@@ -1,10 +1,12 @@
 import { Grid, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Form, Formik } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import i18n from 'src/lib/i18n';
 import { useEmailAddressesMutation } from './AddEmailAddress.generated';
 import { RowWrapper } from './FixEmailAddressPerson/FixEmailAddressPerson';
 import {
@@ -31,10 +33,23 @@ interface EmailValidationFormProps {
   personId: string;
 }
 
+const validationSchema = yup.object({
+  email: yup
+    .string()
+    .email(i18n.t('Invalid Email Address Format'))
+    .required(i18n.t('Please enter a valid email address')),
+  isPrimary: yup.bool().default(false),
+  updatedAt: yup.string(),
+  source: yup.string(),
+  personId: yup.string(),
+  isValid: yup.bool().default(false),
+});
+
 const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const [emailAddressesMutation] = useEmailAddressesMutation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const initialEmail = {
     email: '',
@@ -45,21 +60,11 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
     isValid: false,
   } as EmailValidationFormEmail;
 
-  const validationSchema = Yup.object({
-    email: Yup.string()
-      .email(t('Invalid Email Address Format'))
-      .required('Please enter a valid email address'),
-    isPrimary: Yup.bool().default(false),
-    updatedAt: Yup.string(),
-    source: Yup.string(),
-    personId: Yup.string(),
-    isValid: Yup.bool().default(false),
-  });
-
   const onSubmit = (values, actions) => {
     emailAddressesMutation({
       variables: {
         input: {
+          accountListId: accountListId || '',
           attributes: {
             id: personId,
             emailAddresses: [
@@ -68,7 +73,6 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
               },
             ],
           },
-          accountListId: accountListId ?? '',
         },
       },
       update: (cache, { data: addEmailAddressData }) => {
@@ -112,6 +116,12 @@ const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
             },
           });
         }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Added email address'), { variant: 'success' });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to add email address'), { variant: 'error' });
       },
     });
   };

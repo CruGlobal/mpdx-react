@@ -22,7 +22,6 @@ import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
-import DeleteModal from './DeleteModal/DeleteModal';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson/FixEmailAddressPerson';
 
 const Container = styled(Box)(() => ({
@@ -86,11 +85,6 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-export interface ModalState {
-  personId: string;
-  id: string;
-  email: string;
-}
 export interface EmailAddressData {
   id: string;
   primary: boolean;
@@ -114,9 +108,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   setContactFocus,
 }) => {
   const [defaultSource, setDefaultSource] = useState('MPDX');
-  const [deleteModalState, setDeleteModalState] = useState<ModalState | null>(
-    null,
-  );
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -155,61 +146,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       ),
     [loading, data],
   );
-
-  const handleDeleteModalOpen = (
-    personId: string,
-    id: string,
-    email: string,
-  ): void => {
-    setDeleteModalState({
-      personId,
-      id,
-      email,
-    });
-  };
-
-  const handleDeleteModalClose = (): void => {
-    setDeleteModalState(null);
-  };
-
-  // Delete function called after confirming with the delete modal
-  const handleDelete = async ({
-    personId,
-    id,
-    email,
-  }: ModalState): Promise<void> => {
-    await updateEmailAddressesMutation({
-      variables: {
-        input: {
-          accountListId,
-          attributes: {
-            id: personId,
-            emailAddresses: [
-              {
-                id: id,
-                destroy: true,
-              },
-            ],
-          },
-        },
-      },
-      update: (cache) => {
-        cache.evict({ id: `EmailAddress:${id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t(`Successfully deleted email address ${email}`), {
-          variant: 'success',
-        });
-        handleDeleteModalClose();
-      },
-      onError: () => {
-        enqueueSnackbar(t(`Error deleting email address ${email}`), {
-          variant: 'error',
-        });
-      },
-    });
-  };
 
   // Update the state with the textfield's value
   const handleChange = (
@@ -295,7 +231,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <ContentDivider />
             <Box mb={2}>
-              {data.people.nodes.length > 0 && (
+              {data.people.nodes.length && (
                 <>
                   <Typography>
                     <strong>
@@ -342,8 +278,8 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     person={person}
                     key={person.id}
                     dataState={dataState}
+                    accountListId={accountListId}
                     handleChange={handleChange}
-                    handleDelete={handleDeleteModalOpen}
                     handleChangePrimary={handleChangePrimary}
                     handleSingleConfirm={handleSingleConfirm}
                     setContactFocus={setContactFocus}
@@ -371,13 +307,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
         <CircularProgress
           data-testid="loading"
           style={{ marginTop: theme.spacing(3) }}
-        />
-      )}
-      {deleteModalState && (
-        <DeleteModal
-          modalState={deleteModalState}
-          handleClose={handleDeleteModalClose}
-          handleDelete={handleDelete}
         />
       )}
     </Container>

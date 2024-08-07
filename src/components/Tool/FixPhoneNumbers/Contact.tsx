@@ -114,6 +114,11 @@ interface Props {
   handleAdd: (personId: string, number: string) => void;
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
+  handleUpdate: (
+    personId: string,
+    name: string,
+    numbers: PhoneNumberData[],
+  ) => void;
 }
 
 const Contact: React.FC<Props> = ({
@@ -127,6 +132,7 @@ const Contact: React.FC<Props> = ({
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
+  handleUpdate,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -349,7 +355,12 @@ const Contact: React.FC<Props> = ({
             style={{ paddingLeft: theme.spacing(1) }}
           >
             <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
+              <Button
+                data-testid={`confirmButton-${personId}`}
+                onClick={() => handleUpdate(personId, name, numbers)}
+                variant="contained"
+                style={{ width: '100%' }}
+              >
                 <Icon
                   path={mdiCheckboxMarkedCircle}
                   size={0.8}

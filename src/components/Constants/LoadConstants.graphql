@@ -20,6 +20,10 @@ query LoadConstants {
     locations {
       id
     }
+    newsletter {
+      id
+      value
+    }
     # notifications {
     #   id
     #   value
@@ -43,10 +47,6 @@ query LoadConstants {
       value
     }
     sendAppeals {
-      id
-      value
-    }
-    newsletter {
       id
       value
     }

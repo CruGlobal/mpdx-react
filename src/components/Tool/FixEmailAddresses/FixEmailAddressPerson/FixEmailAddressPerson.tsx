@@ -14,9 +14,12 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -95,12 +98,12 @@ const useStyles = makeStyles()((theme: Theme) => ({
 export interface FixEmailAddressPersonProps {
   person: PersonInvalidEmailFragment;
   dataState: { [key: string]: PersonEmailAddresses };
+  accountListId: string;
   handleChange: (
     personId: string,
     numberIndex: number,
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
-  handleDelete: (personId: string, id: string, email: string) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
   handleSingleConfirm: (
     person: PersonInvalidEmailFragment,
@@ -109,11 +112,28 @@ export interface FixEmailAddressPersonProps {
   setContactFocus: SetContactFocus;
 }
 
+interface Email {
+  isValid: boolean;
+  personId: string;
+  isPrimary: boolean;
+  id: string;
+  primary: boolean;
+  updatedAt: string;
+  source: string;
+  email: string;
+  destroy?: boolean | undefined;
+}
+
+interface EmailToDelete {
+  id: string;
+  email: Email;
+}
+
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   person,
   dataState,
+  accountListId,
   handleChange,
-  handleDelete,
   handleChangePrimary,
   handleSingleConfirm,
   setContactFocus,
@@ -121,11 +141,16 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+  const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [emailToDelete, setEmailToDelete] =
+    React.useState<EmailToDelete | null>(null);
 
   const { id, contactId } = person;
   const name = `${person.firstName} ${person.lastName}`;
 
-  const emails = useMemo(() => {
+  const emails: Email[] = useMemo(() => {
     if (!dataState[id]?.emailAddresses.length) {
       return [];
     }
@@ -135,187 +160,262 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         ...email,
         isValid: false,
         personId: id,
-        primary: email.primary,
+        isPrimary: email.primary,
       })) || []
     );
   }, [person, dataState]);
+
+  const handleDelete = async (): Promise<void> => {
+    if (!emailToDelete) {
+      return;
+    }
+    const { id: personId, email } = emailToDelete;
+    await updateEmailAddressesMutation({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            id: personId,
+            emailAddresses: [
+              {
+                id: email.id,
+                destroy: true,
+              },
+            ],
+          },
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `EmailAddress:${email.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully deleted email address ${email.email}`),
+          {
+            variant: 'success',
+          },
+        );
+        handleDeleteEmailModalClose();
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error deleting email address ${email.email}`), {
+          variant: 'error',
+        });
+      },
+    });
+  };
 
   const handleContactNameClick = () => {
     setContactFocus(contactId);
   };
 
+  const handleDeleteEmailOpen = ({ id, email }: EmailToDelete) => {
+    setDeleteModalOpen(true);
+    setEmailToDelete({ id, email });
+  };
+  const handleDeleteEmailModalClose = (): void => {
+    setDeleteModalOpen(false);
+    setEmailToDelete(null);
+  };
+
   const hasOnePrimaryEmail = (): boolean => {
-    return emails.filter((email) => email.primary)?.length === 1;
+    return emails.filter((email) => email.isPrimary)?.length === 1;
   };
 
   return (
-    <Container container>
-      <Grid container>
-        <Grid item md={10} xs={12}>
-          <PersonCard display="flex" alignItems="center">
-            <Grid container>
-              <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                  p={2}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="h6">{name}</Typography>
-                    </Link>
+    <>
+      <Container container>
+        <Grid container>
+          <Grid item md={10} xs={12}>
+            <PersonCard display="flex" alignItems="center">
+              <Grid container>
+                <Grid item xs={12}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    style={{ height: '100%' }}
+                    p={2}
+                  >
+                    <Avatar src="" className={classes.avatar} />
+                    <Box display="flex" flexDirection="column" ml={2}>
+                      <Link underline="hover" onClick={handleContactNameClick}>
+                        <Typography variant="h6">{name}</Typography>
+                      </Link>
+                    </Box>
                   </Box>
-                </Box>
-              </Grid>
-              <EmailAddressListWrapper item xs={12}>
-                <Grid container>
-                  <Hidden xsDown>
-                    <ColumnHeaderWrapper item xs={12} sm={6}>
-                      <Box display="flex" justifyContent="space-between" px={2}>
-                        <Typography>
-                          <strong>{t('Source')}</strong>
-                        </Typography>
-                        <Typography>
-                          <strong>{t('Primary')}</strong>
-                        </Typography>
-                      </Box>
-                    </ColumnHeaderWrapper>
-                    <ColumnHeaderWrapper item xs={12} sm={6}>
-                      <Box display="flex" justifyContent="flex-start" px={3.25}>
-                        <Typography>
-                          <strong>{t('Address')}</strong>
-                        </Typography>
-                      </Box>
-                    </ColumnHeaderWrapper>
-                  </Hidden>
-                  {emails.map((email, index) => (
-                    <Fragment key={email.id}>
-                      <RowWrapper item xs={12} sm={6}>
+                </Grid>
+                <EmailAddressListWrapper item xs={12}>
+                  <Grid container>
+                    <Hidden xsDown>
+                      <ColumnHeaderWrapper item xs={12} sm={6}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
                           px={2}
                         >
-                          <Box>
-                            <Hidden smUp>
-                              <Typography display="inline">
-                                <strong>{t('Source')}: </strong>
-                              </Typography>
-                            </Hidden>
-                            <Typography display="inline">
-                              {`${email.source} (${dateFormatShort(
-                                DateTime.fromISO(email.updatedAt),
-                                locale,
-                              )})`}
-                            </Typography>
-                          </Box>
-                          {email.primary ? (
-                            <Box
-                              data-testid={`starIcon-${id}-${index}`}
-                              onClick={() => handleChangePrimary(id, index)}
-                            >
-                              <HoverableIcon path={mdiStar} size={1} />
-                            </Box>
-                          ) : (
-                            <Box
-                              data-testid={`starOutlineIcon-${id}-${index}`}
-                              onClick={() => handleChangePrimary(id, index)}
-                            >
-                              <HoverableIcon path={mdiStarOutline} size={1} />
-                            </Box>
-                          )}
-                        </Box>
-                      </RowWrapper>
-                      <RowWrapper item xs={12} sm={6}>
-                        <BoxWithResponsiveBorder
-                          display="flex"
-                          px={2}
-                          justifyContent="flex-start"
-                        >
-                          <TextField
-                            style={{ width: '100%' }}
-                            inputProps={{
-                              'data-testid': `textfield-${id}-${index}`,
-                            }}
-                            onChange={(
-                              event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(id, index, event)}
-                            value={email.email}
-                            disabled={email.source !== 'MPDX'}
-                          />
-
-                          {email.source === 'MPDX' ? (
-                            <Box
-                              data-testid={`delete-${id}-${index}`}
-                              onClick={() =>
-                                handleDelete(id, email.id, email.email)
-                              }
-                            >
-                              <HoverableIcon path={mdiDelete} size={1} />
-                            </Box>
-                          ) : (
-                            <Icon
-                              path={mdiLock}
-                              size={1}
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
-                          )}
-                        </BoxWithResponsiveBorder>
-                      </RowWrapper>
-                    </Fragment>
-                  ))}
-                  <RowWrapper item xs={12} sm={6}>
-                    <Box display="flex" justifyContent="space-between" px={2}>
-                      <Box>
-                        <Hidden smUp>
-                          <Typography display="inline">
-                            <strong>{t('Source')}: </strong>
+                          <Typography>
+                            <strong>{t('Source')}</strong>
                           </Typography>
-                        </Hidden>
-                        <Typography display="inline">MPDX</Typography>
+                          <Typography>
+                            <strong>{t('Primary')}</strong>
+                          </Typography>
+                        </Box>
+                      </ColumnHeaderWrapper>
+                      <ColumnHeaderWrapper item xs={12} sm={6}>
+                        <Box
+                          display="flex"
+                          justifyContent="flex-start"
+                          px={3.25}
+                        >
+                          <Typography>
+                            <strong>{t('Address')}</strong>
+                          </Typography>
+                        </Box>
+                      </ColumnHeaderWrapper>
+                    </Hidden>
+                    {emails.map((email, index) => (
+                      <Fragment key={email.id}>
+                        <RowWrapper item xs={12} sm={6}>
+                          <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            px={2}
+                          >
+                            <Box>
+                              <Hidden smUp>
+                                <Typography display="inline">
+                                  <strong>{t('Source')}: </strong>
+                                </Typography>
+                              </Hidden>
+                              <Typography display="inline">
+                                {`${email.source} (${dateFormatShort(
+                                  DateTime.fromISO(email.updatedAt),
+                                  locale,
+                                )})`}
+                              </Typography>
+                            </Box>
+                            {email.isPrimary ? (
+                              <Box
+                                data-testid={`starIcon-${id}-${index}`}
+                                onClick={() => handleChangePrimary(id, index)}
+                              >
+                                <HoverableIcon path={mdiStar} size={1} />
+                              </Box>
+                            ) : (
+                              <Box
+                                data-testid={`starOutlineIcon-${id}-${index}`}
+                                onClick={() => handleChangePrimary(id, index)}
+                              >
+                                <HoverableIcon path={mdiStarOutline} size={1} />
+                              </Box>
+                            )}
+                          </Box>
+                        </RowWrapper>
+                        <RowWrapper item xs={12} sm={6}>
+                          <BoxWithResponsiveBorder
+                            display="flex"
+                            px={2}
+                            justifyContent="flex-start"
+                          >
+                            <TextField
+                              style={{ width: '100%' }}
+                              inputProps={{
+                                'data-testid': `textfield-${id}-${index}`,
+                              }}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>,
+                              ) => handleChange(id, index, event)}
+                              value={email.email}
+                              disabled={email.source !== 'MPDX'}
+                            />
+
+                            {email.source === 'MPDX' ? (
+                              <Box
+                                data-testid={`delete-${id}-${index}`}
+                                onClick={() =>
+                                  handleDeleteEmailOpen({ id, email })
+                                }
+                              >
+                                <HoverableIcon path={mdiDelete} size={1} />
+                              </Box>
+                            ) : (
+                              <Icon
+                                path={mdiLock}
+                                size={1}
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            )}
+                          </BoxWithResponsiveBorder>
+                        </RowWrapper>
+                      </Fragment>
+                    ))}
+                    <RowWrapper item xs={12} sm={6}>
+                      <Box display="flex" justifyContent="space-between" px={2}>
+                        <Box>
+                          <Hidden smUp>
+                            <Typography display="inline">
+                              <strong>{t('Source')}: </strong>
+                            </Typography>
+                          </Hidden>
+                          <Typography display="inline">MPDX</Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  </RowWrapper>
-                  <RowWrapper item xs={12} sm={6}>
-                    <BoxWithResponsiveBorder
-                      display="flex"
-                      justifyContent="flex-start"
-                      px={2}
-                    >
-                      <EmailValidationForm personId={id} />
-                    </BoxWithResponsiveBorder>
-                  </RowWrapper>
-                </Grid>
-              </EmailAddressListWrapper>
-            </Grid>
-          </PersonCard>
+                    </RowWrapper>
+                    <RowWrapper item xs={12} sm={6}>
+                      <BoxWithResponsiveBorder
+                        display="flex"
+                        justifyContent="flex-start"
+                        px={2}
+                      >
+                        <EmailValidationForm personId={id} />
+                      </BoxWithResponsiveBorder>
+                    </RowWrapper>
+                  </Grid>
+                </EmailAddressListWrapper>
+              </Grid>
+            </PersonCard>
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              style={{ paddingLeft: theme.spacing(1) }}
+            >
+              <ConfirmButtonWrapper>
+                <Button
+                  variant="contained"
+                  style={{ width: '100%' }}
+                  onClick={() =>
+                    handleSingleConfirm(person, emails as EmailAddressData[])
+                  }
+                  disabled={!hasOnePrimaryEmail()}
+                >
+                  <ConfirmButtonIcon />
+                  {t('Confirm')}
+                </Button>
+              </ConfirmButtonWrapper>
+            </Box>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={2}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            style={{ paddingLeft: theme.spacing(1) }}
-          >
-            <ConfirmButtonWrapper>
-              <Button
-                variant="contained"
-                style={{ width: '100%' }}
-                onClick={() =>
-                  handleSingleConfirm(person, emails as EmailAddressData[])
-                }
-                disabled={!hasOnePrimaryEmail()}
-              >
-                <ConfirmButtonIcon />
-                {t('Confirm')}
-              </Button>
-            </ConfirmButtonWrapper>
-          </Box>
-        </Grid>
-      </Grid>
-    </Container>
+      </Container>
+
+      {deleteModalOpen && emailToDelete && (
+        <Confirmation
+          title={t('Confirm')}
+          isOpen={true}
+          message={
+            <Typography>
+              {t('Are you sure you wish to delete this email address:')}{' '}
+              <strong>{emailToDelete?.email.email}</strong>
+            </Typography>
+          }
+          mutation={handleDelete}
+          handleClose={handleDeleteEmailModalClose}
+        />
+      )}
+    </>
   );
 };

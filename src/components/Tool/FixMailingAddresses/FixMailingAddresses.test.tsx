@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import theme from 'src/theme';
-import FixSendNewsletter from './FixMailingAddresses';
+import FixMailingAddresses from './FixMailingAddresses';
 import {
   mockInvalidAddressesResponse,
   mpdxSourcedAddress,
@@ -54,7 +54,7 @@ const Components = ({
           mocks={mocks}
           cache={cache}
         >
-          <FixSendNewsletter
+          <FixMailingAddresses
             accountListId={accountListId}
             setContactFocus={setContactFocus}
           />
@@ -64,7 +64,7 @@ const Components = ({
   </SnackbarProvider>
 );
 
-describe('FixSendNewsletter', () => {
+describe('FixMailingAddresses', () => {
   beforeEach(() => {
     setContactFocus.mockClear();
   });

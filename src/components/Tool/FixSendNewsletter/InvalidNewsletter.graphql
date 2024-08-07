@@ -1,4 +1,4 @@
-query GetInvalidNewsletter($accountListId: ID!) {
+query InvalidNewsletter($accountListId: ID!) {
   contacts(
     accountListId: $accountListId
     contactsFilter: {
@@ -41,6 +41,7 @@ fragment ContactPrimaryPerson on Person {
     email
   }
   optoutEnewsletter
+  deceased
 }
 
 fragment Status on Constant {
