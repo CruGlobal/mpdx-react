@@ -13,6 +13,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
@@ -541,22 +542,24 @@ const Contact: React.FC<Props> = ({
                       </Button>
                     </Box>
                     <Box className={classes.ButtonIcons}>
-                      <IconButton
-                        data-testid="hideButton"
-                        onClick={() =>
-                          showModal(
-                            modalContact,
-                            t(
-                              `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
-                              { source: name },
-                            ),
-                            t('Hide'),
-                            UpdateTypeEnum.Hide,
-                          )
-                        }
-                      >
-                        <VisibilityOffIcon />
-                      </IconButton>
+                      <Tooltip title="Hide Contact">
+                        <IconButton
+                          data-testid="hideButton"
+                          onClick={() =>
+                            showModal(
+                              modalContact,
+                              t(
+                                `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
+                                { source: name },
+                              ),
+                              t('Hide'),
+                              UpdateTypeEnum.Hide,
+                            )
+                          }
+                        >
+                          <VisibilityOffIcon />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
                   </Box>
                 </Grid>
