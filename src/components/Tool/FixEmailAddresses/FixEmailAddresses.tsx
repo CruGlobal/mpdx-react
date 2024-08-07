@@ -12,7 +12,7 @@ import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useGetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
-import theme from '../../../theme';
+import theme from 'src/theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
