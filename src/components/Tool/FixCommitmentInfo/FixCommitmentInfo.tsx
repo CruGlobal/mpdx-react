@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useApolloClient } from '@apollo/client';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -22,11 +21,7 @@ import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipS
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
-import {
-  InvalidStatusesDocument,
-  InvalidStatusesQuery,
-  useInvalidStatusesQuery,
-} from './GetInvalidStatuses.generated';
+import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
 
@@ -64,6 +59,14 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
+export interface DonationsType {
+  amount: {
+    amount: number;
+    currency: string;
+    conversionDate: string;
+  };
+}
+
 export interface ContactType {
   id?: string | undefined;
   status?: string | undefined;
@@ -71,6 +74,7 @@ export interface ContactType {
   pledgeCurrency?: string | undefined;
   pledgeAmount?: number | undefined;
   pledgeFrequency?: string | undefined;
+  donations?: DonationsType[] | [];
 }
 
 export interface ModalStateType {
@@ -113,7 +117,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const client = useApolloClient();
   const { data, loading, fetchMore } = useInvalidStatusesQuery({
     variables: { accountListId },
   });
@@ -140,20 +143,22 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const [updateInvalidStatus, { loading: updating }] =
     useUpdateStatusMutation();
 
-  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
-    ? (
-        contactFilterGroups.accountList.contactFilterGroups
-          .find((group) => group?.filters[0]?.filterKey === 'status')
-          ?.filters.find(
-            (filter: { filterKey: string }) => filter.filterKey === 'status',
-          ) as MultiselectFilter
-      ).options?.filter(
-        (status) =>
-          status.value !== 'NULL' &&
-          status.value !== 'HIDDEN' &&
-          status.value !== 'ACTIVE',
-      )
-    : [{ name: '', value: '' }];
+  const contactStatuses = useMemo(() => {
+    contactFilterGroups?.accountList?.contactFilterGroups
+      ? (
+          contactFilterGroups.accountList.contactFilterGroups
+            .find((group) => group?.filters[0]?.filterKey === 'status')
+            ?.filters.find(
+              (filter: { filterKey: string }) => filter.filterKey === 'status',
+            ) as MultiselectFilter
+        ).options?.filter(
+          (status) =>
+            status.value !== 'NULL' &&
+            status.value !== 'HIDDEN' &&
+            status.value !== 'ACTIVE',
+        )
+      : [{ name: '', value: '' }];
+  }, [contactFilterGroups]);
 
   const updateContact = async (): Promise<void> => {
     let attributes;
@@ -188,6 +193,9 @@ const FixCommitmentInfo: React.FC<Props> = ({
         accountListId,
         attributes,
       },
+      update: (cache) => {
+        cache.evict({ id: `Contact:${modalState.contact.id}` });
+      },
       onError() {
         enqueueSnackbar(
           t(`Error updating ${modalState.contact.name}'s commitment info`),
@@ -205,34 +213,8 @@ const FixCommitmentInfo: React.FC<Props> = ({
             autoHideDuration: 7000,
           },
         );
-        hideContactFromView(modalState.contact.id);
       },
     });
-  };
-
-  const hideContactFromView = (hideId?: string): void => {
-    const query = {
-      query: InvalidStatusesDocument,
-      variables: {
-        accountListId,
-      },
-    };
-
-    const dataFromCache = client.readQuery<InvalidStatusesQuery>(query);
-
-    if (dataFromCache) {
-      const data = {
-        ...dataFromCache,
-        contacts: {
-          ...dataFromCache.contacts,
-          nodes: dataFromCache.contacts.nodes.filter(
-            (contact) => contact.id !== hideId,
-          ),
-        },
-      };
-
-      client.writeQuery({ ...query, data });
-    }
   };
 
   const handleShowModal = (
@@ -294,7 +276,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                     )})`,
                     border: 'none !important',
                   }}
-                  itemContent={(index, contact) => (
+                  itemContent={(_, contact) => (
                     <Grid item xs={12}>
                       <Contact
                         id={contact.id}
@@ -316,19 +298,19 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         }
                         frequencyValue={contact.pledgeFrequency || ''}
                         showModal={handleShowModal}
-                        statuses={contactStatuses || [{ name: '', value: '' }]}
+                        statuses={contactStatuses! || [{ name: '', value: '' }]}
                         setContactFocus={setContactFocus}
                       />
                     </Grid>
                   )}
-                  endReached={() =>
+                  endReached={() => {
                     data?.contacts?.pageInfo.hasNextPage &&
-                    fetchMore({
-                      variables: {
-                        after: data.contacts?.pageInfo.endCursor,
-                      },
-                    })
-                  }
+                      fetchMore({
+                        variables: {
+                          after: data.contacts?.pageInfo.endCursor,
+                        },
+                      });
+                  }}
                 />
               </Grid>
             </>

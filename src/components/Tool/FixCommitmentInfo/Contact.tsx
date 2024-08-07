@@ -32,7 +32,11 @@ import {
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
-import { ContactType, UpdateTypeEnum } from './FixCommitmentInfo';
+import {
+  ContactType,
+  DonationsType,
+  UpdateTypeEnum,
+} from './FixCommitmentInfo';
 import { frequencies } from './InputOptions/Frequencies';
 
 interface FormAttributes {
@@ -40,14 +44,6 @@ interface FormAttributes {
   pledgeCurrency?: string;
   pledgeAmount?: number;
   pledgeFrequency?: string;
-}
-
-interface DonationsType {
-  amount: {
-    amount: number;
-    currency: string;
-    conversionDate: string;
-  };
 }
 
 const useStyles = makeStyles()(() => ({
