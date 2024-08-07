@@ -250,7 +250,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                   <Typography>
                     <strong>
                       {t('You have {{amount}} partner statuses to confirm.', {
-                        amount: data?.contacts.nodes.length,
+                        amount: data?.contacts.totalCount,
                       })}
                     </strong>
                   </Typography>

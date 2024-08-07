@@ -542,7 +542,7 @@ const Contact: React.FC<Props> = ({
                           )
                         }
                       >
-                        {"Don't Change"}
+                        {t("Don't Change")}
                       </Button>
                     </Box>
                     <Box className={classes.ButtonIcons}>
