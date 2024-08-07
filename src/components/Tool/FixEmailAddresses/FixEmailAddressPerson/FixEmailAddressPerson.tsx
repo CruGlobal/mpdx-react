@@ -383,11 +383,16 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         </Grid>
       </Container>
 
-      {deleteModalOpen && (
+      {deleteModalOpen && emailToDelete && (
         <Confirmation
           title={t('Confirm')}
           isOpen={true}
-          message={t('Are you sure you wish to delete this email address:')}
+          message={
+            <Typography>
+              {t('Are you sure you wish to delete this email address:')}{' '}
+              <strong>{emailToDelete?.email.email}</strong>
+            </Typography>
+          }
           mutation={handleDelete}
           handleClose={handleDeleteEmailModalClose}
         />
