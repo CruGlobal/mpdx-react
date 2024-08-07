@@ -4,6 +4,7 @@ import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 import {
@@ -27,6 +28,7 @@ interface Props {
   onClose: () => void;
   setContactDetailsLoaded: (value: boolean) => void;
   contactDetailsLoaded: boolean;
+  contextType?: ContactContextTypesEnum;
 }
 
 const HeaderBar = styled(Box)(({}) => ({
@@ -68,6 +70,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   onClose,
   setContactDetailsLoaded,
   contactDetailsLoaded,
+  contextType,
 }: Props) => {
   const { data } = useGetContactDetailsHeaderQuery({
     variables: { accountListId, contactId },
@@ -127,6 +130,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             status={data?.contact.status ?? StatusEnum.Unresponsive}
             onClose={onClose}
+            contextType={contextType}
           />
           <IconButton onClick={onClose}>
             <CloseButtonIcon

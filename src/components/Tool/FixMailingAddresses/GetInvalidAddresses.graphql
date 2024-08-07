@@ -33,7 +33,7 @@ fragment ContactAddress on Address {
   historic
 }
 
-mutation UpdateContactAddress(
+mutation UpdateContactMailingAddress(
   $accountListId: ID!
   $attributes: AddressUpdateInput!
 ) {

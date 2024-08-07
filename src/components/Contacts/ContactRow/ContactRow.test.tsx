@@ -8,6 +8,10 @@ import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/Con
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../ContactsContext/ContactsContext';
 import { ContactRow } from './ContactRow';
 import {
   ContactRowFragment,
@@ -58,6 +62,34 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
 jest.mock('../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
+const setContactFocus = jest.fn();
+const contactDetailsOpen = true;
+const toggleSelectionById = jest.fn();
+const isRowChecked = jest.fn();
+
+const Components = () => (
+  <TestRouter router={router}>
+    <GqlMockedProvider>
+      <ThemeProvider theme={theme}>
+        <ContactsWrapper>
+          <ContactsContext.Provider
+            value={
+              {
+                accountListId,
+                setContactFocus,
+                contactDetailsOpen,
+                toggleSelectionById,
+                isRowChecked,
+              } as unknown as ContactsType
+            }
+          >
+            <ContactRow contact={contact} />
+          </ContactsContext.Provider>
+        </ContactsWrapper>
+      </ThemeProvider>
+    </GqlMockedProvider>
+  </TestRouter>
+);
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
@@ -68,17 +100,7 @@ beforeEach(() => {
 
 describe('ContactsRow', () => {
   it('default', () => {
-    const { getByText } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactsWrapper>
-              <ContactRow contact={contact} />
-            </ContactsWrapper>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
+    const { getByText } = render(<Components />);
 
     expect(
       getByText(
@@ -93,40 +115,19 @@ describe('ContactsRow', () => {
   });
 
   it('should render check event', async () => {
-    const { getByRole } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactsWrapper>
-              <ContactRow contact={contact} />
-            </ContactsWrapper>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
+    const { getByRole } = render(<Components />);
 
     const checkbox = getByRole('checkbox');
     expect(checkbox).not.toBeChecked();
     userEvent.click(checkbox);
-    // TODO: Find a way to check that click event was pressed.
+    expect(checkbox).toBeChecked();
   });
 
   it('should open log task modal', async () => {
-    const { getByTitle } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactsWrapper>
-              <ContactRow contact={contact} />
-            </ContactsWrapper>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
+    const { getByTitle } = render(<Components />);
 
     const taskButton = getByTitle('Log Task');
     userEvent.click(taskButton);
-    // TODO: Find a way to check that click event was pressed.
     expect(openTaskModal).toHaveBeenCalledWith({
       view: TaskModalEnum.Log,
       defaultValues: {
@@ -136,20 +137,15 @@ describe('ContactsRow', () => {
   });
 
   it('should render contact select event', () => {
-    const { getByTestId } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactsWrapper>
-              <ContactRow contact={contact} />
-            </ContactsWrapper>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
+    isRowChecked.mockImplementationOnce((id) => id === contact.id);
+
+    const { getByTestId } = render(<Components />);
+
+    expect(setContactFocus).not.toHaveBeenCalled();
 
     const rowButton = getByTestId('rowButton');
     userEvent.click(rowButton);
-    // TODO: Find a way to check that click event was pressed.
+
+    expect(setContactFocus).toHaveBeenCalledWith(contact.id);
   });
 });

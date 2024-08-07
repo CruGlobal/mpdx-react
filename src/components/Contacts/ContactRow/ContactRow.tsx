@@ -15,6 +15,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import theme from 'src/theme';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
@@ -22,21 +23,35 @@ import { preloadContactsRightPanel } from '../ContactsRightPanel/DynamicContacts
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
 
+// When making changes in this file, also check to see if you don't need to make changes to the below file
+// src/components/Tool/Appeal/List/ContactRow/ContactRow.tsx
+
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
 }
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
-  const {
-    accountListId,
-    isRowChecked: isChecked,
-    contactDetailsOpen,
-    setContactFocus: onContactSelected,
-    toggleSelectionById: onContactCheckToggle,
-  } = React.useContext(ContactsContext) as ContactsType;
+export const StyledCheckbox = styled(Checkbox, {
+  shouldForwardProp: (prop) => prop !== 'value',
+})(() => ({
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  },
+}));
 
-  const ListItemButton = styled(ButtonBase)(({ theme }) => ({
+export const ListItemButton = styled(ButtonBase, {
+  shouldForwardProp: (prop) =>
+    prop !== 'useTopMargin' && prop !== 'isChecked' && prop !== 'contactId',
+})(
+  ({
+    useTopMargin,
+    contactId,
+    isChecked,
+  }: {
+    useTopMargin?: boolean;
+    contactId: string;
+    isChecked: ContactsType['isRowChecked'];
+  }) => ({
     flex: '1 1 auto',
     textAlign: 'left',
     marginTop: useTopMargin ? '16px' : '0',
@@ -47,15 +62,17 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     ...(isChecked(contactId)
       ? { backgroundColor: theme.palette.cruGrayLight.main }
       : {}),
-  }));
+  }),
+);
 
-  const StyledCheckbox = styled(Checkbox, {
-    shouldForwardProp: (prop) => prop !== 'value',
-  })(() => ({
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
-  }));
+export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+  const {
+    accountListId,
+    isRowChecked: isChecked,
+    contactDetailsOpen,
+    setContactFocus: onContactSelected,
+    toggleSelectionById: onContactCheckToggle,
+  } = React.useContext(ContactsContext) as ContactsType;
 
   const onClick = () => {
     onContactSelected(contact.id);
@@ -80,6 +97,9 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       focusRipple
       onClick={onClick}
       onMouseEnter={preloadContactsRightPanel}
+      useTopMargin={useTopMargin}
+      isChecked={isChecked}
+      contactId={contactId}
       data-testid="rowButton"
     >
       <Hidden xsDown>

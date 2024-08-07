@@ -5,6 +5,11 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import {
+  AppealsContext,
+  AppealsType,
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import theme from '../../../theme';
 import {
   ContactsContext,
@@ -33,8 +38,9 @@ import {
 } from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
 
-interface Props {
+interface ContactDetailsProps {
   onClose: () => void;
+  contextType?: ContactContextTypesEnum;
 }
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
@@ -83,7 +89,10 @@ export enum TabKey {
   Notes = 'Notes',
 }
 
-export const ContactDetails: React.FC<Props> = ({ onClose }) => {
+export const ContactDetails: React.FC<ContactDetailsProps> = ({
+  onClose,
+  contextType = ContactContextTypesEnum.Contacts,
+}) => {
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
 
@@ -91,7 +100,9 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
     accountListId,
     contactDetailsId: contactId,
     setContactFocus,
-  } = React.useContext(ContactsContext) as ContactsType;
+  } = contextType === ContactContextTypesEnum.Contacts
+    ? (React.useContext(ContactsContext) as ContactsType)
+    : (React.useContext(AppealsContext) as AppealsType);
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
@@ -106,6 +117,7 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
           onClose={onClose}
           contactDetailsLoaded={contactDetailsLoaded}
           setContactDetailsLoaded={setContactDetailsLoaded}
+          contextType={contextType}
         />
       )}
       <TabContext value={selectedTabKey}>
