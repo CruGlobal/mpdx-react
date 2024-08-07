@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -143,22 +143,20 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const [updateInvalidStatus, { loading: updating }] =
     useUpdateStatusMutation();
 
-  const contactStatuses = useMemo(() => {
-    contactFilterGroups?.accountList?.contactFilterGroups
-      ? (
-          contactFilterGroups.accountList.contactFilterGroups
-            .find((group) => group?.filters[0]?.filterKey === 'status')
-            ?.filters.find(
-              (filter: { filterKey: string }) => filter.filterKey === 'status',
-            ) as MultiselectFilter
-        ).options?.filter(
-          (status) =>
-            status.value !== 'NULL' &&
-            status.value !== 'HIDDEN' &&
-            status.value !== 'ACTIVE',
-        )
-      : [{ name: '', value: '' }];
-  }, [contactFilterGroups]);
+  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
+    ? (
+        contactFilterGroups.accountList.contactFilterGroups
+          .find((group) => group?.filters[0]?.filterKey === 'status')
+          ?.filters.find(
+            (filter: { filterKey: string }) => filter.filterKey === 'status',
+          ) as MultiselectFilter
+      ).options?.filter(
+        (status) =>
+          status.value !== 'NULL' &&
+          status.value !== 'HIDDEN' &&
+          status.value !== 'ACTIVE',
+      )
+    : [{ name: '', value: '' }];
 
   const updateContact = async (): Promise<void> => {
     let attributes;
@@ -298,7 +296,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         }
                         frequencyValue={contact.pledgeFrequency || ''}
                         showModal={handleShowModal}
-                        statuses={contactStatuses! || [{ name: '', value: '' }]}
+                        statuses={contactStatuses || [{ name: '', value: '' }]}
                         setContactFocus={setContactFocus}
                       />
                     </Grid>
