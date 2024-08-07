@@ -25,7 +25,7 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { ConfirmButtonIcon } from '../../ConfirmButtonIcon';
 import EmailValidationForm from '../EmailValidationForm';
-import { PersonEmailAddresses } from '../FixEmailAddresses';
+import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
 import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
 
 const PersonCard = styled(Box)(({ theme }) => ({
@@ -105,6 +105,10 @@ export interface FixEmailAddressPersonProps {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
+  handleSingleConfirm: (
+    person: PersonInvalidEmailFragment,
+    emails: EmailAddressData[],
+  ) => void;
   setContactFocus: SetContactFocus;
 }
 
@@ -131,6 +135,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   accountListId,
   handleChange,
   handleChangePrimary,
+  handleSingleConfirm,
   setContactFocus,
 }) => {
   const { t } = useTranslation();
@@ -214,6 +219,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
     setEmailToDelete(null);
   };
 
+  const hasOnePrimaryEmail = (): boolean => {
+    return emails.filter((email) => email.isPrimary)?.length === 1;
+  };
+
   return (
     <>
       <Container container>
@@ -287,7 +296,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               </Typography>
                             </Box>
                             {email.isPrimary ? (
-                              <Box data-testid={`starIcon-${id}-${index}`}>
+                              <Box
+                                data-testid={`starIcon-${id}-${index}`}
+                                onClick={() => handleChangePrimary(id, index)}
+                              >
                                 <HoverableIcon path={mdiStar} size={1} />
                               </Box>
                             ) : (
@@ -358,7 +370,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         justifyContent="flex-start"
                         px={2}
                       >
-                        <EmailValidationForm personId={id} />
+                        <EmailValidationForm
+                          personId={id}
+                          accountListId={accountListId}
+                        />
                       </BoxWithResponsiveBorder>
                     </RowWrapper>
                   </Grid>
@@ -373,7 +388,14 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
               style={{ paddingLeft: theme.spacing(1) }}
             >
               <ConfirmButtonWrapper>
-                <Button variant="contained" style={{ width: '100%' }}>
+                <Button
+                  variant="contained"
+                  style={{ width: '100%' }}
+                  onClick={() =>
+                    handleSingleConfirm(person, emails as EmailAddressData[])
+                  }
+                  disabled={!hasOnePrimaryEmail()}
+                >
                   <ConfirmButtonIcon />
                   {t('Confirm')}
                 </Button>

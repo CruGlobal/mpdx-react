@@ -9,9 +9,15 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { useGetInvalidEmailAddressesQuery } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import {
+  PersonInvalidEmailFragment,
+  useGetInvalidEmailAddressesQuery,
+  useUpdateEmailAddressesMutation,
+} from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { PersonEmailAddressInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
@@ -103,10 +109,13 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
 }) => {
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, loading } = useGetInvalidEmailAddressesQuery({
     variables: { accountListId },
   });
+  const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
+
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
   }>({});
@@ -169,6 +178,52 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDefaultSource(event.target.value);
   };
 
+  const handleSingleConfirm = async (
+    person: PersonInvalidEmailFragment,
+    emails: EmailAddressData[],
+  ) => {
+    const personName = `${person.firstName} ${person.lastName}`;
+    const emailAddresses = [] as PersonEmailAddressInput[];
+    emails.map((emailAddress) => {
+      emailAddresses.push({
+        email: emailAddress.email,
+        id: emailAddress.id,
+        primary: emailAddress.primary,
+        validValues: true,
+      });
+    });
+
+    await updateEmailAddressesMutation({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            id: person.id,
+            emailAddresses,
+          },
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${person.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully updated email addresses for ${personName}`),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating email addresses for ${personName}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
   return (
     <Container>
       {!loading && data && dataState ? (
@@ -177,7 +232,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <ContentDivider />
             <Box mb={2}>
-              {data.people.nodes.length && (
+              {!!data.people.nodes.length && (
                 <>
                   <Typography>
                     <strong>
@@ -216,7 +271,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
               )}
             </Box>
           </Grid>
-          {data.people.nodes.length > 0 ? (
+          {!!data.people.nodes.length ? (
             <>
               <Grid item xs={12}>
                 {data?.people.nodes.map((person) => (
@@ -227,6 +282,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     accountListId={accountListId}
                     handleChange={handleChange}
                     handleChangePrimary={handleChangePrimary}
+                    handleSingleConfirm={handleSingleConfirm}
                     setContactFocus={setContactFocus}
                   />
                 ))}

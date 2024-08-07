@@ -6,11 +6,7 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  render,
-  screen,
-  waitFor,
-} from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
 import { EmailAddressesMutation } from '../AddEmailAddress.generated';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
@@ -49,6 +45,7 @@ const person: PersonInvalidEmailFragment = {
 
 const setContactFocus = jest.fn();
 const mutationSpy = jest.fn();
+const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -62,14 +59,23 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
+const defaultDataState = {
+  contactTestId: {
+    emailAddresses: person.emailAddresses.nodes as EmailAddressData[],
+  },
+} as { [key: string]: PersonEmailAddresses };
+
+type TestComponentProps = {
+  mocks?: ApolloErgonoMockMap;
+  dataState?: { [key: string]: PersonEmailAddresses };
+};
+
+const TestComponent = ({
+  mocks,
+  dataState = defaultDataState,
+}: TestComponentProps) => {
   const handleChangeMock = jest.fn();
   const handleChangePrimaryMock = jest.fn();
-  const dataState = {
-    contactTestId: {
-      emailAddresses: person.emailAddresses.nodes as EmailAddressData[],
-    },
-  } as { [key: string]: PersonEmailAddresses };
 
   return (
     <SnackbarProvider>
@@ -85,9 +91,10 @@ const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
             <FixEmailAddressPerson
               person={person}
               dataState={dataState}
-              handleChange={handleChangeMock}
               accountListId={accountListId}
+              handleChange={handleChangeMock}
               handleChangePrimary={handleChangePrimaryMock}
+              handleSingleConfirm={handleSingleConfirm}
               setContactFocus={setContactFocus}
             />
           </GqlMockedProvider>
@@ -235,7 +242,6 @@ describe('FixEmailAddressPerson', () => {
       await waitFor(() => getByTestId('delete-contactTestId-1'));
 
       userEvent.click(getByTestId('delete-contactTestId-1'));
-      screen.logTestingPlaygroundURL();
       await waitFor(() => {
         expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
       });
@@ -271,6 +277,74 @@ describe('FixEmailAddressPerson', () => {
           },
         ),
       );
+    });
+  });
+
+  describe('confirm button', () => {
+    it('should disable confirm button if there is more than one primary email', async () => {
+      const dataState = {
+        contactTestId: {
+          emailAddresses: [
+            {
+              ...person.emailAddresses.nodes[0],
+              primary: true,
+            },
+            {
+              ...person.emailAddresses.nodes[1],
+              primary: true,
+            },
+          ] as EmailAddressData[],
+        },
+      };
+
+      const { getByRole, queryByRole } = render(
+        <TestComponent dataState={dataState} />,
+      );
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).toBeDisabled();
+      });
+    });
+
+    it('should disable confirm button if there are no primary emails', async () => {
+      const dataState = {
+        contactTestId: {
+          emailAddresses: [
+            {
+              ...person.emailAddresses.nodes[0],
+              primary: false,
+            },
+            {
+              ...person.emailAddresses.nodes[1],
+              primary: false,
+            },
+          ] as EmailAddressData[],
+        },
+      };
+      const { getByRole, queryByRole } = render(
+        <TestComponent dataState={dataState} />,
+      );
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).toBeDisabled();
+      });
+    });
+
+    it('should not disable confirm button if there is exactly one primary email', async () => {
+      const { getByRole, queryByRole } = render(<TestComponent />);
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(0);
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).not.toBeDisabled();
+      });
+
+      userEvent.click(getByRole('button', { name: 'Confirm' }));
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
     });
   });
 });
