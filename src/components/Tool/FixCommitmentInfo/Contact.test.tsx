@@ -94,10 +94,9 @@ describe('FixCommitmentContact', () => {
         <TestComponent />
       </TestRouter>,
     );
-    userEvent.click(getByTestId('goToContactsButton'));
-    expect(setContactFocus).toHaveBeenCalledWith(testData.id, 'Donations');
+
     userEvent.click(getByTestId('contactSelect'));
-    expect(setContactFocus).toHaveBeenCalledTimes(2);
+    expect(setContactFocus).toHaveBeenCalledWith(testData.id, 'Donations');
   });
 
   it('should fail validation', async () => {

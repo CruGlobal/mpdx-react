@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-import SearchIcon from '@mui/icons-material/Search';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Avatar,
@@ -542,12 +541,6 @@ const Contact: React.FC<Props> = ({
                       </Button>
                     </Box>
                     <Box className={classes.ButtonIcons}>
-                      <IconButton
-                        data-testid="goToContactsButton"
-                        onClick={() => setContactFocus(id, 'Donations')}
-                      >
-                        <SearchIcon />
-                      </IconButton>
                       <IconButton
                         data-testid="hideButton"
                         onClick={() =>

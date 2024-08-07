@@ -186,7 +186,7 @@ describe('FixCommitmentContact', () => {
     const { getAllByTestId } = render(<Components />);
 
     await waitFor(() => {
-      userEvent.click(getAllByTestId('goToContactsButton')[0]);
+      userEvent.click(getAllByTestId('contactSelect')[0]);
     });
     await waitFor(() => {
       expect(setContactFocus).toHaveBeenCalled();
