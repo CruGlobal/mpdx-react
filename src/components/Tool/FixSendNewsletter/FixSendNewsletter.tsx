@@ -1,6 +1,4 @@
 import React, { useMemo } from 'react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
-import { Icon } from '@mdi/react';
 import {
   Box,
   Button,
@@ -14,8 +12,10 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
+import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
+import { ButtonHeaderBox } from '../MergeContacts/StickyConfirmButtons';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
@@ -28,34 +28,30 @@ import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated
 const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
-    width: '70%',
+    width: '80%',
     display: 'flex',
-    [theme.breakpoints.down('sm')]: {
+    height: 'auto',
+    [theme.breakpoints.down('md')]: {
       width: '100%',
     },
   },
   outer: {
     display: 'flex',
     flexDirection: 'row',
-    width: '100%',
     justifyContent: 'center',
+    width: '100%',
   },
   divider: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
   descriptionBox: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   footer: {
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
-  },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    marginTop: theme.spacing(1),
-    color: 'white',
   },
   buttonIcon: {
     marginRight: theme.spacing(1),
@@ -77,6 +73,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { data, loading, fetchMore } = useInvalidNewsletterQuery({
     variables: { accountListId },
   });
+  const totalCount = data?.contacts.totalCount;
   let numberOfContacts = data?.contacts.nodes?.length ?? 0;
 
   const contactsToFix = useMemo(
@@ -179,21 +176,46 @@ const FixSendNewsletter: React.FC<Props> = ({
                       'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
                     )}
                   </Typography>
-                  <Button variant="contained" className={classes.buttonBlue}>
-                    <Icon
-                      path={mdiCheckboxMarkedCircle}
-                      size={0.8}
-                      className={classes.buttonIcon}
-                    />
-                    <Trans
-                      defaults="Cofirm {{value}}"
-                      values={{
-                        value: numberOfContacts,
-                      }}
-                    />
-                  </Button>
                 </Box>
               </Grid>
+              <ButtonHeaderBox mb={0}>
+                <Box>
+                  <Typography>
+                    <Trans
+                      defaults="<i>Showing <bold>{{numberOfContacts}}</bold> of <bold>{{totalCount}}</bold></i>"
+                      shouldUnescape
+                      values={{
+                        numberOfContacts,
+                        totalCount,
+                      }}
+                      components={{ bold: <strong />, i: <i /> }}
+                    />
+                  </Typography>
+                </Box>
+                {(loading || updating) && (
+                  <LoadingSpinner
+                    firstLoad={true}
+                    data-testid="LoadingSpinner"
+                  />
+                )}
+                <Box>
+                  <Button
+                    variant="contained"
+                    onClick={() => null}
+                    disabled={updating || !numberOfContacts}
+                    sx={{ mr: 2 }}
+                  >
+                    {
+                      <Trans
+                        defaults="Confirm All ({{value}})"
+                        values={{
+                          value: numberOfContacts,
+                        }}
+                      />
+                    }
+                  </Button>
+                </Box>
+              </ButtonHeaderBox>
               <InfiniteList
                 loading={loading}
                 disableHover={true}

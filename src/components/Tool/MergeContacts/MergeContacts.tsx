@@ -158,7 +158,7 @@ const MergeContacts: React.FC<Props> = ({
                 confirmAction={handleSubmit}
                 setActions={setActions}
               />
-              <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
+              <Grid item xs={12} sx={{ margin: '15px 2px 20px 2px' }}>
                 {data?.contactDuplicates.nodes.map((duplicate) => (
                   <ContactPair
                     key={duplicate.id}

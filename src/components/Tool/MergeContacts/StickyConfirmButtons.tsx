@@ -6,7 +6,7 @@ import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpin
 import theme from 'src/theme';
 import { ActionType } from './MergeContacts';
 
-const ButtonHeaderBox = styled(Box)(() => ({
+export const ButtonHeaderBox = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -14,7 +14,6 @@ const ButtonHeaderBox = styled(Box)(() => ({
   backgroundColor: 'white',
   paddingTop: theme.spacing(2),
   paddingBottom: theme.spacing(2),
-  marginBottom: theme.spacing(2),
   position: 'sticky',
   top: '64px',
   zIndex: '100',
