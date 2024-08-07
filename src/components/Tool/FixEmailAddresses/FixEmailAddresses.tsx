@@ -205,6 +205,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       },
       update: (cache) => {
         cache.evict({ id: `Person:${person.id}` });
+        cache.gc();
       },
       onCompleted: () => {
         enqueueSnackbar(
@@ -231,7 +232,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <ContentDivider />
             <Box mb={2}>
-              {data.people.nodes.length && (
+              {!!data.people.nodes.length && (
                 <>
                   <Typography>
                     <strong>
@@ -270,7 +271,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
               )}
             </Box>
           </Grid>
-          {data.people.nodes.length > 0 ? (
+          {!!data.people.nodes.length ? (
             <>
               <Grid item xs={12}>
                 {data?.people.nodes.map((person) => (

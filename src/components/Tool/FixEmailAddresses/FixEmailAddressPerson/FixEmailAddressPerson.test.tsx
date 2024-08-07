@@ -340,10 +340,16 @@ describe('FixEmailAddressPerson', () => {
     it('should not disable confirm button if there is exactly one primary email', async () => {
       const { getByRole, queryByRole } = render(<TestComponent />);
 
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(0);
+
       await waitFor(() => {
         expect(queryByRole('loading')).not.toBeInTheDocument();
         expect(getByRole('button', { name: 'Confirm' })).not.toBeDisabled();
       });
+
+      userEvent.click(getByRole('button', { name: 'Confirm' }));
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
     });
   });
 });

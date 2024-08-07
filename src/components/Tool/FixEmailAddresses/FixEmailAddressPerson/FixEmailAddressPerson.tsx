@@ -370,7 +370,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         justifyContent="flex-start"
                         px={2}
                       >
-                        <EmailValidationForm personId={id} />
+                        <EmailValidationForm
+                          personId={id}
+                          accountListId={accountListId}
+                        />
                       </BoxWithResponsiveBorder>
                     </RowWrapper>
                   </Grid>

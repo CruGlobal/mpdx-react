@@ -1,9 +1,8 @@
 import React from 'react';
-import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ApolloErgonoMockMap, ErgonoMockShape } from 'graphql-ergonomock';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
@@ -51,10 +50,9 @@ const defaultGraphQLMock = {
 
 interface ComponentsProps {
   mocks?: ApolloErgonoMockMap;
-  cache?: ApolloCache<object>;
 }
 
-const Components = ({ mocks = defaultGraphQLMock, cache }: ComponentsProps) => (
+const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
@@ -66,7 +64,6 @@ const Components = ({ mocks = defaultGraphQLMock, cache }: ComponentsProps) => (
           }>
             mocks={mocks}
             onCall={mutationSpy}
-            cache={cache}
           >
             <FixEmailAddresses
               accountListId={accountListId}
@@ -206,15 +203,17 @@ describe('FixEmailAddresses-Home', () => {
   });
 
   it('delete third email from first person', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+    const { getByTestId, getByText, getByRole, queryByTestId } = render(
+      <Components />,
+    );
 
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
 
-    const deleteButton = await waitFor(() =>
-      getByTestId('modal-delete-button'),
+    await waitFor(() =>
+      getByText(`Are you sure you wish to delete this email address:`),
     );
-    userEvent.click(deleteButton);
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
       expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
@@ -322,31 +321,8 @@ describe('FixEmailAddresses-Home', () => {
 
   describe('handleSingleConfirm', () => {
     it('should successfully submit changes to multiple emails', async () => {
-      const cache = new InMemoryCache();
       const personName = 'Test Contact';
-
-      const updatePerson = {
-        person: {
-          id: mockInvalidEmailAddressesResponse[0].id,
-          emailAddresses: {
-            nodes: [
-              {
-                ...contactOneEmailAddressNodes[0],
-                email: 'different@email.com',
-              },
-              {
-                ...contactOneEmailAddressNodes[1],
-                email: 'different2@email.com',
-              },
-              {
-                ...contactOneEmailAddressNodes[2],
-              },
-            ],
-          },
-        },
-      } as ErgonoMockShape;
-
-      const { getAllByRole, getByTestId, queryByText } = render(
+      const { getAllByRole, getByTestId, getByText, queryByText } = render(
         <Components
           mocks={{
             GetInvalidEmailAddresses: {
@@ -354,15 +330,15 @@ describe('FixEmailAddresses-Home', () => {
                 nodes: mockInvalidEmailAddressesResponse,
               },
             },
-            UpdateEmailAddresses: { updatePerson },
           }}
-          cache={cache}
         />,
       );
 
       await waitFor(() => {
         expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
       });
+
+      expect(getByText(personName)).toBeInTheDocument();
 
       const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
       userEvent.click(confirmButton);
@@ -377,8 +353,6 @@ describe('FixEmailAddresses-Home', () => {
     }, 999999);
 
     it('should handle an error', async () => {
-      const cache = new InMemoryCache();
-
       const { getAllByRole, getByTestId } = render(
         <Components
           mocks={{
@@ -391,7 +365,6 @@ describe('FixEmailAddresses-Home', () => {
               throw new Error('Server Error');
             },
           }}
-          cache={cache}
         />,
       );
 
