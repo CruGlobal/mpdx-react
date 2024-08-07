@@ -163,12 +163,14 @@ const FixSendNewsletter: React.FC<Props> = ({
                 <Box className={classes.descriptionBox}>
                   <Typography>
                     <strong>
-                      {t(
-                        'You have {{amount}} newsletter statuses to confirm.',
-                        {
-                          amount: numberOfContacts,
-                        },
-                      )}
+                      {
+                        <Trans
+                          defaults="You have {{amount}} newsletter statuses to confirm."
+                          values={{
+                            amount: numberOfContacts,
+                          }}
+                        />
+                      }
                     </strong>
                   </Typography>
                   <Typography>
@@ -248,6 +250,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                         street: '',
                         city: '',
                         state: '',
+                        country: '',
                         postalCode: '',
                         source: '',
                         createdAt: '',

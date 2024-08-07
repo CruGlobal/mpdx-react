@@ -37,6 +37,7 @@ fragment ContactPrimaryAddress on Address {
   street
   city
   state
+  country
   postalCode
   source
   createdAt

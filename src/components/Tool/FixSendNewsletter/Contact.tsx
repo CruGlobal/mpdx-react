@@ -17,10 +17,13 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import {
   ContactPrimaryAddressFragment,
@@ -101,6 +104,7 @@ const Contact = ({
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState(SendNewsletterEnum.None);
   const { classes } = useStyles();
+  const locale = useLocale();
 
   const newsletterOptions = [
     { value: SendNewsletterEnum.Physical, name: t('Physical') },
@@ -138,123 +142,146 @@ const Contact = ({
 
   return (
     <Card variant="outlined" className={classes.contactBasic}>
-        <CardHeader
-          avatar={
-            <Avatar
-              src={avatar}
-              style={{
-                width: theme.spacing(4),
-                height: theme.spacing(4),
-              }}
+      <CardHeader
+        avatar={
+          <Avatar
+            src={avatar}
+            style={{
+              width: theme.spacing(4),
+              height: theme.spacing(4),
+            }}
+          />
+        }
+        action={
+          <Button
+            variant="contained"
+            onClick={() => handleSingleConfirm(id, name, newsletter)}
+            sx={{ marginTop: '9px' }}
+          >
+            <Icon
+              path={mdiCheckboxMarkedCircle}
+              size={0.8}
+              className={classes.buttonIcon}
             />
-          }
-          action={
-            <Button
-              variant="contained"
-              onClick={() => handleSingleConfirm(id, name, newsletter)}
-              sx={{ marginTop: '9px' }}
-            >
-              <Icon
-                path={mdiCheckboxMarkedCircle}
-                size={0.8}
-                className={classes.buttonIcon}
-              />
-              Confirm
-            </Button>
-          }
-          title={
-            <Link underline="hover" onClick={handleContactNameClick}>
-              <InlineTypography variant="subtitle1">{name}</InlineTypography>
-            </Link>
-          }
-          subheader={<Typography variant="body2">{status}</Typography>}
-        ></CardHeader>
-        <CardContent
-          className={classes.minimalPadding}
-          sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
-        >
-          {primaryPerson && (
-            <Grid container alignItems="center">
-              <Grid item xs={12} sm={5} md={4}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                >
-                  {primaryPerson.firstName && matches && (
-                    <Avatar
-                      src={avatar}
-                      style={{
-                        width: theme.spacing(4),
-                        height: theme.spacing(4),
-                      }}
-                    />
-                  )}
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <Typography variant="subtitle1">
-                      {`${primaryPerson.firstName} ${primaryPerson.lastName}`}
-                    </Typography>
+            Confirm
+          </Button>
+        }
+        title={
+          <Link underline="hover" onClick={handleContactNameClick}>
+            <InlineTypography variant="subtitle1">{name}</InlineTypography>
+          </Link>
+        }
+        subheader={<Typography variant="body2">{status}</Typography>}
+      ></CardHeader>
+      <CardContent
+        className={classes.minimalPadding}
+        sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
+      >
+        {primaryPerson && (
+          <Grid container alignItems="center">
+            <Grid item xs={12} sm={5} md={4}>
+              <Box
+                display="flex"
+                alignItems="center"
+                style={{ height: '100%' }}
+              >
+                {primaryPerson.firstName && matches && (
+                  <Avatar
+                    src={avatar}
+                    style={{
+                      width: theme.spacing(4),
+                      height: theme.spacing(4),
+                    }}
+                  />
+                )}
+                <Box display="flex" flexDirection="column" ml={2}>
+                  <Typography variant="subtitle1">
+                    {`${primaryPerson.firstName} ${primaryPerson.lastName}`}
+                  </Typography>
+                  <Link
+                    underline="hover"
+                    href={
+                      `mailto:${primaryPerson.primaryEmailAddress?.email}` || ''
+                    }
+                  >
                     <Typography variant="body2">
                       {primaryPerson.primaryEmailAddress?.email || ''}
                     </Typography>
-                  </Box>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4} md={4}>
-                <Box
-                  display="flex"
-                  alignItems="start"
-                  flexDirection="column"
-                  p={2}
-                >
-                  <Typography variant="body2">
-                    {primaryAddress?.street || ''}
-                  </Typography>
-                  <Typography variant="body2">
-                    {primaryAddress?.city || ''}
-                  </Typography>
-                  {primaryAddress?.source && (
+                  </Link>
+                  {primaryPerson.optoutEnewsletter && (
                     <Typography variant="body2">
-                      <Trans
-                        defaults="<bold>Source:</bold> {{where}}"
-                        shouldUnescape
-                        values={{ where: primaryAddress?.source }}
-                        components={{ bold: <strong /> }}
-                      />
+                      {t('opted out of newsletter')}
                     </Typography>
                   )}
                 </Box>
-              </Grid>
-              <Grid xs={12} sm={3} md={4}>
-                <Typography variant="body2">
-                  <Trans
-                    defaults="<bold>Send newsletter?</bold>"
-                    components={{ bold: <strong /> }}
-                  />
-                </Typography>
-
-                <Select
-                  className={classes.select}
-                  value={newsletter}
-                  onChange={handleChange}
-                  size="small"
-                >
-                  {newsletterOptions.map((newsletter) => (
-                    <MenuItem key={newsletter.name} value={newsletter.value}>
-                      {newsletter.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  style={{ paddingLeft: theme.spacing(1), textAlign: 'right' }}
-                ></Box>
-              </Grid>
+              </Box>
             </Grid>
-          )}
-        </CardContent>
-      </Card>
+            <Grid item xs={12} sm={4} md={4}>
+              <Box
+                display="flex"
+                alignItems="start"
+                flexDirection="column"
+                p={2}
+              >
+                <Typography variant="body2">
+                  {primaryAddress?.street || ''}
+                </Typography>
+                <Typography variant="body2">
+                  {`${primaryAddress?.city} ${
+                    primaryAddress?.state ? primaryAddress.state : ''
+                  }. ${primaryAddress?.postalCode}`}
+                </Typography>
+                <Typography variant="body2">
+                  {primaryAddress?.country || ''}
+                </Typography>
+                {primaryAddress?.source && (
+                  <Typography variant="body2">
+                    <Trans
+                      defaults="<bold>Source:</bold> {{where}} ({{date}})"
+                      shouldUnescape
+                      values={{
+                        where: primaryAddress?.source,
+                        date: dateFormatShort(
+                          DateTime.fromISO(primaryAddress?.createdAt),
+                          locale,
+                        ),
+                      }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+            <Grid xs={12} sm={3} md={4}>
+              <Typography variant="body2">
+                <Trans
+                  defaults="<bold>Send newsletter?</bold>"
+                  components={{ bold: <strong /> }}
+                />
+              </Typography>
+
+              <Select
+                className={classes.select}
+                value={newsletter}
+                onChange={handleChange}
+                size="small"
+              >
+                {newsletterOptions.map((newsletter) => (
+                  <MenuItem key={newsletter.name} value={newsletter.value}>
+                    {newsletter.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Box
+                display="flex"
+                flexDirection="column"
+                style={{ paddingLeft: theme.spacing(1), textAlign: 'right' }}
+              ></Box>
+            </Grid>
+          </Grid>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
