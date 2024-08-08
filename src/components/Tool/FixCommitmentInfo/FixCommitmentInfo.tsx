@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -9,15 +9,9 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
-import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import {
-  InfiniteList,
-  ItemWithBorders,
-} from 'src/components/InfiniteList/InfiniteList';
-import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { MultiselectFilter, StatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -28,10 +22,6 @@ import Contact from './Contact';
 import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
-
-const ItemOverride: React.ComponentType<ItemProps> = (props) => (
-  <ItemWithBorders disableGutters disableHover={true} {...props} />
-);
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -119,23 +109,11 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const { classes } = useStyles();
   const [modalState, setModalState] =
     useState<ModalStateType>(defaultModalState);
-  const [descriptionBoxHeight, setDescriptionBoxHeight] = useState<number>(0);
-  const descriptionBoxRef = useRef<HTMLDivElement | null>(null);
-  const headingBoxRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { data, loading, fetchMore } = useInvalidStatusesQuery({
+  const { data } = useInvalidStatusesQuery({
     variables: { accountListId },
-  });
-
-  useEffect(() => {
-    if (descriptionBoxRef.current && headingBoxRef.current) {
-      setDescriptionBoxHeight(
-        descriptionBoxRef.current.clientHeight +
-          headingBoxRef.current.clientHeight,
-      );
-    }
   });
 
   const { data: contactFilterGroups, loading: loadingStatuses } =
@@ -244,13 +222,13 @@ const FixCommitmentInfo: React.FC<Props> = ({
     <Box className={classes.outer} data-testid="Home">
       {!updating && !loadingStatuses && data ? (
         <Grid container className={classes.container} data-testid="Container">
-          <Grid item xs={12} ref={headingBoxRef}>
+          <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
             <Divider className={classes.divider} data-testid="Divider" />
           </Grid>
           {data.contacts?.nodes.length > 0 ? (
             <>
-              <Grid item xs={12} ref={descriptionBoxRef}>
+              <Grid item xs={12}>
                 <Box
                   className={classes.descriptionBox}
                   data-testid="Description"
@@ -275,53 +253,34 @@ const FixCommitmentInfo: React.FC<Props> = ({
                 </Box>
               </Grid>
               <Grid item xs={12}>
-                <InfiniteList
-                  loading={loading}
-                  data={data?.contacts?.nodes ?? []}
-                  ItemOverride={ItemOverride}
-                  style={{
-                    height: `calc(100vh - ${navBarHeight} - ${descriptionBoxHeight}px - ${theme.spacing(
-                      5,
-                    )})`,
-                    border: 'none !important',
-                  }}
-                  itemContent={(_, contact) => (
-                    <Grid item xs={12}>
-                      <Contact
-                        id={contact.id}
-                        name={contact.name}
-                        key={contact.id}
-                        donations={contact.donations?.nodes}
-                        statusTitle={
-                          contact.status
-                            ? contactPartnershipStatus[contact.status]
-                            : ''
-                        }
-                        statusValue={contact.status || ''}
-                        amount={contact.pledgeAmount || 0}
-                        amountCurrency={contact.pledgeCurrency || ''}
-                        frequencyTitle={
-                          contact.pledgeFrequency
-                            ? frequencies[contact.pledgeFrequency]
-                            : ''
-                        }
-                        frequencyValue={contact.pledgeFrequency || ''}
-                        showModal={handleShowModal}
-                        statuses={contactStatuses || [{ name: '', value: '' }]}
-                        setContactFocus={setContactFocus}
-                        avatar={contact?.avatar}
-                      />
-                    </Grid>
-                  )}
-                  endReached={() => {
-                    data?.contacts?.pageInfo.hasNextPage &&
-                      fetchMore({
-                        variables: {
-                          after: data.contacts?.pageInfo.endCursor,
-                        },
-                      });
-                  }}
-                />
+                <Box>
+                  {data.contacts.nodes.map((contact) => (
+                    <Contact
+                      id={contact.id}
+                      name={contact.name}
+                      key={contact.id}
+                      donations={contact.donations?.nodes}
+                      statusTitle={
+                        contact.status
+                          ? contactPartnershipStatus[contact.status]
+                          : ''
+                      }
+                      statusValue={contact.status || ''}
+                      amount={contact.pledgeAmount || 0}
+                      amountCurrency={contact.pledgeCurrency || ''}
+                      frequencyTitle={
+                        contact.pledgeFrequency
+                          ? frequencies[contact.pledgeFrequency]
+                          : ''
+                      }
+                      frequencyValue={contact.pledgeFrequency || ''}
+                      showModal={handleShowModal}
+                      statuses={contactStatuses || [{ name: '', value: '' }]}
+                      setContactFocus={setContactFocus}
+                      avatar={contact?.avatar}
+                    />
+                  ))}
+                </Box>
               </Grid>
             </>
           ) : (

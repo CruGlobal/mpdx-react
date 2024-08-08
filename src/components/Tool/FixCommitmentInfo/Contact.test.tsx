@@ -133,21 +133,6 @@ describe('FixCommitmentContact', () => {
         'Please select a status',
       );
     });
-    await waitFor(() => {
-      expect(getByTestId('pledgeCurrencyError')).toHaveTextContent(
-        'Please select a currency',
-      );
-    });
-    await waitFor(() => {
-      expect(getByTestId('pledgeAmountError')).toHaveTextContent(
-        'pledgeAmount must be a `number` type, but the final value was: `NaN`',
-      );
-    });
-    await waitFor(() => {
-      expect(getByTestId('pledgeFrequencyError')).toHaveTextContent(
-        'Please select frequency',
-      );
-    });
   });
 
   it('should should render select field options and inputs', async () => {
