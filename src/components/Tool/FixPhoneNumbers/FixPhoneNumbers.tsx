@@ -459,7 +459,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       variables: { after: data.people.pageInfo.endCursor },
                     })
                   }
-                  EmptyPlaceholder={<NoData tool="fixEmailAddresses" />}
+                  EmptyPlaceholder={<NoData tool="fixPhoneNumbers" />}
                   style={{
                     height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
                       32,
