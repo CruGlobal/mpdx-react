@@ -395,40 +395,40 @@ const Contact: React.FC<Props> = ({
                         </Grid>
                         <Grid item xs={12} lg={4}>
                           <Box className={classes.boxBottom}>
-                            <InputLabel id="amount-label">
-                              {t('Amount')}
-                            </InputLabel>
-                            <Field
-                              id="standard-number"
-                              as={TextField}
-                              input={<StyledInput />}
-                              label={t('Amount')}
-                              labelId="amount-label"
-                              placeholder="Amount"
-                              type="number"
-                              variant="standard"
-                              size="small"
-                              fullWidth
-                              render={() => (
-                                <TextField
-                                  className={classes.select}
-                                  inputProps={{
-                                    'data-testid': 'pledgeAmount-input',
-                                  }}
-                                  name={'pledgeAmount'}
-                                  value={pledgeAmount}
-                                  type="number"
-                                  size="small"
-                                  error={Boolean(errors.pledgeAmount)}
-                                  onChange={(event) =>
-                                    setFieldValue(
-                                      'pledgeAmount',
-                                      parseFloat(event.target.value),
-                                    )
-                                  }
-                                />
-                              )}
-                            />
+                            <FormControl fullWidth>
+                              <Field
+                                id="standard-number"
+                                as={TextField}
+                                input={<StyledInput />}
+                                label={t('Amount')}
+                                labelId="amount-label"
+                                placeholder="Amount"
+                                type="number"
+                                variant="standard"
+                                size="small"
+                                fullWidth
+                                render={() => (
+                                  <TextField
+                                    label={t('Amount')}
+                                    className={classes.select}
+                                    inputProps={{
+                                      'data-testid': 'pledgeAmount-input',
+                                    }}
+                                    name={'pledgeAmount'}
+                                    value={pledgeAmount}
+                                    type="number"
+                                    size="small"
+                                    error={Boolean(errors.pledgeAmount)}
+                                    onChange={(event) =>
+                                      setFieldValue(
+                                        'pledgeAmount',
+                                        parseFloat(event.target.value),
+                                      )
+                                    }
+                                  />
+                                )}
+                              />
+                            </FormControl>
                             <FormHelperText
                               error={true}
                               data-testid="pledgeAmountError"
