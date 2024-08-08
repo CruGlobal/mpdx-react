@@ -330,6 +330,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
           message={
             <Trans
               defaults="{{message}}"
+              tOptions={{ interpolation: { escapeValue: false } }}
               shouldUnescape
               values={{ message: modalState.message }}
               components={{ bold: <strong /> }}
