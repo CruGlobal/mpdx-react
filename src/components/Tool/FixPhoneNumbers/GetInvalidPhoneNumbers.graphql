@@ -5,6 +5,7 @@ query GetInvalidPhoneNumbers($accountListId: ID!) {
     peopleFilter: { phoneNumberValid: false }
     first: 50
   ) {
+    totalCount
     nodes {
       ...PersonInvalidNumber
     }

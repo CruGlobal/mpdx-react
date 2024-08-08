@@ -250,7 +250,8 @@ const FixPhoneNumbers: React.FC<Props> = ({
                   <Typography>
                     <strong>
                       {t('You have {{amount}} phone numbers to confirm.', {
-                        amount: data.people.nodes.length,
+                        amount:
+                          data.people.totalCount || data.people.nodes.length,
                       })}
                     </strong>
                   </Typography>
