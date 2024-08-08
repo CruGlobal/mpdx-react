@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Card,
+  FormControl,
   FormHelperText,
   Grid,
   IconButton,
@@ -307,36 +308,41 @@ const Contact: React.FC<Props> = ({
                       >
                         <Grid item xs={12} md={6} lg={12}>
                           <Box className={classes.boxTop}>
-                            <InputLabel id="status-label">
-                              {t('Status')}
-                            </InputLabel>
-                            <Select
-                              className={classes.select}
-                              size="small"
-                              placeholder="Status"
-                              labelId="status-label"
-                              label={t('Status')}
-                              inputProps={{
-                                'data-testid': 'pledgeStatus-input',
-                              }}
-                              data-testid="statusSelect"
-                              style={{ width: '100%' }}
-                              value={statusValue}
-                              onChange={(event) =>
-                                setFieldValue('statusValue', event.target.value)
-                              }
-                            >
-                              <MenuItem value="">Status</MenuItem>
-                              {statuses.map((status) => (
-                                <MenuItem
-                                  value={status.value}
-                                  key={status.value}
-                                  data-testid="statusSelectOptions"
-                                >
-                                  {status.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                            <FormControl fullWidth>
+                              <InputLabel id="status-label">
+                                {t('Status')}
+                              </InputLabel>
+                              <Select
+                                className={classes.select}
+                                size="small"
+                                placeholder="Status"
+                                labelId="status-label"
+                                label={t('Status')}
+                                inputProps={{
+                                  'data-testid': 'pledgeStatus-input',
+                                }}
+                                data-testid="statusSelect"
+                                style={{ width: '100%' }}
+                                value={statusValue}
+                                onChange={(event) =>
+                                  setFieldValue(
+                                    'statusValue',
+                                    event.target.value,
+                                  )
+                                }
+                              >
+                                <MenuItem value="">Status</MenuItem>
+                                {statuses.map((status) => (
+                                  <MenuItem
+                                    value={status.value}
+                                    key={status.value}
+                                    data-testid="statusSelectOptions"
+                                  >
+                                    {status.name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
                             <FormHelperText
                               error={true}
                               data-testid="statusSelectError"
@@ -347,33 +353,38 @@ const Contact: React.FC<Props> = ({
                         </Grid>
                         <Grid item xs={12} md={6} lg={4}>
                           <Box className={classes.boxBottom}>
-                            <InputLabel id="currency-label">
-                              {t('Currency')}
-                            </InputLabel>
-                            <Select
-                              className={classes.select}
-                              labelId="currency-label"
-                              size="small"
-                              label={t('Currency')}
-                              placeholder="Currency"
-                              data-testid="pledgeCurrency"
-                              inputProps={{
-                                'data-testid': 'pledgeCurrency-input',
-                              }}
-                              value={pledgeCurrency}
-                              onChange={(e) =>
-                                setFieldValue('pledgeCurrency', e.target.value)
-                              }
-                            >
-                              <MenuItem value={'Currency'} disabled>
+                            <FormControl fullWidth>
+                              <InputLabel id="currency-label">
                                 {t('Currency')}
-                              </MenuItem>
-                              {pledgeCurrencies &&
-                                getPledgeCurrencyOptions(
-                                  pledgeCurrencies,
-                                  PledgeCurrencyOptionFormatEnum.Short,
-                                )}
-                            </Select>
+                              </InputLabel>
+                              <Select
+                                className={classes.select}
+                                labelId="currency-label"
+                                size="small"
+                                label={t('Currency')}
+                                placeholder="Currency"
+                                data-testid="pledgeCurrency"
+                                inputProps={{
+                                  'data-testid': 'pledgeCurrency-input',
+                                }}
+                                value={pledgeCurrency}
+                                onChange={(e) =>
+                                  setFieldValue(
+                                    'pledgeCurrency',
+                                    e.target.value,
+                                  )
+                                }
+                              >
+                                <MenuItem value={'Currency'} disabled>
+                                  {t('Currency')}
+                                </MenuItem>
+                                {pledgeCurrencies &&
+                                  getPledgeCurrencyOptions(
+                                    pledgeCurrencies,
+                                    PledgeCurrencyOptionFormatEnum.Short,
+                                  )}
+                              </Select>
+                            </FormControl>
                             <FormHelperText
                               error={true}
                               data-testid="pledgeCurrencyError"
@@ -431,43 +442,45 @@ const Contact: React.FC<Props> = ({
                             className={classes.boxBottom}
                             data-testid="BoxBottom"
                           >
-                            <InputLabel id="frequency-label">
-                              {t('Frequency')}
-                            </InputLabel>
-                            <Select
-                              className={classes.select}
-                              inputProps={{
-                                'data-testid': 'pledgeFrequency-input',
-                              }}
-                              data-testid="pledgeFrequency"
-                              label={t('Frequency')}
-                              labelId="frequency-label"
-                              placeholder="Frequency"
-                              size="small"
-                              style={{ width: '100%' }}
-                              value={pledgeFrequency}
-                              onChange={(event) =>
-                                setFieldValue(
-                                  'pledgeFrequency',
-                                  event.target.value,
-                                )
-                              }
-                            >
-                              <MenuItem value="Frequency" disabled>
+                            <FormControl fullWidth>
+                              <InputLabel id="frequency-label">
                                 {t('Frequency')}
-                              </MenuItem>
-                              {Object.entries(frequencies).map(
-                                ([freqValue, freqTranslated]) => (
-                                  <MenuItem
-                                    value={freqValue}
-                                    key={freqValue}
-                                    data-testid="pledgeFrequencyOptions"
-                                  >
-                                    {freqTranslated}
-                                  </MenuItem>
-                                ),
-                              )}
-                            </Select>
+                              </InputLabel>
+                              <Select
+                                className={classes.select}
+                                inputProps={{
+                                  'data-testid': 'pledgeFrequency-input',
+                                }}
+                                data-testid="pledgeFrequency"
+                                label={t('Frequency')}
+                                labelId="frequency-label"
+                                placeholder="Frequency"
+                                size="small"
+                                style={{ width: '100%' }}
+                                value={pledgeFrequency}
+                                onChange={(event) =>
+                                  setFieldValue(
+                                    'pledgeFrequency',
+                                    event.target.value,
+                                  )
+                                }
+                              >
+                                <MenuItem value="Frequency" disabled>
+                                  {t('Frequency')}
+                                </MenuItem>
+                                {Object.entries(frequencies).map(
+                                  ([freqValue, freqTranslated]) => (
+                                    <MenuItem
+                                      value={freqValue}
+                                      key={freqValue}
+                                      data-testid="pledgeFrequencyOptions"
+                                    >
+                                      {freqTranslated}
+                                    </MenuItem>
+                                  ),
+                                )}
+                              </Select>
+                            </FormControl>
                             <FormHelperText
                               error={true}
                               data-testid="pledgeFrequencyError"
