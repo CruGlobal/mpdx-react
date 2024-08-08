@@ -1,7 +1,9 @@
 import React from 'react';
+import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -73,30 +75,46 @@ const testData: ErgonoMockShape[] = [
   },
 ];
 
-const Components: React.FC<{ data?: ErgonoMockShape[] }> = ({
-  data = testData,
-}) => (
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+const Components: React.FC<{
+  data?: ErgonoMockShape[];
+  cache?: ApolloCache<object>;
+}> = ({ data = testData, cache }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <TestWrapper>
-        <GqlMockedProvider<{
-          GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-        }>
-          mocks={{
-            GetInvalidPhoneNumbers: {
-              people: {
-                nodes: data,
+    <SnackbarProvider>
+      <TestRouter router={router}>
+        <TestWrapper>
+          <GqlMockedProvider<{
+            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+          }>
+            mocks={{
+              GetInvalidPhoneNumbers: {
+                people: {
+                  nodes: data,
+                },
               },
-            },
-          }}
-        >
-          <FixPhoneNumbers
-            accountListId={accountListId}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </TestWrapper>
-    </TestRouter>
+            }}
+            cache={cache}
+          >
+            <FixPhoneNumbers
+              accountListId={accountListId}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </TestWrapper>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
@@ -212,6 +230,32 @@ describe('FixPhoneNumbers-Home', () => {
       expect(
         queryByText(`${testData[0].firstName} ${testData[0].lastName}`),
       ).not.toBeInTheDocument();
+    });
+  });
+  it('should bulk confirm all phone numbers', async () => {
+    const cache = new InMemoryCache();
+
+    const { getByTestId, queryByTestId, getByText } = render(
+      <Components cache={cache} />,
+    );
+    await waitFor(() => {
+      expect(queryByTestId('loading')).not.toBeInTheDocument();
+      expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+    });
+
+    userEvent.click(getByTestId(`starOutlineIcon-testid-1`));
+
+    const confirmAllButton = getByTestId('source-button');
+    userEvent.click(confirmAllButton);
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
+        variant: 'success',
+        autoHideDuration: 7000,
+      });
+      expect(
+        getByText('No people with phone numbers need attention'),
+      ).toBeVisible();
     });
   });
 });

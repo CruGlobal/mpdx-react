@@ -3,10 +3,11 @@ mutation UpdateInvalidPhoneNumbers($input: PeopleUpdateMutationInput!) {
     people {
       phoneNumbers {
         nodes {
-          source
           number
+          source
           id
           primary
+          validValues
         }
       }
     }
