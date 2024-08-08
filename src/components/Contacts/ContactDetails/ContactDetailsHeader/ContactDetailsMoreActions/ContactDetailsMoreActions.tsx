@@ -169,6 +169,7 @@ export const ContactDetailsMoreAcitions: React.FC<
       },
       update: (cache) => {
         cache.evict({ id: `Contact:${contactId}` });
+        cache.gc();
 
         enqueueSnackbar(t('Contact successfully deleted'), {
           variant: 'success',
