@@ -9,10 +9,14 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { MultiselectFilter, StatusEnum } from 'src/graphql/types.generated';
@@ -24,6 +28,10 @@ import Contact from './Contact';
 import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { frequencies } from './InputOptions/Frequencies';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
+
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover={true} {...props} />
+);
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -270,6 +278,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                 <InfiniteList
                   loading={loading}
                   data={data?.contacts?.nodes ?? []}
+                  ItemOverride={ItemOverride}
                   style={{
                     height: `calc(100vh - ${navBarHeight} - ${descriptionBoxHeight}px - ${theme.spacing(
                       5,
