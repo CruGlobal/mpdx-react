@@ -50,6 +50,7 @@ const Components = ({
               InvalidStatuses: {
                 contacts: {
                   nodes: mockNodes,
+                  totalCount: 2,
                 },
               },
             }}
