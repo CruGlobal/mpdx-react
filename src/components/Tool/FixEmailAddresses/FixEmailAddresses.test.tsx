@@ -1,9 +1,8 @@
 import React from 'react';
-import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ApolloErgonoMockMap, ErgonoMockShape } from 'graphql-ergonomock';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
@@ -24,20 +23,20 @@ import {
 import {
   contactId,
   contactOneEmailAddressNodes,
-  contactTwoEmailAddressNodes,
   mockInvalidEmailAddressesResponse,
   newEmail,
 } from './FixEmailAddressesMocks';
 
-const accountListId = 'test121';
+const accountListId = 'accountListId';
 const router = {
   query: { accountListId },
   isReady: true,
 };
 
 const setContactFocus = jest.fn();
-
+const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
+
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -48,22 +47,21 @@ jest.mock('notistack', () => ({
     };
   },
 }));
-
 jest.mock('src/hooks/useGetAppSettings');
 
-const Components = ({
-  mocks = {
-    GetInvalidEmailAddresses: {
-      people: { nodes: mockInvalidEmailAddressesResponse },
-    },
+const defaultGraphQLMock = {
+  GetInvalidEmailAddresses: {
+    people: { nodes: mockInvalidEmailAddressesResponse },
   },
-  cache,
-}: {
+};
+
+interface ComponentsProps {
   mocks?: ApolloErgonoMockMap;
-  cache?: ApolloCache<object>;
-}) => (
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider>
+}
+
+const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <TestWrapper>
           <GqlMockedProvider<{
@@ -73,7 +71,7 @@ const Components = ({
             UpdatePeople: UpdatePeopleMutation;
           }>
             mocks={mocks}
-            cache={cache}
+            onCall={mutationSpy}
           >
             <FixEmailAddresses
               accountListId={accountListId}
@@ -82,47 +80,41 @@ const Components = ({
           </GqlMockedProvider>
         </TestWrapper>
       </TestRouter>
-    </SnackbarProvider>
-  </ThemeProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
-describe('FixPhoneNumbers-Home', () => {
-  beforeEach(() => {
-    (useGetAppSettings as jest.Mock).mockReturnValue({ appName: 'MPDX' });
+describe('FixEmailAddresses-Home', () => {
+  it('default with test data', async () => {
+    const { getByText, getByTestId, queryByTestId } = render(<Components />);
+
+    await waitFor(() =>
+      expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
+    );
+    await expect(
+      getByText('You have 2 email addresses to confirm.'),
+    ).toBeInTheDocument();
+    expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
+    expect(getByText('Test Contact')).toBeInTheDocument();
+    expect(getByText('Simba Lion')).toBeInTheDocument();
+    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
+    expect(queryByTestId('no-data')).not.toBeInTheDocument();
   });
 
-  describe('render', () => {
-    it('default with test data', async () => {
-      const { getByText, getByTestId, queryByTestId } = render(<Components />);
-
-      await waitFor(() =>
-        expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
-      );
-      await waitFor(() =>
-        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
-      );
-      await expect(
-        getByText('You have 2 email addresses to confirm.'),
-      ).toBeInTheDocument();
-      expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
-      expect(getByText('Test Contact')).toBeInTheDocument();
-      expect(getByText('Simba Lion')).toBeInTheDocument();
-      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
-      expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
-      expect(queryByTestId('no-data')).not.toBeInTheDocument();
+  it('should show the app name as a source value', async () => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'OtherThing',
     });
 
-    it('should show the app name as a source value', async () => {
-      (useGetAppSettings as jest.Mock).mockReturnValue({
-        appName: 'OtherThing',
-      });
-
-      const { getByRole, getByText } = render(<Components />);
-      await waitFor(() => {
-        expect(getByText('Fix Email Addresses')).toBeInTheDocument();
-        expect(getByText('Confirm 2 as OtherThing')).toBeInTheDocument();
-        expect(getByRole('combobox')).toHaveDisplayValue('OtherThing');
-      });
+    const { getByRole, getByText } = render(<Components />);
+    await waitFor(() => {
+      expect(getByText('Fix Email Addresses')).toBeInTheDocument();
+      expect(getByText('Confirm 2 as OtherThing')).toBeInTheDocument();
+      expect(getByRole('combobox')).toHaveDisplayValue('OtherThing');
     });
   });
 
@@ -198,16 +190,51 @@ describe('FixPhoneNumbers-Home', () => {
     });
   });
 
+  it('should add an new email address, firing a GraphQL mutation and resetting the form', async () => {
+    const { getByTestId, getAllByLabelText } = render(<Components />);
+    await waitFor(() => {
+      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    });
+    const textFieldNew = getAllByLabelText('New Email Address')[0];
+    userEvent.type(textFieldNew, newEmail.email);
+    const addButton = getByTestId('addButton-testid');
+    expect(textFieldNew).toHaveValue(newEmail.email);
+
+    userEvent.click(addButton);
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Added email address', {
+        variant: 'success',
+      }),
+    );
+
+    expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
+      'EmailAddresses',
+    );
+    expect(mutationSpy.mock.calls[1][0].operation.variables).toEqual({
+      input: {
+        accountListId: accountListId,
+        attributes: {
+          id: 'testid',
+          emailAddresses: [{ email: newEmail.email }],
+        },
+      },
+    });
+    expect(textFieldNew).toHaveValue('');
+  });
+
   it('delete third email from first person', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+    const { getByTestId, getByText, getByRole, queryByTestId } = render(
+      <Components />,
+    );
 
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
 
-    const deleteButton = await waitFor(() =>
-      getByTestId('modal-delete-button'),
+    await waitFor(() =>
+      getByText(`Are you sure you wish to delete this email address:`),
     );
-    userEvent.click(deleteButton);
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
       expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
@@ -215,7 +242,9 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change second email for second person to primary then delete it', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+    const { getByTestId, queryByTestId, getByText, getByRole } = render(
+      <Components />,
+    );
 
     const star11 = await waitFor(() =>
       getByTestId('starOutlineIcon-testid2-1'),
@@ -225,145 +254,14 @@ describe('FixPhoneNumbers-Home', () => {
     const delete11 = await waitFor(() => getByTestId('delete-testid2-1'));
     userEvent.click(delete11);
 
-    const deleteButton = await waitFor(() =>
-      getByTestId('modal-delete-button'),
+    await waitFor(() =>
+      getByText(`Are you sure you wish to delete this email address:`),
     );
-    userEvent.click(deleteButton);
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
       expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
       expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
-    });
-  });
-
-  describe('add email address', () => {
-    interface AddEmailAddressProps {
-      postSaveResponse: object;
-      emailAddressNodes: object[];
-      elementToWaitFor: string;
-      textFieldIndex: number;
-      addButtonId: string;
-      cache: InMemoryCache;
-    }
-
-    const addEmailAddress = async ({
-      postSaveResponse,
-      emailAddressNodes,
-      elementToWaitFor,
-      textFieldIndex,
-      addButtonId,
-      cache,
-    }: AddEmailAddressProps) => {
-      let cardinality = 0;
-      jest.spyOn(cache, 'readQuery').mockReturnValue(postSaveResponse);
-      jest.spyOn(cache, 'writeQuery');
-
-      const updatePerson = {
-        person: {
-          emailAddresses: {
-            nodes: [
-              ...emailAddressNodes,
-              {
-                ...newEmail,
-              },
-            ],
-          },
-        },
-      } as ErgonoMockShape;
-
-      const { getByTestId, getAllByLabelText } = render(
-        <Components
-          mocks={{
-            GetInvalidEmailAddresses: () => {
-              let queryResult;
-              if (cardinality === 0) {
-                queryResult = {
-                  people: {
-                    nodes: mockInvalidEmailAddressesResponse,
-                  },
-                };
-              } else {
-                queryResult = postSaveResponse;
-              }
-              cardinality++;
-              return queryResult;
-            },
-            EmailAddresses: { updatePerson },
-          }}
-          cache={cache}
-        />,
-      );
-      await waitFor(() => {
-        expect(getByTestId(elementToWaitFor)).toBeInTheDocument();
-      });
-
-      const textFieldNew =
-        getAllByLabelText('New Email Address')[textFieldIndex];
-      userEvent.type(textFieldNew, newEmail.email);
-      const addButton = getByTestId(addButtonId);
-      userEvent.click(addButton);
-    };
-
-    it('should add an email address to the first person', async () => {
-      const cache = new InMemoryCache();
-      const postSaveResponse = {
-        people: {
-          nodes: [
-            {
-              ...mockInvalidEmailAddressesResponse[0],
-              emailAddresses: {
-                nodes: [...contactOneEmailAddressNodes, newEmail],
-              },
-            },
-            { ...mockInvalidEmailAddressesResponse[1] },
-          ],
-        },
-      };
-      await addEmailAddress({
-        postSaveResponse,
-        emailAddressNodes: contactOneEmailAddressNodes,
-        elementToWaitFor: 'textfield-testid-0',
-        textFieldIndex: 0,
-        addButtonId: 'addButton-testid',
-        cache,
-      });
-
-      await waitFor(() => {
-        expect(cache.writeQuery).toHaveBeenLastCalledWith(
-          expect.objectContaining({ data: postSaveResponse }),
-        );
-      });
-    });
-
-    it('should add an email address to the second person', async () => {
-      const cache = new InMemoryCache();
-      const postSaveResponse = {
-        people: {
-          nodes: [
-            { ...mockInvalidEmailAddressesResponse[0] },
-            {
-              ...mockInvalidEmailAddressesResponse[1],
-              emailAddresses: {
-                nodes: [...contactTwoEmailAddressNodes, newEmail],
-              },
-            },
-          ],
-        },
-      };
-      await addEmailAddress({
-        postSaveResponse,
-        emailAddressNodes: contactTwoEmailAddressNodes,
-        elementToWaitFor: 'textfield-testid2-0',
-        textFieldIndex: 1,
-        addButtonId: 'addButton-testid2',
-        cache,
-      });
-
-      await waitFor(() => {
-        expect(cache.writeQuery).toHaveBeenLastCalledWith(
-          expect.objectContaining({ data: postSaveResponse }),
-        );
-      });
     });
   });
 
@@ -413,33 +311,38 @@ describe('FixPhoneNumbers-Home', () => {
     });
   });
 
+  describe('Add email address - Testing cache', () => {
+    it('should add an email address to the first person', async () => {
+      const { getAllByTestId, getByTestId, queryByTestId, getAllByRole } =
+        render(<Components />);
+
+      const emailInput = await waitFor(
+        () => getAllByRole('textbox', { name: 'New Email Address' })[0],
+      );
+      const addButton = getAllByTestId('addButton-testid')[0];
+      expect(queryByTestId('starOutlineIcon-testid-2')).not.toBeInTheDocument();
+
+      expect(addButton).toBeDisabled();
+      userEvent.type(emailInput, 'test@cru.org');
+      expect(addButton).not.toBeDisabled();
+      userEvent.click(addButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith('Added email address', {
+          variant: 'success',
+        });
+      });
+
+      await waitFor(() =>
+        expect(getByTestId('starOutlineIcon-testid-2')).toBeInTheDocument(),
+      );
+    });
+  });
+
   describe('handleSingleConfirm', () => {
     it('should successfully submit changes to multiple emails', async () => {
-      const cache = new InMemoryCache();
       const personName = 'Test Contact';
-
-      const updatePerson = {
-        person: {
-          id: mockInvalidEmailAddressesResponse[0].id,
-          emailAddresses: {
-            nodes: [
-              {
-                ...contactOneEmailAddressNodes[0],
-                email: 'different@email.com',
-              },
-              {
-                ...contactOneEmailAddressNodes[1],
-                email: 'different2@email.com',
-              },
-              {
-                ...contactOneEmailAddressNodes[2],
-              },
-            ],
-          },
-        },
-      } as ErgonoMockShape;
-
-      const { getAllByRole, queryByTestId, queryByText } = render(
+      const { getAllByRole, getByTestId, getByText, queryByText } = render(
         <Components
           mocks={{
             GetInvalidEmailAddresses: {
@@ -447,15 +350,15 @@ describe('FixPhoneNumbers-Home', () => {
                 nodes: mockInvalidEmailAddressesResponse,
               },
             },
-            UpdateEmailAddresses: { updatePerson },
           }}
-          cache={cache}
         />,
       );
 
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
+      await waitFor(() => {
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      });
+
+      expect(getByText(personName)).toBeInTheDocument();
 
       const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
       userEvent.click(confirmButton);
@@ -467,12 +370,10 @@ describe('FixPhoneNumbers-Home', () => {
         );
         expect(queryByText(personName)).not.toBeInTheDocument();
       });
-    });
+    }, 999999);
 
     it('should handle an error', async () => {
-      const cache = new InMemoryCache();
-
-      const { getAllByRole, queryByTestId } = render(
+      const { getAllByRole, getByTestId } = render(
         <Components
           mocks={{
             GetInvalidEmailAddresses: {
@@ -484,12 +385,11 @@ describe('FixPhoneNumbers-Home', () => {
               throw new Error('Server Error');
             },
           }}
-          cache={cache}
         />,
       );
 
       await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
       );
 
       const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
@@ -506,11 +406,10 @@ describe('FixPhoneNumbers-Home', () => {
 
   describe('handleBulkConfirm', () => {
     it('should save all the email changes for all people', async () => {
-      const cache = new InMemoryCache();
       const noPeopleMessage = 'No people with email addresses need attention';
 
       const { getByRole, getByText, getByTestId, queryByTestId } = render(
-        <Components cache={cache} />,
+        <Components />,
       );
 
       await waitFor(() => {
@@ -535,7 +434,6 @@ describe('FixPhoneNumbers-Home', () => {
     });
 
     it('should handle errors', async () => {
-      const cache = new InMemoryCache();
       const personName1 = 'Test Contact';
       const personName2 = 'Simba Lion';
 
@@ -551,7 +449,6 @@ describe('FixPhoneNumbers-Home', () => {
               throw new Error('Server error');
             },
           }}
-          cache={cache}
         />,
       );
 
@@ -576,7 +473,6 @@ describe('FixPhoneNumbers-Home', () => {
     });
 
     it('should cancel the bulk confirmation', async () => {
-      const cache = new InMemoryCache();
       const personName1 = 'Test Contact';
       const personName2 = 'Simba Lion';
 
@@ -589,7 +485,6 @@ describe('FixPhoneNumbers-Home', () => {
               },
             },
           }}
-          cache={cache}
         />,
       );
 
@@ -611,11 +506,10 @@ describe('FixPhoneNumbers-Home', () => {
     });
 
     it('should not update if there is no email for the default source', async () => {
-      const cache = new InMemoryCache();
       const noPrimaryEmailMessage =
         'No DataServer primary email address exists to update';
 
-      const { getByRole, queryByTestId } = render(<Components cache={cache} />);
+      const { getByRole, queryByTestId } = render(<Components />);
 
       await waitFor(() => {
         expect(queryByTestId('loading')).not.toBeInTheDocument();

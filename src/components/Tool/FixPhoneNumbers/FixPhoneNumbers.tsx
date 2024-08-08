@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -10,6 +11,7 @@ import {
   NativeSelect,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
@@ -19,7 +21,12 @@ import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
-import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import {
+  GetInvalidPhoneNumbersDocument,
+  GetInvalidPhoneNumbersQuery,
+  useGetInvalidPhoneNumbersQuery,
+} from './GetInvalidPhoneNumbers.generated';
+import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -108,7 +115,7 @@ export interface PhoneNumberData {
   destroy?: boolean;
 }
 
-interface PersonPhoneNumbers {
+export interface PersonPhoneNumbers {
   phoneNumbers: PhoneNumberData[];
   toDelete: PersonPhoneNumberInput[];
 }
@@ -123,11 +130,14 @@ const FixPhoneNumbers: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-
+  const { enqueueSnackbar } = useSnackbar();
+  const client = useApolloClient();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
+
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
@@ -235,6 +245,68 @@ const FixPhoneNumbers: React.FC<Props> = ({
     setDefaultSource(event.target.value);
   };
 
+  const updatePhoneNumber = async (
+    personId: string,
+    name: string,
+    numbers: PhoneNumberData[],
+  ): Promise<void> => {
+    const attributes = [
+      {
+        phoneNumbers: numbers.map((phoneNumber) => ({
+          id: phoneNumber.id,
+          primary: phoneNumber.primary,
+          number: phoneNumber.number,
+        })),
+        id: personId,
+      },
+    ];
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes,
+        },
+      },
+      onError() {
+        enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted() {
+        enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+        hideContactFromView(personId);
+      },
+    });
+  };
+
+  const hideContactFromView = (hideId: string): void => {
+    const query = {
+      query: GetInvalidPhoneNumbersDocument,
+      variables: {
+        accountListId,
+      },
+    };
+
+    const dataFromCache = client.readQuery<GetInvalidPhoneNumbersQuery>(query);
+
+    if (dataFromCache) {
+      const data = {
+        ...dataFromCache,
+        people: {
+          ...dataFromCache.people,
+          nodes: dataFromCache.people.nodes.filter(
+            (person) => person.id !== hideId,
+          ),
+        },
+      };
+      client.writeQuery({ ...query, data });
+    }
+  };
+
   return (
     <Box className={classes.container}>
       {!loading && data ? (
@@ -317,6 +389,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
+                    handleUpdate={updatePhoneNumber}
                   />
                 ))}
               </Grid>

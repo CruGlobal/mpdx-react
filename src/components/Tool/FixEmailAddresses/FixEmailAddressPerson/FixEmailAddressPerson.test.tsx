@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
+import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
@@ -16,6 +17,7 @@ import {
 import { mockInvalidEmailAddressesResponse } from '../FixEmailAddressesMocks';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson';
 
+const accountListId = 'accountListId';
 const person: PersonInvalidEmailFragment = {
   id: 'contactTestId',
   firstName: 'Test',
@@ -42,39 +44,63 @@ const person: PersonInvalidEmailFragment = {
 };
 
 const setContactFocus = jest.fn();
+const mutationSpy = jest.fn();
 const handleSingleConfirm = jest.fn();
+const mockEnqueue = jest.fn();
 
-const TestComponent = ({ mocks }: { mocks: ApolloErgonoMockMap }) => {
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+const defaultDataState = {
+  contactTestId: {
+    emailAddresses: person.emailAddresses.nodes as EmailAddressData[],
+  },
+} as { [key: string]: PersonEmailAddresses };
+
+type TestComponentProps = {
+  mocks?: ApolloErgonoMockMap;
+  dataState?: { [key: string]: PersonEmailAddresses };
+};
+
+const TestComponent = ({
+  mocks,
+  dataState = defaultDataState,
+}: TestComponentProps) => {
   const handleChangeMock = jest.fn();
-  const handleDeleteModalOpenMock = jest.fn();
   const handleChangePrimaryMock = jest.fn();
-  const dataState = {
-    contactTestId: {
-      emailAddresses: person.emailAddresses.nodes as EmailAddressData[],
-    },
-  } as { [key: string]: PersonEmailAddresses };
 
   return (
-    <ThemeProvider theme={theme}>
-      <TestWrapper>
-        <GqlMockedProvider<{
-          GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-          EmailAddresses: EmailAddressesMutation;
-        }>
-          mocks={mocks}
-        >
-          <FixEmailAddressPerson
-            person={person}
-            dataState={dataState}
-            handleChange={handleChangeMock}
-            handleDelete={handleDeleteModalOpenMock}
-            handleChangePrimary={handleChangePrimaryMock}
-            handleSingleConfirm={handleSingleConfirm}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </TestWrapper>
-    </ThemeProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestWrapper>
+          <GqlMockedProvider<{
+            GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            EmailAddresses: EmailAddressesMutation;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
+            <FixEmailAddressPerson
+              person={person}
+              dataState={dataState}
+              accountListId={accountListId}
+              handleChange={handleChangeMock}
+              handleChangePrimary={handleChangePrimaryMock}
+              handleSingleConfirm={handleSingleConfirm}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </TestWrapper>
+      </ThemeProvider>
+    </SnackbarProvider>
   );
 };
 
@@ -199,6 +225,126 @@ describe('FixEmailAddressPerson', () => {
       await waitFor(() => {
         expect(addButton).not.toBeDisabled();
       });
+    });
+
+    it('should show delete confirmation', async () => {
+      const { getByTestId, getByRole } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
+      );
+      await waitFor(() => getByTestId('delete-contactTestId-1'));
+
+      userEvent.click(getByTestId('delete-contactTestId-1'));
+      await waitFor(() => {
+        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
+      });
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      const { id, email } = person.emailAddresses.nodes[1];
+
+      await waitFor(() => {
+        expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
+          'UpdateEmailAddresses',
+        );
+        expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+          input: {
+            accountListId,
+            attributes: {
+              id: person.id,
+              emailAddresses: [
+                {
+                  id,
+                  destroy: true,
+                },
+              ],
+            },
+          },
+        });
+      });
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully deleted email address ${email}`,
+          {
+            variant: 'success',
+          },
+        ),
+      );
+    });
+  });
+
+  describe('confirm button', () => {
+    it('should disable confirm button if there is more than one primary email', async () => {
+      const dataState = {
+        contactTestId: {
+          emailAddresses: [
+            {
+              ...person.emailAddresses.nodes[0],
+              primary: true,
+            },
+            {
+              ...person.emailAddresses.nodes[1],
+              primary: true,
+            },
+          ] as EmailAddressData[],
+        },
+      };
+
+      const { getByRole, queryByRole } = render(
+        <TestComponent dataState={dataState} />,
+      );
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).toBeDisabled();
+      });
+    });
+
+    it('should disable confirm button if there are no primary emails', async () => {
+      const dataState = {
+        contactTestId: {
+          emailAddresses: [
+            {
+              ...person.emailAddresses.nodes[0],
+              primary: false,
+            },
+            {
+              ...person.emailAddresses.nodes[1],
+              primary: false,
+            },
+          ] as EmailAddressData[],
+        },
+      };
+      const { getByRole, queryByRole } = render(
+        <TestComponent dataState={dataState} />,
+      );
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).toBeDisabled();
+      });
+    });
+
+    it('should not disable confirm button if there is exactly one primary email', async () => {
+      const { getByRole, queryByRole } = render(<TestComponent />);
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(0);
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).not.toBeDisabled();
+      });
+
+      userEvent.click(getByRole('button', { name: 'Confirm' }));
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
     });
   });
 });

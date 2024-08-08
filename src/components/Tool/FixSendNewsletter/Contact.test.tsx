@@ -5,7 +5,7 @@ import Contact from './Contact';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
-} from './GetInvalidNewsletter.generated';
+} from './InvalidNewsletter.generated';
 
 const TestComponent = ({
   primaryPerson,
@@ -21,7 +21,7 @@ const TestComponent = ({
       primaryPerson={primaryPerson}
       status=""
       primaryAddress={primaryAddress}
-      updateFunction={jest.fn()}
+      handleSingleConfirm={jest.fn()}
       setContactFocus={jest.fn()}
     />
   </ThemeProvider>
