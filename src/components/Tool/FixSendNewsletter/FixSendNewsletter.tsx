@@ -11,7 +11,6 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
@@ -70,7 +69,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { data, loading, fetchMore } = useInvalidNewsletterQuery({
+  const { data, loading } = useInvalidNewsletterQuery({
     variables: { accountListId },
   });
   const totalCount = data?.contacts.totalCount;
@@ -218,62 +217,44 @@ const FixSendNewsletter: React.FC<Props> = ({
                   </Button>
                 </Box>
               </ButtonHeaderBox>
-              <InfiniteList
-                loading={loading}
-                disableHover={true}
-                data={contactsToFix}
-                itemContent={(_, contact) => (
-                  <Contact
-                    id={contact.id}
-                    name={contact.name}
-                    // need to fix this after changes to fix commitment info get merged
-                    avatar={contact.avatar}
-                    status={
-                      data.constant.status?.find(
-                        (status) => contact.status === status.id,
-                      )?.value || ''
+              {contactsToFix?.map((contact) => (
+                <Contact
+                  id={contact.id}
+                  name={contact.name}
+                  // need to fix this after changes to fix commitment info get merged
+                  avatar={contact.avatar}
+                  status={
+                    data.constant.status?.find(
+                      (status) => contact.status === status.id,
+                    )?.value || ''
+                  }
+                  primaryPerson={
+                    contact.primaryPerson || {
+                      firstName: '',
+                      lastName: '',
+                      primaryEmailAddress: {
+                        email: '',
+                      },
+                      optoutEnewsletter: false,
+                      deceased: false,
                     }
-                    primaryPerson={
-                      contact.primaryPerson || {
-                        firstName: '',
-                        lastName: '',
-                        primaryEmailAddress: {
-                          email: '',
-                        },
-                        optoutEnewsletter: false,
-                        deceased: false,
-                      }
+                  }
+                  key={contact.id}
+                  primaryAddress={
+                    contact.primaryAddress || {
+                      street: '',
+                      city: '',
+                      state: '',
+                      country: '',
+                      postalCode: '',
+                      source: '',
+                      createdAt: '',
                     }
-                    key={contact.id}
-                    primaryAddress={
-                      contact.primaryAddress || {
-                        street: '',
-                        city: '',
-                        state: '',
-                        country: '',
-                        postalCode: '',
-                        source: '',
-                        createdAt: '',
-                      }
-                    }
-                    handleSingleConfirm={handleSingleConfirm}
-                    setContactFocus={setContactFocus}
-                  />
-                )}
-                endReached={() =>
-                  data.contacts.pageInfo.hasNextPage &&
-                  fetchMore({
-                    variables: { after: data.contacts.pageInfo.endCursor },
-                  })
-                }
-                EmptyPlaceholder={<NoData tool="fixSendNewsletter" />}
-                style={{
-                  height: '100vh',
-                  width: '100%',
-                  position: 'relative',
-                  scrollbarWidth: 'none',
-                }}
-              ></InfiniteList>
+                  }
+                  handleSingleConfirm={handleSingleConfirm}
+                  setContactFocus={setContactFocus}
+                />
+              ))}
             </>
           ) : (
             <NoData tool="fixSendNewsletter" />

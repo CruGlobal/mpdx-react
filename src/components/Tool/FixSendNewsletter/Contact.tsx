@@ -43,9 +43,7 @@ const useStyles = makeStyles()(() => ({
     marginRight: '3px',
   },
   contactBasic: {
-    height: '100%',
     width: '100%',
-    position: 'relative',
     marginTop: '15px',
     [theme.breakpoints.down('sm')]: {
       backgroundColor: 'white',
