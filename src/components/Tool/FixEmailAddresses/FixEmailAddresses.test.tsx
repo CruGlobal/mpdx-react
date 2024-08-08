@@ -85,6 +85,11 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
 );
 
 describe('FixEmailAddresses-Home', () => {
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
   it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(<Components />);
 
@@ -106,15 +111,11 @@ describe('FixEmailAddresses-Home', () => {
   });
 
   it('should show the app name as a source value', async () => {
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'OtherThing',
-    });
-
     const { getByRole, getByText } = render(<Components />);
     await waitFor(() => {
       expect(getByText('Fix Email Addresses')).toBeInTheDocument();
-      expect(getByText('Confirm 2 as OtherThing')).toBeInTheDocument();
-      expect(getByRole('combobox')).toHaveDisplayValue('OtherThing');
+      expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
+      expect(getByRole('combobox')).toHaveDisplayValue('MPDX');
     });
   });
 

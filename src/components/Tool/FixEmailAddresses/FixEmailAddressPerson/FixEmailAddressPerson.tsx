@@ -362,7 +362,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               <strong>{t('Source')}: </strong>
                             </Typography>
                           </Hidden>
-                          <Typography display="inline">MPDX</Typography>
+                          <Typography display="inline">{appName}</Typography>
                         </Box>
                       </Box>
                     </RowWrapper>
