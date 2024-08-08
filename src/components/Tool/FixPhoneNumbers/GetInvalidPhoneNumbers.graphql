@@ -15,6 +15,7 @@ fragment PersonInvalidNumber on Person {
   id
   firstName
   lastName
+  avatar
   phoneNumbers(first: 25) {
     nodes {
       ...PersonPhoneNumber

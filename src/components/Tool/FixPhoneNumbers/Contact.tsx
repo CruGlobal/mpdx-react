@@ -124,6 +124,7 @@ interface Props {
   handleAdd: (personId: string, number: string) => void;
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
+  avatar: string;
 }
 
 const Contact: React.FC<Props> = ({
@@ -137,6 +138,7 @@ const Contact: React.FC<Props> = ({
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
+  avatar,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -175,7 +177,7 @@ const Contact: React.FC<Props> = ({
                 <ContactHeader
                   avatar={
                     <ContactAvatar
-                      src=""
+                      src={avatar || ''}
                       aria-label="Contact Avatar"
                       onClick={handleContactNameClick}
                     />

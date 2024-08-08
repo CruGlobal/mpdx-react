@@ -317,6 +317,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
+                    avatar={person?.avatar}
                   />
                 ))}
               </Grid>
