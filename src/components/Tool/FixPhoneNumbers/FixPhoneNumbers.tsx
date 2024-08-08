@@ -251,7 +251,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     <strong>
                       {t('You have {{amount}} phone numbers to confirm.', {
                         amount:
-                          data.people.totalCount || data.people.nodes.length,
+                          data.people?.totalCount || data.people.nodes.length,
                       })}
                     </strong>
                   </Typography>

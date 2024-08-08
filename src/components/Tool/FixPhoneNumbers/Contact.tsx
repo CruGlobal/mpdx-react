@@ -17,6 +17,7 @@ import {
   Link,
   TextField,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
@@ -254,13 +255,15 @@ const Contact: React.FC<Props> = ({
                                 className={classes.hoverHighlight}
                               />
                             ) : (
-                              <StarOutlineIcon
-                                data-testid={`starOutlineIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                                onClick={() =>
-                                  handleChangePrimary(personId, index)
-                                }
-                              />
+                              <Tooltip title="Set as Primary">
+                                <StarOutlineIcon
+                                  data-testid={`starOutlineIcon-${personId}-${index}`}
+                                  className={classes.hoverHighlight}
+                                  onClick={() =>
+                                    handleChangePrimary(personId, index)
+                                  }
+                                />
+                              </Tooltip>
                             )}
                           </Typography>
                         </Box>
@@ -297,11 +300,13 @@ const Contact: React.FC<Props> = ({
                               onClick={() => handleDelete(personId, index)}
                               className={classes.paddingX}
                             >
-                              <Icon
-                                path={mdiDelete}
-                                size={1}
-                                className={classes.hoverHighlight}
-                              />
+                              <Tooltip title="Delete Number">
+                                <Icon
+                                  path={mdiDelete}
+                                  size={1}
+                                  className={classes.hoverHighlight}
+                                />
+                              </Tooltip>
                             </Box>
                           ) : (
                             <Icon
@@ -363,11 +368,13 @@ const Contact: React.FC<Props> = ({
                         onClick={() => addNewPhoneNumber()}
                         data-testid={`addButton-${personId}`}
                       >
-                        <Icon
-                          path={mdiPlus}
-                          size={1}
-                          className={classes.hoverHighlight}
-                        />
+                        <Tooltip title="Add Number">
+                          <Icon
+                            path={mdiPlus}
+                            size={1}
+                            className={classes.hoverHighlight}
+                          />
+                        </Tooltip>
                       </Box>
                     </Box>
                   </Grid>

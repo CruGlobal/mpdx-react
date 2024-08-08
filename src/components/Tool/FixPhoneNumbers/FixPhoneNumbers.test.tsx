@@ -85,6 +85,7 @@ describe('FixPhoneNumbers-Home', () => {
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
+                    totalCount: 2,
                     nodes: testData,
                   },
                 },
@@ -123,6 +124,7 @@ describe('FixPhoneNumbers-Home', () => {
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
+                    totalCount: 2,
                     nodes: testData,
                   },
                 },
