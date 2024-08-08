@@ -476,7 +476,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                       shouldUnescape
-                      values={{ value: data.people.nodes.length }}
+                      values={{ value: data.people.totalCount }}
                       components={{ bold: <strong /> }}
                     />
                   </Typography>
