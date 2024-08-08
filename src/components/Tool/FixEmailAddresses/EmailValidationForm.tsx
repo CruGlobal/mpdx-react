@@ -5,10 +5,9 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import { useEmailAddressesMutation } from './AddEmailAddress.generated';
-import { RowWrapper } from './FixEmailAddressPerson';
+import { RowWrapper } from './FixEmailAddressPerson/FixEmailAddressPerson';
 import {
   GetInvalidEmailAddressesDocument,
   GetInvalidEmailAddressesQuery,
@@ -30,8 +29,8 @@ interface EmailValidationFormEmail {
 }
 
 interface EmailValidationFormProps {
-  index: number;
   personId: string;
+  accountListId: string;
 }
 
 const validationSchema = yup.object({
@@ -46,9 +45,11 @@ const validationSchema = yup.object({
   isValid: yup.bool().default(false),
 });
 
-const EmailValidationForm = ({ personId }: EmailValidationFormProps) => {
+const EmailValidationForm = ({
+  personId,
+  accountListId,
+}: EmailValidationFormProps) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const [emailAddressesMutation] = useEmailAddressesMutation();
   const { enqueueSnackbar } = useSnackbar();
 

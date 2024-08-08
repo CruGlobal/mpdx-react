@@ -36,6 +36,7 @@ describe('FixPhoneNumbers-Contact', () => {
     const handleDeleteModalOpenMock = jest.fn();
     const handleAddMock = jest.fn();
     const handleChangePrimaryMock = jest.fn();
+    const updatePhoneNumber = jest.fn();
 
     const { getByText, getByTestId, getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
@@ -52,6 +53,7 @@ describe('FixPhoneNumbers-Contact', () => {
             handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
             avatar={testData.avatar}
+            handleUpdate={updatePhoneNumber}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -69,6 +71,7 @@ describe('FixPhoneNumbers-Contact', () => {
     const handleDeleteModalOpenMock = jest.fn();
     const handleAddMock = jest.fn();
     const handleChangePrimaryMock = jest.fn();
+    const updatePhoneNumber = jest.fn();
 
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
@@ -85,6 +88,7 @@ describe('FixPhoneNumbers-Contact', () => {
             handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
             avatar={testData.avatar}
+            handleUpdate={updatePhoneNumber}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -106,6 +110,7 @@ describe('FixPhoneNumbers-Contact', () => {
     const handleDeleteModalOpenMock = jest.fn();
     const handleAddMock = jest.fn();
     const handleChangePrimaryMock = jest.fn();
+    const updatePhoneNumber = jest.fn();
 
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
@@ -122,6 +127,7 @@ describe('FixPhoneNumbers-Contact', () => {
             handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
             avatar={testData.avatar}
+            handleUpdate={updatePhoneNumber}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -135,5 +141,7 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(handleChangePrimaryMock).toHaveBeenCalled();
     userEvent.click(getByTestId('delete-testid-1'));
     expect(handleDeleteModalOpenMock).toHaveBeenCalled();
+    userEvent.click(getByTestId(`confirmButton-${testData.id}`));
+    expect(updatePhoneNumber).toHaveBeenCalled();
   });
 });
