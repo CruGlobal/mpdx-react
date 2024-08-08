@@ -14,6 +14,7 @@ import Contact from './Contact';
 let testData = {
   id: 'test 1',
   name: 'Tester 1',
+  avatar: '',
   statusTitle: 'Partner - Financial',
   statusValue: 'NEW_CONNECTION',
   frequencyTitle: 'Monthly',
@@ -60,6 +61,7 @@ const TestComponent: React.FC = () => (
         frequencyValue={testData.frequencyValue}
         statuses={statuses}
         setContactFocus={setContactFocus}
+        avatar={testData.avatar}
       />
     </TestWrapper>
   </ThemeProvider>
@@ -103,6 +105,7 @@ describe('FixCommitmentContact', () => {
     testData = {
       id: 'test 2',
       name: 'Tester 2',
+      avatar: '',
       statusTitle: '',
       statusValue: '',
       frequencyTitle: '',

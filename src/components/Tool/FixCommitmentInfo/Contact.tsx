@@ -16,6 +16,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { Field, Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -153,6 +154,11 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+const ContactAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
+}));
+
 interface Props {
   id: string;
   name: string;
@@ -171,6 +177,7 @@ interface Props {
   ) => void;
   statuses: FilterOption[];
   setContactFocus: SetContactFocus;
+  avatar?: string;
 }
 
 const Contact: React.FC<Props> = ({
@@ -186,6 +193,7 @@ const Contact: React.FC<Props> = ({
   showModal,
   statuses,
   setContactFocus,
+  avatar,
 }) => {
   const { pledgeCurrency: pledgeCurrencies } = useApiConstants() || {};
   const locale = useLocale();
@@ -270,12 +278,9 @@ const Contact: React.FC<Props> = ({
                         alignItems="center"
                         className={classes.left}
                       >
-                        <Avatar
-                          src=""
-                          style={{
-                            width: theme.spacing(4),
-                            height: theme.spacing(4),
-                          }}
+                        <ContactAvatar
+                          src={avatar || ''}
+                          aria-label="Contact Avatar"
                         />
                         <Box display="flex" flexDirection="column" ml={2}>
                           <Link

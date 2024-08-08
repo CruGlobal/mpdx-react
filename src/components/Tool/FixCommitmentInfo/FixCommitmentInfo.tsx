@@ -300,6 +300,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         showModal={handleShowModal}
                         statuses={contactStatuses || [{ name: '', value: '' }]}
                         setContactFocus={setContactFocus}
+                        avatar={contact?.avatar}
                       />
                     </Grid>
                   )}
