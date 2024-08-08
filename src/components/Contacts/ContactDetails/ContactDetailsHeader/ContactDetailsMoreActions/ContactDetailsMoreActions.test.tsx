@@ -1,4 +1,5 @@
 import React from 'react';
+import { InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -268,11 +269,15 @@ describe('ContactDetailsMoreActions', () => {
   });
 
   it('handles deleting contact', async () => {
+    const cache = new InMemoryCache();
+    const mockEvict = jest.fn();
+    cache.evict = mockEvict;
+
     const { queryAllByText, queryByText, getByRole, getByText } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider cache={cache}>
               <ContactsWrapper>
                 <ContactDetailProvider>
                   <ContactDetailsMoreAcitions
@@ -293,8 +298,13 @@ describe('ContactDetailsMoreActions', () => {
     );
     expect(getByText('Delete Contact')).toBeInTheDocument();
     userEvent.click(queryAllByText('Delete Contact')[0]);
-    userEvent.click(
-      getByRole('button', { hidden: true, name: 'delete contact' }),
+    await waitFor(() =>
+      userEvent.click(
+        getByRole('button', { hidden: true, name: 'delete contact' }),
+      ),
+    );
+    await waitFor(() =>
+      expect(mockEvict).toHaveBeenCalledWith({ id: `Contact:${contactId}` }),
     );
     expect(onClose).toHaveBeenCalled();
   });

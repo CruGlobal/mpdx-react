@@ -10,6 +10,7 @@ import {
   NativeSelect,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
@@ -19,13 +20,17 @@ import {
   ItemWithBorders,
 } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
+import {
+  PersonPhoneNumberInput,
+  PersonUpdateInput,
+} from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -118,7 +123,7 @@ export interface PhoneNumberData {
   destroy?: boolean;
 }
 
-interface PersonPhoneNumbers {
+export interface PersonPhoneNumbers {
   phoneNumbers: PhoneNumberData[];
   toDelete: PersonPhoneNumberInput[];
 }
@@ -133,11 +138,13 @@ const FixPhoneNumbers: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-
+  const { enqueueSnackbar } = useSnackbar();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
+
   const { data, loading, fetchMore } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
@@ -172,6 +179,34 @@ const FixPhoneNumbers: React.FC<Props> = ({
       ),
     [loading],
   );
+
+  const determineBulkDataToSend = (
+    dataState: { [key: string]: PersonPhoneNumbers },
+    defaultSource: string,
+  ): PersonUpdateInput[] => {
+    const dataToSend = [] as PersonUpdateInput[];
+
+    Object.entries(dataState).forEach((value) => {
+      const primaryNumber = value[1].phoneNumbers.find(
+        (number) => number.source === defaultSource,
+      );
+      if (primaryNumber) {
+        dataToSend.push({
+          id: value[0],
+          phoneNumbers: value[1].phoneNumbers.map(
+            (number) =>
+              ({
+                id: number.id,
+                primary: number.id === primaryNumber.id,
+                number: number.number,
+                validValues: true,
+              } as PersonPhoneNumberInput),
+          ),
+        });
+      }
+    });
+    return dataToSend;
+  };
 
   const handleDeleteModalOpen = (
     personId: string,
@@ -245,6 +280,81 @@ const FixPhoneNumbers: React.FC<Props> = ({
     setDefaultSource(event.target.value);
   };
 
+  const updatePhoneNumber = async (
+    personId: string,
+    name: string,
+    numbers: PhoneNumberData[],
+  ): Promise<void> => {
+    const attributes = [
+      {
+        phoneNumbers: numbers.map((phoneNumber) => ({
+          id: phoneNumber.id,
+          primary: phoneNumber.primary,
+          number: phoneNumber.number,
+          validValues: true,
+        })),
+        id: personId,
+      },
+    ];
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes,
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${personId}` });
+      },
+      onError() {
+        enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted() {
+        enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
+  const handleBulkConfirm = async () => {
+    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
+
+    if (!dataToSend.length) {
+      return;
+    }
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes: dataToSend,
+        },
+      },
+      update: (cache) => {
+        data?.people.nodes.forEach((person) => {
+          cache.evict({ id: `Person:${person.id}` });
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t(`Phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
   return (
     <Box className={classes.container}>
       {!loading && data ? (
@@ -299,6 +409,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     </NativeSelect>
                     <Button
                       className={classes.buttonBlue}
+                      onClick={handleBulkConfirm}
                       data-testid="source-button"
                     >
                       <Icon
@@ -338,6 +449,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                         handleAdd={handleAdd}
                         handleChangePrimary={handleChangePrimary}
                         setContactFocus={setContactFocus}
+                        handleUpdate={updatePhoneNumber}
                       />
                     </Grid>
                   )}

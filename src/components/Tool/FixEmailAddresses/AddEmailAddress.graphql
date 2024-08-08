@@ -3,7 +3,7 @@ mutation EmailAddresses($input: PersonUpdateMutationInput!) {
     person {
       emailAddresses {
         nodes {
-          email
+          ...PersonEmailAddress
         }
       }
     }
