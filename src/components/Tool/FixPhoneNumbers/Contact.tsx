@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  FormControl,
   Grid,
   Hidden,
   Link,
@@ -81,21 +82,17 @@ const useStyles = makeStyles()((theme: Theme) => ({
     paddingRight: theme.spacing(2),
   },
   paddingY: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
   paddingB2: {
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(1),
   },
   hoverHighlight: {
     '&:hover': {
       color: theme.palette.mpdxBlue.main,
       cursor: 'pointer',
     },
-  },
-  avatar: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
   },
 }));
 
@@ -184,7 +181,7 @@ const Contact: React.FC<Props> = ({
                   }
                   title={
                     <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="h6">{name}</Typography>
+                      <Typography variant="subtitle1">{name}</Typography>
                     </Link>
                   }
                   action={
@@ -209,10 +206,10 @@ const Contact: React.FC<Props> = ({
                         justifyContent="space-between"
                         className={classes.paddingX}
                       >
-                        <Typography>
+                        <Typography variant="body2">
                           <strong>{t('Source')}</strong>
                         </Typography>
-                        <Typography>
+                        <Typography variant="body2">
                           <strong>{t('Primary')}</strong>
                         </Typography>
                       </Box>
@@ -223,7 +220,7 @@ const Contact: React.FC<Props> = ({
                         justifyContent="flex-start"
                         className={classes.paddingX}
                       >
-                        <Typography>
+                        <Typography variant="body2">
                           <strong>{t('Phone Number')}</strong>
                         </Typography>
                       </Box>
@@ -239,11 +236,11 @@ const Contact: React.FC<Props> = ({
                         >
                           <Box>
                             <Hidden smUp>
-                              <Typography display="inline">
+                              <Typography display="inline" variant="body2">
                                 <strong>{t('Source')}: </strong>
                               </Typography>
                             </Hidden>
-                            <Typography display="inline">
+                            <Typography display="inline" variant="body2">
                               {`${phoneNumber.source} (${dateFormatShort(
                                 DateTime.fromISO(phoneNumber.updatedAt),
                                 locale,
@@ -277,17 +274,20 @@ const Contact: React.FC<Props> = ({
                             classes.paddingX,
                           )}
                         >
-                          <TextField
-                            style={{ width: '100%' }}
-                            inputProps={{
-                              'data-testid': `textfield-${personId}-${index}`,
-                            }}
-                            onChange={(
-                              event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(personId, index, event)}
-                            value={phoneNumber.number}
-                            disabled={phoneNumber.source !== 'MPDX'}
-                          />
+                          <FormControl fullWidth>
+                            <TextField
+                              style={{ width: '100%' }}
+                              size="small"
+                              inputProps={{
+                                'data-testid': `textfield-${personId}-${index}`,
+                              }}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>,
+                              ) => handleChange(personId, index, event)}
+                              value={phoneNumber.number}
+                              disabled={phoneNumber.source !== 'MPDX'}
+                            />
+                          </FormControl>
 
                           {phoneNumber.source === 'MPDX' ? (
                             <Box
@@ -324,11 +324,13 @@ const Contact: React.FC<Props> = ({
                     >
                       <Box>
                         <Hidden smUp>
-                          <Typography display="inline">
+                          <Typography display="inline" variant="body2">
                             <strong>{t('Source')}: </strong>
                           </Typography>
                         </Hidden>
-                        <Typography display="inline">MPDX</Typography>
+                        <Typography display="inline" variant="body2">
+                          MPDX
+                        </Typography>
                       </Box>
                     </Box>
                   </Grid>
@@ -341,16 +343,19 @@ const Contact: React.FC<Props> = ({
                         classes.paddingX,
                       )}
                     >
-                      <TextField
-                        style={{ width: '100%' }}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => updateNewPhoneNumber(event)}
-                        inputProps={{
-                          'data-testid': `addNewNumberInput-${personId}`,
-                        }}
-                        value={newPhoneNumber}
-                      />
+                      <FormControl fullWidth>
+                        <TextField
+                          style={{ width: '100%' }}
+                          size="small"
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>,
+                          ) => updateNewPhoneNumber(event)}
+                          inputProps={{
+                            'data-testid': `addNewNumberInput-${personId}`,
+                          }}
+                          value={newPhoneNumber}
+                        />
+                      </FormControl>
                       <Box
                         className={classes.paddingX}
                         display="flex"
