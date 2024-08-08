@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
@@ -327,7 +327,14 @@ const FixCommitmentInfo: React.FC<Props> = ({
           data-testid="HideModal"
           isOpen={true}
           title={modalState.title}
-          message={modalState.message}
+          message={
+            <Trans
+              defaults="{{message}}"
+              shouldUnescape
+              values={{ message: modalState.message }}
+              components={{ bold: <strong /> }}
+            />
+          }
           handleClose={() => setModalState(defaultModalState)}
           mutation={updateContact}
         />
