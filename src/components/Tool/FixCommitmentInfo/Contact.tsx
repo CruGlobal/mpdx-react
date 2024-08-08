@@ -227,9 +227,9 @@ const Contact: React.FC<Props> = ({
 
   const appealFormSchema = yup.object({
     statusValue: yup.string().required('Please select a status'),
-    pledgeCurrency: yup.string().required('Please select a currency'),
-    pledgeAmount: yup.number().required('Please enter an amount'),
-    pledgeFrequency: yup.string().required('Please select frequency'),
+    pledgeCurrency: yup.string(),
+    pledgeAmount: yup.number(),
+    pledgeFrequency: yup.string(),
   });
 
   return (
