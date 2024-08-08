@@ -497,36 +497,38 @@ const Contact: React.FC<Props> = ({
                         className={classes.donationsTable}
                         lg={12}
                       >
-                        {donations.map((donation) => (
-                          <Grid
-                            key={donation.amount.conversionDate}
-                            display="flex"
-                            flexDirection="column"
-                          >
-                            <Box>
-                              <Typography
-                                fontWeight={700}
-                                variant="body2"
-                                data-testid="donationDate"
-                              >
-                                {DateTime.fromISO(
-                                  donation.amount.conversionDate,
-                                )
-                                  .setLocale(locale || 'en')
-                                  .toLocaleString()}
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography
-                                sx={{ textAlign: 'center' }}
-                                variant="body2"
-                                data-testid="donationAmount"
-                              >
-                                {`${donation.amount.amount} ${donation.amount.currency}`}
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        ))}
+                        {donations
+                          .map((donation) => (
+                            <Grid
+                              key={donation.amount.conversionDate}
+                              display="flex"
+                              flexDirection="column"
+                            >
+                              <Box>
+                                <Typography
+                                  fontWeight={700}
+                                  variant="body2"
+                                  data-testid="donationDate"
+                                >
+                                  {DateTime.fromISO(
+                                    donation.amount.conversionDate,
+                                  )
+                                    .setLocale(locale || 'en')
+                                    .toLocaleString()}
+                                </Typography>
+                              </Box>
+                              <Box>
+                                <Typography
+                                  sx={{ textAlign: 'center' }}
+                                  variant="body2"
+                                  data-testid="donationAmount"
+                                >
+                                  {`${donation.amount.amount} ${donation.amount.currency}`}
+                                </Typography>
+                              </Box>
+                            </Grid>
+                          ))
+                          .reverse()}
                       </Grid>
                     )}
                   </Grid>
