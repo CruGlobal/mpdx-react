@@ -295,7 +295,7 @@ const Contact: React.FC<Props> = ({
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''
-                            } ${frequencyTitle}`}
+                            } ${frequencyTitle && frequencyTitle}`}
                           </Typography>
                         </Box>
                       </Box>
