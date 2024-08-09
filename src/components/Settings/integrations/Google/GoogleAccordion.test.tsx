@@ -89,7 +89,7 @@ describe('GoogleAccordion', () => {
   describe('Not Connected', () => {
     it('should render Google Overview', async () => {
       const mutationSpy = jest.fn();
-      const { getByText } = render(
+      const { getByText, getByTestId, queryByText } = render(
         <Components>
           <GqlMockedProvider<{
             GoogleAccount: GoogleAccountsQuery;
@@ -112,6 +112,14 @@ describe('GoogleAccordion', () => {
       await waitFor(() => {
         expect(getByText(/google integration overview/i)).toBeInTheDocument();
       });
+      userEvent.click(getByText(/add account/i));
+      expect(getByText('Add Google Account')).toBeInTheDocument();
+
+      userEvent.click(getByTestId('CloseIcon'));
+      await waitFor(() =>
+        expect(queryByText(/add google account/i)).not.toBeInTheDocument(),
+      );
+
       userEvent.click(getByText(/add account/i));
 
       expect(getByText(/continue/i)).toHaveAttribute(
