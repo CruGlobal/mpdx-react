@@ -16,11 +16,11 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { SmallLoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -61,16 +61,15 @@ const useStyles = makeStyles()(() => ({
     },
   },
   select: {
-    minWidth: theme.spacing(17),
+    minWidth: theme.spacing(10),
     [theme.breakpoints.down('md')]: {
-      width: '100%',
-      maxWidth: '200px',
+      maxWidth: theme.spacing(15),
       margin: `${theme.spacing(1)} auto 0`,
     },
   },
-}));
-const InlineTypography = styled(Typography)(() => ({
-  display: 'inline',
+  inline: {
+    display: 'inline',
+  },
 }));
 
 interface Props {
@@ -101,6 +100,7 @@ const Contact = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState(SendNewsletterEnum.None);
+  const [updatingSingle, setUpdatingSingle] = useState(false);
   const { classes } = useStyles();
   const locale = useLocale();
 
@@ -153,20 +153,30 @@ const Contact = ({
         action={
           <Button
             variant="contained"
-            onClick={() => handleSingleConfirm(id, name, newsletter)}
+            onClick={() => {
+              setUpdatingSingle(true);
+              handleSingleConfirm(id, name, newsletter);
+            }}
             sx={{ marginTop: '9px' }}
+            disabled={updatingSingle}
           >
-            <Icon
-              path={mdiCheckboxMarkedCircle}
-              size={0.8}
-              className={classes.buttonIcon}
-            />
+            {updatingSingle ? (
+              <SmallLoadingSpinner />
+            ) : (
+              <Icon
+                path={mdiCheckboxMarkedCircle}
+                size={0.8}
+                className={classes.buttonIcon}
+              />
+            )}
             Confirm
           </Button>
         }
         title={
           <Link underline="hover" onClick={handleContactNameClick}>
-            <InlineTypography variant="subtitle1">{name}</InlineTypography>
+            <Typography className={classes.inline} variant="subtitle1">
+              {name}
+            </Typography>
           </Link>
         }
         subheader={<Typography variant="body2">{status}</Typography>}
@@ -177,7 +187,7 @@ const Contact = ({
       >
         {primaryPerson && (
           <Grid container alignItems="center">
-            <Grid item xs={12} sm={5} md={4}>
+            <Grid item xs={6} sm={5} md={4}>
               <Box
                 display="flex"
                 alignItems="center"
@@ -214,7 +224,7 @@ const Contact = ({
                 </Box>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={6} sm={4} md={4}>
               <Box
                 display="flex"
                 alignItems="start"
@@ -250,7 +260,7 @@ const Contact = ({
                 )}
               </Box>
             </Grid>
-            <Grid xs={12} sm={3} md={4}>
+            <Grid item xs={12} sm={3} md={4} sx={{ textAlign: 'right' }}>
               <Typography variant="body2">
                 <Trans
                   defaults="<bold>Send newsletter?</bold>"
