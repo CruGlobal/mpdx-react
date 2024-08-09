@@ -115,7 +115,7 @@ describe('FixEmailAddresses-Home', () => {
     await waitFor(() => {
       expect(getByText('Fix Email Addresses')).toBeInTheDocument();
       expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
-      expect(getByRole('combobox')).toHaveDisplayValue('MPDX');
+      expect(getByRole('combobox')).toHaveTextContent('MPDX');
     });
   });
 
@@ -508,17 +508,59 @@ describe('FixEmailAddresses-Home', () => {
 
     it('should not update if there is no email for the default source', async () => {
       const noPrimaryEmailMessage =
-        'No DataServer primary email address exists to update';
+        'No MPDX primary email address exists to update';
 
-      const { getByRole, queryByTestId } = render(<Components />);
+      const { getByRole, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: [
+                  {
+                    ...mockInvalidEmailAddressesResponse[0],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          source: 'DataServer',
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          source: 'DonorHub',
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    ...mockInvalidEmailAddressesResponse[1],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          source: 'DataServer',
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          source: 'DonorHub',
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          }}
+        />,
+      );
 
       await waitFor(() => {
         expect(queryByTestId('loading')).not.toBeInTheDocument();
       });
-      userEvent.selectOptions(getByRole('combobox'), 'DataServer');
+      userEvent.click(getByRole('combobox'));
+      userEvent.click(getByRole('option', { name: 'MPDX' }));
 
       const bulkConfirmButton = getByRole('button', {
-        name: 'Confirm 2 as DataServer',
+        name: 'Confirm 2 as MPDX',
       });
       userEvent.click(bulkConfirmButton);
       userEvent.click(getByRole('button', { name: 'Yes' }));
@@ -577,7 +619,7 @@ describe('FixEmailAddresses-Home', () => {
           ],
         },
       } as { [key: string]: PersonEmailAddresses };
-      const defaultSource = 'DataServer';
+      const defaultSource = 'DonorHub';
 
       const dataToSend = determineBulkDataToSend(dataState, defaultSource);
       expect(dataToSend.length).toEqual(0);
