@@ -5,6 +5,7 @@ query GetInvalidPhoneNumbers($accountListId: ID!) {
     peopleFilter: { phoneNumberValid: false }
     first: 50
   ) {
+    totalCount
     nodes {
       ...PersonInvalidNumber
     }
@@ -15,6 +16,7 @@ fragment PersonInvalidNumber on Person {
   id
   firstName
   lastName
+  avatar
   phoneNumbers(first: 25) {
     nodes {
       ...PersonPhoneNumber

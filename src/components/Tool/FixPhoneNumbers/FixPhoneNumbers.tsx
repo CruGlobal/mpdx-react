@@ -7,7 +7,9 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  NativeSelect,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -20,7 +22,6 @@ import {
 } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
@@ -76,16 +77,15 @@ const useStyles = makeStyles()(() => ({
       alignItems: 'start',
     },
   },
-  nativeSelect: {
+  select: {
     minWidth: theme.spacing(20),
-    width: '10%',
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      maxWidth: '200px',
+      margin: `${theme.spacing(1)} auto 0`,
     },
   },
 }));
@@ -264,9 +264,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
     setDataState(temp);
   };
 
-  const handleSourceChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
+  const handleSourceChange = (event: SelectChangeEvent<string>): void => {
     setDefaultSource(event.target.value);
   };
 
@@ -360,7 +358,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                   <Typography>
                     <strong>
                       {t('You have {{amount}} phone numbers to confirm.', {
-                        amount: data.people.nodes.length,
+                        amount: data.people.totalCount,
                       })}
                     </strong>
                   </Typography>
@@ -372,31 +370,25 @@ const FixPhoneNumbers: React.FC<Props> = ({
                   <Box className={classes.defaultBox}>
                     <Typography>{t('Default Primary Source:')}</Typography>
 
-                    <NativeSelect
-                      input={
-                        <StyledInput
-                          inputProps={{
-                            'data-testid': 'source-select',
-                          }}
-                        />
-                      }
-                      className={classes.nativeSelect}
-                      value={defaultSource}
+                    <Select
+                      className={classes.select}
                       data-testid="source-select"
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                      value={defaultSource}
+                      onChange={(event: SelectChangeEvent<string>) =>
                         handleSourceChange(event)
                       }
+                      size="small"
                     >
-                      <option value="MPDX" data-testid="source-option-mpdx">
+                      <MenuItem value="MPDX" data-testid="source-option-mpdx">
                         MPDX
-                      </option>
-                      <option
+                      </MenuItem>
+                      <MenuItem
                         value="DataServer"
                         data-testid="source-option-dataserver"
                       >
                         DataServer
-                      </option>
-                    </NativeSelect>
+                      </MenuItem>
+                    </Select>
                     <Button
                       className={classes.buttonBlue}
                       onClick={handleBulkConfirm}
@@ -408,7 +400,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                         className={classes.buttonIcon}
                       />
                       {t('Confirm {{amount}} as {{source}}', {
-                        amount: data.people.nodes.length,
+                        amount: data.people.totalCount,
                         source: defaultSource,
                       })}
                     </Button>
@@ -428,6 +420,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
+                    avatar={person?.avatar}
                     handleUpdate={updatePhoneNumber}
                   />
                 ))}
@@ -438,7 +431,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                       shouldUnescape
-                      values={{ value: data.people.nodes.length }}
+                      values={{ value: data.people.totalCount }}
                       components={{ bold: <strong /> }}
                     />
                   </Typography>

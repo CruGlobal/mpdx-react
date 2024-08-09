@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
@@ -7,11 +8,16 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
   Grid,
   Hidden,
   Link,
   TextField,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
@@ -26,25 +32,20 @@ import theme from '../../../theme';
 import { PhoneNumberData } from './FixPhoneNumbers';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  left: {
-    [theme.breakpoints.up('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
+  left: {},
   container: {
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
   },
   boxBottom: {
-    backgroundColor: theme.palette.cruGrayLight.main,
     width: '100%',
     [theme.breakpoints.down('xs')]: {
       paddingTop: theme.spacing(2),
     },
+  },
+  contactCard: {
+    marginBottom: theme.spacing(2),
   },
   buttonTop: {
     marginLeft: theme.spacing(2),
@@ -82,11 +83,11 @@ const useStyles = makeStyles()((theme: Theme) => ({
     paddingRight: theme.spacing(2),
   },
   paddingY: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
   paddingB2: {
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(1),
   },
   hoverHighlight: {
     '&:hover': {
@@ -94,10 +95,17 @@ const useStyles = makeStyles()((theme: Theme) => ({
       cursor: 'pointer',
     },
   },
-  avatar: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
+}));
+
+const ContactHeader = styled(CardHeader)(() => ({
+  '.MuiCardHeader-action': {
+    alignSelf: 'center',
   },
+}));
+
+const ContactAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
 }));
 
 interface Props {
@@ -114,6 +122,7 @@ interface Props {
   handleAdd: (personId: string, number: string) => void;
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
+  avatar: string;
   handleUpdate: (
     personId: string,
     name: string,
@@ -132,6 +141,7 @@ const Contact: React.FC<Props> = ({
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
+  avatar,
   handleUpdate,
 }) => {
   const { t } = useTranslation();
@@ -164,38 +174,62 @@ const Contact: React.FC<Props> = ({
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item md={10} xs={12}>
+        <Card className={classes.contactCard}>
           <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
               <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                  p={2}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box display="flex" flexDirection="column" ml={2}>
+                <ContactHeader
+                  avatar={
+                    <ContactAvatar
+                      src={avatar || ''}
+                      aria-label="Contact Avatar"
+                      onClick={handleContactNameClick}
+                    />
+                  }
+                  title={
                     <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="h6">{name}</Typography>
+                      <Typography variant="subtitle1">{name}</Typography>
                     </Link>
-                  </Box>
-                </Box>
+                  }
+                  action={
+                    <Button
+                      data-testid={`confirmButton-${personId}`}
+                      onClick={() => handleUpdate(personId, name, numbers)}
+                      variant="contained"
+                      style={{ width: '100%' }}
+                    >
+                      <Icon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
+                        className={classes.buttonIcon}
+                      />
+                      {t('Confirm')}
+                    </Button>
+                  }
+                ></ContactHeader>
               </Grid>
 
-              <Grid item xs={12} className={classes.boxBottom}>
-                <Grid container>
-                  <Hidden xsDown>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
+              <CardContent className={(classes.paddingX, classes.paddingY)}>
+                <Grid container display="flex" alignItems="center">
+                  <Hidden smDown>
+                    <Grid item xs={6} sm={4} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="space-between"
                         className={classes.paddingX}
                       >
-                        <Typography>
+                        <Typography variant="body2">
                           <strong>{t('Source')}</strong>
                         </Typography>
-                        <Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6} sm={2} className={classes.paddingY}>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        className={classes.paddingX}
+                      >
+                        <Typography variant="body2">
                           <strong>{t('Primary')}</strong>
                         </Typography>
                       </Box>
@@ -206,7 +240,7 @@ const Contact: React.FC<Props> = ({
                         justifyContent="flex-start"
                         className={classes.paddingX}
                       >
-                        <Typography>
+                        <Typography variant="body2">
                           <strong>{t('Phone Number')}</strong>
                         </Typography>
                       </Box>
@@ -214,7 +248,7 @@ const Contact: React.FC<Props> = ({
                   </Hidden>
                   {numbers.map((phoneNumber, index) => (
                     <Fragment key={index}>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Grid item xs={6} sm={4} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
@@ -222,31 +256,55 @@ const Contact: React.FC<Props> = ({
                         >
                           <Box>
                             <Hidden smUp>
-                              <Typography display="inline">
+                              <Typography display="inline" variant="body2">
                                 <strong>{t('Source')}: </strong>
                               </Typography>
                             </Hidden>
-                            <Typography display="inline">
+                            <Typography display="inline" variant="body2">
                               {`${phoneNumber.source} (${dateFormatShort(
                                 DateTime.fromISO(phoneNumber.updatedAt),
                                 locale,
                               )})`}
                             </Typography>
                           </Box>
-                          <Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={2} className={classes.paddingB2}>
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          className={classes.paddingX}
+                        >
+                          <Typography display="flex" alignItems="center">
                             {phoneNumber.primary ? (
-                              <StarIcon
-                                data-testid={`starIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                              />
+                              <>
+                                <Hidden smUp>
+                                  <Typography display="inline" variant="body2">
+                                    <strong>{t('Source')}: </strong>
+                                  </Typography>
+                                </Hidden>
+                                <StarIcon
+                                  data-testid={`starIcon-${personId}-${index}`}
+                                  className={classes.hoverHighlight}
+                                />
+                              </>
                             ) : (
-                              <StarOutlineIcon
-                                data-testid={`starOutlineIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                                onClick={() =>
-                                  handleChangePrimary(personId, index)
-                                }
-                              />
+                              <>
+                                <Hidden smUp>
+                                  <Typography display="inline" variant="body2">
+                                    <strong>{t('Source')}: </strong>
+                                  </Typography>
+                                </Hidden>
+                                <Tooltip title="Set as Primary">
+                                  <StarOutlineIcon
+                                    data-testid={`starOutlineIcon-${personId}-${index}`}
+                                    className={classes.hoverHighlight}
+                                    onClick={() =>
+                                      handleChangePrimary(personId, index)
+                                    }
+                                  />
+                                </Tooltip>
+                              </>
                             )}
                           </Typography>
                         </Box>
@@ -260,37 +318,52 @@ const Contact: React.FC<Props> = ({
                             classes.paddingX,
                           )}
                         >
-                          <TextField
-                            style={{ width: '100%' }}
-                            inputProps={{
-                              'data-testid': `textfield-${personId}-${index}`,
-                            }}
-                            onChange={(
-                              event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(personId, index, event)}
-                            value={phoneNumber.number}
-                            disabled={phoneNumber.source !== 'MPDX'}
-                          />
+                          <FormControl fullWidth>
+                            <TextField
+                              style={{ width: '100%' }}
+                              size="small"
+                              inputProps={{
+                                'data-testid': `textfield-${personId}-${index}`,
+                              }}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>,
+                              ) => handleChange(personId, index, event)}
+                              value={phoneNumber.number}
+                              disabled={phoneNumber.source !== 'MPDX'}
+                            />
+                          </FormControl>
 
                           {phoneNumber.source === 'MPDX' ? (
                             <Box
+                              display="flex"
+                              alignItems="center"
                               data-testid={`delete-${personId}-${index}`}
                               onClick={() => handleDelete(personId, index)}
+                              className={classes.paddingX}
                             >
-                              <Icon
-                                path={mdiDelete}
-                                size={1}
-                                className={classes.hoverHighlight}
-                              />
+                              <Tooltip title="Delete Number">
+                                <Icon
+                                  path={mdiDelete}
+                                  size={1}
+                                  className={classes.hoverHighlight}
+                                />
+                              </Tooltip>
                             </Box>
                           ) : (
-                            <Icon
-                              path={mdiLock}
-                              size={1}
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              data-testid={`lock-${personId}-${index}`}
+                              className={classes.paddingX}
+                            >
+                              <Icon
+                                path={mdiLock}
+                                size={1}
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </Box>
                           )}
                         </Box>
                       </Grid>
@@ -304,11 +377,13 @@ const Contact: React.FC<Props> = ({
                     >
                       <Box>
                         <Hidden smUp>
-                          <Typography display="inline">
+                          <Typography display="inline" variant="body2">
                             <strong>{t('Source')}: </strong>
                           </Typography>
                         </Hidden>
-                        <Typography display="inline">MPDX</Typography>
+                        <Typography display="inline" variant="body2">
+                          MPDX
+                        </Typography>
                       </Box>
                     </Box>
                   </Grid>
@@ -321,56 +396,41 @@ const Contact: React.FC<Props> = ({
                         classes.paddingX,
                       )}
                     >
-                      <TextField
-                        style={{ width: '100%' }}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => updateNewPhoneNumber(event)}
-                        inputProps={{
-                          'data-testid': `addNewNumberInput-${personId}`,
-                        }}
-                        value={newPhoneNumber}
-                      />
+                      <FormControl fullWidth>
+                        <TextField
+                          style={{ width: '100%' }}
+                          size="small"
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>,
+                          ) => updateNewPhoneNumber(event)}
+                          inputProps={{
+                            'data-testid': `addNewNumberInput-${personId}`,
+                          }}
+                          value={newPhoneNumber}
+                        />
+                      </FormControl>
                       <Box
+                        className={classes.paddingX}
+                        display="flex"
+                        alignItems="center"
                         onClick={() => addNewPhoneNumber()}
                         data-testid={`addButton-${personId}`}
                       >
-                        <Icon
-                          path={mdiPlus}
-                          size={1}
-                          className={classes.hoverHighlight}
-                        />
+                        <Tooltip title="Add Number">
+                          <Icon
+                            path={mdiPlus}
+                            size={1}
+                            className={classes.hoverHighlight}
+                          />
+                        </Tooltip>
                       </Box>
                     </Box>
                   </Grid>
                 </Grid>
-              </Grid>
+              </CardContent>
             </Grid>
           </Box>
-        </Grid>
-        <Grid item xs={12} md={2}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            style={{ paddingLeft: theme.spacing(1) }}
-          >
-            <Box className={classes.buttonTop}>
-              <Button
-                data-testid={`confirmButton-${personId}`}
-                onClick={() => handleUpdate(personId, name, numbers)}
-                variant="contained"
-                style={{ width: '100%' }}
-              >
-                <Icon
-                  path={mdiCheckboxMarkedCircle}
-                  size={0.8}
-                  className={classes.buttonIcon}
-                />
-                {t('Confirm')}
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
+        </Card>
       </Grid>
     </Grid>
   );

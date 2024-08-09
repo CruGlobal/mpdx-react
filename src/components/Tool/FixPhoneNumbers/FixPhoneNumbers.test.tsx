@@ -101,6 +101,7 @@ const Components: React.FC<{
             mocks={{
               GetInvalidPhoneNumbers: {
                 people: {
+                  totalCount: 2,
                   nodes: data,
                 },
               },
