@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ApolloCache } from '@apollo/client';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -128,8 +128,6 @@ enum ModalEnum {
   Edit = 'Edit',
 }
 
-const sourceOptions = [appName, 'DataServer'];
-
 const FixMailingAddresses: React.FC<Props> = ({
   accountListId,
   setContactFocus,
@@ -142,12 +140,25 @@ const FixMailingAddresses: React.FC<Props> = ({
   const [selectedContactId, setSelectedContactId] = useState('');
   const [defaultSource, setDefaultSource] = useState(appName);
   const [openBulkConfirmModal, setOpenBulkConfirmModal] = useState(false);
+  const [sourceOptions, setSourceOptions] = useState<string[]>([appName]);
 
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
   });
   const [updateAddress] = useUpdateContactAddressMutation();
   const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    const existingSources = new Set<string>();
+    existingSources.add(appName);
+
+    data?.contacts.nodes.forEach((contact) => {
+      contact.addresses.nodes.forEach((address) => {
+        existingSources.add(address.source);
+      });
+    });
+    setSourceOptions([...existingSources]);
+  }, [loading, data]);
 
   const handleSingleConfirm = async ({
     addresses,
