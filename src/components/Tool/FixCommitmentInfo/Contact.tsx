@@ -330,7 +330,6 @@ const Contact: React.FC<Props> = ({
                                   )
                                 }
                               >
-                                <MenuItem value="">Status</MenuItem>
                                 {statuses.map((status) => (
                                   <MenuItem
                                     value={status.value}
@@ -374,9 +373,6 @@ const Contact: React.FC<Props> = ({
                                   )
                                 }
                               >
-                                <MenuItem value={'Currency'} disabled>
-                                  {t('Currency')}
-                                </MenuItem>
                                 {pledgeCurrencies &&
                                   getPledgeCurrencyOptions(
                                     pledgeCurrencies,
@@ -464,9 +460,6 @@ const Contact: React.FC<Props> = ({
                                   )
                                 }
                               >
-                                <MenuItem value="Frequency" disabled>
-                                  {t('Frequency')}
-                                </MenuItem>
                                 {Object.entries(frequencies).map(
                                   ([freqValue, freqTranslated]) => (
                                     <MenuItem
