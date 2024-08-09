@@ -9,6 +9,7 @@ import {
   Grid,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -263,9 +264,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
     setDataState(temp);
   };
 
-  const handleSourceChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
+  const handleSourceChange = (event: SelectChangeEvent<string>): void => {
     setDefaultSource(event.target.value);
   };
 
@@ -375,7 +374,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       className={classes.select}
                       data-testid="source-select"
                       value={defaultSource}
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                      onChange={(event: SelectChangeEvent<string>) =>
                         handleSourceChange(event)
                       }
                       size="small"
