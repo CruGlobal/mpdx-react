@@ -320,13 +320,20 @@ const Contact: React.FC<Props> = ({
                               </Tooltip>
                             </Box>
                           ) : (
-                            <Icon
-                              path={mdiLock}
-                              size={1}
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              data-testid={`lock-${personId}-${index}`}
+                              className={classes.paddingX}
+                            >
+                              <Icon
+                                path={mdiLock}
+                                size={1}
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </Box>
                           )}
                         </Box>
                       </Grid>
