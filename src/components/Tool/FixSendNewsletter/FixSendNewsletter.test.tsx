@@ -69,12 +69,11 @@ const TestComponent = ({
 );
 
 describe('FixSendNewsletter', () => {
-  const deceasedName =
-    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[2].name;
-  const firstContactName =
-    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[0].name;
-  const secondContactName =
-    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes[1].name;
+  const contacts =
+    mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes;
+  const deceasedName = contacts[2].name;
+  const firstContactName = contacts[0].name;
+  const secondContactName = contacts[1].name;
   const initialNewsletterValue = 'None';
   const newNewsletterValue = 'Physical';
 
@@ -188,6 +187,7 @@ describe('FixSendNewsletter', () => {
       await waitFor(() => {
         expect(newsletterDropdown).toHaveDisplayValue([initialNewsletterValue]);
       });
+      expect(queryByText(firstContactName)).toBeInTheDocument();
       userEvent.selectOptions(newsletterDropdown, newNewsletterValue);
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
       await waitFor(() => {
