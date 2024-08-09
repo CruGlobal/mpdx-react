@@ -25,6 +25,7 @@ const TestComponent = ({
       contactUpdates={[
         { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
       ]}
+      setContactUpdates={jest.fn()}
       handleSingleConfirm={jest.fn()}
       setContactFocus={jest.fn()}
     />

@@ -93,7 +93,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
-  const [contactUpdates] = useState<ContactUpdateData[]>([]);
+  const [contactUpdates, setContactUpdates] = useState<ContactUpdateData[]>([]);
   const [updateContacts] = useMassActionsUpdateContactsMutation();
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
@@ -264,6 +264,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                           }
                         }
                         contactUpdates={contactUpdates}
+                        setContactUpdates={setContactUpdates}
                         handleSingleConfirm={handleSingleConfirm}
                         setContactFocus={setContactFocus}
                       />

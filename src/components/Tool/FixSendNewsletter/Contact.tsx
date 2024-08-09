@@ -87,6 +87,7 @@ interface Props {
   primaryAddress?: ContactPrimaryAddressFragment;
   source?: string;
   contactUpdates: ContactUpdateData[];
+  setContactUpdates: React.Dispatch<React.SetStateAction<ContactUpdateData[]>>;
   handleSingleConfirm: (
     id: string,
     name: string,
@@ -102,6 +103,7 @@ const Contact = ({
   status,
   primaryAddress,
   contactUpdates,
+  setContactUpdates,
   handleSingleConfirm,
   setContactFocus,
 }: Props): ReactElement => {
@@ -136,10 +138,13 @@ const Contact = ({
     if (existingItem) {
       existingItem.sendNewsletter = sendNewsletter;
     } else {
-      contactUpdates.push({
-        id,
-        sendNewsletter: sendNewsletter,
-      });
+      setContactUpdates([
+        ...contactUpdates,
+        {
+          id,
+          sendNewsletter: sendNewsletter,
+        },
+      ]);
     }
   };
 
