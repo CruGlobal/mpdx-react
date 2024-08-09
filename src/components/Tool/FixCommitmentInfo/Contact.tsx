@@ -226,11 +226,11 @@ const Contact: React.FC<Props> = ({
     );
   };
 
-  const appealFormSchema = yup.object({
+  const commitmentInfoFormSchema = yup.object({
     statusValue: yup.string().required('Please select a status'),
-    pledgeCurrency: yup.string(),
-    pledgeAmount: yup.number(),
-    pledgeFrequency: yup.string(),
+    pledgeCurrency: yup.string().nullable(),
+    pledgeAmount: yup.number().nullable(),
+    pledgeFrequency: yup.string().nullable(),
   });
 
   return (
@@ -242,7 +242,7 @@ const Contact: React.FC<Props> = ({
           pledgeAmount: amount || null,
           pledgeFrequency: frequencyValue,
         }}
-        validationSchema={appealFormSchema}
+        validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
           await onSubmit(values);
         }}
