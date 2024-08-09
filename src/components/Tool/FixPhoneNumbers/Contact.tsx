@@ -211,8 +211,8 @@ const Contact: React.FC<Props> = ({
 
               <CardContent className={(classes.paddingX, classes.paddingY)}>
                 <Grid container display="flex" alignItems="center">
-                  <Hidden xsDown>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
+                  <Hidden smDown>
+                    <Grid item xs={6} sm={4} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="space-between"
@@ -221,6 +221,14 @@ const Contact: React.FC<Props> = ({
                         <Typography variant="body2">
                           <strong>{t('Source')}</strong>
                         </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6} sm={2} className={classes.paddingY}>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        className={classes.paddingX}
+                      >
                         <Typography variant="body2">
                           <strong>{t('Primary')}</strong>
                         </Typography>
@@ -240,7 +248,7 @@ const Contact: React.FC<Props> = ({
                   </Hidden>
                   {numbers.map((phoneNumber, index) => (
                     <Fragment key={index}>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Grid item xs={6} sm={4} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
@@ -259,22 +267,44 @@ const Contact: React.FC<Props> = ({
                               )})`}
                             </Typography>
                           </Box>
-                          <Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={2} className={classes.paddingB2}>
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          className={classes.paddingX}
+                        >
+                          <Typography display="flex" alignItems="center">
                             {phoneNumber.primary ? (
-                              <StarIcon
-                                data-testid={`starIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                              />
-                            ) : (
-                              <Tooltip title="Set as Primary">
-                                <StarOutlineIcon
-                                  data-testid={`starOutlineIcon-${personId}-${index}`}
+                              <>
+                                <Hidden smUp>
+                                  <Typography display="inline" variant="body2">
+                                    <strong>{t('Source')}: </strong>
+                                  </Typography>
+                                </Hidden>
+                                <StarIcon
+                                  data-testid={`starIcon-${personId}-${index}`}
                                   className={classes.hoverHighlight}
-                                  onClick={() =>
-                                    handleChangePrimary(personId, index)
-                                  }
                                 />
-                              </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Hidden smUp>
+                                  <Typography display="inline" variant="body2">
+                                    <strong>{t('Source')}: </strong>
+                                  </Typography>
+                                </Hidden>
+                                <Tooltip title="Set as Primary">
+                                  <StarOutlineIcon
+                                    data-testid={`starOutlineIcon-${personId}-${index}`}
+                                    className={classes.hoverHighlight}
+                                    onClick={() =>
+                                      handleChangePrimary(personId, index)
+                                    }
+                                  />
+                                </Tooltip>
+                              </>
                             )}
                           </Typography>
                         </Box>
