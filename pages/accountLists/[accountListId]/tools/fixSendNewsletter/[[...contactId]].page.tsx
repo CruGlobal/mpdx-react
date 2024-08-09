@@ -24,7 +24,7 @@ const FixSendNewsletterPage: React.FC = () => {
           div.MuiBox-root {
             overflow-x: visible;
             overflow-y: visible;
-          },
+          }
           div.MuiBox-root#scrollOverride {
             overflow-y: auto;
           }

@@ -1,6 +1,7 @@
 import { SendNewsletterEnum, StatusEnum } from 'src/graphql/types.generated';
 
 export const mpdxSourcedAddress = {
+  id: '1',
   street: '100 Lake Hart Drive',
   city: 'Orlando',
   state: 'FL',
@@ -10,9 +11,11 @@ export const mpdxSourcedAddress = {
 };
 
 export const primaryPerson = {
+  id: '1',
   firstName: 'Frodo',
   lastName: 'Baggins',
   primaryEmailAddress: {
+    id: '1',
     email: 'frodo.baggins@shire.com',
   },
   optoutEnewsletter: false,
@@ -51,6 +54,7 @@ export const mockInvalidNewslettersResponse = {
         },
       ],
     },
+    totalCount: 2,
     constant: {
       status: [
         { id: StatusEnum.PartnerPray, value: 'Partner - Pray' },

@@ -159,9 +159,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                   />
                 </Typography>
               </Box>
-              {(loading || updating) && (
-                <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
-              )}
+              {(loading || updating) && <LoadingSpinner firstLoad={true} />}
               <Box>
                 <Button
                   variant="contained"
@@ -223,7 +221,7 @@ const FixSendNewsletter: React.FC<Props> = ({
             ))}
           </>
         ) : loading && !data ? (
-          <LoadingSpinner firstLoad={true} />
+          <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
         ) : (
           <NoData tool="fixSendNewsletter" />
         )}
