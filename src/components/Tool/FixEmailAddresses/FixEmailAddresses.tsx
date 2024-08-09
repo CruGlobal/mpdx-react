@@ -16,9 +16,15 @@ import {
   PersonInvalidEmailFragment,
   useGetInvalidEmailAddressesQuery,
   useUpdateEmailAddressesMutation,
+  useUpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
-import { PersonEmailAddressInput } from 'src/graphql/types.generated';
-import theme from 'src/theme';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import {
+  PersonEmailAddressInput,
+  PersonUpdateInput,
+} from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
 import { StyledInput } from '../StyledInput';
@@ -103,11 +109,43 @@ interface FixEmailAddressesProps {
   setContactFocus: SetContactFocus;
 }
 
+export const determineBulkDataToSend = (
+  dataState: {
+    [key: string]: PersonEmailAddresses;
+  },
+  defaultSource: string,
+): PersonUpdateInput[] => {
+  const dataToSend = [] as PersonUpdateInput[];
+
+  Object.entries(dataState).forEach((value) => {
+    const primaryEmailAddress = value[1].emailAddresses.find(
+      (email) => email.source === defaultSource,
+    );
+    if (primaryEmailAddress) {
+      dataToSend.push({
+        id: value[0],
+        emailAddresses: value[1].emailAddresses.map(
+          (emailAddress) =>
+            ({
+              email: emailAddress.email,
+              id: emailAddress.id,
+              primary: emailAddress.id === primaryEmailAddress.id,
+              validValues: true,
+            } as PersonEmailAddressInput),
+        ),
+      });
+    }
+  });
+  return dataToSend;
+};
+
 export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
   setContactFocus,
 }) => {
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+  const { appName } = useGetAppSettings();
+  const [defaultSource, setDefaultSource] = useState(appName);
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -115,6 +153,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     variables: { accountListId },
   });
   const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
+  const [updatePeople] = useUpdatePeopleMutation();
 
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
@@ -224,6 +263,46 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     });
   };
 
+  const handleBulkConfirm = async () => {
+    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
+
+    if (dataToSend.length) {
+      await updatePeople({
+        variables: {
+          input: {
+            accountListId,
+            attributes: dataToSend,
+          },
+        },
+        update: (cache) => {
+          data?.people.nodes.forEach((person) => {
+            cache.evict({ id: `Person:${person.id}` });
+          });
+          cache.gc();
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t(`Successfully updated email addresses`), {
+            variant: 'success',
+          });
+        },
+        onError: () => {
+          enqueueSnackbar(t(`Error updating email addresses`), {
+            variant: 'error',
+            autoHideDuration: 7000,
+          });
+        },
+      });
+    } else {
+      enqueueSnackbar(
+        t(`No ${defaultSource} primary email address exists to update`),
+        {
+          variant: 'warning',
+          autoHideDuration: 7000,
+        },
+      );
+    }
+  };
+
   return (
     <Container>
       {!loading && data && dataState ? (
@@ -256,10 +335,12 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                         handleSourceChange(event)
                       }
                     >
-                      <option value="MPDX">MPDX</option>
+                      <option value={appName}>{appName}</option>
                       <option value="DataServer">DataServer</option>
                     </SourceSelect>
-                    <ConfirmButton>
+                    <ConfirmButton
+                      onClick={() => setShowBulkConfirmModal(true)}
+                    >
                       <ConfirmButtonIcon />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.nodes.length,
@@ -310,6 +391,15 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           style={{ marginTop: theme.spacing(3) }}
         />
       )}
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(`You are updating all contacts visible on this page, setting the first ${defaultSource} email address as the
+          primary email address. If no such email address exists the contact will not be updated.
+          Are you sure you want to do this?`)}
+      />
     </Container>
   );
 };

@@ -42,3 +42,16 @@ mutation UpdateEmailAddresses($input: PersonUpdateMutationInput!) {
     }
   }
 }
+
+mutation UpdatePeople($input: PeopleUpdateMutationInput!) {
+  updatePeople(input: $input) {
+    people {
+      emailAddresses {
+        nodes {
+          ...PersonEmailAddress
+          validValues
+        }
+      }
+    }
+  }
+}
