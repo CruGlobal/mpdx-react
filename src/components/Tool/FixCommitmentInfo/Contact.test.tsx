@@ -149,10 +149,10 @@ describe('FixCommitmentContact', () => {
     expect(frequency).toHaveValue('WEEKLY');
 
     const currency = getByTestId('pledgeCurrency-input');
-    fireEvent.change(currency, {
-      target: { value: 'Currency' },
+    fireEvent.select(currency, {
+      target: { value: 'USD ($)' },
     });
-    expect(currency).toHaveValue('Currency');
+    expect(currency).toHaveValue('USD ($)');
 
     const status = getByTestId('pledgeStatus-input');
     fireEvent.change(status, {
