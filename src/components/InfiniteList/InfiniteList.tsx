@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { List, ListItem, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
@@ -40,10 +40,6 @@ const ItemWithBorders = styled(ListItem, {
       }),
 }));
 
-const Item: React.ComponentType<ItemProps> = (props) => (
-  <ItemWithBorders disableGutters {...props} />
-);
-
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   <ItemWithBorders disableGutters disableHover>
     <Skeleton variant="rectangular" height={height - padding * 2} />
@@ -70,6 +66,7 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
 
 export interface InfiniteListProps<T, C> {
   loading: boolean;
+  disableHover?: boolean;
   EmptyPlaceholder?: ReactElement | null;
   itemContent: ItemContent<T, C>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,6 +76,7 @@ export interface InfiniteListProps<T, C> {
 
 export const InfiniteList = <T, C>({
   loading,
+  disableHover = false,
   data = [],
   EmptyPlaceholder = null,
   context,
@@ -90,6 +88,13 @@ export const InfiniteList = <T, C>({
   const { groupCounts, groupLabels, items } = useMemo(
     () => groupItems(data, groupBy),
     [data, groupBy],
+  );
+
+  const Item: React.ComponentType<ItemProps> = useCallback(
+    (props) => (
+      <ItemWithBorders disableGutters disableHover={disableHover} {...props} />
+    ),
+    [disableHover],
   );
 
   const commonProps: Omit<VirtuosoProps<T, C>, 'itemContent'> = {
@@ -107,6 +112,7 @@ export const InfiniteList = <T, C>({
       exit: (velocity) => Math.abs(velocity) < 10,
       ...props.scrollSeekConfiguration,
     },
+    overscan: 2000,
   };
 
   if (groupCounts.length > 0) {

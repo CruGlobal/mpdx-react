@@ -1,6 +1,6 @@
-mutation DeleteOrganizationContact($input: DeleteOrganizationContactInput!) {
-  deleteOrganizationContact(input: $input) {
-    success
+mutation AnonymizeContact($input: ContactAnonymizeMutationInput!) {
+  anonymizeContact(input: $input) {
+    clientMutationId
   }
 }
 
@@ -30,9 +30,9 @@ query SearchOrganizationsContacts($input: SearchOrganizationsContactsInput!) {
         name
         accountListUsers {
           id
-          firstName
-          lastName
-          emailAddresses {
+          userFirstName
+          userLastName
+          userEmailAddresses {
             email
             primary
             historic

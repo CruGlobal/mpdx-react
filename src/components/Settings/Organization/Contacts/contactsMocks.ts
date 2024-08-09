@@ -37,15 +37,15 @@ export class ContactsMocks {
       accountListUsers: [
         {
           id: '123456',
-          firstName: 'accountListFirstName',
-          lastName: 'accountListLastName',
-          emailAddresses: [],
+          userFirstName: 'accountListFirstName',
+          userLastName: 'accountListLastName',
+          userEmailAddresses: [],
         },
         {
           id: '654321',
-          firstName: 'accountListFirstName2',
-          lastName: 'accountListLastName2',
-          emailAddresses: [],
+          userFirstName: 'accountListFirstName2',
+          userLastName: 'accountListLastName2',
+          userEmailAddresses: [],
         },
       ],
     },

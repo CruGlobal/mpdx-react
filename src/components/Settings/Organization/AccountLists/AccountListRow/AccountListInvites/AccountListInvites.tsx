@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-import { Box, IconButton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { PersonRemove } from '@mui/icons-material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   AccountListInvites as AccountListInvitesType,
   Maybe,
 } from 'src/graphql/types.generated';
-import theme from 'src/theme';
+import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
 import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
 interface Props {
@@ -19,11 +18,6 @@ interface Props {
   accountListInvites: Maybe<AccountListInvitesType>[];
 }
 
-const BorderBottomBox = styled(Box)(() => ({
-  borderBottom: '1px solid',
-  borderColor: theme.palette.cruGrayLight.main,
-}));
-
 export const AccountListInvites: React.FC<Props> = ({
   name,
   accountListId,
@@ -31,13 +25,14 @@ export const AccountListInvites: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { appName } = useAppSettingsContext();
-  const [deleteInviteDialogOpen, setDeleteInviteDialogOpen] = useState(false);
+  const [deleteInvite, setDeleteInvite] =
+    useState<AccountListInvitesType | null>(null);
   const [adminDeleteOrganizationInvite] =
     useAdminDeleteOrganizationInviteMutation();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const haneleInviteDelete = async (invite) => {
+  const handleInviteDelete = async (invite) => {
     if (!invite?.id) {
       return;
     }
@@ -54,12 +49,12 @@ export const AccountListInvites: React.FC<Props> = ({
         cache.gc();
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully deleted user'), {
+        enqueueSnackbar(t('Successfully removed invite'), {
           variant: 'success',
         });
       },
       onError: () => {
-        enqueueSnackbar(t('{{appName}} could not delete user', { appName }), {
+        enqueueSnackbar(t('{{appName}} could not remove invite', { appName }), {
           variant: 'error',
         });
       },
@@ -72,48 +67,61 @@ export const AccountListInvites: React.FC<Props> = ({
 
       {accountListInvites &&
         accountListInvites?.map((invite, idx) => (
-          <BorderBottomBox key={`designationAccounts-invites-${idx}`}>
+          <BorderBottomBox
+            sx={{ borderBottom: '0' }}
+            key={`designationAccounts-invites-${idx}`}
+          >
             <Typography
               component="span"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
               }}
             >
               <Box>
-                <Box sx={{ fontWeight: 'bold', m: 1 }}>
-                  {invite?.recipientEmail}
-                </Box>
-                <Box sx={{ fontWeight: 'regular', m: 1 }}>
+                <HeaderBox>{invite?.recipientEmail}</HeaderBox>
+                <Box>
                   {t('Invited by')} {invite?.invitedByUser?.firstName}{' '}
                   {invite?.invitedByUser?.lastName}
                 </Box>
               </Box>
-
-              <IconButton
-                aria-label="delete"
-                color="error"
-                onClick={() => setDeleteInviteDialogOpen(true)}
+              <Tooltip
+                title={t('Remove this invite from the account.')}
+                placement={'top'}
+                arrow
+                data-testid="DeleteInviteButton"
               >
-                <DeleteIcon />
-              </IconButton>
+                <IconButton
+                  aria-label="delete"
+                  color="error"
+                  onClick={() => setDeleteInvite(invite)}
+                  size="small"
+                >
+                  <PersonRemove fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Typography>
-            <Confirmation
-              isOpen={deleteInviteDialogOpen}
-              title={t('Confirm')}
-              message={t(
-                'Are you sure you want to remove the invite for {{email}} from {{accountList}}?',
-                {
-                  email: invite?.recipientEmail,
-                  accountList: name,
-                },
-              )}
-              handleClose={() => setDeleteInviteDialogOpen(false)}
-              mutation={() => haneleInviteDelete(invite)}
-            />
           </BorderBottomBox>
         ))}
+      <Confirmation
+        isOpen={!!deleteInvite}
+        title={t('Confirm')}
+        message={
+          <Trans
+            t={t}
+            defaults="Are you sure you want to remove the invite for <strong>{{email}}</strong> from the account: <strong>{{accountName}}</strong>?"
+            values={{
+              email: deleteInvite?.recipientEmail,
+              accountName: name,
+            }}
+            shouldUnescape={true}
+          />
+        }
+        mutation={() => handleInviteDelete(deleteInvite)}
+        handleClose={() => setDeleteInvite(null)}
+      />
     </>
   );
 };

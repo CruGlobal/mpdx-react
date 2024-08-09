@@ -13,3 +13,22 @@ mutation AdminDeleteOrganizationCoach(
     success
   }
 }
+
+mutation DeleteUser($input: UserDeleteMutationInput!) {
+  deleteUser(input: $input) {
+    id
+    clientMutationId
+  }
+}
+
+mutation DeleteAccountList($input: AccountListResetMutationInput!) {
+  resetAccountList(input: $input) {
+    clientMutationId
+  }
+}
+
+mutation RemoveAccountListUser($input: AccountListUserDeleteMutationInput!) {
+  deleteAccountListUser(input: $input) {
+    id
+  }
+}

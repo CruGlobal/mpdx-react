@@ -6,6 +6,7 @@ import {
   InputAdornment,
   Skeleton,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -30,7 +31,7 @@ const HeaderAndDropdown = styled(Box)(() => ({
 const OrganizationsContacts = (): ReactElement => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const matches = useMediaQuery('(max-width:600px)');
+  const isNarrowScreen = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
   >();
@@ -47,6 +48,7 @@ const OrganizationsContacts = (): ReactElement => {
   return (
     <OrganizationsContextProvider
       selectedOrganizationId={selectedOrganization?.id ?? ''}
+      selectedOrganizationName={selectedOrganization?.name ?? ''}
       search={contactSearch}
       setSearch={setSearch}
       clearFilters={clearFilters}
@@ -66,32 +68,36 @@ const OrganizationsContacts = (): ReactElement => {
           <HeaderAndDropdown>
             <Box>
               {selectedOrganization && (
-                <TextField
-                  label={t('Search Contacts')}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  fullWidth
-                  multiline
-                  inputProps={{ 'aria-label': 'Search Contacts' }}
-                  style={{
-                    width: matches ? '150px' : '250px',
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PersonSearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+                <Tooltip
+                  title={t('Search by name, phone, email or partner number')}
+                  placement={'bottom'}
+                  arrow
+                >
+                  <TextField
+                    label={t('Search Contacts')}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    fullWidth
+                    inputProps={{ 'aria-label': 'Search Contacts' }}
+                    style={{
+                      width: isNarrowScreen ? '150px' : '250px',
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonSearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
               )}
             </Box>
             <Box>
               <Autocomplete
                 style={{
-                  width: matches ? '150px' : '250px',
+                  width: isNarrowScreen ? '150px' : '350px',
                 }}
-                autoSelect
                 autoHighlight
                 options={organizations?.map((org) => org?.id) || []}
                 getOptionLabel={(orgId) =>

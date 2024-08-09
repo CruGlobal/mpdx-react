@@ -82,9 +82,9 @@ type SearchOrganizationsContactsContact = {
     name: string;
     accountListUsers: {
       id: string;
-      firstName: string;
-      lastName: string;
-      emailAddresses: EmailAddress[];
+      userFirstName: string;
+      userLastName: string;
+      userEmailAddresses: EmailAddress[];
     }[];
   };
   addresses: {
