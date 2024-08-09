@@ -308,7 +308,7 @@ const Contact: React.FC<Props> = ({
                       >
                         <Grid item xs={12} md={6} lg={12}>
                           <Box className={classes.boxTop}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth size="small">
                               <InputLabel id="status-label">
                                 {t('Status')}
                               </InputLabel>
@@ -353,7 +353,7 @@ const Contact: React.FC<Props> = ({
                         </Grid>
                         <Grid item xs={12} md={6} lg={4}>
                           <Box className={classes.boxBottom}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth size="small">
                               <InputLabel id="currency-label">
                                 {t('Currency')}
                               </InputLabel>
@@ -395,7 +395,7 @@ const Contact: React.FC<Props> = ({
                         </Grid>
                         <Grid item xs={12} lg={4}>
                           <Box className={classes.boxBottom}>
-                            <FormControl fullWidth>
+                            <FormControl fullWidth size="small">
                               <Field
                                 id="standard-number"
                                 as={TextField}
@@ -442,7 +442,7 @@ const Contact: React.FC<Props> = ({
                             className={classes.boxBottom}
                             data-testid="BoxBottom"
                           >
-                            <FormControl fullWidth>
+                            <FormControl fullWidth size="small">
                               <InputLabel id="frequency-label">
                                 {t('Frequency')}
                               </InputLabel>
