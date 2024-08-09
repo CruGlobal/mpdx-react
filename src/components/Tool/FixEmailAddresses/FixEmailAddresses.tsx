@@ -278,6 +278,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           data?.people.nodes.forEach((person) => {
             cache.evict({ id: `Person:${person.id}` });
           });
+          cache.gc();
         },
         onCompleted: () => {
           enqueueSnackbar(t(`Successfully updated email addresses`), {
