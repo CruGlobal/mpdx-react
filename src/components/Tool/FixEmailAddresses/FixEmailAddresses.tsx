@@ -109,6 +109,7 @@ interface FixEmailAddressesProps {
   setContactFocus: SetContactFocus;
 }
 
+//TODO: Try to make bulk confirm logic more similar across tools, perhaps we can factor out a common function
 export const determineBulkDataToSend = (
   dataState: {
     [key: string]: PersonEmailAddresses;
