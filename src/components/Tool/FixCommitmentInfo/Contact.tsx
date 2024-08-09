@@ -44,7 +44,7 @@ import { frequencies } from './InputOptions/Frequencies';
 interface FormAttributes {
   status?: string;
   pledgeCurrency?: string;
-  pledgeAmount?: number;
+  pledgeAmount?: number | null;
   pledgeFrequency?: string;
 }
 
@@ -239,7 +239,7 @@ const Contact: React.FC<Props> = ({
         initialValues={{
           statusValue: statusValue,
           pledgeCurrency: amountCurrency,
-          pledgeAmount: amount,
+          pledgeAmount: amount || null,
           pledgeFrequency: frequencyValue,
         }}
         validationSchema={appealFormSchema}
@@ -266,7 +266,6 @@ const Contact: React.FC<Props> = ({
             pledgeAmount,
             pledgeFrequency,
           };
-
           return (
             <Form onSubmit={handleSubmit}>
               <Grid container className={classes.formWrapper}>

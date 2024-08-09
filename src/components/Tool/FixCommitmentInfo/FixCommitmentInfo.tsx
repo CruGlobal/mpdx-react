@@ -70,7 +70,7 @@ export interface ContactType {
   status?: string | undefined;
   name?: string | undefined;
   pledgeCurrency?: string | undefined;
-  pledgeAmount?: number | undefined;
+  pledgeAmount?: number | undefined | null;
   pledgeFrequency?: string | undefined;
   donations?: DonationsType[] | [];
 }
