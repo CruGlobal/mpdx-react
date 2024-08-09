@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import theme from 'src/theme';
 import Contact from './Contact';
 import {
@@ -37,12 +37,14 @@ describe('Fix Newsletter - Contact', () => {
         firstName: '',
         lastName: '',
         primaryEmailAddress: {
+          id: '',
           email: '',
         },
         optoutEnewsletter: false,
       } as ContactPrimaryPersonFragment;
 
       primaryAddress = {
+        id: '',
         street: '',
         city: '',
         state: '',
@@ -60,7 +62,9 @@ describe('Fix Newsletter - Contact', () => {
         />,
       );
 
-      expect(getByRole('combobox')).toHaveDisplayValue(['None']);
+      expect(
+        within(getByRole('combobox')).getByText('None'),
+      ).toBeInTheDocument();
     });
 
     it('should be Physical', () => {
@@ -73,11 +77,13 @@ describe('Fix Newsletter - Contact', () => {
         />,
       );
 
-      expect(getByRole('combobox')).toHaveDisplayValue(['Physical']);
+      expect(
+        within(getByRole('combobox')).getByText('Physical'),
+      ).toBeInTheDocument();
     });
 
     it('should be Email', () => {
-      primaryPerson.primaryEmailAddress = { email: 'a@b.com' };
+      primaryPerson.primaryEmailAddress = { id: '1', email: 'a@b.com' };
 
       const { getByRole } = render(
         <TestComponent
@@ -86,11 +92,13 @@ describe('Fix Newsletter - Contact', () => {
         />,
       );
 
-      expect(getByRole('combobox')).toHaveDisplayValue(['Email']);
+      expect(
+        within(getByRole('combobox')).getByText('Email'),
+      ).toBeInTheDocument();
     });
 
     it('should be None when opting out of emails', () => {
-      primaryPerson.primaryEmailAddress = { email: 'a@b.com' };
+      primaryPerson.primaryEmailAddress = { id: '1', email: 'a@b.com' };
       primaryPerson.optoutEnewsletter = true;
 
       const { getByRole } = render(
@@ -100,12 +108,14 @@ describe('Fix Newsletter - Contact', () => {
         />,
       );
 
-      expect(getByRole('combobox')).toHaveDisplayValue(['None']);
+      expect(
+        within(getByRole('combobox')).getByText('None'),
+      ).toBeInTheDocument();
     });
 
     it('should be Both', () => {
       primaryAddress.street = '100 Test St';
-      primaryPerson.primaryEmailAddress = { email: 'a@b.com' };
+      primaryPerson.primaryEmailAddress = { id: '1', email: 'a@b.com' };
 
       const { getByRole } = render(
         <TestComponent
@@ -114,12 +124,14 @@ describe('Fix Newsletter - Contact', () => {
         />,
       );
 
-      expect(getByRole('combobox')).toHaveDisplayValue(['Both']);
+      expect(
+        within(getByRole('combobox')).getByText('Both'),
+      ).toBeInTheDocument();
     });
 
     it('should be Physical when opting out of emails', () => {
       primaryAddress.street = '100 Test St';
-      primaryPerson.primaryEmailAddress = { email: 'a@b.com' };
+      primaryPerson.primaryEmailAddress = { id: '1', email: 'a@b.com' };
       primaryPerson.optoutEnewsletter = true;
 
       const { getByRole } = render(
@@ -129,7 +141,9 @@ describe('Fix Newsletter - Contact', () => {
         />,
       );
 
-      expect(getByRole('combobox')).toHaveDisplayValue(['Physical']);
+      expect(
+        within(getByRole('combobox')).getByText('Physical'),
+      ).toBeInTheDocument();
     });
   });
 });

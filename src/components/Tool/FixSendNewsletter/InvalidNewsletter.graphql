@@ -32,6 +32,7 @@ query InvalidNewsletter($accountListId: ID!) {
 }
 
 fragment ContactPrimaryAddress on Address {
+  id
   street
   city
   state
@@ -42,9 +43,11 @@ fragment ContactPrimaryAddress on Address {
 }
 
 fragment ContactPrimaryPerson on Person {
+  id
   firstName
   lastName
   primaryEmailAddress {
+    id
     email
   }
   optoutEnewsletter

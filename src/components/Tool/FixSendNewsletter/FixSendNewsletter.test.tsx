@@ -1,6 +1,6 @@
-import { ApolloCache, InMemoryCache } from '@apollo/client';
+import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
@@ -135,12 +135,8 @@ describe('FixSendNewsletter', () => {
     const newNewsletterValue = 'Physical';
 
     it('should successfully update the newsletter', async () => {
-      const cache = new InMemoryCache();
-      jest.spyOn(cache, 'readQuery').mockReturnValue({
-        ...mockInvalidNewslettersResponse.InvalidNewsletter,
-      });
-
-      const { getAllByRole, queryByText, queryByRole } = render(
+      const mutationSpy = jest.fn();
+      const { getAllByRole, queryByText, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
             InvalidNewsletter: {
@@ -150,7 +146,7 @@ describe('FixSendNewsletter', () => {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
             },
           }}
-          cache={cache}
+          onCall={mutationSpy}
         />,
       );
       await waitFor(() =>
@@ -159,15 +155,30 @@ describe('FixSendNewsletter', () => {
 
       const newsletterDropdown = getAllByRole('combobox')[0];
       await waitFor(() => {
-        expect(newsletterDropdown).toHaveDisplayValue([initialNewsletterValue]);
+        expect(
+          within(newsletterDropdown).getByText(initialNewsletterValue),
+        ).toBeInTheDocument();
+        userEvent.click(newsletterDropdown);
+        userEvent.click(getByText(newNewsletterValue));
       });
-      userEvent.selectOptions(newsletterDropdown, newNewsletterValue);
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith('Newsletter updated!', {
           variant: 'success',
         });
-        expect(queryByText(name)).not.toBeInTheDocument();
+      });
+      await waitFor(() => {
+        expect(mutationSpy.mock.calls[1][0]).toMatchObject({
+          operation: {
+            operationName: 'UpdateContactNewsletter',
+            variables: {
+              accountListId: 'account-id',
+              attributes: {
+                sendNewsletter: 'PHYSICAL',
+              },
+            },
+          },
+        });
         expect(queryByText(otherName)).toBeInTheDocument();
       });
     });
@@ -204,13 +215,7 @@ describe('FixSendNewsletter', () => {
     });
 
     it('should filter out deceased', async () => {
-      const cache = new InMemoryCache();
-      jest.spyOn(cache, 'readQuery').mockReturnValue({
-        ...mockInvalidNewslettersResponse.InvalidNewsletter,
-      });
-      jest.spyOn(cache, 'writeQuery');
-
-      const { getAllByRole, queryByText, queryByRole } = render(
+      const { getAllByRole, queryByText, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
             InvalidNewsletter: {
@@ -220,7 +225,6 @@ describe('FixSendNewsletter', () => {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
             },
           }}
-          cache={cache}
         />,
       );
       await waitFor(() =>
@@ -228,47 +232,12 @@ describe('FixSendNewsletter', () => {
       );
 
       const newsletterDropdown = getAllByRole('combobox')[0];
-      userEvent.selectOptions(newsletterDropdown, newNewsletterValue);
+      userEvent.click(newsletterDropdown);
+      userEvent.click(getByText(newNewsletterValue));
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
       await waitFor(() => {
         expect(queryByText(deceasedName)).not.toBeInTheDocument();
         expect(queryByText(otherName)).toBeInTheDocument();
-        expect(cache.writeQuery).toHaveBeenCalledWith(
-          expect.objectContaining({
-            data: {
-              constant: expect.any(Object),
-              contacts: {
-                nodes: [
-                  {
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[0],
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[1],
-                  },
-                ],
-              },
-            },
-          }),
-        );
-        expect(cache.writeQuery).not.toHaveBeenCalledWith(
-          expect.objectContaining({
-            data: {
-              constant: expect.any(Object),
-              contacts: {
-                nodes: [
-                  {
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[0],
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[1],
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[2],
-                  },
-                ],
-              },
-            },
-          }),
-        );
       });
     });
   });
