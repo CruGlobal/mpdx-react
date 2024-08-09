@@ -13,21 +13,25 @@ query InvalidNewsletter($accountListId: ID!) {
       hasNextPage
     }
     nodes {
-      id
-      name
-      status
-      avatar
-      source
-      primaryAddress {
-        ...ContactPrimaryAddress
-      }
-      primaryPerson {
-        ...ContactPrimaryPerson
-      }
+      ...InvalidNewsletterContact
     }
   }
   constant {
     ...Status
+  }
+}
+
+fragment InvalidNewsletterContact on Contact {
+  id
+  name
+  status
+  avatar
+  source
+  primaryAddress {
+    ...ContactPrimaryAddress
+  }
+  primaryPerson {
+    ...ContactPrimaryPerson
   }
 }
 

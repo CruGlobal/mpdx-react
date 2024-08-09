@@ -25,10 +25,7 @@ import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import {
-  ContactPrimaryAddressFragment,
-  ContactPrimaryPersonFragment,
-} from './InvalidNewsletter.generated';
+import { InvalidNewsletterContactFragment } from './InvalidNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -73,13 +70,7 @@ const useStyles = makeStyles()(() => ({
 }));
 
 interface Props {
-  id: string;
-  name: string;
-  primaryPerson?: ContactPrimaryPersonFragment;
-  status?: string;
-  avatar?: string;
-  primaryAddress?: ContactPrimaryAddressFragment;
-  source?: string;
+  contact: InvalidNewsletterContactFragment;
   handleSingleConfirm: (
     id: string,
     name: string,
@@ -89,12 +80,7 @@ interface Props {
 }
 
 const Contact = ({
-  id,
-  name,
-  primaryPerson,
-  status,
-  avatar,
-  primaryAddress,
+  contact,
   handleSingleConfirm,
   setContactFocus,
 }: Props): ReactElement => {
@@ -113,12 +99,12 @@ const Contact = ({
   const matches = useMediaQuery('(min-width:600px)');
   useEffect(() => {
     let newNewsletterValue = SendNewsletterEnum.None;
-    if (primaryAddress?.street) {
+    if (contact?.primaryAddress?.street) {
       newNewsletterValue = SendNewsletterEnum.Physical;
     }
-    if (primaryPerson) {
-      if (!primaryPerson.optoutEnewsletter) {
-        if (primaryPerson.primaryEmailAddress?.email?.length) {
+    if (contact?.primaryPerson) {
+      if (!contact?.primaryPerson.optoutEnewsletter) {
+        if (contact?.primaryPerson.primaryEmailAddress?.email?.length) {
           if (newNewsletterValue === SendNewsletterEnum.Physical) {
             newNewsletterValue = SendNewsletterEnum.Both;
           } else {
@@ -128,14 +114,14 @@ const Contact = ({
       }
     }
     setNewsletter(newNewsletterValue);
-  }, [primaryAddress]);
+  }, [contact?.primaryAddress]);
 
   const handleChange = (event: SelectChangeEvent<string>): void => {
     setNewsletter(event.target.value as SendNewsletterEnum);
   };
 
   const handleContactNameClick = () => {
-    setContactFocus(id);
+    setContactFocus(contact?.id);
   };
 
   return (
@@ -143,7 +129,7 @@ const Contact = ({
       <CardHeader
         avatar={
           <Avatar
-            src={avatar}
+            src={contact?.avatar}
             style={{
               width: theme.spacing(4),
               height: theme.spacing(4),
@@ -155,7 +141,7 @@ const Contact = ({
             variant="contained"
             onClick={() => {
               setUpdatingSingle(true);
-              handleSingleConfirm(id, name, newsletter);
+              handleSingleConfirm(contact?.id, contact?.name, newsletter);
             }}
             sx={{ marginTop: '9px' }}
             disabled={updatingSingle}
@@ -175,7 +161,7 @@ const Contact = ({
         title={
           <Link underline="hover" onClick={handleContactNameClick}>
             <Typography className={classes.inline} variant="subtitle1">
-              {name}
+              {contact?.name}
             </Typography>
           </Link>
         }
@@ -185,7 +171,7 @@ const Contact = ({
         className={classes.minimalPadding}
         sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
       >
-        {primaryPerson && (
+        {contact?.primaryPerson && (
           <Grid container alignItems="center">
             <Grid item xs={6} sm={5} md={4}>
               <Box
@@ -193,9 +179,9 @@ const Contact = ({
                 alignItems="center"
                 style={{ height: '100%' }}
               >
-                {primaryPerson.firstName && matches && (
+                {contact?.primaryPerson.firstName && matches && (
                   <Avatar
-                    src={avatar}
+                    src={contact?.avatar}
                     style={{
                       width: theme.spacing(4),
                       height: theme.spacing(4),
@@ -204,19 +190,20 @@ const Contact = ({
                 )}
                 <Box display="flex" flexDirection="column" ml={2}>
                   <Typography variant="subtitle1">
-                    {`${primaryPerson.firstName} ${primaryPerson.lastName}`}
+                    {`${contact?.primaryPerson.firstName} ${contact?.primaryPerson.lastName}`}
                   </Typography>
                   <Link
                     underline="hover"
                     href={
-                      `mailto:${primaryPerson.primaryEmailAddress?.email}` || ''
+                      `mailto:${contact?.primaryPerson.primaryEmailAddress?.email}` ||
+                      ''
                     }
                   >
                     <Typography variant="body2">
-                      {primaryPerson.primaryEmailAddress?.email || ''}
+                      {contact?.primaryPerson.primaryEmailAddress?.email || ''}
                     </Typography>
                   </Link>
-                  {primaryPerson.optoutEnewsletter && (
+                  {contact?.primaryPerson.optoutEnewsletter && (
                     <Typography variant="body2">
                       {t('opted out of newsletter')}
                     </Typography>
@@ -232,25 +219,27 @@ const Contact = ({
                 p={2}
               >
                 <Typography variant="body2">
-                  {primaryAddress?.street || ''}
+                  {contact?.primaryAddress?.street || ''}
                 </Typography>
                 <Typography variant="body2">
-                  {`${primaryAddress?.city} ${
-                    primaryAddress?.state ? primaryAddress.state : ''
-                  }. ${primaryAddress?.postalCode}`}
+                  {`${contact?.primaryAddress?.city} ${
+                    contact?.primaryAddress?.state
+                      ? contact?.primaryAddress.state
+                      : ''
+                  }. ${contact?.primaryAddress?.postalCode}`}
                 </Typography>
                 <Typography variant="body2">
-                  {primaryAddress?.country || ''}
+                  {contact?.primaryAddress?.country || ''}
                 </Typography>
-                {primaryAddress?.source && (
+                {contact?.primaryAddress?.source && (
                   <Typography variant="body2">
                     <Trans
                       defaults="<bold>Source:</bold> {{where}} ({{date}})"
                       shouldUnescape
                       values={{
-                        where: primaryAddress?.source,
+                        where: contact?.primaryAddress?.source,
                         date: dateFormatShort(
-                          DateTime.fromISO(primaryAddress?.createdAt),
+                          DateTime.fromISO(contact?.primaryAddress?.createdAt),
                           locale,
                         ),
                       }}

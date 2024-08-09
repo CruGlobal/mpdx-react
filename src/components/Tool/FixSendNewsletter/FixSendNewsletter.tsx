@@ -110,12 +110,7 @@ const FixSendNewsletter: React.FC<Props> = ({
   };
 
   return (
-    <Box
-      className={classes.outer}
-      display="flex"
-      flexDirection="column"
-      data-testid="Home"
-    >
+    <Box className={classes.outer} data-testid="Home">
       <Grid container className={classes.container}>
         <Grid item xs={12}>
           <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
@@ -159,8 +154,9 @@ const FixSendNewsletter: React.FC<Props> = ({
                   />
                 </Typography>
               </Box>
-              {(loading || updating) && <LoadingSpinner firstLoad={true} />}
+              {updating && <LoadingSpinner firstLoad={true} />}
               <Box>
+                {/* TODO */}
                 <Button
                   variant="contained"
                   onClick={() => null}
@@ -180,41 +176,8 @@ const FixSendNewsletter: React.FC<Props> = ({
             </ButtonHeaderBox>
             {contactsToFix?.map((contact) => (
               <Contact
-                id={contact.id}
-                name={contact.name}
-                // need to fix this after changes to fix commitment info get merged
-                avatar={contact.avatar}
-                status={
-                  data.constant.status?.find(
-                    (status) => contact.status === status.id,
-                  )?.value || ''
-                }
-                primaryPerson={
-                  contact.primaryPerson || {
-                    id: '',
-                    firstName: '',
-                    lastName: '',
-                    primaryEmailAddress: {
-                      email: '',
-                      id: '',
-                    },
-                    optoutEnewsletter: false,
-                    deceased: false,
-                  }
-                }
+                contact={contact}
                 key={contact.id}
-                primaryAddress={
-                  contact.primaryAddress || {
-                    id: '',
-                    street: '',
-                    city: '',
-                    state: '',
-                    country: '',
-                    postalCode: '',
-                    source: '',
-                    createdAt: '',
-                  }
-                }
                 handleSingleConfirm={handleSingleConfirm}
                 setContactFocus={setContactFocus}
               />

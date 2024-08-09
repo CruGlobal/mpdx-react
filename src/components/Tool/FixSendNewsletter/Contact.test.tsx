@@ -5,6 +5,7 @@ import Contact from './Contact';
 import {
   ContactPrimaryAddressFragment,
   ContactPrimaryPersonFragment,
+  InvalidNewsletterContactFragment,
 } from './InvalidNewsletter.generated';
 
 const TestComponent = ({
@@ -13,19 +14,25 @@ const TestComponent = ({
 }: {
   primaryPerson: ContactPrimaryPersonFragment;
   primaryAddress: ContactPrimaryAddressFragment;
-}) => (
-  <ThemeProvider theme={theme}>
-    <Contact
-      id=""
-      name=""
-      primaryPerson={primaryPerson}
-      status=""
-      primaryAddress={primaryAddress}
-      handleSingleConfirm={jest.fn()}
-      setContactFocus={jest.fn()}
-    />
-  </ThemeProvider>
-);
+}) => {
+  const contact: InvalidNewsletterContactFragment = {
+    id: '',
+    name: '',
+    avatar: '',
+    primaryPerson: primaryPerson,
+    status: null,
+    primaryAddress: primaryAddress,
+  };
+  return (
+    <ThemeProvider theme={theme}>
+      <Contact
+        contact={contact}
+        handleSingleConfirm={jest.fn()}
+        setContactFocus={jest.fn()}
+      />
+    </ThemeProvider>
+  );
+};
 
 describe('Fix Newsletter - Contact', () => {
   describe('inital value for dropdown', () => {
