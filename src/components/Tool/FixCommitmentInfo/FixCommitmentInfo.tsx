@@ -1,5 +1,4 @@
-import React from 'react';
-import { useApolloClient } from '@apollo/client';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -13,23 +12,16 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import {
-  MultiselectFilter,
-  PledgeFrequencyEnum,
-  StatusEnum,
-} from 'src/graphql/types.generated';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { MultiselectFilter, StatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
-import {
-  GetInvalidStatusesDocument,
-  GetInvalidStatusesQuery,
-  useGetInvalidStatusesQuery,
-} from './GetInvalidStatuses.generated';
+import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { frequencies } from './InputOptions/Frequencies';
-import { useUpdateInvalidStatusMutation } from './UpdateInvalidStatus.generated';
+import { useUpdateStatusMutation } from './UpdateStatus.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -65,9 +57,49 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
+export interface DonationsType {
+  amount: {
+    amount: number;
+    currency: string;
+    conversionDate: string;
+  };
+}
+
+export interface ContactType {
+  id?: string | undefined;
+  status?: string | undefined;
+  name?: string | undefined;
+  pledgeCurrency?: string | undefined;
+  pledgeAmount?: number | undefined | null;
+  pledgeFrequency?: string | undefined;
+  donations?: DonationsType[] | [];
+}
+
+export interface ModalStateType {
+  open: boolean;
+  contact: ContactType;
+  message: string;
+  title: string;
+  updateType: UpdateTypeEnum | null;
+}
+
+const defaultModalState = {
+  open: false,
+  contact: {},
+  message: '',
+  title: '',
+  updateType: null,
+};
+
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
+}
+
+export enum UpdateTypeEnum {
+  Change = 'CHANGE',
+  DontChange = 'DONT_CHANGE',
+  Hide = 'HIDE',
 }
 
 const FixCommitmentInfo: React.FC<Props> = ({
@@ -75,13 +107,15 @@ const FixCommitmentInfo: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
+  const [modalState, setModalState] =
+    useState<ModalStateType>(defaultModalState);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const client = useApolloClient();
-  const { data, loading } = useGetInvalidStatusesQuery({
+  const { data } = useInvalidStatusesQuery({
     variables: { accountListId },
   });
+
   const { data: contactFilterGroups, loading: loadingStatuses } =
     useContactFiltersQuery({
       variables: {
@@ -91,96 +125,118 @@ const FixCommitmentInfo: React.FC<Props> = ({
         doNotBatch: true,
       },
     });
+
   const [updateInvalidStatus, { loading: updating }] =
-    useUpdateInvalidStatusMutation();
+    useUpdateStatusMutation();
 
-  const contactStatuses = contactFilterGroups?.accountList?.contactFilterGroups
-    ? (
-        contactFilterGroups.accountList.contactFilterGroups
-          .find((group) => group?.filters[0]?.filterKey === 'status')
-          ?.filters.find(
-            (filter: { filterKey: string }) => filter.filterKey === 'status',
-          ) as MultiselectFilter
-      ).options?.filter(
-        (status) =>
-          status.value !== 'NULL' &&
-          status.value !== 'HIDDEN' &&
-          status.value !== 'ACTIVE',
-      )
-    : [{ name: '', value: '' }];
-  //TODO: Make currency field a select element
+  const contactStatuses = useMemo(() => {
+    return contactFilterGroups?.accountList?.contactFilterGroups
+      ? (
+          contactFilterGroups.accountList.contactFilterGroups
+            .find((group) => group?.filters[0]?.filterKey === 'status')
+            ?.filters.find(
+              (filter: { filterKey: string }) => filter.filterKey === 'status',
+            ) as MultiselectFilter
+        ).options?.filter(
+          (status) =>
+            status.value !== 'NULL' &&
+            status.value !== 'HIDDEN' &&
+            status.value !== 'ACTIVE',
+        )
+      : [{ name: '', value: '' }];
+  }, [contactFilterGroups]);
 
-  const updateContact = async (
-    id: string,
-    change: boolean,
-    status?: string,
-    pledgeCurrency?: string,
-    pledgeAmount?: number,
-    pledgeFrequency?: string,
-  ): Promise<void> => {
-    const attributes = change
-      ? {
-          id,
-          status: status as StatusEnum,
-          pledgeAmount,
-          pledgeCurrency,
-          pledgeFrequency: pledgeFrequency as PledgeFrequencyEnum,
+  const updateContact = async (): Promise<void> => {
+    let attributes;
+
+    switch (modalState.updateType) {
+      case 'CHANGE':
+        attributes = {
+          id: modalState.contact.id,
+          status: modalState.contact.status,
+          pledgeAmount: modalState.contact.pledgeAmount,
+          pledgeCurrency: modalState.contact.pledgeCurrency,
+          pledgeFrequency: modalState.contact.pledgeFrequency,
           statusValid: true,
-        }
-      : { id, statusValid: true };
+        };
+        break;
+      case 'DONT_CHANGE':
+        attributes = {
+          id: modalState.contact.id,
+          statusValid: true,
+        };
+        break;
+      case 'HIDE':
+        attributes = {
+          id: modalState.contact.id,
+          status: 'NEVER_ASK' as StatusEnum,
+        };
+        break;
+    }
+
     await updateInvalidStatus({
       variables: {
         accountListId,
         attributes,
       },
+      update: (cache) => {
+        cache.evict({ id: `Contact:${modalState.contact.id}` });
+      },
+      onError() {
+        enqueueSnackbar(
+          t(`Error updating ${modalState.contact.name}'s commitment info`),
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
+      },
+      onCompleted() {
+        enqueueSnackbar(
+          t(`${modalState.contact.name}'s commitment info updated!`),
+          {
+            variant: 'success',
+            autoHideDuration: 7000,
+          },
+        );
+      },
     });
-    enqueueSnackbar(t('Contact commitment info updated!'), {
-      variant: 'success',
-    });
-    hideContact(id);
   };
 
-  const hideContact = (hideId: string): void => {
-    const query = {
-      query: GetInvalidStatusesDocument,
-      variables: {
-        accountListId,
-      },
-    };
-
-    const dataFromCache = client.readQuery<GetInvalidStatusesQuery>(query);
-
-    if (dataFromCache) {
-      const data = {
-        ...dataFromCache,
-        contacts: {
-          ...dataFromCache.contacts,
-          nodes: dataFromCache.contacts.nodes.filter(
-            (contact) => contact.id !== hideId,
-          ),
-        },
-      };
-
-      client.writeQuery({ ...query, data });
-    }
+  const handleShowModal = (
+    contact: ContactType,
+    message: string,
+    title: string,
+    updateType: UpdateTypeEnum,
+  ) => {
+    setModalState({
+      open: true,
+      contact,
+      message,
+      title,
+      updateType,
+    });
   };
 
   return (
     <Box className={classes.outer} data-testid="Home">
-      {!loading && !updating && !loadingStatuses && data ? (
-        <Grid container className={classes.container}>
+      {!updating && !loadingStatuses && data ? (
+        <Grid container className={classes.container} data-testid="Container">
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
-            <Divider className={classes.divider} />
+            <Divider className={classes.divider} data-testid="Divider" />
           </Grid>
           {data.contacts?.nodes.length > 0 ? (
             <>
               <Grid item xs={12}>
-                <Box className={classes.descriptionBox}>
+                <Box
+                  className={classes.descriptionBox}
+                  data-testid="Description"
+                >
                   <Typography>
                     <strong>
                       {t('You have {{amount}} partner statuses to confirm.', {
-                        amount: data?.contacts.nodes.length,
+                        amount: data?.contacts.totalCount,
                       })}
                     </strong>
                   </Typography>
@@ -196,14 +252,14 @@ const FixCommitmentInfo: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-
               <Grid item xs={12}>
                 <Box>
                   {data.contacts.nodes.map((contact) => (
                     <Contact
                       id={contact.id}
                       name={contact.name}
-                      key={contact.name}
+                      key={contact.id}
+                      donations={contact.donations?.nodes}
                       statusTitle={
                         contact.status
                           ? contactPartnershipStatus[contact.status]
@@ -218,24 +274,12 @@ const FixCommitmentInfo: React.FC<Props> = ({
                           : ''
                       }
                       frequencyValue={contact.pledgeFrequency || ''}
-                      hideFunction={hideContact}
-                      updateFunction={updateContact}
+                      showModal={handleShowModal}
                       statuses={contactStatuses || [{ name: '', value: '' }]}
                       setContactFocus={setContactFocus}
+                      avatar={contact?.avatar}
                     />
                   ))}
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{ value: data.contacts.nodes.length }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
                 </Box>
               </Grid>
             </>
@@ -245,6 +289,24 @@ const FixCommitmentInfo: React.FC<Props> = ({
         </Grid>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+      )}
+      {modalState.open && (
+        <Confirmation
+          data-testid="HideModal"
+          isOpen={true}
+          title={modalState.title}
+          message={
+            <Trans
+              defaults="{{message}}"
+              tOptions={{ interpolation: { escapeValue: false } }}
+              shouldUnescape
+              values={{ message: modalState.message }}
+              components={{ bold: <strong /> }}
+            />
+          }
+          handleClose={() => setModalState(defaultModalState)}
+          mutation={updateContact}
+        />
       )}
     </Box>
   );
