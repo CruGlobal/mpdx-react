@@ -177,13 +177,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
               emailAddresses: person.emailAddresses.nodes.map(
                 (emailAddress) => {
                   existingSources.add(emailAddress.source);
-                  return {
-                    id: emailAddress.id,
-                    primary: emailAddress.primary,
-                    updatedAt: emailAddress.updatedAt,
-                    source: emailAddress.source,
-                    email: emailAddress.email,
-                  };
+                  return { ...emailAddress };
                 },
               ),
             },
