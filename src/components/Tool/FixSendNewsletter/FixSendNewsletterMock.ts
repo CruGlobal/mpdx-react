@@ -71,3 +71,18 @@ export const mockUploadNewsletterChange = {
     },
   },
 };
+
+export const mockMassActionsUpdateContactsData = {
+  MassActionsUpdateContacts: {
+    updateContacts: [
+      {
+        id: 'contactId',
+        sendNewsletter: SendNewsletterEnum.Physical,
+      },
+      {
+        id: 'contactId2',
+        sendNewsletter: SendNewsletterEnum.Both,
+      },
+    ],
+  },
+};

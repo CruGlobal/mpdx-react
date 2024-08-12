@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
@@ -13,6 +13,8 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -61,6 +63,11 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+export interface ContactUpdateData {
+  id: string;
+  sendNewsletter: SendNewsletterEnum;
+}
+
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
@@ -86,6 +93,9 @@ const FixSendNewsletter: React.FC<Props> = ({
   }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
+  const [contactUpdates, setContactUpdates] = useState<ContactUpdateData[]>([]);
+  const [updateContacts] = useMassActionsUpdateContactsMutation();
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   const handleSingleConfirm = async (
     id: string,
@@ -142,6 +152,36 @@ const FixSendNewsletter: React.FC<Props> = ({
     });
   };
 
+  const handleBulkConfirm = async () => {
+    if (!data?.contacts.nodes.length) {
+      return;
+    }
+    await updateContacts({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: contactUpdates.map((contact) => ({
+          id: contact.id,
+          sendNewsletter: contact.sendNewsletter,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: InvalidNewsletterDocument,
+          variables: { accountListId },
+        },
+      ],
+      onError: () => {
+        enqueueSnackbar(t(`Error updating contacts`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+    enqueueSnackbar(t('Newsletter statuses updated successfully'), {
+      variant: 'success',
+    });
+  };
+
   return (
     <Box className={classes.outer} data-testid="Home">
       {!loading && !updating && data ? (
@@ -169,14 +209,18 @@ const FixSendNewsletter: React.FC<Props> = ({
                       'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
                     )}
                   </Typography>
-                  <Button variant="contained" className={classes.buttonBlue}>
+                  <Button
+                    variant="contained"
+                    className={classes.buttonBlue}
+                    onClick={() => setShowBulkConfirmModal(true)}
+                  >
                     <Icon
                       path={mdiCheckboxMarkedCircle}
                       size={0.8}
                       className={classes.buttonIcon}
                     />
                     <Trans
-                      defaults="Cofirm {{value}}"
+                      defaults="Confirm {{value}}"
                       values={{
                         value: numberOfContacts,
                       }}
@@ -219,6 +263,8 @@ const FixSendNewsletter: React.FC<Props> = ({
                             createdAt: '',
                           }
                         }
+                        contactUpdates={contactUpdates}
+                        setContactUpdates={setContactUpdates}
                         handleSingleConfirm={handleSingleConfirm}
                         setContactFocus={setContactFocus}
                       />
@@ -247,6 +293,15 @@ const FixSendNewsletter: React.FC<Props> = ({
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(
+          'You are updating all contacts visible on this page, setting it to the visible newsletter selection. Are you sure you want to do this?',
+        )}
+      />
     </Box>
   );
 };
