@@ -10,10 +10,16 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   GetInvalidEmailAddressesQuery,
   UpdateEmailAddressesMutation,
+  UpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
-import { FixEmailAddresses } from './FixEmailAddresses';
+import {
+  FixEmailAddresses,
+  PersonEmailAddresses,
+  determineBulkDataToSend,
+} from './FixEmailAddresses';
 import {
   contactId,
   contactOneEmailAddressNodes,
@@ -41,6 +47,7 @@ jest.mock('notistack', () => ({
     };
   },
 }));
+jest.mock('src/hooks/useGetAppSettings');
 
 const defaultGraphQLMock = {
   GetInvalidEmailAddresses: {
@@ -61,6 +68,7 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
             GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
             EmailAddresses: EmailAddressesMutation;
             UpdateEmailAddresses: UpdateEmailAddressesMutation;
+            UpdatePeople: UpdatePeopleMutation;
           }>
             mocks={mocks}
             onCall={mutationSpy}
@@ -77,6 +85,11 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
 );
 
 describe('FixEmailAddresses-Home', () => {
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
   it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(<Components />);
 
@@ -95,6 +108,15 @@ describe('FixEmailAddresses-Home', () => {
     expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
     expect(queryByTestId('no-data')).not.toBeInTheDocument();
+  });
+
+  it('should show the app name as a source value', async () => {
+    const { getByRole, getByText } = render(<Components />);
+    await waitFor(() => {
+      expect(getByText('Fix Email Addresses')).toBeInTheDocument();
+      expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
+      expect(getByRole('combobox')).toHaveTextContent('MPDX');
+    });
   });
 
   describe('handleChangePrimary()', () => {
@@ -380,6 +402,235 @@ describe('FixEmailAddresses-Home', () => {
           { variant: 'error', autoHideDuration: 7000 },
         );
       });
+    });
+  });
+
+  describe('handleBulkConfirm', () => {
+    it('should save all the email changes for all people', async () => {
+      const noPeopleMessage = 'No people with email addresses need attention';
+
+      const { getByRole, getByText, getByTestId, queryByTestId } = render(
+        <Components />,
+      );
+
+      await waitFor(() => {
+        expect(queryByTestId('loading')).not.toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      });
+      userEvent.click(getByTestId('starOutlineIcon-testid-1'));
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully updated email addresses`,
+          { variant: 'success' },
+        );
+        expect(getByText(noPeopleMessage)).toBeVisible();
+      });
+    });
+
+    it('should handle errors', async () => {
+      const personName1 = 'Test Contact';
+      const personName2 = 'Simba Lion';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+            UpdatePeople: () => {
+              throw new Error('Server error');
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating email addresses`,
+          { variant: 'error', autoHideDuration: 7000 },
+        );
+        expect(getByText(personName1)).toBeVisible();
+        expect(getByText(personName2)).toBeVisible();
+      });
+    });
+
+    it('should cancel the bulk confirmation', async () => {
+      const personName1 = 'Test Contact';
+      const personName2 = 'Simba Lion';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'No' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).not.toHaveBeenCalled();
+        expect(getByText(personName1)).toBeVisible();
+        expect(getByText(personName2)).toBeVisible();
+      });
+    });
+
+    it('should not update if there is no email for the default source', async () => {
+      const noPrimaryEmailMessage =
+        'No MPDX primary email address exists to update';
+
+      const { getByRole, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: [
+                  {
+                    ...mockInvalidEmailAddressesResponse[0],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          source: 'DataServer',
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          source: 'DonorHub',
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    ...mockInvalidEmailAddressesResponse[1],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          source: 'DataServer',
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          source: 'DonorHub',
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(queryByTestId('loading')).not.toBeInTheDocument();
+      });
+      userEvent.click(getByRole('combobox'));
+      userEvent.click(getByRole('option', { name: 'MPDX' }));
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(noPrimaryEmailMessage, {
+          variant: 'warning',
+          autoHideDuration: 7000,
+        });
+        expect(bulkConfirmButton).toBeVisible();
+      });
+    });
+  });
+
+  describe('determineBulkDataToSend', () => {
+    it('should set the first email of the given source to primary', () => {
+      const dataState = {
+        testid: {
+          emailAddresses: [
+            {
+              ...contactOneEmailAddressNodes[0],
+              primary: false,
+            },
+            {
+              ...contactOneEmailAddressNodes[1],
+            },
+            {
+              ...contactOneEmailAddressNodes[2],
+              primary: true,
+            },
+          ],
+        },
+      } as { [key: string]: PersonEmailAddresses };
+      const defaultSource = 'MPDX';
+
+      const dataToSend = determineBulkDataToSend(
+        dataState,
+        defaultSource,
+        'MPDX',
+      );
+
+      const emails = dataToSend[0].emailAddresses ?? [];
+      expect(emails[0].primary).toEqual(true);
+      expect(emails[2].primary).toEqual(false);
+    });
+
+    it('should be empty if there is no email of the given source', () => {
+      const dataState = {
+        testid: {
+          emailAddresses: [
+            {
+              ...contactOneEmailAddressNodes[0],
+            },
+            {
+              ...contactOneEmailAddressNodes[1],
+            },
+            {
+              ...contactOneEmailAddressNodes[2],
+            },
+          ],
+        },
+      } as { [key: string]: PersonEmailAddresses };
+      const defaultSource = 'DonorHub';
+
+      const dataToSend = determineBulkDataToSend(
+        dataState,
+        defaultSource,
+        'MPDX',
+      );
+      expect(dataToSend.length).toEqual(0);
     });
   });
 });

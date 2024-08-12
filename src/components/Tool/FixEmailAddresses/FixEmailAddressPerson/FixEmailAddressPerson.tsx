@@ -20,6 +20,7 @@ import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -138,6 +139,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleSingleConfirm,
   setContactFocus,
 }) => {
+  const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
@@ -327,10 +329,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                 event: React.ChangeEvent<HTMLInputElement>,
                               ) => handleChange(id, index, event)}
                               value={email.email}
-                              disabled={email.source !== 'MPDX'}
+                              disabled={email.source !== appName}
                             />
 
-                            {email.source === 'MPDX' ? (
+                            {email.source === appName ? (
                               <Box
                                 data-testid={`delete-${id}-${index}`}
                                 onClick={() =>
@@ -360,7 +362,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                               <strong>{t('Source')}: </strong>
                             </Typography>
                           </Hidden>
-                          <Typography display="inline">MPDX</Typography>
+                          <Typography display="inline">{appName}</Typography>
                         </Box>
                       </Box>
                     </RowWrapper>
