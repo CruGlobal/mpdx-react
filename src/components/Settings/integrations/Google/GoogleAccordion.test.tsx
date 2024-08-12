@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -89,7 +89,7 @@ describe('GoogleAccordion', () => {
   describe('Not Connected', () => {
     it('should render Google Overview', async () => {
       const mutationSpy = jest.fn();
-      const { getByText } = render(
+      const { getByText, getByTestId, queryByText } = render(
         <Components>
           <GqlMockedProvider<{
             GoogleAccount: GoogleAccountsQuery;
@@ -113,8 +113,16 @@ describe('GoogleAccordion', () => {
         expect(getByText(/google integration overview/i)).toBeInTheDocument();
       });
       userEvent.click(getByText(/add account/i));
+      expect(getByText('Add Google Account')).toBeInTheDocument();
 
-      expect(getByText(/add account/i)).toHaveAttribute(
+      userEvent.click(getByTestId('CloseIcon'));
+      await waitFor(() =>
+        expect(queryByText(/add google account/i)).not.toBeInTheDocument(),
+      );
+
+      userEvent.click(getByText(/add account/i));
+
+      expect(getByText(/continue/i)).toHaveAttribute(
         'href',
         `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
       );
@@ -186,7 +194,7 @@ describe('GoogleAccordion', () => {
     it('shows account with expired token', async () => {
       const mutationSpy = jest.fn();
       googleAccount.tokenExpired = true;
-      const { getByText, getAllByText } = render(
+      const { getByText } = render(
         <Components>
           <GqlMockedProvider<{
             GoogleAccount: GoogleAccountsQuery;
@@ -212,7 +220,9 @@ describe('GoogleAccordion', () => {
 
       await waitFor(() => {
         expect(getByText(/click "refresh google account/i)).toBeInTheDocument();
-        expect(getAllByText(/refresh google account/i)[1]).toHaveAttribute(
+        userEvent.click(getByText('Refresh Google Account'));
+
+        expect(getByText(/continue/i)).toHaveAttribute(
           'href',
           `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
         );
