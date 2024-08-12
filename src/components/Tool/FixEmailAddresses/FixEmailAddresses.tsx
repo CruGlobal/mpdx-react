@@ -115,12 +115,15 @@ export const determineBulkDataToSend = (
     [key: string]: PersonEmailAddresses;
   },
   defaultSource: string,
+  appName: string,
 ): PersonUpdateInput[] => {
   const dataToSend = [] as PersonUpdateInput[];
 
   Object.entries(dataState).forEach((value) => {
     const primaryEmailAddress = value[1].emailAddresses.find(
-      (email) => email.source === defaultSource,
+      (email) =>
+        email.source === defaultSource ||
+        (defaultSource === appName && email.source === 'MPDX'),
     );
     if (primaryEmailAddress) {
       dataToSend.push({
@@ -268,7 +271,11 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   };
 
   const handleBulkConfirm = async () => {
-    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
+    const dataToSend = determineBulkDataToSend(
+      dataState,
+      defaultSource ?? '',
+      appName,
+    );
 
     if (dataToSend.length) {
       await updatePeople({
