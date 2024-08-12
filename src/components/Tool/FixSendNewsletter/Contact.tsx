@@ -24,6 +24,8 @@ import { SmallLoadingSpinner } from 'src/components/Settings/Organization/Loadin
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import theme from '../../../theme';
 import { InvalidNewsletterContactFragment } from './InvalidNewsletter.generated';
 
@@ -90,21 +92,15 @@ const Contact = ({
   const { classes } = useStyles();
   const locale = useLocale();
 
-  const newsletterOptions = [
-    { value: SendNewsletterEnum.Physical, name: t('Physical') },
-    { value: SendNewsletterEnum.Email, name: t('Email') },
-    { value: SendNewsletterEnum.Both, name: t('Both') },
-    { value: SendNewsletterEnum.None, name: t('None') },
-  ];
   const matches = useMediaQuery('(min-width:600px)');
   useEffect(() => {
     let newNewsletterValue = SendNewsletterEnum.None;
-    if (contact?.primaryAddress?.street) {
+    if (contact.primaryAddress?.street) {
       newNewsletterValue = SendNewsletterEnum.Physical;
     }
-    if (contact?.primaryPerson) {
-      if (!contact?.primaryPerson.optoutEnewsletter) {
-        if (contact?.primaryPerson.primaryEmailAddress?.email?.length) {
+    if (contact.primaryPerson) {
+      if (!contact.primaryPerson.optoutEnewsletter) {
+        if (contact.primaryPerson.primaryEmailAddress?.email?.length) {
           if (newNewsletterValue === SendNewsletterEnum.Physical) {
             newNewsletterValue = SendNewsletterEnum.Both;
           } else {
@@ -165,13 +161,17 @@ const Contact = ({
             </Typography>
           </Link>
         }
-        subheader={<Typography variant="body2">{status}</Typography>}
+        subheader={
+          <Typography variant="body2">
+            {getLocalizedContactStatus(t, contact.status)}
+          </Typography>
+        }
       ></CardHeader>
       <CardContent
         className={classes.minimalPadding}
         sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
       >
-        {contact?.primaryPerson && (
+        {contact.primaryPerson && (
           <Grid container alignItems="center">
             <Grid item xs={6} sm={5} md={4}>
               <Box
@@ -179,7 +179,7 @@ const Contact = ({
                 alignItems="center"
                 style={{ height: '100%' }}
               >
-                {contact?.primaryPerson.firstName && matches && (
+                {contact.primaryPerson.firstName && matches && (
                   <Avatar
                     src={contact?.avatar}
                     style={{
@@ -190,20 +190,17 @@ const Contact = ({
                 )}
                 <Box display="flex" flexDirection="column" ml={2}>
                   <Typography variant="subtitle1">
-                    {`${contact?.primaryPerson.firstName} ${contact?.primaryPerson.lastName}`}
+                    {`${contact.primaryPerson.firstName} ${contact.primaryPerson.lastName}`}
                   </Typography>
                   <Link
                     underline="hover"
-                    href={
-                      `mailto:${contact?.primaryPerson.primaryEmailAddress?.email}` ||
-                      ''
-                    }
+                    href={`mailto:${contact.primaryPerson.primaryEmailAddress?.email}`}
                   >
                     <Typography variant="body2">
-                      {contact?.primaryPerson.primaryEmailAddress?.email || ''}
+                      {contact.primaryPerson.primaryEmailAddress?.email || ''}
                     </Typography>
                   </Link>
-                  {contact?.primaryPerson.optoutEnewsletter && (
+                  {contact.primaryPerson.optoutEnewsletter && (
                     <Typography variant="body2">
                       {t('opted out of newsletter')}
                     </Typography>
@@ -222,16 +219,16 @@ const Contact = ({
                   {contact?.primaryAddress?.street || ''}
                 </Typography>
                 <Typography variant="body2">
-                  {`${contact?.primaryAddress?.city} ${
-                    contact?.primaryAddress?.state
-                      ? contact?.primaryAddress.state
+                  {`${contact.primaryAddress?.city || ''} ${
+                    contact.primaryAddress?.state
+                      ? contact.primaryAddress.state
                       : ''
-                  }. ${contact?.primaryAddress?.postalCode}`}
+                  } ${contact.primaryAddress?.postalCode || ''}`}
                 </Typography>
                 <Typography variant="body2">
-                  {contact?.primaryAddress?.country || ''}
+                  {contact.primaryAddress?.country || ''}
                 </Typography>
-                {contact?.primaryAddress?.source && (
+                {contact.primaryAddress?.source && (
                   <Typography variant="body2">
                     <Trans
                       defaults="<bold>Source:</bold> {{where}} ({{date}})"
@@ -263,9 +260,9 @@ const Contact = ({
                 onChange={handleChange}
                 size="small"
               >
-                {newsletterOptions.map((newsletter) => (
-                  <MenuItem key={newsletter.name} value={newsletter.value}>
-                    {newsletter.name}
+                {Object.values(SendNewsletterEnum).map((value) => (
+                  <MenuItem key={value} value={value}>
+                    {getLocalizedSendNewsletter(t, value)}
                   </MenuItem>
                 ))}
               </Select>
