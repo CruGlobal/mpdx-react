@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box } from '@mui/system';
+import { useTranslation } from 'react-i18next';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
@@ -24,10 +25,51 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   appealInfo,
   appealInfoLoading,
 }) => {
-  const { contactsQueryResult, isFiltered, searchTerm, setActiveFilters } =
-    React.useContext(AppealsContext) as AppealsType;
+  const {
+    contactsQueryResult,
+    isFiltered,
+    searchTerm,
+    setActiveFilters,
+    activeFilters,
+  } = React.useContext(AppealsContext) as AppealsType;
+  const { t } = useTranslation();
+  const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const { data, loading, fetchMore } = contactsQueryResult;
+
+  useEffect(() => {
+    if (!activeFilters.appealStatus) {
+      return;
+    }
+    switch (activeFilters.appealStatus.toLowerCase()) {
+      case 'processed':
+        setNullStateTitle(t('No donations yet towards this appeal'));
+        break;
+      case 'excluded':
+        setNullStateTitle(t('No contacts have been excluded from this appeal'));
+        break;
+      case 'asked':
+        setNullStateTitle(
+          t('All contacts for this appeal have committed to this appeal'),
+        );
+        break;
+      case 'not_received':
+        setNullStateTitle(
+          t(
+            'There are no contacts for this appeal that have not been received.',
+          ),
+        );
+        break;
+      case 'received_not_processed':
+        setNullStateTitle(
+          t('No gifts have been received and not yet processed to this appeal'),
+        );
+        break;
+      default:
+        setNullStateTitle('');
+        break;
+    }
+  }, [activeFilters]);
 
   return (
     <>
@@ -65,6 +107,8 @@ export const ContactsList: React.FC<ContactsListProps> = ({
               totalCount={data?.contacts.totalCount || 0}
               filtered={isFiltered || !!searchTerm}
               changeFilters={setActiveFilters}
+              title={nullStateTitle}
+              paragraph={''}
             />
           </Box>
         }
