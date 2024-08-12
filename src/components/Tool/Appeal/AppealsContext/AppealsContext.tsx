@@ -94,11 +94,22 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     onCompleted: ({ userOptions }) => {
       if (contactId?.includes('list')) {
         setViewMode(TableViewModeEnum.List);
+        setFilterPanelOpen(true);
+        setActiveFilters({
+          appealStatus: AppealStatusEnum.Asked,
+        });
       } else {
-        setViewMode(
+        const defaultView =
           (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows,
-        );
+            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows;
+        setViewMode(defaultView);
+
+        if (defaultView === TableViewModeEnum.List) {
+          setFilterPanelOpen(true);
+          setActiveFilters({
+            appealStatus: AppealStatusEnum.Asked,
+          });
+        }
       }
     },
   });
@@ -282,6 +293,13 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
+    setActiveFilters({});
+    if (view === TableViewModeEnum.List) {
+      setFilterPanelOpen(true);
+      setActiveFilters({
+        appealStatus: AppealStatusEnum.Asked,
+      });
+    }
   };
   //#endregion
 

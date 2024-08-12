@@ -431,7 +431,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                           {...params}
                           variant="outlined"
                           size="small"
-                          placeholder={t('Select Some Options')}
+                          placeholder={t('Select some options')}
                         />
                       )}
                     />
@@ -472,7 +472,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                           {...params}
                           variant="outlined"
                           size="small"
-                          placeholder={t('Select Some Options')}
+                          placeholder={t('Select some options')}
                         />
                       )}
                     />
@@ -498,7 +498,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({ accountListId }) => {
                         {...params}
                         variant="outlined"
                         size="small"
-                        placeholder={t('Select Some Options')}
+                        placeholder={t('Select some options')}
                       />
                     )}
                   />

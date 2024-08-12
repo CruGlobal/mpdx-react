@@ -69,7 +69,7 @@ const AppealProgressBar = ({
             display="inline"
             className={classes.colorYellow}
           >
-            {givenAmount} ({`${((given / (amount || 1)) * 100).toFixed(0)}%`})
+            {givenAmount} ({`${Math.floor((given / (amount || 1)) * 100)}%`})
           </Typography>
         </Tooltip>
         <Typography
@@ -88,7 +88,7 @@ const AppealProgressBar = ({
             className={classes.colorOrange}
           >
             {receivedAmount} (
-            {`${(((received + given) / (amount || 1)) * 100).toFixed(0)}%`})
+            {`${Math.floor(((received + given) / (amount || 1)) * 100)}%`})
           </Typography>
         </Tooltip>
         <Typography
@@ -107,10 +107,9 @@ const AppealProgressBar = ({
             className={classes.colorLightGray}
           >
             {committedAmount} (
-            {`${(
-              ((committed + received + given) / (amount || 1)) *
-              100
-            ).toFixed(0)}%`}
+            {`${Math.floor(
+              ((committed + received + given) / (amount || 1)) * 100,
+            )}%`}
             )
           </Typography>
         </Tooltip>
