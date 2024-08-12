@@ -10,14 +10,13 @@ interface Props {
 }
 
 export enum PageEnum {
-  InitialPage = 'InitialPage',
   DetailsPage = 'DetailsPage',
   ContactsPage = 'ContactsPage',
 }
 
 export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, replace, pathname, isReady } = router;
+  const { query, replace, push, pathname, isReady } = router;
 
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
@@ -37,7 +36,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     [activeFilters],
   );
 
-  const { appealId: appealIdParams, searchTerm } = query;
+  const { appealId: appealIdParams, searchTerm, accountListId } = query;
 
   useEffect(() => {
     // TODO: Fix these suggested Articles
@@ -47,7 +46,12 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
         : 'HS_CONTACTS_SUGGESTIONS',
     );
     if (appealIdParams === undefined) {
-      setPage(PageEnum.InitialPage);
+      push({
+        pathname: '/accountLists/[accountListId]/tools/appeals',
+        query: {
+          accountListId,
+        },
+      });
       return;
     }
     const length = appealIdParams.length;
@@ -65,7 +69,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
       setPage(PageEnum.ContactsPage);
       setContactId(appealIdParams);
     }
-  }, [appealIdParams]);
+  }, [appealIdParams, accountListId]);
 
   useEffect(() => {
     if (!isReady) {

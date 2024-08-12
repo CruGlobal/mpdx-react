@@ -112,7 +112,7 @@ describe('ContactsPageContext', () => {
           router={{
             query: { accountListId, appealId: [appealIdentifier, 'flows'] },
             pathname:
-              '/accountLists/[accountListId]/tools/appeals/[[...contactId]]',
+              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
             isReady,
             push,
           }}
@@ -149,7 +149,7 @@ describe('ContactsPageContext', () => {
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
         pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal-Id-1/flows/contact-id',
+          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/flows/contact-id',
         query: {},
       }),
     );
@@ -162,7 +162,7 @@ describe('ContactsPageContext', () => {
           router={{
             query: { accountListId, appealId: [appealIdentifier, 'list'] },
             pathname:
-              '/accountLists/[accountListId]/tools/appeals/[[...contactId]]',
+              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
             isReady,
             push,
           }}
@@ -193,7 +193,7 @@ describe('ContactsPageContext', () => {
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
         pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal-Id-1/flows',
+          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/flows',
         query: {},
       }),
     );
@@ -202,7 +202,8 @@ describe('ContactsPageContext', () => {
     await waitFor(() => expect(getByText('list')).toBeInTheDocument());
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
-        pathname: '/accountLists/account-list-1/tools/appeals/appeal-Id-1/list',
+        pathname:
+          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/list',
         query: {},
       }),
     );
@@ -217,7 +218,8 @@ describe('ContactsPageContext', () => {
               accountListId,
               appealId: [appealIdentifier, 'flows', contactId],
             },
-            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+            pathname:
+              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
             isReady,
             push,
           }}
@@ -253,7 +255,7 @@ describe('ContactsPageContext', () => {
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
         pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal-Id-1/flows',
+          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/flows',
         query: {},
       }),
     );
@@ -268,7 +270,8 @@ describe('ContactsPageContext', () => {
               accountListId,
               appealId: [appealIdentifier, 'flows', contactId],
             },
-            pathname: '/accountLists/[accountListId]/contacts',
+            pathname:
+              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
             isReady,
             push,
           }}

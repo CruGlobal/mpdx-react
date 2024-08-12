@@ -101,7 +101,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         );
       }
     },
-    skip: page === PageEnum.InitialPage,
   });
 
   const contactsFilters = useMemo(
@@ -121,7 +120,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       contactsFilters,
       first: 25,
     },
-    skip: !accountListId || page === PageEnum.InitialPage,
+    skip: !accountListId,
   });
   const { data, loading } = contactsQueryResult;
 
@@ -134,7 +133,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       first: contactCount,
       contactsFilters,
     },
-    skip: contactCount === 0 || page === PageEnum.InitialPage,
+    skip: contactCount === 0,
   });
   const allContactIds = useMemo(
     () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
@@ -189,7 +188,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId || page === PageEnum.InitialPage,
+    skip: !accountListId,
     context: {
       doNotBatch: true,
     },
@@ -217,9 +216,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   //#region User Actions
   const setContactFocus = (id?: string, openDetails = true) => {
-    if (page === PageEnum.InitialPage) {
-      return;
-    }
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -236,7 +232,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     }
 
     let pathname = '';
-    pathname = `/accountLists/${accountListId}/tools/appeals`;
+    pathname = `/accountLists/${accountListId}/tools/appeals/appeal`;
     if (appealId) {
       pathname += `/${appealId}`;
     }

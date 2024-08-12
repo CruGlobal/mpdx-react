@@ -112,18 +112,6 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 );
 
 describe('Appeal navigation', () => {
-  it('should show initial appeal page', async () => {
-    const { getByText, getAllByText } = render(<Components />);
-
-    await waitFor(() =>
-      expect(getByText('Primary Appeal')).toBeInTheDocument(),
-    );
-
-    await waitFor(() =>
-      expect(getAllByText('Add Appeal')[0]).toBeInTheDocument(),
-    );
-  });
-
   it('should show list detail appeal page and open filters', async () => {
     const { getByText, findByTestId, queryByText, getByRole, queryByRole } =
       render(

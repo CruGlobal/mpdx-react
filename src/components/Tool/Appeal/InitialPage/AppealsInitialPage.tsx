@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
-import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -25,8 +25,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 const AppealsInitialPage: React.FC = () => {
   const { t } = useTranslation();
   const { classes } = useStyles();
-
-  const { accountListId } = useContext(AppealsContext) as AppealsType;
+  const accountListId = useAccountListId();
 
   return (
     <Box className={classes.outer}>
