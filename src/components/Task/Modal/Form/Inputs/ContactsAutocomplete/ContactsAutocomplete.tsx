@@ -9,6 +9,7 @@ interface ContactsAutocompleteProps {
   value: string[];
   onChange: (value: string[]) => void;
   excludeContactIds?: string[];
+  disabled?: boolean;
 }
 
 export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
@@ -16,6 +17,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
   value,
   onChange,
   excludeContactIds = [],
+  disabled = false,
 }) => {
   const { t } = useTranslation();
 
@@ -87,6 +89,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
       multiple
       openOnFocus
       autoSelect
+      disabled={disabled}
       options={options
         .slice()
         .sort((a, b) => a.name.localeCompare(b.name))

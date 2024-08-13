@@ -1,0 +1,11 @@
+mutation CreateAccountListPledge(
+  $input: AccountListPledgeCreateMutationInput!
+) {
+  createAccountListPledge(input: $input) {
+    pledge {
+      id
+      amount
+      amountCurrency
+    }
+  }
+}
