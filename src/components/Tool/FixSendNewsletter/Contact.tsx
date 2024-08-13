@@ -5,29 +5,31 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
   Link,
-  NativeSelect,
+  MenuItem,
+  Select,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { DateTime } from 'luxon';
+import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { SmallLoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import theme from '../../../theme';
-import { StyledInput } from '../StyledInput';
 import { ContactUpdateData } from './FixSendNewsletter';
-import {
-  ContactPrimaryAddressFragment,
-  ContactPrimaryPersonFragment,
-} from './InvalidNewsletter.generated';
+import { InvalidNewsletterContactFragment } from './InvalidNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
-  left: {
-    [theme.breakpoints.up('lg')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -36,56 +38,42 @@ const useStyles = makeStyles()(() => ({
       border: `1px solid ${theme.palette.cruGrayMedium.main}`,
     },
   },
-  boxBottom: {
-    backgroundColor: theme.palette.cruGrayLight.main,
-    width: '100%',
-  },
-  buttonTop: {
-    padding: theme.spacing(1),
-    [theme.breakpoints.down('md')]: {
-      display: 'flex',
-      justifyContent: 'center',
-      padding: theme.spacing(2),
-    },
-    '& .MuiButton-root': {
-      backgroundColor: theme.palette.mpdxBlue.main,
-      width: '100%',
-      color: 'white',
-      [theme.breakpoints.down('md')]: {
-        width: '50%',
-      },
-      [theme.breakpoints.down('xs')]: {
-        width: '100%',
-      },
-    },
-  },
   buttonIcon: {
-    marginRight: theme.spacing(1),
+    marginRight: '3px',
   },
-  rowChangeResponsive: {
-    flexDirection: 'column',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: -20,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-  },
-  newsletterInput: {
+  contactBasic: {
     width: '100%',
-    [theme.breakpoints.down('xs')]: {
-      width: '50%',
+    marginTop: '15px',
+    [theme.breakpoints.down('sm')]: {
+      backgroundColor: 'white',
+      width: '100%',
+      overflow: 'initial',
     },
+  },
+  minimalPadding: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: '8px!important',
+    [theme.breakpoints.down('sm')]: {
+      padding: '5px 15px!important',
+    },
+  },
+  select: {
+    minWidth: theme.spacing(13),
+    textAlign: 'left',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: theme.spacing(15),
+      margin: `${theme.spacing(1)} auto 0`,
+    },
+  },
+  inline: {
+    display: 'inline',
   },
 }));
 
 interface Props {
-  id: string;
-  name: string;
-  primaryPerson?: ContactPrimaryPersonFragment;
-  status?: string;
-  primaryAddress?: ContactPrimaryAddressFragment;
-  source?: string;
+  contact: InvalidNewsletterContactFragment;
   contactUpdates: ContactUpdateData[];
   setContactUpdates: React.Dispatch<React.SetStateAction<ContactUpdateData[]>>;
   handleSingleConfirm: (
@@ -97,11 +85,7 @@ interface Props {
 }
 
 const Contact = ({
-  id,
-  name,
-  primaryPerson,
-  status,
-  primaryAddress,
+  contact,
   contactUpdates,
   setContactUpdates,
   handleSingleConfirm,
@@ -109,16 +93,19 @@ const Contact = ({
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState(SendNewsletterEnum.None);
+  const [updatingSingle, setUpdatingSingle] = useState(false);
   const { classes } = useStyles();
+  const locale = useLocale();
 
+  const matches = useMediaQuery('(min-width:600px)');
   useEffect(() => {
     let newNewsletterValue = SendNewsletterEnum.None;
-    if (primaryAddress?.street) {
+    if (contact.primaryAddress?.street) {
       newNewsletterValue = SendNewsletterEnum.Physical;
     }
-    if (primaryPerson) {
-      if (!primaryPerson.optoutEnewsletter) {
-        if (primaryPerson.primaryEmailAddress?.email?.length) {
+    if (contact.primaryPerson) {
+      if (!contact.primaryPerson.optoutEnewsletter) {
+        if (contact.primaryPerson.primaryEmailAddress?.email?.length) {
           if (newNewsletterValue === SendNewsletterEnum.Physical) {
             newNewsletterValue = SendNewsletterEnum.Both;
           } else {
@@ -128,12 +115,12 @@ const Contact = ({
       }
     }
     updateNewsletterValue(newNewsletterValue);
-  }, [primaryAddress]);
+  }, [contact?.primaryAddress]);
 
   const updateNewsletterValue = (sendNewsletter: SendNewsletterEnum): void => {
     setNewsletter(sendNewsletter);
     const existingItem = contactUpdates.find(
-      (contactData) => contactData.id === id,
+      (contactData) => contactData.id === contact.id,
     );
     if (existingItem) {
       existingItem.sendNewsletter = sendNewsletter;
@@ -141,156 +128,177 @@ const Contact = ({
       setContactUpdates([
         ...contactUpdates,
         {
-          id,
+          id: contact.id,
           sendNewsletter: sendNewsletter,
         },
       ]);
     }
   };
 
-  const handleChange = (
-    event:
-      | React.ChangeEvent<HTMLSelectElement>
-      | React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-  ): void => {
+  const handleChange = (event): void => {
     updateNewsletterValue(event.target.value as SendNewsletterEnum);
   };
 
   const handleContactNameClick = () => {
-    setContactFocus(id);
+    setContactFocus(contact?.id);
   };
 
   return (
-    <Grid container className={classes.container}>
-      <Grid container>
-        <Grid item lg={10} xs={12}>
-          <Box display="flex" alignItems="center" className={classes.left}>
-            <Grid container>
-              <Grid item xs={12} sm={8} md={9}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                  p={2}
-                >
+    <Card variant="outlined" className={classes.contactBasic}>
+      <CardHeader
+        avatar={
+          <Avatar
+            src={contact?.avatar}
+            style={{
+              width: theme.spacing(4),
+              height: theme.spacing(4),
+            }}
+          />
+        }
+        action={
+          <Button
+            variant="contained"
+            onClick={() => {
+              setUpdatingSingle(true);
+              handleSingleConfirm(contact?.id, contact?.name, newsletter);
+            }}
+            sx={{ marginTop: '9px' }}
+            disabled={updatingSingle}
+          >
+            {updatingSingle ? (
+              <SmallLoadingSpinner />
+            ) : (
+              <Icon
+                path={mdiCheckboxMarkedCircle}
+                size={0.8}
+                className={classes.buttonIcon}
+              />
+            )}
+            Confirm
+          </Button>
+        }
+        title={
+          <Link underline="hover" onClick={handleContactNameClick}>
+            <Typography className={classes.inline} variant="subtitle1">
+              {contact?.name}
+            </Typography>
+          </Link>
+        }
+        subheader={
+          <Typography variant="body2">
+            {getLocalizedContactStatus(t, contact.status)}
+          </Typography>
+        }
+      ></CardHeader>
+      <CardContent
+        className={classes.minimalPadding}
+        sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
+      >
+        {contact.primaryPerson && (
+          <Grid container alignItems="center">
+            <Grid item xs={6} sm={5} md={4}>
+              <Box
+                display="flex"
+                alignItems="center"
+                style={{ height: '100%' }}
+              >
+                {contact.primaryPerson.firstName && matches && (
                   <Avatar
-                    src=""
+                    src={contact?.avatar}
                     style={{
-                      width: theme.spacing(7),
-                      height: theme.spacing(7),
+                      width: theme.spacing(4),
+                      height: theme.spacing(4),
                     }}
                   />
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="h6">{name}</Typography>
-                    </Link>
-                    <Typography>{status}</Typography>
-                  </Box>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={4} md={3}>
-                <Box
-                  display="flex"
-                  alignItems="start"
-                  className={classes.rowChangeResponsive}
-                  p={2}
-                >
-                  <Typography variant="body1">
-                    <strong>Send newsletter?</strong>
+                )}
+                <Box display="flex" flexDirection="column" ml={2}>
+                  <Typography variant="subtitle1">
+                    {`${contact.primaryPerson.firstName} ${contact.primaryPerson.lastName}`}
                   </Typography>
-                  <NativeSelect
-                    input={<StyledInput />}
-                    className={classes.newsletterInput}
-                    value={newsletter}
-                    onChange={(event) => handleChange(event)}
+                  <Link
+                    underline="hover"
+                    href={`mailto:${contact.primaryPerson.primaryEmailAddress?.email}`}
                   >
-                    <option value={SendNewsletterEnum.Physical}>
-                      {t('Physical')}
-                    </option>
-                    <option value={SendNewsletterEnum.Email}>
-                      {t('Email')}
-                    </option>
-                    <option value={SendNewsletterEnum.Both}>{t('Both')}</option>
-                    <option value={SendNewsletterEnum.None}>{t('None')}</option>
-                  </NativeSelect>
+                    <Typography variant="body2">
+                      {contact.primaryPerson.primaryEmailAddress?.email || ''}
+                    </Typography>
+                  </Link>
+                  {contact.primaryPerson.optoutEnewsletter && (
+                    <Typography variant="body2">
+                      {t('opted out of newsletter')}
+                    </Typography>
+                  )}
                 </Box>
-              </Grid>
-              {primaryPerson && (
-                <>
-                  <Grid item xs={12} sm={6} className={classes.boxBottom}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      style={{ height: '100%' }}
-                      p={2}
-                    >
-                      {primaryPerson.firstName && (
-                        <Avatar
-                          src=""
-                          style={{
-                            width: theme.spacing(7),
-                            height: theme.spacing(7),
-                          }}
-                        />
-                      )}
-                      <Box display="flex" flexDirection="column" ml={2}>
-                        <Typography variant="h6">
-                          {`${primaryPerson.firstName} ${primaryPerson.lastName}`}
-                        </Typography>
-                        <Typography>
-                          {primaryPerson.primaryEmailAddress?.email || ''}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6} className={classes.boxBottom}>
-                    <Box
-                      display="flex"
-                      alignItems="start"
-                      flexDirection="column"
-                      p={2}
-                    >
-                      <Typography variant="body1">
-                        {primaryAddress?.street || ''}
-                      </Typography>
-                      <Typography variant="body1">
-                        {primaryAddress?.city || ''}
-                      </Typography>
-                      <Typography variant="body1">
-                        {primaryAddress?.source
-                          ? `Source: ${primaryAddress?.source}`
-                          : ''}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </>
-              )}
+              </Box>
             </Grid>
-          </Box>
-        </Grid>
-        <Grid item xs={12} lg={2}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            style={{ paddingLeft: theme.spacing(1) }}
-          >
-            <Box className={classes.buttonTop}>
-              <Button
-                variant="contained"
-                onClick={() => handleSingleConfirm(id, name, newsletter)}
+            <Grid item xs={6} sm={4} md={4}>
+              <Box
+                display="flex"
+                alignItems="start"
+                flexDirection="column"
+                p={2}
               >
-                <Icon
-                  path={mdiCheckboxMarkedCircle}
-                  size={0.8}
-                  className={classes.buttonIcon}
+                <Typography variant="body2">
+                  {contact?.primaryAddress?.street || ''}
+                </Typography>
+                <Typography variant="body2">
+                  {`${contact.primaryAddress?.city || ''} ${
+                    contact.primaryAddress?.state
+                      ? contact.primaryAddress.state
+                      : ''
+                  } ${contact.primaryAddress?.postalCode || ''}`}
+                </Typography>
+                <Typography variant="body2">
+                  {contact.primaryAddress?.country || ''}
+                </Typography>
+                {contact.primaryAddress?.source && (
+                  <Typography variant="body2">
+                    <Trans
+                      defaults="<bold>Source:</bold> {{where}} ({{date}})"
+                      shouldUnescape
+                      values={{
+                        where: contact?.primaryAddress?.source,
+                        date: dateFormatShort(
+                          DateTime.fromISO(contact?.primaryAddress?.createdAt),
+                          locale,
+                        ),
+                      }}
+                      components={{ bold: <strong /> }}
+                    />
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={3} md={4} sx={{ textAlign: 'right' }}>
+              <Typography variant="body2">
+                <Trans
+                  defaults="<bold>Send newsletter?</bold>"
+                  components={{ bold: <strong /> }}
                 />
-                Confirm
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
-    </Grid>
+              </Typography>
+
+              <Select
+                className={classes.select}
+                value={newsletter}
+                onChange={handleChange}
+                size="small"
+              >
+                {Object.values(SendNewsletterEnum).map((value) => (
+                  <MenuItem key={value} value={value}>
+                    {getLocalizedSendNewsletter(t, value)}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Box
+                display="flex"
+                flexDirection="column"
+                style={{ paddingLeft: theme.spacing(1), textAlign: 'right' }}
+              ></Box>
+            </Grid>
+          </Grid>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

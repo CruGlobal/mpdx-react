@@ -28,6 +28,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { requiredDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
+import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
 import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
@@ -56,10 +57,6 @@ const donationSchema = yup.object({
 });
 
 type Attributes = yup.InferType<typeof donationSchema>;
-
-const LoadingSpinner: React.FC = () => (
-  <CircularProgress color="primary" size={20} sx={{ marginRight: 3 }} />
-);
 
 export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   open,
@@ -291,7 +288,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                         setFieldValue('designationAccountId', e.target.value)
                       }
                       endAdornment={
-                        loadingDesignationAccounts && <LoadingSpinner />
+                        loadingDesignationAccounts && (
+                          <SmallLoadingSpinner spacing="25px" />
+                        )
                       }
                     >
                       {designationAccounts?.designationAccounts
@@ -317,7 +316,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       onChange={(e) =>
                         setFieldValue('appealId', e.target.value)
                       }
-                      endAdornment={loadingAppeals && <LoadingSpinner />}
+                      endAdornment={
+                        loadingAppeals && <SmallLoadingSpinner spacing="25px" />
+                      }
                     >
                       {appealId !== '' && (
                         <MenuItem key={null} value="">

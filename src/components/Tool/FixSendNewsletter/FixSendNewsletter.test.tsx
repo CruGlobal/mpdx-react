@@ -1,6 +1,6 @@
-import { ApolloCache, InMemoryCache } from '@apollo/client';
+import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
@@ -126,7 +126,7 @@ describe('FixSendNewsletter', () => {
       );
 
       await waitFor(() => {
-        expect(getByRole('button', { name: 'Confirm 2' })).toBeVisible();
+        expect(getByRole('button', { name: 'Confirm All (2)' })).toBeVisible();
       });
     });
 
@@ -144,7 +144,6 @@ describe('FixSendNewsletter', () => {
       await waitFor(() =>
         expect(queryByRole('progressbar')).not.toBeInTheDocument(),
       );
-
       await waitFor(() => {
         expect(queryByText(deceasedName)).not.toBeInTheDocument();
       });
@@ -153,20 +152,9 @@ describe('FixSendNewsletter', () => {
 
   describe('confirm single', () => {
     it('should successfully update the newsletter', async () => {
-      const cache = new InMemoryCache();
-      jest.spyOn(cache, 'readQuery').mockReturnValue({
-        contacts: {
-          nodes: [
-            {
-              ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                .nodes[1],
-              sendNewsletter: SendNewsletterEnum.Physical,
-            },
-          ],
-        },
-      });
+      const mutationSpy = jest.fn();
 
-      const { getAllByRole, queryByText, queryByRole } = render(
+      const { getAllByRole, queryByText, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
             InvalidNewsletter: {
@@ -176,7 +164,7 @@ describe('FixSendNewsletter', () => {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
             },
           }}
-          cache={cache}
+          onCall={mutationSpy}
         />,
       );
       await waitFor(() =>
@@ -185,16 +173,31 @@ describe('FixSendNewsletter', () => {
 
       const newsletterDropdown = getAllByRole('combobox')[0];
       await waitFor(() => {
-        expect(newsletterDropdown).toHaveDisplayValue([initialNewsletterValue]);
+        expect(
+          within(newsletterDropdown).getByText('Both'),
+        ).toBeInTheDocument();
+        userEvent.click(newsletterDropdown);
+        userEvent.click(getByText(newNewsletterValue));
       });
       expect(queryByText(firstContactName)).toBeInTheDocument();
-      userEvent.selectOptions(newsletterDropdown, newNewsletterValue);
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith('Newsletter updated!', {
           variant: 'success',
         });
-        expect(queryByText(firstContactName)).not.toBeInTheDocument();
+      });
+      await waitFor(() => {
+        expect(mutationSpy.mock.calls[1][0]).toMatchObject({
+          operation: {
+            operationName: 'UpdateContactNewsletter',
+            variables: {
+              accountListId: 'account-id',
+              attributes: {
+                sendNewsletter: 'PHYSICAL',
+              },
+            },
+          },
+        });
         expect(queryByText(secondContactName)).toBeInTheDocument();
       });
     });
@@ -231,13 +234,7 @@ describe('FixSendNewsletter', () => {
     });
 
     it('should filter out deceased', async () => {
-      const cache = new InMemoryCache();
-      jest.spyOn(cache, 'readQuery').mockReturnValue({
-        ...mockInvalidNewslettersResponse.InvalidNewsletter,
-      });
-      jest.spyOn(cache, 'writeQuery');
-
-      const { getAllByRole, queryByText, queryByRole } = render(
+      const { getAllByRole, queryByText, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
             InvalidNewsletter: {
@@ -247,7 +244,6 @@ describe('FixSendNewsletter', () => {
               ...mockUploadNewsletterChange.UpdateContactNewsletter,
             },
           }}
-          cache={cache}
         />,
       );
       await waitFor(() =>
@@ -255,47 +251,12 @@ describe('FixSendNewsletter', () => {
       );
 
       const newsletterDropdown = getAllByRole('combobox')[0];
-      userEvent.selectOptions(newsletterDropdown, newNewsletterValue);
+      userEvent.click(newsletterDropdown);
+      userEvent.click(getByText(newNewsletterValue));
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
       await waitFor(() => {
         expect(queryByText(deceasedName)).not.toBeInTheDocument();
         expect(queryByText(secondContactName)).toBeInTheDocument();
-        expect(cache.writeQuery).toHaveBeenCalledWith(
-          expect.objectContaining({
-            data: {
-              constant: expect.any(Object),
-              contacts: {
-                nodes: [
-                  {
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[0],
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[1],
-                  },
-                ],
-              },
-            },
-          }),
-        );
-        expect(cache.writeQuery).not.toHaveBeenCalledWith(
-          expect.objectContaining({
-            data: {
-              constant: expect.any(Object),
-              contacts: {
-                nodes: [
-                  {
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[0],
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[1],
-                    ...mockInvalidNewslettersResponse.InvalidNewsletter.contacts
-                      .nodes[2],
-                  },
-                ],
-              },
-            },
-          }),
-        );
       });
     });
   });
@@ -303,31 +264,38 @@ describe('FixSendNewsletter', () => {
   describe('bulk confirm', () => {
     const secondContactNewNewsletterValue = 'Both';
 
-    const confirmAll = async (getAllByRole, getByRole, queryByRole) => {
+    const confirmAll = async (
+      getAllByRole,
+      getByRole,
+      queryByRole,
+      getByText,
+    ) => {
       await waitFor(() =>
         expect(queryByRole('progressbar')).not.toBeInTheDocument(),
       );
 
       const firstNewsletterDropdown = getAllByRole('combobox')[0];
       await waitFor(() => {
-        expect(firstNewsletterDropdown).toHaveDisplayValue([
-          initialNewsletterValue,
-        ]);
+        expect(
+          within(firstNewsletterDropdown).getByText(initialNewsletterValue),
+        ).toBeInTheDocument();
       });
-      userEvent.selectOptions(firstNewsletterDropdown, newNewsletterValue);
-
+      await waitFor(() => {
+        userEvent.click(firstNewsletterDropdown);
+        userEvent.click(getByRole('option', { name: newNewsletterValue }));
+      });
       const secondNewsletterDropdown = getAllByRole('combobox')[1];
       await waitFor(() => {
-        expect(secondNewsletterDropdown).toHaveDisplayValue([
-          initialNewsletterValue,
-        ]);
+        expect(
+          within(secondNewsletterDropdown).getByText(initialNewsletterValue),
+        ).toBeInTheDocument();
       });
-      userEvent.selectOptions(
-        secondNewsletterDropdown,
-        secondContactNewNewsletterValue,
-      );
 
-      userEvent.click(getByRole('button', { name: 'Confirm 2' }));
+      userEvent.click(secondNewsletterDropdown);
+      userEvent.click(
+        getByRole('option', { name: secondContactNewNewsletterValue }),
+      );
+      userEvent.click(getByText('Confirm All (2)'));
       userEvent.click(getByRole('button', { name: 'Yes' }));
     };
 
@@ -349,7 +317,7 @@ describe('FixSendNewsletter', () => {
         expect(queryByRole('progressbar')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByRole('button', { name: 'Confirm 2' }));
+      userEvent.click(getByRole('button', { name: 'Confirm All (2)' }));
 
       await waitFor(() => {
         expect(
@@ -362,8 +330,8 @@ describe('FixSendNewsletter', () => {
 
     it('should successfully update all the contacts', async () => {
       let cardinality = 0;
-
-      const { getAllByRole, getByRole, queryByText, queryByRole } = render(
+      const mutationSpy = jest.fn();
+      const { getAllByRole, getByRole, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
             InvalidNewsletter: () => {
@@ -391,9 +359,11 @@ describe('FixSendNewsletter', () => {
               ...mockMassActionsUpdateContactsData.MassActionsUpdateContacts,
             },
           }}
+          onCall={mutationSpy}
         />,
       );
-      confirmAll(getAllByRole, getByRole, queryByRole);
+      confirmAll(getAllByRole, getByRole, queryByRole, getByText);
+
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
           'Newsletter statuses updated successfully',
@@ -401,13 +371,31 @@ describe('FixSendNewsletter', () => {
             variant: 'success',
           },
         );
-        expect(queryByText(firstContactName)).not.toBeInTheDocument();
-        expect(queryByText(secondContactName)).not.toBeInTheDocument();
+      });
+      await waitFor(() => {
+        expect(mutationSpy.mock.calls[1][0]).toMatchObject({
+          operation: {
+            operationName: 'MassActionsUpdateContacts',
+            variables: {
+              accountListId: 'account-id',
+              attributes: [
+                {
+                  id: 'contactId2',
+                  sendNewsletter: SendNewsletterEnum.Both,
+                },
+                {
+                  id: 'contactId1',
+                  sendNewsletter: SendNewsletterEnum.Physical,
+                },
+              ],
+            },
+          },
+        });
       });
     });
 
     it('should handle errors', async () => {
-      const { getAllByRole, getByRole, queryByRole } = render(
+      const { getAllByRole, getByRole, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
             InvalidNewsletter: {
@@ -419,7 +407,7 @@ describe('FixSendNewsletter', () => {
           }}
         />,
       );
-      confirmAll(getAllByRole, getByRole, queryByRole);
+      confirmAll(getAllByRole, getByRole, queryByRole, getByText);
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(`Error updating contacts`, {
           variant: 'error',
