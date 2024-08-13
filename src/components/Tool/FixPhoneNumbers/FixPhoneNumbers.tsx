@@ -54,15 +54,6 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    paddingRight: theme.spacing(1.5),
-    color: 'white',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(2),
-    },
-  },
   buttonIcon: {
     marginRight: theme.spacing(1),
   },
@@ -390,7 +381,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       </MenuItem>
                     </Select>
                     <Button
-                      className={classes.buttonBlue}
                       onClick={handleBulkConfirm}
                       data-testid="source-button"
                     >
