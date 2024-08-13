@@ -381,6 +381,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       </MenuItem>
                     </Select>
                     <Button
+                      variant="contained"
                       onClick={handleBulkConfirm}
                       data-testid="source-button"
                     >
