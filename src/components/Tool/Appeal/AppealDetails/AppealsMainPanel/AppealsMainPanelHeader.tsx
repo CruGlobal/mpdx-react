@@ -109,7 +109,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
                 value={TableViewModeEnum.Flows}
                 disabled={viewMode === TableViewModeEnum.Flows}
               >
-                <ViewColumnIcon titleAccess={t('Column Workflow View')} />
+                <ViewColumnIcon titleAccess={t('Flows View')} />
               </ToggleButton>
             </StyledToggleButtonGroup>
           </StyledBox>

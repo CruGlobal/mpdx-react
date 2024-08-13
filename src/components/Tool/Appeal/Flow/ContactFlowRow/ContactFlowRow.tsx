@@ -43,6 +43,10 @@ const StyledCheckbox = styled(Checkbox, {
   },
 }));
 
+const StyledListItemIcon = styled(ListItemIcon)(() => ({
+  minWidth: '40px',
+}));
+
 const FlexCenterAlignedBox = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
@@ -123,7 +127,7 @@ export const ContactFlowRow: React.FC<Props> = ({
             </Box>
           </FlexCenterAlignedBox>
           <Box display="flex" width={'40px'}>
-            <ListItemIcon>
+            <StyledListItemIcon>
               <StyledCheckbox
                 checked={isChecked(contact.id)}
                 color="secondary"
@@ -131,7 +135,7 @@ export const ContactFlowRow: React.FC<Props> = ({
                 onChange={() => onContactCheckToggle(contact.id)}
                 value={isChecked}
               />
-            </ListItemIcon>
+            </StyledListItemIcon>
           </Box>
         </FlexCenterAlignedBox>
         <FlexCenterAlignedBox>
