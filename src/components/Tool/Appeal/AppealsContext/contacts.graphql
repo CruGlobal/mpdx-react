@@ -11,12 +11,7 @@ query Contacts(
     first: $first
   ) {
     nodes {
-      name
-      id
-      pledgeAmount
-      pledgeCurrency
-      pledgeFrequency
-      pledgeReceived
+      ...AppealContactInfo
     }
     pageInfo {
       hasNextPage
@@ -24,4 +19,14 @@ query Contacts(
     }
     totalCount
   }
+}
+
+fragment AppealContactInfo on Contact {
+  id
+  name
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  pledgeReceived
+  pledgeStartDate
 }

@@ -18,7 +18,6 @@ import {
   StyledCheckbox,
 } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
-import { Contact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -27,6 +26,8 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import { PledgeModalEnum } from '../../Pledge/CreatePledge/CreatePledgeModal';
 import {
   DynamicCreatePledgeModal,
   preloadCreatePledgeModal,
@@ -36,19 +37,18 @@ import { useDeleteAppealContactMutation } from './DeleteAppealContact.generated'
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
 
-export type ContactRow = Pick<
-  Contact,
-  | 'id'
-  | 'name'
-  | 'pledgeAmount'
-  | 'pledgeFrequency'
-  | 'pledgeCurrency'
-  | 'pledgeReceived'
->;
 interface Props {
-  contact: ContactRow;
+  contact: AppealContactInfoFragment;
   useTopMargin?: boolean;
 }
+
+export type PledgeInfo = {
+  contactId: string;
+  amount: number;
+  currency: string;
+  expectedDate: string;
+  status: string;
+};
 
 export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const {
@@ -62,6 +62,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [deleteAppealContact] = useDeleteAppealContactMutation();
   const [createPledgeModalOpen, setCreatePledgeModalOpen] = useState(false);
+  const [pledgeModalType, setPledgeModalType] = useState(
+    PledgeModalEnum.Create,
+  );
+  const [pledgeValues, setPledgeValues] = useState<PledgeInfo>();
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -113,7 +117,21 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   };
 
   const handleAddContact = () => {
+    setPledgeModalType(PledgeModalEnum.Create);
+    setPledgeValues(undefined);
     setCreatePledgeModalOpen(true);
+  };
+
+  const handleEditContact = () => {
+    setPledgeModalType(PledgeModalEnum.Edit);
+    setCreatePledgeModalOpen(true);
+    setPledgeValues({
+      contactId: contactId,
+      amount: pledgeAmount ?? 0,
+      currency: pledgeCurrency ?? '',
+      expectedDate: contact.pledgeStartDate ?? '',
+      status: '',
+    });
   };
 
   return (
@@ -185,7 +203,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
                 component="div"
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleAddContact();
+                  handleEditContact();
                 }}
                 onMouseOver={preloadCreatePledgeModal}
               >
@@ -224,6 +242,8 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         <DynamicCreatePledgeModal
           contact={contact}
           handleClose={() => setCreatePledgeModalOpen(false)}
+          type={pledgeModalType}
+          pledge={pledgeValues}
         />
       )}
     </>

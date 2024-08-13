@@ -33,13 +33,9 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
-import { ContactRow } from '../../List/ContactRow/ContactRow';
+import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import { PledgeInfo } from '../../List/ContactRow/ContactRow';
 import { useCreateAccountListPledgeMutation } from './CreateContactPledge.generated';
-
-interface CreatePledgeModalProps {
-  handleClose: () => void;
-  contact: ContactRow;
-}
 
 export type CreatePledgeFormikSchema = {
   contactId: string;
@@ -48,6 +44,18 @@ export type CreatePledgeFormikSchema = {
   expectedDate: string;
   status: string;
 };
+
+export enum PledgeModalEnum {
+  Create = 'Create',
+  Edit = 'Edit',
+}
+
+interface CreatePledgeModalProps {
+  handleClose: () => void;
+  contact: AppealContactInfoFragment;
+  type?: PledgeModalEnum;
+  pledge?: PledgeInfo;
+}
 
 const CreatePledgeSchema: yup.SchemaOf<CreatePledgeFormikSchema> = yup.object({
   contactId: yup.string().required(),
@@ -72,6 +80,8 @@ const CreatePledgeSchema: yup.SchemaOf<CreatePledgeFormikSchema> = yup.object({
 
 export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
   contact,
+  type = PledgeModalEnum.Create,
+  pledge,
   handleClose,
 }) => {
   const { t } = useTranslation();
@@ -122,16 +132,34 @@ export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
     });
   };
 
+  const initialValues = pledge
+    ? {
+        contactId: contact.id,
+        amount: pledge.amount,
+        currency: pledge.currency,
+        expectedDate: pledge.expectedDate,
+        status: pledge.status,
+      }
+    : {
+        contactId: contact.id,
+        amount: 0,
+        currency: 'USD',
+        expectedDate: '',
+        status: PledgeStatusEnum.NotReceived,
+      };
+
   return (
-    <Modal title={t('Add Commitment')} isOpen={true} handleClose={handleClose}>
+    <Modal
+      title={
+        type === PledgeModalEnum.Create
+          ? t('Add Commitment')
+          : t('Edit Commitment')
+      }
+      isOpen={true}
+      handleClose={handleClose}
+    >
       <Formik
-        initialValues={{
-          contactId: contact.id,
-          amount: 0,
-          currency: '',
-          expectedDate: '',
-          status: PledgeStatusEnum.NotReceived,
-        }}
+        initialValues={initialValues}
         validationSchema={CreatePledgeSchema}
         validateOnMount
         onSubmit={onSubmit}

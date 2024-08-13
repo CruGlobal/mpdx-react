@@ -12,7 +12,7 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
-import { ContactRow } from '../../List/ContactRow/ContactRow';
+import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { CreatePledgeModal } from './CreatePledgeModal';
 
 const accountListId = 'abc';
@@ -26,7 +26,7 @@ const mutationSpy = jest.fn();
 const refetch = jest.fn();
 
 interface ComponentsProps {
-  contact?: ContactRow;
+  contact?: AppealContactInfoFragment;
 }
 
 const defaultContact = {
