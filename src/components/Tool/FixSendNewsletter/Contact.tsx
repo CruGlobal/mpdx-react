@@ -12,7 +12,6 @@ import {
   Link,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Typography,
   useMediaQuery,
 } from '@mui/material';
@@ -27,6 +26,7 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import theme from '../../../theme';
+import { ContactUpdateData } from './FixSendNewsletter';
 import { InvalidNewsletterContactFragment } from './InvalidNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -60,7 +60,8 @@ const useStyles = makeStyles()(() => ({
     },
   },
   select: {
-    minWidth: theme.spacing(10),
+    minWidth: theme.spacing(13),
+    textAlign: 'left',
     [theme.breakpoints.down('md')]: {
       maxWidth: theme.spacing(15),
       margin: `${theme.spacing(1)} auto 0`,
@@ -73,6 +74,8 @@ const useStyles = makeStyles()(() => ({
 
 interface Props {
   contact: InvalidNewsletterContactFragment;
+  contactUpdates: ContactUpdateData[];
+  setContactUpdates: React.Dispatch<React.SetStateAction<ContactUpdateData[]>>;
   handleSingleConfirm: (
     id: string,
     name: string,
@@ -83,6 +86,8 @@ interface Props {
 
 const Contact = ({
   contact,
+  contactUpdates,
+  setContactUpdates,
   handleSingleConfirm,
   setContactFocus,
 }: Props): ReactElement => {
@@ -109,11 +114,29 @@ const Contact = ({
         }
       }
     }
-    setNewsletter(newNewsletterValue);
+    updateNewsletterValue(newNewsletterValue);
   }, [contact?.primaryAddress]);
 
-  const handleChange = (event: SelectChangeEvent<string>): void => {
-    setNewsletter(event.target.value as SendNewsletterEnum);
+  const updateNewsletterValue = (sendNewsletter: SendNewsletterEnum): void => {
+    setNewsletter(sendNewsletter);
+    const existingItem = contactUpdates.find(
+      (contactData) => contactData.id === contact.id,
+    );
+    if (existingItem) {
+      existingItem.sendNewsletter = sendNewsletter;
+    } else {
+      setContactUpdates([
+        ...contactUpdates,
+        {
+          id: contact.id,
+          sendNewsletter: sendNewsletter,
+        },
+      ]);
+    }
+  };
+
+  const handleChange = (event): void => {
+    updateNewsletterValue(event.target.value as SendNewsletterEnum);
   };
 
   const handleContactNameClick = () => {

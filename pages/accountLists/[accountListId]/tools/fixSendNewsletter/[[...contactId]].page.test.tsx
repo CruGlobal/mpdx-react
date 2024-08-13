@@ -84,7 +84,7 @@ describe('FixSendNewsletterPage', () => {
 
     await waitFor(() => {
       expect(pushFn).toHaveBeenCalledWith(
-        `/accountLists/${accountListId}/tools/fixSendNewsletter/${'contactId'}`,
+        `/accountLists/${accountListId}/tools/fixSendNewsletter/${'contactId1'}`,
       );
     });
   });

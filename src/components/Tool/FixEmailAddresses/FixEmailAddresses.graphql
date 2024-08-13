@@ -30,3 +30,28 @@ fragment PersonEmailAddress on EmailAddress {
   updatedAt
   source
 }
+
+mutation UpdateEmailAddresses($input: PersonUpdateMutationInput!) {
+  updatePerson(input: $input) {
+    person {
+      emailAddresses {
+        nodes {
+          ...PersonEmailAddress
+        }
+      }
+    }
+  }
+}
+
+mutation UpdatePeople($input: PeopleUpdateMutationInput!) {
+  updatePeople(input: $input) {
+    people {
+      emailAddresses {
+        nodes {
+          ...PersonEmailAddress
+          validValues
+        }
+      }
+    }
+  }
+}

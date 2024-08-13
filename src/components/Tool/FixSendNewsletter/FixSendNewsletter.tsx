@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Button, Divider, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ButtonHeaderBox } from '../MergeContacts/StickyConfirmButtons';
@@ -49,6 +51,11 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+export interface ContactUpdateData {
+  id: string;
+  sendNewsletter: SendNewsletterEnum;
+}
+
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
@@ -72,13 +79,16 @@ const FixSendNewsletter: React.FC<Props> = ({
       data?.contacts?.nodes.filter(
         (contact) => !contact?.primaryPerson?.deceased,
       ),
-    [data?.contacts.nodes],
+    [data],
   );
   if (contactsToFix) {
     numberOfContacts = contactsToFix?.length;
   }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
+  const [contactUpdates, setContactUpdates] = useState<ContactUpdateData[]>([]);
+  const [updateContacts] = useMassActionsUpdateContactsMutation();
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   const handleSingleConfirm = async (
     id: string,
@@ -105,6 +115,36 @@ const FixSendNewsletter: React.FC<Props> = ({
       },
     });
     enqueueSnackbar(t('Newsletter updated!'), {
+      variant: 'success',
+    });
+  };
+
+  const handleBulkConfirm = async () => {
+    if (!data?.contacts.nodes.length) {
+      return;
+    }
+    await updateContacts({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: contactUpdates.map((contact) => ({
+          id: contact.id,
+          sendNewsletter: contact.sendNewsletter,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: InvalidNewsletterDocument,
+          variables: { accountListId },
+        },
+      ],
+      onError: () => {
+        enqueueSnackbar(t(`Error updating contacts`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+    enqueueSnackbar(t('Newsletter statuses updated successfully'), {
       variant: 'success',
     });
   };
@@ -156,10 +196,9 @@ const FixSendNewsletter: React.FC<Props> = ({
               </Box>
               {updating && <LoadingSpinner firstLoad={true} />}
               <Box>
-                {/* TODO */}
                 <Button
                   variant="contained"
-                  onClick={() => null}
+                  onClick={() => setShowBulkConfirmModal(true)}
                   disabled={updating || !numberOfContacts}
                   sx={{ mr: 2 }}
                 >
@@ -180,6 +219,8 @@ const FixSendNewsletter: React.FC<Props> = ({
                 key={contact.id}
                 handleSingleConfirm={handleSingleConfirm}
                 setContactFocus={setContactFocus}
+                contactUpdates={contactUpdates}
+                setContactUpdates={setContactUpdates}
               />
             ))}
           </>
@@ -189,6 +230,15 @@ const FixSendNewsletter: React.FC<Props> = ({
           <NoData tool="fixSendNewsletter" />
         )}
       </Grid>
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(
+          'You are updating all contacts visible on this page, setting it to the visible newsletter selection. Are you sure you want to do this?',
+        )}
+      />
     </Box>
   );
 };

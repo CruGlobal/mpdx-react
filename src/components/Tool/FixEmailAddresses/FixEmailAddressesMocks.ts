@@ -26,7 +26,7 @@ export const contactOneEmailAddressNodes = [
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
     email: 'email2@gmail.com',
     primary: false,
-    source: 'MPDX',
+    source: 'DataServer',
   },
   {
     __typename: 'EmailAddress',
@@ -77,65 +77,3 @@ export const mockInvalidEmailAddressesResponse: ErgonoMockShape[] = [
     },
   },
 ];
-
-export const mockCacheWriteData = {
-  people: {
-    nodes: [
-      {
-        ...mockInvalidEmailAddressesResponse[0],
-        emailAddresses: {
-          nodes: [
-            {
-              __typename: contactOneEmailAddressNodes[0].__typename,
-              email: contactOneEmailAddressNodes[0].email,
-            },
-            {
-              __typename: contactOneEmailAddressNodes[1].__typename,
-              email: contactOneEmailAddressNodes[1].email,
-            },
-            {
-              __typename: contactOneEmailAddressNodes[2].__typename,
-              email: contactOneEmailAddressNodes[2].email,
-            },
-            {
-              __typename: newEmail.__typename,
-              email: newEmail.email,
-            },
-          ],
-        },
-      },
-      {
-        ...mockInvalidEmailAddressesResponse[1],
-      },
-    ],
-  },
-};
-
-export const mockCacheWriteDataContactTwo = {
-  people: {
-    nodes: [
-      {
-        ...mockInvalidEmailAddressesResponse[0],
-      },
-      {
-        ...mockInvalidEmailAddressesResponse[1],
-        emailAddresses: {
-          nodes: [
-            {
-              __typename: contactTwoEmailAddressNodes[0].__typename,
-              email: contactTwoEmailAddressNodes[0].email,
-            },
-            {
-              __typename: contactTwoEmailAddressNodes[1].__typename,
-              email: contactTwoEmailAddressNodes[1].email,
-            },
-            {
-              __typename: newEmail.__typename,
-              email: newEmail.email,
-            },
-          ],
-        },
-      },
-    ],
-  },
-};

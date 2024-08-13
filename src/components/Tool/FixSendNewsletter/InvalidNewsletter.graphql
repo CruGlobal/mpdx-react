@@ -33,6 +33,7 @@ fragment InvalidNewsletterContact on Contact {
   primaryPerson {
     ...ContactPrimaryPerson
   }
+  sendNewsletter
 }
 
 fragment ContactPrimaryAddress on Address {
