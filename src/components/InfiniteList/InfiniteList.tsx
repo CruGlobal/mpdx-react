@@ -109,11 +109,6 @@ export const InfiniteList = <T, C>({
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
     },
-    scrollSeekConfiguration: {
-      enter: (velocity) => Math.abs(velocity) > 200,
-      exit: (velocity) => Math.abs(velocity) < 10,
-      ...props.scrollSeekConfiguration,
-    },
     overscan: 2000,
   };
 
