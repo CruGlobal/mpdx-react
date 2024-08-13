@@ -36,7 +36,15 @@ export type EditAppealFormikSchema = {
 
 const EditAppealSchema: yup.SchemaOf<EditAppealFormikSchema> = yup.object({
   name: yup.string().required('Please enter a name'),
-  amount: yup.number().required('Please enter a goal'),
+  amount: yup
+    .number()
+    .required('Please enter a goal')
+    .typeError('Appeal amount must be a valid number')
+    .test(
+      'Is positive?',
+      'Must use a positive number for appeal amount',
+      (value) => !value || parseFloat(value as unknown as string) > 0,
+    ),
 });
 
 export const EditAppealHeaderInfoModal: React.FC<

@@ -96,4 +96,53 @@ describe('EditAppealHeaderInfoModal', () => {
       });
     });
   });
+
+  it('should show amount error', async () => {
+    const { getByRole, getByText, queryByText } = render(<Components />);
+
+    const name = getByRole('textbox', { name: /name/i });
+    const amount = getByRole('spinbutton', { name: /goal/i });
+
+    userEvent.clear(name);
+    userEvent.type(name, 'New Appeal Name');
+    userEvent.clear(amount);
+
+    userEvent.type(amount, '100');
+    userEvent.clear(amount);
+
+    await waitFor(() =>
+      expect(getByText(/please enter a goal/i)).toBeInTheDocument(),
+    );
+
+    userEvent.clear(amount);
+    userEvent.type(amount, '-100');
+
+    await waitFor(() =>
+      expect(
+        getByText(/must use a positive number for appeal amount/i),
+      ).toBeInTheDocument(),
+    );
+    userEvent.clear(amount);
+    userEvent.type(amount, '400');
+    await waitFor(() =>
+      expect(
+        queryByText(/must use a positive number for appeal amount/i),
+      ).not.toBeInTheDocument(),
+    );
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateAppeal', {
+        input: {
+          accountListId,
+          attributes: {
+            id: '1',
+            name: 'New Appeal Name',
+            amount: 400,
+          },
+        },
+      });
+    });
+  });
 });
