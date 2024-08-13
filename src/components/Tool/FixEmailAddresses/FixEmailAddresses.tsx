@@ -409,6 +409,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                   scrollbarWidth: 'none',
                 }}
                 ItemOverride={ItemOverride}
+                increaseViewportBy={{ top: 2000, bottom: 2000 }}
               ></InfiniteList>
               <Grid item xs={12}>
                 <Box width="100%" display="flex" justifyContent="center">
