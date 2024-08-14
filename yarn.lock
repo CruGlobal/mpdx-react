@@ -4967,29 +4967,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/base@patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::locator=mpdx-react%40workspace%3A.":
-  version: 5.0.0-alpha.98
-  resolution: "@mui/base@patch:@mui/base@npm%3A5.0.0-alpha.98#./.yarn/patches/@mui-base-npm-5.0.0-alpha.98-f4d605d753.patch::version=5.0.0-alpha.98&hash=8e63fa&locator=mpdx-react%40workspace%3A."
-  dependencies:
-    "@babel/runtime": ^7.19.0
-    "@emotion/is-prop-valid": ^1.2.0
-    "@mui/types": ^7.2.0
-    "@mui/utils": ^5.10.6
-    "@popperjs/core": ^2.11.6
-    clsx: ^1.2.1
-    prop-types: ^15.8.1
-    react-is: ^18.2.0
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 728d6e97c6a54e99f670fe3fecd1ae2829986e14498f7a0060f995de3a8790eba19ccc97d0f819c7f788e2c271795e31ae1e8f71fb617d0e7261d87ec00b21b4
-  languageName: node
-  linkType: hard
-
 "@mui/core-downloads-tracker@npm:^5.15.14":
   version: 5.15.14
   resolution: "@mui/core-downloads-tracker@npm:5.15.14"
