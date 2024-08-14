@@ -4945,7 +4945,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/base@npm:5.0.0-beta.40, @mui/base@npm:^5.0.0-beta.36":
+"@mui/base@npm:5.0.0-beta.40":
   version: 5.0.0-beta.40
   resolution: "@mui/base@npm:5.0.0-beta.40"
   dependencies:
@@ -4964,6 +4964,28 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 9c084ee67de372411a71af5eca9a5367db9f5bce57bb43973629c522760fe64fa2a43d2934dccd24d6dcbcd0ed399c5fc5c461226c86104f5767de1c9b8deba2
+  languageName: node
+  linkType: hard
+
+"@mui/base@patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch::locator=mpdx-react%40workspace%3A.":
+  version: 5.0.0-beta.40
+  resolution: "@mui/base@patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch::version=5.0.0-beta.40&hash=6b20e2&locator=mpdx-react%40workspace%3A."
+  dependencies:
+    "@babel/runtime": ^7.23.9
+    "@floating-ui/react-dom": ^2.0.8
+    "@mui/types": ^7.2.14
+    "@mui/utils": ^5.15.14
+    "@popperjs/core": ^2.11.8
+    clsx: ^2.1.0
+    prop-types: ^15.8.1
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 4a14fd43a4b40787fb63562e3283c18e060249678c9605982b372b7675d0da3157056712fd8bd0a5fdaa28b8c22445c9d0292aab16e7912d0635b567417347eb
   languageName: node
   linkType: hard
 

@@ -1,0 +1,24 @@
+diff --git a/useAutocomplete/useAutocomplete.js b/useAutocomplete/useAutocomplete.js
+index b2c2a8a6770571390b3aa61267413314865642e7..8d386b2b0e240ae5746d156d3b8dea110a80bee2 100644
+--- a/useAutocomplete/useAutocomplete.js
++++ b/useAutocomplete/useAutocomplete.js
+@@ -330,6 +330,9 @@ export function useAutocomplete(props) {
+     }
+     const getNextIndex = () => {
+       const maxIndex = filteredOptions.length - 1;
++      if (diff === 'clear') {
++        return -1;
++      }
+       if (diff === 'reset') {
+         return defaultHighlighted;
+       }
+@@ -958,6 +961,9 @@ export function useAutocomplete(props) {
+       onMouseDown: event => {
+         // Prevent blur
+         event.preventDefault();
++      },
++      onMouseLeave: () => {
++        changeHighlightedIndex({ diff: 'clear' });
+       }
+     }),
+     getOptionProps: ({
