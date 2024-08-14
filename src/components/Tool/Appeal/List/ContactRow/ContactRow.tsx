@@ -11,7 +11,6 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   ListItemButton,
@@ -23,6 +22,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -32,13 +32,17 @@ import {
   DynamicCreatePledgeModal,
   preloadCreatePledgeModal,
 } from '../../Pledge/CreatePledge/DynamicCreatePledgeModal';
-import { useDeleteAppealContactMutation } from './DeleteAppealContact.generated';
+import {
+  DynamicDeleteAppealContactModal,
+  preloadDeleteAppealContactModal,
+} from '../../Pledge/DeleteAppealContact/DynamicDeleteAppealContactModal';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
 
 interface Props {
   contact: AppealContactInfoFragment;
+  appealStatus: AppealStatusEnum;
   useTopMargin?: boolean;
 }
 
@@ -50,7 +54,11 @@ export type PledgeInfo = {
   status: string;
 };
 
-export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
+export const ContactRow: React.FC<Props> = ({
+  contact,
+  appealStatus,
+  useTopMargin,
+}) => {
   const {
     isRowChecked: isChecked,
     contactDetailsOpen,
@@ -59,9 +67,8 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
   const locale = useLocale();
-  const { enqueueSnackbar } = useSnackbar();
-  const [deleteAppealContact] = useDeleteAppealContactMutation();
   const [createPledgeModalOpen, setCreatePledgeModalOpen] = useState(false);
+  const [removeContactModalOpen, setRemoveContactModalOpen] = useState(false);
   const [pledgeModalType, setPledgeModalType] = useState(
     PledgeModalEnum.Create,
   );
@@ -93,30 +100,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     [pledgeFrequency],
   );
 
-  const handleRemoveContact = async (contactId: string) => {
-    await deleteAppealContact({
-      variables: {
-        input: {
-          id: contactId,
-        },
-      },
-      update: (cache) => {
-        cache.evict({ id: `Contact:${contactId}` });
-      },
-      onCompleted: () => {
-        enqueueSnackbar('Successfully remove contact from appeal.', {
-          variant: 'success',
-        });
-      },
-      onError: () => {
-        enqueueSnackbar('Error while removing contact from appeal.', {
-          variant: 'error',
-        });
-      },
-    });
-  };
-
-  const handleAddContact = () => {
+  const handleCreatePledge = () => {
     setPledgeModalType(PledgeModalEnum.Create);
     setPledgeValues(undefined);
     setCreatePledgeModalOpen(true);
@@ -125,6 +109,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const handleEditContact = () => {
     setPledgeModalType(PledgeModalEnum.Edit);
     setCreatePledgeModalOpen(true);
+    // TODO after API fixed
     setPledgeValues({
       contactId: contactId,
       amount: pledgeAmount ?? 0,
@@ -132,6 +117,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       expectedDate: contact.pledgeStartDate ?? '',
       status: '',
     });
+  };
+
+  const handleRemoveContactFromAppeal = () => {
+    setRemoveContactModalOpen(true);
   };
 
   return (
@@ -198,6 +187,22 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
                 paddingRight: theme.spacing(2),
               }}
             >
+              {appealStatus === AppealStatusEnum.Asked && (
+                <IconButton
+                  size={'small'}
+                  component="div"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleCreatePledge();
+                  }}
+                  onMouseOver={preloadCreatePledgeModal}
+                >
+                  <AddIcon />
+                </IconButton>
+              )}
+              {(appealStatus === AppealStatusEnum.NotReceived ||
+                appealStatus === AppealStatusEnum.Processed ||
+                appealStatus === AppealStatusEnum.ReceivedNotProcessed) && (
               <IconButton
                 size={'small'}
                 component="div"
@@ -209,17 +214,21 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
               >
                 <EditIcon />
               </IconButton>
+              )}
+
+              {appealStatus !== AppealStatusEnum.Excluded && (
               <IconButton
                 size={'small'}
                 component="div"
                 onClick={(event) => {
                   event.stopPropagation();
-                  handleAddContact();
+                    handleRemoveContactFromAppeal();
                 }}
-                onMouseOver={preloadCreatePledgeModal}
+                  onMouseOver={preloadDeleteAppealContactModal}
               >
-                <AddIcon />
+                  <DeleteIcon color="error" />
               </IconButton>
+              )}
               <IconButton
                 size={'small'}
                 component="div"
@@ -237,6 +246,14 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           <Box></Box>
         </Hidden>
       </ListItemButton>
+
+      {removeContactModalOpen && (
+        <DynamicDeleteAppealContactModal
+          contactId={contactId}
+          handleClose={() => setRemoveContactModalOpen(false)}
+        />
+      )}
+
 
       {createPledgeModalOpen && (
         <DynamicCreatePledgeModal

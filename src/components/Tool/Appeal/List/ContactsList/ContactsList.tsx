@@ -10,6 +10,7 @@ import {
 } from '../../AppealDetails/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -24,10 +25,18 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   appealInfo,
   appealInfoLoading,
 }) => {
-  const { contactsQueryResult, isFiltered, searchTerm, setActiveFilters } =
-    React.useContext(AppealsContext) as AppealsType;
+  const {
+    contactsQueryResult,
+    isFiltered,
+    searchTerm,
+    setActiveFilters,
+    activeFilters,
+  } = React.useContext(AppealsContext) as AppealsType;
 
   const { data, loading, fetchMore } = contactsQueryResult;
+
+  const appealStatus =
+    (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
 
   return (
     <>
@@ -46,6 +55,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           <ContactRow
             key={contact.id}
             contact={contact}
+            appealStatus={appealStatus}
             useTopMargin={index === 0}
           />
         )}
