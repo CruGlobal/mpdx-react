@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
@@ -133,12 +133,14 @@ export const ContactFlow: React.FC<Props> = ({
     }
   };
 
+  const ref = useRef<HTMLElement | null>(null);
+
   return loadingUserOptions ? (
     <Loading loading={loadingUserOptions} />
   ) : (
     flowOptions && (
       <DndProvider backend={HTML5Backend}>
-        <ContactFlowDragLayer />
+        <ContactFlowDragLayer containerRef={ref} />
         <Box
           display="grid"
           minWidth="100%"
@@ -149,6 +151,7 @@ export const ContactFlow: React.FC<Props> = ({
           style={{ overflowX: 'auto' }}
           gridAutoColumns="300px"
           data-testid="contactsFlow"
+          ref={ref}
         >
           {flowOptions.map((column) => (
             <Box
