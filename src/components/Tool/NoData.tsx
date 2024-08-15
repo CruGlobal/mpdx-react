@@ -3,6 +3,7 @@ import {
   mdiAccountGroup,
   mdiCurrencyUsd,
   mdiEmailOutline,
+  mdiGoogle,
   mdiHome,
   mdiMap,
   mdiNewspaperVariantOutline,
@@ -72,6 +73,13 @@ const textMap: { [key: string]: ToolText } = {
     primaryText: i18n.t('No duplicate people need attention'),
     secondaryText: i18n.t('People with similar names will appear here.'),
     icon: mdiAccountGroup,
+  },
+  googleImport: {
+    primaryText: i18n.t("You haven't connected a Google account yet"),
+    secondaryText: i18n.t(
+      'Add a Google account then try to import from Google.',
+    ),
+    icon: mdiGoogle,
   },
 };
 
