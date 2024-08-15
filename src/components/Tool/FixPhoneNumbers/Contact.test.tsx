@@ -8,6 +8,7 @@ import Contact from './Contact';
 
 const testData = {
   name: 'Test Contact',
+  avatar: 'https://www.example.com',
   id: 'testid',
   numbers: [
     {
@@ -51,6 +52,7 @@ describe('FixPhoneNumbers-Contact', () => {
             handleAdd={handleAddMock}
             handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
+            avatar={testData.avatar}
             handleUpdate={updatePhoneNumber}
           />
         </TestWrapper>
@@ -85,6 +87,7 @@ describe('FixPhoneNumbers-Contact', () => {
             handleAdd={handleAddMock}
             handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
+            avatar={testData.avatar}
             handleUpdate={updatePhoneNumber}
           />
         </TestWrapper>
@@ -123,6 +126,7 @@ describe('FixPhoneNumbers-Contact', () => {
             handleAdd={handleAddMock}
             handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
+            avatar={testData.avatar}
             handleUpdate={updatePhoneNumber}
           />
         </TestWrapper>

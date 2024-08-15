@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { List, ListItem, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
@@ -27,22 +27,18 @@ const ItemWithBorders = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== 'disableHover',
 })<{ disableHover?: boolean }>(({ disableHover }) => ({
   padding: `${padding}px`,
-  borderBottom: `1px solid ${theme.palette.grey[200]}`,
   '&:last-child': {
     borderBottom: 'none',
   },
   ...(disableHover
     ? {}
     : {
+        borderBottom: `1px solid ${theme.palette.grey[200]}`,
         '&:hover': {
           backgroundColor: theme.palette.cruGrayLight.main,
         },
       }),
 }));
-
-const Item: React.ComponentType<ItemProps> = (props) => (
-  <ItemWithBorders disableGutters {...props} />
-);
 
 const SkeletonItem: React.FC<{ height: number }> = ({ height }) => (
   <ItemWithBorders disableGutters disableHover>
@@ -75,6 +71,7 @@ export interface InfiniteListProps<T, C> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
   groupBy?: (item: T) => { label: string; order?: number };
+  disableHover?: boolean;
 }
 
 export const InfiniteList = <T, C>({
@@ -84,12 +81,20 @@ export const InfiniteList = <T, C>({
   context,
   groupBy,
   itemContent,
+  disableHover = false,
   ...props
 }: Omit<GroupedVirtuosoProps<T, C>, 'groupCounts' | 'itemContent'> &
   InfiniteListProps<T, C>): ReactElement => {
   const { groupCounts, groupLabels, items } = useMemo(
     () => groupItems(data, groupBy),
     [data, groupBy],
+  );
+
+  const Item: React.ComponentType<ItemProps> = useCallback(
+    (props) => (
+      <ItemWithBorders disableGutters disableHover={disableHover} {...props} />
+    ),
+    [disableHover],
   );
 
   const commonProps: Omit<VirtuosoProps<T, C>, 'itemContent'> = {
@@ -107,6 +112,7 @@ export const InfiniteList = <T, C>({
       exit: (velocity) => Math.abs(velocity) < 10,
       ...props.scrollSeekConfiguration,
     },
+    overscan: 2000,
   };
 
   if (groupCounts.length > 0) {

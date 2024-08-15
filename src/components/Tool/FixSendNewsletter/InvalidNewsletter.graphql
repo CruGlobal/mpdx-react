@@ -7,17 +7,13 @@ query InvalidNewsletter($accountListId: ID!) {
     }
     first: 100
   ) {
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
     nodes {
-      id
-      name
-      status
-      source
-      primaryAddress {
-        ...ContactPrimaryAddress
-      }
-      primaryPerson {
-        ...ContactPrimaryPerson
-      }
+      ...InvalidNewsletterContact
     }
   }
   constant {
@@ -25,19 +21,38 @@ query InvalidNewsletter($accountListId: ID!) {
   }
 }
 
+fragment InvalidNewsletterContact on Contact {
+  id
+  name
+  status
+  avatar
+  source
+  primaryAddress {
+    ...ContactPrimaryAddress
+  }
+  primaryPerson {
+    ...ContactPrimaryPerson
+  }
+  sendNewsletter
+}
+
 fragment ContactPrimaryAddress on Address {
+  id
   street
   city
   state
+  country
   postalCode
   source
   createdAt
 }
 
 fragment ContactPrimaryPerson on Person {
+  id
   firstName
   lastName
   primaryEmailAddress {
+    id
     email
   }
   optoutEnewsletter

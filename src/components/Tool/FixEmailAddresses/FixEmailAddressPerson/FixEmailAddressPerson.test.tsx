@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import { EmailAddressesMutation } from '../AddEmailAddress.generated';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
@@ -48,6 +49,7 @@ const mutationSpy = jest.fn();
 const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
 
+jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -105,6 +107,12 @@ const TestComponent = ({
 };
 
 describe('FixEmailAddressPerson', () => {
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
+
   it('default', () => {
     const { getByText, getByTestId, getByDisplayValue } = render(
       <TestComponent

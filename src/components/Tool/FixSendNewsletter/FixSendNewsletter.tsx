@@ -1,25 +1,19 @@
-import React from 'react';
-import { mdiCheckboxMarkedCircle } from '@mdi/js';
-import { Icon } from '@mdi/react';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  Grid,
-  Typography,
-} from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import { Box, Button, Divider, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
+import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
+import { ButtonHeaderBox } from '../MergeContacts/StickyConfirmButtons';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
   InvalidNewsletterDocument,
-  InvalidNewsletterQuery,
   useInvalidNewsletterQuery,
 } from './InvalidNewsletter.generated';
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
@@ -27,39 +21,40 @@ import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated
 const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
-    width: '70%',
+    width: '80%',
     display: 'flex',
-    [theme.breakpoints.down('sm')]: {
+    height: 'auto',
+    [theme.breakpoints.down('md')]: {
       width: '100%',
     },
   },
   outer: {
     display: 'flex',
     flexDirection: 'row',
-    width: '100%',
     justifyContent: 'center',
+    width: '100%',
   },
   divider: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
   descriptionBox: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   footer: {
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
   },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    marginTop: theme.spacing(1),
-    color: 'white',
-  },
   buttonIcon: {
     marginRight: theme.spacing(1),
   },
 }));
+
+export interface ContactUpdateData {
+  id: string;
+  sendNewsletter: SendNewsletterEnum;
+}
 
 interface Props {
   accountListId: string;
@@ -76,16 +71,24 @@ const FixSendNewsletter: React.FC<Props> = ({
   const { data, loading } = useInvalidNewsletterQuery({
     variables: { accountListId },
   });
+  const totalCount = data?.contacts.totalCount;
+  let numberOfContacts = data?.contacts.nodes?.length ?? 0;
 
-  let numberOfContacts = data?.contacts.nodes.length ?? 0;
-  if (data) {
-    const filtered = data.contacts.nodes.filter((node) => {
-      return !node.primaryPerson?.deceased;
-    });
-    numberOfContacts = filtered.length;
+  const contactsToFix = useMemo(
+    () =>
+      data?.contacts?.nodes.filter(
+        (contact) => !contact?.primaryPerson?.deceased,
+      ),
+    [data],
+  );
+  if (contactsToFix) {
+    numberOfContacts = contactsToFix?.length;
   }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
+  const [contactUpdates, setContactUpdates] = useState<ContactUpdateData[]>([]);
+  const [updateContacts] = useMassActionsUpdateContactsMutation();
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   const handleSingleConfirm = async (
     id: string,
@@ -101,35 +104,9 @@ const FixSendNewsletter: React.FC<Props> = ({
         accountListId,
         attributes,
       },
-      update: (cache, { data: updateContactData }) => {
-        const updateContactId =
-          updateContactData?.updateContact?.contact.id || '';
-
-        const query = {
-          query: InvalidNewsletterDocument,
-          variables: {
-            accountListId,
-          },
-        };
-
-        const dataFromCache = cache.readQuery<InvalidNewsletterQuery>(query);
-
-        if (dataFromCache) {
-          const data = {
-            ...dataFromCache,
-            contacts: {
-              ...dataFromCache.contacts,
-              nodes: dataFromCache.contacts.nodes.filter(
-                (contact) =>
-                  contact.id !== updateContactId &&
-                  !contact.primaryPerson?.deceased,
-              ),
-            },
-            constant: dataFromCache.constant,
-          };
-          cache.writeQuery({ ...query, data });
-        }
-      },
+      refetchQueries: [
+        { query: InvalidNewsletterDocument, variables: { accountListId } },
+      ],
       onError() {
         enqueueSnackbar(t(`Error updating contact ${name}`), {
           variant: 'error',
@@ -142,111 +119,126 @@ const FixSendNewsletter: React.FC<Props> = ({
     });
   };
 
+  const handleBulkConfirm = async () => {
+    if (!data?.contacts.nodes.length) {
+      return;
+    }
+    await updateContacts({
+      variables: {
+        accountListId: accountListId ?? '',
+        attributes: contactUpdates.map((contact) => ({
+          id: contact.id,
+          sendNewsletter: contact.sendNewsletter,
+        })),
+      },
+      refetchQueries: [
+        {
+          query: InvalidNewsletterDocument,
+          variables: { accountListId },
+        },
+      ],
+      onError: () => {
+        enqueueSnackbar(t(`Error updating contacts`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+    enqueueSnackbar(t('Newsletter statuses updated successfully'), {
+      variant: 'success',
+    });
+  };
+
   return (
     <Box className={classes.outer} data-testid="Home">
-      {!loading && !updating && data ? (
-        <Grid container className={classes.container}>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
-            <Divider className={classes.divider} />
-          </Grid>
-          {!!numberOfContacts ? (
-            <>
-              <Grid item xs={12}>
-                <Box className={classes.descriptionBox}>
-                  <Typography>
-                    <strong>
-                      {t(
-                        'You have {{amount}} newsletter statuses to confirm.',
-                        {
-                          amount: numberOfContacts,
-                        },
-                      )}
-                    </strong>
-                  </Typography>
-                  <Typography>
-                    {t(
-                      'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
-                    )}
-                  </Typography>
-                  <Button variant="contained" className={classes.buttonBlue}>
-                    <Icon
-                      path={mdiCheckboxMarkedCircle}
-                      size={0.8}
-                      className={classes.buttonIcon}
-                    />
-                    <Trans
-                      defaults="Cofirm {{value}}"
-                      values={{
-                        value: numberOfContacts,
-                      }}
-                    />
-                  </Button>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                {data.contacts.nodes.map(
-                  (contact) =>
-                    !contact.primaryPerson?.deceased && (
-                      <Contact
-                        id={contact.id}
-                        name={contact.name}
-                        // need to fix this after changes to fix commitment info get merged
-                        status={
-                          data.constant.status?.find(
-                            (status) => contact.status === status.id,
-                          )?.value || ''
-                        }
-                        primaryPerson={
-                          contact.primaryPerson || {
-                            firstName: '',
-                            lastName: '',
-                            primaryEmailAddress: {
-                              email: '',
-                            },
-                            optoutEnewsletter: false,
-                            deceased: false,
-                          }
-                        }
-                        key={contact.id}
-                        primaryAddress={
-                          contact.primaryAddress || {
-                            street: '',
-                            city: '',
-                            state: '',
-                            postalCode: '',
-                            source: '',
-                            createdAt: '',
-                          }
-                        }
-                        handleSingleConfirm={handleSingleConfirm}
-                        setContactFocus={setContactFocus}
-                      />
-                    ),
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{
-                        value: numberOfContacts,
-                      }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
-                </Box>
-              </Grid>
-            </>
-          ) : (
-            <NoData tool="fixSendNewsletter" />
-          )}
+      <Grid container className={classes.container}>
+        <Grid item xs={12}>
+          <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
+          <Divider className={classes.divider} />
         </Grid>
-      ) : (
-        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
-      )}
+
+        <Grid item xs={12}>
+          <Box className={classes.descriptionBox}>
+            <Typography>
+              <strong>
+                {
+                  <Trans
+                    defaults="You have {{amount}} newsletter statuses to confirm."
+                    values={{
+                      amount: loading ? '...' : totalCount,
+                    }}
+                  />
+                }
+              </strong>
+            </Typography>
+            <Typography>
+              {t(
+                'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
+              )}
+            </Typography>
+          </Box>
+        </Grid>
+        {!loading && data && !!numberOfContacts ? (
+          <>
+            <ButtonHeaderBox mb={0}>
+              <Box>
+                <Typography>
+                  <Trans
+                    defaults="<i>Showing <bold>{{numberOfContacts}}</bold> of <bold>{{totalCount}}</bold></i>"
+                    shouldUnescape
+                    values={{
+                      numberOfContacts,
+                      totalCount,
+                    }}
+                    components={{ bold: <strong />, i: <i /> }}
+                  />
+                </Typography>
+              </Box>
+              {updating && <LoadingSpinner firstLoad={true} />}
+              <Box>
+                <Button
+                  variant="contained"
+                  onClick={() => setShowBulkConfirmModal(true)}
+                  disabled={updating || !numberOfContacts}
+                  sx={{ mr: 2 }}
+                >
+                  {
+                    <Trans
+                      defaults="Confirm All ({{value}})"
+                      values={{
+                        value: numberOfContacts,
+                      }}
+                    />
+                  }
+                </Button>
+              </Box>
+            </ButtonHeaderBox>
+            {contactsToFix?.map((contact) => (
+              <Contact
+                contact={contact}
+                key={contact.id}
+                handleSingleConfirm={handleSingleConfirm}
+                setContactFocus={setContactFocus}
+                contactUpdates={contactUpdates}
+                setContactUpdates={setContactUpdates}
+              />
+            ))}
+          </>
+        ) : loading && !data ? (
+          <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
+        ) : (
+          <NoData tool="fixSendNewsletter" />
+        )}
+      </Grid>
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(
+          'You are updating all contacts visible on this page, setting it to the visible newsletter selection. Are you sure you want to do this?',
+        )}
+      />
     </Box>
   );
 };

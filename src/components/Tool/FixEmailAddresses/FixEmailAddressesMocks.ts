@@ -26,7 +26,7 @@ export const contactOneEmailAddressNodes = [
     updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
     email: 'email2@gmail.com',
     primary: false,
-    source: 'MPDX',
+    source: 'DataServer',
   },
   {
     __typename: 'EmailAddress',

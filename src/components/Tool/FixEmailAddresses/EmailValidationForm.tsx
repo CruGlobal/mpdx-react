@@ -66,7 +66,7 @@ const EmailValidationForm = ({
     emailAddressesMutation({
       variables: {
         input: {
-          accountListId: accountListId || '',
+          accountListId: accountListId ?? '',
           attributes: {
             id: personId,
             emailAddresses: [
