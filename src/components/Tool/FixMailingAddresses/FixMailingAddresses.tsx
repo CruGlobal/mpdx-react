@@ -19,6 +19,7 @@ import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
+import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -28,7 +29,6 @@ import {
   InvalidAddressesDocument,
   InvalidAddressesQuery,
   useInvalidAddressesQuery,
-  useUpdateContactAddressMutation,
 } from './GetInvalidAddresses.generated';
 
 export type HandleSingleConfirmProps = {
