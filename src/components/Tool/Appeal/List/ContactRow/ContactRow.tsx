@@ -27,6 +27,10 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import {
+  DynamicAddExcludedContactModal,
+  preloadAddExcludedContactModal,
+} from '../../Pledge/AddExcludedContactModal/DynamicAddExcludedContactModal';
 import { PledgeModalEnum } from '../../Pledge/CreatePledge/CreatePledgeModal';
 import {
   DynamicCreatePledgeModal,
@@ -68,6 +72,8 @@ export const ContactRow: React.FC<Props> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const [createPledgeModalOpen, setCreatePledgeModalOpen] = useState(false);
+  const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
+    useState(false);
   const [removeContactModalOpen, setRemoveContactModalOpen] = useState(false);
   const [pledgeModalType, setPledgeModalType] = useState(
     PledgeModalEnum.Create,
@@ -121,6 +127,10 @@ export const ContactRow: React.FC<Props> = ({
 
   const handleRemoveContactFromAppeal = () => {
     setRemoveContactModalOpen(true);
+  };
+
+  const handleAddExcludedContactToAppeal = () => {
+    setAddExcludedContactModalOpen(true);
   };
 
   return (
@@ -203,42 +213,45 @@ export const ContactRow: React.FC<Props> = ({
               {(appealStatus === AppealStatusEnum.NotReceived ||
                 appealStatus === AppealStatusEnum.Processed ||
                 appealStatus === AppealStatusEnum.ReceivedNotProcessed) && (
-              <IconButton
-                size={'small'}
-                component="div"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleEditContact();
-                }}
-                onMouseOver={preloadCreatePledgeModal}
-              >
-                <EditIcon />
-              </IconButton>
+                <IconButton
+                  size={'small'}
+                  component="div"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleEditContact();
+                  }}
+                  onMouseOver={preloadCreatePledgeModal}
+                >
+                  <EditIcon />
+                </IconButton>
               )}
 
               {appealStatus !== AppealStatusEnum.Excluded && (
-              <IconButton
-                size={'small'}
-                component="div"
-                onClick={(event) => {
-                  event.stopPropagation();
+                <IconButton
+                  size={'small'}
+                  component="div"
+                  onClick={(event) => {
+                    event.stopPropagation();
                     handleRemoveContactFromAppeal();
-                }}
+                  }}
                   onMouseOver={preloadDeleteAppealContactModal}
-              >
+                >
                   <DeleteIcon color="error" />
-              </IconButton>
+                </IconButton>
               )}
-              <IconButton
-                size={'small'}
-                component="div"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleRemoveContact(contactId);
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
+              {appealStatus === AppealStatusEnum.Excluded && (
+                <IconButton
+                  size={'small'}
+                  component="div"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleAddExcludedContactToAppeal();
+                  }}
+                  onMouseOver={preloadAddExcludedContactModal}
+                >
+                  <AddIcon />
+                </IconButton>
+              )}
             </Box>
           </Grid>
         </Grid>
@@ -254,6 +267,12 @@ export const ContactRow: React.FC<Props> = ({
         />
       )}
 
+      {addExcludedContactModalOpen && (
+        <DynamicAddExcludedContactModal
+          contactId={contactId}
+          handleClose={() => setAddExcludedContactModalOpen(false)}
+        />
+      )}
 
       {createPledgeModalOpen && (
         <DynamicCreatePledgeModal

@@ -11,6 +11,7 @@ import {
 } from 'src/components/Contacts/ContactRow/ContactRow.generated';
 import theme from 'src/theme';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -77,7 +78,10 @@ const Components = () => (
               } as unknown as AppealsType
             }
           >
-            <ContactRow contact={contact} />
+            <ContactRow
+              contact={contact}
+              appealStatus={AppealStatusEnum.Asked}
+            />
           </AppealsContext.Provider>
         </AppealsWrapper>
       </ThemeProvider>
