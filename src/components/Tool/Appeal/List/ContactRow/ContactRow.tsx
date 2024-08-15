@@ -31,15 +31,19 @@ import {
   DynamicAddExcludedContactModal,
   preloadAddExcludedContactModal,
 } from '../../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
-import { PledgeModalEnum } from '../../Modals/CreatePledge/CreatePledgeModal';
-import {
-  DynamicCreatePledgeModal,
-  preloadCreatePledgeModal,
-} from '../../Modals/CreatePledge/DynamicCreatePledgeModal';
 import {
   DynamicDeleteAppealContactModal,
   preloadDeleteAppealContactModal,
 } from '../../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
+import {
+  DynamicDeletePledgeModal,
+  preloadDeletePledgeModal,
+} from '../../Modals/DeletePledgeModal/DynamicDeletePledgeModal';
+import {
+  DynamicPledgeModal,
+  preloadPledgeModal,
+} from '../../Modals/PledgeModal/DynamicPledgeModal';
+import { PledgeModalEnum } from '../../Modals/PledgeModal/PledgeModal';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
@@ -51,6 +55,7 @@ interface Props {
 }
 
 export type PledgeInfo = {
+  id?: string;
   contactId: string;
   amount: number;
   currency: string;
@@ -71,7 +76,8 @@ export const ContactRow: React.FC<Props> = ({
   } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
   const locale = useLocale();
-  const [createPledgeModalOpen, setCreatePledgeModalOpen] = useState(false);
+  const [createPledgeModalOpen, setPledgeModalOpen] = useState(false);
+  const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
   const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
     useState(false);
   const [removeContactModalOpen, setRemoveContactModalOpen] = useState(false);
@@ -109,12 +115,12 @@ export const ContactRow: React.FC<Props> = ({
   const handleCreatePledge = () => {
     setPledgeModalType(PledgeModalEnum.Create);
     setPledgeValues(undefined);
-    setCreatePledgeModalOpen(true);
+    setPledgeModalOpen(true);
   };
 
   const handleEditContact = () => {
     setPledgeModalType(PledgeModalEnum.Edit);
-    setCreatePledgeModalOpen(true);
+    setPledgeModalOpen(true);
     // TODO after API fixed
     setPledgeValues({
       contactId: contactId,
@@ -131,6 +137,18 @@ export const ContactRow: React.FC<Props> = ({
 
   const handleAddExcludedContactToAppeal = () => {
     setAddExcludedContactModalOpen(true);
+  };
+
+  const handleRemovePledge = () => {
+    setDeletePledgeModalOpen(true);
+    // TODO after API fixed
+    setPledgeValues({
+      contactId: contactId,
+      amount: pledgeAmount ?? 0,
+      currency: pledgeCurrency ?? '',
+      expectedDate: contact.pledgeStartDate ?? '',
+      status: '',
+    });
   };
 
   return (
@@ -198,46 +216,58 @@ export const ContactRow: React.FC<Props> = ({
               }}
             >
               {appealStatus === AppealStatusEnum.Asked && (
-                <IconButton
-                  size={'small'}
-                  component="div"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleCreatePledge();
-                  }}
-                  onMouseOver={preloadCreatePledgeModal}
-                >
-                  <AddIcon />
-                </IconButton>
+                <>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleCreatePledge();
+                    }}
+                    onMouseOver={preloadPledgeModal}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleRemoveContactFromAppeal();
+                    }}
+                    onMouseOver={preloadDeleteAppealContactModal}
+                  >
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </>
               )}
               {(appealStatus === AppealStatusEnum.NotReceived ||
                 appealStatus === AppealStatusEnum.Processed ||
                 appealStatus === AppealStatusEnum.ReceivedNotProcessed) && (
-                <IconButton
-                  size={'small'}
-                  component="div"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleEditContact();
-                  }}
-                  onMouseOver={preloadCreatePledgeModal}
-                >
-                  <EditIcon />
-                </IconButton>
-              )}
-
-              {appealStatus !== AppealStatusEnum.Excluded && (
-                <IconButton
-                  size={'small'}
-                  component="div"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleRemoveContactFromAppeal();
-                  }}
-                  onMouseOver={preloadDeleteAppealContactModal}
-                >
-                  <DeleteIcon color="error" />
-                </IconButton>
+                <>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleEditContact();
+                    }}
+                    onMouseOver={preloadPledgeModal}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleRemovePledge();
+                    }}
+                    onMouseOver={preloadDeletePledgeModal}
+                  >
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </>
               )}
               {appealStatus === AppealStatusEnum.Excluded && (
                 <IconButton
@@ -275,11 +305,18 @@ export const ContactRow: React.FC<Props> = ({
       )}
 
       {createPledgeModalOpen && (
-        <DynamicCreatePledgeModal
+        <DynamicPledgeModal
           contact={contact}
-          handleClose={() => setCreatePledgeModalOpen(false)}
+          handleClose={() => setPledgeModalOpen(false)}
           type={pledgeModalType}
           pledge={pledgeValues}
+        />
+      )}
+
+      {deletePledgeModalOpen && pledgeValues && (
+        <DynamicDeletePledgeModal
+          pledge={pledgeValues}
+          handleClose={() => setDeletePledgeModalOpen(false)}
         />
       )}
     </>
