@@ -1,11 +1,11 @@
 import React, { ReactElement, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { DynamicAppealsDetailsPage } from 'src/components/Tool/Appeal/AppealDetails/DynamicAppealsDetailsPage';
 import {
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { DynamicAppealsDetailsPage } from 'src/components/Tool/Appeal/DynamicAppealsDetailsPage';
 import { DynamicAppealsInitialPage } from 'src/components/Tool/Appeal/InitialPage/DynamicAppealsInitialPage';
 import { ToolsWrapper } from '../ToolsWrapper';
 import { AppealsWrapper, PageEnum } from './AppealsWrapper';

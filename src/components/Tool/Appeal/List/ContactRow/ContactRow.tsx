@@ -30,16 +30,16 @@ import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generat
 import {
   DynamicAddExcludedContactModal,
   preloadAddExcludedContactModal,
-} from '../../Pledge/AddExcludedContactModal/DynamicAddExcludedContactModal';
-import { PledgeModalEnum } from '../../Pledge/CreatePledge/CreatePledgeModal';
+} from '../../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
+import { PledgeModalEnum } from '../../Modals/CreatePledge/CreatePledgeModal';
 import {
   DynamicCreatePledgeModal,
   preloadCreatePledgeModal,
-} from '../../Pledge/CreatePledge/DynamicCreatePledgeModal';
+} from '../../Modals/CreatePledge/DynamicCreatePledgeModal';
 import {
   DynamicDeleteAppealContactModal,
   preloadDeleteAppealContactModal,
-} from '../../Pledge/DeleteAppealContact/DynamicDeleteAppealContactModal';
+} from '../../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx

@@ -29,13 +29,13 @@ import {
 import {
   DynamicAddContactToAppealModal,
   preloadAddContactToAppealModal,
-} from './AddContactToAppealModal/DynamicAddContactToAppealModal';
-import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
-import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
+} from '../../Modals/AddContactToAppealModal/DynamicAddContactToAppealModal';
 import {
   DynamicDeleteAppealModal,
   preloadDeleteAppealModal,
-} from './DeleteAppealModal/DynamicAddContactToAppealModal';
+} from '../../Modals/DeleteAppealModal/DynamicAddContactToAppealModal';
+import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
+import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
 import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({

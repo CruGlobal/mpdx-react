@@ -17,7 +17,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import {
   AppealsContext,
   AppealsType,
-} from '../../../AppealsContext/AppealsContext';
+} from '../../AppealsContext/AppealsContext';
 import { useDeleteAppealMutation } from './DeleteAppeal.generated';
 
 interface DeleteAppealModalProps {

@@ -14,7 +14,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
-import { CreatePledgeModal, PledgeModalEnum } from './CreatePledgeModal';
+import { PledgeModal, PledgeModalEnum } from './PledgeModal';
 
 const accountListId = 'abc';
 const appealId = 'appealId';
@@ -56,7 +56,7 @@ const Components = ({ contact = defaultContact }: ComponentsProps) => (
                     contactsQueryResult: { refetch },
                   }}
                 >
-                  <CreatePledgeModal
+                  <PledgeModal
                     handleClose={handleClose}
                     contact={contact}
                     type={PledgeModalEnum.Create}
@@ -71,7 +71,7 @@ const Components = ({ contact = defaultContact }: ComponentsProps) => (
   </I18nextProvider>
 );
 
-describe('CreatePledgeModal', () => {
+describe('PledgeModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
     refetch.mockClear();

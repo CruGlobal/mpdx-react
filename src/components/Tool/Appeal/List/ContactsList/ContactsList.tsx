@@ -7,7 +7,7 @@ import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
-} from '../../AppealDetails/AppealHeaderInfo';
+} from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
 import {
   AppealStatusEnum,

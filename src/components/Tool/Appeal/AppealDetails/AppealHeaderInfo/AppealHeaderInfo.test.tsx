@@ -6,7 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import theme from 'src/theme';
-import { appealInfo } from '../appealMockData';
+import { appealInfo } from '../../appealMockData';
 import { AppealHeaderInfo, AppealHeaderInfoProps } from './AppealHeaderInfo';
 
 const router = {

@@ -27,7 +27,7 @@ import {
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo';
+import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
 

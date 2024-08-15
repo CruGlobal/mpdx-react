@@ -10,7 +10,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import theme from 'src/theme';
-import { AppealsContext } from '../../../AppealsContext/AppealsContext';
+import { AppealsContext } from '../../AppealsContext/AppealsContext';
 import { AddContactToAppealModal } from './AddContactToAppealModal';
 import { AppealQuery } from './appealInfo.generated';
 

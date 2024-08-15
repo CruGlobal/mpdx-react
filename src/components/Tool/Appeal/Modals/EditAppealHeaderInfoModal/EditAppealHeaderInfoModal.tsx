@@ -21,7 +21,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
   AppealDocument,
   AppealQuery,
-} from '../AppealsMainPanel/appealInfo.generated';
+} from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
 import { useUpdateAppealMutation } from './EditAppeal.generated';
 
 interface EditAppealHeaderInfoModalProps {

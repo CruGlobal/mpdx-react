@@ -7,8 +7,8 @@ import { EditIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsT
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import AppealProgressBar from '../AppealProgressBar';
-import { EditAppealHeaderInfoModal } from './EditAppealHeaderInfoModal/EditAppealHeaderInfoModal';
+import { EditAppealHeaderInfoModal } from '../../Modals/EditAppealHeaderInfoModal/EditAppealHeaderInfoModal';
+import AppealProgressBar from '../AppealProgressBar/AppealProgressBar';
 
 export const appealHeaderInfoHeight = theme.spacing(9);
 

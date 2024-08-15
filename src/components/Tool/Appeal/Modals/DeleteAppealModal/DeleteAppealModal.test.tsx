@@ -11,7 +11,7 @@ import theme from 'src/theme';
 import {
   AppealsContext,
   AppealsType,
-} from '../../../AppealsContext/AppealsContext';
+} from '../../AppealsContext/AppealsContext';
 import { DeleteAppealModal } from './DeleteAppealModal';
 
 const mockEnqueue = jest.fn();

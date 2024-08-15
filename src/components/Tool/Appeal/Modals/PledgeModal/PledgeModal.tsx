@@ -37,7 +37,7 @@ import {
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { PledgeInfo } from '../../List/ContactRow/ContactRow';
-import { useCreateAccountListPledgeMutation } from './CreateContactPledge.generated';
+import { useCreateAccountListPledgeMutation } from './ContactPledge.generated';
 
 export type CreatePledgeFormikSchema = {
   contactId: string;
@@ -52,7 +52,7 @@ export enum PledgeModalEnum {
   Edit = 'Edit',
 }
 
-interface CreatePledgeModalProps {
+interface PledgeModalProps {
   handleClose: () => void;
   contact: AppealContactInfoFragment;
   type?: PledgeModalEnum;
@@ -82,7 +82,7 @@ const CreatePledgeSchema = yup.object({
 
 type Attributes = yup.InferType<typeof CreatePledgeSchema>;
 
-export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
+export const PledgeModal: React.FC<PledgeModalProps> = ({
   contact,
   type = PledgeModalEnum.Create,
   pledge,

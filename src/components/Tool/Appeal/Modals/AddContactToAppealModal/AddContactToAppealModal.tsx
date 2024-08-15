@@ -13,7 +13,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import {
   AppealsContext,
   AppealsType,
-} from '../../../AppealsContext/AppealsContext';
+} from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from './AddContactToAppeal.generated';
 import { useAppealQuery } from './appealInfo.generated';
 
