@@ -1,9 +1,19 @@
 import React, { useContext } from 'react';
-import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  Theme,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
+import theme from 'src/theme';
 import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -54,7 +64,19 @@ const AppealsInitialPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box width="100%" display="flex" justifyContent="center">
-            <AddAppealForm accountListId={accountListId || ''} />
+            <Box m={1}>
+              <Card>
+                <CardHeader
+                  title="Add Appeal"
+                  style={{
+                    backgroundColor: theme.palette.cruGrayLight.main,
+                  }}
+                />
+                <CardContent>
+                  <AddAppealForm accountListId={accountListId || ''} />
+                </CardContent>
+              </Card>
+            </Box>
           </Box>
         </Grid>
       </Grid>
