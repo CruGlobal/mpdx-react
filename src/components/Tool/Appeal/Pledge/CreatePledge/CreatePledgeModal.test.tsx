@@ -2,18 +2,19 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
+import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
-import { CreatePledgeModal } from './CreatePledgeModal';
+import { CreatePledgeModal, PledgeModalEnum } from './CreatePledgeModal';
 
 const accountListId = 'abc';
 const appealId = 'appealId';
@@ -58,6 +59,7 @@ const Components = ({ contact = defaultContact }: ComponentsProps) => (
                   <CreatePledgeModal
                     handleClose={handleClose}
                     contact={contact}
+                    type={PledgeModalEnum.Create}
                   />
                 </AppealsContext.Provider>
               </AppealsWrapper>
@@ -74,15 +76,18 @@ describe('CreatePledgeModal', () => {
     handleClose.mockClear();
     refetch.mockClear();
   });
-  it('default', () => {
-    const { getByRole } = render(<Components />);
+  it('default', async () => {
+    const { getByRole, getByText } = render(<Components />);
 
     expect(
       getByRole('heading', { name: 'Add Commitment' }),
     ).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Amount' })).toBeInTheDocument();
-    expect(getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
+    expect(getByText('Currency')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
+    });
     expect(getByRole('textbox', { name: 'Expected Date' })).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Status' })).toBeInTheDocument();
 
@@ -101,40 +106,52 @@ describe('CreatePledgeModal', () => {
     expect(handleClose).toHaveBeenCalledTimes(2);
   });
 
-  it('adds 2 contacts to appeal and refreshes contacts list', async () => {
+  it('Add commitment', async () => {
     const { getByRole, getByText, queryByText } = render(<Components />);
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
 
-    userEvent.click(getByRole('combobox', { name: 'Contacts' }));
+    const amountInput = getByRole('textbox', { name: 'Amount' });
+    userEvent.clear(amountInput);
+    userEvent.type(amountInput, '0');
+    userEvent.tab();
+    screen.logTestingPlaygroundURL();
+    await waitFor(() =>
+      expect(
+        getByText(/must use a positive number for amount/i),
+      ).toBeInTheDocument(),
+    );
 
+    userEvent.clear(amountInput);
+    userEvent.tab();
+    await waitFor(() =>
+      expect(getByText(/amount is required/i)).toBeInTheDocument(),
+    );
+
+    userEvent.type(amountInput, '100');
     await waitFor(() => {
-      expect(getByRole('option', { name: 'Alice' })).toBeInTheDocument();
-      userEvent.click(getByRole('option', { name: 'Alice' }));
-      expect(getByText('Alice')).toBeInTheDocument();
-    });
-
-    expect(queryByText('Bob')).not.toBeInTheDocument();
-    userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-
-    await waitFor(() => {
-      expect(getByRole('option', { name: 'Bob' })).toBeInTheDocument();
-      userEvent.click(getByRole('option', { name: 'Bob' }));
-      expect(getByText('Bob')).toBeInTheDocument();
+      expect(
+        queryByText(/must use a positive number for amount/i),
+      ).not.toBeInTheDocument();
+      expect(queryByText(/amount is required/i)).not.toBeInTheDocument();
     });
 
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[8][0].operation.operationName).toEqual(
-        'AssignContactsToAppeal',
+      expect(mutationSpy.mock.calls[6][0].operation.operationName).toEqual(
+        'CreateAccountListPledge',
       );
-      expect(mutationSpy.mock.calls[8][0].operation.variables).toEqual({
+      expect(mutationSpy.mock.calls[6][0].operation.variables).toEqual({
         input: {
           accountListId,
           attributes: {
-            id: appealId,
-            contactIds: ['contact-1', 'contact-2', 'contact-3', 'contact-4'],
+            appealId: appealId,
+            contactId: defaultContact.id,
+            amount: 100,
+            amountCurrency: 'USD',
+            expectedDate: '2020-01-01',
+            status: PledgeStatusEnum.NotReceived,
           },
         },
       });

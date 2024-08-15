@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Box, useMediaQuery } from '@mui/system';
 import { FastField, FieldProps, Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -27,6 +28,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
+import { requiredDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import i18n from 'src/lib/i18n';
 import {
@@ -41,7 +43,7 @@ export type CreatePledgeFormikSchema = {
   contactId: string;
   amount: number;
   currency: string;
-  expectedDate: string;
+  expectedDate: DateTime<true | false>;
   status: string;
 };
 
@@ -57,7 +59,7 @@ interface CreatePledgeModalProps {
   pledge?: PledgeInfo;
 }
 
-const CreatePledgeSchema: yup.SchemaOf<CreatePledgeFormikSchema> = yup.object({
+const CreatePledgeSchema = yup.object({
   contactId: yup.string().required(),
   amount: yup
     .number()
@@ -74,9 +76,11 @@ const CreatePledgeSchema: yup.SchemaOf<CreatePledgeFormikSchema> = yup.object({
       (value) => parseFloat(value as unknown as string) > 0,
     ),
   currency: yup.string().required(i18n.t('Currency is required')),
-  expectedDate: yup.string().required(i18n.t('Expected Date is required')),
+  expectedDate: requiredDateTime(i18n.t('Expected Date is required')),
   status: yup.string().required(i18n.t('Status is required')),
 });
+
+type Attributes = yup.InferType<typeof CreatePledgeSchema>;
 
 export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
   contact,
@@ -96,7 +100,7 @@ export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
   const constants = useApiConstants();
   const pledgeCurrencies = constants?.pledgeCurrency;
 
-  const onSubmit = async (attributes: CreatePledgeFormikSchema) => {
+  const onSubmit = async (attributes: Attributes) => {
     const amount = parseFloat(
       (attributes.amount as unknown as string).replace(/[^\d.-]/g, ''),
     );
@@ -110,7 +114,7 @@ export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
             contactId: contact.id,
             amount: amount,
             amountCurrency: attributes.currency,
-            expectedDate: attributes.expectedDate,
+            expectedDate: attributes.expectedDate.toISODate() ?? '',
             status: attributes.status as PledgeStatusEnum,
           },
         },
@@ -137,14 +141,14 @@ export const CreatePledgeModal: React.FC<CreatePledgeModalProps> = ({
         contactId: contact.id,
         amount: pledge.amount,
         currency: pledge.currency,
-        expectedDate: pledge.expectedDate,
+        expectedDate: DateTime.fromISO(pledge.expectedDate),
         status: pledge.status,
       }
     : {
         contactId: contact.id,
         amount: 0,
         currency: 'USD',
-        expectedDate: '',
+        expectedDate: DateTime.local().startOf('day'),
         status: PledgeStatusEnum.NotReceived,
       };
 
