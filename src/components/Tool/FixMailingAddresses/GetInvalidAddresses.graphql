@@ -32,26 +32,3 @@ fragment ContactAddress on Address {
   createdAt
   historic
 }
-
-mutation UpdateContactAddress(
-  $accountListId: ID!
-  $attributes: AddressUpdateInput!
-) {
-  updateAddress(
-    input: { accountListId: $accountListId, attributes: $attributes }
-  ) {
-    address {
-      city
-      country
-      historic
-      id
-      location
-      metroArea
-      postalCode
-      primaryMailingAddress
-      region
-      state
-      street
-    }
-  }
-}
