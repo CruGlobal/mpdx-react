@@ -23,7 +23,7 @@ const ListContainer: React.ComponentType<ListProps> = React.forwardRef(
   ),
 );
 
-const ItemWithBorders = styled(ListItem, {
+export const ItemWithBorders = styled(ListItem, {
   shouldForwardProp: (prop) => prop !== 'disableHover',
 })<{ disableHover?: boolean }>(({ disableHover }) => ({
   padding: `${padding}px`,
@@ -67,6 +67,7 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
 export interface InfiniteListProps<T, C> {
   loading: boolean;
   EmptyPlaceholder?: ReactElement | null;
+  ItemOverride?: React.ComponentType<ItemProps> | null;
   itemContent: ItemContent<T, C>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
@@ -78,6 +79,7 @@ export const InfiniteList = <T, C>({
   loading,
   data = [],
   EmptyPlaceholder = null,
+  ItemOverride = null,
   context,
   groupBy,
   itemContent,
@@ -103,14 +105,9 @@ export const InfiniteList = <T, C>({
       Footer: loading ? Loading : undefined,
       EmptyPlaceholder: loading ? undefined : () => EmptyPlaceholder,
       List: ListContainer,
-      Item,
+      Item: ItemOverride ?? Item,
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
-    },
-    scrollSeekConfiguration: {
-      enter: (velocity) => Math.abs(velocity) > 200,
-      exit: (velocity) => Math.abs(velocity) < 10,
-      ...props.scrollSeekConfiguration,
     },
     overscan: 2000,
   };
