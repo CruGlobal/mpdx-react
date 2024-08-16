@@ -1,5 +1,7 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
+  AlertTitle,
   Autocomplete,
   Box,
   Button,
@@ -16,6 +18,7 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
+  Link,
   MenuItem,
   Radio,
   RadioGroup,
@@ -46,6 +49,7 @@ const ContainerBox = styled(Grid)(({ theme }) => ({
   padding: theme.spacing(3),
   width: '70%',
   display: 'flex',
+  minWidth: '450px',
   [theme.breakpoints.down('lg')]: {
     width: '100%',
   },
@@ -338,7 +342,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                 />
                               </RadioGroup>
                             </FormControl>
-                            {!!selectedAccount?.contactGroups.length && (
+                            {!!selectedAccount?.contactGroups.length ? (
                               <Box
                                 sx={{
                                   display:
@@ -459,7 +463,29 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                   </Box>
                                 </BorderBox>
                               </Box>
-                            )}
+                            ) : importByGroup === 'true' ? (
+                              <Alert severity="info">
+                                <AlertTitle>
+                                  {t(
+                                    'You have no Google Contact groups/labels',
+                                  )}
+                                </AlertTitle>
+                                <Typography>
+                                  {t(
+                                    "If you'd like to import contacts by group/label, please add labels here: ",
+                                  )}
+                                </Typography>
+                                {
+                                  <Link
+                                    href={'https://contacts.google.com'}
+                                    underline="hover"
+                                    sx={{ fontWeight: 'bold' }}
+                                  >
+                                    {t('contacts.google.com')}
+                                  </Link>
+                                }
+                              </Alert>
+                            ) : null}
                             <Box sx={{ padding: theme.spacing(2) }}>
                               <Section>
                                 <BoldTypography>
