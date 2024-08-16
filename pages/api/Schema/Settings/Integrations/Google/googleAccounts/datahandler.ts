@@ -1,14 +1,16 @@
 import { fetchAllData } from 'src/lib/deserializeJsonApi';
 
 export interface GoogleAccountsResponse {
-  attributes: Omit<GoogleAccountAttributes, 'id'>;
-  id: string;
-  relationships: {
-    contact_groups: {
-      data: unknown[];
+  data: {
+    attributes: Omit<GoogleAccountAttributes, 'id'>;
+    id: string;
+    relationships: {
+      contact_groups: {
+        data: unknown[];
+      };
     };
+    type: string;
   };
-  type: string;
 }
 
 export interface GoogleAccountAttributes {

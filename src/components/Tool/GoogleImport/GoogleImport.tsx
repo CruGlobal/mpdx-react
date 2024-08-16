@@ -25,11 +25,11 @@ import {
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
-import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { ContactTagInput } from 'src/components/Tags/Tags';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
@@ -81,25 +81,10 @@ const Section = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
-const useStyles = makeStyles()(() => ({
-  bulletList: {
-    margin: '0 0 10px 15px',
-    '> li': {
-      margin: '5px',
-    },
-  },
-  divider: {
-    margin: theme.spacing(2, 0),
-  },
-  headerTitle: {
-    fontSize: '1rem!important',
-  },
-}));
-
 const googleImportSchema = yup.object({
   tagsForAllList: yup.array().of(yup.string()).default([]),
   override: yup.string().required(),
-  importAll: yup.string().required(),
+  importByGroup: yup.string().required(),
   groupTags: yup.object(),
   groups: yup.array().of(yup.string()).default([]),
 });
@@ -111,13 +96,12 @@ interface Props {
 }
 
 const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
-  const { classes } = useStyles();
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [showConfirmAllModal, setShowConfirmAllModal] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState('');
+  const [selectedAccountId, setSelectedAccountId] = useState('');
 
   const { data: contactTagsList, loading: contactTagsListLoading } =
     useGetContactTagListQuery({
@@ -129,32 +113,36 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGoogleContactGroupsQuery();
   const googleAccounts = data?.googleAccounts;
 
-  const account = useMemo(() => {
-    return googleAccounts?.find((account) => account?.id === selectedAccount);
-  }, [googleAccounts, selectedAccount]);
+  const selectedAccount = useMemo(() => {
+    return googleAccounts?.find(
+      (selectedAccount) => selectedAccount?.id === selectedAccountId,
+    );
+  }, [googleAccounts, selectedAccountId]);
 
   const initialValues = useMemo(() => {
     const initialGroupTags =
-      account?.contactGroups.reduce((acc, group) => {
-        if (group?.id) {acc[group?.id] = [group?.tag];}
+      selectedAccount?.contactGroups.reduce((acc, group) => {
+        if (group?.id) {
+          acc[group?.id] = [group?.tag];
+        }
         return acc;
       }, {}) || {};
     return {
       tagsForAllList: [],
       override: 'false',
-      importAll: 'false',
+      importByGroup: 'true',
       groupTags: initialGroupTags,
       groups: [] as string[],
     };
-  }, [account]);
+  }, [selectedAccount]);
 
   useEffect(() => {
-    googleAccounts?.length && setSelectedAccount(googleAccounts[0]?.id || '');
+    googleAccounts?.length && setSelectedAccountId(googleAccounts[0]?.id || '');
   }, [googleAccounts]);
 
   const handleCloseModal = () => {
+    window.location.href = `/accountLists/${accountListId}/tools`;
     setShowModal(false);
-    window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
     setRedirecting(true);
   };
 
@@ -176,7 +164,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
         <>
           <Grid item xs={12}>
             <Typography variant="h4">{t('Import from Google')}</Typography>
-            <Divider className={classes.divider} />
+            <Divider sx={{ margin: theme.spacing(2, 0) }} />
           </Grid>
           {loading && !data && (
             <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
@@ -184,7 +172,19 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
 
           {!loading && data && (
             <>
-              {!data?.googleAccounts.length && <NoData tool="googleImport" />}
+              {!data?.googleAccounts.length && (
+                <NoData
+                  tool="googleImport"
+                  button={
+                    <Button
+                      href={`/accountLists/${accountListId}/settings/integrations?selectedTab=google`}
+                      variant="contained"
+                    >
+                      {t('Connect Google Account')}
+                    </Button>
+                  }
+                />
+              )}
               {!!data?.googleAccounts.length && (
                 <>
                   {data?.googleAccounts.length > 1 && (
@@ -196,17 +196,17 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                         {t('Account to Import From')}
                       </BoldTypography>
                       <Select
-                        value={selectedAccount ?? ''}
-                        onChange={(e) => setSelectedAccount(e.target.value)}
+                        value={selectedAccountId ?? ''}
+                        onChange={(e) => setSelectedAccountId(e.target.value)}
                         fullWidth
                       >
-                        {googleAccounts?.map((account) => (
+                        {googleAccounts?.map((selectedAccount) => (
                           <MenuItem
-                            value={account?.id}
-                            key={account?.id}
-                            aria-label={account?.email}
+                            value={selectedAccount?.id}
+                            key={selectedAccount?.id}
+                            aria-label={selectedAccount?.email}
                           >
-                            {account?.email}
+                            {selectedAccount?.email}
                           </MenuItem>
                         ))}
                       </Select>
@@ -223,15 +223,15 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                       values: {
                         tagsForAllList,
                         override,
-                        importAll,
+                        importByGroup,
                         groupTags,
                         groups,
                       },
                       handleSubmit,
+                      submitForm,
                       isSubmitting,
                       setFieldValue,
                       handleChange,
-                      isValid,
                     }): ReactElement => (
                       <form noValidate style={{ width: '100%' }}>
                         <Card>
@@ -243,21 +243,21 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                               <Trans
                                 defaults="Importing from <bold>{{email}}</bold>"
                                 shouldUnescape
-                                values={{ email: account?.email }}
+                                values={{ email: selectedAccount?.email }}
                                 components={{ bold: <strong /> }}
                               />
                             }
                             action={
                               <Button
-                                href={`${process.env.SITE_URL}/accountLists/${accountListId}/settings/integrations`}
+                                href={`/accountLists/${accountListId}/settings/integrations?selectedTab=google`}
                                 size="small"
                                 variant="contained"
                               >
                                 {t('Connect Another Google Account')}
                               </Button>
                             }
-                            classes={{
-                              title: classes.headerTitle,
+                            titleTypographyProps={{
+                              fontSize: '1rem! important',
                             }}
                           ></CardHeader>
                           <CardContent>
@@ -265,17 +265,17 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                               <RadioGroup
                                 aria-labelledby="import-all-radio-group"
                                 defaultValue="false"
-                                name="importAll"
-                                onChange={handleChange('importAll')}
-                                value={importAll}
+                                name="importByGroup"
+                                onChange={handleChange('importByGroup')}
+                                value={importByGroup}
                               >
                                 <FormControlLabel
-                                  value="true"
+                                  value="false"
                                   control={<Radio />}
                                   label={t('Import all contacts')}
                                 />
                                 <FormControlLabel
-                                  value="false"
+                                  value="true"
                                   control={<Radio />}
                                   label={t(
                                     'Only import contacts from certain groups',
@@ -283,11 +283,11 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                 />
                               </RadioGroup>
                             </FormControl>
-                            {!!account?.contactGroups.length && (
+                            {!!selectedAccount?.contactGroups.length && (
                               <Box
                                 sx={{
                                   display:
-                                    importAll === 'false' ? 'block' : 'none',
+                                    importByGroup === 'true' ? 'block' : 'none',
                                 }}
                               >
                                 <BorderBox>
@@ -316,7 +316,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                             onClick={() =>
                                               setFieldValue(
                                                 'groups',
-                                                account?.contactGroups.map(
+                                                selectedAccount?.contactGroups.map(
                                                   (group) => group?.id,
                                                 ),
                                               )
@@ -335,12 +335,8 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                       </Grid>
                                     </Grid>
                                   </HeaderBox>
-                                  <Box
-                                    sx={{
-                                      marginX: theme.spacing(2),
-                                    }}
-                                  >
-                                    {account?.contactGroups.map(
+                                  <Box mx={2}>
+                                    {selectedAccount?.contactGroups.map(
                                       (group, idx) => (
                                         <Grid
                                           container
@@ -470,48 +466,34 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                             <CardActions>
                               <Button
                                 variant="contained"
-                                disabled={!isValid || isSubmitting}
+                                disabled={
+                                  (importByGroup === 'true' &&
+                                    !groups.length) ||
+                                  isSubmitting
+                                }
                                 onClick={() => {
-                                  importAll
-                                    ? setShowConfirmAllModal(true)
-                                    : handleSubmit();
+                                  if (importByGroup === 'false') {
+                                    setShowConfirmAllModal(true);
+                                  } else {
+                                    handleSubmit();
+                                  }
                                 }}
                               >
-                                Import
+                                {t('Import')}
                               </Button>
                             </CardActions>
                           </CardContent>
                         </Card>
-                        <Modal
+                        <Confirmation
                           isOpen={showConfirmAllModal}
+                          title={t('Confirm Import All')}
+                          message={t(
+                            'Are you sure you want to import all contacts? This may import many contacts that you do not wish to have in {{appName}}. Many users find it more helpful to use the "Only import contacts from certain groups" option.',
+                            { appName },
+                          )}
                           handleClose={() => setShowConfirmAllModal(false)}
-                          title={t('Confirm')}
-                        >
-                          <>
-                            <DialogContent dividers>
-                              <DialogContentText
-                                component="div"
-                                sx={{ color: theme.palette.primary.dark }}
-                              >
-                                {t(
-                                  'Are you sure you want to import all contacts? This may import many contacts that you do not wish to have in {{appName}}. Many users find it more helpful to use the "Only import contacts from certain groups" option.',
-                                  { appName },
-                                )}
-                              </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button
-                                variant="contained"
-                                onClick={() => {
-                                  setShowConfirmAllModal(false);
-                                  handleSubmit();
-                                }}
-                              >
-                                Ok
-                              </Button>
-                            </DialogActions>
-                          </>
-                        </Modal>
+                          mutation={submitForm}
+                        />
                       </form>
                     )}
                   </Formik>
@@ -521,7 +503,6 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
           )}
         </>
       </ContainerBox>
-
       <Modal
         isOpen={showModal}
         handleClose={handleCloseModal}
@@ -541,7 +522,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
           </DialogContent>
           <DialogActions>
             <Button variant="contained" onClick={handleCloseModal}>
-              Ok
+              {t('Ok')}
             </Button>
           </DialogActions>
         </>

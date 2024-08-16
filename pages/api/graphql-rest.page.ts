@@ -37,7 +37,10 @@ import {
   GoogleAccountIntegrations,
   GoogleAccountIntegrationsResponse,
 } from './Schema/Settings/Integrations/Google/googleAccountIntegrations/datahandler';
-import { GoogleAccounts } from './Schema/Settings/Integrations/Google/googleAccounts/datahandler';
+import {
+  GoogleAccounts,
+  GoogleAccountsResponse,
+} from './Schema/Settings/Integrations/Google/googleAccounts/datahandler';
 import { SyncGoogleIntegration } from './Schema/Settings/Integrations/Google/syncGoogleIntegration/datahandler';
 import {
   UpdateGoogleIntegration,
@@ -897,10 +900,13 @@ class MpdxRestApi extends RESTDataSource {
   //
 
   async googleAccounts() {
-    const response = await this.get('user/google_accounts', {
-      sort: 'created_at',
-      include: 'contact_groups',
-    });
+    const response: GoogleAccountsResponse[] = await this.get(
+      'user/google_accounts',
+      {
+        sort: 'created_at',
+        include: 'contact_groups',
+      },
+    );
     return GoogleAccounts(response);
   }
 
