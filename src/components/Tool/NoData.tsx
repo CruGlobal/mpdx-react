@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import {
   mdiAccountGroup,
   mdiCurrencyUsd,
@@ -16,6 +16,7 @@ import { NullStateBox } from '../Shared/Filters/NullState/NullStateBox';
 
 interface Props {
   tool: string;
+  button?: ReactElement;
 }
 
 interface ToolText {
@@ -83,12 +84,13 @@ const textMap: { [key: string]: ToolText } = {
   },
 };
 
-const NoData: React.FC<Props> = ({ tool }: Props) => {
+const NoData: React.FC<Props> = ({ tool, button }: Props) => {
   return (
     <NullStateBox data-testid={`${tool}-null-state`}>
       <Icon path={textMap[tool].icon} size={1.5} />
       <Typography variant="h5">{textMap[tool].primaryText}</Typography>
-      <Typography>{textMap[tool].secondaryText}</Typography>
+      <Typography my={1}>{textMap[tool].secondaryText}</Typography>
+      {button}
     </NullStateBox>
   );
 };
