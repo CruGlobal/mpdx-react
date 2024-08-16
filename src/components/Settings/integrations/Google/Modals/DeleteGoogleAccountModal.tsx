@@ -8,6 +8,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import { useDeleteGoogleAccountMutation } from '../GoogleAccounts.generated';
 
@@ -24,6 +25,7 @@ export const DeleteGoogleAccountModal: React.FC<
   DeleteGoogleAccountModalProps
 > = ({ account, handleClose }) => {
   const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -45,7 +47,7 @@ export const DeleteGoogleAccountModal: React.FC<
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t('{{appName}} removed your integration with Google.'),
+          t('{{appName}} removed your integration with Google.', { appName }),
           {
             variant: 'success',
           },
@@ -54,7 +56,10 @@ export const DeleteGoogleAccountModal: React.FC<
       },
       onError: () => {
         enqueueSnackbar(
-          t("{{appName}} couldn't save your configuration changes for Google."),
+          t(
+            "{{appName}} couldn't save your configuration changes for Google.",
+            { appName },
+          ),
           {
             variant: 'error',
           },
