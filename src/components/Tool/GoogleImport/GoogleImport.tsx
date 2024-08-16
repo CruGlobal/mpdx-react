@@ -24,6 +24,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
+import { getSession } from 'next-auth/react';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
@@ -83,8 +85,8 @@ const Section = styled(Box)(({ theme }) => ({
 
 const googleImportSchema = yup.object({
   tagsForAllList: yup.array().of(yup.string()).default([]),
-  override: yup.string().required(),
-  importByGroup: yup.string().required(),
+  override: yup.string(),
+  importByGroup: yup.string(),
   groupTags: yup.object(),
   groups: yup.array().of(yup.string()).default([]),
 });
@@ -98,6 +100,7 @@ interface Props {
 const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const [showModal, setShowModal] = useState(false);
   const [showConfirmAllModal, setShowConfirmAllModal] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
@@ -150,8 +153,60 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
     attributes: Attributes,
     { resetForm },
   ): Promise<void> => {
+    setShowConfirmAllModal(false);
+    const session = await getSession();
+    const apiToken = session?.user?.apiToken;
+
+    const groupTags = Object.entries(attributes.groupTags).reduce(
+      (result, value: [string, string[]]) => {
+        result[value[0]] = value[1].join(',');
+        return result;
+      },
+      {},
+    );
+
+    const importData = {
+      data: {
+        attributes: {
+          groups: attributes.groups,
+          import_by_group: attributes.importByGroup,
+          override: attributes.override,
+          source: 'google',
+          tag_list: attributes.tagsForAllList.join(','),
+          group_tags: groupTags,
+        },
+        relationships: {
+          source_account: {
+            data: {
+              type: 'google_accounts',
+              id: selectedAccountId,
+            },
+          },
+        },
+        type: 'imports',
+      },
+    };
+    await fetch(
+      `${process.env.REST_API_URL}account_lists/${accountListId}/imports/google`,
+      {
+        method: 'POST',
+        body: JSON.stringify(importData),
+        headers: {
+          authorization: `Bearer ${apiToken}`,
+          'content-type': 'application/vnd.api+json',
+        },
+      },
+    ).catch((err) => {
+      enqueueSnackbar(t('Import has failed'), {
+        variant: 'error',
+      });
+      throw new Error(err);
+    });
+
+    enqueueSnackbar(t('Import has started'), {
+      variant: 'success',
+    });
     resetForm();
-    alert('import mutation TODO');
     setShowModal(true);
   };
 
