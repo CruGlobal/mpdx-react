@@ -32,16 +32,19 @@ export const useAutoScroll = ({
 
   const handleScroll: FrameRequestCallback = useCallback(
     (time) => {
+      if (!enabled || !containerRef.current) {
+        // Reset the elapsed time counter when disabled. Otherwise, when it is enabled again, the first frame will
+        // calculate the elapsed time as the time since the last time it was enabled.
+        lastFrameTime.current = null;
+        return;
+      }
+
       // Time since handleScroll was last called in seconds
       const elapsedTime =
         lastFrameTime.current === null
           ? 0
           : (time - lastFrameTime.current) / 1000;
       lastFrameTime.current = time;
-
-      if (!enabled || !containerRef.current) {
-        return;
-      }
 
       const containerRect = containerRef.current.getBoundingClientRect();
       const distanceFromLeftEdge = mouseX - containerRect.x;
@@ -60,12 +63,6 @@ export const useAutoScroll = ({
     },
     [enabled, mouseX],
   );
-
-  // Reset the elapsed time counter when disabled. Otherwise, when it is enabled again, the first frame will calculate
-  // the elapsed time as the time since the last time it was enabled.
-  useEffect(() => {
-    lastFrameTime.current = null;
-  }, [enabled]);
 
   useEffect(() => {
     // Schedule the first scroll check
