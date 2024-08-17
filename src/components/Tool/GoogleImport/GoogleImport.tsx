@@ -148,9 +148,9 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
   }, [googleAccounts]);
 
   const handleCloseModal = () => {
-    window.location.href = `/accountLists/${accountListId}/tools`;
     setShowModal(false);
     setRedirecting(true);
+    window.location.href = `/accountLists/${accountListId}/tools`;
   };
 
   const onSubmit = async (
