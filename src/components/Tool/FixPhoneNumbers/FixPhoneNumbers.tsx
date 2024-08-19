@@ -7,19 +7,25 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  NativeSelect,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
+import {
+  PersonPhoneNumberInput,
+  PersonUpdateInput,
+} from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { StyledInput } from '../StyledInput';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
 import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -48,15 +54,6 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
   },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    paddingRight: theme.spacing(1.5),
-    color: 'white',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(2),
-    },
-  },
   buttonIcon: {
     marginRight: theme.spacing(1),
   },
@@ -71,16 +68,15 @@ const useStyles = makeStyles()(() => ({
       alignItems: 'start',
     },
   },
-  nativeSelect: {
+  select: {
     minWidth: theme.spacing(20),
-    width: '10%',
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      maxWidth: '200px',
+      margin: `${theme.spacing(1)} auto 0`,
     },
   },
 }));
@@ -108,7 +104,7 @@ export interface PhoneNumberData {
   destroy?: boolean;
 }
 
-interface PersonPhoneNumbers {
+export interface PersonPhoneNumbers {
   phoneNumbers: PhoneNumberData[];
   toDelete: PersonPhoneNumberInput[];
 }
@@ -123,11 +119,13 @@ const FixPhoneNumbers: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-
+  const { enqueueSnackbar } = useSnackbar();
   const [defaultSource, setDefaultSource] = useState('MPDX');
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
+
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
@@ -162,6 +160,34 @@ const FixPhoneNumbers: React.FC<Props> = ({
       ),
     [loading],
   );
+
+  const determineBulkDataToSend = (
+    dataState: { [key: string]: PersonPhoneNumbers },
+    defaultSource: string,
+  ): PersonUpdateInput[] => {
+    const dataToSend = [] as PersonUpdateInput[];
+
+    Object.entries(dataState).forEach((value) => {
+      const primaryNumber = value[1].phoneNumbers.find(
+        (number) => number.source === defaultSource,
+      );
+      if (primaryNumber) {
+        dataToSend.push({
+          id: value[0],
+          phoneNumbers: value[1].phoneNumbers.map(
+            (number) =>
+              ({
+                id: number.id,
+                primary: number.id === primaryNumber.id,
+                number: number.number,
+                validValues: true,
+              } as PersonPhoneNumberInput),
+          ),
+        });
+      }
+    });
+    return dataToSend;
+  };
 
   const handleDeleteModalOpen = (
     personId: string,
@@ -229,10 +255,83 @@ const FixPhoneNumbers: React.FC<Props> = ({
     setDataState(temp);
   };
 
-  const handleSourceChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
+  const handleSourceChange = (event: SelectChangeEvent<string>): void => {
     setDefaultSource(event.target.value);
+  };
+
+  const updatePhoneNumber = async (
+    personId: string,
+    name: string,
+    numbers: PhoneNumberData[],
+  ): Promise<void> => {
+    const attributes = [
+      {
+        phoneNumbers: numbers.map((phoneNumber) => ({
+          id: phoneNumber.id,
+          primary: phoneNumber.primary,
+          number: phoneNumber.number,
+          validValues: true,
+        })),
+        id: personId,
+      },
+    ];
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes,
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${personId}` });
+      },
+      onError() {
+        enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted() {
+        enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
+  const handleBulkConfirm = async () => {
+    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
+
+    if (!dataToSend.length) {
+      return;
+    }
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes: dataToSend,
+        },
+      },
+      update: (cache) => {
+        data?.people.nodes.forEach((person) => {
+          cache.evict({ id: `Person:${person.id}` });
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t(`Phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+      },
+    });
   };
 
   return (
@@ -250,7 +349,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                   <Typography>
                     <strong>
                       {t('You have {{amount}} phone numbers to confirm.', {
-                        amount: data.people.nodes.length,
+                        amount: data.people.totalCount,
                       })}
                     </strong>
                   </Typography>
@@ -262,33 +361,28 @@ const FixPhoneNumbers: React.FC<Props> = ({
                   <Box className={classes.defaultBox}>
                     <Typography>{t('Default Primary Source:')}</Typography>
 
-                    <NativeSelect
-                      input={
-                        <StyledInput
-                          inputProps={{
-                            'data-testid': 'source-select',
-                          }}
-                        />
-                      }
-                      className={classes.nativeSelect}
-                      value={defaultSource}
+                    <Select
+                      className={classes.select}
                       data-testid="source-select"
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                      value={defaultSource}
+                      onChange={(event: SelectChangeEvent<string>) =>
                         handleSourceChange(event)
                       }
+                      size="small"
                     >
-                      <option value="MPDX" data-testid="source-option-mpdx">
+                      <MenuItem value="MPDX" data-testid="source-option-mpdx">
                         MPDX
-                      </option>
-                      <option
+                      </MenuItem>
+                      <MenuItem
                         value="DataServer"
                         data-testid="source-option-dataserver"
                       >
                         DataServer
-                      </option>
-                    </NativeSelect>
+                      </MenuItem>
+                    </Select>
                     <Button
-                      className={classes.buttonBlue}
+                      variant="contained"
+                      onClick={handleBulkConfirm}
                       data-testid="source-button"
                     >
                       <Icon
@@ -297,7 +391,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                         className={classes.buttonIcon}
                       />
                       {t('Confirm {{amount}} as {{source}}', {
-                        amount: data.people.nodes.length,
+                        amount: data.people.totalCount,
                         source: defaultSource,
                       })}
                     </Button>
@@ -317,6 +411,8 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     handleAdd={handleAdd}
                     handleChangePrimary={handleChangePrimary}
                     setContactFocus={setContactFocus}
+                    avatar={person?.avatar}
+                    handleUpdate={updatePhoneNumber}
                   />
                 ))}
               </Grid>
@@ -326,7 +422,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     <Trans
                       defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
                       shouldUnescape
-                      values={{ value: data.people.nodes.length }}
+                      values={{ value: data.people.totalCount }}
                       components={{ bold: <strong /> }}
                     />
                   </Typography>

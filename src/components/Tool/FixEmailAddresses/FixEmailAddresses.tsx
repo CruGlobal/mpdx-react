@@ -5,20 +5,36 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  NativeSelect,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { PersonEmailAddressInput } from 'src/graphql/types.generated';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import {
+  PersonInvalidEmailFragment,
+  useGetInvalidEmailAddressesQuery,
+  useUpdateEmailAddressesMutation,
+  useUpdatePeopleMutation,
+} from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import {
+  PersonEmailAddressInput,
+  PersonUpdateInput,
+} from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
-import { StyledInput } from '../StyledInput';
-import DeleteModal from './DeleteModal';
-import { FixEmailAddressPerson } from './FixEmailAddressPerson';
-import { useGetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
+import { FixEmailAddressPerson } from './FixEmailAddressPerson/FixEmailAddressPerson';
 
 const Container = styled(Box)(() => ({
   padding: theme.spacing(3),
@@ -38,7 +54,7 @@ const FixEmailAddressesWrapper = styled(Grid)(() => ({
   },
 }));
 
-const SourceSelect = styled(NativeSelect)(() => ({
+const SourceSelect = styled(Select)(() => ({
   minWidth: theme.spacing(20),
   width: '10%',
   marginLeft: theme.spacing(2),
@@ -81,22 +97,12 @@ const DefaultSourceWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-export interface ModalState {
-  open: boolean;
-  personId: string;
-  emailIndex: number;
-  emailAddress: string;
-}
-
-const defaultDeleteModalState = {
-  open: false,
-  personId: '',
-  emailIndex: 0,
-  emailAddress: '',
-};
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover={true} {...props} />
+);
 
 export interface EmailAddressData {
-  id?: string;
+  id: string;
   primary: boolean;
   updatedAt: string;
   source: string;
@@ -104,9 +110,8 @@ export interface EmailAddressData {
   destroy?: boolean;
 }
 
-interface PersonEmailAddresses {
+export interface PersonEmailAddresses {
   emailAddresses: EmailAddressData[];
-  toDelete: PersonEmailAddressInput[];
 }
 
 interface FixEmailAddressesProps {
@@ -114,67 +119,85 @@ interface FixEmailAddressesProps {
   setContactFocus: SetContactFocus;
 }
 
+//TODO: Try to make bulk confirm logic more similar across tools, perhaps we can factor out a common function
+export const determineBulkDataToSend = (
+  dataState: {
+    [key: string]: PersonEmailAddresses;
+  },
+  defaultSource: string,
+  appName: string,
+): PersonUpdateInput[] => {
+  const dataToSend = [] as PersonUpdateInput[];
+
+  Object.entries(dataState).forEach((value) => {
+    const primaryEmailAddress = value[1].emailAddresses.find(
+      (email) =>
+        email.source === defaultSource ||
+        (defaultSource === appName && email.source === 'MPDX'),
+    );
+    if (primaryEmailAddress) {
+      dataToSend.push({
+        id: value[0],
+        emailAddresses: value[1].emailAddresses.map(
+          (emailAddress) =>
+            ({
+              email: emailAddress.email,
+              id: emailAddress.id,
+              primary: emailAddress.id === primaryEmailAddress.id,
+              validValues: true,
+            } as PersonEmailAddressInput),
+        ),
+      });
+    }
+  });
+  return dataToSend;
+};
+
 export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
   setContactFocus,
 }) => {
-  const [defaultSource, setDefaultSource] = useState('MPDX');
-  const [deleteModalState, setDeleteModalState] = useState<ModalState>(
-    defaultDeleteModalState,
-  );
+  const appName = process.env.APP_NAME ?? 'MPDX';
+  const [defaultSource, setDefaultSource] = useState(appName);
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { data, loading } = useGetInvalidEmailAddressesQuery({
+  const { data, loading, fetchMore } = useGetInvalidEmailAddressesQuery({
     variables: { accountListId },
   });
+  const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
+  const [updatePeople] = useUpdatePeopleMutation();
 
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
   }>({});
+  const [sourceOptions, setSourceOptions] = useState<string[]>([appName]);
 
   // Create a mutable copy of the query data and store in the state
-  useEffect(
-    () =>
-      setDataState(
-        data
-          ? data.people.nodes?.reduce<{ [key: string]: PersonEmailAddresses }>(
-              (map, person) => ({
-                ...map,
-                [person.id]: {
-                  emailAddresses: person.emailAddresses.nodes.map(
-                    (emailAddress) => ({
-                      id: emailAddress.id,
-                      primary: emailAddress.primary,
-                      updatedAt: emailAddress.updatedAt,
-                      source: emailAddress.source,
-                      email: emailAddress.email,
-                    }),
-                  ),
-                  toDelete: [],
+  useEffect(() => {
+    const existingSources = new Set<string>();
+    existingSources.add(appName);
+
+    const newDataState = data
+      ? data.people.nodes?.reduce<{ [key: string]: PersonEmailAddresses }>(
+          (map, person) => ({
+            ...map,
+            [person.id]: {
+              emailAddresses: person.emailAddresses.nodes.map(
+                (emailAddress) => {
+                  existingSources.add(emailAddress.source);
+                  return { ...emailAddress };
                 },
-              }),
-              {},
-            )
-          : {},
-      ),
-    [loading],
-  );
-
-  const handleDeleteModalOpen = (
-    personId: string,
-    emailIndex: number,
-  ): void => {
-    setDeleteModalState({
-      open: true,
-      personId: personId,
-      emailIndex: emailIndex,
-      emailAddress: dataState[personId].emailAddresses[emailIndex].email,
-    });
-  };
-
-  const handleDeleteModalClose = (): void => {
-    setDeleteModalState(defaultDeleteModalState);
-  };
+              ),
+            },
+          }),
+          {},
+        )
+      : {};
+    setDataState(newDataState);
+    setSourceOptions([...existingSources]);
+  }, [loading, data]);
 
   // Update the state with the textfield's value
   const handleChange = (
@@ -187,64 +210,123 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
     setDataState(temp);
   };
 
-  // Delete function called after confirming with the delete modal
-  const handleDelete = (): void => {
-    const temp = { ...dataState };
-    const deleting = temp[deleteModalState.personId].emailAddresses.splice(
-      deleteModalState.emailIndex,
-      1,
-    )[0];
-    deleting.destroy = true;
-    deleting.primary &&
-      (temp[deleteModalState.personId].emailAddresses[0].primary = true); // If the deleted email was primary, set the new first index to primary
-    deleting.id &&
-      temp[deleteModalState.personId].toDelete.push({
-        destroy: true,
-        id: deleting.id,
-      }); //Only destroy the email if it already exists (has an ID)
-    setDataState(temp);
-    handleDeleteModalClose();
-  };
-
-  // Add a new email address to the state
-  const handleAdd = (personId: string, email: string): void => {
-    const temp = { ...dataState };
-    temp[personId].emailAddresses.push({
-      updatedAt: new Date().toISOString(),
-      email: email,
-      primary: false,
-      source: 'MPDX',
-    });
-    setDataState(temp);
-  };
-
   // Change the primary address in the state
   const handleChangePrimary = (personId: string, emailIndex: number): void => {
     const temp = { ...dataState };
-    temp[personId].emailAddresses = temp[personId].emailAddresses.map(
-      (email, index) => ({
-        ...email,
-        primary: index === emailIndex ? true : false,
-      }),
-    );
+    if (temp[personId]) {
+      temp[personId].emailAddresses = temp[personId].emailAddresses.map(
+        (email, index) => ({
+          ...email,
+          primary: index === emailIndex,
+        }),
+      );
+    }
     setDataState(temp);
   };
 
-  const handleSourceChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
-    setDefaultSource(event.target.value);
+  const handleSourceChange = (event: SelectChangeEvent<unknown>): void => {
+    setDefaultSource(event.target.value as string);
+  };
+
+  const handleSingleConfirm = async (
+    person: PersonInvalidEmailFragment,
+    emails: EmailAddressData[],
+  ) => {
+    const personName = `${person.firstName} ${person.lastName}`;
+    const emailAddresses = [] as PersonEmailAddressInput[];
+    emails.map((emailAddress) => {
+      emailAddresses.push({
+        email: emailAddress.email,
+        id: emailAddress.id,
+        primary: emailAddress.primary,
+        validValues: true,
+      });
+    });
+
+    await updateEmailAddressesMutation({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            id: person.id,
+            emailAddresses,
+          },
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${person.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully updated email addresses for ${personName}`),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating email addresses for ${personName}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
+  const handleBulkConfirm = async () => {
+    const dataToSend = determineBulkDataToSend(
+      dataState,
+      defaultSource ?? '',
+      appName,
+    );
+
+    if (dataToSend.length) {
+      await updatePeople({
+        variables: {
+          input: {
+            accountListId,
+            attributes: dataToSend,
+          },
+        },
+        update: (cache) => {
+          data?.people.nodes.forEach((person) => {
+            cache.evict({ id: `Person:${person.id}` });
+          });
+          cache.gc();
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t(`Successfully updated email addresses`), {
+            variant: 'success',
+          });
+        },
+        onError: () => {
+          enqueueSnackbar(t(`Error updating email addresses`), {
+            variant: 'error',
+            autoHideDuration: 7000,
+          });
+        },
+      });
+    } else {
+      enqueueSnackbar(
+        t(`No ${defaultSource} primary email address exists to update`),
+        {
+          variant: 'warning',
+          autoHideDuration: 7000,
+        },
+      );
+    }
   };
 
   return (
     <Container>
-      {!loading && data && dataState ? (
+      {data && dataState ? (
         <FixEmailAddressesWrapper container>
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
             <ContentDivider />
             <Box mb={2}>
-              {data.people.nodes.length > 0 && (
+              {!!data.people.nodes.length && (
                 <>
                   <Typography>
                     <strong>
@@ -262,16 +344,19 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     <Typography>{t('Default Primary Source:')}</Typography>
 
                     <SourceSelect
-                      input={<StyledInput />}
                       value={defaultSource}
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                        handleSourceChange(event)
-                      }
+                      onChange={handleSourceChange}
+                      size="small"
                     >
-                      <option value="MPDX">MPDX</option>
-                      <option value="DataServer">DataServer</option>
+                      {sourceOptions.map((source) => (
+                        <MenuItem key={source} value={source}>
+                          {source}
+                        </MenuItem>
+                      ))}
                     </SourceSelect>
-                    <ConfirmButton>
+                    <ConfirmButton
+                      onClick={() => setShowBulkConfirmModal(true)}
+                    >
                       <ConfirmButtonIcon />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.nodes.length,
@@ -283,31 +368,59 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
               )}
             </Box>
           </Grid>
-          {data.people.nodes.length > 0 ? (
+          {!!data.people.nodes.length ? (
             <>
-              <Grid item xs={12}>
-                {data?.people.nodes.map((person) => (
-                  <FixEmailAddressPerson
-                    name={`${person.firstName} ${person.lastName}`}
-                    key={person.id}
-                    personId={person.id}
-                    emails={dataState[person.id]?.emailAddresses || []}
-                    toDelete={dataState[person.id]?.toDelete}
-                    handleChange={handleChange}
-                    handleDelete={handleDeleteModalOpen}
-                    handleAdd={handleAdd}
-                    handleChangePrimary={handleChangePrimary}
-                    setContactFocus={setContactFocus}
-                  />
-                ))}
-              </Grid>
+              <InfiniteList
+                loading={loading}
+                data={data.people.nodes}
+                itemContent={(index, person) => (
+                  <Grid
+                    key={index}
+                    item
+                    xs={12}
+                    sx={{
+                      marginBottom: `${theme.spacing(2)}`,
+                    }}
+                  >
+                    <FixEmailAddressPerson
+                      person={person}
+                      key={person.id}
+                      dataState={dataState}
+                      accountListId={accountListId}
+                      handleChange={handleChange}
+                      handleChangePrimary={handleChangePrimary}
+                      handleSingleConfirm={handleSingleConfirm}
+                      setContactFocus={setContactFocus}
+                    />
+                  </Grid>
+                )}
+                endReached={() =>
+                  data.people.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.people.pageInfo.endCursor },
+                  })
+                }
+                EmptyPlaceholder={<NoData tool="fixEmailAddresses" />}
+                style={{
+                  height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
+                    33,
+                  )})`,
+                  width: '100%',
+                  scrollbarWidth: 'none',
+                }}
+                ItemOverride={ItemOverride}
+                increaseViewportBy={{ top: 2000, bottom: 2000 }}
+              ></InfiniteList>
               <Grid item xs={12}>
                 <Box width="100%" display="flex" justifyContent="center">
                   <Typography>
                     <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                      defaults="Showing <bold>{{value}}</bold> of <bold>{{total}}</bold>"
                       shouldUnescape
-                      values={{ value: data.people.nodes.length }}
+                      values={{
+                        value: data.people.nodes.length,
+                        total: data.people.totalCount,
+                      }}
                       components={{ bold: <strong /> }}
                     />
                   </Typography>
@@ -319,12 +432,19 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           )}
         </FixEmailAddressesWrapper>
       ) : (
-        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
+        <CircularProgress
+          data-testid="loading"
+          style={{ marginTop: theme.spacing(3) }}
+        />
       )}
-      <DeleteModal
-        modalState={deleteModalState}
-        handleClose={handleDeleteModalClose}
-        handleDelete={handleDelete}
+      <Confirmation
+        isOpen={showBulkConfirmModal}
+        handleClose={() => setShowBulkConfirmModal(false)}
+        mutation={handleBulkConfirm}
+        title={t('Confirm')}
+        message={t(`You are updating all contacts visible on this page, setting the first ${defaultSource} email address as the
+          primary email address. If no such email address exists the contact will not be updated.
+          Are you sure you want to do this?`)}
       />
     </Container>
   );

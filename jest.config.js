@@ -42,6 +42,7 @@ const customJestConfig = {
     '!**/*.mock.*',
     '!**/*.stories.*',
     '!**/*.test.*',
+    '!**/*Mock.ts',
   ],
   testEnvironment: 'jest-environment-jsdom',
   snapshotFormat: {

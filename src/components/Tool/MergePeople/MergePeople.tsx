@@ -1,30 +1,35 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
-  Button,
   CircularProgress,
   Divider,
   Grid,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { TypeEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
+import ContactPair from '../MergeContacts/ContactPair';
+import { StickyConfirmButtons } from '../MergeContacts/StickyConfirmButtons';
+import { bulkUpdateDuplicates } from '../MergeContacts/mergeDuplicatesHelper';
 import NoData from '../NoData';
-import { useGetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
-import PersonDuplicate from './PersonDuplicates';
+import {
+  useGetPersonDuplicatesQuery,
+  useMergePeopleBulkMutation,
+  useUpdateDuplicateMutation,
+} from './GetPersonDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
     padding: theme.spacing(3),
-    width: '70%',
+    width: '80%',
     display: 'flex',
-    [theme.breakpoints.down('md')]: {
-      width: '80%',
-    },
-    [theme.breakpoints.down('sm')]: {
+    height: 'auto',
+    [theme.breakpoints.down('lg')]: {
       width: '100%',
     },
   },
@@ -39,27 +44,13 @@ const useStyles = makeStyles()(() => ({
     marginBottom: theme.spacing(2),
   },
   descriptionBox: {
-    marginBottom: theme.spacing(2),
-  },
-  footer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  confirmButton: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    width: 200,
-    color: 'white',
+    marginBottom: theme.spacing(1),
   },
 }));
 
-interface ActionType {
+export interface ActionType {
   action: string;
   mergeId?: string;
-}
-
-interface ActionsType {
-  [key: string]: ActionType;
 }
 
 interface Props {
@@ -72,44 +63,55 @@ const MergePeople: React.FC<Props> = ({
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
-  const [actions, setActions] = useState<ActionsType>({});
+  const [actions, setActions] = useState<Record<string, ActionType>>({});
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetPersonDuplicatesQuery({
     variables: { accountListId },
   });
   const { appName } = useGetAppSettings();
+  const [peopleMerge, { loading: updating }] = useMergePeopleBulkMutation();
+  const [updateDuplicates] = useUpdateDuplicateMutation();
+  const disabled = useMemo(
+    () => updating || !Object.entries(actions).length,
+    [actions, updating],
+  );
+  const totalCount = data?.personDuplicates.totalCount || 0;
+  const duplicatesDisplayedCount = data?.personDuplicates.nodes.length || 0;
 
-  const updateActions = (id1: string, id2: string, action: string): void => {
-    if (action === 'cancel') {
-      setActions((prevState) => ({
-        ...prevState,
-        [id1]: { action: '' },
-        [id2]: { action: '' },
-      }));
-    } else {
-      setActions((prevState) => ({
-        ...prevState,
-        [id1]: { action: 'merge', mergeId: id2 },
-        [id2]: { action: 'delete' },
-      }));
+  const updateActions = (
+    id1: string,
+    id2: string,
+    duplicateId: string,
+    action: string,
+  ): void => {
+    if (!updating) {
+      if (action === 'ignore') {
+        setActions((prevState) => ({
+          ...prevState,
+          [id1]: { action: '' },
+          [id2]: { action: '' },
+          [duplicateId]: { action: 'ignore' },
+        }));
+      } else {
+        setActions((prevState) => ({
+          ...prevState,
+          [id1]: { action: 'merge', mergeId: id2 },
+          [id2]: { action: 'delete' },
+        }));
+      }
     }
   };
 
-  const testFnc = (): void => {
-    for (const [id, action] of Object.entries(actions)) {
-      switch (action.action) {
-        case 'merge':
-          // eslint-disable-next-line no-console
-          console.log(`Merging ${id} with ${action.mergeId}`);
-          break;
-        case 'delete':
-          // eslint-disable-next-line no-console
-          console.log(`Deleting ${id}`);
-          break;
-        default:
-          break;
-      }
-    }
+  const handleSubmit = () => {
+    bulkUpdateDuplicates(
+      TypeEnum.Person,
+      actions,
+      peopleMerge,
+      updateDuplicates,
+      enqueueSnackbar,
+      t,
+    );
   };
 
   return (
@@ -125,71 +127,51 @@ const MergePeople: React.FC<Props> = ({
             <Typography variant="h4">{t('Merge People')}</Typography>
             <Divider className={classes.divider} />
           </Grid>
-          {data?.personDuplicates.nodes.length > 0 ? (
+          {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>
-                <Box className={classes.descriptionBox}>
+                <Box
+                  className={classes.descriptionBox}
+                  data-testid="PeopleMergeDescription"
+                >
                   <Typography>
-                    {t(
-                      'You have {{amount}} possible duplicate people. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost.',
-                      {
-                        amount: data?.personDuplicates.nodes.length,
+                    <Trans
+                      defaults="You have <bold>{{totalCount}}</bold> possible duplicate people. This is sometimes caused when you imported data into {{appName}}. We recommend reconciling these as soon as possible. Please select the duplicate that should win the merge. No data will be lost. "
+                      shouldUnescape
+                      values={{
+                        totalCount,
                         appName,
-                      },
-                    )}
+                      }}
+                      components={{ bold: <strong /> }}
+                    />
                   </Typography>
                   <Typography>
                     <strong>{t('This cannot be undone.')}</strong>
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12}>
+              <StickyConfirmButtons
+                accountListId={accountListId}
+                loading={loading}
+                updating={updating}
+                duplicatesDisplayedCount={duplicatesDisplayedCount}
+                disabled={disabled}
+                totalCount={totalCount}
+                confirmAction={handleSubmit}
+                setActions={setActions}
+              />
+              <Grid item xs={12} sx={{ margin: '0px 2px 20px 2px' }}>
                 {data?.personDuplicates.nodes.map((duplicate) => (
-                  <PersonDuplicate
+                  <ContactPair
                     key={duplicate.id}
-                    person1={duplicate.recordOne}
-                    person2={duplicate.recordTwo}
+                    duplicateId={duplicate.id}
+                    contact1={duplicate.recordOne}
+                    contact2={duplicate.recordTwo}
                     update={updateActions}
+                    updating={updating}
                     setContactFocus={setContactFocus}
                   />
                 ))}
-              </Grid>
-              <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ width: '100%' }}
-                  p={2}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() => testFnc()}
-                    className={classes.confirmButton}
-                  >
-                    {t('Confirm and Continue')}
-                  </Button>
-                  <Box ml={2} mr={2}>
-                    <Typography>
-                      <strong>{t('OR')}</strong>
-                    </Typography>
-                  </Box>
-                  <Button className={classes.confirmButton}>
-                    {t('Confirm and Leave')}
-                  </Button>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{ value: data?.personDuplicates.nodes.length }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
-                </Box>
               </Grid>
             </>
           ) : (

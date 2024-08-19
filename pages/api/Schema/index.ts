@@ -15,6 +15,8 @@ import ExportContactsTypeDefs from './ExportContacts/exportContacts.graphql';
 import { ExportContactsResolvers } from './ExportContacts/resolvers';
 import MergeContactsTypeDefs from './MergeContacts/mergeContacts.graphql';
 import { MergeContactsResolvers } from './MergeContacts/resolvers';
+import MergePeopleBulkTypeDefs from './MergePeople/mergePeopleBulk.graphql';
+import { MergePeopleBulkResolvers } from './MergePeople/resolvers';
 import { integrationSchema } from './SubgraphSchema/Integrations';
 import { organizationSchema } from './SubgraphSchema/Organizations';
 import { preferencesSchema } from './SubgraphSchema/Preferences';
@@ -76,6 +78,7 @@ const schema = buildSubgraphSchema([
   },
   { typeDefs: ExportContactsTypeDefs, resolvers: ExportContactsResolvers },
   { typeDefs: MergeContactsTypeDefs, resolvers: MergeContactsResolvers },
+  { typeDefs: MergePeopleBulkTypeDefs, resolvers: MergePeopleBulkResolvers },
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,

@@ -1,7 +1,9 @@
 import React from 'react';
+import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -73,32 +75,53 @@ const testData: ErgonoMockShape[] = [
   },
 ];
 
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+const Components: React.FC<{
+  data?: ErgonoMockShape[];
+  cache?: ApolloCache<object>;
+}> = ({ data = testData, cache }) => (
+  <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <TestRouter router={router}>
+        <TestWrapper>
+          <GqlMockedProvider<{
+            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+          }>
+            mocks={{
+              GetInvalidPhoneNumbers: {
+                people: {
+                  totalCount: 2,
+                  nodes: data,
+                },
+              },
+            }}
+            cache={cache}
+          >
+            <FixPhoneNumbers
+              accountListId={accountListId}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </TestWrapper>
+      </TestRouter>
+    </SnackbarProvider>
+  </ThemeProvider>
+);
+
 describe('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
-    const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByText, queryByTestId } = render(<Components />);
 
     await waitFor(() =>
       expect(getByText('Fix Phone Numbers')).toBeInTheDocument(),
@@ -113,30 +136,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change primary of first number', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
 
     const star1 = await waitFor(() => getByTestId('starOutlineIcon-testid-1'));
     userEvent.click(star1);
@@ -147,30 +147,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('delete third number from first person', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
 
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
@@ -182,30 +159,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change second number for second person to primary then delete it', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
 
     const star11 = await waitFor(() =>
       getByTestId('starOutlineIcon-testid2-1'),
@@ -223,30 +177,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('add a phone number to first person', async () => {
-    const { getByTestId, getByDisplayValue } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId, getByDisplayValue } = render(<Components />);
     await waitFor(() =>
       expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument(),
     );
@@ -265,30 +196,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should render no contacts with no data', async () => {
-    const { getByText, getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: [],
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByText, getByTestId } = render(<Components data={[]} />);
     await waitFor(() =>
       expect(getByTestId('fixPhoneNumbers-null-state')).toBeInTheDocument(),
     );
@@ -298,30 +206,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should modify first number of first contact', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<Components />);
     await waitFor(() => {
       expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     });
@@ -330,5 +215,48 @@ describe('FixPhoneNumbers-Home', () => {
     expect(firstInput.value).toBe('+3533895895');
     userEvent.type(firstInput, '123');
     expect(firstInput.value).toBe('+3533895895123');
+  });
+
+  it('should hide contact from view', async () => {
+    const { getByTestId, getByText, queryByText } = render(<Components />);
+    await waitFor(() => {
+      expect(
+        getByText(`${testData[0].firstName} ${testData[0].lastName}`),
+      ).toBeInTheDocument();
+    });
+
+    userEvent.click(getByTestId('confirmButton-testid'));
+
+    await waitFor(() => {
+      expect(
+        queryByText(`${testData[0].firstName} ${testData[0].lastName}`),
+      ).not.toBeInTheDocument();
+    });
+  });
+  it('should bulk confirm all phone numbers', async () => {
+    const cache = new InMemoryCache();
+
+    const { getByTestId, queryByTestId, getByText } = render(
+      <Components cache={cache} />,
+    );
+    await waitFor(() => {
+      expect(queryByTestId('loading')).not.toBeInTheDocument();
+      expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+    });
+
+    userEvent.click(getByTestId(`starOutlineIcon-testid-1`));
+
+    const confirmAllButton = getByTestId('source-button');
+    userEvent.click(confirmAllButton);
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
+        variant: 'success',
+        autoHideDuration: 7000,
+      });
+      expect(
+        getByText('No people with phone numbers need attention'),
+      ).toBeVisible();
+    });
   });
 });

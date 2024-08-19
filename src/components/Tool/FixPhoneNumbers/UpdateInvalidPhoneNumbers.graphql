@@ -1,0 +1,15 @@
+mutation UpdateInvalidPhoneNumbers($input: PeopleUpdateMutationInput!) {
+  updatePeople(input: $input) {
+    people {
+      phoneNumbers {
+        nodes {
+          number
+          source
+          id
+          primary
+          validValues
+        }
+      }
+    }
+  }
+}

@@ -2,36 +2,24 @@ import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import { Box, CardContent, Typography } from '@mui/material';
+import { Box, CardContent, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { AppealFieldsFragment } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';
 import AnimatedCard from '../../AnimatedCard';
 import AppealProgressBar from './AppealProgressBar';
-
-export interface Props {
-  name: string;
-  id: string;
-  primary: boolean;
-  amount: number;
-  amountCurrency: string;
-  given: number;
-  received: number;
-  commited: number;
-  total: number;
-  changePrimary: (newPrimaryId: string) => void;
-}
 
 const useStyles = makeStyles()(() => ({
   cardContent: {
     marginTop: -theme.spacing(2),
   },
   starPrimary: {
-    color: theme.palette.mpdxBlue.main,
     transform: `translateY(${theme.spacing(0.5)}px)`,
     '&:hover': {
       cursor: 'pointer',
-      color: theme.palette.progressBarYellow.main,
+      color: theme.palette.mpdxBlue.main,
     },
   },
   colorYellow: {
@@ -65,21 +53,46 @@ const useStyles = makeStyles()(() => ({
       },
     },
   },
+  hoverHighlight: {
+    cursor: 'pointer',
+    '&:hover': {
+      color: theme.palette.mpdxBlue.main,
+    },
+  },
+  primaryButton: {
+    marginTop: '-6px',
+    marginLeft: theme.spacing(1),
+  },
 }));
 
+export interface AppealProps {
+  appeal: AppealFieldsFragment;
+  primary?: boolean;
+  changePrimary: (newPrimaryId: string) => void;
+}
+
 const Appeal = ({
-  name,
-  id,
-  primary,
-  amount,
-  amountCurrency,
-  given,
-  received,
-  commited,
+  appeal,
+  primary = false,
   changePrimary,
-}: Props): ReactElement => {
+}: AppealProps): ReactElement => {
+  const { t } = useTranslation();
   const { classes } = useStyles();
   const accountListId = useAccountListId();
+
+  const {
+    name,
+    id,
+    amount: appealAmount,
+    amountCurrency,
+    pledgesAmountProcessed,
+    pledgesAmountReceivedNotProcessed,
+    pledgesAmountNotReceivedNotProcessed,
+  } = appeal;
+  const amount = appealAmount || 0;
+  const given = pledgesAmountProcessed || 0;
+  const received = pledgesAmountReceivedNotProcessed || 0;
+  const committed = pledgesAmountNotReceivedNotProcessed || 0;
 
   return (
     <Box m={1}>
@@ -102,20 +115,26 @@ const Appeal = ({
               <Typography variant="h6" display="inline">
                 {given.toFixed(2)} / {amount.toFixed(2)}
               </Typography>
-              {primary ? (
-                <StarIcon className={classes.starPrimary} />
-              ) : (
-                <StarOutlineIcon
-                  className={classes.starPrimary}
-                  data-testid={`setPrimary-${id}`}
-                  onClick={() => changePrimary(id)}
-                />
-              )}
+
+              <IconButton
+                aria-label={t('Primary Icon')}
+                className={classes.primaryButton}
+              >
+                {primary ? (
+                  <StarIcon className={classes.starPrimary} />
+                ) : (
+                  <StarOutlineIcon
+                    className={classes.starPrimary}
+                    data-testid={`setPrimary-${id}`}
+                    onClick={() => changePrimary(id)}
+                  />
+                )}
+              </IconButton>
             </Box>
           </Box>
           <AppealProgressBar
             given={given}
-            commited={commited}
+            committed={committed}
             received={received}
             amount={amount}
             amountCurrency={amountCurrency}

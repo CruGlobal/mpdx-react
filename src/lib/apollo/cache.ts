@@ -72,6 +72,7 @@ export const createCache = () =>
           contacts: paginationFieldPolicy,
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
+          people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
           // Ignore the input.pageNumber arg so that queries with different page numbers will
