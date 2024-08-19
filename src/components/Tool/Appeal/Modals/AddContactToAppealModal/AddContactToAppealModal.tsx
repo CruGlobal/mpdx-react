@@ -63,13 +63,19 @@ export const AddContactToAppealModal: React.FC<
         contactsQueryResult.refetch();
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully updated the appeal'), {
+        const successMessage =
+          attributes.contactIds.length === 1
+            ? t('1 contact successfully added to your appeal.')
+            : t('{{count}} contacts successfully added to your appeal.', {
+                count: attributes.contactIds.length,
+              });
+        enqueueSnackbar(successMessage, {
           variant: 'success',
         });
         handleClose();
       },
       onError: () => {
-        enqueueSnackbar(t('Failed to update the appeal'), {
+        enqueueSnackbar(t('Failed to add contact(s) to the appeal'), {
           variant: 'error',
         });
       },

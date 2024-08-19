@@ -137,13 +137,12 @@ describe('AddExcludedContactModal', () => {
 
       expect(refetch).toHaveBeenCalledTimes(1);
 
-      // TODO: When API is fixed, uncomment this
-      // expect(mockEnqueue).toHaveBeenCalledWith(
-      //   'Successfully added contact to appeal',
-      //   {
-      //     variant: 'success',
-      //   },
-      // );
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully added contact to appeal',
+        {
+          variant: 'success',
+        },
+      );
     });
   });
 });
