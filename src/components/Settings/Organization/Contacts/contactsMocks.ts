@@ -39,7 +39,9 @@ export class ContactsMocks {
           id: '123456',
           userFirstName: 'accountListFirstName',
           userLastName: 'accountListLastName',
-          userEmailAddresses: [],
+          userEmailAddresses: [
+            { email: 'accountList.contactOwner@cru.org', primary: true },
+          ],
         },
         {
           id: '654321',

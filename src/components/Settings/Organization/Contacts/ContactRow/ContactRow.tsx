@@ -39,7 +39,7 @@ const StyledBox = styled(Box)(() => ({
   justifyContent: 'flex-start',
 }));
 
-const PersonData: React.FC<PersonDataProps> = ({ person }) => {
+const ContactPersonData: React.FC<PersonDataProps> = ({ person }) => {
   const email =
     person?.emailAddresses &&
     person?.emailAddresses.find((email) => email?.primary);
@@ -77,9 +77,6 @@ const UserPersonData: React.FC<UserDataProps> = ({ person }) => {
   const email =
     person?.userEmailAddresses &&
     person?.userEmailAddresses.find((email) => email?.primary);
-  const phone =
-    person?.phoneNumbers &&
-    person?.phoneNumbers.find((phone) => phone?.primary);
   return (
     <StyledBox>
       <Typography component="span" variant="body2">
@@ -94,15 +91,6 @@ const UserPersonData: React.FC<UserDataProps> = ({ person }) => {
         >
           {email.email}
         </Link>
-      )}
-      {phone && (
-        <Typography
-          key={`phone-${phone.number}`}
-          component="span"
-          variant="body2"
-        >
-          {phone.number}
-        </Typography>
       )}
     </StyledBox>
   );
@@ -178,7 +166,10 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
                 {people?.map(
                   (person, idx) =>
                     person && (
-                      <PersonData person={person} key={`person-${idx}`} />
+                      <ContactPersonData
+                        person={person}
+                        key={`person-${idx}`}
+                      />
                     ),
                 )}
 

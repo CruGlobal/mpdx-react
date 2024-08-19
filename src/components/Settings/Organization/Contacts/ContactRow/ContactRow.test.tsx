@@ -48,17 +48,20 @@ describe('ContactRow', () => {
         </GqlMockedProvider>
       </Components>,
     );
+    //Check Contact person info
     expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
     expect(getByText('firstName lastName')).toBeInTheDocument();
     expect(getByText('test@cru.org')).toBeInTheDocument();
     expect(getByText('(111) 222-3333')).toBeInTheDocument();
 
+    //Check account user person info
     expect(
       getByText('accountListFirstName accountListLastName'),
     ).toBeInTheDocument();
     expect(
       getByText('accountListFirstName2 accountListLastName2'),
     ).toBeInTheDocument();
+    expect(getByText('accountList.contactOwner@cru.org')).toBeInTheDocument();
   });
 
   it('should only show primary address', () => {
