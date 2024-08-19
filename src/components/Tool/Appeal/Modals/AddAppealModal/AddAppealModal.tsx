@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { DialogActions, DialogContent } from '@mui/material';
 import { FormikValues } from 'formik';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
@@ -11,6 +12,7 @@ import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import AddAppealForm, {
   ContactExclusion,
+  contactExclusions,
 } from '../../InitialPage/AddAppealForm/AddAppealForm';
 
 interface AddAppealModalProps {
@@ -18,6 +20,8 @@ interface AddAppealModalProps {
   appealGoal: number;
   appealStatuses: FilterOption[];
   appealExcludes: ContactExclusion[];
+  appealIncludes: object;
+  isEndOfYearAsk: boolean;
   handleClose: () => void;
 }
 
@@ -25,16 +29,45 @@ export const AddAppealModal: React.FC<AddAppealModalProps> = ({
   appealName,
   appealGoal,
   appealStatuses,
-  appealExcludes,
+  appealExcludes = [],
+  appealIncludes = {},
+  isEndOfYearAsk,
   handleClose,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const formRef = useRef<FormikValues>();
 
-  const handleSubmit = () => {
+  const inclusionFilter = useMemo(() => {
+    if (!isEndOfYearAsk) {
+      return { ...appealIncludes };
+    }
+    const now = DateTime.local();
+    const fiveYears = now.minus({ years: 5 }).toFormat('yyyy-MM-dd');
+    const nowFormatted = now.toFormat('yyyy-MM-dd');
+
+    const includes = {
+      donation: 'one',
+      donation_date: `${fiveYears}..${nowFormatted}`,
+    };
+
+    return {
+      ...appealIncludes,
+      ...includes,
+    };
+  }, [appealIncludes]);
+
+  const exclusionFilter = useMemo(() => {
+    if (!isEndOfYearAsk) {
+      return appealExcludes;
+    }
+    return contactExclusions;
+  }, [appealIncludes]);
+
+  const handleSubmit = async () => {
     if (formRef.current) {
-      formRef.current.handleSubmit();
+      await formRef.current.handleSubmit();
+      handleClose();
     }
   };
 
@@ -46,7 +79,8 @@ export const AddAppealModal: React.FC<AddAppealModalProps> = ({
           appealName={appealName}
           appealGoal={appealGoal}
           appealStatuses={appealStatuses}
-          appealExcludes={appealExcludes}
+          appealExcludes={exclusionFilter}
+          appealIncludes={inclusionFilter}
           formRef={formRef}
         />
       </DialogContent>

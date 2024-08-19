@@ -21,7 +21,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   GetAppealsDocument,
   GetAppealsQuery,
@@ -70,71 +69,19 @@ export const contactExclusions: ContactExclusion[] = [
   },
 ];
 
-const calculateGoal = (
+export const calculateGoal = (
   initialGoal: number,
   letterCost: number,
   adminCost: number,
 ): number => {
-  return (initialGoal + letterCost) * (1 + adminCost / 100);
+  const adminPercent = 1 - Number(adminCost) / 100;
+
+  return (
+    Math.round(
+      ((Number(initialGoal) + Number(letterCost)) / adminPercent) * 100,
+    ) / 100
+  );
 };
-
-const appealFormSchema = yup.object({
-  name: yup.string().required('Please enter a name'),
-  initialGoal: yup.number().required(),
-  letterCost: yup.number().required(),
-  adminCost: yup.number().required(),
-  statuses: yup.array().of(
-    yup.object({
-      name: yup.string(),
-      value: yup.string(),
-    }),
-  ),
-  tags: yup.array().of(yup.string()),
-  exclusions: yup.array().of(
-    yup.object({
-      name: yup.string(),
-      value: yup.string(),
-    }),
-  ),
-});
-type Attributes = yup.InferType<typeof appealFormSchema>;
-
-type FormikRefType = React.RefObject<
-  FormikProps<{
-    name: string;
-    initialGoal: number;
-    letterCost: number;
-    adminCost: number;
-    statuses: Pick<FilterOption, 'name' | 'value'>[];
-    tags: never[];
-    exclusions: ContactExclusion[];
-  }>
->;
-
-const useStyles = makeStyles()((theme: Theme) => ({
-  loadingIndicator: {
-    margin: theme.spacing(0, 1, 0, 0),
-  },
-  input: {
-    width: '100%',
-  },
-  form: {
-    width: '100%',
-  },
-  submitButton: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    width: '150px',
-    color: 'white',
-  },
-  selectAll: {
-    color: theme.palette.mpdxBlue.main,
-    marginLeft: 5,
-    '&:hover': {
-      cursor: 'pointer',
-      textDecoration: 'underline',
-    },
-  },
-}));
 
 type BuildInclusionFilterProps = {
   appealIncludes: object;
@@ -198,13 +145,95 @@ export const buildExclusionFilter = (
   });
 };
 
+const appealFormSchema = yup.object({
+  name: yup.string().required('Please enter a name'),
+  initialGoal: yup
+    .number()
+    .typeError(i18n.t('Initial Goal must be a valid number'))
+    .required(i18n.t('Initial Goal is required'))
+    .test(
+      i18n.t('Is positive?'),
+      i18n.t('Must use a positive number for Initial Goal'),
+      (value) => parseFloat(value as unknown as string) >= 0,
+    ),
+  letterCost: yup
+    .number()
+    .typeError(i18n.t('Letter Cost must be a valid number'))
+    .required(i18n.t('Letter Cost  is required'))
+    .test(
+      i18n.t('Is positive?'),
+      i18n.t('Must use a positive number for Letter Cost'),
+      (value) => parseFloat(value as unknown as string) >= 0,
+    ),
+  adminCost: yup
+    .number()
+    .typeError(i18n.t('Admin Cost must be a valid number'))
+    .required(i18n.t('Admin Cost is required'))
+    .test(
+      i18n.t('Is positive?'),
+      i18n.t('Must use a positive number for Admin Cost'),
+      (value) => parseFloat(value as unknown as string) >= 0,
+    ),
+  statuses: yup.array().of(
+    yup.object({
+      name: yup.string(),
+      value: yup.string(),
+    }),
+  ),
+  tags: yup.array().of(yup.string()),
+  exclusions: yup.array().of(
+    yup.object({
+      name: yup.string(),
+      value: yup.string(),
+    }),
+  ),
+});
+type Attributes = yup.InferType<typeof appealFormSchema>;
+
+type FormikRefType = React.RefObject<
+  FormikProps<{
+    name: string;
+    initialGoal: number;
+    letterCost: number;
+    adminCost: number;
+    statuses: Pick<FilterOption, 'name' | 'value'>[];
+    tags: never[];
+    exclusions: ContactExclusion[];
+  }>
+>;
+
+const useStyles = makeStyles()((theme: Theme) => ({
+  loadingIndicator: {
+    margin: theme.spacing(0, 1, 0, 0),
+  },
+  input: {
+    width: '100%',
+  },
+  form: {
+    width: '100%',
+  },
+  submitButton: {
+    backgroundColor: theme.palette.mpdxBlue.main,
+    width: '150px',
+    color: 'white',
+  },
+  selectAll: {
+    color: theme.palette.mpdxBlue.main,
+    marginLeft: 5,
+    '&:hover': {
+      cursor: 'pointer',
+      textDecoration: 'underline',
+    },
+  },
+}));
+
 type CreateNewAppealAttributes = {
   name: string;
   amount: number;
   inclusionFilterJson?: string;
   exclusionFilterJson?: string;
 };
-interface AddAppealFormProps {
+export interface AddAppealFormProps {
   accountListId: string;
   appealName?: string;
   appealGoal?: number;
@@ -265,17 +294,20 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         props.adminCost,
       ),
     };
+
     const inclusionFilter = buildInclusionFilter({
       appealIncludes,
       tags: props.tags,
       statuses: props.statuses,
     });
     if (!isEqual(inclusionFilter, {})) {
-      attributes.inclusionFilterJson = JSON.stringify(inclusionFilter);
+      // TODO: Waiting for inclusionFilter to be added to the API
+      attributes.inclusionFilter = inclusionFilter;
     }
     const exclusionFilter = buildExclusionFilter(props.exclusions);
     if (!isEqual(exclusionFilter, {})) {
-      attributes.exclusionFilterJson = JSON.stringify(exclusionFilter);
+      // TODO: Waiting for exclusionFilter to be added to the API
+      attributes.exclusionFilter = exclusionFilter;
     }
 
     await createNewAppeal({
@@ -365,7 +397,6 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               <Field
                 error={errors.name}
                 helperText={errors.name}
-                data-testid="nameInput"
                 label={t('Name')}
                 placeholder={t('Appeal Name')}
                 name="name"
@@ -373,6 +404,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 variant="outlined"
                 className={classes.input}
                 as={TextField}
+                inputProps={{ 'data-testid': 'nameInput' }}
               />
             </FormControl>
           </Box>
@@ -510,6 +542,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 display="inline"
                 className={classes.selectAll}
                 onClick={() => handleSelectAllStatuses(setFieldValue)}
+                data-testid="contactStatusSelect-selectAll"
               >
                 {t('select all')}
               </Typography>
@@ -521,6 +554,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               <Autocomplete
                 multiple
                 autoHighlight
+                data-testid="contactStatusSelect"
                 id="tags-standard"
                 options={contactStatuses.filter(
                   ({ value: id1 }) =>
@@ -550,6 +584,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 display="inline"
                 className={classes.selectAll}
                 onClick={() => handleSelectAllTags(setFieldValue)}
+                data-testid="contactTagsSelect-selectAll"
               >
                 {t('select all')}
               </Typography>
@@ -561,6 +596,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               <Autocomplete
                 multiple
                 autoHighlight
+                data-testid="contactTagsSelect"
                 id="tags-standard"
                 options={contactTagsList.filter(
                   (tag1) => !tags.some((tag2) => tag2 === tag1),
@@ -584,6 +620,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
             <Autocomplete
               multiple
               autoHighlight
+              data-testid="exclusionsSelect"
               id="exclusions-standard"
               options={contactExclusions.filter(
                 ({ value: id1 }) =>
