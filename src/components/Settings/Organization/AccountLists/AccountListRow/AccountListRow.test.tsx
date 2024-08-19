@@ -1,12 +1,15 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { OrganizationsAccountList } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../../../theme';
 import { AccountListsMocks } from '../AccountLists.mock';
-import { AccountListRow, AccountListRowProps } from './AccountListRow';
+import { AccountListRow } from './AccountListRow';
 
 jest.mock('next-auth/react');
 
@@ -18,6 +21,7 @@ const router = {
 };
 
 const mockEnqueue = jest.fn();
+jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -32,10 +36,20 @@ const accountList = new AccountListsMocks().accountList;
 
 const mutationSpy = jest.fn();
 
-const Components: React.FC<AccountListRowProps> = ({ accountList }) => (
+type TestComponentProps = {
+  accountList: OrganizationsAccountList;
+  mocks?: ApolloErgonoMockMap;
+  search?: string;
+  organizationId?: string;
+};
+
+const Components: React.FC<TestComponentProps> = ({
+  accountList,
+  mocks = {},
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <GqlMockedProvider onCall={mutationSpy}>
+      <GqlMockedProvider onCall={mutationSpy} mocks={mocks}>
         <ThemeProvider theme={theme}>
           <AccountListRow
             accountList={accountList}
@@ -49,6 +63,11 @@ const Components: React.FC<AccountListRowProps> = ({ accountList }) => (
 );
 
 describe('AccountLists', () => {
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
   it('should show details', () => {
     const { getByText, queryByText } = render(
       <Components accountList={accountList} search="" organizationId="" />,
@@ -248,6 +267,90 @@ describe('AccountLists', () => {
           variant: 'success',
         },
       );
+    });
+  });
+  describe('handling error state', () => {
+    it('Should render the error state of deleting a user', async () => {
+      const { getByRole, getAllByRole } = render(
+        <Components
+          accountList={accountList}
+          search=""
+          organizationId=""
+          mocks={{
+            DeleteUser: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      const firstDeleteButton = getAllByRole('button', { name: 'Delete' })[0];
+      userEvent.click(firstDeleteButton);
+      userEvent.type(
+        getAllByRole('textbox', { name: 'Reason' })[0],
+        'this is a test',
+      );
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'MPDX could not delete user: userFirstName userLastName',
+          {
+            variant: 'error',
+          },
+        );
+      });
+    });
+
+    it('Should render the error state of removing a user', async () => {
+      const { getByRole, getAllByRole } = render(
+        <Components
+          accountList={accountList}
+          search=""
+          organizationId=""
+          mocks={{
+            RemoveAccountListUser: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      userEvent.click(getAllByRole('button', { name: 'Remove User' })[0]);
+
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'MPDX could not remove user: userFirstName userLastName',
+          {
+            variant: 'error',
+          },
+        );
+      });
+    });
+
+    it('Should render the error state of removing a coach', async () => {
+      const { getByRole, getAllByRole } = render(
+        <Components
+          accountList={accountList}
+          mocks={{
+            AdminDeleteOrganizationCoach: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+      userEvent.click(getAllByRole('button', { name: 'Remove Coach' })[0]);
+
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'MPDX could not remove coach: coachFirstName coachLastName',
+          {
+            variant: 'error',
+          },
+        );
+      });
     });
   });
 });
