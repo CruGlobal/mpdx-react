@@ -123,13 +123,21 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
         contactsQueryResult.refetch();
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully added commitment to appeal'), {
+        let successMessage = 'Successfully added commitment to appeal';
+        if (type === PledgeModalEnum.Edit) {
+          successMessage = t('Successfully edited commitment');
+        }
+        enqueueSnackbar(t(successMessage), {
           variant: 'success',
         });
         handleClose();
       },
       onError: () => {
-        enqueueSnackbar(t('Unable to add commitment to appeal'), {
+        let errorMessage = 'Unable to add commitment to appeal';
+        if (type === PledgeModalEnum.Edit) {
+          errorMessage = t('Unable to edit commitment');
+        }
+        enqueueSnackbar(t(errorMessage), {
           variant: 'error',
         });
       },
