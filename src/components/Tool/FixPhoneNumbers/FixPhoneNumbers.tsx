@@ -92,12 +92,14 @@ export interface ModalState {
   open: boolean;
   personIndex: number;
   numberIndex: number;
+  phoneNumber: string;
 }
 
 const defaultDeleteModalState = {
   open: false,
   personIndex: 0,
   numberIndex: 0,
+  phoneNumber: '',
 };
 
 export interface PersonPhoneNumbers {
@@ -110,7 +112,7 @@ interface Props {
 }
 
 interface FormValuesPerson extends PersonInvalidNumberFragment {
-  newPhoneNumber: PersonPhoneNumberFragment | Record<string, never>;
+  newPhoneNumber: PersonPhoneNumberFragment | Record<string, never> | string;
   isNewPhoneNumber: boolean;
 }
 
@@ -142,7 +144,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
       data?.people?.nodes.map((person) => ({
         ...person,
         isNewPhoneNumber: false,
-        newPhoneNumber: {},
+        newPhoneNumber: '',
       })) || [],
   };
 
@@ -236,11 +238,13 @@ const FixPhoneNumbers: React.FC<Props> = ({
                 const handleDeleteModalOpen = (
                   personIndex: number,
                   numberIndex: number,
+                  phoneNumber: string,
                 ): void => {
                   setDeleteModalState({
                     open: true,
-                    personIndex: personIndex,
-                    numberIndex: numberIndex,
+                    personIndex,
+                    numberIndex,
+                    phoneNumber,
                   });
                 };
 

@@ -115,14 +115,15 @@ const ContactAvatar = styled(Avatar)(() => ({
 }));
 
 interface Props {
-  handleDelete: (personIndex: number, phoneNumber: number) => void;
+  handleDelete: (
+    personIndex: number,
+    numberIndex: number,
+    phoneNumber: string,
+  ) => void;
   setContactFocus: SetContactFocus;
   handleUpdate: (personId: string, personIndex: number, name: string) => void;
   errors: FormikErrors<any>;
-  setValues: (
-    fields: React.SetStateAction<{ [field: string]: any }>,
-    shouldValidate?: boolean,
-  ) => void;
+  setValues: (FormValues) => void;
   values: FormValues;
   person: PersonInvalidNumberFragment;
   personIndex: number;
@@ -399,7 +400,13 @@ const Contact: React.FC<Props> = ({
                               display="flex"
                               alignItems="center"
                               data-testid={`delete-${person.id}-${index}`}
-                              onClick={() => handleDelete(personIndex, index)}
+                              onClick={() =>
+                                handleDelete(
+                                  personIndex,
+                                  index,
+                                  phoneNumber.number || '',
+                                )
+                              }
                               className={classes.paddingX}
                             >
                               <Tooltip title="Delete Number">
