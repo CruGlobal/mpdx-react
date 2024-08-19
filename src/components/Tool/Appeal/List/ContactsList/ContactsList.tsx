@@ -1,20 +1,39 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import theme from 'src/theme';
 import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
 } from '../../AppealDetails/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { ContactRow } from '../ContactRow/ContactRow';
+
+const useStyles = makeStyles()(() => ({
+  headerContainer: {
+    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  },
+  contactHeader: {
+    padding: theme.spacing(1, 2),
+  },
+  givingHeader: {
+    padding: '8px 16px 8px 30px',
+    [theme.breakpoints.down('md')]: {
+      padding: '8px 16px 8px 8px',
+    },
+  },
+}));
 
 interface ContactsListProps {
   appealInfo?: AppealQuery;
@@ -25,15 +44,18 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   appealInfo,
   appealInfoLoading,
 }) => {
+  const { t } = useTranslation();
+  const { classes } = useStyles();
+  const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
+
   const {
     contactsQueryResult,
     isFiltered,
     searchTerm,
     setActiveFilters,
     activeFilters,
+    contactDetailsOpen,
   } = React.useContext(AppealsContext) as AppealsType;
-  const { t } = useTranslation();
-  const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
@@ -71,12 +93,42 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     }
   }, [activeFilters]);
 
+  const columnName = useMemo(() => {
+    let name = t('Regular Giving');
+    if (
+      activeFilters.appealStatus === AppealStatusEnum.NotReceived ||
+      activeFilters.appealStatus === AppealStatusEnum.ReceivedNotProcessed
+    ) {
+      name = t('Amount Committed');
+    } else if (activeFilters.appealStatus === AppealStatusEnum.Processed) {
+      name = t('Donation(s)');
+    }
+    return name;
+  }, [activeFilters]);
+
   return (
     <>
       <AppealHeaderInfo
         appealInfo={appealInfo?.appeal}
         loading={appealInfoLoading}
       />
+
+      <Grid container alignItems="center" className={classes.headerContainer}>
+        <Grid item xs={10} md={6} className={classes.contactHeader}>
+          <Typography variant="subtitle1" fontWeight={800}>
+            {t('Contact')}
+          </Typography>
+        </Grid>
+        <Grid item xs={2} md={6} className={classes.givingHeader}>
+          <Box justifyContent={contactDetailsOpen ? 'flex-end' : undefined}>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={800}>
+                {columnName}
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
 
       <InfiniteList
         loading={loading}
