@@ -18,7 +18,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { AppSettingsType } from 'src/components/common/AppSettings/AppSettingsProvider';
 import {
   PersonPhoneNumberInput,
   PersonUpdateInput,
@@ -28,7 +27,11 @@ import theme from '../../../theme';
 import NoData from '../NoData';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
-import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import {
+  PersonInvalidNumberFragment,
+  PersonPhoneNumberFragment,
+  useGetInvalidPhoneNumbersQuery,
+} from './GetInvalidPhoneNumbers.generated';
 import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -87,35 +90,32 @@ const useStyles = makeStyles()(() => ({
 
 export interface ModalState {
   open: boolean;
-  personId: string;
+  personIndex: number;
   numberIndex: number;
-  phoneNumber: string;
 }
 
 const defaultDeleteModalState = {
   open: false,
-  personId: '',
+  personIndex: 0,
   numberIndex: 0,
-  phoneNumber: '',
 };
 
-export interface PhoneNumberData {
-  id?: string;
-  primary: boolean;
-  updatedAt: string;
-  source: string;
-  number: string;
-  destroy?: boolean;
-}
-
 export interface PersonPhoneNumbers {
-  phoneNumbers: PhoneNumberData[];
-  toDelete: PersonPhoneNumberInput[];
+  phoneNumbers: PersonPhoneNumberFragment[];
 }
 
 interface Props {
   accountListId: string;
   setContactFocus: SetContactFocus;
+}
+
+interface FormValuesPerson extends PersonInvalidNumberFragment {
+  newPhoneNumber: PersonPhoneNumberFragment | Record<string, never>;
+  isNewPhoneNumber: boolean;
+}
+
+export interface FormValues {
+  people: FormValuesPerson[] | [];
 }
 
 const FixPhoneNumbers: React.FC<Props> = ({
@@ -125,21 +125,29 @@ const FixPhoneNumbers: React.FC<Props> = ({
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const [defaultSource, setDefaultSource] = useState<string | AppSettingsType>(
+  const [defaultSource, setDefaultSource] = useState<string | undefined>(
     appName,
   );
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
-
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
   const { t } = useTranslation();
 
+  const initialValues: FormValues = {
+    people:
+      data?.people?.nodes.map((person) => ({
+        ...person,
+        isNewPhoneNumber: false,
+        newPhoneNumber: {},
+      })) || [],
+  };
+
   const determineBulkDataToSend = (
-    values: { [key: string]: PersonPhoneNumbers },
+    values: { [key: string]: any },
     defaultSource: string,
   ): PersonUpdateInput[] => {
     const dataToSend = [] as PersonUpdateInput[];
@@ -220,30 +228,19 @@ const FixPhoneNumbers: React.FC<Props> = ({
         <>
           {data?.people.nodes.length > 0 ? (
             <Formik
-              initialValues={{
-                people: data?.people?.nodes,
-                newPhoneNumber: {},
-              }}
+              initialValues={initialValues}
               onSubmit={() => alert('hello')}
               validationSchema={fixPhoneNumberSchema}
             >
-              {({
-                values: { people },
-                errors,
-                setValues,
-                values,
-              }): ReactElement => {
+              {({ errors, setValues, values }): ReactElement => {
                 const handleDeleteModalOpen = (
-                  personId: string,
+                  personIndex: number,
                   numberIndex: number,
                 ): void => {
                   setDeleteModalState({
                     open: true,
-                    personId: personId,
+                    personIndex: personIndex,
                     numberIndex: numberIndex,
-                    phoneNumber:
-                      values?.people[personId]?.phoneNumbers?.nodes[numberIndex]
-                        ?.number,
                   });
                 };
 
@@ -255,7 +252,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                   const temp = JSON.parse(JSON.stringify(values));
 
                   const deleting = temp?.people[
-                    deleteModalState.personId
+                    deleteModalState.personIndex
                   ].phoneNumbers?.nodes.splice(
                     deleteModalState.numberIndex,
                     1,
@@ -263,17 +260,11 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
                   deleting.destroy = true;
 
-                  // deleting.id &&
-                  //   temp?.people[deleteModalState.personId].toDelete.push({
-                  //     destroy: true,
-                  //     id: deleting.id,
-                  //   });
-
                   deleting.primary &&
-                    temp?.people[deleteModalState.personId]?.phoneNumbers?.nodes
-                      .length &&
+                    temp?.people[deleteModalState.personIndex]?.phoneNumbers
+                      ?.nodes.length &&
                     (temp.people[
-                      deleteModalState.personId
+                      deleteModalState.personIndex
                     ].phoneNumbers.nodes[0].primary = true);
 
                   setValues(temp);
@@ -289,12 +280,14 @@ const FixPhoneNumbers: React.FC<Props> = ({
                     {
                       phoneNumbers: values.people[
                         personIndex
-                      ].phoneNumbers.nodes.map((phoneNumber) => ({
-                        id: phoneNumber.id,
-                        primary: phoneNumber.primary,
-                        number: phoneNumber.number,
-                        validValues: true,
-                      })),
+                      ].phoneNumbers.nodes.map(
+                        (phoneNumber: PersonPhoneNumberFragment) => ({
+                          id: phoneNumber.id,
+                          primary: phoneNumber.primary,
+                          number: phoneNumber.number,
+                          validValues: true,
+                        }),
+                      ),
                       id: personId,
                     },
                   ];
@@ -329,7 +322,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
                 const handleBulkConfirm = async () => {
                   const dataToSend = determineBulkDataToSend(
-                    values.people,
+                    values?.people,
                     defaultSource ?? '',
                   );
 
@@ -345,9 +338,11 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       },
                     },
                     update: (cache) => {
-                      data?.people.nodes.forEach((person) => {
-                        cache.evict({ id: `Person:${person.id}` });
-                      });
+                      data?.people.nodes.forEach(
+                        (person: PersonInvalidNumberFragment) => {
+                          cache.evict({ id: `Person:${person.id}` });
+                        },
+                      );
                     },
                     onError: () => {
                       enqueueSnackbar(t(`Error updating phone numbers`), {
@@ -435,23 +430,21 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       </Grid>
 
                       <Grid item xs={12}>
-                        {people.map((person, i) => (
-                          <Contact
-                            name={`${person.firstName} ${person.lastName}`}
-                            key={person.id}
-                            person={person}
-                            personId={person.id}
-                            numbers={values.people[i].phoneNumbers.nodes || []}
-                            personIndex={i}
-                            handleDelete={handleDeleteModalOpen}
-                            setContactFocus={setContactFocus}
-                            avatar={person?.avatar}
-                            handleUpdate={updatePhoneNumber}
-                            errors={errors}
-                            values={values}
-                            setValues={setValues}
-                          />
-                        ))}
+                        {values.people.map(
+                          (person: PersonInvalidNumberFragment, i: number) => (
+                            <Contact
+                              key={person.id}
+                              person={person}
+                              personIndex={i}
+                              handleDelete={handleDeleteModalOpen}
+                              setContactFocus={setContactFocus}
+                              handleUpdate={updatePhoneNumber}
+                              errors={errors}
+                              values={values}
+                              setValues={setValues}
+                            />
+                          ),
+                        )}
                       </Grid>
 
                       <Grid item xs={12}>

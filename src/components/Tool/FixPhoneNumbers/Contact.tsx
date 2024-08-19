@@ -22,6 +22,7 @@ import {
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
+import { FormikErrors } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -30,7 +31,11 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { PhoneNumberData } from './FixPhoneNumbers';
+import { FormValues } from './FixPhoneNumbers';
+import {
+  PersonInvalidNumberFragment,
+  PersonPhoneNumberFragment,
+} from './GetInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {},
@@ -110,33 +115,24 @@ const ContactAvatar = styled(Avatar)(() => ({
 }));
 
 interface Props {
-  name: string;
-  numbers: PhoneNumberData[];
-  personId: string;
-  handleDelete: (personId: string, phoneNumber: number) => void;
+  handleDelete: (personIndex: number, phoneNumber: number) => void;
   setContactFocus: SetContactFocus;
-  avatar: string;
   handleUpdate: (personId: string, personIndex: number, name: string) => void;
-  errors: object;
+  errors: FormikErrors<any>;
   setValues: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined,
+    fields: React.SetStateAction<{ [field: string]: any }>,
+    shouldValidate?: boolean,
   ) => void;
-  values: any;
-  person: any;
+  values: FormValues;
+  person: PersonInvalidNumberFragment;
   personIndex: number;
 }
 
 const Contact: React.FC<Props> = ({
-  name,
-  numbers,
-  personId,
   handleDelete,
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
-  avatar,
   handleUpdate,
   errors,
   setValues,
@@ -148,6 +144,10 @@ const Contact: React.FC<Props> = ({
   const locale = useLocale();
   const { classes } = useStyles();
   const { appName } = useGetAppSettings();
+
+  const numbers: PersonPhoneNumberFragment[] = person.phoneNumbers.nodes || [];
+  const name: string = `${person.firstName} ${person.lastName}`;
+
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
 
@@ -168,7 +168,7 @@ const Contact: React.FC<Props> = ({
                 <ContactHeader
                   avatar={
                     <ContactAvatar
-                      src={avatar || ''}
+                      src={person?.avatar || ''}
                       aria-label="Contact Avatar"
                       onClick={handleContactNameClick}
                     />
@@ -180,8 +180,8 @@ const Contact: React.FC<Props> = ({
                   }
                   action={
                     <Button
-                      data-testid={`confirmButton-${personId}`}
-                      onClick={() => handleUpdate(personId, personIndex, name)}
+                      data-testid={`confirmButton-${person.id}`}
+                      onClick={() => handleUpdate(person.id, personIndex, name)}
                       variant="contained"
                       style={{ width: '100%' }}
                     >
@@ -279,7 +279,7 @@ const Contact: React.FC<Props> = ({
                                   </Typography>
                                 </Hidden>
                                 <StarIcon
-                                  data-testid={`starIcon-${personId}-${index}`}
+                                  data-testid={`starIcon-${person.id}-${index}`}
                                   className={classes.hoverHighlight}
                                 />
                               </>
@@ -296,18 +296,22 @@ const Contact: React.FC<Props> = ({
                                 </Hidden>
                                 <Tooltip title="Set as Primary">
                                   <StarOutlineIcon
-                                    data-testid={`starOutlineIcon-${personId}-${index}`}
+                                    data-testid={`starOutlineIcon-${person.id}-${index}`}
                                     className={classes.hoverHighlight}
                                     onClick={() => {
                                       const temp = {
                                         people: values.people.map(
-                                          (personValue: any) =>
+                                          (
+                                            personValue: PersonInvalidNumberFragment,
+                                          ) =>
                                             personValue === person
                                               ? {
                                                   ...person,
                                                   phoneNumbers: {
                                                     nodes: numbers.map(
-                                                      (number: any) =>
+                                                      (
+                                                        number: PersonPhoneNumberFragment,
+                                                      ) =>
                                                         number === phoneNumber
                                                           ? {
                                                               ...phoneNumber,
@@ -346,20 +350,24 @@ const Contact: React.FC<Props> = ({
                               style={{ width: '100%' }}
                               size="small"
                               inputProps={{
-                                'data-testid': `textfield-${personId}-${index}`,
+                                'data-testid': `textfield-${person.id}-${index}`,
                               }}
                               onChange={(
                                 event: React.ChangeEvent<HTMLInputElement>,
                               ) => {
                                 const temp = {
                                   people: values.people.map(
-                                    (personValue: any) =>
+                                    (
+                                      personValue: PersonInvalidNumberFragment,
+                                    ) =>
                                       personValue === person
                                         ? {
                                             ...person,
                                             phoneNumbers: {
                                               nodes: numbers.map(
-                                                (number: any) =>
+                                                (
+                                                  number: PersonPhoneNumberFragment,
+                                                ) =>
                                                   number === phoneNumber
                                                     ? {
                                                         ...phoneNumber,
@@ -390,7 +398,7 @@ const Contact: React.FC<Props> = ({
                             <Box
                               display="flex"
                               alignItems="center"
-                              data-testid={`delete-${personId}-${index}`}
+                              data-testid={`delete-${person.id}-${index}`}
                               onClick={() => handleDelete(personIndex, index)}
                               className={classes.paddingX}
                             >
@@ -406,7 +414,7 @@ const Contact: React.FC<Props> = ({
                             <Box
                               display="flex"
                               alignItems="center"
-                              data-testid={`lock-${personId}-${index}`}
+                              data-testid={`lock-${person.id}-${index}`}
                               className={classes.paddingX}
                             >
                               <Icon
@@ -461,20 +469,21 @@ const Contact: React.FC<Props> = ({
                             event: React.ChangeEvent<HTMLInputElement>,
                           ) => {
                             const temp = {
-                              people: values.people.map((personValue: any) =>
-                                personValue === person
-                                  ? {
-                                      ...person,
-                                      isNewPhoneNumber: true,
-                                      newPhoneNumber: event.target.value,
-                                    }
-                                  : personValue,
+                              people: values.people.map(
+                                (personValue: PersonInvalidNumberFragment) =>
+                                  personValue === person
+                                    ? {
+                                        ...person,
+                                        isNewPhoneNumber: true,
+                                        newPhoneNumber: event.target.value,
+                                      }
+                                    : personValue,
                               ),
                             };
                             setValues(temp);
                           }}
                           inputProps={{
-                            'data-testid': `addNewNumberInput-${personId}`,
+                            'data-testid': `addNewNumberInput-${person.id}`,
                           }}
                           value={values.people[personIndex].newPhoneNumber}
                         />
@@ -488,32 +497,33 @@ const Contact: React.FC<Props> = ({
                         alignItems="center"
                         onClick={() => {
                           const temp = {
-                            people: values.people.map((personValue: any) =>
-                              personValue === person
-                                ? {
-                                    ...person,
-                                    phoneNumbers: {
-                                      nodes: [
-                                        ...person.phoneNumbers.nodes,
-                                        {
-                                          updatedAt: DateTime.local().toISO(),
-                                          primary: false,
-                                          source: appName,
-                                          number:
-                                            values.people[personIndex]
-                                              .newPhoneNumber,
-                                        },
-                                      ],
-                                    },
-                                    isNewPhoneNumber: false,
-                                    newPhoneNumber: '',
-                                  }
-                                : personValue,
+                            people: values.people.map(
+                              (personValue: PersonInvalidNumberFragment) =>
+                                personValue === person
+                                  ? {
+                                      ...person,
+                                      phoneNumbers: {
+                                        nodes: [
+                                          ...person.phoneNumbers.nodes,
+                                          {
+                                            updatedAt: DateTime.local().toISO(),
+                                            primary: false,
+                                            source: appName,
+                                            number:
+                                              values.people[personIndex]
+                                                .newPhoneNumber,
+                                          },
+                                        ],
+                                      },
+                                      isNewPhoneNumber: false,
+                                      newPhoneNumber: '',
+                                    }
+                                  : personValue,
                             ),
                           };
                           setValues(temp);
                         }}
-                        data-testid={`addButton-${personId}`}
+                        data-testid={`addButton-${person.id}`}
                       >
                         <Tooltip title="Add Number">
                           <Icon

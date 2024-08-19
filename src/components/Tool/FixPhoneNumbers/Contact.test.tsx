@@ -32,28 +32,37 @@ const setContactFocus = jest.fn();
 
 describe('FixPhoneNumbers-Contact', () => {
   it('default', () => {
-    const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
     const updatePhoneNumber = jest.fn();
 
     const { getByText, getByTestId, getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            name={testData.name}
-            key={testData.name}
-            personId={testData.id}
-            numbers={testData.numbers}
-            toDelete={[]}
-            handleChange={handleChangeMock}
+            // name={testData.name}
+            // key={testData.name}
+            // personId={testData.id}
+            // numbers={testData.numbers}
+            // handleDelete={handleDeleteModalOpenMock}
+            // setContactFocus={setContactFocus}
+            // avatar={testData.avatar}
+            // handleUpdate={updatePhoneNumber}
+
+            // person={person}
+            // personIndex={i}
+            // errors={errors}
+            // values={values}
+            // setValues={setValues}
+
+            key={testData.id}
+            person={testData}
+            personIndex={i}
             handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
-            avatar={testData.avatar}
             handleUpdate={updatePhoneNumber}
+            errors={errors}
+            values={values}
+            setValues={setValues}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -67,10 +76,7 @@ describe('FixPhoneNumbers-Contact', () => {
   });
 
   it('input reset after adding an email address', () => {
-    const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
     const updatePhoneNumber = jest.fn();
 
     const { getByTestId } = render(
@@ -81,11 +87,7 @@ describe('FixPhoneNumbers-Contact', () => {
             key={testData.name}
             personId={testData.id}
             numbers={testData.numbers}
-            toDelete={[]}
-            handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
             avatar={testData.avatar}
             handleUpdate={updatePhoneNumber}
@@ -108,8 +110,6 @@ describe('FixPhoneNumbers-Contact', () => {
   it('should call mock functions', () => {
     const handleChangeMock = jest.fn();
     const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
     const updatePhoneNumber = jest.fn();
 
     const { getByTestId } = render(
@@ -120,11 +120,7 @@ describe('FixPhoneNumbers-Contact', () => {
             key={testData.name}
             personId={testData.id}
             numbers={testData.numbers}
-            toDelete={[]}
-            handleChange={handleChangeMock}
             handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
             setContactFocus={setContactFocus}
             avatar={testData.avatar}
             handleUpdate={updatePhoneNumber}
@@ -137,8 +133,6 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(firstInput.value).toBe('3533895895');
     userEvent.type(firstInput, '123');
     expect(handleChangeMock).toHaveBeenCalled();
-    userEvent.click(getByTestId('starOutlineIcon-testid-1'));
-    expect(handleChangePrimaryMock).toHaveBeenCalled();
     userEvent.click(getByTestId('delete-testid-1'));
     expect(handleDeleteModalOpenMock).toHaveBeenCalled();
     userEvent.click(getByTestId(`confirmButton-${testData.id}`));
