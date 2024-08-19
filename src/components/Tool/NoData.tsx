@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import {
   mdiAccountGroup,
   mdiCurrencyUsd,
   mdiEmailOutline,
+  mdiGoogle,
   mdiHome,
   mdiMap,
   mdiNewspaperVariantOutline,
@@ -15,6 +16,7 @@ import { NullStateBox } from '../Shared/Filters/NullState/NullStateBox';
 
 interface Props {
   tool: string;
+  button?: ReactElement;
 }
 
 interface ToolText {
@@ -73,14 +75,22 @@ const textMap: { [key: string]: ToolText } = {
     secondaryText: i18n.t('People with similar names will appear here.'),
     icon: mdiAccountGroup,
   },
+  googleImport: {
+    primaryText: i18n.t("You haven't connected a Google account yet"),
+    secondaryText: i18n.t(
+      'Add a Google account then try to import from Google.',
+    ),
+    icon: mdiGoogle,
+  },
 };
 
-const NoData: React.FC<Props> = ({ tool }: Props) => {
+const NoData: React.FC<Props> = ({ tool, button }: Props) => {
   return (
     <NullStateBox data-testid={`${tool}-null-state`}>
       <Icon path={textMap[tool].icon} size={1.5} />
       <Typography variant="h5">{textMap[tool].primaryText}</Typography>
-      <Typography>{textMap[tool].secondaryText}</Typography>
+      <Typography my={1}>{textMap[tool].secondaryText}</Typography>
+      {button}
     </NullStateBox>
   );
 };

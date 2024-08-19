@@ -104,21 +104,21 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Import your contact information from your Google account',
 
         icon: mdiGoogle,
-        id: 'google',
+        id: 'import/google',
       },
 
       {
         tool: 'Import from TntConnect',
         desc: 'Import your contacts from your TntConnect database',
         icon: mdiCloudUpload,
-        id: 'tntConnect',
+        id: 'import/tnt',
       },
 
       {
         tool: 'Import from CSV',
         desc: 'Import contacts you have saved in a CSV file',
         icon: mdiTable,
-        id: 'csv',
+        id: 'import/csv',
       },
     ],
   },

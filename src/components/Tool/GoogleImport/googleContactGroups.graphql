@@ -1,0 +1,17 @@
+query GoogleContactGroups {
+  googleAccounts {
+    email
+    primary
+    remoteId
+    id
+    tokenExpired
+    contactGroups {
+      id
+      createdAt
+      tag
+      title
+      updatedAt
+      updatedInDbAt
+    }
+  }
+}

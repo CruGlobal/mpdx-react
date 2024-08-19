@@ -900,14 +900,14 @@ class MpdxRestApi extends RESTDataSource {
   //
 
   async googleAccounts() {
-    const { data }: { data: GoogleAccountsResponse[] } = await this.get(
+    const response: GoogleAccountsResponse[] = await this.get(
       'user/google_accounts',
       {
         sort: 'created_at',
         include: 'contact_groups',
       },
     );
-    return GoogleAccounts(data);
+    return GoogleAccounts(response);
   }
 
   async googleAccountIntegrations(
