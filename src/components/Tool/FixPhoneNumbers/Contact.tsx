@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -12,6 +12,7 @@ import {
   CardContent,
   CardHeader,
   FormControl,
+  FormHelperText,
   Grid,
   Hidden,
   Link,
@@ -25,7 +26,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
@@ -111,58 +112,44 @@ const ContactAvatar = styled(Avatar)(() => ({
 interface Props {
   name: string;
   numbers: PhoneNumberData[];
-  toDelete: PersonPhoneNumberInput[];
   personId: string;
-  handleChange: (
-    personId: string,
-    numberIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
   handleDelete: (personId: string, phoneNumber: number) => void;
-  handleAdd: (personId: string, number: string) => void;
-  handleChangePrimary: (personId: string, numberIndex: number) => void;
   setContactFocus: SetContactFocus;
   avatar: string;
-  handleUpdate: (
-    personId: string,
-    name: string,
-    numbers: PhoneNumberData[],
+  handleUpdate: (personId: string, personIndex: number, name: string) => void;
+  errors: object;
+  setValues: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined,
   ) => void;
+  values: any;
+  person: any;
+  personIndex: number;
 }
 
 const Contact: React.FC<Props> = ({
   name,
   numbers,
   personId,
-  handleChange,
   handleDelete,
-  handleAdd,
-  handleChangePrimary,
   // Remove below line when function is being used.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
   avatar,
   handleUpdate,
+  errors,
+  setValues,
+  values,
+  person,
+  personIndex,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const [newPhoneNumber, setNewPhoneNumber] = useState<string>('');
+  const { appName } = useGetAppSettings();
   //TODO: Add button functionality
   //TODO: Make name pop up a modal to edit the person info
-
-  const updateNewPhoneNumber = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setNewPhoneNumber(event.target.value);
-  };
-
-  const addNewPhoneNumber = (): void => {
-    if (newPhoneNumber) {
-      handleAdd(personId, newPhoneNumber);
-      setNewPhoneNumber('');
-    }
-  };
 
   const handleContactNameClick = () => {
     // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
@@ -194,7 +181,7 @@ const Contact: React.FC<Props> = ({
                   action={
                     <Button
                       data-testid={`confirmButton-${personId}`}
-                      onClick={() => handleUpdate(personId, name, numbers)}
+                      onClick={() => handleUpdate(personId, personIndex, name)}
                       variant="contained"
                       style={{ width: '100%' }}
                     >
@@ -218,8 +205,8 @@ const Contact: React.FC<Props> = ({
                         justifyContent="space-between"
                         className={classes.paddingX}
                       >
-                        <Typography variant="body2">
-                          <strong>{t('Source')}</strong>
+                        <Typography variant="body2" fontWeight="fontWeightBold">
+                          {t('Source')}
                         </Typography>
                       </Box>
                     </Grid>
@@ -229,8 +216,8 @@ const Contact: React.FC<Props> = ({
                         justifyContent="center"
                         className={classes.paddingX}
                       >
-                        <Typography variant="body2">
-                          <strong>{t('Primary')}</strong>
+                        <Typography variant="body2" fontWeight="fontWeightBold">
+                          {t('Primary')}
                         </Typography>
                       </Box>
                     </Grid>
@@ -240,8 +227,8 @@ const Contact: React.FC<Props> = ({
                         justifyContent="flex-start"
                         className={classes.paddingX}
                       >
-                        <Typography variant="body2">
-                          <strong>{t('Phone Number')}</strong>
+                        <Typography variant="body2" fontWeight="fontWeightBold">
+                          {t('Phone Number')}
                         </Typography>
                       </Box>
                     </Grid>
@@ -256,8 +243,12 @@ const Contact: React.FC<Props> = ({
                         >
                           <Box>
                             <Hidden smUp>
-                              <Typography display="inline" variant="body2">
-                                <strong>{t('Source')}: </strong>
+                              <Typography
+                                display="inline"
+                                variant="body2"
+                                fontWeight="fontWeightBold"
+                              >
+                                {t('Source')}:
                               </Typography>
                             </Hidden>
                             <Typography display="inline" variant="body2">
@@ -279,8 +270,12 @@ const Contact: React.FC<Props> = ({
                             {phoneNumber.primary ? (
                               <>
                                 <Hidden smUp>
-                                  <Typography display="inline" variant="body2">
-                                    <strong>{t('Source')}: </strong>
+                                  <Typography
+                                    display="inline"
+                                    variant="body2"
+                                    fontWeight="fontWeightBold"
+                                  >
+                                    {t('Source')}:
                                   </Typography>
                                 </Hidden>
                                 <StarIcon
@@ -291,17 +286,45 @@ const Contact: React.FC<Props> = ({
                             ) : (
                               <>
                                 <Hidden smUp>
-                                  <Typography display="inline" variant="body2">
-                                    <strong>{t('Source')}: </strong>
+                                  <Typography
+                                    display="inline"
+                                    variant="body2"
+                                    fontWeight="fontWeightBold"
+                                  >
+                                    {t('Source')}:
                                   </Typography>
                                 </Hidden>
                                 <Tooltip title="Set as Primary">
                                   <StarOutlineIcon
                                     data-testid={`starOutlineIcon-${personId}-${index}`}
                                     className={classes.hoverHighlight}
-                                    onClick={() =>
-                                      handleChangePrimary(personId, index)
-                                    }
+                                    onClick={() => {
+                                      const temp = {
+                                        people: values.people.map(
+                                          (personValue: any) =>
+                                            personValue === person
+                                              ? {
+                                                  ...person,
+                                                  phoneNumbers: {
+                                                    nodes: numbers.map(
+                                                      (number: any) =>
+                                                        number === phoneNumber
+                                                          ? {
+                                                              ...phoneNumber,
+                                                              primary: true,
+                                                            }
+                                                          : {
+                                                              ...number,
+                                                              primary: false,
+                                                            },
+                                                    ),
+                                                  },
+                                                }
+                                              : personValue,
+                                        ),
+                                      };
+                                      setValues(temp);
+                                    }}
                                   />
                                 </Tooltip>
                               </>
@@ -327,18 +350,48 @@ const Contact: React.FC<Props> = ({
                               }}
                               onChange={(
                                 event: React.ChangeEvent<HTMLInputElement>,
-                              ) => handleChange(personId, index, event)}
+                              ) => {
+                                const temp = {
+                                  people: values.people.map(
+                                    (personValue: any) =>
+                                      personValue === person
+                                        ? {
+                                            ...person,
+                                            phoneNumbers: {
+                                              nodes: numbers.map(
+                                                (number: any) =>
+                                                  number === phoneNumber
+                                                    ? {
+                                                        ...phoneNumber,
+                                                        number:
+                                                          event.target.value,
+                                                      }
+                                                    : number,
+                                              ),
+                                            },
+                                          }
+                                        : personValue,
+                                  ),
+                                };
+                                setValues(temp);
+                              }}
                               value={phoneNumber.number}
-                              disabled={phoneNumber.source !== 'MPDX'}
+                              disabled={phoneNumber.source !== appName}
                             />
+                            <FormHelperText error={true}>
+                              {
+                                errors?.people?.[personIndex]?.phoneNumbers
+                                  ?.nodes?.[index]?.number
+                              }
+                            </FormHelperText>
                           </FormControl>
 
-                          {phoneNumber.source === 'MPDX' ? (
+                          {phoneNumber.source === appName ? (
                             <Box
                               display="flex"
                               alignItems="center"
                               data-testid={`delete-${personId}-${index}`}
-                              onClick={() => handleDelete(personId, index)}
+                              onClick={() => handleDelete(personIndex, index)}
                               className={classes.paddingX}
                             >
                               <Tooltip title="Delete Number">
@@ -377,12 +430,16 @@ const Contact: React.FC<Props> = ({
                     >
                       <Box>
                         <Hidden smUp>
-                          <Typography display="inline" variant="body2">
-                            <strong>{t('Source')}: </strong>
+                          <Typography
+                            display="inline"
+                            variant="body2"
+                            fontWeight="fontWeightBold"
+                          >
+                            {t('Source')}:
                           </Typography>
                         </Hidden>
                         <Typography display="inline" variant="body2">
-                          MPDX
+                          {appName}
                         </Typography>
                       </Box>
                     </Box>
@@ -402,18 +459,60 @@ const Contact: React.FC<Props> = ({
                           size="small"
                           onChange={(
                             event: React.ChangeEvent<HTMLInputElement>,
-                          ) => updateNewPhoneNumber(event)}
+                          ) => {
+                            const temp = {
+                              people: values.people.map((personValue: any) =>
+                                personValue === person
+                                  ? {
+                                      ...person,
+                                      isNewPhoneNumber: true,
+                                      newPhoneNumber: event.target.value,
+                                    }
+                                  : personValue,
+                              ),
+                            };
+                            setValues(temp);
+                          }}
                           inputProps={{
                             'data-testid': `addNewNumberInput-${personId}`,
                           }}
-                          value={newPhoneNumber}
+                          value={values.people[personIndex].newPhoneNumber}
                         />
+                        <FormHelperText error={true}>
+                          {errors?.people?.[personIndex]?.newPhoneNumber}
+                        </FormHelperText>
                       </FormControl>
                       <Box
                         className={classes.paddingX}
                         display="flex"
                         alignItems="center"
-                        onClick={() => addNewPhoneNumber()}
+                        onClick={() => {
+                          const temp = {
+                            people: values.people.map((personValue: any) =>
+                              personValue === person
+                                ? {
+                                    ...person,
+                                    phoneNumbers: {
+                                      nodes: [
+                                        ...person.phoneNumbers.nodes,
+                                        {
+                                          updatedAt: DateTime.local().toISO(),
+                                          primary: false,
+                                          source: appName,
+                                          number:
+                                            values.people[personIndex]
+                                              .newPhoneNumber,
+                                        },
+                                      ],
+                                    },
+                                    isNewPhoneNumber: false,
+                                    newPhoneNumber: '',
+                                  }
+                                : personValue,
+                            ),
+                          };
+                          setValues(temp);
+                        }}
                         data-testid={`addButton-${personId}`}
                       >
                         <Tooltip title="Add Number">
