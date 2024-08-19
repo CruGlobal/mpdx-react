@@ -27,10 +27,11 @@ jest.mock('notistack', () => ({
 }));
 
 jest.mock('src/lib/deserializeJsonApi');
-jest.mock('next-auth/react');
 
 const accountListId = 'account-id';
 const router = {
+  pathname: `/accountLists/${accountListId}/tools`,
+  push: jest.fn(),
   isReady: true,
 };
 
@@ -79,19 +80,13 @@ describe('Google Import', () => {
         getAllByRole,
         queryByText,
         getByRole,
-      } = render(
-        <TestComponent
-          mocks={{
-            GoogleContactGroups: {
-              ...mockGoogleContactGroupsResponse.GoogleContactGroups,
-            },
-          }}
-        />,
-      );
+      } = render(<TestComponent mocks={mockGoogleContactGroupsResponse} />);
+
+      expect(await findByText('Account to Import From')).toBeVisible();
+      expect(await findByText(account1GroupName)).toBeVisible();
+
       await waitFor(() => {
-        expect(getByText('Account to Import From')).toBeVisible();
         expect(getAllByText(account1Email)[0]).toBeVisible();
-        expect(getByText(account1GroupName)).toBeVisible();
       });
       const importButton = getByRole('button', { name: 'Import' });
 
@@ -138,7 +133,7 @@ describe('Google Import', () => {
     });
 
     it('single Google account with no groups/labels', async () => {
-      const { getByText, getByRole } = render(
+      const { getByText, getByRole, findByText } = render(
         <TestComponent
           mocks={{
             GoogleContactGroups: {
@@ -150,9 +145,9 @@ describe('Google Import', () => {
           }}
         />,
       );
-      await waitFor(() => {
-        expect(getByText(account3Email)).toBeVisible();
-      });
+
+      expect(await findByText(account3Email)).toBeVisible();
+
       expect(
         getByText('You have no Google Contact groups/labels'),
       ).toBeVisible();
@@ -167,7 +162,7 @@ describe('Google Import', () => {
     });
 
     it('no Google accounts', async () => {
-      const { getByText } = render(
+      const { findByText } = render(
         <TestComponent
           mocks={{
             GoogleContactGroups: {
@@ -176,11 +171,10 @@ describe('Google Import', () => {
           }}
         />,
       );
-      await waitFor(() => {
-        expect(
-          getByText("You haven't connected a Google account yet"),
-        ).toBeVisible();
-      });
+
+      expect(
+        await findByText("You haven't connected a Google account yet"),
+      ).toBeVisible();
     });
   });
 
@@ -316,7 +310,7 @@ describe('Google Import', () => {
         });
       });
 
-      expect(window.location.href).toEqual(
+      expect(router.push).toHaveBeenCalledWith(
         `/accountLists/${accountListId}/tools`,
       );
     });

@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
@@ -105,6 +106,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [showConfirmAllModal, setShowConfirmAllModal] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
@@ -150,7 +152,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
   const handleCloseModal = () => {
     setShowModal(false);
     setRedirecting(true);
-    window.location.href = `/accountLists/${accountListId}/tools`;
+    router.push(`/accountLists/${accountListId}/tools`);
   };
 
   const onSubmit = async (
@@ -162,8 +164,8 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
     const apiToken = session?.user?.apiToken;
 
     const groupTags = Object.entries(attributes.groupTags).reduce(
-      (result, value: [string, string[]]) => {
-        result[value[0]] = value[1].join(',');
+      (result, [groupId, tags]: [string, string[]]) => {
+        result[groupId] = tags.join(',');
         return result;
       },
       {},
@@ -204,7 +206,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
       enqueueSnackbar(t('Import has failed'), {
         variant: 'error',
       });
-      throw new Error(err);
+      throw err;
     });
 
     enqueueSnackbar(t('Import has started'), {
@@ -475,15 +477,13 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                     "If you'd like to import contacts by group/label, please add labels here: ",
                                   )}
                                 </Typography>
-                                {
-                                  <Link
-                                    href={'https://contacts.google.com'}
-                                    underline="hover"
-                                    sx={{ fontWeight: 'bold' }}
-                                  >
-                                    {t('contacts.google.com')}
-                                  </Link>
-                                }
+                                <Link
+                                  href={'https://contacts.google.com'}
+                                  underline="hover"
+                                  sx={{ fontWeight: 'bold' }}
+                                >
+                                  {t('contacts.google.com')}
+                                </Link>
                               </Alert>
                             ) : null}
                             <Box sx={{ padding: theme.spacing(2) }}>
