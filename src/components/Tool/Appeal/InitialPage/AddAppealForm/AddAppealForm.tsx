@@ -14,8 +14,9 @@ import {
   Theme,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { Field, Form, Formik, FormikProps, FormikValues } from 'formik';
+import { isEqual } from 'lodash';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -27,14 +28,93 @@ import {
 } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import { FilterOption, MultiselectFilter } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
+import removeObjectNulls from 'src/lib/removeObjectNulls';
+import {
+  useContactFiltersQuery,
+  useContactTagsQuery,
+} from './AddAppealForm.generated';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
-import { useGetContactTagsQuery } from './GetContactTags.generated';
 
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
+export enum ExclusionEnum {
+  SpecialGift = 'specialGift3months',
+  JoinedTeam = 'joinedTeam3months',
+  IncreasedGiving = 'increasedGiving3months',
+  MissedGift = '30daysLate',
+  DoNotAskAppeals = 'doNotAskAppeals',
+}
+
+export type ContactExclusion = {
+  name: string;
+  value: ExclusionEnum;
+};
+export const contactExclusions: ContactExclusion[] = [
+  {
+    name: i18n.t('May have given a special gift in the last 3 months'),
+    value: ExclusionEnum.SpecialGift,
+  },
+  {
+    name: i18n.t('May have joined my team in the last 3 months'),
+    value: ExclusionEnum.JoinedTeam,
+  },
+  {
+    name: i18n.t('May have increased their giving in the last 3 months'),
+    value: ExclusionEnum.IncreasedGiving,
+  },
+  {
+    name: i18n.t('May have missed a gift in the last 30-90 days'),
+    value: ExclusionEnum.MissedGift,
+  },
+  {
+    name: i18n.t('Have "Send Appeals" set to No'),
+    value: ExclusionEnum.DoNotAskAppeals,
+  },
+];
+
+const calculateGoal = (
+  initialGoal: number,
+  letterCost: number,
+  adminCost: number,
+): number => {
+  return (initialGoal + letterCost) * (1 + adminCost / 100);
+};
+
+const appealFormSchema = yup.object({
+  name: yup.string().required('Please enter a name'),
+  initialGoal: yup.number().required(),
+  letterCost: yup.number().required(),
+  adminCost: yup.number().required(),
+  statuses: yup.array().of(
+    yup.object({
+      name: yup.string(),
+      value: yup.string(),
+    }),
+  ),
+  tags: yup.array().of(yup.string()),
+  exclusions: yup.array().of(
+    yup.object({
+      name: yup.string(),
+      value: yup.string(),
+    }),
+  ),
+});
+type Attributes = yup.InferType<typeof appealFormSchema>;
+
+type FormikRefType = React.RefObject<
+  FormikProps<{
+    name: string;
+    initialGoal: number;
+    letterCost: number;
+    adminCost: number;
+    statuses: Pick<FilterOption, 'name' | 'value'>[];
+    tags: never[];
+    exclusions: ContactExclusion[];
+  }>
+>;
 
 const useStyles = makeStyles()((theme: Theme) => ({
+  loadingIndicator: {
+    margin: theme.spacing(0, 1, 0, 0),
+  },
   input: {
     width: '100%',
   },
@@ -56,89 +136,83 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface FormAttributes {
-  name: string;
-  initialGoal: number;
-  letterCost: number;
-  adminCost: number;
-}
+type BuildInclusionFilterProps = {
+  appealIncludes: object;
+  tags: Attributes['tags'];
+  statuses: Attributes['statuses'];
+};
+export const buildInclusionFilter = ({
+  appealIncludes,
+  tags,
+  statuses,
+}: BuildInclusionFilterProps): object => {
+  const defaultInclusionFilter = {
+    any_tags: true,
+  };
 
-export type ContactExclusion = {
-  name: string;
-  value: string;
+  const inclusionFilter = removeObjectNulls({
+    ...defaultInclusionFilter,
+    tags: tags && tags.length ? tags.join(',') : null,
+    status:
+      statuses && statuses.length
+        ? statuses.map((status) => status.value).join(',')
+        : null,
+    ...appealIncludes,
+  });
+
+  return isEqual(inclusionFilter, defaultInclusionFilter)
+    ? {}
+    : inclusionFilter;
 };
 
-export const contactExclusions: ContactExclusion[] = [
-  {
-    name: i18n.t('May have given a special gift in the last 3 months'),
-    value: 'SPECIAL_GIFT',
-  },
-  {
-    name: i18n.t('May have joined my team in the last 3 months'),
-    value: 'JOINED_TEAM',
-  },
-  {
-    name: i18n.t('May have increased their giving in the last 3 months'),
-    value: 'INCREASED_GIVING',
-  },
-  {
-    name: i18n.t('May have missed a gift in the last 30-90 days'),
-    value: 'MISSED_GIFT',
-  },
-  {
-    name: i18n.t('Have "Send Appeals" set to No'),
-    value: 'NO_APPEALS',
-  },
-];
+export const buildExclusionFilter = (
+  exclusions: Attributes['exclusions'],
+): object => {
+  if (!exclusions || !exclusions.length) {
+    return {};
+  }
+  const today = DateTime.local().toFormat('yyyy-MM-dd');
+  const threeMonthsAgo = DateTime.local()
+    .minus({ months: 3 })
+    .toFormat('yyyy-MM-dd');
+  const containsExclusion = (exclusionValue: ExclusionEnum) => {
+    return exclusions?.find((exclusion) => exclusion.value === exclusionValue);
+  };
 
-const calculateGoal = (
-  initialGoal: number,
-  letterCost: number,
-  adminCost: number,
-): number => {
-  return (initialGoal + letterCost) * (1 + adminCost / 100);
+  return removeObjectNulls({
+    started_giving_range: containsExclusion(ExclusionEnum.JoinedTeam)
+      ? `${threeMonthsAgo}..${today}`
+      : null,
+    gave_more_than_pledged_range: containsExclusion(ExclusionEnum.SpecialGift)
+      ? `${threeMonthsAgo}..${today}`
+      : null,
+    pledge_amount_increased_range: containsExclusion(
+      ExclusionEnum.IncreasedGiving,
+    )
+      ? `${threeMonthsAgo}..${today}`
+      : null,
+    pledge_late_by: containsExclusion(ExclusionEnum.MissedGift)
+      ? '30_90'
+      : null,
+    no_appeals: containsExclusion(ExclusionEnum.DoNotAskAppeals) ? true : null,
+  });
 };
 
-const appealFormSchema = yup.object({
-  name: yup.string().required('Please enter a name'),
-  initialGoal: yup.number().required(),
-  letterCost: yup.number().required(),
-  adminCost: yup.number().required(),
-  statuses: yup.array().of(
-    yup.object({
-      __typename: yup.string(),
-      name: yup.string(),
-      value: yup.string(),
-    }),
-  ),
-  tags: yup.array().of(yup.string()),
-  exclusions: yup.array().of(
-    yup.object({
-      name: yup.string(),
-      value: yup.string(),
-    }),
-  ),
-});
+type CreateNewAppealAttributes = {
+  name: string;
+  amount: number;
+  inclusionFilterJson?: string;
+  exclusionFilterJson?: string;
+};
 interface AddAppealFormProps {
   accountListId: string;
   appealName?: string;
   appealGoal?: number;
-  appealStatuses?: FilterOption[];
+  appealStatuses?: Pick<FilterOption, 'name' | 'value'>[];
   appealExcludes?: ContactExclusion[];
+  appealIncludes?: object;
   formRef?: React.MutableRefObject<FormikValues | undefined>;
 }
-
-type FormikRefType = React.RefObject<
-  FormikProps<{
-    name: string;
-    initialGoal: number;
-    letterCost: number;
-    adminCost: number;
-    statuses: FilterOption[];
-    tags: never[];
-    exclusions: ContactExclusion[];
-  }>
->;
 
 const AddAppealForm: React.FC<AddAppealFormProps> = ({
   accountListId,
@@ -146,15 +220,17 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   appealGoal,
   appealStatuses,
   appealExcludes,
+  appealIncludes = {},
   formRef,
 }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { data: contactFilterTags, loading: loadingTags } =
-    useGetContactTagsQuery({
+  const { data: contactFilterTags, loading: loadingTags } = useContactTagsQuery(
+    {
       variables: { accountListId },
-    });
+    },
+  );
   const { data: contactFilterGroups, loading: loadingStatuses } =
     useContactFiltersQuery({
       variables: {
@@ -180,8 +256,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
     }
   }, [contactFilterGroups]);
 
-  const onSubmit = async (props: FormAttributes, resetForm: () => void) => {
-    const attributes = {
+  const onSubmit = async (props: Attributes, resetForm: () => void) => {
+    const attributes: CreateNewAppealAttributes = {
       name: props.name,
       amount: calculateGoal(
         props.initialGoal,
@@ -189,6 +265,18 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         props.adminCost,
       ),
     };
+    const inclusionFilter = buildInclusionFilter({
+      appealIncludes,
+      tags: props.tags,
+      statuses: props.statuses,
+    });
+    if (!isEqual(inclusionFilter, {})) {
+      attributes.inclusionFilterJson = JSON.stringify(inclusionFilter);
+    }
+    const exclusionFilter = buildExclusionFilter(props.exclusions);
+    if (!isEqual(exclusionFilter, {})) {
+      attributes.exclusionFilterJson = JSON.stringify(exclusionFilter);
+    }
 
     await createNewAppeal({
       variables: {
@@ -535,7 +623,13 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 className={classes.submitButton}
                 disabled={!isValid || isSubmitting}
               >
-                {updating && <LoadingIndicator color="primary" size={20} />}
+                {updating && (
+                  <CircularProgress
+                    className={classes.loadingIndicator}
+                    color="primary"
+                    size={20}
+                  />
+                )}
                 {t('Add Appeal')}
               </Button>
             </Box>

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm';
+import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
 import theme from 'src/theme';
 import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';

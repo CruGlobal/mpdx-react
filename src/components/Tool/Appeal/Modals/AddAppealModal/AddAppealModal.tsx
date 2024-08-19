@@ -11,7 +11,7 @@ import { FilterOption } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import AddAppealForm, {
   ContactExclusion,
-} from '../../InitialPage/AddAppealForm';
+} from '../../InitialPage/AddAppealForm/AddAppealForm';
 
 interface AddAppealModalProps {
   appealName: string;
