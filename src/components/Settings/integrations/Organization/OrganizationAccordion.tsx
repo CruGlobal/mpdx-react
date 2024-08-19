@@ -339,7 +339,6 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
         <OrganizationAddAccountModal
           handleClose={() => setShowAddAccountModal(false)}
           accountListId={accountListId}
-          refetchOrganizations={refetchOrganizations}
         />
       )}
 
