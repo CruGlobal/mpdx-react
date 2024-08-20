@@ -149,19 +149,19 @@ const FixPhoneNumbers: React.FC<Props> = ({
   };
 
   const determineBulkDataToSend = (
-    values: { [key: string]: any },
+    values: FormValuesPerson[],
     defaultSource: string,
   ): PersonUpdateInput[] => {
     const dataToSend = [] as PersonUpdateInput[];
 
-    Object.entries(values).forEach((value) => {
-      const primaryNumber = value[1].phoneNumbers.nodes.find(
+    values.forEach((value) => {
+      const primaryNumber = value.phoneNumbers.nodes.find(
         (number) => number.source === defaultSource,
       );
       if (primaryNumber) {
         dataToSend.push({
-          id: value[1].id,
-          phoneNumbers: value[1].phoneNumbers.nodes.map(
+          id: value.id,
+          phoneNumbers: value.phoneNumbers.nodes.map(
             (number) =>
               ({
                 id: number.id,
@@ -178,6 +178,126 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
   const handleSourceChange = (event: SelectChangeEvent<string>): void => {
     setDefaultSource(event.target.value);
+  };
+
+  const handleDeleteModalClose = (): void => {
+    setDeleteModalState(defaultDeleteModalState);
+  };
+
+  const handleDeleteModalOpen = (
+    personIndex: number,
+    numberIndex: number,
+    phoneNumber: string,
+  ): void => {
+    setDeleteModalState({
+      open: true,
+      personIndex,
+      numberIndex,
+      phoneNumber,
+    });
+  };
+
+  const handleBulkConfirm = async (values: FormValues) => {
+    const dataToSend = determineBulkDataToSend(
+      values?.people,
+      defaultSource ?? '',
+    );
+
+    if (!dataToSend.length) {
+      return;
+    }
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes: dataToSend,
+        },
+      },
+      update: (cache) => {
+        data?.people.nodes.forEach((person: PersonInvalidNumberFragment) => {
+          cache.evict({ id: `Person:${person.id}` });
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t(`Error updating phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t(`Phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
+  const updatePhoneNumber = async (
+    values: FormValues,
+    personId: string,
+    personIndex: number,
+    name: string,
+  ): Promise<void> => {
+    const attributes = [
+      {
+        phoneNumbers: values.people[personIndex].phoneNumbers.nodes.map(
+          (phoneNumber: PersonPhoneNumberFragment) => ({
+            id: phoneNumber.id,
+            primary: phoneNumber.primary,
+            number: phoneNumber.number,
+            validValues: true,
+          }),
+        ),
+        id: personId,
+      },
+    ];
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes,
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${personId}` });
+      },
+      onError() {
+        enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+      },
+      onCompleted() {
+        enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
+          variant: 'success',
+          autoHideDuration: 7000,
+        });
+      },
+    });
+  };
+
+  const handleDelete = (
+    values: FormValues,
+    setValues: (FormValues) => void,
+  ): void => {
+    const temp = JSON.parse(JSON.stringify(values));
+
+    const deleting = temp?.people[
+      deleteModalState.personIndex
+    ].phoneNumbers?.nodes.splice(deleteModalState.numberIndex, 1)[0];
+
+    deleting.destroy = true;
+
+    deleting.primary &&
+      temp?.people[deleteModalState.personIndex]?.phoneNumbers?.nodes.length &&
+      (temp.people[deleteModalState.personIndex].phoneNumbers.nodes[0].primary =
+        true);
+
+    setValues(temp);
+    handleDeleteModalClose();
   };
 
   const fixPhoneNumberSchema = yup.object({
@@ -231,138 +351,10 @@ const FixPhoneNumbers: React.FC<Props> = ({
           {data?.people.nodes.length > 0 ? (
             <Formik
               initialValues={initialValues}
-              onSubmit={() => alert('hello')}
+              onSubmit={() => {}}
               validationSchema={fixPhoneNumberSchema}
             >
               {({ errors, setValues, values }): ReactElement => {
-                const handleDeleteModalOpen = (
-                  personIndex: number,
-                  numberIndex: number,
-                  phoneNumber: string,
-                ): void => {
-                  setDeleteModalState({
-                    open: true,
-                    personIndex,
-                    numberIndex,
-                    phoneNumber,
-                  });
-                };
-
-                const handleDeleteModalClose = (): void => {
-                  setDeleteModalState(defaultDeleteModalState);
-                };
-
-                const handleDelete = (): void => {
-                  const temp = JSON.parse(JSON.stringify(values));
-
-                  const deleting = temp?.people[
-                    deleteModalState.personIndex
-                  ].phoneNumbers?.nodes.splice(
-                    deleteModalState.numberIndex,
-                    1,
-                  )[0];
-
-                  deleting.destroy = true;
-
-                  deleting.primary &&
-                    temp?.people[deleteModalState.personIndex]?.phoneNumbers
-                      ?.nodes.length &&
-                    (temp.people[
-                      deleteModalState.personIndex
-                    ].phoneNumbers.nodes[0].primary = true);
-
-                  setValues(temp);
-                  handleDeleteModalClose();
-                };
-
-                const updatePhoneNumber = async (
-                  personId: string,
-                  personIndex: number,
-                  name: string,
-                ): Promise<void> => {
-                  const attributes = [
-                    {
-                      phoneNumbers: values.people[
-                        personIndex
-                      ].phoneNumbers.nodes.map(
-                        (phoneNumber: PersonPhoneNumberFragment) => ({
-                          id: phoneNumber.id,
-                          primary: phoneNumber.primary,
-                          number: phoneNumber.number,
-                          validValues: true,
-                        }),
-                      ),
-                      id: personId,
-                    },
-                  ];
-
-                  await updateInvalidPhoneNumbers({
-                    variables: {
-                      input: {
-                        accountListId,
-                        attributes,
-                      },
-                    },
-                    update: (cache) => {
-                      cache.evict({ id: `Person:${personId}` });
-                    },
-                    onError() {
-                      enqueueSnackbar(
-                        t(`Error updating ${name}'s phone numbers`),
-                        {
-                          variant: 'error',
-                          autoHideDuration: 7000,
-                        },
-                      );
-                    },
-                    onCompleted() {
-                      enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
-                        variant: 'success',
-                        autoHideDuration: 7000,
-                      });
-                    },
-                  });
-                };
-
-                const handleBulkConfirm = async () => {
-                  const dataToSend = determineBulkDataToSend(
-                    values?.people,
-                    defaultSource ?? '',
-                  );
-
-                  if (!dataToSend.length) {
-                    return;
-                  }
-
-                  await updateInvalidPhoneNumbers({
-                    variables: {
-                      input: {
-                        accountListId,
-                        attributes: dataToSend,
-                      },
-                    },
-                    update: (cache) => {
-                      data?.people.nodes.forEach(
-                        (person: PersonInvalidNumberFragment) => {
-                          cache.evict({ id: `Person:${person.id}` });
-                        },
-                      );
-                    },
-                    onError: () => {
-                      enqueueSnackbar(t(`Error updating phone numbers`), {
-                        variant: 'error',
-                        autoHideDuration: 7000,
-                      });
-                    },
-                    onCompleted: () => {
-                      enqueueSnackbar(t(`Phone numbers updated!`), {
-                        variant: 'success',
-                        autoHideDuration: 7000,
-                      });
-                    },
-                  });
-                };
-
                 return (
                   <>
                     <Grid container className={classes.outter}>
@@ -416,7 +408,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                             </Select>
                             <Button
                               variant="contained"
-                              onClick={handleBulkConfirm}
+                              onClick={() => handleBulkConfirm(values)}
                               data-testid="source-button"
                             >
                               <Icon
@@ -464,11 +456,10 @@ const FixPhoneNumbers: React.FC<Props> = ({
                         </Box>
                       </Grid>
                     </Grid>
-
                     <DeleteModal
                       modalState={deleteModalState}
                       handleClose={handleDeleteModalClose}
-                      handleDelete={handleDelete}
+                      handleDelete={() => handleDelete(values, setValues)}
                     />
                   </>
                 );
