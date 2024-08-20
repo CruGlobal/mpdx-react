@@ -40,21 +40,21 @@ interface ConnectOrganizationProps {
 
 const StyledForm = styled('form')({ width: '100%' });
 
-const StyledBox = styled(Box)(() => ({
+const StyledBox = styled(Box)({
   padding: '0 10px',
-}));
+});
 
-const WarningBox = styled(Box)(() => ({
+const WarningBox = styled(Box)({
   padding: '15px',
   background: theme.palette.mpdxYellow.main,
   maxWidth: 'calc(100% - 20px)',
   margin: '10px auto 0',
-}));
+});
 
-const StyledTypography = styled(Typography)(() => ({
+const StyledTypography = styled(Typography)({
   marginTop: '10px',
   color: theme.palette.mpdxYellow.dark,
-}));
+});
 
 export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
   onDone,
