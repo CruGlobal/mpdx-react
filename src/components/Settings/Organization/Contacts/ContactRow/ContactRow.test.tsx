@@ -84,7 +84,6 @@ describe('ContactRow', () => {
           <ContactRow
             contact={{
               ...contact,
-              allowDeletion: false,
             }}
             selectedOrganizationName="Cru"
           />

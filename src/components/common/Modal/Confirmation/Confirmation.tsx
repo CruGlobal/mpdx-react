@@ -26,7 +26,6 @@ export interface ConfirmationProps {
   isOpen: boolean;
   title: string;
   subtitle?: ReactNode | string;
-  formLabel?: string;
   message?: ReactNode;
   mutation: () => Promise<unknown>;
   confirmButtonProps?: ActionButtonProps;

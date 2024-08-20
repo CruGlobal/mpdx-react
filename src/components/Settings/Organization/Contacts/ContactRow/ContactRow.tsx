@@ -235,7 +235,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
         message={
           <Trans
             t={t}
-            defaults="<p>This contact will be anonymized in your {{appName}} organization. This is permanent and can't be recovered. Only anonymize if you are 100% confident that you are looking at the correct contact.</p><p>A contact placeholder will remain with a name like “DataPrivacy, Deleted”. Gift data will remain. Other data such as notes and tasks will be removed. Status will be set as “Never Ask”. Newsletter set to 'N/A'. You can request removal across all other systems at dsar@cru.org.</p>"
+            defaults="<p>This contact will be anonymized in your {{appName}} organization. This is permanent and can't be recovered. Only anonymize if you are 100% confident that you are looking at the correct contact.</p><br /><p>A contact placeholder will remain with a name like “DataPrivacy, Deleted”. Gift data will remain. Other data such as notes and tasks will be removed. Status will be set as “Never Ask”. Newsletter set to 'N/A'. You can request removal across all other systems at dsar@cru.org.</p>"
             values={{
               appName,
             }}

@@ -17,7 +17,6 @@ type SearchOrganizationsContactsResponse {
 
 type OrganizationsContact {
   id: ID!
-  allowDeletion: Boolean!
   name: String!
   squareAvatar: String
   people: [ContactPeople]!

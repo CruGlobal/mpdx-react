@@ -7,7 +7,6 @@ mutation AnonymizeContact($input: ContactAnonymizeMutationInput!) {
 query SearchOrganizationsContacts($input: SearchOrganizationsContactsInput!) {
   searchOrganizationsContacts(input: $input) {
     contacts {
-      allowDeletion
       id
       name
       squareAvatar

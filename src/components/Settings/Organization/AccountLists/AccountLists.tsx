@@ -111,13 +111,11 @@ export const AccountLists: React.FC = () => {
               <NullStateBox>
                 <Icon path={mdiHome} size={1.5} />
 
-                {pagination &&
-                  pagination?.totalCount === 0 &&
-                  search === '' && (
-                    <Typography variant="h5">
-                      {t('Looks like you have no account lists to manage yet')}
-                    </Typography>
-                  )}
+                {pagination && pagination?.totalCount === 0 && !search && (
+                  <Typography variant="h5">
+                    {t('Looks like you have no account lists to manage yet')}
+                  </Typography>
+                )}
                 <Typography variant="h5">
                   {t('No account lists match your search filters.')}
                 </Typography>

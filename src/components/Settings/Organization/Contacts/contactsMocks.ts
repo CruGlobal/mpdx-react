@@ -1,6 +1,5 @@
 export class ContactsMocks {
   contact = {
-    allowDeletion: true,
     id: '2f5d998f',
     name: 'Lastname, Firstnames',
     squareAvatar: 'https://stage.mpdx.org/images/avatar.png',

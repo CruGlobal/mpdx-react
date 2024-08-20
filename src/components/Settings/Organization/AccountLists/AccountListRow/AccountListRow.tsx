@@ -5,24 +5,18 @@ import {
   Grid,
   IconButton,
   ListItemText,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
-import {
-  StyledList,
-  StyledListItem,
-} from 'src/components/Shared/Lists/listsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   AccountListUsers,
   OrganizationAccountListCoaches,
   OrganizationsAccountList,
 } from 'src/graphql/types.generated';
-import * as Types from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
@@ -32,13 +26,15 @@ import {
 } from '../AccountLists.generated';
 import { AccountListCoachesOrUsers } from './AccountListCoachesOrUsers/AccountListCoachesOrUsers';
 import { AccountListInvites } from './AccountListInvites/AccountListInvites';
+import { DeleteAccountConfirmModal } from './DeleteAccountConfirmModal';
 import {
   useAdminDeleteOrganizationCoachMutation,
   useDeleteAccountListMutation,
   useDeleteUserMutation,
   useRemoveAccountListUserMutation,
 } from './DeleteAccountListsItems.generated';
-import { BorderBottomBox, HeaderBox, WarningBox } from './accountListRowHelper';
+import { DeleteUserConfirmModal } from './DeleteUserConfirmModal';
+import { BorderBottomBox, HeaderBox } from './accountListRowHelper';
 
 export interface AccountListRowProps {
   accountList: OrganizationsAccountList;
@@ -72,19 +68,15 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
   const [removeAccountListUser] = useRemoveAccountListUserMutation();
   const [deleteUserMutation] = useDeleteUserMutation();
   const [deleteAccountList] = useDeleteAccountListMutation();
-  const [removeUser, setRemoveUser] = useState<Types.AccountListUsers | null>(
-    null,
-  );
-  const [deleteUser, setDeleteUser] = useState<Types.AccountListUsers | null>(
-    null,
-  );
+  const [removeUser, setRemoveUser] = useState<AccountListUsers | null>(null);
+  const [deleteUser, setDeleteUser] = useState<AccountListUsers | null>(null);
   const [removeCoach, setRemoveCoach] =
-    useState<Types.OrganizationAccountListCoaches | null>(null);
+    useState<OrganizationAccountListCoaches | null>(null);
   const [deleteAccountListDialogOpen, setDeleteAccountListDialogOpen] =
     useState(false);
   const [reason, setReason] = useState('');
   const {
-    id,
+    id: accountListId,
     name,
     designationAccounts,
     accountListUsers,
@@ -93,79 +85,78 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     accountListCoaches,
   } = accountList;
 
+  // handleRemoveUser is different from handleDeleteUser. Deleting a user permanently deletes them. Removing them just removes them as a user from the AccountList.
   const handleDeleteUser = async (item: AccountListUsers | null) => {
-    if (item) {
-      const fullName = `${item.userFirstName} ${item.userLastName}`;
-      const errorMessage = t(
-        '{{appName}} could not delete user: {{fullName}}',
-        {
-          appName,
-          fullName,
+    if (!item) {
+      setReason('');
+      return;
+    }
+    const fullName = `${item.userFirstName} ${item.userLastName}`;
+    const errorMessage = t('{{appName}} could not delete user: {{fullName}}', {
+      appName,
+      fullName,
+    });
+    if (!item.userId) {
+      enqueueSnackbar(errorMessage, {
+        variant: 'error',
+      });
+      return;
+    }
+
+    await deleteUserMutation({
+      variables: {
+        input: {
+          reason: reason,
+          resettedUserId: item.userId,
         },
-      );
-      if (!item.userId) {
+      },
+      update: (cache) => {
+        cache.updateQuery<
+          SearchOrganizationsAccountListsQuery,
+          SearchOrganizationsAccountListsQueryVariables
+        >(
+          {
+            query: SearchOrganizationsAccountListsDocument,
+            variables: {
+              input: {
+                organizationId,
+                search,
+              },
+            },
+          },
+          (data) =>
+            data && {
+              ...data,
+              searchOrganizationsAccountLists: {
+                ...data.searchOrganizationsAccountLists,
+                accountLists:
+                  data.searchOrganizationsAccountLists.accountLists.map(
+                    (list) =>
+                      list && {
+                        ...list,
+                        accountListUsers: list.accountListUsers?.filter(
+                          (user) => user?.userId !== item.userId,
+                        ),
+                      },
+                  ),
+              },
+            },
+        );
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t('Deletion process enqueued: {{fullName}}', { fullName }),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
-        return;
-      }
-
-      await deleteUserMutation({
-        variables: {
-          input: {
-            reason: reason,
-            resettedUserId: item.userId,
-          },
-        },
-        update: (cache) => {
-          cache.updateQuery<
-            SearchOrganizationsAccountListsQuery,
-            SearchOrganizationsAccountListsQueryVariables
-          >(
-            {
-              query: SearchOrganizationsAccountListsDocument,
-              variables: {
-                input: {
-                  organizationId,
-                  search,
-                },
-              },
-            },
-            (data) =>
-              data && {
-                ...data,
-                searchOrganizationsAccountLists: {
-                  ...data.searchOrganizationsAccountLists,
-                  accountLists:
-                    data.searchOrganizationsAccountLists.accountLists.map(
-                      (list) =>
-                        list && {
-                          ...list,
-                          accountListUsers: list.accountListUsers?.filter(
-                            (user) => user?.userId !== item.userId,
-                          ),
-                        },
-                    ),
-                },
-              },
-          );
-        },
-        onCompleted: () => {
-          enqueueSnackbar(
-            t('Deletion process enqueued: {{fullName}}', { fullName }),
-            {
-              variant: 'success',
-            },
-          );
-        },
-        onError: () => {
-          enqueueSnackbar(errorMessage, {
-            variant: 'error',
-          });
-        },
-      });
-    }
-    setReason('');
+      },
+    });
   };
 
   const handleDeleteAccountList = async () => {
@@ -174,7 +165,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       name,
     });
 
-    if (!id) {
+    if (!accountListId) {
       enqueueSnackbar(errorMessage, {
         variant: 'error',
       });
@@ -183,12 +174,12 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
     await deleteAccountList({
       variables: {
         input: {
-          accountListId: id,
+          accountListId: accountListId,
           reason: reason,
         },
       },
       update: (cache) => {
-        cache.evict({ id: `OrganizationsAccountList:${id}` });
+        cache.evict({ id: `OrganizationsAccountList:${accountListId}` });
         cache.gc();
       },
       onCompleted: () => {
@@ -208,91 +199,88 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
   const handleRemoveCoach = async (
     item: OrganizationAccountListCoaches | null,
   ) => {
-    if (item) {
-      const fullName = item.coachFirstName + ' ' + item.coachLastName;
-      const errorMessage = t(
-        '{{appName}} could not remove coach: {{fullName}}',
-        {
-          appName,
-          fullName,
+    if (!item) {
+      return;
+    }
+    const fullName = item.coachFirstName + ' ' + item.coachLastName;
+    const errorMessage = t('{{appName}} could not remove coach: {{fullName}}', {
+      appName,
+      fullName,
+    });
+    if (!item.id) {
+      enqueueSnackbar(errorMessage, {
+        variant: 'error',
+      });
+      return;
+    }
+    await adminDeleteOrganizationCoach({
+      variables: {
+        input: {
+          accountListId: accountListId,
+          coachId: item.id,
         },
-      );
-      if (!item.id) {
+      },
+      update: (cache) => {
+        cache.evict({ id: `OrganizationAccountListCoaches:${item.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t('Successfully removed coach: {{fullName}}', { fullName }),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
-        return;
-      }
-      await adminDeleteOrganizationCoach({
-        variables: {
-          input: {
-            accountListId: id,
-            coachId: item.id,
-          },
-        },
-        update: (cache) => {
-          cache.evict({ id: `OrganizationAccountListCoaches:${item.id}` });
-          cache.gc();
-        },
-        onCompleted: () => {
-          enqueueSnackbar(
-            t('Successfully removed coach: {{fullName}}', { fullName }),
-            {
-              variant: 'success',
-            },
-          );
-        },
-        onError: () => {
-          enqueueSnackbar(errorMessage, {
-            variant: 'error',
-          });
-        },
-      });
-    }
+      },
+    });
   };
 
+  // handleRemoveUser is different from handleDeleteUser. Deleting a user permanently deletes them. Removing them just removes them as a user from the AccountList.
   const handleRemoveUser = async (item: AccountListUsers | null) => {
-    if (item) {
-      const fullName = `${item.userFirstName} ${item.userLastName}`;
-      const errorMessage = t(
-        '{{appName}} could not remove user: {{fullName}}',
-        {
-          appName,
-          fullName,
+    if (!item) {
+      return;
+    }
+    const fullName = `${item.userFirstName} ${item.userLastName}`;
+    const errorMessage = t('{{appName}} could not remove user: {{fullName}}', {
+      appName,
+      fullName,
+    });
+    if (!item.userId) {
+      enqueueSnackbar(errorMessage, {
+        variant: 'error',
+      });
+      return;
+    }
+    await removeAccountListUser({
+      variables: {
+        input: {
+          accountListId: accountListId,
+          userId: item.userId,
         },
-      );
-      if (!item.userId) {
+      },
+      update: (cache) => {
+        cache.evict({ id: `AccountListUsers:${item.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t('Successfully removed user: {{fullName}}', { fullName }),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
         enqueueSnackbar(errorMessage, {
           variant: 'error',
         });
-        return;
-      }
-      await removeAccountListUser({
-        variables: {
-          input: {
-            accountListId: id,
-            userId: item.userId,
-          },
-        },
-        update: (cache) => {
-          cache.evict({ id: `AccountListUsers:${item.id}` });
-          cache.gc();
-        },
-        onCompleted: () => {
-          enqueueSnackbar(
-            t('Successfully removed user: {{fullName}}', { fullName }),
-            {
-              variant: 'success',
-            },
-          );
-        },
-        onError: () => {
-          enqueueSnackbar(errorMessage, {
-            variant: 'error',
-          });
-        },
-      });
-    }
+      },
+    });
   };
 
   return (
@@ -327,103 +315,17 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
                             <DeleteForever fontSize="small" />
                           </IconButton>
                         </Tooltip>
-                        <Confirmation
-                          isOpen={deleteAccountListDialogOpen}
-                          title={t('Confirm')}
-                          message={
-                            <>
-                              <WarningBox
-                                sx={{
-                                  fontSize: '10px',
-                                  marginTop: 0,
-                                  marginBottom: theme.spacing(1),
-                                }}
-                              >
-                                <Typography
-                                  sx={{
-                                    fontWeight: 'bold',
-                                    marginBottom: theme.spacing(1),
-                                  }}
-                                >
-                                  {t(
-                                    'WARNING: Please read the implications of deleting this account.',
-                                  )}
-                                </Typography>
-                                <Typography>{t('Users')}</Typography>
-                                <StyledList>
-                                  <StyledListItem>
-                                    {t(
-                                      'You are about to delete an account list. It will not delete the user(s).',
-                                    )}
-                                  </StyledListItem>
-                                  <StyledListItem>
-                                    {t(
-                                      'The user(s) will lose gift data and donor contact data. Consider whether you should notify the user(s).',
-                                    )}
-                                  </StyledListItem>
-                                  <StyledListItem>
-                                    {t(
-                                      'This is not the place to remove a user’s access to this account.',
-                                    )}
-                                  </StyledListItem>
-                                </StyledList>
-                                <Typography>
-                                  {t('Designations Accounts')}
-                                </Typography>
-                                <StyledList>
-                                  <StyledListItem>
-                                    {t(
-                                      'This will delete all designation accounts that are not shared with other account lists. (including the donations for that designation)',
-                                    )}
-                                  </StyledListItem>
-                                  <StyledListItem>
-                                    {t(
-                                      'If this account contains ministry designations rather than a staff designation, then consider whether someone else in your organization needs this. If you want to retain the designation account, then share it with the appropriate user.',
-                                    )}
-                                  </StyledListItem>
-                                </StyledList>
-                                <Typography>{t('Donation System')}</Typography>
-                                <StyledList>
-                                  <StyledListItem>
-                                    {t(
-                                      'A blue question icon indicates that the user may be active in the donation system and this account may be automatically recreated. Consider first updating the donation system.',
-                                    )}
-                                  </StyledListItem>
-                                </StyledList>
-                              </WarningBox>
-                              <Typography sx={{ fontWeight: 'bold' }}>
-                                {t(
-                                  `Are you sure you want to permanently delete the account list: {{accountListName}}?`,
-                                  {
-                                    accountListName: name,
-                                    interpolation: { escapeValue: false },
-                                  },
-                                )}
-                              </Typography>
-                              {t(
-                                'Please explain the reason for deleting this account.',
-                              )}
-                              <TextField
-                                // eslint-disable-next-line jsx-a11y/no-autofocus
-                                autoFocus
-                                margin="dense"
-                                id={t('Reason')}
-                                label={t('Reason')}
-                                type="text"
-                                fullWidth
-                                multiline
-                                value={reason}
-                                onChange={(e) => setReason(e.target.value)}
-                                sx={{ marginTop: 2 }}
-                              />
-                            </>
+                        <DeleteAccountConfirmModal
+                          t={t}
+                          deleteAccountListDialogOpen={
+                            deleteAccountListDialogOpen
                           }
-                          confirmButtonProps={{ disabled: reason.length < 5 }}
-                          handleClose={() => {
-                            setDeleteAccountListDialogOpen(false);
-                            setReason('');
-                          }}
-                          mutation={() => handleDeleteAccountList()}
+                          setDeleteAccountListDialogOpen={
+                            setDeleteAccountListDialogOpen
+                          }
+                          reason={reason}
+                          setReason={setReason}
+                          handleDeleteAccountList={handleDeleteAccountList}
                         />
                       </>
                     )}
@@ -500,7 +402,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             <AccountListInvites
               accountListInvites={accountListUsersInvites}
               name={name}
-              accountListId={id}
+              accountListId={accountListId}
             />
           )}
           {!accountListUsers?.length && !accountListUsersInvites?.length && (
@@ -528,7 +430,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
             <AccountListInvites
               accountListInvites={accountListCoachInvites}
               name={name}
-              accountListId={id}
+              accountListId={accountListId}
             />
           )}
 
@@ -557,89 +459,14 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
         handleClose={() => setRemoveUser(null)}
         mutation={() => handleRemoveUser(removeUser)}
       />
-      <Confirmation
-        isOpen={!!deleteUser}
-        title={t('Confirm')}
-        message={
-          <>
-            <WarningBox
-              sx={{
-                fontSize: '10px',
-                marginTop: 0,
-                marginBottom: theme.spacing(1),
-              }}
-            >
-              <Typography
-                sx={{ marginBottom: theme.spacing(1), fontWeight: 'bold' }}
-              >
-                {t(
-                  'WARNING: Please read the implications of deleting this user.',
-                )}
-              </Typography>
-              <Typography>{t('Accounts')}</Typography>
-              <StyledList>
-                <StyledListItem>
-                  {t(
-                    'You are about to delete a user and any unshared associated account(s). Associated accounts will be deleted unless they are shared with other users.',
-                  )}
-                </StyledListItem>
-                <StyledListItem>
-                  {t(
-                    'Only delete if you know that this user will not be returning to any other missional organization that uses {{appName}}. You may need to confirm this with them.',
-
-                    { appName: appName },
-                  )}
-                </StyledListItem>
-              </StyledList>
-              <Typography>{t('Designations Accounts')}</Typography>
-              <StyledList>
-                <StyledListItem>
-                  {t(
-                    'If this user has access to a ministry designation, then consider whether someone else in your organization needs this. If you want to retain the account, then share it with the appropriate user.',
-                  )}
-                </StyledListItem>
-              </StyledList>
-              <Typography>{t('Donation System')}</Typography>
-              <StyledList>
-                <StyledListItem>
-                  {t(
-                    'A blue question icon indicates that the user may be active in the donation system and this user and account may be automatically recreated. Consider first updating the donation system.',
-                  )}
-                </StyledListItem>
-              </StyledList>
-            </WarningBox>
-            <Typography sx={{ fontWeight: 'bold' }}>
-              {t(
-                'Are you sure you want to permanently delete the user: {{first}} {{last}}?',
-                {
-                  first: deleteUser?.userFirstName,
-                  last: deleteUser?.userLastName,
-                  interpolation: { escapeValue: false },
-                },
-              )}
-            </Typography>
-            {t('Please explain the reason for deleting this user.')}
-            <TextField
-              // eslint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
-              margin="dense"
-              id={t('Reason')}
-              label={t('Reason')}
-              type="text"
-              fullWidth
-              multiline
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              sx={{ marginTop: 2 }}
-            />
-          </>
-        }
-        formLabel="Reason"
-        mutation={() => handleDeleteUser(deleteUser)}
-        handleClose={() => {
-          setDeleteUser(null);
-          setReason('');
-        }}
+      <DeleteUserConfirmModal
+        t={t}
+        deleteUser={deleteUser}
+        setDeleteUser={setDeleteUser}
+        reason={reason}
+        setReason={setReason}
+        handleDeleteUser={handleDeleteUser}
+        appName={appName}
       />
       <Confirmation
         isOpen={!!removeCoach}

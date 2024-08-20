@@ -34,14 +34,6 @@ const AccountListsOrganizations = (): ReactElement => {
     SettingsOrganizationFragment | null | undefined
   >(null);
 
-  useEffect(() => {
-    if (!window?.localStorage) {
-      return;
-    }
-    const savedOrg = window.localStorage.getItem('admin-org');
-    savedOrg && setSelectedOrganization(JSON.parse(savedOrg));
-  }, []);
-
   const [search, setSearch] = useState('');
   const isNarrowScreen = useMediaQuery('(max-width:600px)');
 
@@ -51,6 +43,20 @@ const AccountListsOrganizations = (): ReactElement => {
 
   const clearFilters = () => {
     setSearch('');
+  };
+
+  useEffect(() => {
+    if (!window?.localStorage) {
+      return;
+    }
+    const savedOrg = window.localStorage.getItem('admin-org');
+    savedOrg && setSelectedOrganization(JSON.parse(savedOrg));
+  }, []);
+
+  const handleSelectedOrgChange = (organization): void => {
+    const org = organizations?.find((org) => org?.id === organization);
+    setSelectedOrganization(org);
+    org && window.localStorage.setItem(`admin-org`, JSON.stringify(org));
   };
 
   return (
@@ -123,17 +129,9 @@ const AccountListsOrganizations = (): ReactElement => {
                   />
                 )}
                 value={selectedOrganization?.id ?? null}
-                onChange={(_, organization): void => {
-                  const org = organizations?.find(
-                    (org) => org?.id === organization,
-                  );
-                  setSelectedOrganization(org);
-                  org &&
-                    window.localStorage.setItem(
-                      `admin-org`,
-                      JSON.stringify(org),
-                    );
-                }}
+                onChange={(_, organization): void =>
+                  handleSelectedOrgChange(organization)
+                }
               />
             </Box>
           </HeaderAndDropdown>
