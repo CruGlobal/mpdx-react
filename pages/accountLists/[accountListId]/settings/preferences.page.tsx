@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { Skeleton } from '@mui/material';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import { Alert, Box, Button, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
@@ -29,6 +30,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
 import { getCountries } from 'src/lib/data/countries';
 import { suggestArticles } from 'src/lib/helpScout';
+import theme from 'src/theme';
 import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
@@ -36,10 +38,30 @@ const AccordionLoading = styled(Skeleton)(() => ({
   height: '48px',
 }));
 
+const StickyBox = styled(Box)(() => ({
+  position: 'sticky',
+  top: theme.spacing(10),
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.grey[200],
+  height: theme.spacing(9),
+  zIndex: '700',
+  background: theme.palette.common.white,
+  paddingY: 1,
+}));
+
 const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
-  const { query } = useRouter();
+  const { push, query } = useRouter();
+
+  const setupPositions = ['', 'locale', 'monthly_goal', 'home_country'];
+  const accordionPanelPositions = [
+    '',
+    'locale',
+    'monthly goal',
+    'home country',
+  ];
+  const [setup, setSetup] = useState(0);
   const [expandedPanel, setExpandedPanel] = useState(
     typeof query.selectedTab === 'string' ? query.selectedTab : '',
   );
@@ -53,6 +75,45 @@ const Preferences: React.FC = () => {
   const handleAccordionChange = (panel: string) => {
     const panelLowercase = panel.toLowerCase();
     setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
+    if (setup > 0) {handleSetupChange();}
+  };
+
+  const handleSetupChange = async () => {
+    const nextNav = setup + 1;
+    if (setupPositions.length === nextNav) {
+      setSetup(0);
+      push(`/accountLists/${accountListId}/settings/notifications`);
+    } else {
+      setSetup(nextNav);
+      setExpandedPanel(accordionPanelPositions[nextNav]);
+      // push({
+      //   pathname: pathname,
+      //   query: {
+      //     accountListId: accountListId,
+      //     selectedTab: accordionPanelPositions[nextNav],
+      //   },
+      // });
+    }
+    // await updateUser({
+    //   variables: {
+    //     input: {
+    //       attributes: {
+    //         setup: position,
+    //       },
+    //     },
+    //   },
+    //   onCompleted: () => {
+    //     enqueueSnackbar(t('Saved successfully.'), {
+    //       variant: 'success',
+    //     });
+    //     handleAccordionChange(label);
+    //   },
+    //   onError: () => {
+    //     enqueueSnackbar(t('Saving failed.'), {
+    //       variant: 'error',
+    //     });
+    //   },
+    // });
   };
 
   const { data: personalPreferencesData, loading: personalPreferencesLoading } =
@@ -77,12 +138,53 @@ const Preferences: React.FC = () => {
   const { data: userOrganizationAccountsData } =
     useGetUsersOrganizationsAccountsQuery();
 
+  let setupData = personalPreferencesData?.user.setup;
+  // TODO: get actual setup data
+  setupData = 'locale';
+
+  useEffect(() => {
+    if (setupData && setupData !== 'finish') {
+      const position = setupPositions.indexOf(setupData);
+      setSetup(position);
+      setExpandedPanel(accordionPanelPositions[position]);
+    }
+  }, [setupData]);
+
   return (
     <SettingsWrapper
       pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
       selectedMenuId={'preferences'}
     >
+      <StickyBox>
+        <Alert
+          severity="info"
+          variant="outlined"
+          iconMapping={{
+            info: <CampaignIcon fontSize="large" />,
+          }}
+          action={
+            <Button variant="contained" onClick={handleSetupChange}>
+              {t('Skip Step')}
+            </Button>
+          }
+          sx={{ marginY: 2 }}
+        >
+          {setup === 1 && (
+            <Typography variant="h6">{t("Let's set your locale!")}</Typography>
+          )}
+          {setup === 2 && (
+            <Typography variant="h6">
+              {t('Great progress comes from great goals!')}
+            </Typography>
+          )}
+          {setup === 3 && (
+            <Typography variant="h6">
+              {t('What Country are you in?')}
+            </Typography>
+          )}
+        </Alert>
+      </StickyBox>
       <ProfileInfo accountListId={accountListId} />
       <AccordionGroup title={t('Personal Preferences')}>
         {personalPreferencesLoading && (
@@ -100,6 +202,7 @@ const Preferences: React.FC = () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
               locale={personalPreferencesData?.user?.preferences?.locale || ''}
+              disabled={!!setup}
             />
             <LocaleAccordion
               handleAccordionChange={handleAccordionChange}
@@ -107,6 +210,7 @@ const Preferences: React.FC = () => {
               localeDisplay={
                 personalPreferencesData?.user?.preferences?.localeDisplay || ''
               }
+              disabled={!!setup && setup !== 1}
             />
             <DefaultAccountAccordion
               handleAccordionChange={handleAccordionChange}
@@ -116,6 +220,7 @@ const Preferences: React.FC = () => {
               defaultAccountList={
                 personalPreferencesData?.user?.defaultAccountList || ''
               }
+              disabled={!!setup}
             />
             <TimeZoneAccordion
               handleAccordionChange={handleAccordionChange}
@@ -124,6 +229,7 @@ const Preferences: React.FC = () => {
                 personalPreferencesData?.user?.preferences?.timeZone || ''
               }
               timeZones={timeZones}
+              disabled={!!setup}
             />
             <HourToSendNotificationsAccordion
               handleAccordionChange={handleAccordionChange}
@@ -132,6 +238,7 @@ const Preferences: React.FC = () => {
                 personalPreferencesData?.user?.preferences
                   ?.hourToSendNotifications || null
               }
+              disabled={!!setup}
             />
           </>
         )}
@@ -153,6 +260,7 @@ const Preferences: React.FC = () => {
               expandedPanel={expandedPanel}
               name={accountPreferencesData?.accountList?.name || ''}
               accountListId={accountListId}
+              disabled={!!setup}
             />
             <MonthlyGoalAccordion
               handleAccordionChange={handleAccordionChange}
@@ -165,6 +273,7 @@ const Preferences: React.FC = () => {
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
+              disabled={!!setup && setup !== 2}
             />
             <HomeCountryAccordion
               handleAccordionChange={handleAccordionChange}
@@ -174,6 +283,7 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
               countries={countries}
+              disabled={!!setup && setup !== 3}
             />
             <CurrencyAccordion
               handleAccordionChange={handleAccordionChange}

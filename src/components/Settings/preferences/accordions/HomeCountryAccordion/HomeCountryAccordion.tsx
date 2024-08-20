@@ -22,6 +22,7 @@ interface HomeCountryAccordionProps {
   homeCountry: string;
   accountListId: string;
   countries: { name: string; code: string }[];
+  disabled?: boolean;
 }
 
 export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
@@ -30,6 +31,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   homeCountry,
   accountListId,
   countries,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -78,6 +80,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
       label={label}
       value={selectedCountry}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

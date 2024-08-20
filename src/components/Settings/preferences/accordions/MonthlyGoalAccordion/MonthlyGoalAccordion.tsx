@@ -24,6 +24,7 @@ interface MonthlyGoalAccordionProps {
   monthlyGoal: number | null;
   accountListId: string;
   currency: string;
+  disabled?: boolean;
 }
 
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
@@ -32,6 +33,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   monthlyGoal,
   accountListId,
   currency,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -81,6 +83,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
       label={label}
       value={monthlyGoalString}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

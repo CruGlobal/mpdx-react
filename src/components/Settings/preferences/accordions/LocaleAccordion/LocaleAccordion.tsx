@@ -20,12 +20,14 @@ interface LocaleAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   localeDisplay: string;
+  disabled?: boolean;
 }
 
 export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
   localeDisplay,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -80,6 +82,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
       label={label}
       value={selectedLocale || ''}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

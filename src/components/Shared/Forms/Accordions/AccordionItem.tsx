@@ -121,6 +121,7 @@ interface AccordionItemProps {
   children?: React.ReactNode;
   fullWidth?: boolean;
   image?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({
@@ -131,6 +132,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   children,
   fullWidth = false,
   image,
+  disabled,
 }) => {
   const expanded = useMemo(
     () => expandedPanel.toLowerCase() === label.toLowerCase(),
@@ -141,6 +143,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
       onChange={() => onAccordionChange(label)}
       expanded={expanded}
       disableGutters
+      disabled={disabled}
     >
       <StyledAccordionSummary expandIcon={<ExpandMore />}>
         <StyledAccordionColumn>

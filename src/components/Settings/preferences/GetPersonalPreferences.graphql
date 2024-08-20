@@ -2,6 +2,7 @@ query GetPersonalPreferences($accountListId: ID!) {
   user {
     id
     defaultAccountList
+    setup
     preferences {
       id
       timeZone
