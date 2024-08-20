@@ -10,12 +10,11 @@ import { ConnectOrganization } from '../ConnectOrganization';
 
 interface OrganizationAddAccountModalProps {
   handleClose: () => void;
-  accountListId: string | undefined;
 }
 
 export const OrganizationAddAccountModal: React.FC<
   OrganizationAddAccountModalProps
-> = ({ handleClose, accountListId }) => {
+> = ({ handleClose }) => {
   const { t } = useTranslation();
 
   return (
@@ -27,7 +26,6 @@ export const OrganizationAddAccountModal: React.FC<
     >
       <ConnectOrganization
         onDone={handleClose}
-        accountListId={accountListId}
         ButtonContainer={DialogActions}
         CancelButton={CancelButton}
         ConnectButton={SubmitButton}

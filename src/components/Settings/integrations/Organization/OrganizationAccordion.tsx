@@ -338,7 +338,6 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       {showAddAccountModal && (
         <OrganizationAddAccountModal
           handleClose={() => setShowAddAccountModal(false)}
-          accountListId={accountListId}
         />
       )}
 

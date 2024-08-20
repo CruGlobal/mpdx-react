@@ -32,7 +32,6 @@ import { OrganizationFormikSchema, OrganizationSchema } from './schema';
 
 interface ConnectOrganizationProps {
   onDone: () => void;
-  accountListId: string | undefined;
   ButtonContainer?: React.FC<{ children: ReactNode }>;
   CancelButton?: React.FC<ButtonProps>;
   ConnectButton?: React.FC<ButtonProps>;
@@ -59,7 +58,6 @@ const StyledTypography = styled(Typography)(() => ({
 
 export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
   onDone,
-  accountListId,
   ButtonContainer = Box,
   CancelButton = Button,
   ConnectButton = Button,
@@ -88,10 +86,6 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
         { variant: 'success' },
       );
       window.location.href = getOauthUrl(id);
-      return;
-    }
-
-    if (!accountListId) {
       return;
     }
 

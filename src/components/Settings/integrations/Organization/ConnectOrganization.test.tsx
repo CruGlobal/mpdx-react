@@ -113,7 +113,7 @@ describe('Connect Organization', () => {
     const { getByText, getByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider>
-          <ConnectOrganization onDone={onDone} accountListId={accountListId} />
+          <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -143,7 +143,7 @@ describe('Connect Organization', () => {
           }}
           onCall={mutationSpy}
         >
-          <ConnectOrganization onDone={onDone} accountListId={accountListId} />
+          <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -186,7 +186,7 @@ describe('Connect Organization', () => {
           }}
           onCall={mutationSpy}
         >
-          <ConnectOrganization onDone={onDone} accountListId={accountListId} />
+          <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -222,7 +222,7 @@ describe('Connect Organization', () => {
           }}
           onCall={mutationSpy}
         >
-          <ConnectOrganization onDone={onDone} accountListId={accountListId} />
+          <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -255,7 +255,7 @@ describe('Connect Organization', () => {
           }}
           onCall={mutationSpy}
         >
-          <ConnectOrganization onDone={onDone} accountListId={accountListId} />
+          <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
       </Components>,
     );
@@ -316,7 +316,7 @@ describe('Connect Organization', () => {
           }}
           onCall={mutationSpy}
         >
-          <ConnectOrganization onDone={onDone} accountListId={accountListId} />
+          <ConnectOrganization onDone={onDone} />
         </GqlMockedProvider>
       </Components>,
     );

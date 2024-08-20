@@ -32,10 +32,7 @@ describe('OrganizationAddAccountModal', () => {
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider>
-            <OrganizationAddAccountModal
-              handleClose={handleClose}
-              accountListId={accountListId}
-            />
+            <OrganizationAddAccountModal handleClose={handleClose} />
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,
