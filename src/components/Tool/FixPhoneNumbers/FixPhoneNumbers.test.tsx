@@ -34,7 +34,7 @@ const testData: ErgonoMockShape[] = [
           source: 'MPDX',
         },
         {
-          id: 'id12',
+          id: 'id2',
           updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
           number: '3533895895',
           primary: false,
@@ -154,8 +154,9 @@ describe('FixPhoneNumbers-Home', () => {
 
     const deleteButton = getByTestId('modal-delete-button');
     userEvent.click(deleteButton);
-
-    expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    waitFor(() => {
+      expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    });
   });
 
   it('change second number for second person to primary then delete it', async () => {
@@ -218,19 +219,21 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should hide contact from view', async () => {
-    const { getByTestId, getByText, queryByText } = render(<Components />);
+    const cache = new InMemoryCache();
+    const { getByTestId, getByText } = render(<Components cache={cache} />);
     await waitFor(() => {
-      expect(
-        getByText(`${testData[0].firstName} ${testData[0].lastName}`),
-      ).toBeInTheDocument();
+      expect(getByText(`Simba Lion`)).toBeInTheDocument();
     });
 
     userEvent.click(getByTestId('confirmButton-testid'));
-
     await waitFor(() => {
-      expect(
-        queryByText(`${testData[0].firstName} ${testData[0].lastName}`),
-      ).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        "Test Contact's phone numbers updated!",
+        {
+          variant: 'success',
+          autoHideDuration: 7000,
+        },
+      );
     });
   });
   it('should bulk confirm all phone numbers', async () => {

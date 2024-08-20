@@ -7,7 +7,7 @@ import DeleteModal from './DeleteModal';
 
 const testState = {
   open: true,
-  personId: '0',
+  personIndex: 0,
   numberIndex: 0,
   phoneNumber: '623533895895',
 };

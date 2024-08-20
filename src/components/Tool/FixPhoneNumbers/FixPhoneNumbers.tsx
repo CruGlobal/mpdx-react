@@ -128,7 +128,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
   const [defaultSource, setDefaultSource] = useState<string | undefined>(
-    appName,
+    appName || 'MPDX',
   );
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
@@ -411,7 +411,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                                 value="DataServer"
                                 data-testid="source-option-dataserver"
                               >
-                                DataServer
+                                {t('DataServer')}
                               </MenuItem>
                             </Select>
                             <Button

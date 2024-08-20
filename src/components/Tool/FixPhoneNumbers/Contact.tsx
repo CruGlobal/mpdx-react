@@ -300,7 +300,7 @@ const Contact: React.FC<Props> = ({
                                     data-testid={`starOutlineIcon-${person.id}-${index}`}
                                     className={classes.hoverHighlight}
                                     onClick={() => {
-                                      const temp = {
+                                      const updatedValues = {
                                         people: values.people.map(
                                           (
                                             personValue: PersonInvalidNumberFragment,
@@ -328,7 +328,7 @@ const Contact: React.FC<Props> = ({
                                               : personValue,
                                         ),
                                       };
-                                      setValues(temp);
+                                      setValues(updatedValues);
                                     }}
                                   />
                                 </Tooltip>
@@ -356,7 +356,7 @@ const Contact: React.FC<Props> = ({
                               onChange={(
                                 event: React.ChangeEvent<HTMLInputElement>,
                               ) => {
-                                const temp = {
+                                const updatedValues = {
                                   people: values.people.map(
                                     (
                                       personValue: PersonInvalidNumberFragment,
@@ -382,10 +382,10 @@ const Contact: React.FC<Props> = ({
                                         : personValue,
                                   ),
                                 };
-                                setValues(temp);
+                                setValues(updatedValues);
                               }}
                               value={phoneNumber.number}
-                              disabled={phoneNumber.source !== appName}
+                              disabled={phoneNumber.source !== 'MPDX'}
                             />
                             <FormHelperText error={true}>
                               {
@@ -395,7 +395,7 @@ const Contact: React.FC<Props> = ({
                             </FormHelperText>
                           </FormControl>
 
-                          {phoneNumber.source === appName ? (
+                          {phoneNumber.source === 'MPDX' ? (
                             <Box
                               display="flex"
                               alignItems="center"
@@ -475,7 +475,7 @@ const Contact: React.FC<Props> = ({
                           onChange={(
                             event: React.ChangeEvent<HTMLInputElement>,
                           ) => {
-                            const temp = {
+                            const updatedValues = {
                               people: values.people.map(
                                 (personValue: PersonInvalidNumberFragment) =>
                                   personValue === person
@@ -487,7 +487,7 @@ const Contact: React.FC<Props> = ({
                                     : personValue,
                               ),
                             };
-                            setValues(temp);
+                            setValues(updatedValues);
                           }}
                           inputProps={{
                             'data-testid': `addNewNumberInput-${person.id}`,
@@ -503,7 +503,7 @@ const Contact: React.FC<Props> = ({
                         display="flex"
                         alignItems="center"
                         onClick={() => {
-                          const temp = {
+                          const updatedValues = {
                             people: values.people.map(
                               (personValue: PersonInvalidNumberFragment) =>
                                 personValue === person
@@ -528,7 +528,7 @@ const Contact: React.FC<Props> = ({
                                   : personValue,
                             ),
                           };
-                          setValues(temp);
+                          setValues(updatedValues);
                         }}
                         data-testid={`addButton-${person.id}`}
                       >
