@@ -1,5 +1,10 @@
 import React from 'react';
+import { DialogActions, DialogContent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { ConnectOrganization } from '../ConnectOrganization';
 
@@ -20,7 +25,14 @@ export const OrganizationAddAccountModal: React.FC<
       handleClose={handleClose}
       size="sm"
     >
-      <ConnectOrganization onDone={handleClose} accountListId={accountListId} />
+      <ConnectOrganization
+        onDone={handleClose}
+        accountListId={accountListId}
+        ButtonContainer={DialogActions}
+        CancelButton={CancelButton}
+        ConnectButton={SubmitButton}
+        ContentContainer={DialogContent}
+      />
     </Modal>
   );
 };

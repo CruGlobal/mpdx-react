@@ -1,10 +1,10 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, ReactNode, useState } from 'react';
 import { useApolloClient } from '@apollo/client';
 import {
   Autocomplete,
   Box,
   Button,
-  DialogActions,
+  ButtonProps,
   Link,
   TextField,
   Typography,
@@ -15,10 +15,6 @@ import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import {
-  CancelButton,
-  SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { articles, showArticle } from 'src/lib/helpScout';
@@ -37,7 +33,13 @@ import { OrganizationFormikSchema, OrganizationSchema } from './schema';
 interface ConnectOrganizationProps {
   onDone: () => void;
   accountListId: string | undefined;
+  ButtonContainer?: React.FC<{ children: ReactNode }>;
+  CancelButton?: React.FC<ButtonProps>;
+  ConnectButton?: React.FC<ButtonProps>;
+  ContentContainer?: React.FC<{ children: ReactNode }>;
 }
+
+const StyledForm = styled('form')({ width: '100%' });
 
 const StyledBox = styled(Box)(() => ({
   padding: '0 10px',
@@ -58,6 +60,10 @@ const StyledTypography = styled(Typography)(() => ({
 export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
   onDone,
   accountListId,
+  ButtonContainer = Box,
+  CancelButton = Button,
+  ConnectButton = Button,
+  ContentContainer = Box,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -150,8 +156,8 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
         isSubmitting,
         isValid,
       }): ReactElement => (
-        <form onSubmit={handleSubmit}>
-          <StyledBox>
+        <StyledForm onSubmit={handleSubmit}>
+          <ContentContainer>
             <Autocomplete
               disabled={isSubmitting}
               autoHighlight
@@ -182,121 +188,125 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                 />
               )}
             />
-          </StyledBox>
-          {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
-            <Button onClick={showOrganizationHelp}>
-              {t("Can't find your organization?")}
-            </Button>
-          )}
-          {organizationType === OrganizationTypesEnum.MINISTRY && (
-            <WarningBox>
-              <Typography
-                variant="h6"
-                color={theme.palette.mpdxYellow.contrastText}
-              >
-                {t('You must log into {{appName}} with your ministry email', {
-                  appName,
-                })}
-              </Typography>
-              <StyledTypography>
-                {t(
-                  'This organization requires you to log into {{appName}} with your ministry email to access it.',
-                  { appName },
-                )}
-                <ol
-                  style={{
-                    paddingLeft: '15px',
-                  }}
+            {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
+              <Button onClick={showOrganizationHelp}>
+                {t("Can't find your organization?")}
+              </Button>
+            )}
+            {organizationType === OrganizationTypesEnum.MINISTRY && (
+              <WarningBox>
+                <Typography
+                  variant="h6"
+                  color={theme.palette.mpdxYellow.contrastText}
                 >
-                  <li>
-                    {t('First you need to ')}
-                    <Link
-                      href="https://thekey.me/cas/logout"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {t('click here to log out of your personal Key account')}
-                    </Link>
-                  </li>
-                  <li>
-                    {t('Next, ')}
-                    <Link
-                      onClick={() => {
-                        signOut({ callbackUrl: 'signOut' }).then(() => {
-                          clearDataDogUser();
-                          client.clearStore();
-                        });
-                      }}
-                    >
-                      {t('click here to log out of {{appName}}', {
-                        appName,
-                      })}
-                    </Link>
-                    {t(
-                      ' so you can log back in with your official key account.',
-                    )}
-                  </li>
-                </ol>
-              </StyledTypography>
-              <StyledTypography>
-                {t(
-                  "If you are already logged in using your ministry account, you'll need to contact your donation services team to request access.",
-                )}
-                {t(
-                  "Once this is done you'll need to wait 24 hours for {{appName}} to sync your data.",
-                  { appName },
-                )}
-              </StyledTypography>
-            </WarningBox>
-          )}
-          {organizationType === OrganizationTypesEnum.OAUTH && (
-            <WarningBox>
-              <Typography color={theme.palette.mpdxYellow.contrastText}>
-                {t(
-                  "You will be taken to your organization's donation services system to grant {{appName}} permission to access your donation data.",
-                  { appName },
-                )}
-              </Typography>
-            </WarningBox>
-          )}
-          {organizationType === OrganizationTypesEnum.LOGIN && (
-            <>
-              <StyledBox marginTop={4}>
-                <FieldWrapper>
-                  <TextField
-                    required
-                    id="username"
-                    label={t('Username')}
-                    value={username}
-                    disabled={isSubmitting}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus={true}
-                    onChange={handleChange('username')}
-                  />
-                </FieldWrapper>
-              </StyledBox>
-              <StyledBox marginTop={2}>
-                <FieldWrapper>
-                  <TextField
-                    required
-                    id="password"
-                    label={t('Password')}
-                    type="password"
-                    value={password}
-                    disabled={isSubmitting}
-                    onChange={handleChange('password')}
-                    inputProps={{
-                      'data-testid': 'passwordInput',
+                  {t('You must log into {{appName}} with your ministry email', {
+                    appName,
+                  })}
+                </Typography>
+                <StyledTypography>
+                  {t(
+                    'This organization requires you to log into {{appName}} with your ministry email to access it.',
+                    { appName },
+                  )}
+                  <ol
+                    style={{
+                      paddingLeft: '15px',
                     }}
-                  />
-                </FieldWrapper>
-              </StyledBox>
-            </>
-          )}
-          <DialogActions>
-            <CancelButton onClick={onDone} disabled={isSubmitting} />
-
-            <SubmitButton
+                  >
+                    <li>
+                      {t('First you need to ')}
+                      <Link
+                        href="https://thekey.me/cas/logout"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {t(
+                          'click here to log out of your personal Key account',
+                        )}
+                      </Link>
+                    </li>
+                    <li>
+                      {t('Next, ')}
+                      <Link
+                        onClick={() => {
+                          signOut({ callbackUrl: 'signOut' }).then(() => {
+                            clearDataDogUser();
+                            client.clearStore();
+                          });
+                        }}
+                      >
+                        {t('click here to log out of {{appName}}', {
+                          appName,
+                        })}
+                      </Link>
+                      {t(
+                        ' so you can log back in with your official key account.',
+                      )}
+                    </li>
+                  </ol>
+                </StyledTypography>
+                <StyledTypography>
+                  {t(
+                    "If you are already logged in using your ministry account, you'll need to contact your donation services team to request access.",
+                  )}
+                  {t(
+                    "Once this is done you'll need to wait 24 hours for {{appName}} to sync your data.",
+                    { appName },
+                  )}
+                </StyledTypography>
+              </WarningBox>
+            )}
+            {organizationType === OrganizationTypesEnum.OAUTH && (
+              <WarningBox>
+                <Typography color={theme.palette.mpdxYellow.contrastText}>
+                  {t(
+                    "You will be taken to your organization's donation services system to grant {{appName}} permission to access your donation data.",
+                    { appName },
+                  )}
+                </Typography>
+              </WarningBox>
+            )}
+            {organizationType === OrganizationTypesEnum.LOGIN && (
+              <>
+                <StyledBox marginTop={4}>
+                  <FieldWrapper>
+                    <TextField
+                      required
+                      id="username"
+                      label={t('Username')}
+                      value={username}
+                      disabled={isSubmitting}
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
+                      autoFocus={true}
+                      onChange={handleChange('username')}
+                    />
+                  </FieldWrapper>
+                </StyledBox>
+                <StyledBox marginTop={2}>
+                  <FieldWrapper>
+                    <TextField
+                      required
+                      id="password"
+                      label={t('Password')}
+                      type="password"
+                      value={password}
+                      disabled={isSubmitting}
+                      onChange={handleChange('password')}
+                      inputProps={{
+                        'data-testid': 'passwordInput',
+                      }}
+                    />
+                  </FieldWrapper>
+                </StyledBox>
+              </>
+            )}
+          </ContentContainer>
+          <ButtonContainer>
+            <CancelButton onClick={onDone} disabled={isSubmitting}>
+              {t('Cancel')}
+            </CancelButton>
+            <ConnectButton
+              type="submit"
               disabled={
                 !isValid ||
                 isSubmitting ||
@@ -306,9 +316,9 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
               {organizationType === OrganizationTypesEnum.OAUTH
                 ? t('Connect')
                 : t('Add Account')}
-            </SubmitButton>
-          </DialogActions>
-        </form>
+            </ConnectButton>
+          </ButtonContainer>
+        </StyledForm>
       )}
     </Formik>
   );
