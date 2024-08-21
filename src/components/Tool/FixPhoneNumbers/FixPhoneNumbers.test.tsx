@@ -226,12 +226,9 @@ describe('FixPhoneNumbers-Home', () => {
 
     userEvent.click(getByTestId('confirmButton-testid'));
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        "Test Contact's phone numbers updated!",
-        {
-          variant: 'success',
-        },
-      );
+      expect(mockEnqueue).toHaveBeenCalledWith('Phone numbers updated!', {
+        variant: 'success',
+      });
     });
   });
   it('should bulk confirm all phone numbers', async () => {

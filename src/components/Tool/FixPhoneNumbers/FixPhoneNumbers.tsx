@@ -189,12 +189,12 @@ const FixPhoneNumbers: React.FC<Props> = ({
         });
       },
       onError: () => {
-        enqueueSnackbar(t(`Error updating phone numbers`), {
+        enqueueSnackbar(t('Error updating phone numbers'), {
           variant: 'error',
         });
       },
       onCompleted: () => {
-        enqueueSnackbar(t(`Phone numbers updated!`), {
+        enqueueSnackbar(t('Phone numbers updated!'), {
           variant: 'success',
         });
       },
@@ -205,7 +205,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
     values: FormValues,
     personId: string,
     personIndex: number,
-    name: string,
   ): Promise<void> => {
     const attributes = [
       {
@@ -231,13 +230,13 @@ const FixPhoneNumbers: React.FC<Props> = ({
       update: (cache) => {
         cache.evict({ id: `Person:${personId}` });
       },
-      onError() {
-        enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
+      onError: () => {
+        enqueueSnackbar(t('Error updating phone numbers'), {
           variant: 'error',
         });
       },
-      onCompleted() {
-        enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
+      onCompleted: () => {
+        enqueueSnackbar(t('Phone numbers updated!'), {
           variant: 'success',
         });
       },

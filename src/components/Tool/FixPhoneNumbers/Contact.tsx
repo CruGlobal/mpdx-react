@@ -125,7 +125,6 @@ interface Props {
     values: FormValues,
     personId: string,
     personIndex: number,
-    name: string,
   ) => void;
   errors: FormikErrors<any>;
   setValues: (values: FormValues) => void;
@@ -188,7 +187,7 @@ const Contact: React.FC<Props> = ({
                     <Button
                       data-testid={`confirmButton-${person.id}`}
                       onClick={() =>
-                        handleUpdate(values, person.id, personIndex, name)
+                        handleUpdate(values, person.id, personIndex)
                       }
                       variant="contained"
                       style={{ width: '100%' }}
