@@ -52,39 +52,39 @@ export const getRedirectPathname = ({
     pathname = `/accountLists/${accountListId}/reports/donations`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/fixMailingAddresses/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/fix/mailingAddresses/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/fixMailingAddresses`;
+    pathname = `/accountLists/${accountListId}/tools/fix/mailingAddresses`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/fixCommitmentInfo/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/fix/commitmentInfo/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/fixCommitmentInfo`;
+    pathname = `/accountLists/${accountListId}/tools/fix/commitmentInfo`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/fixSendNewsletter/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/fix/sendNewsletter/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/fixSendNewsletter`;
+    pathname = `/accountLists/${accountListId}/tools/fix/sendNewsletter`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/mergeContacts/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/merge/contacts/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/mergeContacts`;
+    pathname = `/accountLists/${accountListId}/tools/merge/contacts`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/fixEmailAddresses/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/fix/emailAddresses/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/fixEmailAddresses`;
+    pathname = `/accountLists/${accountListId}/tools/fix/emailAddresses`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/fixPhoneNumbers/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/fix/phoneNumbers/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/fixPhoneNumbers`;
+    pathname = `/accountLists/${accountListId}/tools/fix/phoneNumbers`;
   } else if (
     routerPathname ===
-    '/accountLists/[accountListId]/tools/mergePeople/[[...contactId]]'
+    '/accountLists/[accountListId]/tools/merge/people/[[...contactId]]'
   ) {
-    pathname = `/accountLists/${accountListId}/tools/mergePeople`;
+    pathname = `/accountLists/${accountListId}/tools/merge/people`;
   }
 
   if (contactId) {

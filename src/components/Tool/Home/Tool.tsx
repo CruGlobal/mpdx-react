@@ -43,17 +43,17 @@ export interface Props {
   tool: string;
   desc: string;
   icon: string;
-  id: string;
+  url: string;
 }
 
-const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
+const Tool = ({ tool, desc, icon, url }: Props): ReactElement => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
 
   return (
     <AnimatedCard className={classes.cardContainer}>
       <NextLink
-        href={`/accountLists/${accountListId}/tools/${id}`}
+        href={`/accountLists/${accountListId}/tools/${url}`}
         scroll={false}
       >
         <CardActionArea>

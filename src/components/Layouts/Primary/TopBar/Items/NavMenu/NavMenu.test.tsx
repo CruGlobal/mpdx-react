@@ -258,13 +258,13 @@ describe('NavMenu', () => {
     );
     expect(getByTestId('notificationTotalText')).toHaveTextContent('7');
     userEvent.click(getByTestId('ToolsMenuToggle'));
-    expect(getByTestId('fix/commitmentInfo-false').firstChild).toHaveStyle(
+    expect(getByTestId('fixCommitmentInfo-false').firstChild).toHaveStyle(
       'color: #383F43;',
     );
-    expect(getByTestId('fix/commitmentInfo-false').children[1]).toHaveStyle(
+    expect(getByTestId('fixCommitmentInfo-false').children[1]).toHaveStyle(
       'color: #383F43;',
     );
-    expect(getByTestId('fix/commitmentInfo-notifications')).toBeInTheDocument();
+    expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
 
   it('test notifications > 10', async () => {

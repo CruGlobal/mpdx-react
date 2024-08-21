@@ -4,7 +4,7 @@ import { render } from '__tests__/util/testingLibraryReactMock';
 import { Item } from './Item';
 
 const item = {
-  id: 'testItem',
+  url: 'testItem',
   title: 'test title',
   isSelected: false,
 };
@@ -13,7 +13,7 @@ describe('ToolItem', () => {
   it('default', () => {
     const { queryByText } = render(
       <TestWrapper>
-        <Item id={item.id} title={item.title} isSelected={item.isSelected} />
+        <Item url={item.url} title={item.title} isSelected={item.isSelected} />
       </TestWrapper>,
     );
     expect(queryByText(item.title)).toBeInTheDocument();

@@ -62,7 +62,7 @@ const ToolHome = (): ReactElement => {
                   tool={t('{{toolname}}', { toolname: tool.tool })}
                   desc={t('{{tooldesc}}', { tooldesc: tool.desc })}
                   icon={tool.icon}
-                  id={tool.id}
+                  url={tool.url}
                 />
               </Grid>
             );

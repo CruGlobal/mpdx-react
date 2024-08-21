@@ -19,18 +19,18 @@ const useStyles = makeStyles()(() => ({
 
 interface Props {
   key?: string;
-  id: string;
+  url: string;
   title: string;
   isSelected: boolean;
 }
 
-export const Item = ({ id, title, isSelected }: Props): ReactElement => {
+export const Item = ({ url, title, isSelected }: Props): ReactElement => {
   const accountListId = useAccountListId();
   const { classes } = useStyles();
 
   return (
     <NextLink
-      href={`/accountLists/${accountListId}/tools/${id}`}
+      href={`/accountLists/${accountListId}/tools/${url}`}
       scroll={false}
     >
       <ListItem

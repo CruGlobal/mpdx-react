@@ -18,6 +18,7 @@ export interface ToolItem {
   desc: string;
   icon: string;
   id: string;
+  url: string;
 }
 
 interface ToolsGroup {
@@ -36,6 +37,7 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Set goals, create asks, and track progress for one-time needs',
         icon: mdiTrophy,
         id: 'appeals',
+        url: 'appeals',
       },
     ],
   },
@@ -48,26 +50,29 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Set the correct contacts commitment info for each contact',
 
         icon: mdiCurrencyUsd,
-        id: 'fix/commitmentInfo',
+        id: 'fixCommitmentInfo',
+        url: 'fix/commitmentInfo',
       },
       {
         tool: 'Fix Mailing Addresses',
         desc: 'Set the correct primary mailing address for each contact',
-
         icon: mdiMap,
-        id: 'fix/mailingAddresses',
+        id: 'fixMailingAddresses',
+        url: 'fix/mailingAddresses',
       },
       {
         tool: 'Fix Send Newsletter',
         desc: 'Set the correct newsletter state for each contact',
         icon: mdiNewspaperVariantOutline,
-        id: 'fix/sendNewsletter',
+        id: 'fixSendNewsletter',
+        url: 'fix/sendNewsletter',
       },
       {
         tool: 'Merge Contacts',
         desc: 'Review and merge duplicate contacts',
         icon: mdiHome,
-        id: 'merge/contacts',
+        id: 'mergeContacts',
+        url: 'merge/contacts',
       },
     ],
   },
@@ -79,19 +84,22 @@ export const ToolsList: ToolsGroup[] = [
         tool: 'Fix Email Addresses',
         desc: 'Set the correct primary email address for each person',
         icon: mdiEmail,
-        id: 'fix/emailAddresses',
+        id: 'fixEmailAddresses',
+        url: 'fix/emailAddresses',
       },
       {
         tool: 'Fix Phone Numbers',
         desc: 'Set the correct primary phone number for each person',
         icon: mdiPhone,
-        id: 'fix/phoneNumbers',
+        id: 'fixPhoneNumbers',
+        url: 'fix/phoneNumbers',
       },
       {
         tool: 'Merge People',
         desc: 'Review and merge duplicate people',
         icon: mdiAccountGroup,
-        id: 'merge/people',
+        id: 'mergePeople',
+        url: 'merge/people',
       },
     ],
   },
@@ -105,6 +113,7 @@ export const ToolsList: ToolsGroup[] = [
 
         icon: mdiGoogle,
         id: 'import/google',
+        url: 'import/google',
       },
 
       {
@@ -112,6 +121,7 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Import your contacts from your TntConnect database',
         icon: mdiCloudUpload,
         id: 'import/tnt',
+        url: 'import/tnt',
       },
 
       {
@@ -119,6 +129,7 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Import contacts you have saved in a CSV file',
         icon: mdiTable,
         id: 'import/csv',
+        url: 'import/csv',
       },
     ],
   },

@@ -22,7 +22,7 @@ describe('Tool', () => {
             tool={'Test'}
             desc={'Test description!!!'}
             icon={mdiAlert}
-            id={'test'}
+            url={'test'}
           />
           ,
         </TestRouter>
