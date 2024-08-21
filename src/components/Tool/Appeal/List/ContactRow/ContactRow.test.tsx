@@ -115,12 +115,16 @@ describe('ContactsRow', () => {
     expect(setContactFocus).toHaveBeenCalledWith(contact.id);
   });
 
-  it('should rendered checked', () => {
-    isRowChecked.mockImplementationOnce(() => true);
+  it('should render contact select event', () => {
+    isRowChecked.mockImplementationOnce((id) => id === contact.id);
 
-    const { getByRole } = render(<Components />);
+    const { getByTestId } = render(<Components />);
 
-    const checkbox = getByRole('checkbox');
-    expect(checkbox).toBeChecked();
+    expect(setContactFocus).not.toHaveBeenCalled();
+
+    const rowButton = getByTestId('rowButton');
+    userEvent.click(rowButton);
+
+    expect(setContactFocus).toHaveBeenCalledWith(contact.id);
   });
 });

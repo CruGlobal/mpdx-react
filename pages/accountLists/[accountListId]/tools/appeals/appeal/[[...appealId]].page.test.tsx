@@ -112,7 +112,7 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 );
 
 describe('Appeal navigation', () => {
-  it('should show list detail appeal page and open filters', async () => {
+  it('should show list detail appeal page and close filters', async () => {
     const { getByText, findByTestId, queryByText, getByRole, queryByRole } =
       render(
         <Components
@@ -134,16 +134,6 @@ describe('Appeal navigation', () => {
     await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
     expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 
-    expect(queryByRole('heading', { name: 'Given' })).not.toBeInTheDocument();
-    expect(
-      queryByRole('heading', { name: 'Received' }),
-    ).not.toBeInTheDocument();
-    expect(
-      queryByRole('heading', { name: 'Committed' }),
-    ).not.toBeInTheDocument();
-
-    userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
-
     await waitFor(() => {
       expect(getByRole('heading', { name: 'Given' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Received' })).toBeInTheDocument();
@@ -155,6 +145,18 @@ describe('Appeal navigation', () => {
       expect(
         getByRole('heading', { name: 'Export Emails' }),
       ).toBeInTheDocument();
+    });
+
+    userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
+
+    await waitFor(() => {
+      expect(queryByRole('heading', { name: 'Given' })).not.toBeInTheDocument();
+      expect(
+        queryByRole('heading', { name: 'Received' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('heading', { name: 'Committed' }),
+      ).not.toBeInTheDocument();
     });
   });
 

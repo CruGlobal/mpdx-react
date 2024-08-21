@@ -117,17 +117,18 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 describe('AppealsDetailsPage', () => {
   describe('Contact drawer', () => {
     it('should open and close on List view', async () => {
-      const { getByText, findByTestId, getByRole, queryByRole } = render(
-        <Components
-          router={{
-            ...defaultRouter,
-            query: {
-              ...defaultRouter.query,
-              appealId: ['1', 'list'],
-            },
-          }}
-        />,
-      );
+      const { getByText, findByTestId, getByRole, queryByRole, getAllByRole } =
+        render(
+          <Components
+            router={{
+              ...defaultRouter,
+              query: {
+                ...defaultRouter.query,
+                appealId: ['1', 'list'],
+              },
+            }}
+          />,
+        );
 
       await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
 
@@ -140,7 +141,7 @@ describe('AppealsDetailsPage', () => {
         expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument(),
       );
 
-      userEvent.click(getByRole('img', { name: 'Close' }));
+      userEvent.click(getAllByRole('img', { name: 'Close' })[0]);
 
       await waitFor(() =>
         expect(queryByRole('tab', { name: 'Tasks' })).not.toBeInTheDocument(),

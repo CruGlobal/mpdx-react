@@ -437,7 +437,7 @@ describe('FixMailingAddresses', () => {
             InvalidAddresses: {
               ...mockInvalidAddressesResponse.InvalidAddresses,
             },
-            UpdateContactMailingAddress: () => {
+            UpdateContactAddress: () => {
               throw new Error('Server Error');
             },
           }}
@@ -519,7 +519,7 @@ describe('FixMailingAddresses', () => {
                 ],
               },
             },
-            UpdateContactMailingAddress: () => {
+            UpdateContactAddress: () => {
               throw new Error('Server Error');
             },
           }}
