@@ -11,6 +11,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   ListItemButton,
@@ -47,6 +48,16 @@ import { PledgeModalEnum } from '../../Modals/PledgeModal/PledgeModal';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
+
+const ListButton = styled(ListItemButton)(() => ({
+  '&:hover .contactRowActions': {
+    opacity: 1,
+  },
+}));
+const ContactRowActions = styled(Box)(() => ({
+  opacity: 0,
+  transition: 'opacity 0.3s',
+}));
 
 interface Props {
   contact: AppealContactInfoFragment;
@@ -151,9 +162,11 @@ export const ContactRow: React.FC<Props> = ({
     });
   };
 
+  const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
+
   return (
     <>
-      <ListItemButton
+      <ListButton
         focusRipple
         onClick={handleContactClick}
         onMouseEnter={preloadContactsRightPanel}
@@ -174,7 +187,11 @@ export const ContactRow: React.FC<Props> = ({
           </ListItemIcon>
         </Hidden>
         <Grid container alignItems="center">
-          <Grid item xs={8} md={6} style={{ paddingRight: 16 }}>
+          <Grid
+            item
+            xs={isExcludedContact ? 5 : 6}
+            style={{ paddingRight: 16 }}
+          >
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -185,10 +202,25 @@ export const ContactRow: React.FC<Props> = ({
               }
             />
           </Grid>
+          {isExcludedContact && (
+            <Grid item xs={3} display={'flex'}>
+              <Box>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                >
+                  <Typography component="span">
+                    {/* TODO */}
+                    Reason
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          )}
           <Grid
             item
-            xs={2}
-            md={6}
+            xs={isExcludedContact ? 4 : 6}
             display={'flex'}
             style={{ justifyContent: 'space-between' }}
           >
@@ -208,12 +240,13 @@ export const ContactRow: React.FC<Props> = ({
               </Box>
             </Box>
 
-            <Box
+            <ContactRowActions
               display="flex"
               alignItems="center"
               style={{
                 paddingRight: theme.spacing(2),
               }}
+              className="contactRowActions"
             >
               {appealStatus === AppealStatusEnum.Asked && (
                 <>
@@ -282,13 +315,13 @@ export const ContactRow: React.FC<Props> = ({
                   <AddIcon />
                 </IconButton>
               )}
-            </Box>
+            </ContactRowActions>
           </Grid>
         </Grid>
         <Hidden xsDown>
           <Box></Box>
         </Hidden>
-      </ListItemButton>
+      </ListButton>
 
       {removeContactModalOpen && (
         <DynamicDeleteAppealContactModal
@@ -299,7 +332,7 @@ export const ContactRow: React.FC<Props> = ({
 
       {addExcludedContactModalOpen && (
         <DynamicAddExcludedContactModal
-          contactId={contactId}
+          contactIds={[contactId]}
           handleClose={() => setAddExcludedContactModalOpen(false)}
         />
       )}

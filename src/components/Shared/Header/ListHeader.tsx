@@ -86,7 +86,7 @@ export enum PageEnum {
 }
 
 interface ListHeaderProps {
-  page: 'contact' | 'task' | 'report' | 'appeal';
+  page: PageEnum;
   activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
@@ -106,6 +106,7 @@ interface ListHeaderProps {
   selectedIds: string[];
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
+  isExcludedAppealPage?: boolean;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -127,6 +128,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   selectedIds,
   massDeselectAll,
   showShowingCount = false,
+  isExcludedAppealPage = false,
 }) => {
   const { t } = useTranslation();
 
@@ -186,6 +188,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               buttonGroup={buttonGroup}
               contactsView={contactsView}
               selectedIds={selectedIds}
+              page={page}
+              isExcludedAppealPage={isExcludedAppealPage}
             />
           )}
           {page === PageEnum.Report && (
@@ -196,6 +200,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
                 buttonGroup={buttonGroup}
                 contactsView={contactsView}
                 selectedIds={selectedIds}
+                page={page}
               />
             </Box>
           )}

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { ListHeader, ListHeaderCheckBoxState } from './ListHeader';
+import { ListHeader, ListHeaderCheckBoxState, PageEnum } from './ListHeader';
 
 export default {
   title: 'Shared/Header/ListHeader',
@@ -8,7 +8,7 @@ export default {
 export const Default = (): ReactElement => {
   return (
     <ListHeader
-      page="contact"
+      page={PageEnum.Contact}
       activeFilters={false}
       starredFilter={{}}
       toggleStarredFilter={() => {}}
@@ -26,7 +26,7 @@ export const Default = (): ReactElement => {
 export const Task = (): ReactElement => {
   return (
     <ListHeader
-      page="task"
+      page={PageEnum.Task}
       activeFilters={false}
       headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
       starredFilter={{}}
@@ -44,7 +44,7 @@ export const Task = (): ReactElement => {
 export const ActiveFilters = (): ReactElement => {
   return (
     <ListHeader
-      page="contact"
+      page={PageEnum.Contact}
       activeFilters={true}
       headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
       starredFilter={{}}
@@ -62,7 +62,7 @@ export const ActiveFilters = (): ReactElement => {
 export const FilterPanelOpen = (): ReactElement => {
   return (
     <ListHeader
-      page="contact"
+      page={PageEnum.Contact}
       activeFilters={false}
       headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
       starredFilter={{}}
@@ -80,7 +80,7 @@ export const FilterPanelOpen = (): ReactElement => {
 export const ActiveFiltersAndFilterPanelOpen = (): ReactElement => {
   return (
     <ListHeader
-      page="contact"
+      page={PageEnum.Contact}
       activeFilters={true}
       headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
       starredFilter={{}}

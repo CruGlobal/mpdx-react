@@ -18,6 +18,7 @@ import { AddExcludedContactModal } from './AddExcludedContactModal';
 const accountListId = 'abc';
 const appealId = 'appealId';
 const contactId = 'contact-3';
+const bulkContactIds = [contactId, 'contact-4', 'contact-5'];
 const router = {
   query: { accountListId },
   isReady: true,
@@ -45,7 +46,11 @@ const appealMock: AppealQuery = {
   },
 };
 
-const Components = () => (
+const Components = ({
+  contactIds = [contactId],
+}: {
+  contactIds?: string[];
+}) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -71,7 +76,7 @@ const Components = () => (
                 >
                   <AddExcludedContactModal
                     handleClose={handleClose}
-                    contactId={contactId}
+                    contactIds={contactIds}
                   />
                 </AppealsContext.Provider>
               </AppealsWrapper>
@@ -89,11 +94,29 @@ describe('AddExcludedContactModal', () => {
     refetch.mockClear();
   });
   it('default', () => {
-    const { getByRole } = render(<Components />);
+    const { getByRole, getByText } = render(<Components />);
 
     expect(getByRole('heading', { name: 'Add Contact' })).toBeInTheDocument();
+    expect(
+      getByText(
+        'This contact has been previously excluded from this appeal. Are you certain you wish to add them?',
+      ),
+    ).toBeInTheDocument();
     expect(getByRole('button', { name: 'No' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Yes' })).toBeInTheDocument();
+  });
+
+  it('bulk default', () => {
+    const { getByRole, getByText } = render(
+      <Components contactIds={bulkContactIds} />,
+    );
+
+    expect(getByRole('heading', { name: 'Add Contacts' })).toBeInTheDocument();
+    expect(
+      getByText(
+        'These 3 contacts have been previously excluded from this appeal. Are you certain you wish to add them?',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('should close modal', async () => {
@@ -139,6 +162,42 @@ describe('AddExcludedContactModal', () => {
 
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Successfully added contact to appeal',
+        {
+          variant: 'success',
+        },
+      );
+    });
+  });
+
+  it('sends all contactIds in bulk mutation', async () => {
+    const { getByRole } = render(<Components contactIds={bulkContactIds} />);
+
+    expect(mutationSpy).toHaveBeenCalledTimes(0);
+    expect(refetch).not.toHaveBeenCalled();
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled(),
+    );
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() => {
+      expect(mutationSpy.mock.calls[4][0].operation.operationName).toEqual(
+        'AssignContactsToAppeal',
+      );
+      expect(mutationSpy.mock.calls[4][0].operation.variables).toEqual({
+        input: {
+          accountListId,
+          attributes: {
+            id: appealId,
+            contactIds: ['contact-1', 'contact-2', ...bulkContactIds],
+          },
+        },
+      });
+
+      expect(refetch).toHaveBeenCalledTimes(1);
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully added contacts to appeal',
         {
           variant: 'success',
         },

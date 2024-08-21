@@ -26,13 +26,13 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 export interface AddExcludedContactModalProps {
-  contactId: string;
+  contactIds: string[];
   handleClose: () => void;
 }
 
 export const AddExcludedContactModal: React.FC<
   AddExcludedContactModalProps
-> = ({ contactId, handleClose }) => {
+> = ({ contactIds, handleClose }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [assignContactsToAppeal] = useAssignContactsToAppealMutation();
@@ -49,9 +49,17 @@ export const AddExcludedContactModal: React.FC<
   });
 
   const existingContactIds = data?.appeal?.contactIds ?? [];
+  const addingManyContacts = contactIds.length > 1;
 
   const handleConfirm = async () => {
     setMutating(true);
+
+    if (!contactIds.length) {
+      enqueueSnackbar(t('Failed to add contact(s) to appeal'), {
+        variant: 'error',
+      });
+      return;
+    }
     // TODO Check this is working. It wasn't currently as the backend doesn't remove the user from the excluded list and returns an error.
     await assignContactsToAppeal({
       variables: {
@@ -59,7 +67,8 @@ export const AddExcludedContactModal: React.FC<
           accountListId: accountListId ?? '',
           attributes: {
             id: appealId,
-            contactIds: [...existingContactIds, contactId],
+            contactIds: [...existingContactIds, ...contactIds],
+            forceListDeletion: true, // TODO - Check it's working.
           },
         },
       },
@@ -67,33 +76,49 @@ export const AddExcludedContactModal: React.FC<
         contactsQueryResult.refetch();
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully added contact to appeal'), {
-          variant: 'success',
-        });
+        {
+          addingManyContacts
+            ? enqueueSnackbar(t('Successfully added contacts to appeal'), {
+                variant: 'success',
+              })
+            : enqueueSnackbar(t('Successfully added contact to appeal'), {
+                variant: 'success',
+              });
+        }
         handleClose();
       },
       onError: () => {
-        enqueueSnackbar(t('Failed to add contact to appeal'), {
-          variant: 'error',
-        });
+        addingManyContacts
+          ? enqueueSnackbar(t('Failed to add contacts to appeal'), {
+              variant: 'error',
+            })
+          : enqueueSnackbar(t('Failed to add contact to appeal'), {
+              variant: 'error',
+            });
       },
     });
     setMutating(false);
   };
 
+  const title = addingManyContacts ? t('Add Contacts') : t('Add Contact');
+  const text = addingManyContacts
+    ? t(
+        'These {{number}} contacts have been previously excluded from this appeal. Are you certain you wish to add them?',
+        { number: contactIds.length },
+      )
+    : t(
+        'This contact has been previously excluded from this appeal. Are you certain you wish to add them?',
+      );
+
   return (
-    <Modal isOpen={true} title={t('Add Contact')} handleClose={handleClose}>
+    <Modal isOpen={true} title={title} handleClose={handleClose}>
       <DialogContent dividers>
         {mutating ? (
           <Box style={{ textAlign: 'center' }}>
             <LoadingIndicator color="primary" size={50} />
           </Box>
         ) : (
-          <DialogContentText component="div">
-            {t(
-              'Are you sure you wish to add this excluded contact to the appeal?',
-            )}
-          </DialogContentText>
+          <DialogContentText component="div">{text}</DialogContentText>
         )}
       </DialogContent>
       <DialogActions>
