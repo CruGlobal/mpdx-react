@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import FixCommitmentInfo from 'src/components/Tool/FixCommitmentInfo/FixCommitmentInfo';
-import { ToolsWrapper } from '../ToolsWrapper';
-import { SetContactFocus, useToolsHelper } from '../useToolsHelper';
+import FixMailingAddresses from 'src/components/Tool/FixMailingAddresses/FixMailingAddresses';
+import { ToolsWrapper } from '../../ToolsWrapper';
+import { SetContactFocus, useToolsHelper } from '../../useToolsHelper';
 
-const FixCommitmentInfoPage: React.FC = () => {
+const FixMailingAddressesPage: React.FC = () => {
   const { t } = useTranslation();
   const { accountListId, handleSelectContact } = useToolsHelper();
-  const pageUrl = 'tools/fixCommitmentInfo';
+  const pageUrl = 'tools/fix/mailingAddresses';
 
   const setContactFocus: SetContactFocus = (contactId) => {
     handleSelectContact(pageUrl, contactId);
@@ -16,11 +16,11 @@ const FixCommitmentInfoPage: React.FC = () => {
 
   return (
     <ToolsWrapper
-      pageTitle={t('Fix Commitment Info')}
+      pageTitle={t('Fix Mailing Addresses')}
       pageUrl={pageUrl}
-      selectedMenuId="fixCommitmentInfo"
+      selectedMenuId="fixMailingAddresses"
     >
-      <FixCommitmentInfo
+      <FixMailingAddresses
         accountListId={accountListId || ''}
         setContactFocus={setContactFocus}
       />
@@ -30,4 +30,4 @@ const FixCommitmentInfoPage: React.FC = () => {
 
 export const getServerSideProps = loadSession;
 
-export default FixCommitmentInfoPage;
+export default FixMailingAddressesPage;

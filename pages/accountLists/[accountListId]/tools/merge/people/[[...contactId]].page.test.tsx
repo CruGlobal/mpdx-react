@@ -2,17 +2,16 @@ import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { mockInvalidAddressesResponse } from 'src/components/Tool/FixMailingAddresses/FixMailingAddressesMock';
-import { InvalidAddressesQuery } from 'src/components/Tool/FixMailingAddresses/GetInvalidAddresses.generated';
+import { GetPersonDuplicatesQuery } from 'src/components/Tool/MergePeople/GetPersonDuplicates.generated';
+import { getPersonDuplicatesMocks } from 'src/components/Tool/MergePeople/PersonDuplicatesMock';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import FixMailingAddressesPage from './[[...contactId]].page';
+import MergePeoplePage from './[[...contactId]].page';
 
 jest.mock('next-auth/react');
 jest.mock('next/router', () => ({
@@ -34,7 +33,6 @@ jest.mock('notistack', () => ({
 
 const pushFn = jest.fn();
 const accountListId = 'account-list-1';
-const contactId = 'contactId';
 const session = {
   expires: '2021-10-28T14:48:20.897Z',
   user: {
@@ -44,17 +42,17 @@ const session = {
     token: 'superLongJwtString',
   },
 };
-const Components = ({ mocks }: { mocks: ApolloErgonoMockMap }) => (
+const Components = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
-        InvalidAddresses: InvalidAddressesQuery;
+        GetPersonDuplicates: GetPersonDuplicatesQuery;
       }>
-        mocks={mocks}
+        mocks={getPersonDuplicatesMocks}
       >
         <I18nextProvider i18n={i18n}>
           <SnackbarProvider>
-            <FixMailingAddressesPage />
+            <MergePeoplePage />
           </SnackbarProvider>
         </I18nextProvider>
       </GqlMockedProvider>
@@ -62,7 +60,7 @@ const Components = ({ mocks }: { mocks: ApolloErgonoMockMap }) => (
   </ThemeProvider>
 );
 
-describe('FixMailingAddressesPage', () => {
+describe('MergePeoplePage', () => {
   beforeEach(() => {
     (getSession as jest.Mock).mockResolvedValue(session);
     (useRouter as jest.Mock).mockReturnValue({
@@ -75,27 +73,19 @@ describe('FixMailingAddressesPage', () => {
   });
 
   it('should open up contact details', async () => {
-    const { getByText, queryByTestId } = render(
-      <Components
-        mocks={{
-          InvalidAddresses: {
-            ...mockInvalidAddressesResponse.InvalidAddresses,
-          },
-        }}
-      />,
-    );
+    const { findByText, queryByTestId } = render(<Components />);
     await waitFor(() =>
       expect(queryByTestId('loading')).not.toBeInTheDocument(),
     );
 
-    const contactName = getByText('Baggins, Frodo');
+    const contactName = await findByText('John Doe');
 
     expect(contactName).toBeInTheDocument();
     userEvent.click(contactName);
 
     await waitFor(() => {
       expect(pushFn).toHaveBeenCalledWith(
-        `/accountLists/${accountListId}/tools/fixMailingAddresses/${contactId}`,
+        `/accountLists/${accountListId}/tools/merge/people/${'contact-1'}`,
       );
     });
   });
