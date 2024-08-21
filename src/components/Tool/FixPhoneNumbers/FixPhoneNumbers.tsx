@@ -321,116 +321,111 @@ const FixPhoneNumbers: React.FC<Props> = ({
               onSubmit={() => {}}
               validationSchema={fixPhoneNumberSchema}
             >
-              {({ errors, setValues, values }): ReactElement => {
-                return (
-                  <>
-                    <Grid container className={classes.outter}>
-                      <Grid item xs={12}>
-                        <Typography variant="h4">
-                          {t('Fix Phone Numbers')}
-                        </Typography>
-                        <Divider className={classes.divider} />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Box mb={2}>
-                          <Typography fontWeight="bold">
-                            {t(
-                              'You have {{amount}} phone numbers to confirm.',
-                              {
-                                amount: data.people.totalCount,
-                              },
-                            )}
-                          </Typography>
-                          <Typography>
-                            {t(
-                              'Choose below which phone number will be set as primary.',
-                            )}
-                          </Typography>
-                          <Box className={classes.defaultBox}>
-                            <Typography>
-                              {t('Default Primary Source:')}
-                            </Typography>
-
-                            <Select
-                              className={classes.select}
-                              data-testid="source-select"
-                              value={defaultSource}
-                              onChange={(event: SelectChangeEvent<string>) =>
-                                handleSourceChange(event)
-                              }
-                              size="small"
-                            >
-                              <MenuItem
-                                value={appName}
-                                data-testid="source-option-mpdx"
-                              >
-                                {appName}
-                              </MenuItem>
-                              <MenuItem
-                                value="DataServer"
-                                data-testid="source-option-dataserver"
-                              >
-                                {t('DataServer')}
-                              </MenuItem>
-                            </Select>
-                            <Button
-                              variant="contained"
-                              onClick={() => handleBulkConfirm(values)}
-                              data-testid="source-button"
-                            >
-                              <Icon
-                                path={mdiCheckboxMarkedCircle}
-                                size={0.8}
-                                className={classes.buttonIcon}
-                              />
-                              {t('Confirm {{amount}} as {{source}}', {
-                                amount: data.people.totalCount,
-                                source: defaultSource,
-                              })}
-                            </Button>
-                          </Box>
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        {values.people.map(
-                          (person: PersonInvalidNumberFragment, i: number) => (
-                            <Contact
-                              key={person.id}
-                              person={person}
-                              personIndex={i}
-                              handleDelete={handleDeleteModalOpen}
-                              setContactFocus={setContactFocus}
-                              handleUpdate={updatePhoneNumber}
-                              errors={errors}
-                              values={values}
-                              setValues={setValues}
-                            />
-                          ),
-                        )}
-                      </Grid>
-
-                      <Grid item xs={12}>
-                        <Box className={classes.footer}>
-                          <Typography>
-                            <Trans
-                              defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                              shouldUnescape
-                              values={{ value: data.people.totalCount }}
-                              components={{ bold: <strong /> }}
-                            />
-                          </Typography>
-                        </Box>
-                      </Grid>
+              {({ errors, setValues, values }): ReactElement => (
+                <>
+                  <Grid container className={classes.outter}>
+                    <Grid item xs={12}>
+                      <Typography variant="h4">
+                        {t('Fix Phone Numbers')}
+                      </Typography>
+                      <Divider className={classes.divider} />
                     </Grid>
-                    <DeleteModal
-                      modalState={deleteModalState}
-                      handleClose={handleDeleteModalClose}
-                      handleDelete={() => handleDelete(values, setValues)}
-                    />
-                  </>
-                );
-              }}
+                    <Grid item xs={12}>
+                      <Box mb={2}>
+                        <Typography fontWeight="bold">
+                          {t('You have {{amount}} phone numbers to confirm.', {
+                            amount: data.people.totalCount,
+                          })}
+                        </Typography>
+                        <Typography>
+                          {t(
+                            'Choose below which phone number will be set as primary.',
+                          )}
+                        </Typography>
+                        <Box className={classes.defaultBox}>
+                          <Typography>
+                            {t('Default Primary Source:')}
+                          </Typography>
+
+                          <Select
+                            className={classes.select}
+                            data-testid="source-select"
+                            value={defaultSource}
+                            onChange={(event: SelectChangeEvent<string>) =>
+                              handleSourceChange(event)
+                            }
+                            size="small"
+                          >
+                            <MenuItem
+                              value={appName}
+                              data-testid="source-option-mpdx"
+                            >
+                              {appName}
+                            </MenuItem>
+                            <MenuItem
+                              value="DataServer"
+                              data-testid="source-option-dataserver"
+                            >
+                              {t('DataServer')}
+                            </MenuItem>
+                          </Select>
+                          <Button
+                            variant="contained"
+                            onClick={() => handleBulkConfirm(values)}
+                            data-testid="source-button"
+                          >
+                            <Icon
+                              path={mdiCheckboxMarkedCircle}
+                              size={0.8}
+                              className={classes.buttonIcon}
+                            />
+                            {t('Confirm {{amount}} as {{source}}', {
+                              amount: data.people.totalCount,
+                              source: defaultSource,
+                            })}
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      {values.people.map(
+                        (person: PersonInvalidNumberFragment, i: number) => (
+                          <Contact
+                            key={person.id}
+                            person={person}
+                            personIndex={i}
+                            handleDelete={handleDeleteModalOpen}
+                            setContactFocus={setContactFocus}
+                            handleUpdate={updatePhoneNumber}
+                            errors={errors}
+                            values={values}
+                            setValues={setValues}
+                          />
+                        ),
+                      )}
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Box className={classes.footer}>
+                        <Typography>
+                          <Trans
+                            defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                            shouldUnescape
+                            values={{ value: data.people.totalCount }}
+                            components={{ bold: <strong /> }}
+                          />
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <DeleteModal
+                    modalState={deleteModalState}
+                    handleClose={handleDeleteModalClose}
+                    handleDelete={() => handleDelete(values, setValues)}
+                  />
+                </>
+              )}
             </Formik>
           ) : (
             <NoData tool="fixPhoneNumbers" />
