@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -8,12 +9,15 @@ import Preferences from './preferences.page';
 
 const accountListId = 'account-list-1';
 
+const mockEnqueue = jest.fn();
+const mutationSpy = jest.fn();
+const push = jest.fn();
+
 const router = {
   query: { accountListId },
   isReady: true,
+  push,
 };
-
-const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -30,6 +34,7 @@ const MocksProviders = (props: {
   children: JSX.Element;
   canUserExportData: boolean;
   singleOrg?: boolean;
+  setup?: string;
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -108,7 +113,17 @@ const MocksProviders = (props: {
               exportedAt: null,
             },
           },
+          GetUserOptions: {
+            userOptions: [
+              {
+                id: 1,
+                key: 'setup_position',
+                value: props.setup || 'finish',
+              },
+            ],
+          },
         }}
+        onCall={mutationSpy}
       >
         {props.children}
       </GqlMockedProvider>
@@ -165,5 +180,94 @@ describe('Preferences page', () => {
     await waitFor(() =>
       expect(queryByText('Primary Organization')).not.toBeInTheDocument(),
     );
+  });
+  describe('Setup Flow', () => {
+    it('should not show setup banner and accordions should not be disabled', async () => {
+      const { queryByText, queryByRole, findByText, getByText } = render(
+        <MocksProviders
+          canUserExportData={false}
+          singleOrg={true}
+          setup="start"
+        >
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      await waitFor(() => {
+        expect(queryByText("Let's set your locale!")).not.toBeInTheDocument();
+        expect(
+          queryByRole('button', { name: 'Skip Step' }),
+        ).not.toBeInTheDocument();
+      });
+
+      //Accordions should be clickable
+      userEvent.click(await findByText('Language'));
+      await waitFor(() => {
+        expect(
+          getByText('The language determines your default language for .'),
+        ).toBeVisible();
+      });
+    });
+
+    it('should show setup banner and open locale', async () => {
+      const { findByText, getByRole, queryByText, getByText } = render(
+        <MocksProviders
+          canUserExportData={false}
+          singleOrg={true}
+          setup="preferences.personal"
+        >
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      //Accordions should be disabled
+      await waitFor(() => {
+        const label = getByText('Language');
+        expect(() => userEvent.click(label)).toThrow();
+        expect(
+          queryByText('The language determines your default language for .'),
+        ).not.toBeInTheDocument();
+      });
+
+      // Start with Locale
+      expect(await findByText("Let's set your locale!")).toBeInTheDocument();
+      expect(
+        await findByText(
+          'The locale determines how numbers, dates and other information are formatted.',
+        ),
+      ).toBeInTheDocument();
+
+      // Moves to Monthly Goal
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      expect(
+        await findByText('Great progress comes from great goals!'),
+      ).toBeInTheDocument();
+      expect(
+        await findByText(
+          'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
+        ),
+      ).toBeInTheDocument();
+
+      // Home Country
+      const skipButton = getByRole('button', { name: 'Skip Step' });
+      userEvent.click(skipButton);
+      expect(
+        await findByText(
+          'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
+        ),
+      ).toBeInTheDocument();
+
+      // Move to Notifications
+      userEvent.click(skipButton);
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+          key: 'setup_position',
+          value: 'preferences.notifications',
+        });
+        expect(push).toHaveBeenCalledWith(
+          '/accountLists/account-list-1/settings/notifications',
+        );
+      });
+    });
   });
 });
