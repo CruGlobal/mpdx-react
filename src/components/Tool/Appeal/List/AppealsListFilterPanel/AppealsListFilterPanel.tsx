@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
@@ -23,6 +23,7 @@ import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   AppealStatusEnum,
+  AppealTourEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -36,7 +37,6 @@ import {
 } from '../../Modals/DeleteAppealModal/DynamicAddContactToAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
-import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -76,76 +76,42 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const { t } = useTranslation();
   const {
     accountListId,
-    appealId,
     activeFilters,
     setActiveFilters,
-    searchTerm,
     selectedIds,
     deselectAll,
+    tour,
+    askedCountQuery,
+    excludedCountQuery,
+    committedCountQuery,
+    givenCountQuery,
+    receivedCountQuery,
   } = React.useContext(AppealsContext) as AppealsType;
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
-  const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
-  const defaultFilters = {
-    appeal: [appealId || ''],
-    ...nameSearch,
+
+  useEffect(() => {
+    if (tour === AppealTourEnum.Finish) {
+      setExportsModalOpen(true);
+    }
+  }, [tour]);
+
+  const handleExportModalClose = () => {
+    setExportsModalOpen(false);
+    if (tour === AppealTourEnum.Finish) {
+      deselectAll();
+    }
   };
 
-  const { data: askedCount, loading: askedLoading } = useContactsCountQuery({
-    variables: {
-      accountListId: accountListId || '',
-      contactsFilter: {
-        ...defaultFilters,
-        appealStatus: AppealStatusEnum.Asked,
-      },
-    },
-  });
-
-  const { data: excludedCount, loading: excludedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.Excluded,
-        },
-      },
-    });
-
+  const { data: askedCount, loading: askedLoading } = askedCountQuery;
+  const { data: excludedCount, loading: excludedLoading } = excludedCountQuery;
   const { data: committedCount, loading: committedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.NotReceived,
-        },
-      },
-    });
-
-  const { data: givenCount, loading: givenLoading } = useContactsCountQuery({
-    variables: {
-      accountListId: accountListId || '',
-      contactsFilter: {
-        ...defaultFilters,
-        appealStatus: AppealStatusEnum.Processed,
-      },
-    },
-  });
-
-  const { data: receivedCount, loading: receivedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.ReceivedNotProcessed,
-        },
-      },
-    });
+    committedCountQuery;
+  const { data: givenCount, loading: givenLoading } = givenCountQuery;
+  const { data: receivedCount, loading: receivedLoading } = receivedCountQuery;
 
   const handleFilterItemClick = (newAppealListView: AppealStatusEnum) => {
     deselectAll();
@@ -290,7 +256,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         <DynamicExportsModal
           ids={selectedIds}
           accountListId={accountListId ?? ''}
-          handleClose={() => setExportsModalOpen(false)}
+          handleClose={handleExportModalClose}
           openMailMergedLabelModal={() => setLabelModalOpen(true)}
         />
       )}
