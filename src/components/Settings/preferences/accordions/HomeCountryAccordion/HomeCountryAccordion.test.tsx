@@ -30,6 +30,7 @@ jest.mock('notistack', () => ({
 }));
 
 const handleAccordionChange = jest.fn();
+const handleSetupChange = jest.fn();
 const mutationSpy = jest.fn();
 
 const countries = [
@@ -56,6 +57,7 @@ const Components: React.FC<ComponentsProps> = ({
             homeCountry={homeCountry}
             accountListId={accountListId}
             countries={countries}
+            handleSetupChange={handleSetupChange}
           />
         </GqlMockedProvider>
       </ThemeProvider>
@@ -146,6 +148,7 @@ describe('HomeCountryAccordion', () => {
                 homeCountry={'USA'}
                 accountListId={accountListId}
                 countries={countries}
+                handleSetupChange={handleSetupChange}
               />
             </MockedProvider>
           </ThemeProvider>

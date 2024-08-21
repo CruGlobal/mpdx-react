@@ -23,6 +23,7 @@ interface HomeCountryAccordionProps {
   accountListId: string;
   countries: { name: string; code: string }[];
   disabled?: boolean;
+  handleSetupChange: () => Promise<void>;
 }
 
 export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
@@ -32,6 +33,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   accountListId,
   countries,
   disabled,
+  handleSetupChange,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -71,6 +73,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
         });
       },
     });
+    handleSetupChange();
   };
 
   return (

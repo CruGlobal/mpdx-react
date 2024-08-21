@@ -21,6 +21,7 @@ interface LocaleAccordionProps {
   expandedPanel: string;
   localeDisplay: string;
   disabled?: boolean;
+  handleSetupChange: () => Promise<void>;
 }
 
 export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
@@ -28,6 +29,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   expandedPanel,
   localeDisplay,
   disabled,
+  handleSetupChange,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -73,6 +75,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
         });
       },
     });
+    handleSetupChange();
   };
 
   return (

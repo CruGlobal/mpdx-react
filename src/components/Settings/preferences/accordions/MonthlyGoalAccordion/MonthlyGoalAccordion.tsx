@@ -25,6 +25,7 @@ interface MonthlyGoalAccordionProps {
   accountListId: string;
   currency: string;
   disabled?: boolean;
+  handleSetupChange: () => Promise<void>;
 }
 
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
@@ -34,6 +35,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   accountListId,
   currency,
   disabled,
+  handleSetupChange,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -74,6 +76,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
         });
       },
     });
+    handleSetupChange();
   };
 
   return (
@@ -126,6 +129,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                 autoFocus
                 label={label}
                 sx={{ marginTop: 1 }}
+                id="monthlyGoalInput"
               />
             </FieldWrapper>
           </FormWrapper>

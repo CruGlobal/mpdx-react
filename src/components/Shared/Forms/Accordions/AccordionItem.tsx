@@ -19,6 +19,10 @@ export const accordionShared = {
 };
 
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
+  '&.MuiAccordion-rounded.Mui-disabled': {
+    color: theme.palette.cruGrayDark,
+    backgroundColor: 'white',
+  },
   overflow: 'hidden',
   border: `1px solid ${theme.palette.divider}`,
   '&:not(:last-child)': {
@@ -135,7 +139,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   disabled,
 }) => {
   const expanded = useMemo(
-    () => expandedPanel.toLowerCase() === label.toLowerCase(),
+    () => expandedPanel?.toLowerCase() === label.toLowerCase(),
     [expandedPanel, label],
   );
   return (
