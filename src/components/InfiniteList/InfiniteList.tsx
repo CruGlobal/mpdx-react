@@ -66,24 +66,24 @@ const GroupLabel = styled(Typography)(({ theme }) => ({
 
 export interface InfiniteListProps<T, C> {
   loading: boolean;
+  disableHover?: boolean;
   EmptyPlaceholder?: ReactElement | null;
   ItemOverride?: React.ComponentType<ItemProps> | null;
   itemContent: ItemContent<T, C>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: any;
   groupBy?: (item: T) => { label: string; order?: number };
-  disableHover?: boolean;
 }
 
 export const InfiniteList = <T, C>({
   loading,
+  disableHover = false,
   data = [],
   EmptyPlaceholder = null,
   ItemOverride = null,
   context,
   groupBy,
   itemContent,
-  disableHover = false,
   ...props
 }: Omit<GroupedVirtuosoProps<T, C>, 'groupCounts' | 'itemContent'> &
   InfiniteListProps<T, C>): ReactElement => {
@@ -108,6 +108,11 @@ export const InfiniteList = <T, C>({
       Item: ItemOverride ?? Item,
       ScrollSeekPlaceholder: SkeletonItem,
       ...props.components,
+    },
+    scrollSeekConfiguration: {
+      enter: (velocity) => Math.abs(velocity) > 200,
+      exit: (velocity) => Math.abs(velocity) < 10,
+      ...props.scrollSeekConfiguration,
     },
     overscan: 2000,
   };

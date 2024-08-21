@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import {
   Autocomplete,
@@ -6,6 +6,7 @@ import {
   InputAdornment,
   Skeleton,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -29,23 +30,39 @@ const HeaderAndDropdown = styled(Box)(() => ({
 
 const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();
-  const [search, setSearch] = useState('');
-  const matches = useMediaQuery('(max-width:600px)');
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
-  >();
+  >(null);
+
+  const [search, setSearch] = useState('');
+  const isNarrowScreen = useMediaQuery('(max-width:600px)');
+
   const { data } = useOrganizationsQuery();
   const organizations = data?.getOrganizations.organizations;
   const contactSearch = useDebouncedValue(search, 1000);
 
   const clearFilters = () => {
     setSearch('');
-    setSelectedOrganization(undefined);
+  };
+
+  useEffect(() => {
+    if (!window?.localStorage) {
+      return;
+    }
+    const savedOrg = window.localStorage.getItem('admin-org');
+    savedOrg && setSelectedOrganization(JSON.parse(savedOrg));
+  }, []);
+
+  const handleSelectedOrgChange = (organization): void => {
+    const org = organizations?.find((org) => org?.id === organization);
+    setSelectedOrganization(org);
+    org && window.localStorage.setItem(`admin-org`, JSON.stringify(org));
   };
 
   return (
     <OrganizationsContextProvider
       selectedOrganizationId={selectedOrganization?.id ?? ''}
+      selectedOrganizationName={selectedOrganization?.name ?? ''}
       search={contactSearch}
       setSearch={setSearch}
       clearFilters={clearFilters}
@@ -64,31 +81,39 @@ const AccountListsOrganizations = (): ReactElement => {
         {organizations?.length && (
           <HeaderAndDropdown>
             <Box>
-              <TextField
-                label={t('Search Account Lists')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                fullWidth
-                multiline
-                inputProps={{ 'aria-label': 'Search Account Lists' }}
-                style={{
-                  width: matches ? '150px' : '250px',
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonSearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
+              {selectedOrganization && (
+                <Tooltip
+                  title={t('Search by name, email or account number')}
+                  placement={'bottom'}
+                  arrow
+                >
+                  <TextField
+                    label={t('Search Account Lists')}
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                    }}
+                    fullWidth
+                    inputProps={{ 'aria-label': 'Search Account Lists' }}
+                    style={{
+                      width: isNarrowScreen ? '150px' : '250px',
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonSearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
+              )}
             </Box>
             <Box>
               <Autocomplete
                 style={{
-                  width: matches ? '150px' : '250px',
+                  width: isNarrowScreen ? '150px' : '350px',
                 }}
-                autoSelect
                 autoHighlight
                 options={organizations?.map((org) => org?.id) || []}
                 getOptionLabel={(orgId) =>
@@ -104,12 +129,9 @@ const AccountListsOrganizations = (): ReactElement => {
                   />
                 )}
                 value={selectedOrganization?.id ?? null}
-                onChange={(_, organization): void => {
-                  const org = organizations?.find(
-                    (org) => org?.id === organization,
-                  );
-                  setSelectedOrganization(org);
-                }}
+                onChange={(_, organization): void =>
+                  handleSelectedOrgChange(organization)
+                }
               />
             </Box>
           </HeaderAndDropdown>

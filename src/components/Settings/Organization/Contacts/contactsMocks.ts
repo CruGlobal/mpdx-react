@@ -1,6 +1,5 @@
 export class ContactsMocks {
   contact = {
-    allowDeletion: true,
     id: '2f5d998f',
     name: 'Lastname, Firstnames',
     squareAvatar: 'https://stage.mpdx.org/images/avatar.png',
@@ -37,15 +36,17 @@ export class ContactsMocks {
       accountListUsers: [
         {
           id: '123456',
-          firstName: 'accountListFirstName',
-          lastName: 'accountListLastName',
-          emailAddresses: [],
+          userFirstName: 'accountListFirstName',
+          userLastName: 'accountListLastName',
+          userEmailAddresses: [
+            { email: 'accountList.contactOwner@cru.org', primary: true },
+          ],
         },
         {
           id: '654321',
-          firstName: 'accountListFirstName2',
-          lastName: 'accountListLastName2',
-          emailAddresses: [],
+          userFirstName: 'accountListFirstName2',
+          userLastName: 'accountListLastName2',
+          userEmailAddresses: [],
         },
       ],
     },

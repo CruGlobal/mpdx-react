@@ -76,6 +76,7 @@ type AccountListInvite = {
 type SearchOrganizationsAccountListsAccountList = {
   name: string;
   id: string;
+  organizationCount: number;
   designationAccounts: {
     displayName: string;
     id: string;
@@ -89,6 +90,9 @@ type SearchOrganizationsAccountListsAccountList = {
     userFirstName: string;
     userLastName: string;
     allowDeletion: boolean;
+    userId: string;
+    lastSyncedAt: string;
+    organizationCount: number;
     userEmailAddresses: EmailAddress[];
   }[];
   accountListUsersInvites: AccountListInvite[];
