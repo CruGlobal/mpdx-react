@@ -145,7 +145,10 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t('Deletion process enqueued: {{fullName}}', { fullName }),
+          t(
+            'Deletion process enqueued: {{fullName}}. Check back later to see the updated data.',
+            { fullName },
+          ),
           {
             variant: 'success',
           },

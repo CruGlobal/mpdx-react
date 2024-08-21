@@ -4,7 +4,7 @@ export class AccountListsMocks {
   accountList: OrganizationsAccountList = {
     __typename: 'OrganizationsAccountList',
     id: '1111',
-    name: 'Name1',
+    name: 'Test Account List Name',
     organizationCount: 1,
     designationAccounts: [
       {

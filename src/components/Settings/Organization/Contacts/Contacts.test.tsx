@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
@@ -161,6 +162,34 @@ describe('Contacts', () => {
 
     await waitFor(() => {
       expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
+    });
+  });
+
+  it('should remove contact when anonymized', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, queryByText, getAllByRole, getByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          SearchOrganizationsContacts: SearchOrganizationsContactsQuery;
+        }>
+          onCall={mutationSpy}
+          mocks={{
+            ...SearchOrganizationsContactsMock,
+          }}
+        >
+          <Contacts />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
+    });
+    userEvent.click(getAllByRole('button', { name: 'Anonymize' })[0]);
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() => {
+      expect(queryByText('Lastname, Firstnames')).not.toBeInTheDocument();
     });
   });
 });

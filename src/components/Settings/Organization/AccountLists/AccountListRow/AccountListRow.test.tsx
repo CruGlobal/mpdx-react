@@ -72,7 +72,7 @@ describe('AccountLists', () => {
     const { getByText, queryByText } = render(
       <Components accountList={accountList} search="" organizationId="" />,
     );
-    expect(getByText('Name1')).toBeInTheDocument();
+    expect(getByText('Test Account List Name')).toBeInTheDocument();
 
     expect(getByText('DisplayName (4791.0)')).toBeInTheDocument();
     expect(getByText('Agape Bulgaria')).toBeInTheDocument();
@@ -146,7 +146,7 @@ describe('AccountLists', () => {
         });
 
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Deletion process enqueued: Name1',
+          'Deletion process enqueued: Test Account List Name',
           {
             variant: 'success',
           },
@@ -202,7 +202,7 @@ describe('AccountLists', () => {
         });
 
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Deletion process enqueued: userFirstName userLastName',
+          'Deletion process enqueued: userFirstName userLastName. Check back later to see the updated data.',
           {
             variant: 'success',
           },
