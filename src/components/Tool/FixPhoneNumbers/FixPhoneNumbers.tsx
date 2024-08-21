@@ -18,10 +18,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import {
-  PersonPhoneNumberInput,
-  PersonUpdateInput,
-} from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -33,6 +29,7 @@ import {
   useGetInvalidPhoneNumbersQuery,
 } from './GetInvalidPhoneNumbers.generated';
 import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
+import { determineBulkDataToSend } from './helper';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -111,13 +108,13 @@ interface Props {
   setContactFocus: SetContactFocus;
 }
 
-interface FormValuesPerson extends PersonInvalidNumberFragment {
-  newPhoneNumber: PersonPhoneNumberFragment | Record<string, never> | string;
+export interface FormValuesPerson extends PersonInvalidNumberFragment {
+  newPhoneNumber: PersonPhoneNumberFragment | string;
   isNewPhoneNumber: boolean;
 }
 
 export interface FormValues {
-  people: FormValuesPerson[] | [];
+  people: FormValuesPerson[];
 }
 
 const FixPhoneNumbers: React.FC<Props> = ({
@@ -146,34 +143,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
         isNewPhoneNumber: false,
         newPhoneNumber: '',
       })) || [],
-  };
-
-  const determineBulkDataToSend = (
-    values: FormValuesPerson[],
-    defaultSource: string,
-  ): PersonUpdateInput[] => {
-    const dataToSend = [] as PersonUpdateInput[];
-
-    values.forEach((value) => {
-      const primaryNumber = value.phoneNumbers.nodes.find(
-        (number) => number.source === defaultSource,
-      );
-      if (primaryNumber) {
-        dataToSend.push({
-          id: value.id,
-          phoneNumbers: value.phoneNumbers.nodes.map(
-            (number) =>
-              ({
-                id: number.id,
-                primary: number.id === primaryNumber.id,
-                number: number.number,
-                validValues: true,
-              } as PersonPhoneNumberInput),
-          ),
-        });
-      }
-    });
-    return dataToSend;
   };
 
   const handleSourceChange = (event: SelectChangeEvent<string>): void => {
@@ -222,13 +191,11 @@ const FixPhoneNumbers: React.FC<Props> = ({
       onError: () => {
         enqueueSnackbar(t(`Error updating phone numbers`), {
           variant: 'error',
-          autoHideDuration: 7000,
         });
       },
       onCompleted: () => {
         enqueueSnackbar(t(`Phone numbers updated!`), {
           variant: 'success',
-          autoHideDuration: 7000,
         });
       },
     });
@@ -267,13 +234,11 @@ const FixPhoneNumbers: React.FC<Props> = ({
       onError() {
         enqueueSnackbar(t(`Error updating ${name}'s phone numbers`), {
           variant: 'error',
-          autoHideDuration: 7000,
         });
       },
       onCompleted() {
         enqueueSnackbar(t(`${name}'s phone numbers updated!`), {
           variant: 'success',
-          autoHideDuration: 7000,
         });
       },
     });
@@ -281,7 +246,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
   const handleDelete = (
     values: FormValues,
-    setValues: (FormValues) => void,
+    setValues: (values: FormValues) => void,
   ): void => {
     const temp = JSON.parse(JSON.stringify(values));
 
@@ -291,10 +256,13 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
     deleting.destroy = true;
 
-    deleting.primary &&
-      temp?.people[deleteModalState.personIndex]?.phoneNumbers?.nodes.length &&
-      (temp.people[deleteModalState.personIndex].phoneNumbers.nodes[0].primary =
-        true);
+    if (
+      deleting.primary &&
+      temp?.people[deleteModalState.personIndex]?.phoneNumbers?.nodes.length
+    ) {
+      temp.people[deleteModalState.personIndex].phoneNumbers.nodes[0].primary =
+        true;
+    }
 
     setValues(temp);
     handleDeleteModalClose();
@@ -366,7 +334,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       </Grid>
                       <Grid item xs={12}>
                         <Box mb={2}>
-                          <Typography fontWeight="fontWeightBold">
+                          <Typography fontWeight="bold">
                             {t(
                               'You have {{amount}} phone numbers to confirm.',
                               {

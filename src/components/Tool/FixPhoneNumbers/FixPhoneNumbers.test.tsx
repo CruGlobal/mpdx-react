@@ -1,5 +1,5 @@
 import React from 'react';
-import { ApolloCache, InMemoryCache } from '@apollo/client';
+import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
@@ -219,8 +219,7 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should hide contact from view', async () => {
-    const cache = new InMemoryCache();
-    const { getByTestId, getByText } = render(<Components cache={cache} />);
+    const { getByTestId, getByText } = render(<Components />);
     await waitFor(() => {
       expect(getByText(`Simba Lion`)).toBeInTheDocument();
     });
@@ -231,17 +230,12 @@ describe('FixPhoneNumbers-Home', () => {
         "Test Contact's phone numbers updated!",
         {
           variant: 'success',
-          autoHideDuration: 7000,
         },
       );
     });
   });
   it('should bulk confirm all phone numbers', async () => {
-    const cache = new InMemoryCache();
-
-    const { getByTestId, queryByTestId, getByText } = render(
-      <Components cache={cache} />,
-    );
+    const { getByTestId, queryByTestId, getByText } = render(<Components />);
     await waitFor(() => {
       expect(queryByTestId('loading')).not.toBeInTheDocument();
       expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
@@ -255,7 +249,6 @@ describe('FixPhoneNumbers-Home', () => {
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
         variant: 'success',
-        autoHideDuration: 7000,
       });
       expect(
         getByText('No people with phone numbers need attention'),

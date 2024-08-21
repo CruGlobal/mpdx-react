@@ -78,10 +78,12 @@ const DeleteModal: React.FC<Props> = ({
               <Typography variant="h5" style={{ marginTop: -theme.spacing(1) }}>
                 {t('Confirm')}
               </Typography>
-              <IconButton onClick={handleClose} className={classes.iconButton}>
-                <Icon path={mdiCloseThick} size={1} />
-              </IconButton>
             </Box>
+          }
+          action={
+            <IconButton onClick={handleClose}>
+              <Icon path={mdiCloseThick} size={1} />
+            </IconButton>
           }
         />
         <CardContent>

@@ -47,7 +47,6 @@ describe('FixPhoneNumbers-Contact', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            key={testData.id}
             person={testData}
             personIndex={0}
             handleDelete={handleDeleteModalOpenMock}
@@ -73,7 +72,6 @@ describe('FixPhoneNumbers-Contact', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            key={testData.id}
             person={testData}
             personIndex={0}
             handleDelete={handleDeleteModalOpenMock}
@@ -115,7 +113,6 @@ describe('FixPhoneNumbers-Contact', () => {
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            key={testData.id}
             person={testData}
             personIndex={0}
             handleDelete={handleDeleteModalOpenMock}
@@ -141,7 +138,7 @@ describe('FixPhoneNumbers-Contact', () => {
             phoneNumbers: {
               nodes: [
                 { ...testData.phoneNumbers.nodes[0], number: '35338958951' },
-                { ...testData.phoneNumbers.nodes[1] },
+                testData.phoneNumbers.nodes[1],
               ],
             },
           },

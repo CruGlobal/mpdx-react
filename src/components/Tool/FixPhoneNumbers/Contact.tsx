@@ -31,7 +31,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { FormValues } from './FixPhoneNumbers';
+import { FormValues, FormValuesPerson } from './FixPhoneNumbers';
 import {
   PersonInvalidNumberFragment,
   PersonPhoneNumberFragment,
@@ -128,7 +128,7 @@ interface Props {
     name: string,
   ) => void;
   errors: FormikErrors<any>;
-  setValues: (FormValues) => void;
+  setValues: (values: FormValues) => void;
   values: FormValues;
   person: PersonInvalidNumberFragment;
   personIndex: number;
@@ -213,7 +213,7 @@ const Contact: React.FC<Props> = ({
                         justifyContent="space-between"
                         className={classes.paddingX}
                       >
-                        <Typography variant="body2" fontWeight="fontWeightBold">
+                        <Typography variant="body2" fontWeight="bold">
                           {t('Source')}
                         </Typography>
                       </Box>
@@ -224,7 +224,7 @@ const Contact: React.FC<Props> = ({
                         justifyContent="center"
                         className={classes.paddingX}
                       >
-                        <Typography variant="body2" fontWeight="fontWeightBold">
+                        <Typography variant="body2" fontWeight="bold">
                           {t('Primary')}
                         </Typography>
                       </Box>
@@ -235,7 +235,7 @@ const Contact: React.FC<Props> = ({
                         justifyContent="flex-start"
                         className={classes.paddingX}
                       >
-                        <Typography variant="body2" fontWeight="fontWeightBold">
+                        <Typography variant="body2" fontWeight="bold">
                           {t('Phone Number')}
                         </Typography>
                       </Box>
@@ -254,7 +254,7 @@ const Contact: React.FC<Props> = ({
                               <Typography
                                 display="inline"
                                 variant="body2"
-                                fontWeight="fontWeightBold"
+                                fontWeight="bold"
                               >
                                 {t('Source')}:
                               </Typography>
@@ -281,7 +281,7 @@ const Contact: React.FC<Props> = ({
                                   <Typography
                                     display="inline"
                                     variant="body2"
-                                    fontWeight="fontWeightBold"
+                                    fontWeight="bold"
                                   >
                                     {t('Source')}:
                                   </Typography>
@@ -297,7 +297,7 @@ const Contact: React.FC<Props> = ({
                                   <Typography
                                     display="inline"
                                     variant="body2"
-                                    fontWeight="fontWeightBold"
+                                    fontWeight="bold"
                                   >
                                     {t('Source')}:
                                   </Typography>
@@ -309,26 +309,20 @@ const Contact: React.FC<Props> = ({
                                     onClick={() => {
                                       const updatedValues = {
                                         people: values.people.map(
-                                          (
-                                            personValue: PersonInvalidNumberFragment,
-                                          ) =>
+                                          (personValue: FormValuesPerson) =>
                                             personValue === person
                                               ? {
-                                                  ...person,
+                                                  ...personValue,
                                                   phoneNumbers: {
                                                     nodes: numbers.map(
                                                       (
                                                         number: PersonPhoneNumberFragment,
-                                                      ) =>
-                                                        number === phoneNumber
-                                                          ? {
-                                                              ...phoneNumber,
-                                                              primary: true,
-                                                            }
-                                                          : {
-                                                              ...number,
-                                                              primary: false,
-                                                            },
+                                                      ) => ({
+                                                        ...number,
+                                                        primary:
+                                                          number ===
+                                                          phoneNumber,
+                                                      }),
                                                     ),
                                                   },
                                                 }
@@ -365,24 +359,21 @@ const Contact: React.FC<Props> = ({
                               ) => {
                                 const updatedValues = {
                                   people: values.people.map(
-                                    (
-                                      personValue: PersonInvalidNumberFragment,
-                                    ) =>
+                                    (personValue: FormValuesPerson) =>
                                       personValue === person
                                         ? {
-                                            ...person,
+                                            ...personValue,
                                             phoneNumbers: {
                                               nodes: numbers.map(
                                                 (
                                                   number: PersonPhoneNumberFragment,
-                                                ) =>
-                                                  number === phoneNumber
-                                                    ? {
-                                                        ...phoneNumber,
-                                                        number:
-                                                          event.target.value,
-                                                      }
-                                                    : number,
+                                                ) => ({
+                                                  ...number,
+                                                  number:
+                                                    number === phoneNumber
+                                                      ? event.target.value
+                                                      : number.number,
+                                                }),
                                               ),
                                             },
                                           }
@@ -455,7 +446,7 @@ const Contact: React.FC<Props> = ({
                           <Typography
                             display="inline"
                             variant="body2"
-                            fontWeight="fontWeightBold"
+                            fontWeight="bold"
                           >
                             {t('Source')}:
                           </Typography>
@@ -484,10 +475,10 @@ const Contact: React.FC<Props> = ({
                           ) => {
                             const updatedValues = {
                               people: values.people.map(
-                                (personValue: PersonInvalidNumberFragment) =>
+                                (personValue: FormValuesPerson) =>
                                   personValue === person
                                     ? {
-                                        ...person,
+                                        ...personValue,
                                         isNewPhoneNumber: true,
                                         newPhoneNumber: event.target.value,
                                       }
@@ -535,7 +526,7 @@ const Contact: React.FC<Props> = ({
                                   : personValue,
                             ),
                           };
-                          setValues(updatedValues);
+                          setValues(updatedValues as FormValues);
                         }}
                         data-testid={`addButton-${person.id}`}
                       >
