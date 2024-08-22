@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { ContactFragmentFragment } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactRowFragment } from 'src/components/Contacts/ContactRow/ContactRow.generated';
 import theme from 'src/theme';
 import {
   AppealStatusEnum,
@@ -24,7 +24,7 @@ const contact = {
   pledgeCurrency: 'USD',
   pledgeReceived: false,
   uncompletedTasksCount: 0,
-} as ContactFragmentFragment;
+} as ContactRowFragment;
 const onContactSelected = jest.fn();
 const toggleSelectionById = jest.fn();
 const isChecked = jest.fn().mockImplementation(() => false);

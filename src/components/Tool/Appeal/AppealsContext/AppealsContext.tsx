@@ -94,14 +94,24 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     onCompleted: ({ userOptions }) => {
       if (contactId?.includes('list')) {
         setViewMode(TableViewModeEnum.List);
+        setFilterPanelOpen(true);
+        setActiveFilters({
+          appealStatus: AppealStatusEnum.Asked,
+        });
       } else {
-        setViewMode(
+        const defaultView =
           (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows,
-        );
+            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows;
+        setViewMode(defaultView);
+
+        if (defaultView === TableViewModeEnum.List) {
+          setFilterPanelOpen(true);
+          setActiveFilters({
+            appealStatus: AppealStatusEnum.Asked,
+          });
+        }
       }
     },
-    skip: page === PageEnum.InitialPage,
   });
 
   const contactsFilters = useMemo(
@@ -121,7 +131,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       contactsFilters,
       first: 25,
     },
-    skip: !accountListId || page === PageEnum.InitialPage,
+    skip: !accountListId,
   });
   const { data, loading } = contactsQueryResult;
 
@@ -134,7 +144,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       first: contactCount,
       contactsFilters,
     },
-    skip: contactCount === 0 || page === PageEnum.InitialPage,
+    skip: contactCount === 0,
   });
   const allContactIds = useMemo(
     () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
@@ -189,7 +199,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
-    skip: !accountListId || page === PageEnum.InitialPage,
+    skip: !accountListId,
     context: {
       doNotBatch: true,
     },
@@ -217,9 +227,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   //#region User Actions
   const setContactFocus = (id?: string, openDetails = true) => {
-    if (page === PageEnum.InitialPage) {
-      return;
-    }
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -236,7 +243,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     }
 
     let pathname = '';
-    pathname = `/accountLists/${accountListId}/tools/appeals`;
+    pathname = `/accountLists/${accountListId}/tools/appeals/appeal`;
     if (appealId) {
       pathname += `/${appealId}`;
     }
@@ -294,6 +301,13 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
+    setActiveFilters({});
+    if (view === TableViewModeEnum.List) {
+      setFilterPanelOpen(true);
+      setActiveFilters({
+        appealStatus: AppealStatusEnum.Asked,
+      });
+    }
   };
   //#endregion
 
@@ -314,7 +328,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     <AppealsContext.Provider
       value={{
         accountListId: accountListId ?? '',
-        contactId: contactId, //
+        contactId: contactId,
         searchTerm: searchTerm,
         contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,

@@ -14,6 +14,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { NullStateBox } from './NullStateBox';
 
@@ -68,6 +69,8 @@ interface Props {
   page: 'contact' | 'task';
   totalCount: number;
   filtered: boolean;
+  title?: string;
+  paragraph?: string;
   changeFilters:
     | Dispatch<SetStateAction<TaskFilterSetInput>>
     | Dispatch<SetStateAction<ContactFilterSetInput>>;
@@ -78,6 +81,13 @@ const NullState: React.FC<Props> = ({
   totalCount,
   filtered,
   changeFilters,
+  title = i18n.t('You have {{count}} total {{page}}s', {
+    count: totalCount,
+    page,
+  }),
+  paragraph = i18n.t(
+    'Unfortunately none of them match your current search or filters.',
+  ),
 }: Props) => {
   const { t } = useTranslation();
 
@@ -89,17 +99,8 @@ const NullState: React.FC<Props> = ({
       />
       {filtered ? (
         <>
-          <Typography variant="h5">
-            <Trans
-              defaults="You have {{count}} total {{page}}s"
-              values={{ count: totalCount, page }}
-            />
-          </Typography>
-          <Typography>
-            {t(
-              'Unfortunately none of them match your current search or filters.',
-            )}
-          </Typography>
+          <Typography variant="h5">{title}</Typography>
+          <Typography>{paragraph}</Typography>
           <Box display="flex" mt={1}>
             <Button variant="contained" onClick={() => changeFilters({})}>
               {t('Reset All Search Filters')}

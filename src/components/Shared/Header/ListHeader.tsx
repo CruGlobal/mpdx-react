@@ -82,10 +82,11 @@ export enum PageEnum {
   Contact = 'contact',
   Task = 'task',
   Report = 'report',
+  Appeal = 'appeal',
 }
 
 interface ListHeaderProps {
-  page: 'contact' | 'task' | 'report';
+  page: 'contact' | 'task' | 'report' | 'appeal';
   activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
@@ -96,6 +97,7 @@ interface ListHeaderProps {
   onSearchTermChanged: (searchTerm: string) => void;
   searchTerm?: string | string[];
   totalItems?: number;
+  leftButtonGroup?: ReactElement;
   buttonGroup?: ReactElement;
   starredFilter?: ContactFilterSetInput | TaskFilterSetInput;
   toggleStarredFilter?: (
@@ -117,6 +119,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   onSearchTermChanged,
   searchTerm,
   totalItems,
+  leftButtonGroup,
   buttonGroup,
   starredFilter,
   toggleStarredFilter,
@@ -133,6 +136,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
             <StyledCheckbox
+              name="check all"
               checked={headerCheckboxState === ListHeaderCheckBoxState.Checked}
               color="secondary"
               indeterminate={
@@ -142,6 +146,9 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               disabled={!totalItems}
             />
           </Hidden>
+        )}
+        {page === PageEnum.Appeal && leftButtonGroup && (
+          <Box>{leftButtonGroup}</Box>
         )}
         <FilterButton
           activeFilters={activeFilters}
@@ -155,11 +162,11 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           )}
         </FilterButton>
         <SearchBox
-          showContactSearchIcon={page === 'task' ? false : true}
+          showContactSearchIcon={page === PageEnum.Task ? false : true}
           searchTerm={searchTerm}
           onChange={onSearchTermChanged}
           placeholder={
-            page === 'task' ? t('Search Tasks') : t('Search Contacts')
+            page === PageEnum.Task ? t('Search Tasks') : t('Search Contacts')
           }
         />
         <Hidden smDown>
@@ -171,8 +178,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </Hidden>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
-<<<<<<< HEAD
-        {page === 'contact' && (
+        {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
           <ContactsMassActionsDropdown
             filterPanelOpen={filterPanelOpen}
             contactDetailsOpen={contactDetailsOpen}
@@ -181,7 +187,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             selectedIds={selectedIds}
           />
         )}
-        {page === 'report' && (
+        {page === PageEnum.Report && (
           <Box mr={2}>
             <ContactsMassActionsDropdown
               filterPanelOpen={filterPanelOpen}
@@ -192,7 +198,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             />
           </Box>
         )}
-        {page === 'task' && (
+        {page === PageEnum.Task && (
           <TasksMassActionsDropdown
             buttonGroup={buttonGroup}
             selectedIds={selectedIds}
@@ -214,52 +220,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             />
           </Hidden>
         )}
-=======
-        <>
-          {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
-            <ContactsMassActionsDropdown
-              filterPanelOpen={filterPanelOpen}
-              contactDetailsOpen={contactDetailsOpen}
-              buttonGroup={buttonGroup}
-              contactsView={contactsView}
-              selectedIds={selectedIds}
-            />
-          )}
-          {page === PageEnum.Report && (
-            <Box mr={2}>
-              <ContactsMassActionsDropdown
-                filterPanelOpen={filterPanelOpen}
-                contactDetailsOpen={contactDetailsOpen}
-                buttonGroup={buttonGroup}
-                contactsView={contactsView}
-                selectedIds={selectedIds}
-              />
-            </Box>
-          )}
-          {page === PageEnum.Task && (
-            <TasksMassActionsDropdown
-              buttonGroup={buttonGroup}
-              selectedIds={selectedIds}
-              massDeselectAll={massDeselectAll}
-              selectedIdCount={
-                headerCheckboxState === ListHeaderCheckBoxState.Checked
-                  ? totalItems ?? 0
-                  : selectedIds.length
-              }
-            />
-          )}
-
-          {starredFilter && toggleStarredFilter && (
-            // This hidden doesn't remove from document
-            <Hidden smDown>
-              <StarFilterButton
-                starredFilter={starredFilter}
-                toggleStarredFilter={toggleStarredFilter}
-              />
-            </Hidden>
-          )}
-        </>
->>>>>>> f9da5c071 (Adding the mass actions back to the List Header.)
       </HeaderWrapInner>
     </HeaderWrap>
   );

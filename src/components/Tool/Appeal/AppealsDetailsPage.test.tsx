@@ -117,7 +117,7 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 describe('AppealsDetailsPage', () => {
   describe('Contact drawer', () => {
     it('should open and close on List view', async () => {
-      const { getByText, findByTestId, getByRole, getAllByRole, queryByRole } =
+      const { getByText, findByTestId, getByRole, queryByRole, getAllByRole } =
         render(
           <Components
             router={{

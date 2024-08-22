@@ -55,6 +55,8 @@ export const AppealsMainPanelHeader: React.FC = () => {
     toggleSelectAll,
     setSearchTerm,
     searchTerm,
+    starredFilter,
+    setStarredFilter,
     selectionType,
     filterPanelOpen,
     contactDetailsOpen,
@@ -63,7 +65,6 @@ export const AppealsMainPanelHeader: React.FC = () => {
     selectedIds,
   } = React.useContext(AppealsContext) as AppealsType;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
     <ListHeader
       page={PageEnum.Appeal}
@@ -76,6 +77,8 @@ export const AppealsMainPanelHeader: React.FC = () => {
       onSearchTermChanged={setSearchTerm}
       searchTerm={searchTerm}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
+      starredFilter={starredFilter}
+      toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}
