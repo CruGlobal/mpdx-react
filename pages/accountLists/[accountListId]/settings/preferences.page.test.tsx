@@ -181,17 +181,23 @@ describe('Preferences page', () => {
       expect(queryByText('Primary Organization')).not.toBeInTheDocument(),
     );
   });
-  describe('Setup Flow', () => {
+
+  describe('Setup Tour', () => {
     it('should not show setup banner and accordions should not be disabled', async () => {
-      const { queryByText, queryByRole, findByText, getByText } = render(
-        <MocksProviders
-          canUserExportData={false}
-          singleOrg={true}
-          setup="start"
-        >
-          <Preferences />
-        </MocksProviders>,
-      );
+      const { queryByText, queryByRole, findByText, getByText, getByRole } =
+        render(
+          <MocksProviders
+            canUserExportData={false}
+            singleOrg={true}
+            setup="start"
+          >
+            <Preferences />
+          </MocksProviders>,
+        );
+
+      expect(
+        getByRole('button', { name: 'Reset Welcome Tour' }),
+      ).toBeInTheDocument();
 
       await waitFor(() => {
         expect(queryByText("Let's set your locale!")).not.toBeInTheDocument();

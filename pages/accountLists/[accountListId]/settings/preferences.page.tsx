@@ -40,7 +40,7 @@ const AccordionLoading = styled(Skeleton)(() => ({
   height: '48px',
 }));
 
-const StickyBox = styled(Box)(({ theme }) => ({
+export const StickyBox = styled(Box)(({ theme }) => ({
   position: 'sticky',
   top: theme.spacing(10),
   borderBottom: '1px solid',
@@ -59,12 +59,7 @@ const Preferences: React.FC = () => {
   const { push, query } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const setupAccordions = [
-    { setupPosition: '', accordionPanel: '' },
-    { setupPosition: 'locale', accordionPanel: 'locale' },
-    { setupPosition: 'monthly_goal', accordionPanel: 'monthly goal' },
-    { setupPosition: 'home_country', accordionPanel: 'home country' },
-  ];
+  const setupAccordions = ['locale', 'monthly goal', 'home country'];
   const [setup, setSetup] = useState(0);
   const [expandedPanel, setExpandedPanel] = useState(
     typeof query.selectedTab === 'string' ? query.selectedTab : '',
@@ -108,16 +103,28 @@ const Preferences: React.FC = () => {
 
   useEffect(() => {
     if (isSettingUp) {
-      setSetup(1);
-      setExpandedPanel(setupAccordions[1]?.accordionPanel);
-    } else {
-      setSetup(0);
+      setExpandedPanel(setupAccordions[0]);
     }
   }, [isSettingUp]);
 
   const handleAccordionChange = (panel: string) => {
     const panelLowercase = panel.toLowerCase();
     setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
+  };
+
+  const resetWelcomeTour = async () => {
+    await updateUserOptions({
+      variables: {
+        key: 'setup_position',
+        value: 'start',
+      },
+      onError: () => {
+        enqueueSnackbar(t('Resetting the welcome tour failed.'), {
+          variant: 'error',
+        });
+      },
+    });
+    push(`/accountLists/${accountListId}/settings/preferences`);
   };
 
   const handleSetupChange = async () => {
@@ -127,7 +134,6 @@ const Preferences: React.FC = () => {
     const nextNav = setup + 1;
 
     if (setupAccordions.length === nextNav) {
-      setSetup(0);
       await updateUserOptions({
         variables: {
           key: 'setup_position',
@@ -142,17 +148,17 @@ const Preferences: React.FC = () => {
       push(`/accountLists/${accountListId}/settings/notifications`);
     } else {
       setSetup(nextNav);
-      setExpandedPanel(setupAccordions[nextNav].accordionPanel);
+      setExpandedPanel(setupAccordions[nextNav]);
     }
   };
 
   const getSetupMessage = (setup) => {
     switch (setup) {
-      case 1:
+      case 0:
         return t("Let's set your locale!");
-      case 2:
+      case 1:
         return t('Great progress comes from great goals!');
-      case 3:
+      case 2:
         return t('What country are you in?');
       default:
         return '';
@@ -202,7 +208,7 @@ const Preferences: React.FC = () => {
               localeDisplay={
                 personalPreferencesData?.user?.preferences?.localeDisplay || ''
               }
-              disabled={isSettingUp && setup !== 1}
+              disabled={isSettingUp && setup !== 0}
               handleSetupChange={handleSetupChange}
             />
             <DefaultAccountAccordion
@@ -266,7 +272,7 @@ const Preferences: React.FC = () => {
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
-              disabled={isSettingUp && setup !== 2}
+              disabled={isSettingUp && setup !== 1}
               handleSetupChange={handleSetupChange}
             />
             <HomeCountryAccordion
@@ -277,7 +283,7 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
               countries={countries}
-              disabled={isSettingUp && setup !== 3}
+              disabled={isSettingUp && setup !== 2}
               handleSetupChange={handleSetupChange}
             />
             <CurrencyAccordion
@@ -347,6 +353,15 @@ const Preferences: React.FC = () => {
           </>
         )}
       </AccordionGroup>
+      <Box sx={{ overflow: 'auto' }}>
+        <Button
+          sx={{ float: 'right', marginTop: 2, marginBottom: 6 }}
+          variant="outlined"
+          onClick={resetWelcomeTour}
+        >
+          {t('Reset Welcome Tour')}
+        </Button>
+      </Box>
     </SettingsWrapper>
   );
 };
