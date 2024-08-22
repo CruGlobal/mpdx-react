@@ -38,10 +38,10 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
-const StyledBox = styled(Box)(() => ({
+const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  marginRight: '12px',
+  marginRight: theme.spacing(1.5),
 }));
 
 export const AppealsMainPanelHeader: React.FC = () => {

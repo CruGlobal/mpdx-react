@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -95,7 +95,7 @@ describe('AppealsMainPanelHeader', () => {
     expect(getByRole('button', { name: 'Flows View' })).toBeInTheDocument();
   });
 
-  it('should open filters', async () => {
+  it('should open filters', () => {
     const { getByRole } = render(
       <Components
         router={{
@@ -106,12 +106,11 @@ describe('AppealsMainPanelHeader', () => {
     );
 
     userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
-    await waitFor(() => {
-      expect(toggleFilterPanel).toHaveBeenCalled();
-    });
+
+    expect(toggleFilterPanel).toHaveBeenCalled();
   });
 
-  it('should disable select all contacts if no contacts', async () => {
+  it('should disable select all contacts if no contacts', () => {
     const { getByRole } = render(
       <Components
         router={{
@@ -124,7 +123,7 @@ describe('AppealsMainPanelHeader', () => {
     expect(getByRole('checkbox')).toBeDisabled();
   });
 
-  it('should seatch contacts', async () => {
+  it('should search contacts', () => {
     const { getByRole } = render(
       <Components
         router={{
@@ -135,9 +134,8 @@ describe('AppealsMainPanelHeader', () => {
     );
 
     userEvent.type(getByRole('textbox'), 'search term');
-    await waitFor(() => {
-      expect(setSearchTerm).toHaveBeenCalledWith('search term');
-    });
+
+    expect(setSearchTerm).toHaveBeenCalledWith('search term');
   });
 
   it('should change view', async () => {
@@ -158,9 +156,7 @@ describe('AppealsMainPanelHeader', () => {
     );
   });
 
-  handleViewModeChange;
-
-  it('should allow select all to be checked', async () => {
+  it('should allow select all to be checked', () => {
     const { getByRole } = render(
       <Components
         router={{
@@ -192,8 +188,7 @@ describe('AppealsMainPanelHeader', () => {
 
     expect(getByRole('checkbox')).not.toBeDisabled();
     userEvent.click(getByRole('checkbox'));
-    await waitFor(() => {
-      expect(toggleSelectAll).toHaveBeenCalled();
-    });
+
+    expect(toggleSelectAll).toHaveBeenCalled();
   });
 });
