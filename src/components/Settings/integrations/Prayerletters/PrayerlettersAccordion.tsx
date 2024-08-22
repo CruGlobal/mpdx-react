@@ -17,6 +17,7 @@ import {
 export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
@@ -91,6 +92,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
       expandedPanel={expandedPanel}
       label={accordionName}
       value={''}
+      disabled={disabled}
       image={
         <img
           src="/images/settings-preferences-intergrations-prayerletters.svg"

@@ -17,4 +17,5 @@ export const StyledServicesButton = styled(Button)(({ theme }) => ({
 export interface AccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
+  disabled?: boolean;
 }
