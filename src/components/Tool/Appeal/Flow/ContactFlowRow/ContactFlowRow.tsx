@@ -35,9 +35,7 @@ export interface DraggedContact extends Omit<ContactsDraggedContact, 'status'> {
   status: AppealStatusEnum;
 }
 
-const StyledCheckbox = styled(Checkbox, {
-  shouldForwardProp: (prop) => prop !== 'value',
-})(() => ({
+const StyledCheckbox = styled(Checkbox)(() => ({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
@@ -130,7 +128,6 @@ export const ContactFlowRow: React.FC<Props> = ({
                 color="secondary"
                 onClick={(event) => event.stopPropagation()}
                 onChange={() => onContactCheckToggle(contact.id)}
-                value={isChecked}
               />
             </StyledListItemIcon>
           </Box>
