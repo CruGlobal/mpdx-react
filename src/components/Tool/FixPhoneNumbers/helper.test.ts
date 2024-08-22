@@ -74,7 +74,7 @@ const testData = [
 ];
 
 describe('FixPhoneNumbers-helper', () => {
-  it('Should return a Contact with all phoneNumbers', async () => {
+  it('Should return a Contact with all phoneNumbers', () => {
     const result = determineBulkDataToSend(testData[0], 'MPDX');
     expect(result).toEqual([
       {
@@ -102,7 +102,7 @@ describe('FixPhoneNumbers-helper', () => {
       },
     ]);
   });
-  it('Should still return a Contact with all phoneNumbers', async () => {
+  it('Should still return a Contact with all phoneNumbers', () => {
     const result = determineBulkDataToSend(testData[1], 'MPDX');
     expect(result).toEqual([
       {
@@ -130,7 +130,7 @@ describe('FixPhoneNumbers-helper', () => {
       },
     ]);
   });
-  it('Should return an empty array', async () => {
+  it('Should return an empty array', () => {
     const result = determineBulkDataToSend(testData[0], 'DataServer');
     expect(result).toEqual([]);
   });

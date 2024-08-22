@@ -1,7 +1,4 @@
-import {
-  PersonPhoneNumberInput,
-  PersonUpdateInput,
-} from 'src/graphql/types.generated';
+import { PersonUpdateInput } from 'src/graphql/types.generated';
 import { FormValuesPerson } from './FixPhoneNumbers';
 
 export const determineBulkDataToSend = (
@@ -17,15 +14,12 @@ export const determineBulkDataToSend = (
     if (primaryNumber) {
       dataToSend.push({
         id: value.id,
-        phoneNumbers: value.phoneNumbers.nodes.map(
-          (number) =>
-            ({
-              id: number.id,
-              primary: number.id === primaryNumber.id,
-              number: number.number,
-              validValues: true,
-            } as PersonPhoneNumberInput),
-        ),
+        phoneNumbers: value.phoneNumbers.nodes.map((number) => ({
+          id: number.id,
+          primary: number.id === primaryNumber.id,
+          number: number.number,
+          validValues: true,
+        })),
       });
     }
   });

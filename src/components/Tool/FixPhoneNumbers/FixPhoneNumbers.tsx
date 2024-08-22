@@ -109,7 +109,7 @@ interface Props {
 }
 
 export interface FormValuesPerson extends PersonInvalidNumberFragment {
-  newPhoneNumber: PersonPhoneNumberFragment | string;
+  newPhoneNumber: string;
   isNewPhoneNumber: boolean;
 }
 
