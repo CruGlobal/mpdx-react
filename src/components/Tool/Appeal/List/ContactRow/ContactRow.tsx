@@ -7,6 +7,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import {
   ListItemButton,
@@ -80,9 +81,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       focusRipple
       onClick={handleContactClick}
       onMouseEnter={preloadContactsRightPanel}
-      useTopMargin={useTopMargin}
-      isChecked={isChecked}
-      contactId={contactId}
+      className={clsx({
+        'top-margin': useTopMargin,
+        checked: isChecked(contactId),
+      })}
       data-testid="rowButton"
     >
       <Hidden xsDown>
