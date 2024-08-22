@@ -48,7 +48,7 @@ const NavToolList = ({ selectedId }: Props): ReactElement => {
             {group.items.map((tool) => (
               <Item
                 key={tool.id}
-                id={tool.id}
+                url={tool.url}
                 title={tool.tool}
                 isSelected={selectedId === tool.id}
               />

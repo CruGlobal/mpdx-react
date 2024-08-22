@@ -18,6 +18,7 @@ export interface ToolItem {
   desc: string;
   icon: string;
   id: string;
+  url: string;
 }
 
 interface ToolsGroup {
@@ -36,6 +37,7 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Set goals, create asks, and track progress for one-time needs',
         icon: mdiTrophy,
         id: 'appeals',
+        url: 'appeals',
       },
     ],
   },
@@ -49,25 +51,28 @@ export const ToolsList: ToolsGroup[] = [
 
         icon: mdiCurrencyUsd,
         id: 'fixCommitmentInfo',
+        url: 'fix/commitmentInfo',
       },
       {
         tool: 'Fix Mailing Addresses',
         desc: 'Set the correct primary mailing address for each contact',
-
         icon: mdiMap,
         id: 'fixMailingAddresses',
+        url: 'fix/mailingAddresses',
       },
       {
         tool: 'Fix Send Newsletter',
         desc: 'Set the correct newsletter state for each contact',
         icon: mdiNewspaperVariantOutline,
         id: 'fixSendNewsletter',
+        url: 'fix/sendNewsletter',
       },
       {
         tool: 'Merge Contacts',
         desc: 'Review and merge duplicate contacts',
         icon: mdiHome,
         id: 'mergeContacts',
+        url: 'merge/contacts',
       },
     ],
   },
@@ -80,18 +85,21 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Set the correct primary email address for each person',
         icon: mdiEmail,
         id: 'fixEmailAddresses',
+        url: 'fix/emailAddresses',
       },
       {
         tool: 'Fix Phone Numbers',
         desc: 'Set the correct primary phone number for each person',
         icon: mdiPhone,
         id: 'fixPhoneNumbers',
+        url: 'fix/phoneNumbers',
       },
       {
         tool: 'Merge People',
         desc: 'Review and merge duplicate people',
         icon: mdiAccountGroup,
         id: 'mergePeople',
+        url: 'merge/people',
       },
     ],
   },
@@ -105,6 +113,7 @@ export const ToolsList: ToolsGroup[] = [
 
         icon: mdiGoogle,
         id: 'import/google',
+        url: 'import/google',
       },
 
       {
@@ -112,6 +121,7 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Import your contacts from your TntConnect database',
         icon: mdiCloudUpload,
         id: 'import/tnt',
+        url: 'import/tnt',
       },
 
       {
@@ -119,6 +129,7 @@ export const ToolsList: ToolsGroup[] = [
         desc: 'Import contacts you have saved in a CSV file',
         icon: mdiTable,
         id: 'import/csv',
+        url: 'import/csv',
       },
     ],
   },

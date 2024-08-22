@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import MergeContacts from 'src/components/Tool/MergeContacts/MergeContacts';
-import { ToolsWrapper } from '../ToolsWrapper';
-import { SetContactFocus, useToolsHelper } from '../useToolsHelper';
+import MergePeople from 'src/components/Tool/MergePeople/MergePeople';
+import { ToolsWrapper } from '../../ToolsWrapper';
+import { SetContactFocus, useToolsHelper } from '../../useToolsHelper';
 
-const MergeContactsPage: React.FC = () => {
+const MergePeoplePage: React.FC = () => {
   const { t } = useTranslation();
   const { accountListId, handleSelectContact } = useToolsHelper();
-  const pageUrl = 'tools/mergeContacts';
+  const pageUrl = 'tools/merge/people';
 
   const setContactFocus: SetContactFocus = (contactId) => {
     handleSelectContact(pageUrl, contactId);
@@ -16,9 +16,9 @@ const MergeContactsPage: React.FC = () => {
 
   return (
     <ToolsWrapper
-      pageTitle={t('Merge Contacts')}
+      pageTitle={t('Merge People')}
       pageUrl={pageUrl}
-      selectedMenuId="mergeContacts"
+      selectedMenuId="mergePeople"
       styles={
         <style>{`
           div.MuiBox-root {
@@ -31,7 +31,7 @@ const MergeContactsPage: React.FC = () => {
     `}</style>
       }
     >
-      <MergeContacts
+      <MergePeople
         accountListId={accountListId || ''}
         setContactFocus={setContactFocus}
       />
@@ -41,4 +41,4 @@ const MergeContactsPage: React.FC = () => {
 
 export const getServerSideProps = loadSession;
 
-export default MergeContactsPage;
+export default MergePeoplePage;

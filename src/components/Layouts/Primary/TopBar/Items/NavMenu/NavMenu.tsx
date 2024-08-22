@@ -342,7 +342,7 @@ const NavMenu: React.FC = () => {
                                   currentToolId === tool.id
                                 }`}
                                 aria-current={
-                                  router.asPath.includes(tool.id) && 'page'
+                                  router.asPath.includes(tool.url) && 'page'
                                 }
                                 className={clsx(
                                   classes.menuItem,
