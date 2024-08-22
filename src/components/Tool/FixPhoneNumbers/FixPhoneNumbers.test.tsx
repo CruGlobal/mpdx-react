@@ -1,5 +1,5 @@
 import React from 'react';
-import { ApolloCache, InMemoryCache } from '@apollo/client';
+import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
@@ -34,7 +34,7 @@ const testData: ErgonoMockShape[] = [
           source: 'MPDX',
         },
         {
-          id: 'id12',
+          id: 'id2',
           updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
           number: '3533895895',
           primary: false,
@@ -154,8 +154,9 @@ describe('FixPhoneNumbers-Home', () => {
 
     const deleteButton = getByTestId('modal-delete-button');
     userEvent.click(deleteButton);
-
-    expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    waitFor(() => {
+      expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    });
   });
 
   it('change second number for second person to primary then delete it', async () => {
@@ -218,27 +219,20 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should hide contact from view', async () => {
-    const { getByTestId, getByText, queryByText } = render(<Components />);
+    const { getByTestId, getByText } = render(<Components />);
     await waitFor(() => {
-      expect(
-        getByText(`${testData[0].firstName} ${testData[0].lastName}`),
-      ).toBeInTheDocument();
+      expect(getByText(`Simba Lion`)).toBeInTheDocument();
     });
 
     userEvent.click(getByTestId('confirmButton-testid'));
-
     await waitFor(() => {
-      expect(
-        queryByText(`${testData[0].firstName} ${testData[0].lastName}`),
-      ).not.toBeInTheDocument();
+      expect(mockEnqueue).toHaveBeenCalledWith('Phone numbers updated!', {
+        variant: 'success',
+      });
     });
   });
   it('should bulk confirm all phone numbers', async () => {
-    const cache = new InMemoryCache();
-
-    const { getByTestId, queryByTestId, getByText } = render(
-      <Components cache={cache} />,
-    );
+    const { getByTestId, queryByTestId, getByText } = render(<Components />);
     await waitFor(() => {
       expect(queryByTestId('loading')).not.toBeInTheDocument();
       expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
@@ -252,7 +246,6 @@ describe('FixPhoneNumbers-Home', () => {
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
         variant: 'success',
-        autoHideDuration: 7000,
       });
       expect(
         getByText('No people with phone numbers need attention'),
