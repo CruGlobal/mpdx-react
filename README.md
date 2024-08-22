@@ -75,6 +75,8 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `HS_HOME_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the dashboard page
 - `HS_REPORTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the reports pages
 - `HS_TASKS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the tasks page
+- `PRIVACY_POLICY_URL` - URL of the privacy policy
+- `TERMS_OF_USE_URL` - URL of the terms of use
 
 #### Auth provider
 
