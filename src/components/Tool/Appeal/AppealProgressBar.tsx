@@ -30,7 +30,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-export interface Props {
+export interface AppealProgressBarProps {
   given: number;
   received: number;
   committed: number;
@@ -44,7 +44,7 @@ const AppealProgressBar = ({
   committed,
   amount,
   amountCurrency,
-}: Props): ReactElement => {
+}: AppealProgressBarProps): ReactElement => {
   const { classes } = useStyles();
   const locale = useLocale();
   const givenAmount = useMemo(
@@ -69,7 +69,7 @@ const AppealProgressBar = ({
             display="inline"
             className={classes.colorYellow}
           >
-            {givenAmount} ({`${((given / (amount || 1)) * 100).toFixed(0)}%`})
+            {givenAmount} ({`${Math.floor((given / (amount || 1)) * 100)}%`})
           </Typography>
         </Tooltip>
         <Typography
@@ -88,7 +88,7 @@ const AppealProgressBar = ({
             className={classes.colorOrange}
           >
             {receivedAmount} (
-            {`${(((received + given) / (amount || 1)) * 100).toFixed(0)}%`})
+            {`${Math.floor(((received + given) / (amount || 1)) * 100)}%`})
           </Typography>
         </Tooltip>
         <Typography
@@ -107,10 +107,9 @@ const AppealProgressBar = ({
             className={classes.colorLightGray}
           >
             {committedAmount} (
-            {`${(
-              ((committed + received + given) / (amount || 1)) *
-              100
-            ).toFixed(0)}%`}
+            {`${Math.floor(
+              ((committed + received + given) / (amount || 1)) * 100,
+            )}%`}
             )
           </Typography>
         </Tooltip>

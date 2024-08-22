@@ -22,6 +22,7 @@ import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { AccountList } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -163,6 +164,32 @@ const ProfileMenu = (): ReactElement => {
     window.location.href = url.href;
   };
 
+  const handleAccountListClick = (
+    accountList: Pick<AccountList, 'id' | 'name' | 'salaryOrganizationId'>,
+  ) => {
+    if (
+      router.pathname ===
+      '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]'
+    ) {
+      router.push({
+        pathname: '/accountLists/[accountListId]/tools/appeals',
+        query: {
+          accountListId: accountList.id,
+        },
+      });
+    } else {
+      router.push({
+        pathname: accountListId
+          ? router.pathname
+          : '/accountLists/[accountListId]/',
+        query: {
+          ...queryWithoutContactId,
+          accountListId: accountList.id,
+        },
+      });
+    }
+  };
+
   return (
     <>
       <ProfileName
@@ -238,17 +265,7 @@ const ProfileMenu = (): ReactElement => {
                       ? theme.palette.cruGrayMedium.main
                       : 'inherit',
                 }}
-                onClick={() =>
-                  router.push({
-                    pathname: accountListId
-                      ? router.pathname
-                      : '/accountLists/[accountListId]/',
-                    query: {
-                      ...queryWithoutContactId,
-                      accountListId: accountList.id,
-                    },
-                  })
-                }
+                onClick={() => handleAccountListClick(accountList)}
               >
                 <ListItemText primary={accountList.name} />
               </StyledMenuItem>

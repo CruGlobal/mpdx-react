@@ -23,7 +23,10 @@ import { preloadContactsRightPanel } from '../ContactsRightPanel/DynamicContacts
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
 
-const ListItemButton = styled(ButtonBase)(({ theme }) => ({
+// When making changes in this file, also check to see if you don't need to make changes to the below file
+// src/components/Tool/Appeal/List/ContactRow/ContactRow.tsx
+
+export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   flex: '1 1 auto',
   textAlign: 'left',
   padding: theme.spacing(0, 0.5, 0, 2),
@@ -38,7 +41,7 @@ const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   },
 }));
 
-const StyledCheckbox = styled(Checkbox, {
+export const StyledCheckbox = styled(Checkbox, {
   shouldForwardProp: (prop) => prop !== 'value',
 })(() => ({
   '&:hover': {
