@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconButton, IconButtonTypeMap } from '@mui/material';
+import { IconButton, IconButtonProps } from '@mui/material';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
 
@@ -7,7 +7,7 @@ interface Props {
   accountListId: string;
   contactId: string;
   isStarred: boolean;
-  size?: IconButtonTypeMap['props']['size'];
+  size?: IconButtonProps['size'];
 }
 
 export const StarContactIconButton: React.FC<Props> = ({
