@@ -38,6 +38,12 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
+const StyledBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  marginRight: theme.spacing(1.5),
+}));
+
 export const AppealsMainPanelHeader: React.FC = () => {
   const { t } = useTranslation();
 
@@ -90,7 +96,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
       }
       buttonGroup={
         <Hidden xsDown>
-          <Box display="flex" alignItems="center">
+          <StyledBox>
             <StyledToggleButtonGroup
               exclusive
               value={viewMode}
@@ -106,10 +112,10 @@ export const AppealsMainPanelHeader: React.FC = () => {
                 value={TableViewModeEnum.Flows}
                 disabled={viewMode === TableViewModeEnum.Flows}
               >
-                <ViewColumnIcon titleAccess={t('Column Workflow View')} />
+                <ViewColumnIcon titleAccess={t('Flows View')} />
               </ToggleButton>
             </StyledToggleButtonGroup>
-          </Box>
+          </StyledBox>
         </Hidden>
       }
     />

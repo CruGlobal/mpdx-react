@@ -269,22 +269,30 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     debounce((searchTerm: string) => {
       const { searchTerm: _, ...oldQuery } = query;
       if (searchTerm !== '') {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
-            ...(searchTerm && { searchTerm }),
+        replace(
+          {
+            pathname,
+            query: {
+              ...oldQuery,
+              accountListId,
+              ...(searchTerm && { searchTerm }),
+            },
           },
-        });
+          undefined,
+          { shallow: true },
+        );
       } else {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
+        replace(
+          {
+            pathname,
+            query: {
+              ...oldQuery,
+              accountListId,
+            },
           },
-        });
+          undefined,
+          { shallow: true },
+        );
       }
     }, 500),
     [accountListId],
