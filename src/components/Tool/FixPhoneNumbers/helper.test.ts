@@ -4,6 +4,7 @@ const testData = [
   [
     {
       id: 'testid1',
+      contactId: 'testid1',
       firstName: 'Test',
       lastName: 'Contact',
       avatar: 'https://www.example.com',
@@ -39,6 +40,7 @@ const testData = [
   [
     {
       id: 'testid2',
+      contactId: 'testid2',
       firstName: 'Test',
       lastName: 'Contact',
       avatar: 'https://www.example.com',

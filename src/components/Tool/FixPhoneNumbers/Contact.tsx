@@ -135,8 +135,6 @@ interface Props {
 
 const Contact: React.FC<Props> = ({
   handleDelete,
-  // Remove below line when function is being used.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setContactFocus,
   handleUpdate,
   errors,
@@ -153,14 +151,8 @@ const Contact: React.FC<Props> = ({
   const numbers: PersonPhoneNumberFragment[] = person.phoneNumbers.nodes || [];
   const name: string = `${person.firstName} ${person.lastName}`;
 
-  //TODO: Add button functionality
-  //TODO: Make name pop up a modal to edit the person info
-
   const handleContactNameClick = () => {
-    // This currently doesn't work as we need to add the contactId onto the person graphQL endpoint.
-    // I've asked Andrew to add it here: https://cru-main.slack.com/archives/CG47BDCG6/p1718721024211409
-    // You'll need that to run the below function
-    // setContactFocus(id);
+    setContactFocus(person.contactId);
   };
 
   return (
@@ -180,7 +172,12 @@ const Contact: React.FC<Props> = ({
                   }
                   title={
                     <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography variant="subtitle1">{name}</Typography>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ display: 'inline' }}
+                      >
+                        {name}
+                      </Typography>
                     </Link>
                   }
                   action={
@@ -301,7 +298,10 @@ const Contact: React.FC<Props> = ({
                                     {t('Source')}:
                                   </Typography>
                                 </Hidden>
-                                <Tooltip title="Set as Primary">
+                                <Tooltip
+                                  title="Set as Primary"
+                                  placement="left"
+                                >
                                   <StarOutlineIcon
                                     data-testid={`starOutlineIcon-${person.id}-${index}`}
                                     className={classes.hoverHighlight}
@@ -384,12 +384,6 @@ const Contact: React.FC<Props> = ({
                               value={phoneNumber.number}
                               disabled={phoneNumber.source !== 'MPDX'}
                             />
-                            <FormHelperText error={true}>
-                              {
-                                errors?.people?.[personIndex]?.phoneNumbers
-                                  ?.nodes?.[index]?.number
-                              }
-                            </FormHelperText>
                           </FormControl>
 
                           {phoneNumber.source === 'MPDX' ? (
@@ -406,7 +400,7 @@ const Contact: React.FC<Props> = ({
                               }
                               className={classes.paddingX}
                             >
-                              <Tooltip title="Delete Number">
+                              <Tooltip title="Delete Number" placement="left">
                                 <Icon
                                   path={mdiDelete}
                                   size={1}
@@ -432,6 +426,24 @@ const Contact: React.FC<Props> = ({
                           )}
                         </Box>
                       </Grid>
+                      {errors?.people?.[personIndex]?.phoneNumbers?.nodes?.[
+                        index
+                      ]?.number && (
+                        <>
+                          <Grid item xs={12} sm={6}></Grid>
+                          <Grid item xs={12} sm={6} pb={'10px'}>
+                            <FormHelperText
+                              error={true}
+                              className={classes.paddingX}
+                            >
+                              {
+                                errors?.people?.[personIndex]?.phoneNumbers
+                                  ?.nodes?.[index]?.number
+                              }
+                            </FormHelperText>
+                          </Grid>
+                        </>
+                      )}
                     </Fragment>
                   ))}
                   <Grid item xs={12} sm={6} className={classes.paddingB2}>
@@ -491,9 +503,6 @@ const Contact: React.FC<Props> = ({
                           }}
                           value={values.people[personIndex].newPhoneNumber}
                         />
-                        <FormHelperText error={true}>
-                          {errors?.people?.[personIndex]?.newPhoneNumber}
-                        </FormHelperText>
                       </FormControl>
                       <Box
                         className={classes.paddingX}
@@ -525,7 +534,8 @@ const Contact: React.FC<Props> = ({
                                   : personValue,
                             ),
                           };
-                          setValues(updatedValues as FormValues);
+                          values.people[personIndex].newPhoneNumber &&
+                            setValues(updatedValues as FormValues);
                         }}
                         data-testid={`addButton-${person.id}`}
                       >
@@ -539,6 +549,19 @@ const Contact: React.FC<Props> = ({
                       </Box>
                     </Box>
                   </Grid>
+                  {errors?.people?.[personIndex]?.newPhoneNumber && (
+                    <>
+                      <Grid item xs={12} sm={6}></Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormHelperText
+                          error={true}
+                          className={classes.paddingX}
+                        >
+                          {errors?.people?.[personIndex]?.newPhoneNumber}
+                        </FormHelperText>
+                      </Grid>
+                    </>
+                  )}
                 </Grid>
               </CardContent>
             </Grid>
