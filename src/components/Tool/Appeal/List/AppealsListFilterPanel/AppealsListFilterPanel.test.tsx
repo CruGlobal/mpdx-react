@@ -11,8 +11,8 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { ContactsCountQuery } from '../../AppealsContext/contactsCount.generated';
 import { AppealsListFilterPanel } from './AppealsListFilterPanel';
-import { ContactsCountQuery } from './contactsCount.generated';
 
 const accountListId = 'accountListId';
 const appealId = 'appealId';

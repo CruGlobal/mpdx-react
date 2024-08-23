@@ -29,4 +29,27 @@ fragment AppealContactInfo on Contact {
   pledgeFrequency
   pledgeReceived
   pledgeStartDate
+  pledges {
+    id
+    amount
+    amountCurrency
+    appeal {
+      id
+    }
+    expectedDate
+  }
+  donations {
+    nodes {
+      appeal {
+        id
+      }
+      id
+      donationDate
+      appealAmount {
+        amount
+        convertedAmount
+        convertedCurrency
+      }
+    }
+  }
 }

@@ -25,7 +25,11 @@ import {
   GetAppealsDocument,
   GetAppealsQuery,
 } from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
-import { FilterOption, MultiselectFilter } from 'src/graphql/types.generated';
+import {
+  AppealCreateInput,
+  FilterOption,
+  MultiselectFilter,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import removeObjectNulls from 'src/lib/removeObjectNulls';
 import {
@@ -227,12 +231,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-type CreateNewAppealAttributes = {
-  name: string;
-  amount: number;
-  inclusionFilterJson?: string;
-  exclusionFilterJson?: string;
-};
 export interface AddAppealFormProps {
   accountListId: string;
   appealName?: string;
@@ -286,7 +284,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   }, [contactFilterGroups]);
 
   const onSubmit = async (props: Attributes, resetForm: () => void) => {
-    const attributes: CreateNewAppealAttributes = {
+    const attributes: AppealCreateInput = {
       name: props.name,
       amount: calculateGoal(
         props.initialGoal,

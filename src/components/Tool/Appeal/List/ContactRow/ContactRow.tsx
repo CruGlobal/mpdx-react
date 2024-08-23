@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,6 +12,8 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { TFunction } from 'i18next';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   ListItemButton,
@@ -19,7 +21,7 @@ import {
 } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import {
@@ -59,6 +61,41 @@ const ContactRowActions = styled(Box)(() => ({
   transition: 'opacity 0.3s',
 }));
 
+type FormatPledgeOrDonationProps = {
+  amount?: number | null;
+  currency?: string | null;
+  appealStatus: AppealStatusEnum;
+  date?: any;
+  locale: string;
+  t: TFunction;
+};
+
+const formatPledgeOrDonation = ({
+  amount,
+  currency,
+  appealStatus,
+  date,
+  locale,
+  t,
+}: FormatPledgeOrDonationProps) => {
+  const pledgeOrDonationAmount =
+    amount && currency
+      ? currencyFormat(amount, currency, locale)
+      : amount || currencyFormat(0, currency, locale);
+
+  const pledgeOrDonationDate =
+    appealStatus === AppealStatusEnum.Asked ||
+    appealStatus === AppealStatusEnum.Excluded
+      ? (date && getLocalizedPledgeFrequency(t, date)) ?? ''
+      : date
+      ? dateFormat(DateTime.fromISO(date), locale)
+      : null;
+  return {
+    amount: pledgeOrDonationAmount,
+    date: pledgeOrDonationDate,
+  };
+};
+
 interface Props {
   contact: AppealContactInfoFragment;
   appealStatus: AppealStatusEnum;
@@ -80,6 +117,7 @@ export const ContactRow: React.FC<Props> = ({
   useTopMargin,
 }) => {
   const {
+    appealId,
     isRowChecked: isChecked,
     contactDetailsOpen,
     setContactFocus: onContactSelected,
@@ -96,6 +134,8 @@ export const ContactRow: React.FC<Props> = ({
     PledgeModalEnum.Create,
   );
   const [pledgeValues, setPledgeValues] = useState<PledgeInfo>();
+  const [amountAndFrequency, setAmountAndFrequency] = useState<string>();
+  const [pledgeDonations, setPledgeDonations] = useState<string[] | null>();
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -107,21 +147,98 @@ export const ContactRow: React.FC<Props> = ({
     pledgeAmount,
     pledgeCurrency,
     pledgeFrequency,
+    pledges,
+    donations,
   } = contact;
 
-  const pledge = useMemo(
-    () =>
-      pledgeAmount && pledgeCurrency
-        ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
-        : pledgeAmount || currencyFormat(0, pledgeCurrency, locale),
-    [pledgeAmount, pledgeCurrency, locale],
-  );
-  const frequency = useMemo(
-    () =>
-      (pledgeFrequency && getLocalizedPledgeFrequency(t, pledgeFrequency)) ||
-      '',
-    [pledgeFrequency],
-  );
+  useEffect(() => {
+    if (
+      appealStatus === AppealStatusEnum.Asked ||
+      appealStatus === AppealStatusEnum.Excluded
+    ) {
+      const { amount, date } = formatPledgeOrDonation({
+        amount: pledgeAmount,
+        currency: pledgeCurrency,
+        appealStatus,
+        date: pledgeFrequency,
+        locale,
+        t,
+      });
+      setAmountAndFrequency(`${amount} ${date}`);
+    } else if (
+      appealStatus === AppealStatusEnum.NotReceived ||
+      appealStatus === AppealStatusEnum.ReceivedNotProcessed
+    ) {
+      const appealPledge = pledges?.find(
+        (pledge) => pledge.appeal.id === appealId,
+      );
+
+      if (appealPledge) {
+        const { amount, date } = formatPledgeOrDonation({
+          amount: appealPledge?.amount,
+          currency: appealPledge.amountCurrency,
+          appealStatus,
+          date: appealPledge.expectedDate,
+          locale,
+          t,
+        });
+
+        setAmountAndFrequency(`${amount} (${date})`);
+      } else {
+        setAmountAndFrequency(`${currencyFormat(0, 'USD', locale)}`);
+      }
+    } else if (appealStatus === AppealStatusEnum.Processed) {
+      const appealPledge = pledges?.find(
+        (pledge) => pledge.appeal.id === appealId,
+      );
+
+      if (appealPledge) {
+        const { amount } = formatPledgeOrDonation({
+          amount: appealPledge?.amount,
+          currency: appealPledge.amountCurrency,
+          appealStatus,
+          locale,
+          t,
+        });
+        setAmountAndFrequency(`${amount}`);
+      } else {
+        setAmountAndFrequency(`${currencyFormat(0, 'USD', locale)}`);
+      }
+
+      // Currently we grab all the donations and filter them by the appeal id
+      // We need a query that allows us to filter by the appeal id
+      // Maybe buy the backend team some donuts and ask them to add a filter to the donations query
+      const appealDonations = donations.nodes.filter(
+        (donation) => donation?.appeal?.id === appealId,
+      );
+
+      const givenDonations = appealDonations.map((donation) => {
+        const donationAmount =
+          donation?.appealAmount?.amount &&
+          donation?.appealAmount.convertedCurrency
+            ? currencyFormat(
+                donation.appealAmount.amount,
+                donation.appealAmount.convertedCurrency,
+                locale,
+              )
+            : donation?.appealAmount?.amount ||
+              currencyFormat(
+                0,
+                donation?.appealAmount?.convertedCurrency,
+                locale,
+              );
+
+        const donationDate = dateFormat(
+          DateTime.fromISO(donation.donationDate),
+          locale,
+        );
+
+        return `(${donationAmount}) (${donationDate})`;
+      });
+
+      setPledgeDonations(givenDonations);
+    }
+  }, [appealStatus, pledgeAmount, pledgeCurrency, locale]);
 
   const handleCreatePledge = () => {
     setPledgeModalType(PledgeModalEnum.Create);
@@ -234,9 +351,16 @@ export const ContactRow: React.FC<Props> = ({
                 flexDirection="column"
                 justifyContent="center"
               >
-                <Typography component="span">
-                  {`${pledge} ${frequency}`}
-                </Typography>
+                {appealStatus !== AppealStatusEnum.Processed && (
+                  <Typography component="span">{amountAndFrequency}</Typography>
+                )}
+
+                {appealStatus === AppealStatusEnum.Processed &&
+                  pledgeDonations?.map((donation, idx) => (
+                    <Typography key={`${donation}-${idx}`} component="span">
+                      {amountAndFrequency} {donation}
+                    </Typography>
+                  ))}
               </Box>
             </Box>
 

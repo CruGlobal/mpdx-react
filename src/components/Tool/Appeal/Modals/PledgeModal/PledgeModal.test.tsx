@@ -14,6 +14,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import { defaultContact } from '../../List/ContactRow/ContactRowMock';
 import { PledgeModal, PledgeModalEnum } from './PledgeModal';
 
 const accountListId = 'abc';
@@ -29,15 +30,6 @@ const refetch = jest.fn();
 interface ComponentsProps {
   contact?: AppealContactInfoFragment;
 }
-
-const defaultContact = {
-  id: 'contact-1',
-  name: 'Alice',
-  pledgeAmount: undefined,
-  pledgeFrequency: undefined,
-  pledgeCurrency: undefined,
-  pledgeReceived: false,
-};
 
 const Components = ({ contact = defaultContact }: ComponentsProps) => (
   <I18nextProvider i18n={i18n}>
