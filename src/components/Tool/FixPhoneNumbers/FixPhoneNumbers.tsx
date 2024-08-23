@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -15,9 +15,15 @@ import {
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
@@ -117,6 +123,10 @@ export interface FormValues {
   people: FormValuesPerson[];
 }
 
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover={true} {...props} />
+);
+
 const FixPhoneNumbers: React.FC<Props> = ({
   accountListId,
   setContactFocus,
@@ -131,7 +141,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
     defaultDeleteModalState,
   );
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
-  const { data, loading } = useGetInvalidPhoneNumbersQuery({
+  const { data, loading, fetchMore } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
   const { t } = useTranslation();
@@ -187,6 +197,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
         data?.people.nodes.forEach((person: PersonInvalidNumberFragment) => {
           cache.evict({ id: `Person:${person.id}` });
         });
+        cache.gc();
       },
       onError: () => {
         enqueueSnackbar(t('Error updating phone numbers'), {
@@ -229,6 +240,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
       },
       update: (cache) => {
         cache.evict({ id: `Person:${personId}` });
+        cache.gc();
       },
       onError: () => {
         enqueueSnackbar(t('Error updating phone numbers'), {
@@ -314,124 +326,154 @@ const FixPhoneNumbers: React.FC<Props> = ({
   return (
     <Box className={classes.container}>
       {!loading && data ? (
-        <>
-          {data?.people.nodes.length > 0 ? (
-            <Formik
-              initialValues={initialValues}
-              onSubmit={() => {}}
-              validationSchema={fixPhoneNumberSchema}
-            >
-              {({ errors, setValues, values }): ReactElement => (
-                <>
-                  <Grid container className={classes.outter}>
-                    <Grid item xs={12}>
-                      <Typography variant="h4">
-                        {t('Fix Phone Numbers')}
-                      </Typography>
-                      <Divider className={classes.divider} />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Box mb={2}>
-                        <Typography fontWeight="bold">
-                          {t('You have {{amount}} phone numbers to confirm.', {
-                            amount: data.people.totalCount,
-                          })}
-                        </Typography>
-                        <Typography>
-                          {t(
-                            'Choose below which phone number will be set as primary.',
-                          )}
-                        </Typography>
-                        <Box className={classes.defaultBox}>
-                          <Typography>
-                            {t('Default Primary Source:')}
-                          </Typography>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={() => {}}
+          validationSchema={fixPhoneNumberSchema}
+        >
+          {({ errors, setValues, values }): ReactElement => {
+            // Needed to update formik values when new data is fetched with infinityList
+            useEffect(() => {
+              // Ideally check if the data has changed before updating the formik values
+              setValues({
+                people:
+                  data?.people?.nodes.map((person) => ({
+                    ...person,
+                    isNewPhoneNumber: false,
+                    newPhoneNumber: '',
+                  })) || [],
+              });
+            }, [data]);
 
-                          <Select
-                            className={classes.select}
-                            data-testid="source-select"
-                            value={defaultSource}
-                            onChange={(event: SelectChangeEvent<string>) =>
-                              handleSourceChange(event)
-                            }
-                            size="small"
-                          >
-                            <MenuItem
-                              value={appName}
-                              data-testid="source-option-mpdx"
-                            >
-                              {appName}
-                            </MenuItem>
-                            <MenuItem
-                              value="DataServer"
-                              data-testid="source-option-dataserver"
-                            >
-                              {t('DataServer')}
-                            </MenuItem>
-                          </Select>
-                          <Button
-                            variant="contained"
-                            onClick={() => handleBulkConfirm(values)}
-                            data-testid="source-button"
-                          >
-                            <Icon
-                              path={mdiCheckboxMarkedCircle}
-                              size={0.8}
-                              className={classes.buttonIcon}
-                            />
-                            {t('Confirm {{amount}} as {{source}}', {
-                              amount: data.people.totalCount,
-                              source: defaultSource,
-                            })}
-                          </Button>
-                        </Box>
-                      </Box>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      {values.people.map(
-                        (person: PersonInvalidNumberFragment, i: number) => (
-                          <Contact
-                            key={person.id}
-                            person={person}
-                            personIndex={i}
-                            handleDelete={handleDeleteModalOpen}
-                            setContactFocus={setContactFocus}
-                            handleUpdate={updatePhoneNumber}
-                            errors={errors}
-                            values={values}
-                            setValues={setValues}
-                          />
-                        ),
-                      )}
-                    </Grid>
-
-                    <Grid item xs={12}>
-                      <Box className={classes.footer}>
-                        <Typography>
-                          <Trans
-                            defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                            shouldUnescape
-                            values={{ value: data.people.totalCount }}
-                            components={{ bold: <strong /> }}
-                          />
-                        </Typography>
-                      </Box>
-                    </Grid>
+            return (
+              <>
+                <Grid container className={classes.outter}>
+                  <Grid item xs={12}>
+                    <Typography variant="h4">
+                      {t('Fix Phone Numbers')}
+                    </Typography>
+                    <Divider className={classes.divider} />
                   </Grid>
-                  <DeleteModal
-                    modalState={deleteModalState}
-                    handleClose={handleDeleteModalClose}
-                    handleDelete={() => handleDelete(values, setValues)}
-                  />
-                </>
-              )}
-            </Formik>
-          ) : (
-            <NoData tool="fixPhoneNumbers" />
-          )}
-          ;
-        </>
+                  <Grid item xs={12}>
+                    <Box mb={2}>
+                      <Typography fontWeight="bold">
+                        {t('You have {{amount}} phone numbers to confirm.', {
+                          amount: data.people.totalCount,
+                        })}
+                      </Typography>
+                      <Typography>
+                        {t(
+                          'Choose below which phone number will be set as primary.',
+                        )}
+                      </Typography>
+                      <Box className={classes.defaultBox}>
+                        <Typography>{t('Default Primary Source:')}</Typography>
+
+                        <Select
+                          className={classes.select}
+                          data-testid="source-select"
+                          value={defaultSource}
+                          onChange={(event: SelectChangeEvent<string>) =>
+                            handleSourceChange(event)
+                          }
+                          size="small"
+                        >
+                          <MenuItem
+                            value={appName}
+                            data-testid="source-option-mpdx"
+                          >
+                            {appName}
+                          </MenuItem>
+                          <MenuItem
+                            value="DataServer"
+                            data-testid="source-option-dataserver"
+                          >
+                            {t('DataServer')}
+                          </MenuItem>
+                        </Select>
+                        <Button
+                          variant="contained"
+                          onClick={() => handleBulkConfirm(values)}
+                          data-testid="source-button"
+                        >
+                          <Icon
+                            path={mdiCheckboxMarkedCircle}
+                            size={0.8}
+                            className={classes.buttonIcon}
+                          />
+                          {t('Confirm {{amount}} as {{source}}', {
+                            amount: data.people.totalCount,
+                            source: defaultSource,
+                          })}
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  {!!values.people.length ? (
+                    <>
+                      <Grid item xs={12}>
+                        <InfiniteList
+                          loading={loading}
+                          data={values.people}
+                          itemContent={(i, person) => (
+                            <Contact
+                              key={person.id}
+                              person={person}
+                              personIndex={i}
+                              handleDelete={handleDeleteModalOpen}
+                              setContactFocus={setContactFocus}
+                              handleUpdate={updatePhoneNumber}
+                              errors={errors}
+                              values={values}
+                              setValues={setValues}
+                            />
+                          )}
+                          endReached={() =>
+                            data.people.pageInfo.hasNextPage &&
+                            fetchMore({
+                              variables: {
+                                after: data.people.pageInfo.endCursor,
+                              },
+                            })
+                          }
+                          EmptyPlaceholder={<NoData tool="fixPhoneNumbers" />}
+                          style={{
+                            height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
+                              33,
+                            )})`,
+                            width: '100%',
+                            scrollbarWidth: 'none',
+                          }}
+                          ItemOverride={ItemOverride}
+                          increaseViewportBy={{ top: 2000, bottom: 2000 }}
+                        ></InfiniteList>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Box className={classes.footer}>
+                          <Typography>
+                            <Trans
+                              defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                              shouldUnescape
+                              values={{ value: data.people.totalCount }}
+                              components={{ bold: <strong /> }}
+                            />
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </>
+                  ) : (
+                    <NoData tool="fixPhoneNumbers" />
+                  )}
+                </Grid>
+                <DeleteModal
+                  modalState={deleteModalState}
+                  handleClose={handleDeleteModalClose}
+                  handleDelete={() => handleDelete(values, setValues)}
+                />
+              </>
+            );
+          }}
+        </Formik>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}

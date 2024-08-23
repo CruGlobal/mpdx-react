@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -95,24 +96,29 @@ const Components: React.FC<{
     <SnackbarProvider>
       <TestRouter router={router}>
         <TestWrapper>
-          <GqlMockedProvider<{
-            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-          }>
-            mocks={{
-              GetInvalidPhoneNumbers: {
-                people: {
-                  totalCount: 2,
-                  nodes: data,
-                },
-              },
-            }}
-            cache={cache}
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
           >
-            <FixPhoneNumbers
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
-          </GqlMockedProvider>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
+              mocks={{
+                GetInvalidPhoneNumbers: {
+                  people: {
+                    totalCount: 2,
+                    nodes: data,
+                    pageInfo: { hasNextPage: false },
+                  },
+                },
+              }}
+              cache={cache}
+            >
+              <FixPhoneNumbers
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
         </TestWrapper>
       </TestRouter>
     </SnackbarProvider>
@@ -232,7 +238,9 @@ describe('FixPhoneNumbers-Home', () => {
     });
   });
   it('should bulk confirm all phone numbers', async () => {
-    const { getByTestId, queryByTestId, getByText } = render(<Components />);
+    const { getByTestId, queryByTestId, getByText, debug } = render(
+      <Components />,
+    );
     await waitFor(() => {
       expect(queryByTestId('loading')).not.toBeInTheDocument();
       expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
@@ -242,11 +250,14 @@ describe('FixPhoneNumbers-Home', () => {
 
     const confirmAllButton = getByTestId('source-button');
     userEvent.click(confirmAllButton);
+    jest.setTimeout(1000);
+    debug(undefined, Infinity);
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
         variant: 'success',
       });
+
       expect(
         getByText('No people with phone numbers need attention'),
       ).toBeVisible();
