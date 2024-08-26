@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
@@ -26,35 +27,51 @@ const onClose = jest.fn();
 const setActiveFilters = jest.fn();
 const deselectAll = jest.fn();
 
+const defaultcontactCountMock = {
+  data: {
+    contacts: {
+      totalCount: 5,
+    },
+  },
+  loading: false,
+};
+
 const Components = ({ ids = selectedIds }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider<{ ContactsCount: ContactsCountQuery }>
-        mocks={{
-          ContactsCount: {
-            contacts: {
-              totalCount: 5,
+      <SnackbarProvider>
+        <GqlMockedProvider<{ ContactsCount: ContactsCountQuery }>
+          mocks={{
+            ContactsCount: {
+              contacts: {
+                totalCount: 5,
+              },
             },
-          },
-        }}
-      >
-        <AppealsWrapper>
-          <AppealsContext.Provider
-            value={
-              {
-                accountListId,
-                appealId,
-                activeFilters,
-                selectedIds: ids,
-                setActiveFilters,
-                deselectAll,
-              } as unknown as AppealsType
-            }
-          >
-            <AppealsListFilterPanel onClose={onClose} />
-          </AppealsContext.Provider>
-        </AppealsWrapper>
-      </GqlMockedProvider>
+          }}
+        >
+          <AppealsWrapper>
+            <AppealsContext.Provider
+              value={
+                {
+                  accountListId,
+                  appealId,
+                  activeFilters,
+                  selectedIds: ids,
+                  setActiveFilters,
+                  deselectAll,
+                  askedCountQuery: defaultcontactCountMock,
+                  excludedCountQuery: defaultcontactCountMock,
+                  committedCountQuery: defaultcontactCountMock,
+                  givenCountQuery: defaultcontactCountMock,
+                  receivedCountQuery: defaultcontactCountMock,
+                } as unknown as AppealsType
+              }
+            >
+              <AppealsListFilterPanel onClose={onClose} />
+            </AppealsContext.Provider>
+          </AppealsWrapper>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -111,6 +128,90 @@ describe('AppealsListFilterPanel', () => {
     expect(setActiveFilters).toHaveBeenCalledWith({
       ...activeFilters,
       appealStatus: AppealStatusEnum.Processed,
+    });
+
+    userEvent.click(getByText('Received'));
+    expect(deselectAll).toHaveBeenCalled();
+    expect(setActiveFilters).toHaveBeenCalledWith({
+      ...activeFilters,
+      appealStatus: AppealStatusEnum.ReceivedNotProcessed,
+    });
+
+    userEvent.click(getByText('Committed'));
+    expect(deselectAll).toHaveBeenCalled();
+    expect(setActiveFilters).toHaveBeenCalledWith({
+      ...activeFilters,
+      appealStatus: AppealStatusEnum.NotReceived,
+    });
+
+    userEvent.click(getByText('Asked'));
+    expect(deselectAll).toHaveBeenCalled();
+    expect(setActiveFilters).toHaveBeenCalledWith({
+      ...activeFilters,
+      appealStatus: AppealStatusEnum.Asked,
+    });
+
+    userEvent.click(getByText('Excluded'));
+    expect(deselectAll).toHaveBeenCalled();
+    expect(setActiveFilters).toHaveBeenCalledWith({
+      ...activeFilters,
+      appealStatus: AppealStatusEnum.Excluded,
+    });
+  });
+
+  describe('Modals', () => {
+    it('should open export contacts modal', async () => {
+      const { findAllByRole, getByRole } = render(<Components />);
+
+      const buttons = await findAllByRole('button', {
+        name: 'Export 2 Selected',
+      });
+      userEvent.click(buttons[0]);
+
+      await waitFor(() => {
+        expect(
+          getByRole('heading', { name: 'Export Contacts' }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should open export emails modal', async () => {
+      const { findAllByRole, getByTestId } = render(<Components />);
+
+      const buttons = await findAllByRole('button', {
+        name: 'Export 2 Selected',
+      });
+      userEvent.click(buttons[1]);
+
+      await waitFor(() => {
+        expect(getByTestId('ExportEmailsModal')).toBeInTheDocument();
+      });
+    });
+
+    it('should open add contact to appeal modal', async () => {
+      const { findByRole, getByTestId } = render(<Components />);
+
+      const button = await findByRole('button', {
+        name: 'Select Contact',
+      });
+      userEvent.click(button);
+
+      await waitFor(() => {
+        expect(getByTestId('addContactToAppealModal')).toBeInTheDocument();
+      });
+    });
+
+    it('should open delete appeal modal', async () => {
+      const { findByRole, getByTestId } = render(<Components />);
+
+      const button = await findByRole('button', {
+        name: 'Permanently Delete Appeal',
+      });
+      userEvent.click(button);
+
+      await waitFor(() => {
+        expect(getByTestId('deleteAppealModal')).toBeInTheDocument();
+      });
     });
   });
 });

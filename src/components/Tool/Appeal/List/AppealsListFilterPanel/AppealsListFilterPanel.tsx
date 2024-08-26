@@ -36,7 +36,6 @@ import {
 } from '../../Modals/DeleteAppealModal/DynamicDeleteAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
-import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -80,6 +79,11 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setActiveFilters,
     selectedIds,
     deselectAll,
+    askedCountQuery,
+    excludedCountQuery,
+    committedCountQuery,
+    givenCountQuery,
+    receivedCountQuery,
   } = React.useContext(AppealsContext) as AppealsType;
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
@@ -87,37 +91,13 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
 
+
+  const { data: askedCount, loading: askedLoading } = askedCountQuery;
+  const { data: excludedCount, loading: excludedLoading } = excludedCountQuery;
   const { data: committedCount, loading: committedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.NotReceived,
-        },
-      },
-    });
-
-  const { data: givenCount, loading: givenLoading } = useContactsCountQuery({
-    variables: {
-      accountListId: accountListId || '',
-      contactsFilter: {
-        ...defaultFilters,
-        appealStatus: AppealStatusEnum.Processed,
-      },
-    },
-  });
-
-  const { data: receivedCount, loading: receivedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.ReceivedNotProcessed,
-        },
-      },
-    });
+    committedCountQuery;
+  const { data: givenCount, loading: givenLoading } = givenCountQuery;
+  const { data: receivedCount, loading: receivedLoading } = receivedCountQuery;
 
   const handleFilterItemClick = (newAppealListView: AppealStatusEnum) => {
     deselectAll();
@@ -235,7 +215,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}
                   buttonText={t('Select Contact')}
-                  disabled={false}
                   onClick={() => {
                     setAddContactsModalOpen(true);
                   }}
@@ -244,7 +223,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
                   buttonText={t('Permanently Delete Appeal')}
-                  disabled={false}
                   buttonError={'error'}
                   buttonVariant={'outlined'}
                   onClick={() => {

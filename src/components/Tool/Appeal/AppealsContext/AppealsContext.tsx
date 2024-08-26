@@ -16,6 +16,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useContactsQuery } from './contacts.generated';
+import { useContactsCountQuery } from './contactsCount.generated';
 
 export enum AppealStatusEnum {
   Excluded = 'excluded',
@@ -29,6 +30,20 @@ export enum TableViewModeEnum {
   List = 'list',
   Flows = 'flows',
 }
+
+export const shouldSkipContactCount = (tour, filterPanelOpen, viewMode) => {
+  if (viewMode === TableViewModeEnum.Flows) {
+    return true;
+  } else if (viewMode === TableViewModeEnum.List && !filterPanelOpen) {
+    if (!tour) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
 
 export interface AppealsType
   extends Omit<
@@ -47,6 +62,11 @@ export interface AppealsType
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   page: PageEnum | undefined;
+  askedCountQuery: ReturnType<typeof useContactsCountQuery>;
+  excludedCountQuery: ReturnType<typeof useContactsCountQuery>;
+  committedCountQuery: ReturnType<typeof useContactsCountQuery>;
+  givenCountQuery: ReturnType<typeof useContactsCountQuery>;
+  receivedCountQuery: ReturnType<typeof useContactsCountQuery>;
 }
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
@@ -203,6 +223,67 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     context: {
       doNotBatch: true,
     },
+  });
+
+  const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
+  const defaultFilters = {
+    appeal: [appealId || ''],
+    ...nameSearch,
+  };
+
+  const askedCountQuery = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.Asked,
+      },
+    },
+    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+  });
+
+  const excludedCountQuery = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.Excluded,
+      },
+    },
+    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+  });
+
+  const committedCountQuery = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.NotReceived,
+      },
+    },
+    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+  });
+
+  const givenCountQuery = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.Processed,
+      },
+    },
+    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+  });
+
+  const receivedCountQuery = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.ReceivedNotProcessed,
+      },
+    },
+    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
   });
 
   const toggleFilterPanel = () => {
@@ -363,6 +444,11 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         userOptionsLoading: userOptionsLoading,
         appealId,
         page,
+        askedCountQuery,
+        excludedCountQuery,
+        committedCountQuery,
+        givenCountQuery,
+        receivedCountQuery,
       }}
     >
       {children}
