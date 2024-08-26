@@ -11,7 +11,7 @@ import theme from 'src/theme';
 import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
-} from '../../AppealDetails/AppealHeaderInfo';
+} from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import {
   AppealStatusEnum,

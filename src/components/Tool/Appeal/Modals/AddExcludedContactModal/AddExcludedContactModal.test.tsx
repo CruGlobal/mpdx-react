@@ -12,7 +12,7 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
-import { AppealQuery } from '../AddContactToAppealModal/appealInfo.generated';
+import { AppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
 import { AddExcludedContactModal } from './AddExcludedContactModal';
 
 const accountListId = 'abc';

@@ -18,7 +18,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
-import { useAppealQuery } from '../AddContactToAppealModal/appealInfo.generated';
+import { useAppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
 import { useAssignContactsToAppealMutation } from './AddExcludedContactModal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
