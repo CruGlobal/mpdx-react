@@ -18,6 +18,7 @@ import {
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -63,7 +64,11 @@ export const AppealsMainPanelHeader: React.FC = () => {
     viewMode,
     handleViewModeChange,
     selectedIds,
+    activeFilters,
   } = React.useContext(AppealsContext) as AppealsType;
+
+  const isExcludedPage =
+    activeFilters.appealStatus === AppealStatusEnum.Excluded;
 
   return (
     <ListHeader
@@ -82,6 +87,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}
+      isExcludedAppealPage={isExcludedPage}
       leftButtonGroup={
         <Hidden xsDown>
           <Box display="flex" alignItems="center">

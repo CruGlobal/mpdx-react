@@ -70,6 +70,7 @@ const Components = ({
                     contactDetailsOpen: false,
                     selectedIds: [],
                     contactsQueryResult,
+                    activeFilters: {},
                   } as unknown as AppealsType
                 }
               >
