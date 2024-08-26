@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import AppealsDetailsPage from 'src/components/Tool/Appeal/AppealsDetailsPage';
+import AppealsDetailsPage from 'src/components/Tool/Appeal/AppealDetails/AppealsDetailsPage';
 import { ToolsWrapper } from '../../ToolsWrapper';
 import { AppealsWrapper } from '../AppealsWrapper';
 
