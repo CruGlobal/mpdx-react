@@ -25,3 +25,6 @@ yarn-error.log*
 # lighthouse generated
 .lighthouseci/*
 /lighthouse/lighthouse-results.md
+
+# Generated translation files
+/public/locales/
