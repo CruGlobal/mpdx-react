@@ -29,6 +29,10 @@ import {
   DynamicAddExcludedContactModal,
   preloadAddExcludedContactModal,
 } from '../../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
+import {
+  DynamicDeleteAppealContactModal,
+  preloadDeleteAppealContactModal,
+} from '../../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
@@ -58,6 +62,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const locale = useLocale();
   const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
     useState(false);
+  const [removeContactModalOpen, setRemoveContactModalOpen] = useState(false);
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -70,6 +75,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     pledgeCurrency,
     pledgeFrequency,
   } = contact;
+
+  const handleRemoveContactFromAppeal = () => {
+    setRemoveContactModalOpen(true);
+  };
 
   const handleAddExcludedContactToAppeal = () => {
     setAddExcludedContactModalOpen(true);
@@ -158,6 +167,21 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
               }}
               className="contactRowActions"
             >
+              {appealStatus === AppealStatusEnum.Asked && (
+                <>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleRemoveContactFromAppeal();
+                    }}
+                    onMouseOver={preloadDeleteAppealContactModal}
+                  >
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </>
+              )}
               {appealStatus === AppealStatusEnum.Excluded && (
                 <IconButton
                   size={'small'}
@@ -178,6 +202,13 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         <Box></Box>
       </Hidden>
       </ListButton>
+
+      {removeContactModalOpen && (
+        <DynamicDeleteAppealContactModal
+          contactId={contactId}
+          handleClose={() => setRemoveContactModalOpen(false)}
+        />
+      )}
 
       {addExcludedContactModalOpen && (
         <DynamicAddExcludedContactModal
