@@ -1,12 +1,14 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import theme from 'src/theme';
-import { appealInfo } from '../appealMockData';
+import { appealInfo } from '../../appealMockData';
 import { AppealHeaderInfo, AppealHeaderInfoProps } from './AppealHeaderInfo';
 
 const router = {
@@ -17,13 +19,15 @@ const router = {
 const Components = ({ appealInfo, loading }: AppealHeaderInfoProps) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider>
-          <AppealsWrapper>
-            <AppealHeaderInfo appealInfo={appealInfo} loading={loading} />
-          </AppealsWrapper>
-        </GqlMockedProvider>
-      </TestRouter>
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <AppealsWrapper>
+              <AppealHeaderInfo appealInfo={appealInfo} loading={loading} />
+            </AppealsWrapper>
+          </GqlMockedProvider>
+        </TestRouter>
+      </SnackbarProvider>
     </ThemeProvider>
   </LocalizationProvider>
 );
@@ -54,5 +58,26 @@ describe('AppealHeaderInfo', () => {
     });
   });
 
-  // TODO - Build tests for modals opening and saving data
+  it('should allow user to open the edit appeal info modal', async () => {
+    const { getByText, getByTestId, getByRole } = render(
+      <Components appealInfo={appealInfo} loading={false} />,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Test Appeal')).toBeInTheDocument();
+    });
+
+    userEvent.click(getByTestId('edit-appeal-name'));
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Edit Appeal' })).toBeInTheDocument();
+    });
+
+    const button = getByRole('button', { name: 'Close' });
+    within(button).getByTestId('CloseIcon');
+
+    userEvent.click(getByTestId('edit-appeal-goal'));
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Edit Appeal' })).toBeInTheDocument();
+    });
+  });
 });
