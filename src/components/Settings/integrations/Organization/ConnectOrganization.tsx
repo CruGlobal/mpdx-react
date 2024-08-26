@@ -175,11 +175,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
               }
               fullWidth
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder={'Organization'}
-                  data-testid="multiSelectFilter"
-                />
+                <TextField {...params} label={t('Organization')} />
               )}
             />
             {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
