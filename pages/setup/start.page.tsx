@@ -4,11 +4,8 @@ import React, { ReactElement, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUpdatePersonalPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdatePersonalPreferences.generated';
-import { PageHeader } from 'src/components/Setup/PageHeader';
-import {
-  LargeButton,
-  PageWrapper,
-} from 'src/components/Setup/styledComponents';
+import { SetupPage } from 'src/components/Setup/SetupPage';
+import { LargeButton } from 'src/components/Setup/styledComponents';
 import {
   PrivacyPolicyLink,
   TermsOfUseLink,
@@ -50,8 +47,7 @@ const StartPage = (): ReactElement => {
           {appName} | {t('Setup - Start')}
         </title>
       </Head>
-      <PageWrapper>
-        <PageHeader title={t("It's time to get started")} />
+      <SetupPage title={t("It's time to get started")}>
         <p>
           {t(
             `Developing a healthy team of ministry partners sets your ministry up to thrive.
@@ -93,7 +89,7 @@ const StartPage = (): ReactElement => {
         <LargeButton variant="contained" onClick={handleSave}>
           {t("Let's Begin")}
         </LargeButton>
-      </PageWrapper>
+      </SetupPage>
     </>
   );
 };
