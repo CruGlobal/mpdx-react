@@ -41,9 +41,16 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
       refetchQueries: [
         { query: GetAppealsDocument, variables: { accountListId } },
       ],
-    });
-    enqueueSnackbar(t('Primary Appeal Updated'), {
-      variant: 'success',
+      onCompleted: () => {
+        enqueueSnackbar(t('Appeal successfully set to primary'), {
+          variant: 'success',
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Unable to set Appeal as primary'), {
+          variant: 'error',
+        });
+      },
     });
   };
 

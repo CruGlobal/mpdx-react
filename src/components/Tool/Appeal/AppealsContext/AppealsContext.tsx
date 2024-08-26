@@ -122,7 +122,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       ids: [],
       appeal: [appealId || ''],
     }),
-    [sanitizedFilters, starredFilter, searchTerm],
+    [sanitizedFilters, starredFilter, searchTerm, appealId],
   );
 
   const contactsQueryResult = useContactsQuery({
