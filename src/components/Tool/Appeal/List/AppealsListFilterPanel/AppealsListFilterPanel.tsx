@@ -23,6 +23,7 @@ import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   AppealStatusEnum,
+  AppealTourEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -79,6 +80,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setActiveFilters,
     selectedIds,
     deselectAll,
+    tour,
     askedCountQuery,
     excludedCountQuery,
     committedCountQuery,
@@ -91,6 +93,18 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (tour === AppealTourEnum.Finish) {
+      setExportsModalOpen(true);
+    }
+  }, [tour]);
+
+  const handleExportModalClose = () => {
+    setExportsModalOpen(false);
+    if (tour === AppealTourEnum.Finish) {
+      deselectAll();
+    }
+  };
 
   const { data: askedCount, loading: askedLoading } = askedCountQuery;
   const { data: excludedCount, loading: excludedLoading } = excludedCountQuery;
