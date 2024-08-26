@@ -39,7 +39,7 @@ export const AppealsListFilterPanelButton = ({
   buttonText,
   buttonError = 'primary',
   buttonVariant = 'contained',
-  disabled,
+  disabled = false,
   onMouseEnter,
 }: AppealsListFilterPanelButtonProps): ReactElement => {
   const { classes } = useStyles();

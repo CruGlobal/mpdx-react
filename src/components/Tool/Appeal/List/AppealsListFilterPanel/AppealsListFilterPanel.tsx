@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
   BoxProps,
-  Button,
   IconButton,
   List,
   Slide,
@@ -20,7 +19,6 @@ import {
   preloadMassActionsExportEmailsModal,
 } from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
 import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   AppealStatusEnum,
   AppealsContext,
@@ -36,7 +34,6 @@ import {
 } from '../../Modals/DeleteAppealModal/DynamicDeleteAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
-import { useContactsCountQuery } from './contactsCount.generated';
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -61,15 +58,6 @@ export interface FilterPanelProps {
   onClose: () => void;
 }
 
-const LinkButton = styled(Button)(({ theme }) => ({
-  width: '100%',
-  textTransform: 'none',
-  fontSize: 16,
-  color: theme.palette.info.main,
-  fontWeight: 'bold',
-  marginTop: theme.spacing(1),
-}));
-
 export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onClose,
 }) => {
@@ -80,6 +68,11 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setActiveFilters,
     selectedIds,
     deselectAll,
+    askedCountQueryResult,
+    excludedCountQueryResult,
+    committedCountQueryResult,
+    givenCountQueryResult,
+    receivedCountQueryResult,
   } = React.useContext(AppealsContext) as AppealsType;
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
@@ -87,37 +80,14 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
 
+  const { data: askedCount, loading: askedLoading } = askedCountQueryResult;
+  const { data: excludedCount, loading: excludedLoading } =
+    excludedCountQueryResult;
   const { data: committedCount, loading: committedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.NotReceived,
-        },
-      },
-    });
-
-  const { data: givenCount, loading: givenLoading } = useContactsCountQuery({
-    variables: {
-      accountListId: accountListId || '',
-      contactsFilter: {
-        ...defaultFilters,
-        appealStatus: AppealStatusEnum.Processed,
-      },
-    },
-  });
-
+    committedCountQueryResult;
+  const { data: givenCount, loading: givenLoading } = givenCountQueryResult;
   const { data: receivedCount, loading: receivedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.ReceivedNotProcessed,
-        },
-      },
-    });
+    receivedCountQueryResult;
 
   const handleFilterItemClick = (newAppealListView: AppealStatusEnum) => {
     deselectAll();
@@ -130,12 +100,9 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const appealListView = activeFilters.appealStatus;
   const noContactsSelected = !selectedIds.length;
 
-  const handleClearAllClick = () => {
-    setActiveFilters({});
+  const handleExportModalClose = () => {
+    setExportsModalOpen(false);
   };
-
-  const noActiveFilters =
-    Object.keys(sanitizeFilters(activeFilters)).length === 0;
 
   return (
     <Box>
@@ -157,13 +124,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
-              <LinkButton
-                disabled={noActiveFilters}
-                onClick={handleClearAllClick}
-                variant="outlined"
-              >
-                {t('Clear All')}
-              </LinkButton>
             </FilterHeader>
             <FilterList dense sx={{ paddingY: 0 }}>
               <List sx={{ padding: '0' }}>
@@ -235,7 +195,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}
                   buttonText={t('Select Contact')}
-                  disabled={false}
                   onClick={() => {
                     setAddContactsModalOpen(true);
                   }}
@@ -244,7 +203,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
                   buttonText={t('Permanently Delete Appeal')}
-                  disabled={false}
                   buttonError={'error'}
                   buttonVariant={'outlined'}
                   onClick={() => {
