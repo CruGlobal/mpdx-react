@@ -1,0 +1,5 @@
+mutation DeleteAppeal($input: AppealDeleteMutationInput!) {
+  deleteAppeal(input: $input) {
+    id
+  }
+}
