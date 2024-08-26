@@ -30,6 +30,10 @@ import {
   DynamicAddContactToAppealModal,
   preloadAddContactToAppealModal,
 } from '../../Modals/AddContactToAppealModal/DynamicAddContactToAppealModal';
+import {
+  DynamicDeleteAppealModal,
+  preloadDeleteAppealModal,
+} from '../../Modals/DeleteAppealModal/DynamicDeleteAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
 import { useContactsCountQuery } from './contactsCount.generated';
@@ -81,6 +85,8 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
+  const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
+
   const { data: committedCount, loading: committedLoading } =
     useContactsCountQuery({
       variables: {
@@ -237,11 +243,14 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 />
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Permanently Delete Appeal')}
                   disabled={false}
                   buttonError={'error'}
                   buttonVariant={'outlined'}
+                  onClick={() => {
+                    setDeleteAppealModalOpen(true);
+                  }}
+                  onMouseEnter={preloadDeleteAppealModal}
                 />
               </List>
             </FilterList>
@@ -274,6 +283,11 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       {addContactsModalOpen && (
         <DynamicAddContactToAppealModal
           handleClose={() => setAddContactsModalOpen(false)}
+        />
+      )}
+      {deleteAppealModalOpen && (
+        <DynamicDeleteAppealModal
+          handleClose={() => setDeleteAppealModalOpen(false)}
         />
       )}
     </Box>
