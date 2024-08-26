@@ -18,6 +18,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { DynamicAppealTour } from '../AppealTour/DynamicAppealTour';
 import { ContactRow } from '../ContactRow/ContactRow';
 
 const useStyles = makeStyles()(() => ({
@@ -49,6 +50,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const {
+    tour,
     contactsQueryResult,
     isFiltered,
     searchTerm,
@@ -108,6 +110,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
 
   return (
     <>
+      {tour && <DynamicAppealTour />}
       <AppealHeaderInfo
         appealInfo={appealInfo?.appeal}
         loading={appealInfoLoading}

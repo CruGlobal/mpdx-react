@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
@@ -21,6 +21,7 @@ import {
 import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
 import {
   AppealStatusEnum,
+  AppealTourEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
@@ -68,6 +69,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setActiveFilters,
     selectedIds,
     deselectAll,
+    tour,
     askedCountQueryResult,
     excludedCountQueryResult,
     committedCountQueryResult,
@@ -79,6 +81,19 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const [deleteAppealModalOpen, setDeleteAppealModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (tour === AppealTourEnum.Finish) {
+      setExportsModalOpen(true);
+    }
+  }, [tour]);
+
+  const handleExportModalClose = () => {
+    setExportsModalOpen(false);
+    if (tour === AppealTourEnum.Finish) {
+      deselectAll();
+    }
+  };
 
   const { data: askedCount, loading: askedLoading } = askedCountQueryResult;
   const { data: excludedCount, loading: excludedLoading } =
@@ -99,10 +114,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const appealListView = activeFilters.appealStatus;
   const noContactsSelected = !selectedIds.length;
-
-  const handleExportModalClose = () => {
-    setExportsModalOpen(false);
-  };
 
   return (
     <Box>
