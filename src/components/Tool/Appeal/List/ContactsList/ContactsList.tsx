@@ -11,7 +11,7 @@ import theme from 'src/theme';
 import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
-} from '../../AppealDetails/AppealHeaderInfo';
+} from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
 import {
   AppealStatusEnum,
@@ -58,6 +58,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   } = React.useContext(AppealsContext) as AppealsType;
 
   const { data, loading, fetchMore } = contactsQueryResult;
+
+  const appealStatus =
+    (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
 
   useEffect(() => {
     if (!activeFilters.appealStatus) {
@@ -140,6 +143,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           <ContactRow
             key={contact.id}
             contact={contact}
+            appealStatus={appealStatus}
             useTopMargin={index === 0}
           />
         )}
