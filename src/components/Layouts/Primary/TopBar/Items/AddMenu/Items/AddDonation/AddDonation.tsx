@@ -83,7 +83,7 @@ const donationSchema = yup.object({
 
 type Attributes = yup.InferType<typeof donationSchema>;
 
-const LogFormLabel = styled(FormLabel)(({ theme }) => ({
+export const LogFormLabel = styled(FormLabel)(({ theme }) => ({
   margin: theme.spacing(1, 0),
   fontWeight: 'bold',
   color: theme.palette.primary.dark,
@@ -92,7 +92,7 @@ const LogFormLabel = styled(FormLabel)(({ theme }) => ({
   },
 }));
 
-const FormTextField = styled(TextField)(({ theme }) => ({
+export const FormTextField = styled(TextField)(({ theme }) => ({
   '& .MuiInputBase-root.Mui-disabled': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },

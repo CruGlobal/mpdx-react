@@ -1,0 +1,7 @@
+mutation DeleteAccountListPledge(
+  $input: AccountListPledgeDeleteMutationInput!
+) {
+  deleteAccountListPledge(input: $input) {
+    id
+  }
+}
