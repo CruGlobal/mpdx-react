@@ -8,7 +8,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
-import { AppealQuery } from 'src/components/Tool/Appeal/AppealDetails/AppealsMainPanel/appealInfo.generated';
+import { AppealQuery } from 'src/components/Tool/Appeal/AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import { ContactsQuery } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
 import {
   PledgeFrequencyEnum,

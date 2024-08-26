@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import {
   Box,
@@ -26,6 +26,10 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import {
+  DynamicAddContactToAppealModal,
+  preloadAddContactToAppealModal,
+} from '../../Modals/AddContactToAppealModal/DynamicAddContactToAppealModal';
 import { AppealsListFilterPanelButton } from './AppealsListFilterPanelButton';
 import { AppealsListFilterPanelItem } from './AppealsListFilterPanelItem';
 import { useContactsCountQuery } from './contactsCount.generated';
@@ -68,28 +72,15 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const { t } = useTranslation();
   const {
     accountListId,
-    appealId,
     activeFilters,
     setActiveFilters,
-    searchTerm,
     selectedIds,
     deselectAll,
   } = React.useContext(AppealsContext) as AppealsType;
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
-
-  const { data: excludedCount, loading: excludedLoading } =
-    useContactsCountQuery({
-      variables: {
-        accountListId: accountListId || '',
-        contactsFilter: {
-          ...defaultFilters,
-          appealStatus: AppealStatusEnum.Excluded,
-        },
-      },
-    });
-
+  const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const { data: committedCount, loading: committedLoading } =
     useContactsCountQuery({
       variables: {
@@ -237,9 +228,12 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 />
                 <AppealsListFilterPanelButton
                   title={t('Add Contact to Appeal')}
-                  onClick={handleFilterButtonClick}
                   buttonText={t('Select Contact')}
                   disabled={false}
+                  onClick={() => {
+                    setAddContactsModalOpen(true);
+                  }}
+                  onMouseEnter={preloadAddContactToAppealModal}
                 />
                 <AppealsListFilterPanelButton
                   title={t('Delete Appeal')}
@@ -275,6 +269,11 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setExportEmailsModalOpen(false)}
+        />
+      )}
+      {addContactsModalOpen && (
+        <DynamicAddContactToAppealModal
+          handleClose={() => setAddContactsModalOpen(false)}
         />
       )}
     </Box>

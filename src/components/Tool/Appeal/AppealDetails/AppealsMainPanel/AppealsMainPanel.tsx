@@ -6,8 +6,8 @@ import {
 } from '../../AppealsContext/AppealsContext';
 import { DynamicContactFlow } from '../../Flow/DynamicContactFlow';
 import { DynamicContactsList } from '../../List/ContactsList/DynamicContactsList';
+import { useAppealQuery } from './AppealInfo.generated';
 import { AppealsMainPanelHeader } from './AppealsMainPanelHeader';
-import { useAppealQuery } from './appealInfo.generated';
 
 export const AppealsMainPanel: React.FC = () => {
   const {
