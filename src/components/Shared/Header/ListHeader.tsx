@@ -106,6 +106,7 @@ interface ListHeaderProps {
   selectedIds: string[];
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
+  isExcludedAppealPage?: boolean;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -127,6 +128,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   selectedIds,
   massDeselectAll,
   showShowingCount = false,
+  isExcludedAppealPage = false,
 }) => {
   const { t } = useTranslation();
 
@@ -186,6 +188,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             contactsView={contactsView}
             selectedIds={selectedIds}
             page={page}
+            isExcludedAppealPage={isExcludedAppealPage}
           />
         )}
         {page === PageEnum.Report && (

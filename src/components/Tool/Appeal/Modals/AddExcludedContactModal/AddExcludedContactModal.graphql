@@ -1,0 +1,8 @@
+mutation AssignContactsToAppeal($input: AssignContactsToAppealMutationInput!) {
+  assignContactsToAppeal(input: $input) {
+    appeal {
+      id
+      name
+    }
+  }
+}

@@ -39,6 +39,10 @@ import {
   preloadMassActionsRemoveTagsModal,
 } from 'src/components/Contacts/MassActions/RemoveTags/DynamicMassActionsRemoveTagsModal';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import {
+  DynamicAddExcludedContactModal,
+  preloadAddExcludedContactModal,
+} from 'src/components/Tool/Appeal/Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
@@ -56,6 +60,7 @@ interface ContactsMassActionsDropdownProps {
   buttonGroup?: ReactElement;
   selectedIds: string[];
   page: PageEnum;
+  isExcludedAppealPage?: boolean;
 }
 
 export const ContactsMassActionsDropdown: React.FC<
@@ -67,6 +72,7 @@ export const ContactsMassActionsDropdown: React.FC<
   buttonGroup,
   selectedIds,
   page,
+  isExcludedAppealPage = false,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -94,6 +100,8 @@ export const ContactsMassActionsDropdown: React.FC<
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
+  const [addExcludedToAppealModalOpen, setAddExcludedToAppealModalOpen] =
+    useState(false);
 
   const [updateContacts] = useMassActionsUpdateContactsMutation();
 
@@ -238,30 +246,43 @@ export const ContactsMassActionsDropdown: React.FC<
                   <ListItemText>{t('Hide Contacts')}</ListItemText>
                 </MenuItem>
 
+                {isExcludedAppealPage && (
+                  <MenuItem
+                    onClick={() => {
+                      setAddExcludedToAppealModalOpen(true);
+                      handleClose();
+                    }}
+                    onMouseEnter={preloadAddExcludedContactModal}
+                  >
+                    <ListItemText>
+                      {t('Add Excluded Contacts To Appeal')}
+                    </ListItemText>
+                  </MenuItem>
+                )}
 
                 {page !== PageEnum.Appeal && (
                   <>
                     {!isExcludedAppealPage && (
-                <MenuItem
-                  onClick={() => {
-                    setAddToAppealModalOpen(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadMassActionsAddToAppealModal}
-                >
-                  <ListItemText>{t('Add to Appeal')}</ListItemText>
-                </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setAddToAppealModalOpen(true);
+                          handleClose();
+                        }}
+                        onMouseEnter={preloadMassActionsAddToAppealModal}
+                      >
+                        <ListItemText>{t('Add to Appeal')}</ListItemText>
+                      </MenuItem>
                     )}
-                <MenuItem
-                  divider
-                  onClick={() => {
-                    setCreateAppealModalOpen(true);
-                    handleClose();
-                  }}
-                  onMouseEnter={preloadMassActionsCreateAppealModal}
-                >
-                  <ListItemText>{t('Add to New Appeal')}</ListItemText>
-                </MenuItem>
+                    <MenuItem
+                      divider
+                      onClick={() => {
+                        setCreateAppealModalOpen(true);
+                        handleClose();
+                      }}
+                      onMouseEnter={preloadMassActionsCreateAppealModal}
+                    >
+                      <ListItemText>{t('Add to New Appeal')}</ListItemText>
+                    </MenuItem>
                   </>
                 )}
 
@@ -352,6 +373,12 @@ export const ContactsMassActionsDropdown: React.FC<
           ids={selectedIds}
           accountListId={accountListId ?? ''}
           handleClose={() => setMergeModalOpen(false)}
+        />
+      )}
+      {addExcludedToAppealModalOpen && (
+        <DynamicAddExcludedContactModal
+          contactIds={selectedIds}
+          handleClose={() => setAddExcludedToAppealModalOpen(false)}
         />
       )}
     </>
