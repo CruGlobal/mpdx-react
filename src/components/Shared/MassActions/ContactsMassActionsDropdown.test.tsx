@@ -13,7 +13,7 @@ import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettin
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
-import { TableViewModeEnum } from '../Header/ListHeader';
+import { PageEnum, TableViewModeEnum } from '../Header/ListHeader';
 import { ContactsMassActionsDropdown } from './ContactsMassActionsDropdown';
 
 const selectedIds: string[] = ['abc'];
@@ -277,6 +277,7 @@ describe('ContactsMassActionsDropdown', () => {
                     contactDetailsOpen={false}
                     contactsView={TableViewModeEnum.List}
                     selectedIds={selectedIdsMerge}
+                    page={PageEnum.Contact}
                   />
                 </ContactsProvider>
               </SnackbarProvider>

@@ -42,7 +42,7 @@ import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
-import { TableViewModeEnum } from '../Header/ListHeader';
+import { PageEnum, TableViewModeEnum } from '../Header/ListHeader';
 import {
   DynamicHideContactsModal,
   preloadHideContactsModal,
@@ -55,6 +55,7 @@ interface ContactsMassActionsDropdownProps {
   contactsView?: TableViewModeEnum;
   buttonGroup?: ReactElement;
   selectedIds: string[];
+  page: PageEnum;
 }
 
 export const ContactsMassActionsDropdown: React.FC<
@@ -65,6 +66,7 @@ export const ContactsMassActionsDropdown: React.FC<
   contactsView,
   buttonGroup,
   selectedIds,
+  page,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -236,6 +238,10 @@ export const ContactsMassActionsDropdown: React.FC<
                   <ListItemText>{t('Hide Contacts')}</ListItemText>
                 </MenuItem>
 
+
+                {page !== PageEnum.Appeal && (
+                  <>
+                    {!isExcludedAppealPage && (
                 <MenuItem
                   onClick={() => {
                     setAddToAppealModalOpen(true);
@@ -245,6 +251,7 @@ export const ContactsMassActionsDropdown: React.FC<
                 >
                   <ListItemText>{t('Add to Appeal')}</ListItemText>
                 </MenuItem>
+                    )}
                 <MenuItem
                   divider
                   onClick={() => {
@@ -255,6 +262,8 @@ export const ContactsMassActionsDropdown: React.FC<
                 >
                   <ListItemText>{t('Add to New Appeal')}</ListItemText>
                 </MenuItem>
+                  </>
+                )}
 
                 <MenuItem
                   onClick={() => {
