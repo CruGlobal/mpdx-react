@@ -1,12 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Grid,
   Hidden,
+  IconButton,
   ListItemIcon,
   ListItemText,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import {
@@ -22,19 +25,23 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import {
+  DynamicAddExcludedContactModal,
+  preloadAddExcludedContactModal,
+} from '../../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
 
-type ContactRow = Pick<
-  Contact,
-  | 'id'
-  | 'name'
-  | 'pledgeAmount'
-  | 'pledgeFrequency'
-  | 'pledgeCurrency'
-  | 'pledgeReceived'
->;
+const ListButton = styled(ListItemButton)(() => ({
+  '&:hover .contactRowActions': {
+    opacity: 1,
+  },
+}));
+const ContactRowActions = styled(Box)(() => ({
+  opacity: 0,
+  transition: 'opacity 0.3s',
+}));
 interface Props {
   contact: ContactRow;
   useTopMargin?: boolean;
@@ -49,6 +56,8 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
   const locale = useLocale();
+  const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
+    useState(false);
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -62,22 +71,16 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     pledgeFrequency,
   } = contact;
 
-  const pledge = useMemo(
-    () =>
-      pledgeAmount && pledgeCurrency
-        ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
-        : pledgeAmount || currencyFormat(0, pledgeCurrency, locale),
-    [pledgeAmount, pledgeAmount, pledgeCurrency, locale],
-  );
-  const frequency = useMemo(
-    () =>
-      (pledgeFrequency && getLocalizedPledgeFrequency(t, pledgeFrequency)) ||
-      '',
-    [pledgeFrequency],
-  );
+  const handleAddExcludedContactToAppeal = () => {
+    setAddExcludedContactModalOpen(true);
+  };
+
+
+  const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
 
   return (
-    <ListItemButton
+    <>
+      <ListButton
       focusRipple
       onClick={handleContactClick}
       onMouseEnter={preloadContactsRightPanel}
@@ -99,7 +102,11 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </ListItemIcon>
       </Hidden>
       <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+          <Grid
+            item
+            xs={isExcludedContact ? 5 : 6}
+            style={{ paddingRight: 16 }}
+          >
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -110,7 +117,28 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             }
           />
         </Grid>
-        <Grid item xs={2} md={6}>
+          {isExcludedContact && (
+            <Grid item xs={3} display={'flex'}>
+              <Box>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
+                >
+                  <Typography component="span">
+                    {/* TODO */}
+                    Reason
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          )}
+          <Grid
+            item
+            xs={isExcludedContact ? 4 : 6}
+            display={'flex'}
+            style={{ justifyContent: 'space-between' }}
+          >
           <Box
             display="flex"
             alignItems="center"
@@ -121,12 +149,43 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
                 {`${pledge} ${frequency}`}
               </Typography>
             </Box>
-          </Box>
+
+            <ContactRowActions
+              display="flex"
+              alignItems="center"
+              style={{
+                paddingRight: theme.spacing(2),
+              }}
+              className="contactRowActions"
+            >
+              {appealStatus === AppealStatusEnum.Excluded && (
+                <IconButton
+                  size={'small'}
+                  component="div"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleAddExcludedContactToAppeal();
+                  }}
+                  onMouseOver={preloadAddExcludedContactModal}
+                >
+                  <AddIcon />
+                </IconButton>
+              )}
+            </ContactRowActions>
         </Grid>
       </Grid>
       <Hidden xsDown>
         <Box></Box>
       </Hidden>
-    </ListItemButton>
+      </ListButton>
+
+      {addExcludedContactModalOpen && (
+        <DynamicAddExcludedContactModal
+          contactIds={[contactId]}
+          handleClose={() => setAddExcludedContactModalOpen(false)}
+        />
+      )}
+
+    </>
   );
 };
