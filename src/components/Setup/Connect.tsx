@@ -95,19 +95,16 @@ export const Connect: React.FC = () => {
     [organizationAccounts],
   );
 
-  if (!organizationAccounts) {
-    return <CircularProgress />;
-  }
-
   return (
     <SetupPage
       title={
-        organizationAccounts.length
+        organizationAccounts?.length
           ? t("It's time for awesome!")
           : t("It's time to connect!")
       }
     >
-      {!organizationAccounts.length && (
+      {!organizationAccounts && <CircularProgress />}
+      {organizationAccounts?.length === 0 && (
         <>
           <p>
             {t(
@@ -124,7 +121,7 @@ export const Connect: React.FC = () => {
         </>
       )}
 
-      {(adding || !organizationAccounts.length) && (
+      {(adding || organizationAccounts?.length === 0) && (
         <ConnectOrganization
           onDone={() => setAdding(false)}
           ButtonContainer={ButtonContainer}
@@ -133,7 +130,7 @@ export const Connect: React.FC = () => {
         />
       )}
 
-      {!!organizationAccounts.length && !adding && (
+      {organizationAccounts && !!organizationAccounts.length && !adding && (
         <>
           <Typography variant="h4">{t("Sweet! You're connected.")}</Typography>
           {organizationAccounts.map(({ id, organization }) => (

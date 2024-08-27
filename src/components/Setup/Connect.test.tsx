@@ -64,17 +64,17 @@ describe('Connect', () => {
 
   describe('with no connected organizations', () => {
     it('renders header, organization picker, and no cancel button', async () => {
-      const { findByRole, getByRole, getByText, queryByRole } = render(
+      const { findByText, getByRole, queryByRole } = render(
         <TestComponent hasOrganizations={false} />,
       );
 
       expect(
-        await findByRole('heading', { name: "It's time to connect!" }),
-      ).toBeInTheDocument();
-      expect(
-        getByText(
+        await findByText(
           'First, connect your organization to your {{appName}} account.',
         ),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: "It's time to connect!" }),
       ).toBeInTheDocument();
       expect(
         getByRole('combobox', { name: 'Organization' }),
