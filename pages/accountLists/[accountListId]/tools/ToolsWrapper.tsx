@@ -1,8 +1,10 @@
 import Head from 'next/head';
-import React, { JSXElementConstructor, ReactElement } from 'react';
+import React, { JSXElementConstructor, ReactElement, useState } from 'react';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import NavToolDrawer from 'src/components/Tool/NavToolList/NavToolDrawer';
+import NavToolDrawerHandle from 'src/components/Tool/NavToolList/NavToolDrawerHandle';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from '../contacts/ContactsWrapper';
 import { useToolsHelper } from './useToolsHelper';
@@ -24,6 +26,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   const { appName } = useGetAppSettings();
   const { accountListId, selectedContactId, handleSelectContact } =
     useToolsHelper();
+  const [isToolDrawerOpen, setIsToolDrawerOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -33,10 +36,24 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
         </title>
         {styles}
       </Head>
+
       {accountListId ? (
         <SidePanelsLayout
-          leftOpen={false}
-          leftWidth="290px"
+          // Left panel always open so we can show the tool drawer and keep animation from being cutoff
+          leftOpen={true}
+          leftPanel={
+            <>
+              <NavToolDrawer
+                open={isToolDrawerOpen}
+                toggle={(isOpen) => setIsToolDrawerOpen(isOpen)}
+              />
+              <NavToolDrawerHandle
+                open={isToolDrawerOpen}
+                toggle={(isOpen) => setIsToolDrawerOpen(isOpen)}
+              />
+            </>
+          }
+          leftWidth={isToolDrawerOpen ? '290px' : '0px'}
           mainContent={children}
           rightPanel={
             selectedContactId ? (

@@ -16,7 +16,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 export interface Props {
   open: boolean;
-  toggle: () => void;
+  toggle: (isOpen: boolean) => void;
 }
 
 const NavToolDrawerHandle = ({ open, toggle }: Props): ReactElement => {
@@ -31,12 +31,12 @@ const NavToolDrawerHandle = ({ open, toggle }: Props): ReactElement => {
         position: 'fixed',
         zIndex: 10,
         width: '30px',
-        transition: 'left 0.25s',
+        transition: 'left 0.2s',
         left: open ? 290 : 0,
         backgroundColor: theme.palette.mpdxBlue.main,
       }}
     >
-      <IconButton onClick={toggle} className={classes.navToggle}>
+      <IconButton onClick={() => toggle(!open)} className={classes.navToggle}>
         <DoubleArrowIcon
           style={{
             transform: open ? 'rotate(180deg)' : '',
