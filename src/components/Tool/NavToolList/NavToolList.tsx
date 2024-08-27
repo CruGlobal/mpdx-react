@@ -22,19 +22,15 @@ const useStyles = makeStyles()((theme: Theme) => ({
   root: {
     overflow: 'hidden',
   },
-  listContainer: {
-    zIndex: 10,
-  },
   li: {
-    borderTop: '1px solid',
-    borderBottom: '1px solid',
-    borderColor: theme.palette.cruGrayDark.main,
+    borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderColor: theme.palette.cruGrayLight.main,
   },
 }));
 
 const FilterHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  borderBottom: '1px solid',
   borderBottomColor: theme.palette.grey[200],
 }));
 
@@ -74,14 +70,14 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
                 </IconButton>
               </Box>
             </FilterHeader>
-            <FilterList dense>
+            <FilterList dense style={{ paddingTop: 0 }}>
               {ToolsList.map((group) => (
                 <Fragment key={group.groupName}>
                   <ListItem className={classes.li}>
                     <ListItemIcon>
                       <Icon path={group.groupIcon} size={1} />
                     </ListItemIcon>
-                    <ListItemText primary={group.groupName} />
+                    <ListItemText primary={t(group.groupName)} />
                   </ListItem>
                   {group.items.map((tool) => (
                     <Item

@@ -7,7 +7,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import NavToolDrawer from 'src/components/Tool/NavToolList/NavToolDrawer';
+import NavToolList from 'src/components/Tool/NavToolList/NavToolList';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from '../contacts/ContactsWrapper';
 import { useToolsHelper } from './useToolsHelper';
@@ -32,10 +32,6 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
     useToolsHelper();
   const [isToolDrawerOpen, setIsToolDrawerOpen] = useState<boolean>(false);
 
-  const handleDrawerToggle = () => {
-    setIsToolDrawerOpen(!isToolDrawerOpen);
-  };
-
   return (
     <>
       <Head>
@@ -48,11 +44,12 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
       {accountListId ? (
         <SidePanelsLayout
           leftOpen={isToolDrawerOpen}
+          isScrollBox={false}
           leftPanel={
-            <NavToolDrawer
+            <NavToolList
               selectedId={selectedMenuId}
               isOpen={isToolDrawerOpen}
-              toggle={(isOpen) => setIsToolDrawerOpen(isOpen)}
+              toggle={setIsToolDrawerOpen}
             />
           }
           leftWidth="290px"
@@ -60,7 +57,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
             <>
               <MultiPageHeader
                 isNavListOpen={true}
-                onNavListToggle={handleDrawerToggle}
+                onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
                 title={pageTitle}
                 headerType={HeaderTypeEnum.Report}
               />
