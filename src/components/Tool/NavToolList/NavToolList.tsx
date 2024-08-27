@@ -35,6 +35,7 @@ const FilterHeader = styled(Box)(({ theme }) => ({
 }));
 
 const FilterList = styled(List)(({ theme }) => ({
+  paddingTop: 0,
   '& .MuiListItemIcon-root': {
     minWidth: '37px',
   },
@@ -54,7 +55,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
   const { t } = useTranslation();
 
   return (
-    <Box data-testid="MultiPageMenu">
+    <Box data-testid="ToolNavList">
       <div className={classes.root}>
         <Slide in={isOpen} direction="right" mountOnEnter unmountOnExit>
           <Box>
@@ -65,15 +66,21 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
                 alignItems="center"
               >
                 <Typography variant="h6">{t('Tools')}</Typography>
-                <IconButton onClick={() => toggle(!isOpen)}>
+                <IconButton
+                  data-testid="ToolNavClose"
+                  onClick={() => toggle(!isOpen)}
+                >
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
             </FilterHeader>
-            <FilterList dense style={{ paddingTop: 0 }}>
+            <FilterList dense>
               {ToolsList.map((group) => (
                 <Fragment key={group.groupName}>
-                  <ListItem className={classes.li}>
+                  <ListItem
+                    data-testid="ToolNavListItem"
+                    className={classes.li}
+                  >
                     <ListItemIcon>
                       <Icon path={group.groupIcon} size={1} />
                     </ListItemIcon>

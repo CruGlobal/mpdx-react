@@ -56,10 +56,10 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
           mainContent={
             <>
               <MultiPageHeader
-                isNavListOpen={true}
+                isNavListOpen={isToolDrawerOpen}
                 onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
                 title={pageTitle}
-                headerType={HeaderTypeEnum.Report}
+                headerType={HeaderTypeEnum.Tools}
               />
               {children}
             </>
