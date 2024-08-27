@@ -244,8 +244,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   formRef,
 }) => {
   const { classes } = useStyles();
-  const { push } = useRouter();
   const { t } = useTranslation();
+  const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { data: contactFilterTags, loading: loadingTags } = useContactTagsQuery(
     {
@@ -277,7 +277,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
     }
   }, [contactFilterGroups]);
 
-  const onSubmit = async (props: Attributes, resetForm: () => void) => {
+  const onSubmit = async (props: Attributes) => {
     const attributes: AppealCreateInput = {
       name: props.name,
       amount: calculateGoal(
@@ -314,7 +314,6 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
     enqueueSnackbar(t('Appeal successfully added!'), {
       variant: 'success',
     });
-    resetForm();
   };
 
   const contactTagsList = contactFilterTags?.accountList.contactTagList ?? [];
@@ -346,8 +345,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         tags: [],
         exclusions: appealExcludes ?? [],
       }}
-      onSubmit={async (values, { resetForm }) => {
-        await onSubmit(values, resetForm);
+      onSubmit={async (values) => {
+        await onSubmit(values);
       }}
       validationSchema={appealFormSchema}
       innerRef={formRef as FormikRefType}
