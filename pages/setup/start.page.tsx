@@ -86,7 +86,7 @@ const StartPage = (): ReactElement => {
           {t(' and the ')}
           <TermsOfUseLink />
         </p>
-        <LargeButton variant="contained" onClick={handleSave}>
+        <LargeButton variant="contained" fullWidth onClick={handleSave}>
           {t("Let's Begin")}
         </LargeButton>
       </SetupPage>

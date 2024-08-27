@@ -20,7 +20,7 @@ const PageBackground = styled('div')(({ theme }) => ({
 
 const PageCard = styled(Card)(({ theme }) => ({
   marginInline: 'auto',
-  maxWidth: theme.spacing(100),
+  maxWidth: theme.spacing(75),
 }));
 
 const PageContent = styled(CardContent)(({ theme }) => ({
@@ -34,6 +34,7 @@ const PageContent = styled(CardContent)(({ theme }) => ({
 const StyledIcon = styled(CampaignOutlined)(({ theme }) => ({
   width: 'auto',
   height: theme.spacing(8),
+  color: theme.palette.primary.main,
 }));
 
 const HeaderWrapper = styled('div')(({ theme }) => ({
@@ -42,7 +43,10 @@ const HeaderWrapper = styled('div')(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const HeaderTypography = styled(Typography)({ fontWeight: 'bold' });
+const HeaderTypography = styled(Typography)({
+  fontSize: '2.75rem',
+  fontWeight: 'bold',
+});
 
 interface SetupPageProps {
   title: string;
