@@ -13,7 +13,7 @@ const useStyles = makeStyles()(() => ({
     },
   },
   liSelected: {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: 'green',
   },
 }));
 

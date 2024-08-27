@@ -3,8 +3,11 @@ import React, { JSXElementConstructor, ReactElement, useState } from 'react';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import {
+  HeaderTypeEnum,
+  MultiPageHeader,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import NavToolDrawer from 'src/components/Tool/NavToolList/NavToolDrawer';
-import NavToolDrawerHandle from 'src/components/Tool/NavToolList/NavToolDrawerHandle';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from '../contacts/ContactsWrapper';
 import { useToolsHelper } from './useToolsHelper';
@@ -20,6 +23,7 @@ interface ToolsWrapperProps {
 export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   pageTitle,
   pageUrl,
+  selectedMenuId,
   children,
   styles,
 }) => {
@@ -27,6 +31,10 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   const { accountListId, selectedContactId, handleSelectContact } =
     useToolsHelper();
   const [isToolDrawerOpen, setIsToolDrawerOpen] = useState<boolean>(false);
+
+  const handleDrawerToggle = () => {
+    setIsToolDrawerOpen(!isToolDrawerOpen);
+  };
 
   return (
     <>
@@ -39,22 +47,26 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
 
       {accountListId ? (
         <SidePanelsLayout
-          // Left panel always open so we can show the tool drawer and keep animation from being cutoff
-          leftOpen={true}
+          leftOpen={isToolDrawerOpen}
           leftPanel={
+            <NavToolDrawer
+              selectedId={selectedMenuId}
+              isOpen={isToolDrawerOpen}
+              toggle={(isOpen) => setIsToolDrawerOpen(isOpen)}
+            />
+          }
+          leftWidth="290px"
+          mainContent={
             <>
-              <NavToolDrawer
-                open={isToolDrawerOpen}
-                toggle={(isOpen) => setIsToolDrawerOpen(isOpen)}
+              <MultiPageHeader
+                isNavListOpen={true}
+                onNavListToggle={handleDrawerToggle}
+                title={pageTitle}
+                headerType={HeaderTypeEnum.Report}
               />
-              <NavToolDrawerHandle
-                open={isToolDrawerOpen}
-                toggle={(isOpen) => setIsToolDrawerOpen(isOpen)}
-              />
+              {children}
             </>
           }
-          leftWidth={isToolDrawerOpen ? '290px' : '0px'}
-          mainContent={children}
           rightPanel={
             selectedContactId ? (
               <ContactsWrapper>

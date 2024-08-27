@@ -2,14 +2,18 @@ import React, { ReactElement } from 'react';
 import NavToolList from './NavToolList';
 
 export interface Props {
-  open: boolean;
+  isOpen: boolean;
   toggle: (isOpen: boolean) => void;
   selectedId?: string;
 }
 
-const NavToolDrawer = ({ open, toggle, selectedId }: Props): ReactElement => {
+const NavToolDrawer = ({ isOpen, toggle, selectedId }: Props): ReactElement => {
   return (
-    <NavToolList selectedId={selectedId || ''} open={open} toggle={toggle} />
+    <NavToolList
+      selectedId={selectedId || ''}
+      isOpen={isOpen}
+      toggle={toggle}
+    />
   );
 };
 

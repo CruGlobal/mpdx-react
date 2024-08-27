@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 import { Box, IconButton, Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import theme from 'src/theme';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   navToggle: {
@@ -11,36 +10,53 @@ const useStyles = makeStyles()((theme: Theme) => ({
     '&:hover': {
       backgroundColor: theme.palette.mpdxBlue.main,
     },
+    '@media (max-width: 600px)': {
+      width: '30px',
+      height: '30px',
+    },
+  },
+  navDrawerHandleContainer: {
+    height: '100vh',
+    position: 'fixed',
+    zIndex: 10,
+    width: '20px',
+    transition: 'left 0.2s',
+    backgroundColor: theme.palette.mpdxBlue.main,
+
+    '@media (min-width: 600px)': {
+      width: '30px',
+    },
+  },
+  navArrowIcon: {
+    transition: 'transform 0.5s',
+    '@media (max-width: 600px)': {
+      fontSize: '1.25rem',
+    },
   },
 }));
 
 export interface Props {
-  open: boolean;
+  isOpen: boolean;
   toggle: (isOpen: boolean) => void;
 }
 
-const NavToolDrawerHandle = ({ open, toggle }: Props): ReactElement => {
+const NavToolDrawerHandle = ({ isOpen, toggle }: Props): ReactElement => {
   const { classes } = useStyles();
 
   return (
     <Box
       display="flex"
       alignItems="center"
+      className={classes.navDrawerHandleContainer}
       style={{
-        height: '100vh',
-        position: 'fixed',
-        zIndex: 10,
-        width: '30px',
-        transition: 'left 0.2s',
-        left: open ? 290 : 0,
-        backgroundColor: theme.palette.mpdxBlue.main,
+        left: isOpen ? 290 : 0,
       }}
     >
-      <IconButton onClick={() => toggle(!open)} className={classes.navToggle}>
+      <IconButton onClick={() => toggle(!isOpen)} className={classes.navToggle}>
         <DoubleArrowIcon
+          className={classes.navArrowIcon}
           style={{
-            transform: open ? 'rotate(180deg)' : '',
-            transition: 'transform 0.5s',
+            transform: isOpen ? 'rotate(180deg)' : '',
           }}
         />
       </IconButton>
