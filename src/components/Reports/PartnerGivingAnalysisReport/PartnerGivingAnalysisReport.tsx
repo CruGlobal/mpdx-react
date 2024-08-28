@@ -7,7 +7,7 @@ import React, {
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { ListHeader } from 'src/components/Shared/Header/ListHeader';
+import { ListHeader, PageEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -174,7 +174,7 @@ export const PartnerGivingAnalysisReport = forwardRef<
           headerType={HeaderTypeEnum.Report}
         />
         <ListHeader
-          page="report"
+          page={PageEnum.Report}
           activeFilters={isActiveFilters}
           filterPanelOpen={panelOpen === Panel.Filters}
           toggleFilterPanel={onFilterListToggle}

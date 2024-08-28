@@ -15,6 +15,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   ListHeader,
+  PageEnum,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
 import {
@@ -64,7 +65,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
     <ListHeader
-      page="contact"
+      page={PageEnum.Contact}
       activeFilters={Object.keys(sanitizedFilters).length > 0}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
