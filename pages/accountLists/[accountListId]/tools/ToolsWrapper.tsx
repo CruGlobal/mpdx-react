@@ -13,9 +13,9 @@ import { ContactsWrapper } from '../contacts/ContactsWrapper';
 import { useToolsHelper } from './useToolsHelper';
 
 interface ToolsWrapperProps {
-  pageTitle: string;
+  pageTitle?: string;
   pageUrl: string;
-  selectedMenuId: string; // for later use
+  selectedMenuId?: string; // for later use
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   styles?: React.ReactNode;
 }
@@ -47,7 +47,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
           isScrollBox={false}
           leftPanel={
             <NavToolList
-              selectedId={selectedMenuId}
+              selectedId={selectedMenuId || ''}
               isOpen={isToolDrawerOpen}
               toggle={setIsToolDrawerOpen}
             />
@@ -58,7 +58,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
               <MultiPageHeader
                 isNavListOpen={isToolDrawerOpen}
                 onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
-                title={pageTitle}
+                title={pageTitle || ''}
                 headerType={HeaderTypeEnum.Tools}
               />
               {children}
