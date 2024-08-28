@@ -1,9 +1,15 @@
 import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
-import { Box, CardActionArea, CardContent, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+} from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import AnimatedCard from 'src/components/AnimatedCard';
+// import AnimatedCard from 'src/components/AnimatedCard';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';
 
@@ -12,13 +18,13 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    border: '1px solid',
-    height: '200px',
+    // border: '1px solid',
+    height: '250px',
     borderColor: theme.palette.cruGrayMedium.main,
-    backgroundColor: theme.palette.cruGrayLight.main,
+    // backgroundColor: theme.palette.cruGrayLight.main,
     '&:hover': {
-      border: '2px solid',
-      borderColor: theme.palette.mpdxBlue.main,
+      outline: '2px solid',
+      outlineColor: theme.palette.mpdxBlue.main,
       cursor: 'pointer',
     },
   },
@@ -28,7 +34,7 @@ const useStyles = makeStyles()(() => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    height: '200px',
+    height: '250px',
   },
   iconBG: {
     padding: theme.spacing(2),
@@ -51,7 +57,7 @@ const Tool = ({ tool, desc, icon, url }: Props): ReactElement => {
   const accountListId = useAccountListId();
 
   return (
-    <AnimatedCard className={classes.cardContainer}>
+    <Card className={classes.cardContainer} elevation={3}>
       <NextLink
         href={`/accountLists/${accountListId}/tools/${url}`}
         scroll={false}
@@ -71,7 +77,7 @@ const Tool = ({ tool, desc, icon, url }: Props): ReactElement => {
           </CardContent>
         </CardActionArea>
       </NextLink>
-    </AnimatedCard>
+    </Card>
   );
 };
 
