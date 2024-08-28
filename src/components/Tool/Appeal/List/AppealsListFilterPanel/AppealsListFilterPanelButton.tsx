@@ -30,6 +30,7 @@ export interface AppealsListFilterPanelButtonProps {
   buttonError?: ButtonTypeMap['props']['color'];
   buttonVariant?: ButtonTypeMap['props']['variant'];
   disabled?: boolean;
+  onMouseEnter?: React.MouseEventHandler<HTMLLIElement> | undefined;
 }
 
 export const AppealsListFilterPanelButton = ({
@@ -38,12 +39,13 @@ export const AppealsListFilterPanelButton = ({
   buttonText,
   buttonError = 'primary',
   buttonVariant = 'contained',
-  disabled,
+  disabled = false,
+  onMouseEnter,
 }: AppealsListFilterPanelButtonProps): ReactElement => {
   const { classes } = useStyles();
 
   return (
-    <ListItem className={classes.li}>
+    <ListItem className={classes.li} onMouseEnter={onMouseEnter}>
       <Box display="flex" flexDirection="column" className={classes.itemBox}>
         <ListItemText
           primaryTypographyProps={{
