@@ -4,10 +4,8 @@ import ToolHome from 'src/components/Tool/Home/Home';
 import { ToolsWrapper } from './tools/ToolsWrapper';
 
 const ToolsPage = (): ReactElement => {
-  const pageUrl = 'tools';
-
   return (
-    <ToolsWrapper pageUrl={pageUrl}>
+    <ToolsWrapper pageUrl={'tools'}>
       <ToolHome />
     </ToolsWrapper>
   );
