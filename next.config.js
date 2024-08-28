@@ -75,6 +75,7 @@ const config = {
         process.env.DATADOG_APP_ID &&
         process.env.DATADOG_CLIENT_TOKEN,
     ).toString(),
+    HELPJUICE_ORIGIN: process.env.HELPJUICE_ORIGIN,
     ALERT_MESSAGE: process.env.ALERT_MESSAGE,
     PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL,
     TERMS_OF_USE_URL: process.env.TERMS_OF_USE_URL,

@@ -1,0 +1,18 @@
+#helpjuice-widget.bottomRight {
+  right: 130px !important;
+  bottom: 90px !important;
+}
+
+@media (max-width: 900px) {
+  #helpjuice-widget.bottomRight {
+    right: 100px !important;
+    bottom: 85px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #helpjuice-widget.bottomRight {
+    right: 90px !important;
+    bottom: 90px !important;
+  }
+}

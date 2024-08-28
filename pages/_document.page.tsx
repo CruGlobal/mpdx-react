@@ -22,6 +22,26 @@ class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap"
             rel="stylesheet"
           />
+          {process.env.HELPJUICE_ORIGIN && (
+            <link
+              rel="stylesheet"
+              href={`${process.env.HELPJUICE_ORIGIN}/swifty.css`}
+            />
+          )}
+          {process.env.HELPJUICE_ORIGIN && (
+            <Script id="helpjuice" strategy="afterInteractive">
+              {`window.helpjuice_account_url = '${process.env.HELPJUICE_ORIGIN}';
+window.helpjuice_contact_us_url = '${process.env.HELPJUICE_ORIGIN}/contact-us';
+window.helpjuiceSwiftyConfig = { widgetPosition: 'bottomRight' };
+window.helpjuiceSwiftyUrlMap = {};`}
+            </Script>
+          )}
+          {process.env.HELPJUICE_ORIGIN && (
+            <Script
+              src={`${process.env.HELPJUICE_ORIGIN}/swifty.js`}
+              strategy="afterInteractive"
+            />
+          )}
           {process.env.DATADOG_CONFIGURED === 'true' && (
             <Script id="datadog-rum" strategy="afterInteractive">
               {`!function(a,e,t,n,s){a=a[s]=a[s]||{q:[],onReady:function(e){a.q.push(e)}},(s=e.createElement(t)).async=1,s.src=n,(n=e.getElementsByTagName(t)[0]).parentNode.insertBefore(s,n)}(window,document,"script","https://www.datadoghq-browser-agent.com/datadog-rum-v5.js","DD_RUM"),DD_RUM.onReady(function(){DD_RUM.init({clientToken:"${process.env.DATADOG_CLIENT_TOKEN}",applicationId:"${process.env.DATADOG_APP_ID}",site:"datadoghq.com",service:"mpdx-web-react",sessionSampleRate:100,sessionReplaySampleRate:20,trackUserInteractions:!0,trackResources:!0,trackLongTasks:!0,defaultPrivacyLevel:"mask-user-input",env:"${process.env.DD_ENV}",allowedTracingUrls:["${process.env.API_URL}"]})});`}

@@ -35,6 +35,7 @@ import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import './helpjuice.css';
 import './print.css';
 
 export type PageWithLayout = NextPage & {

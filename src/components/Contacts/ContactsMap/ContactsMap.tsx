@@ -92,15 +92,14 @@ export const ContactsMap: React.FC = ({}) => {
   });
 
   useEffect(() => {
-    // Add styles to HelpScout Beacon to move left of Google zoom buttons.
-    const beacon = document.querySelector(
-      '#beacon-container .BeaconFabButtonFrame',
-    ) as HTMLElement;
-    if (!beacon) {
+    // Add styles to Helpjuice beacon to move left of Google zoom buttons.
+    const beacon = document.querySelector('#helpjuice-widget.bottomRight');
+    if (!(beacon instanceof HTMLElement)) {
       return;
     }
-    beacon.style.setProperty('right', '60px', 'important');
-    return () => beacon.style.setProperty('right', '20px');
+    const oldRight = beacon.style.getPropertyValue('right');
+    beacon.style.setProperty('right', '120px', 'important');
+    return () => beacon.style.setProperty('right', oldRight);
   }, []);
 
   useEffect(() => {

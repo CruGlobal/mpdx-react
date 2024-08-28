@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import ManageAccounts, { suggestedArticles } from './manageAccounts.page';
+import ManageAccounts from './manageAccounts.page';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
@@ -43,13 +43,6 @@ describe('ManageAccounts', () => {
       query: {},
       isReady: true,
     });
-  });
-
-  it('should fire suggestArticles on initial render', async () => {
-    render(<Components />);
-    await waitFor(() =>
-      expect(suggestArticles).toHaveBeenCalledWith(suggestedArticles),
-    );
   });
 
   it('should open `Manage Account Access` accordion', async () => {

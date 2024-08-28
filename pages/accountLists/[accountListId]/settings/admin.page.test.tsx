@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import Admin, { suggestedArticles } from './admin.page';
+import Admin from './admin.page';
 
 jest.mock('next-auth/react');
 jest.mock('next/router', () => ({
@@ -56,13 +56,6 @@ describe('Admin', () => {
       query: {},
       isReady: true,
     });
-  });
-
-  it('should fire suggestArticles on intital render', async () => {
-    render(<Components />);
-    await waitFor(() =>
-      expect(suggestArticles).toHaveBeenCalledWith(suggestedArticles),
-    );
   });
 
   it('should keep impersonate user accordion close', async () => {
