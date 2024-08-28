@@ -200,38 +200,118 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing status | Non-Financial', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+    const { getByLabelText, getByText, getByRole, getByTestId, queryByText } =
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <EditPartnershipInfoModal
+                  contact={contactMock}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
-    const frequencyInput = getByLabelText('Frequency');
+    const frequencyInput = getByRole('combobox', { name: 'Frequency' });
+
     expect(statusInput.textContent).toEqual('Partner - Financial');
 
     expect(amountInput).toHaveValue(50);
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
+
     userEvent.click(statusInput);
     userEvent.click(getByText('Ask In Future'));
 
-    // Values get reset and inputs becomes disabled when status is not PARTNER_FINANCIAL
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'No' }));
+
+    expect(amountInput).toHaveValue(50);
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
+    expect(getByText('Every 2 Months')).toBeInTheDocument();
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
     expect(amountInput).toHaveValue(0);
     expect(amountInput).toBeDisabled();
+    expect(queryByText('Every 2 Months')).not.toBeInTheDocument();
     expect(statusInput.textContent).toEqual('Ask In Future');
 
-    // these are flaky for some reason, disabling for now
-    // await waitFor(() => expect(frequencyInput.textContent).toBe(''));
-    // await waitFor(() => expect(frequencyInput).toBeDisabled());
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle when remove commitment warning shows', async () => {
+    const { getByLabelText, getByText, getByRole, getByTestId, queryByTestId } =
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <EditPartnershipInfoModal
+                  contact={contactMock}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+    const statusInput = getByLabelText('Status');
+    const amountInput = getByLabelText('Amount');
+    const frequencyInput = getByRole('combobox', { name: 'Frequency' });
+
+    // Clear amount and frequency
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    // Due to the amount being zero, we don't show the remove commitment message
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+    expect(queryByTestId('removeCommitmentMessage')).not.toBeInTheDocument();
+
+    // If frequency and not amount is set we show the remove commitment message
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+    userEvent.click(frequencyInput);
+    userEvent.click(getByText('Every 2 Months'));
+    expect(amountInput).toHaveValue(0);
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
+
+    // Clear amount and frequency
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    // If amount and not frequency is set we show the remove commitment message
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+    userEvent.type(amountInput, '50');
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask In Future'));
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>

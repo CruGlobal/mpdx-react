@@ -1,8 +1,10 @@
 import React, { ReactElement, useState } from 'react';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
+  Alert,
   Autocomplete,
   Box,
+  Button,
   Checkbox,
   CircularProgress,
   DialogActions,
@@ -34,6 +36,7 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
@@ -69,6 +72,13 @@ const TextFieldInteractive = styled(TextField, {
   '& input.MuiInputBase-input, & fieldset': {
     opacity: isDisabled ? '0.4' : '1',
   },
+}));
+
+const RemoveCommitmentActions = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  width: '100%',
+  gap: theme.spacing(1),
 }));
 
 const SelectInteractive = styled(Select, {
@@ -120,9 +130,12 @@ export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
 > = ({ contact, handleClose }) => {
   const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const [referredByName, setReferredByName] = useState('');
+  const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
+    useState(false);
   const referredContactIds = contact.contactReferralsToMe.nodes.map(
     (referral) => referral.referredBy.id,
   );
@@ -260,14 +273,28 @@ export const EditPartnershipInfoModal: React.FC<
   };
 
   const updateStatus = (
-    status: StatusEnum,
+    newStatus: StatusEnum,
+    setFieldValue: (name: string, value: StatusEnum | number | null) => void,
+    oldStatus?: StatusEnum | null,
+    pledgeAmount?: number | null,
+    pledgeFrequency?: PledgeFrequencyEnum | null,
+  ) => {
+    setFieldValue('status', newStatus);
+    if (
+      newStatus !== StatusEnum.PartnerFinancial &&
+      oldStatus === StatusEnum.PartnerFinancial &&
+      ((pledgeAmount && pledgeAmount > 0) || pledgeFrequency)
+    ) {
+      setShowRemoveCommitmentWarning(true);
+    }
+  };
+
+  const removeCommittedDetails = (
     setFieldValue: (name: string, value: StatusEnum | number | null) => void,
   ) => {
-    setFieldValue('status', status);
-    if (status !== StatusEnum.PartnerFinancial) {
-      setFieldValue('pledgeAmount', 0);
-      setFieldValue('pledgeFrequency', null);
-    }
+    setFieldValue('pledgeAmount', 0);
+    setFieldValue('pledgeFrequency', null);
+    setShowRemoveCommitmentWarning(false);
   };
 
   return (
@@ -330,7 +357,13 @@ export const EditPartnershipInfoModal: React.FC<
                     labelId="status-select-label"
                     value={status}
                     onChange={(e) =>
-                      updateStatus(e.target.value as StatusEnum, setFieldValue)
+                      updateStatus(
+                        e.target.value as StatusEnum,
+                        setFieldValue,
+                        status,
+                        pledgeAmount,
+                        pledgeFrequency,
+                      )
                     }
                     MenuProps={{
                       anchorOrigin: {
@@ -357,6 +390,41 @@ export const EditPartnershipInfoModal: React.FC<
                   </Select>
                 </FormControl>
               </ContactInputWrapper>
+              {showRemoveCommitmentWarning && (
+                <ContactInputWrapper data-testid="removeCommitmentMessage">
+                  <Alert severity="warning">
+                    <Typography>
+                      {t(
+                        '{{appName}} uses your contact status, commitment amount, and frequency together to calculate many things, including your progress towards your goal and notification alerts.',
+                        { appName },
+                      )}
+                    </Typography>
+                    <Typography my={'10px'}>
+                      {t(
+                        'If you are switching this contact away from Partner - Financial status, their commitment amount and frequency will no longer be included in calculations. Would you like to remove their commitment amount and frequency, as well?',
+                      )}
+                    </Typography>
+                    <RemoveCommitmentActions>
+                      <Button
+                        color="inherit"
+                        size="small"
+                        variant="contained"
+                        onClick={() => setShowRemoveCommitmentWarning(false)}
+                      >
+                        {t('No')}
+                      </Button>
+                      <Button
+                        color="primary"
+                        size="small"
+                        variant="contained"
+                        onClick={() => removeCommittedDetails(setFieldValue)}
+                      >
+                        {t('Yes')}
+                      </Button>
+                    </RemoveCommitmentActions>
+                  </Alert>
+                </ContactInputWrapper>
+              )}
               <ContactInputWrapper>
                 <TextFieldInteractive
                   label={t('Amount')}
