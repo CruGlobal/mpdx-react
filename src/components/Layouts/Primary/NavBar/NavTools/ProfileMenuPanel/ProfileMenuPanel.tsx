@@ -3,10 +3,14 @@ import React, { useState } from 'react';
 import { useApolloClient } from '@apollo/client';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRight from '@mui/icons-material/ChevronRight';
-import { Box, Button, Drawer, List, Link as MuiLink } from '@mui/material';
+import { Box, Button, Drawer, List } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import {
+  PrivacyPolicyLink,
+  TermsOfUseLink,
+} from 'src/components/Shared/Links/Links';
 import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -222,23 +226,9 @@ export const ProfileMenuPanel: React.FC = () => {
             {t('Sign Out')}
           </Button>
           <Box display="flex" justifyContent="center" py={1}>
-            <MuiLink
-              href="https://get.mpdx.org/privacy-policy/"
-              target="_blank"
-              color="secondary"
-              variant="caption"
-            >
-              {t('Privacy Policy')}
-            </MuiLink>
+            <PrivacyPolicyLink color="secondary" variant="caption" />
             &nbsp; • &nbsp;
-            <MuiLink
-              href="https://get.mpdx.org/terms-of-use/"
-              target="_blank"
-              color="secondary"
-              variant="caption"
-            >
-              {t('Terms of Use')}
-            </MuiLink>
+            <TermsOfUseLink color="secondary" variant="caption" />
           </Box>
         </Box>
       </LeafListItem>
