@@ -12,7 +12,7 @@ import {
   AppealHeaderInfo,
   appealHeaderInfoHeight,
 } from '../../AppealDetails/AppealHeaderInfo';
-import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
+import { AppealQuery } from '../../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import {
   AppealStatusEnum,
   AppealsContext,
