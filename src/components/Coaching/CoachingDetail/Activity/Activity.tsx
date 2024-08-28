@@ -36,7 +36,6 @@ import {
 } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
-import { HelpButton } from '../HelpButton';
 import { useCoachingDetailActivityQuery } from './Activity.generated';
 import { AppealProgress } from './AppealProgress';
 
@@ -263,7 +262,6 @@ export const Activity: React.FC<ActivityProps> = ({
                 <ChevronRight />
               </StyledButton>
             </ButtonGroup>
-            <HelpButton articleVar="HS_COACHING_ACTIVITY" />
           </Header>
         }
       />

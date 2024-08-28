@@ -31,7 +31,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import theme from 'src/theme';
 import {
@@ -116,10 +115,6 @@ const TasksPage: React.FC = () => {
       setContactDetailsOpen(true);
     }
   }, [isReady, contactId]);
-
-  useEffect(() => {
-    suggestArticles('HS_TASKS_SUGGESTIONS');
-  }, []);
 
   //#region Filters
   const urlFilters =

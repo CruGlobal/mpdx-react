@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import {
-  Box,
   CardContent,
   CardHeader,
   Divider,
@@ -18,7 +17,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
 import { getResultColor } from '../helpers';
 import { useActivitySummaryQuery } from './ActivitySummary.generated';
@@ -96,14 +94,7 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
 
   return (
     <AnimatedCard>
-      <CardHeader
-        title={
-          <Box display="flex" alignItems="center">
-            <Box flex={1}>{t('Activity Summary')}</Box>
-            <HelpButton articleVar="HS_COACHING_ACTIVITY_SUMMARY" />
-          </Box>
-        }
-      />
+      <CardHeader title={t('Activity Summary')} />
       <ContentContainer>
         {loading ? (
           <MultilineSkeleton lines={4} />

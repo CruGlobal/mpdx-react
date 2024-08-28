@@ -11,7 +11,6 @@ import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import useTaskModal from 'src/hooks/useTaskModal';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import { suggestArticles } from 'src/lib/helpScout';
 import {
   GetDashboardDocument,
   GetDashboardQuery,
@@ -32,10 +31,6 @@ const AccountListIdPage = ({
   const [selectedMenuItem, setSelectedMenuItem] =
     useState<AddMenuItemsEnum | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  useEffect(() => {
-    suggestArticles('HS_HOME_SUGGESTIONS');
-  }, []);
 
   useEffect(() => {
     if (!modal || dialogOpen) {
