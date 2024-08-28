@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -42,23 +43,27 @@ const Components = ({
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <TestWrapper>
-          <GqlMockedProvider<{
-            InvalidStatuses: InvalidStatusesQuery;
-          }>
-            mocks={{
-              InvalidStatuses: {
-                contacts: {
-                  nodes: mockNodes,
-                  totalCount: 2,
-                },
-              },
-            }}
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
           >
-            <FixCommitmentInfo
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
-          </GqlMockedProvider>
+            <GqlMockedProvider<{
+              InvalidStatuses: InvalidStatusesQuery;
+            }>
+              mocks={{
+                InvalidStatuses: {
+                  contacts: {
+                    nodes: mockNodes,
+                    totalCount: 2,
+                  },
+                },
+              }}
+            >
+              <FixCommitmentInfo
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
         </TestWrapper>
       </TestRouter>
     </ThemeProvider>
