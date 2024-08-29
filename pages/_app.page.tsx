@@ -21,6 +21,7 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import DataDog from 'src/components/DataDog/DataDog';
 import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
+import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
@@ -190,7 +191,12 @@ const App = ({
                             pageContent
                           ) : (
                             <RouterGuard>
-                              <GraphQLProviders>{pageContent}</GraphQLProviders>
+                              <>
+                                <Helpjuice />
+                                <GraphQLProviders>
+                                  {pageContent}
+                                </GraphQLProviders>
+                              </>
                             </RouterGuard>
                           )}
                           <Loading />
