@@ -61,6 +61,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
+  const appealStatus =
+    (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
+
   useEffect(() => {
     if (!activeFilters.appealStatus) {
       return;
@@ -143,6 +146,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           <ContactRow
             key={contact.id}
             contact={contact}
+            appealStatus={appealStatus}
             useTopMargin={index === 0}
           />
         )}
