@@ -70,4 +70,19 @@ describe('Helpjuice', () => {
       'https://domain.helpjuice.com/contact-us?mpdxName=John+Doe&mpdxEmail=john.doe%40cru.org&mpdxUrl=https%3A%2F%2Fexample.com%2Fpage',
     );
   });
+
+  it('omits the user data if the session is missing', () => {
+    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+      data: null,
+      status: 'loading',
+      update: () => Promise.resolve(null),
+    });
+
+    render(<Helpjuice />);
+
+    expect(document.getElementById('helpjuice-contact-link')).toHaveProperty(
+      'href',
+      'https://domain.helpjuice.com/contact-us?mpdxUrl=https%3A%2F%2Fexample.com%2F',
+    );
+  });
 });

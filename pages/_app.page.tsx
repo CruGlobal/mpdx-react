@@ -170,6 +170,7 @@ const App = ({
         <ErrorBoundary>
           <AppSettingsProvider>
             <SessionProvider session={session}>
+              <Helpjuice />
               <I18nextProvider i18n={i18n}>
                 <StyledEngineProvider injectFirst>
                   <CacheProvider value={emotionCache}>
@@ -191,12 +192,7 @@ const App = ({
                             pageContent
                           ) : (
                             <RouterGuard>
-                              <>
-                                <Helpjuice />
-                                <GraphQLProviders>
-                                  {pageContent}
-                                </GraphQLProviders>
-                              </>
+                              <GraphQLProviders>{pageContent}</GraphQLProviders>
                             </RouterGuard>
                           )}
                           <Loading />
