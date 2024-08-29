@@ -22,11 +22,13 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactFlow/ContactFlowRow/ContactFlowRow.tsx
 
-interface Props extends Omit<ContactFlowRowProps, 'status'> {
+interface Props extends Omit<ContactFlowRowProps, 'status' | 'contact'> {
+  contact: AppealContactInfoFragment;
   contactStatus?: StatusEnum | null;
   appealStatus: AppealStatusEnum;
 }
