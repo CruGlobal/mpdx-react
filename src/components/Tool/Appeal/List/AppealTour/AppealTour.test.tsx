@@ -99,13 +99,13 @@ describe('AppealTour', () => {
   });
 
   it('should click through steps of the tour', async () => {
-    const { getByRole, queryByRole, queryByTestId } = render(<Components />);
+    const { getByRole, findByRole, queryByRole, queryByTestId } = render(
+      <Components />,
+    );
 
-    await waitFor(() => {
-      expect(
-        getByRole('heading', { name: 'Appeal created successfully' }),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await findByRole('heading', { name: 'Appeal created successfully' }),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Start' }));
     expect(

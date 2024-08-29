@@ -1,6 +1,0 @@
-query Appeal($accountListId: ID!, $appealId: ID!) {
-  appeal(accountListId: $accountListId, id: $appealId) {
-    id
-    contactIds
-  }
-}

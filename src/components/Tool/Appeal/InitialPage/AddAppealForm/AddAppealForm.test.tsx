@@ -115,7 +115,9 @@ describe('AddAppealForm', () => {
 
   describe('Goal calculations', () => {
     it('should show errors', async () => {
-      const { getByRole, getByText, queryByText } = render(<Components />);
+      const { getByRole, getByText, findByText, queryByText } = render(
+        <Components />,
+      );
 
       const name = getByRole('textbox', { name: 'Name' });
       const initialGoal = getByRole('spinbutton', { name: 'Initial Goal' });
@@ -125,18 +127,17 @@ describe('AddAppealForm', () => {
 
       userEvent.clear(name);
       userEvent.tab();
-      await waitFor(() =>
-        expect(getByText(/please enter a name/i)).toBeInTheDocument(),
-      );
+
+      expect(await findByText(/please enter a name/i)).toBeInTheDocument();
 
       userEvent.clear(initialGoal);
       userEvent.clear(letterCost);
       userEvent.clear(adminPercent);
 
       expect(goalAmount).toHaveValue(0);
-      await waitFor(() =>
-        expect(getByText(/initial goal is required/i)).toBeInTheDocument(),
-      );
+
+      expect(await findByText(/initial goal is required/i)).toBeInTheDocument();
+
       expect(getByText(/letter cost is required/i)).toBeInTheDocument();
       expect(getByText(/admin cost is required/i)).toBeInTheDocument();
 
@@ -146,11 +147,9 @@ describe('AddAppealForm', () => {
       userEvent.type(letterCost, '-5');
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '-5');
-      await waitFor(() =>
-        expect(
-          getByText(/must use a positive number for initial goal/i),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        await findByText(/must use a positive number for initial goal/i),
+      ).toBeInTheDocument();
       expect(
         getByText(/must use a positive number for letter cost/i),
       ).toBeInTheDocument();
@@ -205,7 +204,9 @@ describe('AddAppealForm', () => {
 
   describe('Select all buttons', () => {
     it('selects all statues', async () => {
-      const { getByText, queryByText, getByTestId } = render(<Components />);
+      const { getByText, findByText, queryByText, getByTestId } = render(
+        <Components />,
+      );
 
       await waitFor(() =>
         expect(getByTestId('contactStatusSelect')).toBeInTheDocument(),
@@ -220,12 +221,10 @@ describe('AddAppealForm', () => {
 
       userEvent.click(selectAllStatusesButton);
 
-      await waitFor(() => {
-        expect(getByText('New Connection')).toBeInTheDocument();
-        expect(getByText('Ask in Future')).toBeInTheDocument();
-        // Ensures the '--- All Active ---' option isn't added
-        expect(queryByText('--- All Active ---')).not.toBeInTheDocument();
-      });
+      expect(await findByText('New Connection')).toBeInTheDocument();
+      expect(getByText('Ask in Future')).toBeInTheDocument();
+      // Ensures the '--- All Active ---' option isn't added
+      expect(queryByText('--- All Active ---')).not.toBeInTheDocument();
     });
 
     it('selects all tags', async () => {
@@ -251,19 +250,17 @@ describe('AddAppealForm', () => {
 
   describe('Select values', () => {
     it('selects contact statuses options', async () => {
-      const { findByTestId, getByText, getByRole } = render(<Components />);
+      const { findByTestId, findByText, getByRole } = render(<Components />);
 
       const contactStatusSelect = await findByTestId('contactStatusSelect');
       userEvent.type(contactStatusSelect, 'New Connection');
       userEvent.selectOptions(getByRole('listbox'), 'New Connection');
 
-      await waitFor(() => {
-        expect(getByText('New Connection')).toBeInTheDocument();
-      });
+      expect(await findByText('New Connection')).toBeInTheDocument();
     });
 
     it('selects tags options', async () => {
-      const { findByTestId, queryByText, getByText, getByRole } = render(
+      const { findByTestId, queryByText, findByText, getByRole } = render(
         <Components />,
       );
 
@@ -271,14 +268,14 @@ describe('AddAppealForm', () => {
       userEvent.type(contactTagsSelect, 'tag-3');
       userEvent.selectOptions(getByRole('listbox'), 'tag-3');
 
-      await waitFor(() => {
-        expect(getByText('tag-3')).toBeInTheDocument();
-        expect(queryByText('tag-2')).not.toBeInTheDocument();
-      });
+      expect(await findByText('tag-3')).toBeInTheDocument();
+      expect(queryByText('tag-2')).not.toBeInTheDocument();
     });
 
     it('selects Exclude contacts options', async () => {
-      const { findByTestId, getByText, getByRole } = render(<Components />);
+      const { findByTestId, getByText, findByText, getByRole } = render(
+        <Components />,
+      );
 
       const exclusionsSelect = await findByTestId('exclusionsSelect');
 
@@ -294,14 +291,12 @@ describe('AddAppealForm', () => {
         'May have increased their giving in the last 3 months',
       );
 
-      await waitFor(() => {
-        expect(
-          getByText('May have given a special gift in the last 3 months'),
-        ).toBeInTheDocument();
-        expect(
-          getByText('May have increased their giving in the last 3 months'),
-        ).toBeInTheDocument();
-      });
+      expect(
+        await findByText('May have given a special gift in the last 3 months'),
+      ).toBeInTheDocument();
+      expect(
+        getByText('May have increased their giving in the last 3 months'),
+      ).toBeInTheDocument();
     });
   });
 

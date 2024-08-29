@@ -117,31 +117,33 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 describe('AppealsDetailsPage', () => {
   describe('Contact drawer', () => {
     it('should open and close on List view', async () => {
-      const { getByText, findByTestId, getByRole, getAllByRole, queryByRole } =
-        render(
-          <Components
-            router={{
-              ...defaultRouter,
-              query: {
-                ...defaultRouter.query,
-                appealId: ['1', 'list'],
-              },
-            }}
-          />,
-        );
+      const {
+        findByTestId,
+        findByText,
+        findByRole,
+        getAllByRole,
+        queryByRole,
+      } = render(
+        <Components
+          router={{
+            ...defaultRouter,
+            query: {
+              ...defaultRouter.query,
+              appealId: ['1', 'list'],
+            },
+          }}
+        />,
+      );
 
-      await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
+      expect(await findByText('Test Person')).toBeInTheDocument();
 
       expect(queryByRole('tab', { name: 'Tasks' })).not.toBeInTheDocument();
 
       const contactRow = await findByTestId('rowButton');
       userEvent.click(contactRow);
 
-      await waitFor(() =>
-        expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument(),
-      );
-
-      userEvent.click(getAllByRole('img', { name: 'Close' })[0]);
+      expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument(),
+        userEvent.click(getAllByRole('img', { name: 'Close' })[0]);
 
       await waitFor(() =>
         expect(queryByRole('tab', { name: 'Tasks' })).not.toBeInTheDocument(),
@@ -149,7 +151,7 @@ describe('AppealsDetailsPage', () => {
     });
 
     it('should open and close on Flows view', async () => {
-      const { getAllByText, getByRole, queryByRole } = render(
+      const { getAllByText, getByRole, findByRole, queryByRole } = render(
         <Components
           router={{
             ...defaultRouter,
@@ -167,10 +169,7 @@ describe('AppealsDetailsPage', () => {
 
       userEvent.click(getAllByText('Test Person')[0]);
 
-      await waitFor(() =>
-        expect(getByRole('tab', { name: 'Tasks' })).toBeInTheDocument(),
-      );
-
+      expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
       userEvent.click(getByRole('img', { name: 'Close' }));
 
       await waitFor(() =>
@@ -181,7 +180,7 @@ describe('AppealsDetailsPage', () => {
 
   describe('Filters', () => {
     it('should open and close on List view', async () => {
-      const { getByRole, queryByRole } = render(
+      const { getByRole, findByRole, queryByRole } = render(
         <Components
           router={{
             ...defaultRouter,
@@ -193,22 +192,19 @@ describe('AppealsDetailsPage', () => {
         />,
       );
 
-      await waitFor(() =>
-        expect(
-          getByRole('img', { name: /toggle filter panel/i }),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('img', { name: /toggle filter panel/i }),
+      ).toBeInTheDocument();
+
       expect(
         queryByRole('heading', { name: /export to csv/i }),
       ).not.toBeInTheDocument();
 
       userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
 
-      await waitFor(() =>
-        expect(
-          getByRole('heading', { name: /export to csv/i }),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('heading', { name: /export to csv/i }),
+      ).toBeInTheDocument();
 
       userEvent.click(getByRole('img', { name: 'Close' }));
 
@@ -220,7 +216,7 @@ describe('AppealsDetailsPage', () => {
     });
 
     it('should open and close on Flows view', async () => {
-      const { getByRole, queryByRole } = render(
+      const { getByRole, findByRole, queryByRole } = render(
         <Components
           router={{
             ...defaultRouter,
@@ -232,22 +228,19 @@ describe('AppealsDetailsPage', () => {
         />,
       );
 
-      await waitFor(() =>
-        expect(
-          getByRole('img', { name: /toggle filter panel/i }),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('img', { name: /toggle filter panel/i }),
+      ).toBeInTheDocument();
+
       expect(
         queryByRole('heading', { name: /see more filters/i }),
       ).not.toBeInTheDocument();
 
       userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
 
-      await waitFor(() =>
-        expect(
-          getByRole('heading', { name: /see more filters/i }),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('heading', { name: /see more filters/i }),
+      ).toBeInTheDocument();
 
       userEvent.click(getByRole('img', { name: 'Close' }));
 

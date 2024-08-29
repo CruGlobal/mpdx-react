@@ -104,9 +104,7 @@ describe('PledgeModal', () => {
   });
 
   it('Add commitment', async () => {
-    const { getByRole, getByText, findByText, queryByText } = render(
-      <Components />,
-    );
+    const { getByRole, findByText, queryByText } = render(<Components />);
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
 
@@ -114,11 +112,10 @@ describe('PledgeModal', () => {
     userEvent.clear(amountInput);
     userEvent.type(amountInput, '0');
     userEvent.tab();
-    await waitFor(() =>
-      expect(
-        getByText(/must use a positive number for amount/i),
-      ).toBeInTheDocument(),
-    );
+
+    expect(
+      await findByText(/must use a positive number for amount/i),
+    ).toBeInTheDocument();
 
     userEvent.clear(amountInput);
     userEvent.tab();
