@@ -15,13 +15,16 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Link as MuiLink,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import {
+  PrivacyPolicyLink,
+  TermsOfUseLink,
+} from 'src/components/Shared/Links/Links';
 import { AccountList } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { clearDataDogUser } from 'src/lib/dataDog';
@@ -374,21 +377,9 @@ const ProfileMenu = (): ReactElement => {
           )}
         </MenuItem>
         <MenuItemFooter>
-          <MuiLink
-            href="https://get.mpdx.org/privacy-policy/"
-            target="_blank"
-            onClick={handleProfileMenuClose}
-          >
-            {t('Privacy Policy')}
-          </MuiLink>
+          <PrivacyPolicyLink />
           &nbsp; • &nbsp;
-          <MuiLink
-            href="https://get.mpdx.org/terms-of-use/"
-            target="_blank"
-            onClick={handleProfileMenuClose}
-          >
-            {t('Terms of Use')}
-          </MuiLink>
+          <TermsOfUseLink />
         </MenuItemFooter>
       </MenuWrapper>
     </>

@@ -44,7 +44,7 @@ interface ComponentsProps {
 }
 
 const Components = ({}: ComponentsProps) => {
-  let cardinality = 0;
+  let requestCount = 0;
   return (
     <I18nextProvider i18n={i18n}>
       <SnackbarProvider>
@@ -56,26 +56,26 @@ const Components = ({}: ComponentsProps) => {
                   mocks={{
                     AppealContacts: () => {
                       let mutationResponse;
-                      if (cardinality < 3) {
+                      if (requestCount < 3) {
                         mutationResponse = {
                           appealContacts: {
                             nodes: [
                               {
-                                id: `id1${cardinality}`,
+                                id: `id1${requestCount}`,
                                 contact: {
-                                  id: `contactId1${cardinality}`,
+                                  id: `contactId1${requestCount}`,
                                 },
                               },
                               {
-                                id: `id2${cardinality}`,
+                                id: `id2${requestCount}`,
                                 contact: {
-                                  id: `contactId2${cardinality}`,
+                                  id: `contactId2${requestCount}`,
                                 },
                               },
                               {
-                                id: `id3${cardinality}`,
+                                id: `id3${requestCount}`,
                                 contact: {
-                                  id: `contactId3${cardinality}`,
+                                  id: `contactId3${requestCount}`,
                                 },
                               },
                             ],
@@ -96,15 +96,15 @@ const Components = ({}: ComponentsProps) => {
                                 },
                               },
                               {
-                                id: `id5${cardinality}`,
+                                id: `id5${requestCount}`,
                                 contact: {
-                                  id: `contactId5${cardinality}`,
+                                  id: `contactId5${requestCount}`,
                                 },
                               },
                               {
-                                id: `id6${cardinality}`,
+                                id: `id6${requestCount}`,
                                 contact: {
-                                  id: `contactId6${cardinality}`,
+                                  id: `contactId6${requestCount}`,
                                 },
                               },
                             ],
@@ -115,7 +115,7 @@ const Components = ({}: ComponentsProps) => {
                           },
                         };
                       }
-                      cardinality++;
+                      requestCount++;
                       return mutationResponse;
                     },
                   }}
@@ -210,16 +210,12 @@ describe('DeleteAppealContactModal', () => {
     });
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[8][0].operation.operationName).toEqual(
-        'DeleteAppealContact',
-      );
-      expect(mutationSpy.mock.calls[8][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteAppealContact', {
         input: {
           id: 'appealContactId',
         },
       });
-
-      expect(handleClose).toHaveBeenCalledTimes(1);
     });
+    expect(handleClose).toHaveBeenCalledTimes(1);
   });
 });

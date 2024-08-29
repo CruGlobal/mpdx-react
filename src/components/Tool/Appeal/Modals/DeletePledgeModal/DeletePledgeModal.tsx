@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   CircularProgress,
@@ -36,18 +36,15 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [deleteAccountListPledge] = useDeleteAccountListPledgeMutation();
-  const [mutating, setMutating] = React.useState(false);
-  const { contactsQueryResult } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const [deleteAccountListPledge, { loading }] =
+    useDeleteAccountListPledgeMutation();
+  const { contactsQueryResult } = useContext(AppealsContext) as AppealsType;
 
   const handleConfirm = async () => {
-    setMutating(true);
     await deleteAccountListPledge({
       variables: {
         input: {
-          id: pledge.id ?? '',
+          id: pledge.id,
         },
       },
       update: () => {
@@ -65,7 +62,6 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
         });
       },
     });
-    setMutating(false);
   };
 
   return (
@@ -75,7 +71,7 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
       handleClose={handleClose}
     >
       <DialogContent dividers>
-        {mutating ? (
+        {loading ? (
           <Box style={{ textAlign: 'center' }}>
             <LoadingIndicator color="primary" size={50} />
           </Box>
@@ -86,10 +82,10 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
         )}
       </DialogContent>
       <DialogActions>
-        <CancelButton onClick={handleClose} disabled={mutating}>
+        <CancelButton onClick={handleClose} disabled={loading}>
           {t('No')}
         </CancelButton>
-        <SubmitButton type="button" onClick={handleConfirm} disabled={mutating}>
+        <SubmitButton type="button" onClick={handleConfirm} disabled={loading}>
           {t('Yes')}
         </SubmitButton>
       </DialogActions>

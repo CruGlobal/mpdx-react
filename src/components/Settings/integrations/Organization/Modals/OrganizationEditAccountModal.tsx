@@ -13,7 +13,7 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateOrganizationAccountMutation } from '../Organizations.generated';
-import { OrganizationFormikSchema } from './OrganizationAddAccountModal';
+import { OrganizationFormikSchema } from '../schema';
 
 interface OrganizationEditAccountModalProps {
   handleClose: () => void;

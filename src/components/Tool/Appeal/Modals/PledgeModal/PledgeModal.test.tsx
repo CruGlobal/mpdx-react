@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
@@ -69,17 +69,22 @@ describe('PledgeModal', () => {
     refetch.mockClear();
   });
   it('default', async () => {
-    const { getByRole, getByText } = render(<Components />);
+    const { getByRole, getByText, findByRole } = render(<Components />);
 
     expect(
       getByRole('heading', { name: 'Add Commitment' }),
     ).toBeInTheDocument();
-    expect(getByRole('combobox', { name: 'Contacts' })).toBeInTheDocument();
+
+    expect(getByText('You are adding a commitment for')).toBeInTheDocument();
+    expect(getByText(defaultContact.name)).toBeInTheDocument();
+
     expect(getByRole('textbox', { name: 'Amount' })).toBeInTheDocument();
     expect(getByText('Currency')).toBeInTheDocument();
-    await waitFor(() => {
-      expect(getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
-    });
+
+    expect(
+      await findByRole('combobox', { name: 'Currency' }),
+    ).toBeInTheDocument();
+
     expect(getByRole('textbox', { name: 'Expected Date' })).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Status' })).toBeInTheDocument();
 
@@ -99,7 +104,9 @@ describe('PledgeModal', () => {
   });
 
   it('Add commitment', async () => {
-    const { getByRole, getByText, queryByText } = render(<Components />);
+    const { getByRole, getByText, findByText, queryByText } = render(
+      <Components />,
+    );
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
 
@@ -115,25 +122,20 @@ describe('PledgeModal', () => {
 
     userEvent.clear(amountInput);
     userEvent.tab();
-    await waitFor(() =>
-      expect(getByText(/amount is required/i)).toBeInTheDocument(),
-    );
+    expect(await findByText('Amount is required')).toBeInTheDocument();
 
     userEvent.type(amountInput, '100');
     await waitFor(() => {
       expect(
         queryByText(/must use a positive number for amount/i),
       ).not.toBeInTheDocument();
-      expect(queryByText(/amount is required/i)).not.toBeInTheDocument();
+      expect(queryByText('Amount is required')).not.toBeInTheDocument();
     });
 
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[7][0].operation.operationName).toEqual(
-        'CreateAccountListPledge',
-      );
-      expect(mutationSpy.mock.calls[7][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('CreateAccountListPledge', {
         input: {
           accountListId,
           attributes: {
@@ -146,14 +148,14 @@ describe('PledgeModal', () => {
           },
         },
       });
-
-      expect(refetch).toHaveBeenCalledTimes(1);
     });
+
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 
   it('Edit commitment', async () => {
     const pledgeId = 'pledge-1';
-    const { getByRole } = render(
+    const { getByRole, findByText } = render(
       <Components
         pledge={{
           id: pledgeId,
@@ -181,13 +183,7 @@ describe('PledgeModal', () => {
       '08/08/2024',
     );
 
-    await waitFor(() => {
-      const combobox = getByRole('combobox', {
-        name: 'Status',
-      });
-
-      within(combobox).getByText('Received');
-    });
+    expect(await findByText('Received')).toBeInTheDocument();
 
     userEvent.clear(amountInput);
     userEvent.type(amountInput, '500');
@@ -195,10 +191,7 @@ describe('PledgeModal', () => {
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[7][0].operation.operationName).toEqual(
-        'UpdateAccountListPledge',
-      );
-      expect(mutationSpy.mock.calls[7][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountListPledge', {
         input: {
           pledgeId,
           attributes: {
@@ -212,8 +205,8 @@ describe('PledgeModal', () => {
           },
         },
       });
-
-      expect(refetch).toHaveBeenCalledTimes(1);
     });
+
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,9 +1,8 @@
-import { isFunction } from 'lodash/fp';
 import removeObjectNulls from './removeObjectNulls';
 
 describe('common.fp.removeObjectNulls', () => {
-  it('should curry', () => {
-    expect(isFunction(removeObjectNulls())).toEqual(true);
+  it('should return empty object', () => {
+    expect(removeObjectNulls({})).toEqual({});
   });
 
   it('should remove nulls', () => {

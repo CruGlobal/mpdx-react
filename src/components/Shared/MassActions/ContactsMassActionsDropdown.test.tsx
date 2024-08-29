@@ -349,13 +349,13 @@ describe('ContactsMassActionsDropdown', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    const actionsButton = getByText('Actions') as HTMLInputElement;
+    const actionsButton = getByText('Actions');
     userEvent.click(actionsButton);
     expect(queryByText('Add to Appeal')).not.toBeInTheDocument();
     expect(queryByText('Add to New Appeal')).not.toBeInTheDocument();
     expect(getByText('Add Excluded Contacts To Appeal')).toBeInTheDocument();
     userEvent.click(getByText('Add Excluded Contacts To Appeal'));
     expect(await findByText('Add Contacts')).toBeInTheDocument();
-    userEvent.click(getByTestId('CloseIcon') as HTMLInputElement);
+    userEvent.click(getByTestId('CloseIcon'));
   });
 });

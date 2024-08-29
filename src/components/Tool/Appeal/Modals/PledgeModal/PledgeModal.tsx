@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
+  Alert,
   DialogActions,
   DialogContent,
   FormControl,
@@ -8,6 +9,7 @@ import {
   MenuItem,
   Select,
   Theme,
+  Typography,
 } from '@mui/material';
 import { Box, useMediaQuery } from '@mui/system';
 import { FastField, FieldProps, Formik } from 'formik';
@@ -19,8 +21,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   FormTextField,
   LogFormLabel,
-} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/AddDonation';
-import { ContactsAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete';
+} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/StyledComponents';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   CancelButton,
@@ -41,14 +42,6 @@ import {
   useUpdateAccountListPledgeMutation,
 } from './ContactPledge.generated';
 
-export type CreatePledgeFormikSchema = {
-  contactId: string;
-  amount: number;
-  amountCurrency: string;
-  expectedDate: DateTime<true | false>;
-  status: string;
-};
-
 interface PledgeModalProps {
   handleClose: () => void;
   contact: AppealContactInfoFragment;
@@ -56,7 +49,6 @@ interface PledgeModalProps {
 }
 
 const CreatePledgeSchema = yup.object({
-  contactId: yup.string().required(),
   amount: yup
     .number()
     .typeError(i18n.t('Amount must be a valid number'))
@@ -167,14 +159,12 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
 
   const initialValues = pledge
     ? {
-        contactId: contact.id,
         amount: pledge.amount,
         amountCurrency: pledge.amountCurrency ?? 'USD',
         expectedDate: DateTime.fromISO(pledge.expectedDate),
         status: pledge.status ?? PledgeStatusEnum.NotReceived,
       }
     : {
-        contactId: contact.id,
         amount: 0,
         amountCurrency: 'USD',
         expectedDate: DateTime.local().startOf('day'),
@@ -194,7 +184,6 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
         onSubmit={onSubmit}
       >
         {({
-          values: { contactId },
           setFieldValue,
           handleSubmit,
           isSubmitting,
@@ -205,14 +194,11 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
           <form onSubmit={handleSubmit}>
             <DialogContent>
               <Grid item>
-                <ContactsAutocomplete
-                  accountListId={accountListId ?? ''}
-                  value={[contactId]}
-                  onChange={(contactId) => {
-                    setFieldValue('contactId', contactId);
-                  }}
-                  disabled={true}
-                />
+                <Alert severity="info" sx={{ marginBottom: 1 }}>
+                  <Typography>
+                    {t('You are adding a commitment for')} <b>{contact.name}</b>
+                  </Typography>
+                </Alert>
               </Grid>
 
               {/* Amount and Currency Row */}
@@ -384,14 +370,13 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                             }}
                             error={!!errors.status && touched.status}
                           >
-                            <MenuItem value={''} disabled></MenuItem>
                             <MenuItem value={PledgeStatusEnum.NotReceived}>
-                              Committed
+                              {t('Committed')}
                             </MenuItem>
                             <MenuItem
                               value={PledgeStatusEnum.ReceivedNotProcessed}
                             >
-                              Received
+                              {t('Received')}
                             </MenuItem>
                           </Select>
                         </Box>

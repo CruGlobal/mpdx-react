@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Alert, AlertTitle, Box, Button, Typography } from '@mui/material';
-import { TFunction, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import {
   AppealTourEnum,
@@ -24,7 +24,7 @@ const StatisticBox = styled(Box, {
 })<{ color: string }>(({ color }) => ({
   backgroundColor: color,
   textAlign: 'center',
-  padding: `${theme.spacing(2)} ${theme.spacing(2)}`,
+  padding: theme.spacing(2),
   position: 'relative',
   width: '20%',
   '&:after': {
@@ -40,7 +40,7 @@ const StatisticBox = styled(Box, {
   },
   '@media (max-width: 550px)': {
     width: '100%',
-    padding: `${theme.spacing(1)} ${theme.spacing(1)}`,
+    padding: theme.spacing(1),
     '&:after': {
       width: '16px',
       height: '16px',
@@ -55,16 +55,15 @@ type ActionButtonsProps = {
   nextTourStep: () => void;
   hideTour: () => void;
   tourStep: AppealTourEnum;
-  t: TFunction;
 };
 const ActionButtons = ({
   nextTourStep,
   hideTour,
   tourStep,
-  t,
 }: ActionButtonsProps) => {
+  const { t } = useTranslation();
   return (
-    <Box display={'flex'} sx={{ marginTop: theme.spacing(2) }}>
+    <Box display={'flex'} mt={2}>
       <Box>
         {tourStep !== AppealTourEnum.Finish && (
           <Button
@@ -130,55 +129,59 @@ const StatisticContainer = ({
 
 export const AppealTour: React.FC = () => {
   const { t } = useTranslation();
-  const [tourTitle, setTourTitle] = React.useState<string>('');
-  const [tourText, setTourText] = React.useState<string>('');
   const {
     tour,
     hideTour,
     nextTourStep,
-    askedCountQuery,
-    excludedCountQuery,
-    committedCountQuery,
-    givenCountQuery,
-    receivedCountQuery,
-  } = React.useContext(AppealsContext) as AppealsType;
+    askedCountQueryResult,
+    excludedCountQueryResult,
+    committedCountQueryResult,
+    givenCountQueryResult,
+    receivedCountQueryResult,
+  } = useContext(AppealsContext) as AppealsType;
 
-  const { data: askedCount } = askedCountQuery;
-  const { data: excludedCount } = excludedCountQuery;
-  const { data: committedCount } = committedCountQuery;
-  const { data: givenCount } = givenCountQuery;
-  const { data: receivedCount } = receivedCountQuery;
+  const { data: askedCount } = askedCountQueryResult;
+  const { data: excludedCount } = excludedCountQueryResult;
+  const { data: committedCount } = committedCountQueryResult;
+  const { data: givenCount } = givenCountQueryResult;
+  const { data: receivedCount } = receivedCountQueryResult;
 
-  useEffect(() => {
+  const tourInfo = useMemo(() => {
     switch (tour) {
-      case AppealTourEnum.Start:
-        setTourTitle(t('Appeal created successfully'));
-        setTourText(t('Get started by reviewing your excluded contacts list.'));
-        break;
       case AppealTourEnum.ReviewExcluded:
-        setTourTitle(t('Review Excluded'));
-        setTourText(
-          t(
+        return {
+          title: t('Review Excluded'),
+          text: t(
             'Go through your list of excluded contacts to see if they should be asked',
           ),
-        );
-        break;
+        };
       case AppealTourEnum.ReviewAsked:
-        setTourTitle(t('Review Asked'));
-        setTourText(
-          t(
+        return {
+          title: t('Review Asked'),
+          text: t(
             'Go through your list of contacts to ask and ensure there are no contacts that should be excluded',
           ),
-        );
-        break;
+        };
       case AppealTourEnum.ExportContacts:
-        setTourTitle(t('Export Contacts'));
-        setTourText(
-          t('Export to CSV and send your appeal to reach out to your contacts'),
-        );
-        break;
+        return {
+          title: t('Export Contacts'),
+          text: t(
+            'Export to CSV and send your appeal to reach out to your contacts',
+          ),
+        };
+      case AppealTourEnum.Finish:
+        return {
+          title: t("You're all done"),
+          text: t(
+            'Send your appeal to your contacts and come back here later to add their commitments',
+          ),
+        };
+      case AppealTourEnum.Start:
       default:
-        break;
+        return {
+          title: t('Appeal created successfully'),
+          text: t('Get started by reviewing your excluded contacts list.'),
+        };
     }
   }, [tour]);
 
@@ -190,12 +193,11 @@ export const AppealTour: React.FC = () => {
     <Box data-testid="appealTour">
       <Alert severity="success" onClose={hideTour}>
         <AlertTitle>
-          <Typography variant="h5">{tourTitle}</Typography>
+          <Typography variant="h5">{tourInfo.title}</Typography>
         </AlertTitle>
-        <Typography variant="body1">{tourText}</Typography>
+        <Typography variant="body1">{tourInfo.text}</Typography>
 
         <ActionButtons
-          t={t}
           nextTourStep={nextTourStep}
           hideTour={hideTour}
           tourStep={tour}

@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useMemo } from 'react';
 import { mdiClose, mdiEqual, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -21,10 +22,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import {
-  GetAppealsDocument,
-  GetAppealsQuery,
-} from 'pages/accountLists/[accountListId]/tools/GetAppeals.generated';
 import {
   AppealCreateInput,
   FilterOption,
@@ -76,15 +73,11 @@ export const contactExclusions: ContactExclusion[] = [
 export const calculateGoal = (
   initialGoal: number,
   letterCost: number,
-  adminCost: number,
+  adminPercentage: number,
 ): number => {
-  const adminPercent = 1 - Number(adminCost) / 100;
+  const adminPercent = 1 - adminPercentage / 100;
 
-  return (
-    Math.round(
-      ((Number(initialGoal) + Number(letterCost)) / adminPercent) * 100,
-    ) / 100
-  );
+  return Math.round(((initialGoal + letterCost) / adminPercent) * 100) / 100;
 };
 
 type BuildInclusionFilterProps = {
@@ -163,13 +156,13 @@ const appealFormSchema = yup.object({
   letterCost: yup
     .number()
     .typeError(i18n.t('Letter Cost must be a valid number'))
-    .required(i18n.t('Letter Cost  is required'))
+    .required(i18n.t('Letter Cost is required'))
     .test(
       i18n.t('Is positive?'),
       i18n.t('Must use a positive number for Letter Cost'),
       (value) => parseFloat(value as unknown as string) >= 0,
     ),
-  adminCost: yup
+  adminPercentage: yup
     .number()
     .typeError(i18n.t('Admin Cost must be a valid number'))
     .required(i18n.t('Admin Cost is required'))
@@ -199,7 +192,7 @@ type FormikRefType = React.RefObject<
     name: string;
     initialGoal: number;
     letterCost: number;
-    adminCost: number;
+    adminPercentage: number;
     statuses: Pick<FilterOption, 'name' | 'value'>[];
     tags: never[];
     exclusions: ContactExclusion[];
@@ -252,6 +245,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
 }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { data: contactFilterTags, loading: loadingTags } = useContactTagsQuery(
     {
@@ -283,13 +277,13 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
     }
   }, [contactFilterGroups]);
 
-  const onSubmit = async (props: Attributes, resetForm: () => void) => {
+  const onSubmit = async (props: Attributes) => {
     const attributes: AppealCreateInput = {
       name: props.name,
       amount: calculateGoal(
         props.initialGoal,
         props.letterCost,
-        props.adminCost,
+        props.adminPercentage,
       ),
     };
 
@@ -311,30 +305,15 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         accountListId,
         attributes,
       },
-      update: (cache, result) => {
-        const query = {
-          query: GetAppealsDocument,
-          variables: { accountListId },
-        };
-        const dataFromCache = cache.readQuery<GetAppealsQuery>(query);
-        if (dataFromCache && result.data?.createAppeal?.appeal) {
-          const data = {
-            regularAppeals: {
-              ...dataFromCache.regularAppeals,
-              nodes: [
-                { ...result.data.createAppeal.appeal },
-                ...dataFromCache.regularAppeals.nodes,
-              ],
-            },
-          };
-          cache.writeQuery({ ...query, data });
-        }
+      onCompleted: (data) => {
+        push(
+          `/accountLists/${accountListId}/tools/appeals/appeal/${data?.createAppeal?.appeal?.id}/list/tour`,
+        );
       },
     });
     enqueueSnackbar(t('Appeal successfully added!'), {
       variant: 'success',
     });
-    resetForm();
   };
 
   const contactTagsList = contactFilterTags?.accountList.contactTagList ?? [];
@@ -361,13 +340,13 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         name: appealName ?? '',
         initialGoal: appealGoal ?? 0,
         letterCost: 0,
-        adminCost: 12,
+        adminPercentage: 12,
         statuses: appealStatuses ?? [],
         tags: [],
         exclusions: appealExcludes ?? [],
       }}
-      onSubmit={async (values, { resetForm }) => {
-        await onSubmit(values, resetForm);
+      onSubmit={async (values) => {
+        await onSubmit(values);
       }}
       validationSchema={appealFormSchema}
       innerRef={formRef as FormikRefType}
@@ -376,7 +355,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         values: {
           initialGoal,
           letterCost,
-          adminCost,
+          adminPercentage,
           statuses,
           tags,
           exclusions,
@@ -476,14 +455,14 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                   justifyContent="start"
                 >
                   <Field
-                    name="adminCost"
+                    name="adminPercentage"
                     type="number"
                     variant="outlined"
                     label={t('Admin %')}
                     size="small"
                     className={classes.input}
-                    error={errors.adminCost}
-                    helperText={errors.adminCost}
+                    error={errors.adminPercentage}
+                    helperText={errors.adminPercentage}
                     as={TextField}
                   />
                 </Box>
@@ -517,7 +496,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                     value={calculateGoal(
                       initialGoal,
                       letterCost,
-                      adminCost,
+                      adminPercentage,
                     ).toFixed(2)}
                   />
                 </Box>
@@ -552,10 +531,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 autoHighlight
                 data-testid="contactStatusSelect"
                 id="tags-standard"
-                options={contactStatuses.filter(
-                  ({ value: id1 }) =>
-                    !statuses?.some(({ value: id2 }) => id2 === id1),
-                )}
+                filterSelectedOptions
+                options={contactStatuses}
                 getOptionLabel={(option) => option.name}
                 value={statuses}
                 onChange={(_event, values) => setFieldValue('statuses', values)}
@@ -594,9 +571,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 autoHighlight
                 data-testid="contactTagsSelect"
                 id="tags-standard"
-                options={contactTagsList.filter(
-                  (tag1) => !tags.some((tag2) => tag2 === tag1),
-                )}
+                filterSelectedOptions
+                options={contactTagsList}
                 getOptionLabel={(option) => option}
                 value={tags}
                 onChange={(_event, values) => setFieldValue('tags', values)}
@@ -618,10 +594,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               autoHighlight
               data-testid="exclusionsSelect"
               id="exclusions-standard"
-              options={contactExclusions.filter(
-                ({ value: id1 }) =>
-                  !exclusions.some(({ value: id2 }) => id2 === id1),
-              )}
+              filterSelectedOptions
+              options={contactExclusions}
               getOptionLabel={(option) => option.name}
               value={exclusions}
               onChange={(_event, values) => setFieldValue('exclusions', values)}
@@ -648,6 +622,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
             },
           )}
 
+          {/* As this form can be added a modal, we allow the modal to submit the form through a ref.
+          (The modal will have their own submit button that will call submit.)
+          However, if you're using the form as normally, the below buttons will show and you don't have to touch ref. */}
           {!formRef && (
             <Box mt={2} mb={1}>
               <Button

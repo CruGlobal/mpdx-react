@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -76,7 +76,7 @@ export const DeleteAppealContactModal: React.FC<
     return allContacts;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadAllAppealContacts();
   }, []);
 

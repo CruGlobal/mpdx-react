@@ -1,8 +1,0 @@
-mutation UpdateAppeal($input: AppealUpdateMutationInput!) {
-  updateAppeal(input: $input) {
-    appeal {
-      name
-      amount
-    }
-  }
-}

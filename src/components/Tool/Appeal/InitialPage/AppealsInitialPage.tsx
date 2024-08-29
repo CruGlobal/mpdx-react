@@ -14,7 +14,6 @@ import { makeStyles } from 'tss-react/mui';
 import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from 'src/theme';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -66,10 +65,10 @@ const AppealsInitialPage: React.FC = () => {
             <Box m={1}>
               <Card>
                 <CardHeader
-                  title="Add Appeal"
-                  style={{
+                  title={t('Add Appeal')}
+                  sx={(theme) => ({
                     backgroundColor: theme.palette.cruGrayLight.main,
-                  }}
+                  })}
                 />
                 <CardContent>
                   <AddAppealForm accountListId={accountListId || ''} />

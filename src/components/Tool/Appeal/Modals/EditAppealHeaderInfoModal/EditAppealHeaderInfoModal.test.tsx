@@ -51,10 +51,12 @@ describe('EditAppealHeaderInfoModal', () => {
         appeal={{
           ...appealInfo,
           name: '',
-          amount: '' as unknown as AppealFieldsFragment['amount'],
         }}
       />,
     );
+
+    userEvent.clear(getByRole('spinbutton', { name: /goal/i }));
+    userEvent.tab();
 
     expect(getByRole('textbox', { name: /name/i })).toHaveValue('');
     expect(getByRole('spinbutton', { name: /goal/i })).toHaveValue(null);

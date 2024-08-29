@@ -59,11 +59,6 @@ const Components = ({ showTour = true }) => {
 };
 
 describe('AppealTour', () => {
-  beforeEach(() => {
-    deselectAll.mockClear();
-    toggleSelectAll.mockClear();
-  });
-
   it('should not render the tour', async () => {
     const { queryByText, queryByRole } = render(
       <Components showTour={false} />,
@@ -121,12 +116,12 @@ describe('AppealTour', () => {
     expect(hideButton).toBeInTheDocument();
     expect(nextButton).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(nextButton);
     expect(getByRole('heading', { name: 'Review Asked' })).toBeInTheDocument();
     expect(hideButton).toBeInTheDocument();
     expect(nextButton).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(nextButton);
     expect(
       getByRole('heading', { name: 'Export Contacts' }),
     ).toBeInTheDocument();
@@ -135,7 +130,7 @@ describe('AppealTour', () => {
 
     userEvent.click(getByRole('button', { name: 'Export to CSV' }));
     expect(
-      getByRole('heading', { name: 'Export Contacts' }),
+      getByRole('heading', { name: "You're all done" }),
     ).toBeInTheDocument();
     expect(queryByRole('button', { name: 'Hide' })).not.toBeInTheDocument();
     expect(getByRole('button', { name: 'Finished' })).toBeInTheDocument();

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -27,7 +27,7 @@ const onClose = jest.fn();
 const setActiveFilters = jest.fn();
 const deselectAll = jest.fn();
 
-const defaultcontactCountMock = {
+const defaultContactCountMock = {
   data: {
     contacts: {
       totalCount: 5,
@@ -59,11 +59,11 @@ const Components = ({ ids = selectedIds }) => (
                   selectedIds: ids,
                   setActiveFilters,
                   deselectAll,
-                  askedCountQuery: defaultcontactCountMock,
-                  excludedCountQuery: defaultcontactCountMock,
-                  committedCountQuery: defaultcontactCountMock,
-                  givenCountQuery: defaultcontactCountMock,
-                  receivedCountQuery: defaultcontactCountMock,
+                  askedCountQueryResult: defaultContactCountMock,
+                  excludedCountQueryResult: defaultContactCountMock,
+                  committedCountQueryResult: defaultContactCountMock,
+                  givenCountQueryResult: defaultContactCountMock,
+                  receivedCountQueryResult: defaultContactCountMock,
                 } as unknown as AppealsType
               }
             >
@@ -93,17 +93,19 @@ describe('AppealsListFilterPanel', () => {
   });
 
   it('default', async () => {
-    const { getByText, getByRole, getAllByRole } = render(<Components />);
+    const { getByText, getByRole, findByRole, getAllByRole } = render(
+      <Components />,
+    );
 
     expect(getByText('Given')).toBeInTheDocument();
     expect(getByText('Committed')).toBeInTheDocument();
     expect(getByText('Excluded')).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(getByRole('button', { name: /given 5/i })).toBeInTheDocument();
-      expect(getByRole('button', { name: /received 5/i })).toBeInTheDocument();
-      expect(getByRole('button', { name: /asked 5/i })).toBeInTheDocument();
-    });
+    expect(
+      await findByRole('button', { name: /given 5/i }),
+    ).toBeInTheDocument();
+    expect(getByRole('button', { name: /received 5/i })).toBeInTheDocument();
+    expect(getByRole('button', { name: /asked 5/i })).toBeInTheDocument();
 
     expect(getByText('Add Contact to Appeal')).toBeInTheDocument();
     expect(getByText('Delete Appeal')).toBeInTheDocument();
@@ -161,57 +163,49 @@ describe('AppealsListFilterPanel', () => {
 
   describe('Modals', () => {
     it('should open export contacts modal', async () => {
-      const { findAllByRole, getByRole } = render(<Components />);
+      const { findAllByRole, findByRole } = render(<Components />);
 
       const buttons = await findAllByRole('button', {
         name: 'Export 2 Selected',
       });
       userEvent.click(buttons[0]);
 
-      await waitFor(() => {
-        expect(
-          getByRole('heading', { name: 'Export Contacts' }),
-        ).toBeInTheDocument();
-      });
+      expect(
+        await findByRole('heading', { name: 'Export Contacts' }),
+      ).toBeInTheDocument();
     });
 
     it('should open export emails modal', async () => {
-      const { findAllByRole, getByTestId } = render(<Components />);
+      const { findAllByRole, findByTestId } = render(<Components />);
 
       const buttons = await findAllByRole('button', {
         name: 'Export 2 Selected',
       });
       userEvent.click(buttons[1]);
 
-      await waitFor(() => {
-        expect(getByTestId('ExportEmailsModal')).toBeInTheDocument();
-      });
+      expect(await findByTestId('ExportEmailsModal')).toBeInTheDocument();
     });
 
     it('should open add contact to appeal modal', async () => {
-      const { findByRole, getByTestId } = render(<Components />);
+      const { findByRole, findByTestId } = render(<Components />);
 
       const button = await findByRole('button', {
         name: 'Select Contact',
       });
       userEvent.click(button);
 
-      await waitFor(() => {
-        expect(getByTestId('addContactToAppealModal')).toBeInTheDocument();
-      });
+      expect(await findByTestId('addContactToAppealModal')).toBeInTheDocument();
     });
 
     it('should open delete appeal modal', async () => {
-      const { findByRole, getByTestId } = render(<Components />);
+      const { findByRole, findByTestId } = render(<Components />);
 
       const button = await findByRole('button', {
         name: 'Permanently Delete Appeal',
       });
       userEvent.click(button);
 
-      await waitFor(() => {
-        expect(getByTestId('deleteAppealModal')).toBeInTheDocument();
-      });
+      expect(await findByTestId('deleteAppealModal')).toBeInTheDocument();
     });
   });
 });

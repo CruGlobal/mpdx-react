@@ -18,10 +18,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import {
-  AppealDocument,
-  AppealQuery,
-} from '../../AppealDetails/AppealsMainPanel/appealInfo.generated';
+import i18n from 'src/lib/i18n';
 import { useUpdateAppealMutation } from './EditAppeal.generated';
 
 interface EditAppealHeaderInfoModalProps {
@@ -35,14 +32,14 @@ export type EditAppealFormikSchema = {
 };
 
 const EditAppealSchema: yup.SchemaOf<EditAppealFormikSchema> = yup.object({
-  name: yup.string().required('Please enter a name'),
+  name: yup.string().required(i18n.t('Please enter a name')),
   amount: yup
     .number()
-    .required('Please enter a goal')
-    .typeError('Appeal amount must be a valid number')
+    .required(i18n.t('Please enter a goal'))
+    .typeError(i18n.t('Appeal amount must be a valid number'))
     .test(
-      'Is positive?',
-      'Must use a positive number for appeal amount',
+      i18n.t('Is positive?'),
+      i18n.t('Must use a positive number for appeal amount'),
       (value) => !value || parseFloat(value as unknown as string) > 0,
     ),
 });
@@ -68,26 +65,17 @@ export const EditAppealHeaderInfoModal: React.FC<
         },
       },
       update: (cache) => {
-        const query = {
-          query: AppealDocument,
-          variables: {
-            accountListId: accountListId ?? '',
-            appealId: appealInfo.id,
-          },
-        };
-        const dataFromCache = cache.readQuery<AppealQuery>(query);
-
-        if (dataFromCache) {
-          const data = {
-            ...dataFromCache,
-            appeal: {
-              ...dataFromCache.appeal,
-              name: attributes.name,
-              amount: attributes.amount,
+        cache.modify({
+          id: cache.identify({ __typename: 'Appeal', id: appealInfo.id }),
+          fields: {
+            name() {
+              return attributes.name;
             },
-          };
-          cache.writeQuery({ ...query, data });
-        }
+            amount() {
+              return attributes.amount;
+            },
+          },
+        });
       },
       onCompleted: () => {
         enqueueSnackbar(t('Successfully updated the appeal'), {
@@ -137,7 +125,7 @@ export const EditAppealHeaderInfoModal: React.FC<
                     onChange={handleChange}
                   />
                   <FormHelperText error={true} data-testid="nameError">
-                    {errors.name && errors.name}
+                    {errors.name}
                   </FormHelperText>
                 </FieldWrapper>
               </Box>
@@ -153,7 +141,7 @@ export const EditAppealHeaderInfoModal: React.FC<
                     onChange={handleChange}
                   />
                   <FormHelperText error={true} data-testid="amountError">
-                    {errors.amount && errors.amount}
+                    {errors.amount}
                   </FormHelperText>
                 </FieldWrapper>
               </Box>

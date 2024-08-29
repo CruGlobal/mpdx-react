@@ -122,16 +122,13 @@ describe('DeletePledgeModal', () => {
     });
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[3][0].operation.operationName).toEqual(
-        'DeleteAccountListPledge',
-      );
-      expect(mutationSpy.mock.calls[3][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteAccountListPledge', {
         input: {
           id: pledge.id,
         },
       });
-
-      expect(refetch).toHaveBeenCalledTimes(1);
     });
+
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

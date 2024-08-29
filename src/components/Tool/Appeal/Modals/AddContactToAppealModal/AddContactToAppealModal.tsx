@@ -15,15 +15,15 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from './AddContactToAppeal.generated';
-import { useAppealQuery } from './appealInfo.generated';
+import { useAppealQuery } from './AppealInfo.generated';
 
 interface AddContactToAppealModalProps {
   handleClose: () => void;
 }
 
-export type AddContactFormikSchema = {
+interface AddContactFormikSchema {
   contactIds: string[];
-};
+}
 
 const AddContactSchema: yup.SchemaOf<AddContactFormikSchema> = yup.object({
   contactIds: yup.array().of(yup.string().required()).default([]),
@@ -83,7 +83,11 @@ export const AddContactToAppealModal: React.FC<
   };
 
   return (
-    <Modal title={t('Add Contact(s)')} isOpen={true} handleClose={handleClose}>
+    <Modal
+      title={t('Add Contact(s) to Appeal')}
+      isOpen={true}
+      handleClose={handleClose}
+    >
       <Formik
         initialValues={{
           contactIds: [],
@@ -106,7 +110,6 @@ export const AddContactToAppealModal: React.FC<
                   accountListId={accountListId ?? ''}
                   value={contactIds}
                   onChange={(contactIds) => {
-                    contactIds;
                     setFieldValue('contactIds', contactIds);
                   }}
                   excludeContactIds={existingContactIds}

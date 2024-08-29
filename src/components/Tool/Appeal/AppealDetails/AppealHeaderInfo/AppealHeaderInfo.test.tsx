@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -46,38 +46,41 @@ describe('AppealHeaderInfo', () => {
   });
 
   it('renders appeal info', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <Components appealInfo={appealInfo} loading={false} />,
     );
 
-    await waitFor(() => {
-      expect(getByText('Test Appeal')).toBeInTheDocument();
-      expect(getByText('$100')).toBeInTheDocument();
-      expect(getByText(/\$50 \(50%\)/i)).toBeInTheDocument();
-      expect(getByText(/\$100 \(100%\)/i)).toBeInTheDocument();
-    });
+    expect(await findByText('Test Appeal')).toBeInTheDocument();
+
+    expect(getByText('$100')).toBeInTheDocument();
+    expect(getByText(/\$50 \(50%\)/i)).toBeInTheDocument();
+    expect(getByText(/\$100 \(100%\)/i)).toBeInTheDocument();
   });
 
   it('should allow user to open the edit appeal info modal', async () => {
-    const { getByText, getByTestId, getByRole } = render(
-      <Components appealInfo={appealInfo} loading={false} />,
-    );
+    const { findByText, findByRole, getByTestId, getByRole, queryByRole } =
+      render(<Components appealInfo={appealInfo} loading={false} />);
 
-    await waitFor(() => {
-      expect(getByText('Test Appeal')).toBeInTheDocument();
-    });
+    expect(await findByText('Test Appeal')).toBeInTheDocument();
 
     userEvent.click(getByTestId('edit-appeal-name'));
-    await waitFor(() => {
-      expect(getByRole('heading', { name: 'Edit Appeal' })).toBeInTheDocument();
-    });
 
-    const button = getByRole('button', { name: 'Close' });
-    within(button).getByTestId('CloseIcon');
+    expect(
+      await findByRole('heading', { name: 'Edit Appeal' }),
+    ).toBeInTheDocument();
 
     userEvent.click(getByTestId('edit-appeal-goal'));
+
+    expect(
+      await findByRole('heading', { name: 'Edit Appeal' }),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'Close' }));
+
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Edit Appeal' })).toBeInTheDocument();
+      expect(
+        queryByRole('heading', { name: 'Edit Appeal' }),
+      ).not.toBeInTheDocument();
     });
   });
 });

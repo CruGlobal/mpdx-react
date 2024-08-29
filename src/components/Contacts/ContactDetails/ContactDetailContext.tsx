@@ -59,7 +59,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
   const [selectedTabKey, setSelectedTabKey] = React.useState(
-    query?.tab ? TabKey[query?.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
+    query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
   );
   const handleTabChange = (
     _event: React.ChangeEvent<Record<string, unknown>>,

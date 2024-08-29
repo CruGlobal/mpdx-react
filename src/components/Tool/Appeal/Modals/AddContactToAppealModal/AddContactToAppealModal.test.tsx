@@ -12,7 +12,7 @@ import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/Conta
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
 import { AddContactToAppealModal } from './AddContactToAppealModal';
-import { AppealQuery } from './appealInfo.generated';
+import { AppealQuery } from './AppealInfo.generated';
 
 const accountListId = 'abc';
 const appealId = 'appealId';
@@ -104,7 +104,7 @@ describe('AddContactToAppealModal', () => {
     const { getByRole } = render(<Components />);
 
     expect(
-      getByRole('heading', { name: 'Add Contact(s)' }),
+      getByRole('heading', { name: 'Add Contact(s) to Appeal' }),
     ).toBeInTheDocument();
     expect(getByRole('combobox', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
@@ -123,26 +123,26 @@ describe('AddContactToAppealModal', () => {
   });
 
   it('adds 2 contacts to appeal and refreshes contacts list', async () => {
-    const { getByRole, getByText, queryByText } = render(<Components />);
+    const { getByRole, getByText, findByRole, queryByText } = render(
+      <Components />,
+    );
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
 
-    await waitFor(() => {
-      expect(getByRole('option', { name: 'Alice' })).toBeInTheDocument();
-      userEvent.click(getByRole('option', { name: 'Alice' }));
-      expect(getByText('Alice')).toBeInTheDocument();
-    });
+    expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
+
+    userEvent.click(getByRole('option', { name: 'Alice' }));
+    expect(getByText('Alice')).toBeInTheDocument();
 
     expect(queryByText('Bob')).not.toBeInTheDocument();
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
 
-    await waitFor(() => {
-      expect(getByRole('option', { name: 'Bob' })).toBeInTheDocument();
-      userEvent.click(getByRole('option', { name: 'Bob' }));
-      expect(getByText('Bob')).toBeInTheDocument();
-    });
+    expect(await findByRole('option', { name: 'Bob' })).toBeInTheDocument();
+
+    userEvent.click(getByRole('option', { name: 'Bob' }));
+    expect(getByText('Bob')).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Save' }));
 
@@ -154,10 +154,7 @@ describe('AddContactToAppealModal', () => {
     });
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[9][0].operation.operationName).toEqual(
-        'AssignContactsToAppeal',
-      );
-      expect(mutationSpy.mock.calls[9][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('AssignContactsToAppeal', {
         input: {
           accountListId,
           attributes: {
@@ -166,8 +163,8 @@ describe('AddContactToAppealModal', () => {
           },
         },
       });
-
-      expect(refetch).toHaveBeenCalledTimes(1);
     });
+
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

@@ -18,7 +18,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
-import { useAppealQuery } from '../AddContactToAppealModal/appealInfo.generated';
+import { useAppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
 import { useAssignContactsToAppealMutation } from './AddExcludedContactModal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -75,25 +75,25 @@ export const AddExcludedContactModal: React.FC<
         contactsQueryResult.refetch();
       },
       onCompleted: () => {
-        {
+        enqueueSnackbar(
           addingManyContacts
-            ? enqueueSnackbar(t('Successfully added contacts to appeal'), {
-                variant: 'success',
-              })
-            : enqueueSnackbar(t('Successfully added contact to appeal'), {
-                variant: 'success',
-              });
-        }
+            ? t('Successfully added contacts to appeal')
+            : t('Successfully added contact to appeal'),
+          {
+            variant: 'success',
+          },
+        );
         handleClose();
       },
       onError: () => {
-        addingManyContacts
-          ? enqueueSnackbar(t('Failed to add contacts to appeal'), {
-              variant: 'error',
-            })
-          : enqueueSnackbar(t('Failed to add contact to appeal'), {
-              variant: 'error',
-            });
+        enqueueSnackbar(
+          addingManyContacts
+            ? t('Failed to add contacts to appeal')
+            : t('Failed to add contact to appeal'),
+          {
+            variant: 'error',
+          },
+        );
       },
     });
     setMutating(false);

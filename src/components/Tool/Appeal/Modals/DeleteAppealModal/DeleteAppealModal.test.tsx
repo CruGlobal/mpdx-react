@@ -101,10 +101,7 @@ describe('DeleteAppealModal', () => {
     );
 
     await waitFor(() => {
-      expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
-        'DeleteAppeal',
-      );
-      expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteAppeal', {
         input: {
           accountListId,
           id: appealId,

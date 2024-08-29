@@ -55,14 +55,14 @@ export const AddAppealModal: React.FC<AddAppealModalProps> = ({
       ...appealIncludes,
       ...includes,
     };
-  }, [appealIncludes]);
+  }, [appealIncludes, isEndOfYearAsk]);
 
   const exclusionFilter = useMemo(() => {
     if (!isEndOfYearAsk) {
       return appealExcludes;
     }
     return contactExclusions;
-  }, [appealIncludes]);
+  }, [appealExcludes, isEndOfYearAsk]);
 
   const handleSubmit = async () => {
     if (formRef.current) {

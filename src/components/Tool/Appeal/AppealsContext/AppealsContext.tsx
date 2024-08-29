@@ -65,11 +65,11 @@ export interface AppealsType
   tour: AppealTourEnum | null;
   nextTourStep: () => void;
   hideTour: () => void;
-  askedCountQuery: ReturnType<typeof useContactsCountQuery>;
-  excludedCountQuery: ReturnType<typeof useContactsCountQuery>;
-  committedCountQuery: ReturnType<typeof useContactsCountQuery>;
-  givenCountQuery: ReturnType<typeof useContactsCountQuery>;
-  receivedCountQuery: ReturnType<typeof useContactsCountQuery>;
+  askedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  excludedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  committedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  givenCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  receivedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
 }
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
@@ -246,8 +246,9 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     appeal: [appealId || ''],
     ...nameSearch,
   };
+  const skip = shouldSkipContactCount(tour, filterPanelOpen, viewMode);
 
-  const askedCountQuery = useContactsCountQuery({
+  const askedCountQueryResult = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
@@ -255,10 +256,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         appealStatus: AppealStatusEnum.Asked,
       },
     },
-    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+    skip,
   });
 
-  const excludedCountQuery = useContactsCountQuery({
+  const excludedCountQueryResult = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
@@ -266,10 +267,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         appealStatus: AppealStatusEnum.Excluded,
       },
     },
-    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+    skip,
   });
 
-  const committedCountQuery = useContactsCountQuery({
+  const committedCountQueryResult = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
@@ -277,10 +278,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         appealStatus: AppealStatusEnum.NotReceived,
       },
     },
-    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+    skip,
   });
 
-  const givenCountQuery = useContactsCountQuery({
+  const givenCountQueryResult = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
@@ -288,10 +289,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         appealStatus: AppealStatusEnum.Processed,
       },
     },
-    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+    skip,
   });
 
-  const receivedCountQuery = useContactsCountQuery({
+  const receivedCountQueryResult = useContactsCountQuery({
     variables: {
       accountListId: accountListId || '',
       contactsFilter: {
@@ -299,7 +300,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         appealStatus: AppealStatusEnum.ReceivedNotProcessed,
       },
     },
-    skip: shouldSkipContactCount(tour, filterPanelOpen, viewMode),
+    skip,
   });
 
   const toggleFilterPanel = () => {
@@ -512,11 +513,11 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         tour,
         nextTourStep,
         hideTour,
-        askedCountQuery,
-        excludedCountQuery,
-        committedCountQuery,
-        givenCountQuery,
-        receivedCountQuery,
+        askedCountQueryResult,
+        excludedCountQueryResult,
+        committedCountQueryResult,
+        givenCountQueryResult,
+        receivedCountQueryResult,
       }}
     >
       {children}

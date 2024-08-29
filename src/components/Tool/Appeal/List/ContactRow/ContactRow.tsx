@@ -21,6 +21,7 @@ import {
   StyledCheckbox,
 } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -59,13 +60,16 @@ const ListButton = styled(ListItemButton)(() => ({
 const ContactRowActions = styled(Box)(() => ({
   opacity: 0,
   transition: 'opacity 0.3s',
+  display: 'flex',
+  alignItems: 'center',
+  paddingRight: theme.spacing(2),
 }));
 
 type FormatPledgeOrDonationProps = {
   amount?: number | null;
   currency?: string | null;
   appealStatus: AppealStatusEnum;
-  date?: any;
+  dateOrFrequency?: PledgeFrequencyEnum | string | null;
   locale: string;
   t: TFunction;
 };
@@ -74,7 +78,7 @@ const formatPledgeOrDonation = ({
   amount,
   currency,
   appealStatus,
-  date,
+  dateOrFrequency,
   locale,
   t,
 }: FormatPledgeOrDonationProps) => {
@@ -86,13 +90,18 @@ const formatPledgeOrDonation = ({
   const pledgeOrDonationDate =
     appealStatus === AppealStatusEnum.Asked ||
     appealStatus === AppealStatusEnum.Excluded
-      ? (date && getLocalizedPledgeFrequency(t, date)) ?? ''
-      : date
-      ? dateFormat(DateTime.fromISO(date), locale)
+      ? (dateOrFrequency &&
+          getLocalizedPledgeFrequency(
+            t,
+            dateOrFrequency as PledgeFrequencyEnum,
+          )) ??
+        ''
+      : dateOrFrequency
+      ? dateFormat(DateTime.fromISO(dateOrFrequency), locale)
       : null;
   return {
     amount: pledgeOrDonationAmount,
-    date: pledgeOrDonationDate,
+    dateOrFrequency: pledgeOrDonationDate,
   };
 };
 
@@ -124,7 +133,7 @@ export const ContactRow: React.FC<Props> = ({
   const [pledgeValues, setPledgeValues] =
     useState<AppealContactInfoFragment['pledges'][0]>();
   const [amountAndFrequency, setAmountAndFrequency] = useState<string>();
-  const [pledgeDonations, setPledgeDonations] = useState<string[] | null>();
+  const [pledgeDonations, setPledgeDonations] = useState<string[] | null>(null);
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -145,15 +154,16 @@ export const ContactRow: React.FC<Props> = ({
       appealStatus === AppealStatusEnum.Asked ||
       appealStatus === AppealStatusEnum.Excluded
     ) {
-      const { amount, date } = formatPledgeOrDonation({
+      const { amount, dateOrFrequency } = formatPledgeOrDonation({
         amount: pledgeAmount,
         currency: pledgeCurrency,
         appealStatus,
-        date: pledgeFrequency,
+        dateOrFrequency: pledgeFrequency,
         locale,
         t,
       });
-      setAmountAndFrequency(`${amount} ${date}`);
+      setAmountAndFrequency(`${amount} ${dateOrFrequency}`);
+      setPledgeValues(undefined);
     } else if (
       appealStatus === AppealStatusEnum.NotReceived ||
       appealStatus === AppealStatusEnum.ReceivedNotProcessed
@@ -163,17 +173,17 @@ export const ContactRow: React.FC<Props> = ({
       );
 
       if (appealPledge) {
-        const { amount, date } = formatPledgeOrDonation({
+        const { amount, dateOrFrequency } = formatPledgeOrDonation({
           amount: appealPledge?.amount,
           currency: appealPledge.amountCurrency,
           appealStatus,
-          date: appealPledge.expectedDate,
+          dateOrFrequency: appealPledge.expectedDate,
           locale,
           t,
         });
 
         setPledgeValues(appealPledge);
-        setAmountAndFrequency(`${amount} (${date})`);
+        setAmountAndFrequency(`${amount} (${dateOrFrequency})`);
       } else {
         setAmountAndFrequency(`${currencyFormat(0, 'USD', locale)}`);
       }
@@ -204,20 +214,13 @@ export const ContactRow: React.FC<Props> = ({
       );
 
       const givenDonations = appealDonations.map((donation) => {
-        const donationAmount =
-          donation?.appealAmount?.amount &&
-          donation?.appealAmount.convertedCurrency
-            ? currencyFormat(
-                donation.appealAmount.amount,
-                donation.appealAmount.convertedCurrency,
-                locale,
-              )
-            : donation?.appealAmount?.amount ||
-              currencyFormat(
-                0,
-                donation?.appealAmount?.convertedCurrency,
-                locale,
-              );
+        const amount = donation?.appealAmount?.amount;
+        const currency = donation?.appealAmount?.convertedCurrency;
+        const donationAmount = currencyFormat(
+          amount && currency ? amount : 0,
+          currency,
+          locale,
+        );
 
         const donationDate = dateFormat(
           DateTime.fromISO(donation.donationDate),
@@ -438,7 +441,7 @@ export const ContactRow: React.FC<Props> = ({
         <DynamicPledgeModal
           contact={contact}
           handleClose={() => setPledgeModalOpen(false)}
-          pledge={pledgeValues ?? undefined}
+          pledge={pledgeValues}
         />
       )}
 

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Alert,
   DialogActions,
@@ -30,9 +30,8 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
   const { t } = useTranslation();
   const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const [deleteAppeal] = useDeleteAppealMutation();
+  const [deleteAppeal, { loading }] = useDeleteAppealMutation();
   const { accountListId, appealId } = useContext(AppealsContext) as AppealsType;
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleDelete = async () => {
     if (!accountListId) {
@@ -47,7 +46,6 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
       });
       return;
     }
-    setIsSubmitting(true);
     await deleteAppeal({
       variables: {
         input: {
@@ -55,12 +53,15 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
           id: appealId,
         },
       },
+      update: (cache) => {
+        cache.evict({ id: `Appeal:${appealId}` });
+        cache.gc();
+        push(`/accountLists/${accountListId}/tools/appeals`);
+      },
       onCompleted: () => {
         enqueueSnackbar(t('Successfully deleted appeal.'), {
           variant: 'success',
         });
-
-        push(`/accountLists/${accountListId}/tools/appeals`);
       },
       onError: () => {
         enqueueSnackbar(t('There was an error trying to delete the appeal.'), {
@@ -68,8 +69,6 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
         });
       },
     });
-
-    setIsSubmitting(false);
   };
 
   return (
@@ -88,11 +87,7 @@ export const DeleteAppealModal: React.FC<DeleteAppealModalProps> = ({
       <DialogActions>
         <CancelButton onClick={handleClose} />
 
-        <ActionButton
-          disabled={isSubmitting}
-          onClick={handleDelete}
-          color="error"
-        >
+        <ActionButton disabled={loading} onClick={handleDelete} color="error">
           {t('Delete Appeal')}
         </ActionButton>
       </DialogActions>

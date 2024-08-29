@@ -47,7 +47,7 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
         });
       },
       onError: () => {
-        enqueueSnackbar(t('Unable to set Appeal as primary'), {
+        enqueueSnackbar(t('Unable to set appeal as primary'), {
           variant: 'error',
         });
       },

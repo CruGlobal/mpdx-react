@@ -12,7 +12,7 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext } from '../../AppealsContext/AppealsContext';
-import { AppealQuery } from '../AddContactToAppealModal/appealInfo.generated';
+import { AppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
 import { AddExcludedContactModal } from './AddExcludedContactModal';
 
 const accountListId = 'abc';
@@ -89,10 +89,6 @@ const Components = ({
 );
 
 describe('AddExcludedContactModal', () => {
-  beforeEach(() => {
-    handleClose.mockClear();
-    refetch.mockClear();
-  });
   it('default', () => {
     const { getByRole, getByText } = render(<Components />);
 
@@ -145,10 +141,7 @@ describe('AddExcludedContactModal', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[5][0].operation.operationName).toEqual(
-        'AssignContactsToAppeal',
-      );
-      expect(mutationSpy.mock.calls[5][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('AssignContactsToAppeal', {
         input: {
           accountListId,
           attributes: {
@@ -158,16 +151,16 @@ describe('AddExcludedContactModal', () => {
           },
         },
       });
-
-      expect(refetch).toHaveBeenCalledTimes(1);
-
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Successfully added contact to appeal',
-        {
-          variant: 'success',
-        },
-      );
     });
+
+    expect(refetch).toHaveBeenCalledTimes(1);
+
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'Successfully added contact to appeal',
+      {
+        variant: 'success',
+      },
+    );
   });
 
   it('sends all contactIds in bulk mutation', async () => {
@@ -182,10 +175,7 @@ describe('AddExcludedContactModal', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
-      expect(mutationSpy.mock.calls[5][0].operation.operationName).toEqual(
-        'AssignContactsToAppeal',
-      );
-      expect(mutationSpy.mock.calls[5][0].operation.variables).toEqual({
+      expect(mutationSpy).toHaveGraphqlOperation('AssignContactsToAppeal', {
         input: {
           accountListId,
           attributes: {
@@ -195,15 +185,15 @@ describe('AddExcludedContactModal', () => {
           },
         },
       });
-
-      expect(refetch).toHaveBeenCalledTimes(1);
-
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Successfully added contacts to appeal',
-        {
-          variant: 'success',
-        },
-      );
     });
+
+    expect(refetch).toHaveBeenCalledTimes(1);
+
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'Successfully added contacts to appeal',
+      {
+        variant: 'success',
+      },
+    );
   });
 });
