@@ -196,7 +196,10 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
               <Grid item>
                 <Alert severity="info" sx={{ marginBottom: 1 }}>
                   <Typography>
-                    {t('You are adding a commitment for')} <b>{contact.name}</b>
+                    {isNewPledge
+                      ? t('You are adding a commitment for')
+                      : t('You are editing the commitment for')}
+                    <b> {contact.name}</b>
                   </Typography>
                 </Alert>
               </Grid>
