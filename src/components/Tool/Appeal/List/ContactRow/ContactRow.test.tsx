@@ -64,7 +64,8 @@ describe('ContactsRow', () => {
     const { getByText } = render(<Components />);
 
     expect(getByText('Test, Name')).toBeInTheDocument();
-    expect(getByText('CA$500 Monthly')).toBeInTheDocument();
+    expect(getByText('CA$500')).toBeInTheDocument();
+    expect(getByText('Monthly')).toBeInTheDocument();
   });
 
   it('should render check event', async () => {
@@ -111,7 +112,8 @@ describe('ContactsRow', () => {
       );
 
       expect(getByText('Reason')).toBeInTheDocument();
-      expect(getByText('CA$500 Monthly')).toBeInTheDocument();
+      expect(getByText('CA$500')).toBeInTheDocument();
+      expect(getByText('Monthly')).toBeInTheDocument();
     });
 
     it('Asked', () => {
@@ -122,7 +124,8 @@ describe('ContactsRow', () => {
       );
 
       expect(queryByText('Reason')).not.toBeInTheDocument();
-      expect(getByText('CA$500 Monthly')).toBeInTheDocument();
+      expect(getByText('CA$500')).toBeInTheDocument();
+      expect(getByText('Monthly')).toBeInTheDocument();
     });
 
     it('Committed', () => {
@@ -133,7 +136,8 @@ describe('ContactsRow', () => {
       );
 
       expect(queryByText('Reason')).not.toBeInTheDocument();
-      expect(getByText('$3,000 (Aug 8, 2024)')).toBeInTheDocument();
+      expect(getByText('$3,000')).toBeInTheDocument();
+      expect(getByText('(Aug 8, 2024)')).toBeInTheDocument();
     });
 
     it('Committed - with no pledges', () => {
@@ -159,7 +163,8 @@ describe('ContactsRow', () => {
       );
 
       expect(queryByText('Reason')).not.toBeInTheDocument();
-      expect(getByText('$3,000 (Aug 8, 2024)')).toBeInTheDocument();
+      expect(getByText('$3,000')).toBeInTheDocument();
+      expect(getByText('(Aug 8, 2024)')).toBeInTheDocument();
     });
 
     it('Given', () => {

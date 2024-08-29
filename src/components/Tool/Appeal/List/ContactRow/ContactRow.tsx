@@ -18,7 +18,7 @@ import {
   StyledCheckbox,
 } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
-import { useGetPledgeOrDonation } from 'src/hooks/useGetPledgeOrDonation';
+import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import {
@@ -43,6 +43,7 @@ import {
   DynamicPledgeModal,
   preloadPledgeModal,
 } from '../../Modals/PledgeModal/DynamicPledgeModal';
+import { AmountAndFrequency } from '../../Shared/AmountAndFrequency/AmountAndFrequency';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
@@ -91,7 +92,7 @@ export const ContactRow: React.FC<Props> = ({
 
   const { id: contactId, name } = contact;
 
-  const { pledgeValues, amountAndFrequency, pledgeDonations } =
+  const { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue } =
     useGetPledgeOrDonation(appealStatus, contact, appealId ?? '', locale);
 
   const handleCreatePledge = () => {
@@ -188,7 +189,12 @@ export const ContactRow: React.FC<Props> = ({
                 justifyContent="center"
               >
                 {appealStatus !== AppealStatusEnum.Processed && (
-                  <Typography component="span">{amountAndFrequency}</Typography>
+                  <Typography component="span">
+                    <AmountAndFrequency
+                      amountAndFrequency={amountAndFrequency}
+                      pledgeOverdue={pledgeOverdue}
+                    />
+                  </Typography>
                 )}
 
                 {appealStatus === AppealStatusEnum.Processed &&

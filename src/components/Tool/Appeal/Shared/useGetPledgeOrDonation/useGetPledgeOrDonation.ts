@@ -7,6 +7,7 @@ import { AppealContactInfoFragment } from 'src/components/Tool/Appeal/AppealsCon
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { useLocale } from '../../../../../hooks/useLocale';
 
 type FormatPledgeOrDonationProps = {
   amount?: number | null;
@@ -30,6 +31,18 @@ const formatPledgeOrDonation = ({
       ? currencyFormat(amount, currency, locale)
       : amount || currencyFormat(0, currency, locale);
 
+  let pledgeOverdue = false;
+  if (
+    (appealStatus === AppealStatusEnum.NotReceived ||
+      appealStatus === AppealStatusEnum.ReceivedNotProcessed) &&
+    dateOrFrequency
+  ) {
+    const date = DateTime.fromISO(dateOrFrequency).startOf('day');
+    if (date <= DateTime.local().startOf('day')) {
+      pledgeOverdue = true;
+    }
+  }
+
   const pledgeOrDonationDate =
     appealStatus === AppealStatusEnum.Asked ||
     appealStatus === AppealStatusEnum.Excluded
@@ -45,21 +58,29 @@ const formatPledgeOrDonation = ({
   return {
     amount: pledgeOrDonationAmount,
     dateOrFrequency: pledgeOrDonationDate,
+    pledgeOverdue,
   };
 };
 
+export interface UseGetPledgeOrDonation {
+  pledgeValues: AppealContactInfoFragment['pledges'][0] | undefined;
+  amountAndFrequency: string[] | undefined;
+  pledgeDonations: string[] | null;
+  pledgeOverdue: boolean;
+}
 // The return value doesn't change until `delay` milliseconds have elapsed since the last time `value` changed
 export const useGetPledgeOrDonation = (
   appealStatus: AppealStatusEnum,
   contact: AppealContactInfoFragment,
   appealId: string,
-  locale: string,
-) => {
+): UseGetPledgeOrDonation => {
+  const locale = useLocale();
   const { t } = useTranslation();
   const [pledgeValues, setPledgeValues] =
     useState<AppealContactInfoFragment['pledges'][0]>();
-  const [amountAndFrequency, setAmountAndFrequency] = useState<string>();
+  const [amountAndFrequency, setAmountAndFrequency] = useState<string[]>();
   const [pledgeDonations, setPledgeDonations] = useState<string[] | null>(null);
+  const [pledgeOverdue, setPledgeOverdue] = useState(false);
 
   useEffect(() => {
     const {
@@ -82,7 +103,7 @@ export const useGetPledgeOrDonation = (
         locale,
         t,
       });
-      setAmountAndFrequency(`${amount} ${dateOrFrequency}`);
+      setAmountAndFrequency([`${amount}`, `${dateOrFrequency}`]);
       setPledgeValues(undefined);
     } else if (
       appealStatus === AppealStatusEnum.NotReceived ||
@@ -93,7 +114,11 @@ export const useGetPledgeOrDonation = (
       );
 
       if (appealPledge) {
-        const { amount, dateOrFrequency } = formatPledgeOrDonation({
+        const {
+          amount,
+          dateOrFrequency,
+          pledgeOverdue: overdue,
+        } = formatPledgeOrDonation({
           amount: appealPledge?.amount,
           currency: appealPledge.amountCurrency,
           appealStatus,
@@ -103,9 +128,10 @@ export const useGetPledgeOrDonation = (
         });
 
         setPledgeValues(appealPledge);
-        setAmountAndFrequency(`${amount} (${dateOrFrequency})`);
+        setAmountAndFrequency([`${amount}`, `(${dateOrFrequency})`]);
+        setPledgeOverdue(overdue);
       } else {
-        setAmountAndFrequency(`${currencyFormat(0, 'USD', locale)}`);
+        setAmountAndFrequency([`${currencyFormat(0, 'USD', locale)}`]);
       }
     } else if (appealStatus === AppealStatusEnum.Processed) {
       const appealPledge = pledges?.find(
@@ -121,9 +147,9 @@ export const useGetPledgeOrDonation = (
           t,
         });
         setPledgeValues(appealPledge);
-        setAmountAndFrequency(`${amount}`);
+        setAmountAndFrequency([`${amount}`]);
       } else {
-        setAmountAndFrequency(`${currencyFormat(0, 'USD', locale)}`);
+        setAmountAndFrequency([`${currencyFormat(0, 'USD', locale)}`]);
       }
 
       // Currently we grab all the donations and filter them by the appeal id
@@ -154,5 +180,5 @@ export const useGetPledgeOrDonation = (
     }
   }, [appealStatus, contact, locale]);
 
-  return { pledgeValues, amountAndFrequency, pledgeDonations };
+  return { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue };
 };
