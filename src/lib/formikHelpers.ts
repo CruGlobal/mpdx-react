@@ -8,4 +8,5 @@ export const dateTime = () =>
 
 export const nullableDateTime = () => dateTime().nullable().defined();
 
-export const requiredDateTime = () => dateTime().required();
+export const requiredDateTime = (requiredMessage = '') =>
+  dateTime().required(requiredMessage);

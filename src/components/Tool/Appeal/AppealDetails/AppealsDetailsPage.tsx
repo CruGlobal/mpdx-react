@@ -3,9 +3,9 @@ import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
-import { AppealsLeftPanel } from './AppealDetails/AppealLeftPanel/AppealsLeftPanel';
-import { AppealsMainPanel } from './AppealDetails/AppealsMainPanel/AppealsMainPanel';
-import { AppealsContext, AppealsType } from './AppealsContext/AppealsContext';
+import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
+import { AppealsLeftPanel } from './AppealLeftPanel/AppealsLeftPanel';
+import { AppealsMainPanel } from './AppealsMainPanel/AppealsMainPanel';
 
 const AppealsDetailsPage: React.FC = () => {
   const { filterPanelOpen, setContactFocus, contactDetailsOpen } = useContext(
