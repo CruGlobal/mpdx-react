@@ -113,6 +113,25 @@ describe('getServerSideProps', () => {
     );
   });
 
+  it('swallows server-side mutation errors', async () => {
+    const accountListOptions = {
+      accountLists: {
+        nodes: [{ id: 'account-list-1' }],
+      },
+    };
+    query.mockResolvedValue({
+      data: accountListOptions,
+    });
+    mutate.mockRejectedValue(new Error('Failed'));
+
+    await expect(getServerSideProps(context)).resolves.toEqual({
+      props: {
+        accountListOptions,
+        session,
+      },
+    });
+  });
+
   it('does not set an account list as the default when there are multiple', async () => {
     const accountListOptions = {
       accountLists: {

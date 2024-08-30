@@ -115,25 +115,32 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   if (accountListOptions.accountLists.nodes.length === 1) {
     // The user has exactly one account list, so set it as the default and go to preferences
     const defaultAccountListId = accountListOptions.accountLists.nodes[0].id;
-    await ssrClient.mutate<
-      UpdateUserDefaultAccountMutation,
-      UpdateUserDefaultAccountMutationVariables
-    >({
-      mutation: UpdateUserDefaultAccountDocument,
-      variables: {
-        input: {
-          attributes: {
-            defaultAccountList: defaultAccountListId,
+    try {
+      await ssrClient.mutate<
+        UpdateUserDefaultAccountMutation,
+        UpdateUserDefaultAccountMutationVariables
+      >({
+        mutation: UpdateUserDefaultAccountDocument,
+        variables: {
+          input: {
+            attributes: {
+              defaultAccountList: defaultAccountListId,
+            },
           },
         },
-      },
-    });
-    return {
-      redirect: {
-        destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
-        permanent: false,
-      },
-    };
+      });
+      return {
+        redirect: {
+          destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
+          permanent: false,
+        },
+      };
+    } catch {
+      // If setting the account list failed, silently swallow the error and let
+      // the user view the page. If the error is persistent, the mutation will
+      // fail there when they try to choose a default account list, and they
+      // will at least get an error message.
+    }
   }
 
   return {
