@@ -22,9 +22,7 @@ interface GetServerSidePropsReturn {
 const accountListId = 'accountID1';
 
 describe('Account Lists page', () => {
-  const context = {
-    req: {} as any,
-  };
+  const context = {};
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {

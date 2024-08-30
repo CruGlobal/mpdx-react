@@ -23,9 +23,7 @@ const router = {
   push,
 };
 
-const context = {
-  req: {},
-} as unknown as GetServerSidePropsContext;
+const context = {} as unknown as GetServerSidePropsContext;
 
 const mutationSpy = jest.fn();
 
