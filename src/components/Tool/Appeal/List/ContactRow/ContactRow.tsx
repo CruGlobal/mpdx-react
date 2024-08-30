@@ -48,6 +48,8 @@ import {
   DynamicPledgeModal,
   preloadPledgeModal,
 } from '../../Modals/PledgeModal/DynamicPledgeModal';
+import { useGetExcludedReasons } from '../../Shared/useGetExcludedReasons/useGetExcludedReasons';
+import { ExcludedAppealContactInfoFragment } from '../ContactsList/AppealExcludedContacts.generated';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx
@@ -109,12 +111,14 @@ interface Props {
   contact: AppealContactInfoFragment;
   appealStatus: AppealStatusEnum;
   useTopMargin?: boolean;
+  excludedContacts: ExcludedAppealContactInfoFragment[];
 }
 
 export const ContactRow: React.FC<Props> = ({
   contact,
   appealStatus,
   useTopMargin,
+  excludedContacts,
 }) => {
   const {
     appealId,
@@ -134,6 +138,8 @@ export const ContactRow: React.FC<Props> = ({
     useState<AppealContactInfoFragment['pledges'][0]>();
   const [amountAndFrequency, setAmountAndFrequency] = useState<string>();
   const [pledgeDonations, setPledgeDonations] = useState<string[] | null>(null);
+
+  const reasons = useGetExcludedReasons(excludedContacts, contact.id);
 
   const handleContactClick = () => {
     onContactSelected(contact.id);
@@ -268,23 +274,24 @@ export const ContactRow: React.FC<Props> = ({
         })}
         data-testid="rowButton"
       >
-        <Hidden xsDown>
-          <ListItemIcon>
-            <StyledCheckbox
-              checked={isChecked(contact.id)}
-              color="secondary"
-              onClick={(event) => event.stopPropagation()}
-              onChange={() => onContactCheckToggle(contact.id)}
-              value={isChecked}
-            />
-          </ListItemIcon>
-        </Hidden>
         <Grid container alignItems="center">
           <Grid
             item
             xs={isExcludedContact ? 5 : 6}
             style={{ paddingRight: 16 }}
+            display={'flex'}
           >
+            <Hidden xsDown>
+              <ListItemIcon>
+                <StyledCheckbox
+                  checked={isChecked(contact.id)}
+                  color="secondary"
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={() => onContactCheckToggle(contact.id)}
+                  value={isChecked}
+                />
+              </ListItemIcon>
+            </Hidden>
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
@@ -303,10 +310,14 @@ export const ContactRow: React.FC<Props> = ({
                   flexDirection="column"
                   justifyContent="center"
                 >
-                  <Typography component="span">
-                    {/* TODO */}
-                    Reason
-                  </Typography>
+                  {reasons.map((reason, idx) => (
+                    <Typography
+                      key={`${contactId}-${reason}-${idx}`}
+                      component="span"
+                    >
+                      {reason}
+                    </Typography>
+                  ))}
                 </Box>
               </Box>
             </Grid>

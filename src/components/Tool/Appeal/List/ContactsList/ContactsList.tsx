@@ -20,6 +20,7 @@ import {
 } from '../../AppealsContext/AppealsContext';
 import { DynamicAppealTour } from '../AppealTour/DynamicAppealTour';
 import { ContactRow } from '../ContactRow/ContactRow';
+import { useExcludedAppealContactsLazyQuery } from './AppealExcludedContacts.generated';
 
 const useStyles = makeStyles()(() => ({
   headerContainer: {
@@ -50,6 +51,8 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const {
+    appealId,
+    accountListId,
     tour,
     contactsQueryResult,
     isFiltered,
@@ -61,8 +64,23 @@ export const ContactsList: React.FC<ContactsListProps> = ({
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
+  const [fetchExcludedAppealContacts, { data: excludedContacts }] =
+    useExcludedAppealContactsLazyQuery({
+      variables: {
+        appealId: appealId ?? '',
+        accountListId: accountListId ?? '',
+      },
+    });
+
   const appealStatus =
     (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
+
+  useEffect(() => {
+    if (appealStatus !== AppealStatusEnum.Excluded) {
+      return;
+    }
+    fetchExcludedAppealContacts();
+  }, [appealStatus]);
 
   useEffect(() => {
     if (!activeFilters.appealStatus) {
@@ -148,6 +166,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
             contact={contact}
             appealStatus={appealStatus}
             useTopMargin={index === 0}
+            excludedContacts={
+              excludedContacts?.appeal?.excludedAppealContacts ?? []
+            }
           />
         )}
         groupBy={(item) => ({ label: item.name[0].toUpperCase() })}
