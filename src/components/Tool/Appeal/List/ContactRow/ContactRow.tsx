@@ -48,8 +48,8 @@ import {
   DynamicPledgeModal,
   preloadPledgeModal,
 } from '../../Modals/PledgeModal/DynamicPledgeModal';
+import { ExcludedAppealContactInfoFragment } from '../../Shared/AppealExcludedContacts.generated';
 import { useGetExcludedReasons } from '../../Shared/useGetExcludedReasons/useGetExcludedReasons';
-import { ExcludedAppealContactInfoFragment } from '../ContactsList/AppealExcludedContacts.generated';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactRow/ContactRow.tsx

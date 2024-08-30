@@ -1,27 +1,9 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { ExcludedAppealContactReasonEnum } from 'src/graphql/types.generated';
 import { useGetExcludedReasons } from './useGetExcludedReasons';
-
-const contactID = 'contactID';
-const defaultExcludedContacts = [
-  {
-    id: 'id1',
-    contact: {
-      id: 'contactID',
-    },
-    reasons: [ExcludedAppealContactReasonEnum.NoAppeals],
-  },
-  {
-    id: 'id2',
-    contact: {
-      id: 'contactID2',
-    },
-    reasons: [
-      ExcludedAppealContactReasonEnum.GaveMoreThanPledgedRange,
-      ExcludedAppealContactReasonEnum.StoppedGivingRange,
-    ],
-  },
-];
+import {
+  contactId,
+  defaultExcludedContacts,
+} from './useGetExcludedReasonsMock';
 
 describe('useGetExcludedReasons', () => {
   it('should return empty string', () => {
@@ -46,7 +28,7 @@ describe('useGetExcludedReasons', () => {
 
   it('should return the correct reason', () => {
     const { result } = renderHook(() =>
-      useGetExcludedReasons(defaultExcludedContacts, contactID),
+      useGetExcludedReasons(defaultExcludedContacts, contactId),
     );
 
     expect(result.current.length).toEqual(1);

@@ -12,6 +12,11 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import { ExcludedAppealContactInfoFragment } from '../../Shared/AppealExcludedContacts.generated';
+import {
+  contactId,
+  defaultExcludedContacts,
+} from '../../Shared/useGetExcludedReasons/useGetExcludedReasonsMock';
 import { ContactRow } from './ContactRow';
 import { defaultContact } from './ContactRowMock';
 
@@ -31,10 +36,12 @@ const isRowChecked = jest.fn();
 type ComponentsProps = {
   appealStatus?: AppealStatusEnum;
   contact?: AppealContactInfoFragment;
+  excludedContacts?: ExcludedAppealContactInfoFragment[];
 };
 const Components = ({
   appealStatus = AppealStatusEnum.Asked,
   contact = defaultContact,
+  excludedContacts = [],
 }: ComponentsProps) => (
   <TestRouter router={router}>
     <GqlMockedProvider>
@@ -51,7 +58,11 @@ const Components = ({
               } as unknown as AppealsType
             }
           >
-            <ContactRow contact={contact} appealStatus={appealStatus} />
+            <ContactRow
+              contact={contact}
+              appealStatus={appealStatus}
+              excludedContacts={excludedContacts}
+            />
           </AppealsContext.Provider>
         </AppealsWrapper>
       </ThemeProvider>
@@ -171,6 +182,37 @@ describe('ContactsRow', () => {
 
       expect(queryByText('Reason')).not.toBeInTheDocument();
       expect(getByText('$3,000 ($50) (Jun 25, 2019)')).toBeInTheDocument();
+    });
+  });
+
+  describe('Excluded Reason', () => {
+    it('should not display excluded reason if not excluded contact', async () => {
+      const { queryByText } = render(
+        <Components
+          appealStatus={AppealStatusEnum.NotReceived}
+          contact={{
+            ...defaultContact,
+            id: contactId,
+          }}
+        />,
+      );
+
+      expect(queryByText('Send Appeals?" set to No')).not.toBeInTheDocument();
+    });
+
+    it('should display excluded reason', async () => {
+      const { findByText } = render(
+        <Components
+          excludedContacts={defaultExcludedContacts}
+          appealStatus={AppealStatusEnum.Excluded}
+          contact={{
+            ...defaultContact,
+            id: contactId,
+          }}
+        />,
+      );
+
+      expect(await findByText('Send Appeals?" set to No')).toBeInTheDocument();
     });
   });
 });

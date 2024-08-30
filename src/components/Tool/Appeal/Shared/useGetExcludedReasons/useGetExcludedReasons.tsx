@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedExcludedFromAppealReasons } from 'src/utils/functions/getLocalizedExcludedFromAppealReasons';
-import { ExcludedAppealContactInfoFragment } from '../../List/ContactsList/AppealExcludedContacts.generated';
+import { ExcludedAppealContactInfoFragment } from '../AppealExcludedContacts.generated';
 
 // The return value doesn't change until `delay` milliseconds have elapsed since the last time `value` changed
 export const useGetExcludedReasons = (

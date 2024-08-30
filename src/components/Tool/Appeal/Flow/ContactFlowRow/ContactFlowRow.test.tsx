@@ -12,11 +12,16 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { ExcludedAppealContactInfoFragment } from '../../Shared/AppealExcludedContacts.generated';
+import {
+  contactId,
+  defaultExcludedContacts,
+} from '../../Shared/useGetExcludedReasons/useGetExcludedReasonsMock';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
 const contact = {
-  id: '123',
+  id: contactId,
   name: 'Test Name',
   starred: true,
   avatar: 'avatar.jpg',
@@ -29,7 +34,14 @@ const onContactSelected = jest.fn();
 const toggleSelectionById = jest.fn();
 const isChecked = jest.fn().mockImplementation(() => false);
 
-const Components = () => (
+type ComponentsProps = {
+  appealStatus?: AppealStatusEnum;
+  excludedContacts?: ExcludedAppealContactInfoFragment[];
+};
+const Components = ({
+  appealStatus = AppealStatusEnum.Processed,
+  excludedContacts = [],
+}: ComponentsProps) => (
   <DndProvider backend={HTML5Backend}>
     <ThemeProvider theme={theme}>
       <TestWrapper>
@@ -44,8 +56,9 @@ const Components = () => (
           <ContactFlowRow
             accountListId={accountListId}
             contact={contact}
-            appealStatus={AppealStatusEnum.Processed}
+            appealStatus={appealStatus}
             onContactSelected={onContactSelected}
+            excludedContacts={excludedContacts}
           />
         </AppealsContext.Provider>
       </TestWrapper>
@@ -73,6 +86,27 @@ describe('ContactFlowRow', () => {
     userEvent.click(getByRole('checkbox'));
     await waitFor(() => {
       expect(toggleSelectionById).toHaveBeenLastCalledWith(contact.id);
+    });
+  });
+
+  describe('Excluded Reason', () => {
+    it('should not display excluded reason if not excluded contact', async () => {
+      const { queryByText } = render(
+        <Components excludedContacts={defaultExcludedContacts} />,
+      );
+
+      expect(queryByText('Send Appeals?" set to No')).not.toBeInTheDocument();
+    });
+
+    it('should display excluded reason', async () => {
+      const { findByText } = render(
+        <Components
+          excludedContacts={defaultExcludedContacts}
+          appealStatus={AppealStatusEnum.Excluded}
+        />,
+      );
+
+      expect(await findByText('Send Appeals?" set to No')).toBeInTheDocument();
     });
   });
 });

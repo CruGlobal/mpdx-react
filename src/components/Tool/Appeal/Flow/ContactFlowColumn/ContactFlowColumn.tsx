@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
@@ -28,6 +28,7 @@ import {
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
+import { useExcludedAppealContactsLazyQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
 
@@ -67,6 +68,21 @@ export const ContactFlowColumn: React.FC<Props> = ({
     skip: !accountListId || !appealStatus,
   });
 
+  const [fetchExcludedAppealContacts, { data: excludedContacts }] =
+    useExcludedAppealContactsLazyQuery({
+      variables: {
+        appealId: appealId ?? '',
+        accountListId: accountListId ?? '',
+      },
+    });
+
+  useEffect(() => {
+    if (appealStatus !== AppealStatusEnum.Excluded) {
+      return;
+    }
+    fetchExcludedAppealContacts();
+  }, [appealStatus]);
+
   const cardContentRef = useRef<HTMLDivElement>();
 
   const [{ canDrop }, drop] = useDrop(() => ({
@@ -94,6 +110,8 @@ export const ContactFlowColumn: React.FC<Props> = ({
   };
 
   const totalContacts = data?.contacts.totalCount || 0;
+
+  const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
 
   return loading && !data ? (
     <CircularProgress />
@@ -165,9 +183,13 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 accountListId={accountListId}
                 contact={contact}
                 appealStatus={appealStatus}
-                contactStatus={contact.status}
                 onContactSelected={onContactSelected}
                 columnWidth={cardContentRef.current?.offsetWidth}
+                excludedContacts={
+                  isExcludedContact
+                    ? excludedContacts?.appeal?.excludedAppealContacts ?? []
+                    : []
+                }
               />
             )}
             endReached={() =>

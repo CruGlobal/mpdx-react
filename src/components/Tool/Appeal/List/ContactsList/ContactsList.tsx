@@ -18,9 +18,9 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { useExcludedAppealContactsLazyQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { DynamicAppealTour } from '../AppealTour/DynamicAppealTour';
 import { ContactRow } from '../ContactRow/ContactRow';
-import { useExcludedAppealContactsLazyQuery } from './AppealExcludedContacts.generated';
 
 const useStyles = makeStyles()(() => ({
   headerContainer: {
@@ -194,7 +194,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
             appealStatus={appealStatus}
             useTopMargin={index === 0}
             excludedContacts={
-              excludedContacts?.appeal?.excludedAppealContacts ?? []
+              isExcludedContact
+                ? excludedContacts?.appeal?.excludedAppealContacts ?? []
+                : []
             }
           />
         )}
