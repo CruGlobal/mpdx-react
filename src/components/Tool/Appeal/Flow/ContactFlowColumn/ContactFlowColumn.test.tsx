@@ -73,8 +73,8 @@ const Components = () => (
 
 describe('ContactFlowColumn', () => {
   it('should render a column with correct details', async () => {
-    const { getByText, getByTestId } = render(<Components />);
-    await waitFor(() => expect(getByText(title)).toBeInTheDocument());
+    const { getByText, findByText, getByTestId } = render(<Components />);
+    expect(await findByText(title)).toBeInTheDocument();
     expect(getByText('1')).toBeInTheDocument();
     expect(getByText('Test Person')).toBeInTheDocument();
     expect(getByTestId('column-header')).toHaveStyle({
@@ -83,9 +83,11 @@ describe('ContactFlowColumn', () => {
   });
 
   it('should open menu', async () => {
-    const { getByText, getByTestId, getByRole } = render(<Components />);
+    const { getByText, findByText, getByTestId, getByRole } = render(
+      <Components />,
+    );
 
-    await waitFor(() => expect(getByText(title)).toBeInTheDocument());
+    expect(await findByText(title)).toBeInTheDocument();
 
     userEvent.click(getByTestId('MoreVertIcon'));
     expect(getByText('Not Interested')).toBeInTheDocument();

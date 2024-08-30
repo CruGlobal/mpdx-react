@@ -109,7 +109,7 @@ const TestRenderContactsFilters: React.FC = () => {
 
 describe('ContactsPageContext', () => {
   it('should open a contact and the URL should reflect the opened contact', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
@@ -142,13 +142,15 @@ describe('ContactsPageContext', () => {
     );
 
     expect(getByText('Loading')).toBeInTheDocument();
-    await waitFor(() =>
-      expect(getByText(`appealId: ${appealIdentifier}`)).toBeInTheDocument(),
-    );
-    userEvent.click(getByText('Open Contact'));
-    await waitFor(() =>
-      expect(getByText(`contactDetailsId: ${contactId}`)).toBeInTheDocument(),
-    );
+
+    expect(
+      await findByText(`appealId: ${appealIdentifier}`),
+    ).toBeInTheDocument(),
+      userEvent.click(getByText('Open Contact'));
+
+    expect(
+      await findByText(`contactDetailsId: ${contactId}`),
+    ).toBeInTheDocument();
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
         pathname:
@@ -159,7 +161,7 @@ describe('ContactsPageContext', () => {
   });
 
   it('should switch views to flows and back to list', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
@@ -190,9 +192,9 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    await waitFor(() => expect(getByText('Flows Button')).toBeInTheDocument());
+    expect(await findByText('Flows Button')).toBeInTheDocument();
     userEvent.click(getByText('Flows Button'));
-    await waitFor(() => expect(getByText('flows')).toBeInTheDocument());
+    expect(await findByText('flows')).toBeInTheDocument();
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
         pathname:
@@ -202,7 +204,7 @@ describe('ContactsPageContext', () => {
     );
 
     userEvent.click(getByText('List Button'));
-    await waitFor(() => expect(getByText('list')).toBeInTheDocument());
+    expect(await findByText('list')).toBeInTheDocument();
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith({
         pathname:
@@ -213,7 +215,7 @@ describe('ContactsPageContext', () => {
   });
 
   it('should redirect back to flows view on contact page', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
@@ -248,11 +250,11 @@ describe('ContactsPageContext', () => {
       </ThemeProvider>,
     );
     expect(getByText('Loading')).toBeInTheDocument();
-    await waitFor(() =>
-      expect(getByText(`contactDetailsId: ${contactId}`)).toBeInTheDocument(),
-    );
 
-    await waitFor(() => expect(getByText('Close Contact')).toBeInTheDocument());
+    expect(
+      await findByText(`contactDetailsId: ${contactId}`),
+    ).toBeInTheDocument();
+    expect(await findByText('Close Contact')).toBeInTheDocument();
     userEvent.click(getByText('Close Contact'));
 
     await waitFor(() =>

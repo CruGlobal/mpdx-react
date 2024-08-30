@@ -100,7 +100,7 @@ describe('EditAppealHeaderInfoModal', () => {
   });
 
   it('should show amount error', async () => {
-    const { getByRole, getByText, queryByText } = render(<Components />);
+    const { getByRole, findByText, queryByText } = render(<Components />);
 
     const name = getByRole('textbox', { name: /name/i });
     const amount = getByRole('spinbutton', { name: /goal/i });
@@ -112,18 +112,15 @@ describe('EditAppealHeaderInfoModal', () => {
     userEvent.type(amount, '100');
     userEvent.clear(amount);
 
-    await waitFor(() =>
-      expect(getByText(/please enter a goal/i)).toBeInTheDocument(),
-    );
+    expect(await findByText(/please enter a goal/i)).toBeInTheDocument();
 
     userEvent.clear(amount);
     userEvent.type(amount, '-100');
 
-    await waitFor(() =>
-      expect(
-        getByText(/must use a positive number for appeal amount/i),
-      ).toBeInTheDocument(),
-    );
+    expect(
+      await findByText(/must use a positive number for appeal amount/i),
+    ).toBeInTheDocument();
+
     userEvent.clear(amount);
     userEvent.type(amount, '400');
     await waitFor(() =>

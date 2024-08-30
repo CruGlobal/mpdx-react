@@ -76,13 +76,13 @@ const Components = (props: ContactFlowProps) => (
 
 describe('ContactFlow', () => {
   it('default', async () => {
-    const { getByText } = render(<Components {...initialProps} />);
+    const { getByText, findByText } = render(<Components {...initialProps} />);
 
-    await waitFor(() => expect(getByText('Excluded')).toBeInTheDocument());
-    await waitFor(() => expect(getByText('Asked')).toBeInTheDocument());
-    await waitFor(() => expect(getByText('Committed')).toBeInTheDocument());
-    await waitFor(() => expect(getByText('Received‌⁠')).toBeInTheDocument());
-    await waitFor(() => expect(getByText('Given')).toBeInTheDocument());
+    expect(await findByText('Excluded')).toBeInTheDocument();
+    expect(getByText('Asked')).toBeInTheDocument();
+    expect(getByText('Committed')).toBeInTheDocument();
+    expect(getByText('Received‌⁠')).toBeInTheDocument();
+    expect(getByText('Given')).toBeInTheDocument();
   });
 
   it('Drag and drop', async () => {
