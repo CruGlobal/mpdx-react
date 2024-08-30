@@ -152,7 +152,7 @@ describe('PledgeModal', () => {
 
   it('Edit commitment', async () => {
     const pledgeId = 'pledge-1';
-    const { getByRole, findByText } = render(
+    const { getByRole, getByText, findByText } = render(
       <Components
         pledge={{
           id: pledgeId,
@@ -172,6 +172,7 @@ describe('PledgeModal', () => {
     expect(
       getByRole('heading', { name: 'Edit Commitment' }),
     ).toBeInTheDocument();
+    expect(getByText('You are editing the commitment for')).toBeInTheDocument();
 
     const amountInput = getByRole('textbox', { name: 'Amount' });
 
