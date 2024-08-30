@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ const formatPledgeOrDonation = ({
   const pledgeOrDonationAmount =
     amount && currency
       ? currencyFormat(amount, currency, locale)
-      : amount || currencyFormat(0, currency, locale);
+      : amount?.toString() || currencyFormat(0, currency, locale);
 
   let pledgeOverdue = false;
   if (
@@ -54,7 +54,7 @@ const formatPledgeOrDonation = ({
         ''
       : dateOrFrequency
       ? dateFormat(DateTime.fromISO(dateOrFrequency), locale)
-      : null;
+      : '';
   return {
     amount: pledgeOrDonationAmount,
     dateOrFrequency: pledgeOrDonationDate,
@@ -62,27 +62,38 @@ const formatPledgeOrDonation = ({
   };
 };
 
+interface AmountAndFrequency {
+  amount: string;
+  dateOrFrequency?: string;
+}
 export interface UseGetPledgeOrDonation {
   pledgeValues: AppealContactInfoFragment['pledges'][0] | undefined;
-  amountAndFrequency: string[] | undefined;
+  amountAndFrequency: AmountAndFrequency | null;
   pledgeDonations: string[] | null;
   pledgeOverdue: boolean;
 }
-// The return value doesn't change until `delay` milliseconds have elapsed since the last time `value` changed
+
+interface UseGetPledgeOrDonationProps {
+  appealStatus: AppealStatusEnum;
+  contact: AppealContactInfoFragment;
+  appealId: string;
+}
+
 export const useGetPledgeOrDonation = (
-  appealStatus: AppealStatusEnum,
-  contact: AppealContactInfoFragment,
-  appealId: string,
+  props: UseGetPledgeOrDonationProps,
 ): UseGetPledgeOrDonation => {
   const locale = useLocale();
   const { t } = useTranslation();
-  const [pledgeValues, setPledgeValues] =
-    useState<AppealContactInfoFragment['pledges'][0]>();
-  const [amountAndFrequency, setAmountAndFrequency] = useState<string[]>();
-  const [pledgeDonations, setPledgeDonations] = useState<string[] | null>(null);
-  const [pledgeOverdue, setPledgeOverdue] = useState(false);
+  const { appealStatus, contact, appealId } = props;
 
-  useEffect(() => {
+  const defaultValues = {
+    amountAndFrequency: null,
+    pledgeValues: undefined,
+    pledgeOverdue: false,
+    pledgeDonations: null,
+  };
+
+  const pledgeOrDonation = useMemo(() => {
     const {
       pledgeAmount,
       pledgeCurrency,
@@ -103,8 +114,14 @@ export const useGetPledgeOrDonation = (
         locale,
         t,
       });
-      setAmountAndFrequency([`${amount}`, `${dateOrFrequency}`]);
-      setPledgeValues(undefined);
+
+      return {
+        ...defaultValues,
+        amountAndFrequency: {
+          amount,
+          dateOrFrequency,
+        },
+      };
     } else if (
       appealStatus === AppealStatusEnum.NotReceived ||
       appealStatus === AppealStatusEnum.ReceivedNotProcessed
@@ -113,30 +130,49 @@ export const useGetPledgeOrDonation = (
         (pledge) => pledge.appeal.id === appealId,
       );
 
-      if (appealPledge) {
-        const {
-          amount,
-          dateOrFrequency,
-          pledgeOverdue: overdue,
-        } = formatPledgeOrDonation({
-          amount: appealPledge?.amount,
-          currency: appealPledge.amountCurrency,
-          appealStatus,
-          dateOrFrequency: appealPledge.expectedDate,
-          locale,
-          t,
-        });
-
-        setPledgeValues(appealPledge);
-        setAmountAndFrequency([`${amount}`, `(${dateOrFrequency})`]);
-        setPledgeOverdue(overdue);
-      } else {
-        setAmountAndFrequency([`${currencyFormat(0, 'USD', locale)}`]);
+      if (!appealPledge) {
+        return {
+          ...defaultValues,
+          amountAndFrequency: {
+            amount: currencyFormat(0, 'USD', locale),
+            dateOrFrequency: '',
+          },
+        };
       }
+
+      const {
+        amount,
+        dateOrFrequency,
+        pledgeOverdue: overdue,
+      } = formatPledgeOrDonation({
+        amount: appealPledge?.amount,
+        currency: appealPledge.amountCurrency,
+        appealStatus,
+        dateOrFrequency: appealPledge.expectedDate,
+        locale,
+        t,
+      });
+
+      return {
+        ...defaultValues,
+        amountAndFrequency: {
+          amount,
+          dateOrFrequency: `(${dateOrFrequency})`,
+        },
+        pledgeValues: appealPledge,
+        pledgeOverdue: overdue,
+      };
     } else if (appealStatus === AppealStatusEnum.Processed) {
       const appealPledge = pledges?.find(
         (pledge) => pledge.appeal.id === appealId,
       );
+
+      const amountAndFrequency = {
+        amount: currencyFormat(0, 'USD', locale),
+        dateOrFrequency: '',
+      };
+      let pledgeValues: AppealContactInfoFragment['pledges'][0] | undefined =
+        undefined;
 
       if (appealPledge) {
         const { amount } = formatPledgeOrDonation({
@@ -146,10 +182,8 @@ export const useGetPledgeOrDonation = (
           locale,
           t,
         });
-        setPledgeValues(appealPledge);
-        setAmountAndFrequency([`${amount}`]);
-      } else {
-        setAmountAndFrequency([`${currencyFormat(0, 'USD', locale)}`]);
+        amountAndFrequency.amount = amount;
+        pledgeValues = appealPledge;
       }
 
       // Currently we grab all the donations and filter them by the appeal id
@@ -176,9 +210,18 @@ export const useGetPledgeOrDonation = (
         return `(${donationAmount}) (${donationDate})`;
       });
 
-      setPledgeDonations(givenDonations);
+      return {
+        ...defaultValues,
+        amountAndFrequency,
+        pledgeValues,
+        pledgeDonations: givenDonations,
+      };
     }
   }, [appealStatus, contact, locale]);
 
-  return { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue };
+  if (pledgeOrDonation) {
+    return pledgeOrDonation;
+  } else {
+    return defaultValues;
+  }
 };

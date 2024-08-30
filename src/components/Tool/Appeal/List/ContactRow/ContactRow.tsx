@@ -19,7 +19,6 @@ import {
 } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
-import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import {
   AppealStatusEnum,
@@ -79,7 +78,6 @@ export const ContactRow: React.FC<Props> = ({
     setContactFocus: onContactSelected,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(AppealsContext) as AppealsType;
-  const locale = useLocale();
   const [createPledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
   const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
@@ -93,7 +91,11 @@ export const ContactRow: React.FC<Props> = ({
   const { id: contactId, name } = contact;
 
   const { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue } =
-    useGetPledgeOrDonation(appealStatus, contact, appealId ?? '', locale);
+    useGetPledgeOrDonation({
+      appealStatus,
+      contact,
+      appealId: appealId ?? '',
+    });
 
   const handleCreatePledge = () => {
     setPledgeModalOpen(true);
@@ -200,7 +202,11 @@ export const ContactRow: React.FC<Props> = ({
                 {appealStatus === AppealStatusEnum.Processed &&
                   pledgeDonations?.map((donation, idx) => (
                     <Typography key={`${donation}-${idx}`} component="span">
-                      {amountAndFrequency} {donation}
+                      <AmountAndFrequency
+                        amountAndFrequency={amountAndFrequency}
+                        pledgeOverdue={pledgeOverdue}
+                      />
+                      {donation}
                     </Typography>
                   ))}
               </Box>

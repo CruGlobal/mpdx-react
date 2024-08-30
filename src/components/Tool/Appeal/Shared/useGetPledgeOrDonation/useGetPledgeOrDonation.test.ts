@@ -7,10 +7,17 @@ const appealId = 'appealId';
 describe('useGetPledgeOrDonation', () => {
   it('returns the normal donation amount when in appeal status Asked', () => {
     const { result } = renderHook(() =>
-      useGetPledgeOrDonation(AppealStatusEnum.Asked, defaultContact, appealId),
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.Asked,
+        contact: defaultContact,
+        appealId: appealId,
+      }),
     );
 
-    expect(result.current.amountAndFrequency).toEqual(['CA$500', 'Monthly']);
+    expect(result.current.amountAndFrequency).toEqual({
+      amount: 'CA$500',
+      dateOrFrequency: 'Monthly',
+    });
 
     expect(result.current.pledgeDonations).toBeNull();
     expect(result.current.pledgeValues).toBeUndefined();
@@ -18,14 +25,17 @@ describe('useGetPledgeOrDonation', () => {
 
   it('returns the normal donation amount when in appeal status Excluded', () => {
     const { result } = renderHook(() =>
-      useGetPledgeOrDonation(
-        AppealStatusEnum.Excluded,
-        defaultContact,
-        appealId,
-      ),
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.Excluded,
+        contact: defaultContact,
+        appealId: appealId,
+      }),
     );
 
-    expect(result.current.amountAndFrequency).toEqual(['CA$500', 'Monthly']);
+    expect(result.current.amountAndFrequency).toEqual({
+      amount: 'CA$500',
+      dateOrFrequency: 'Monthly',
+    });
 
     expect(result.current.pledgeDonations).toBeNull();
     expect(result.current.pledgeValues).toBeUndefined();
@@ -33,17 +43,17 @@ describe('useGetPledgeOrDonation', () => {
 
   it('returns the pledge when in appeal status Committed', () => {
     const { result } = renderHook(() =>
-      useGetPledgeOrDonation(
-        AppealStatusEnum.NotReceived,
-        defaultContact,
-        appealId,
-      ),
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.NotReceived,
+        contact: defaultContact,
+        appealId: appealId,
+      }),
     );
 
-    expect(result.current.amountAndFrequency).toEqual([
-      '$3,000',
-      '(Aug 8, 2024)',
-    ]);
+    expect(result.current.amountAndFrequency).toEqual({
+      amount: '$3,000',
+      dateOrFrequency: '(Aug 8, 2024)',
+    });
 
     expect(result.current.pledgeDonations).toBeNull();
     expect(result.current.pledgeValues).toEqual({
@@ -57,17 +67,17 @@ describe('useGetPledgeOrDonation', () => {
 
   it('returns the pledge when in appeal status Received', () => {
     const { result } = renderHook(() =>
-      useGetPledgeOrDonation(
-        AppealStatusEnum.ReceivedNotProcessed,
-        defaultContact,
-        appealId,
-      ),
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.ReceivedNotProcessed,
+        contact: defaultContact,
+        appealId: appealId,
+      }),
     );
 
-    expect(result.current.amountAndFrequency).toEqual([
-      '$3,000',
-      '(Aug 8, 2024)',
-    ]);
+    expect(result.current.amountAndFrequency).toEqual({
+      amount: '$3,000',
+      dateOrFrequency: '(Aug 8, 2024)',
+    });
 
     expect(result.current.pledgeDonations).toBeNull();
     expect(result.current.pledgeValues).toEqual({
@@ -81,14 +91,17 @@ describe('useGetPledgeOrDonation', () => {
 
   it('returns the donations to appeal when in appeal status Given', () => {
     const { result } = renderHook(() =>
-      useGetPledgeOrDonation(
-        AppealStatusEnum.Processed,
-        defaultContact,
-        appealId,
-      ),
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.Processed,
+        contact: defaultContact,
+        appealId: appealId,
+      }),
     );
 
-    expect(result.current.amountAndFrequency).toEqual(['$3,000']);
+    expect(result.current.amountAndFrequency).toEqual({
+      amount: '$3,000',
+      dateOrFrequency: '',
+    });
 
     expect(result.current.pledgeDonations).toEqual(['($50) (Jun 25, 2019)']);
     expect(result.current.pledgeValues).toEqual({
@@ -117,12 +130,16 @@ describe('useGetPledgeOrDonation', () => {
         ],
       };
       const { result } = renderHook(() =>
-        useGetPledgeOrDonation(AppealStatusEnum.NotReceived, contact, appealId),
+        useGetPledgeOrDonation({
+          appealStatus: AppealStatusEnum.NotReceived,
+          contact: contact,
+          appealId: appealId,
+        }),
       );
-      expect(result.current.amountAndFrequency).toEqual([
-        '$3,000',
-        '(Aug 8, 2001)',
-      ]);
+      expect(result.current.amountAndFrequency).toEqual({
+        amount: '$3,000',
+        dateOrFrequency: '(Aug 8, 2001)',
+      });
       expect(result.current.pledgeOverdue).toEqual(true);
     });
 
@@ -147,7 +164,11 @@ describe('useGetPledgeOrDonation', () => {
         },
       };
       const { result } = renderHook(() =>
-        useGetPledgeOrDonation(AppealStatusEnum.Processed, contact, appealId),
+        useGetPledgeOrDonation({
+          appealStatus: AppealStatusEnum.Processed,
+          contact: contact,
+          appealId: appealId,
+        }),
       );
       expect(result.current.pledgeDonations).toEqual(['($50) (Jun 25, 2001)']);
       expect(result.current.pledgeOverdue).toEqual(false);

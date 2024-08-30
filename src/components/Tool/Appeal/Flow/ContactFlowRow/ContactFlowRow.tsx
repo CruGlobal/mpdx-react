@@ -22,7 +22,6 @@ import {
 import { StarContactIconButton } from 'src/components/Contacts/StarContactIconButton/StarContactIconButton';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import {
@@ -94,7 +93,6 @@ export const ContactFlowRow: React.FC<Props> = ({
 }) => {
   const { id, name, starred } = contact;
   const { t } = useTranslation();
-  const locale = useLocale();
   const {
     appealId,
     isRowChecked: isChecked,
@@ -104,7 +102,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
 
   const { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue } =
-    useGetPledgeOrDonation(appealStatus, contact, appealId ?? '', locale);
+    useGetPledgeOrDonation({ appealStatus, contact, appealId: appealId ?? '' });
 
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
@@ -188,7 +186,11 @@ export const ContactFlowRow: React.FC<Props> = ({
                 {appealStatus === AppealStatusEnum.Processed &&
                   pledgeDonations?.map((donation, idx) => (
                     <Typography key={`${donation}-${idx}`} variant="body2">
-                      {amountAndFrequency} {donation}
+                      <AmountAndFrequency
+                        amountAndFrequency={amountAndFrequency}
+                        pledgeOverdue={pledgeOverdue}
+                      />{' '}
+                      {donation}
                     </Typography>
                   ))}
               </Box>
