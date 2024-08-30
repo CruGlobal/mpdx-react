@@ -51,6 +51,7 @@ describe('Account Lists page', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest.fn().mockResolvedValue({
           data: {
+            user: { id: 'user-1', setup: null },
             accountLists: { nodes: [{ id: accountListId }] },
           },
         }),
@@ -75,6 +76,7 @@ describe('Account Lists page', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest.fn().mockResolvedValue({
           data: {
+            user: { id: 'user-1', setup: null },
             accountLists,
           },
         }),
