@@ -1,0 +1,16 @@
+query DefaultAccountList {
+  user {
+    id
+    defaultAccountList
+  }
+}
+
+mutation UpdateSetupPosition($setupPosition: String!) {
+  createOrUpdateUserOption(
+    input: { key: "setup_position", value: $setupPosition }
+  ) {
+    option {
+      id
+    }
+  }
+}

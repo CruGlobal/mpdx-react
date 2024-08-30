@@ -38,18 +38,22 @@ const StyledIcon = styled(CampaignOutlined)(({ theme }) => ({
 }));
 
 const HeaderWrapper = styled('div')(({ theme }) => ({
+  width: '100%',
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'space-around',
   gap: theme.spacing(1),
 }));
 
 const HeaderTypography = styled(Typography)({
   fontSize: '2.75rem',
   fontWeight: 'bold',
+  flex: 1,
+  textAlign: 'center',
 });
 
 interface SetupPageProps {
-  title: string;
+  title: ReactNode;
   children: ReactNode;
 }
 
