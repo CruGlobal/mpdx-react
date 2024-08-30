@@ -15,6 +15,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
+import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsList } from '../Home/ToolList';
 import { Item } from './Item/Item';
 
@@ -26,6 +29,16 @@ const useStyles = makeStyles()((theme: Theme) => ({
     borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
     borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
     borderColor: theme.palette.cruGrayLight.main,
+  },
+  notificationBox: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    borderRadius: '25%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -53,6 +66,33 @@ export interface Props {
 const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { data, loading } = useGetToolNotificationsQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+
+  const toolData: { [key: string]: { totalCount: number } } = {
+    [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
+      totalCount: 0,
+    },
+    [ToolName.FixMailingAddresses]: data?.[ToolName.FixMailingAddresses] ?? {
+      totalCount: 0,
+    },
+    [ToolName.FixSendNewsletter]: data?.[ToolName.FixSendNewsletter] ?? {
+      totalCount: 0,
+    },
+    [ToolName.FixEmailAddresses]: data?.[ToolName.FixEmailAddresses] ?? {
+      totalCount: 0,
+    },
+    [ToolName.FixPhoneNumbers]: data?.[ToolName.FixPhoneNumbers] ?? {
+      totalCount: 0,
+    },
+    [ToolName.MergeContacts]: data?.[ToolName.MergeContacts] ?? {
+      totalCount: 0,
+    },
+    [ToolName.MergePeople]: data?.[ToolName.MergePeople] ?? { totalCount: 0 },
+  };
 
   return (
     <Box data-testid="ToolNavList">
@@ -86,14 +126,21 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
                     </ListItemIcon>
                     <ListItemText primary={t(group.groupName)} />
                   </ListItem>
-                  {group.items.map((tool) => (
-                    <Item
-                      key={tool.id}
-                      url={tool.url}
-                      title={tool.tool}
-                      isSelected={selectedId === tool.id}
-                    />
-                  ))}
+                  {group.items.map((tool) => {
+                    return (
+                      <Item
+                        key={tool.id}
+                        url={tool.url}
+                        title={tool.tool}
+                        isSelected={selectedId === tool.id}
+                        loading={loading}
+                        needsAttention={
+                          toolData[tool.id]?.totalCount > 0 || false
+                        }
+                        totalCount={toolData[tool.id]?.totalCount || 0}
+                      />
+                    );
+                  })}
                 </Fragment>
               ))}
             </FilterList>
