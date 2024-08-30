@@ -28,6 +28,7 @@ interface Props {
   loading: boolean;
   needsAttention: boolean;
   totalCount: number;
+  toolId: string;
 }
 
 export const Item = ({
@@ -37,6 +38,7 @@ export const Item = ({
   loading,
   needsAttention,
   totalCount,
+  toolId,
 }: Props): ReactElement => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
@@ -49,6 +51,7 @@ export const Item = ({
     >
       <ListItem button selected={isSelected}>
         <ListItemText
+          data-testid={`${toolId}-list-item`}
           primaryTypographyProps={{
             variant: 'subtitle1',
             color: 'textPrimary',
@@ -57,7 +60,7 @@ export const Item = ({
         />
         {!loading && needsAttention && (
           <Box className={classes.notificationBox}>
-            <Typography data-testid={`${title}-notifications`}>
+            <Typography data-testid={`${toolId}-notifications`}>
               {totalCount < 10 ? totalCount : '9+'}
             </Typography>
           </Box>

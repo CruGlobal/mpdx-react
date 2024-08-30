@@ -47,9 +47,15 @@ describe('NavToolList', () => {
     expect(listItems).toHaveLength(4);
   });
   it('test notifications', async () => {
-    const { getByTestId } = render(<TestComponent />);
-    await waitFor(() => {
-      expect(getByTestId('ToolNavList')).toBeInTheDocument();
-    });
+    const { getByTestId, findByTestId } = render(<TestComponent />);
+    expect(getByTestId('ToolNavList')).toBeInTheDocument();
+    expect(getByTestId('fixCommitmentInfo-list-item')).toBeInTheDocument();
+    expect(
+      await findByTestId('fixCommitmentInfo-notifications'),
+    ).toBeInTheDocument();
+
+    expect(
+      await findByTestId('fixCommitmentInfo-notifications'),
+    ).toHaveTextContent('9+');
   });
 });

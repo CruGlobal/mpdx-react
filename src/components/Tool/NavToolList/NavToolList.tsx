@@ -138,6 +138,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
                           toolData[tool.id]?.totalCount > 0 || false
                         }
                         totalCount={toolData[tool.id]?.totalCount || 0}
+                        toolId={tool.id}
                       />
                     );
                   })}
