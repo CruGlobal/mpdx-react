@@ -1,8 +1,5 @@
-import { GetServerSideProps, GetServerSidePropsResult } from 'next';
 import Head from 'next/head';
 import React, { ReactElement } from 'react';
-import { Session } from 'next-auth';
-import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import AccountLists from 'src/components/AccountLists';
@@ -14,11 +11,11 @@ import {
   GetAccountListsQuery,
   GetAccountListsQueryVariables,
 } from './GetAccountLists.generated';
+import { makeGetServerSideProps } from './api/utils/pagePropsHelpers';
 
-export type AccountListsPageProps = {
-  data?: GetAccountListsQuery;
-  session: Session | null;
-};
+export interface AccountListsPageProps {
+  data: GetAccountListsQuery;
+}
 
 const AccountListsPage = ({ data }: AccountListsPageProps): ReactElement => {
   const { t } = useTranslation();
@@ -31,29 +28,16 @@ const AccountListsPage = ({ data }: AccountListsPageProps): ReactElement => {
           {appName} | {t('Account Lists')}
         </title>
       </Head>
-      {data && <AccountLists data={data} />}
+      <AccountLists data={data} />
     </>
   );
 };
 
 AccountListsPage.layout = BaseLayout;
 
-export const getServerSideProps: GetServerSideProps = async (
-  context,
-): Promise<GetServerSidePropsResult<AccountListsPageProps>> => {
+export const getServerSideProps = makeGetServerSideProps(async (session) => {
   try {
-    const session = await getSession(context);
-    const apiToken = session?.user?.apiToken;
-    if (!apiToken) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
-    }
-
-    const ssrClient = makeSsrClient(apiToken);
+    const ssrClient = makeSsrClient(session.user.apiToken);
     const { data } = await ssrClient.query<
       GetAccountListsQuery,
       GetAccountListsQueryVariables
@@ -73,13 +57,12 @@ export const getServerSideProps: GetServerSideProps = async (
     return {
       props: {
         data,
-        session,
       },
     };
   } catch (error) {
     logErrorOnRollbar(error, '/accountLists.page');
     throw error;
   }
-};
+});
 
 export default AccountListsPage;
