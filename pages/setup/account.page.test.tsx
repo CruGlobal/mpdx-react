@@ -20,25 +20,30 @@ const context = {
   req: {},
 } as unknown as GetServerSidePropsContext;
 
+const mutationSpy = jest.fn();
+
+const TestComponent: React.FC = () => {
+  const accountListOptions = {
+    accountLists: {
+      nodes: [1, 2, 3].map((id) => ({
+        id: `account-list-${id}`,
+        name: `Account List ${id}`,
+      })),
+    },
+  };
+
+  return (
+    <TestRouter router={router}>
+      <GqlMockedProvider onCall={mutationSpy}>
+        <AccountPage accountListOptions={accountListOptions} />
+      </GqlMockedProvider>
+    </TestRouter>
+  );
+};
+
 describe('Setup account page', () => {
   it('renders account options, saves default account, and advances to the next page', async () => {
-    const accountListOptions = {
-      accountLists: {
-        nodes: [1, 2, 3].map((id) => ({
-          id: `account-list-${id}`,
-          name: `Account List ${id}`,
-        })),
-      },
-    };
-
-    const mutationSpy = jest.fn();
-    const { getByRole } = render(
-      <TestRouter router={router}>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <AccountPage accountListOptions={accountListOptions} />
-        </GqlMockedProvider>
-      </TestRouter>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     expect(
       getByRole('heading', { name: 'Set default account' }),
@@ -58,6 +63,16 @@ describe('Setup account page', () => {
     expect(push).toHaveBeenCalledWith(
       '/accountLists/account-list-1/settings/preferences',
     );
+  });
+
+  it('disables save button until the user selects an account', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('button', { name: 'Continue Tour' })).toBeDisabled();
+
+    userEvent.click(getByRole('combobox', { name: 'Account' }));
+    userEvent.click(getByRole('option', { name: 'Account List 1' }));
+    expect(getByRole('button', { name: 'Continue Tour' })).not.toBeDisabled();
   });
 });
 
