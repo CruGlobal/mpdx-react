@@ -29,6 +29,8 @@ fragment AppealContactInfo on Contact {
   pledgeFrequency
   pledgeReceived
   pledgeStartDate
+  starred
+  status
   pledges {
     id
     amount
