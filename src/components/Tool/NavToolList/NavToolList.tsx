@@ -107,7 +107,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
               >
                 <Typography variant="h6">{t('Tools')}</Typography>
                 <IconButton
-                  data-testid="ToolNavClose"
+                  data-testid="ToolNavToggle"
                   onClick={() => toggle(!isOpen)}
                 >
                   <Close titleAccess={t('Close')} />

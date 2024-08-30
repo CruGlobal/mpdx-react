@@ -56,11 +56,10 @@ export const Item = ({
           primary={t(title)}
         />
         {!loading && needsAttention && (
-          <Box
-            className={classes.notificationBox}
-            data-testid={`${title}-notifications`}
-          >
-            <Typography>{totalCount < 10 ? totalCount : '9+'}</Typography>
+          <Box className={classes.notificationBox}>
+            <Typography data-testid={`${title}-notifications`}>
+              {totalCount < 10 ? totalCount : '9+'}
+            </Typography>
           </Box>
         )}
         <ArrowForwardIos fontSize="small" color="disabled" />

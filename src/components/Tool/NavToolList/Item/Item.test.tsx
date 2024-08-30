@@ -13,7 +13,14 @@ describe('ToolItem', () => {
   it('default', () => {
     const { queryByText } = render(
       <TestWrapper>
-        <Item url={item.url} title={item.title} isSelected={item.isSelected} />
+        <Item
+          url={item.url}
+          title={item.title}
+          isSelected={item.isSelected}
+          loading={false}
+          needsAttention={false}
+          totalCount={0}
+        />
       </TestWrapper>,
     );
     expect(queryByText(item.title)).toBeInTheDocument();
