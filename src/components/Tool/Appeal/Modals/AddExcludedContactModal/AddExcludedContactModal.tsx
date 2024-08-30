@@ -18,8 +18,8 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { useAssignContactsToAppealMutation } from '../AddContactToAppealModal/AddContactToAppeal.generated';
 import { useAppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
-import { useAssignContactsToAppealMutation } from './AddExcludedContactModal.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
