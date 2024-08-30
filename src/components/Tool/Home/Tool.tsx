@@ -9,7 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-// import AnimatedCard from 'src/components/AnimatedCard';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';
 
@@ -18,10 +17,8 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    // border: '1px solid',
     height: '250px',
     borderColor: theme.palette.cruGrayMedium.main,
-    // backgroundColor: theme.palette.cruGrayLight.main,
     '&:hover': {
       outline: '2px solid',
       outlineColor: theme.palette.mpdxBlue.main,
@@ -73,7 +70,7 @@ const Tool = ({ tool, desc, icon, url }: Props): ReactElement => {
               <Icon path={icon} size={3} />
             </Box>
             <Typography variant="h6">{tool}</Typography>
-            <Typography variant="body2">{desc}</Typography>
+            <Typography variant="subtitle2">{desc}</Typography>
           </CardContent>
         </CardActionArea>
       </NextLink>

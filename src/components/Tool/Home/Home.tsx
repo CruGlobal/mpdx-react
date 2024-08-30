@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import Tool from './Tool';
-import { ToolsList } from './ToolList';
+import { ToolsListHome } from './ToolsListHome';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -43,7 +43,6 @@ const variants = {
 
 const ToolHome = (): ReactElement => {
   const { classes } = useStyles();
-  const toolsListFlattened = ToolsList.flatMap((tool) => tool.items);
   const { t } = useTranslation();
 
   return (
@@ -55,7 +54,7 @@ const ToolHome = (): ReactElement => {
     >
       <Box className={classes.outer} data-testid="Home">
         <Grid container spacing={3} className={classes.container}>
-          {toolsListFlattened.map((tool) => {
+          {ToolsListHome.map((tool) => {
             return (
               <Grid item xs={12} sm={6} lg={4} key={tool.tool}>
                 <Tool

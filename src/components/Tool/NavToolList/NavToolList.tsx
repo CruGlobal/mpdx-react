@@ -9,7 +9,7 @@ import {
   Theme,
 } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { ToolsList } from '../Home/ToolList';
+import { ToolsListNav } from '../Home/ToolsListNav';
 import { Item } from './Item/Item';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -37,7 +37,7 @@ const NavToolList = ({ selectedId }: Props): ReactElement => {
   return (
     <Box component="div" className={classes.list} data-testid="ToolNavList">
       <List>
-        {ToolsList.map((group) => (
+        {ToolsListNav.map((group) => (
           <Fragment key={group.groupName}>
             <ListItem className={classes.li}>
               <ListItemIcon>
