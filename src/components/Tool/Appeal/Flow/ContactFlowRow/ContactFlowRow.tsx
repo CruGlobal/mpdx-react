@@ -21,7 +21,6 @@ import {
 } from 'src/components/Contacts/ContactFlow/ContactFlowRow/ContactFlowRow';
 import { StarContactIconButton } from 'src/components/Contacts/StarContactIconButton/StarContactIconButton';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
-import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import {
@@ -39,14 +38,16 @@ import {
   preloadPledgeModal,
 } from '../../Modals/PledgeModal/DynamicPledgeModal';
 import { AmountAndFrequency } from '../../Shared/AmountAndFrequency/AmountAndFrequency';
+import { ExcludedAppealContactInfoFragment } from '../../Shared/AppealExcludedContacts.generated';
+import { useGetExcludedReasons } from '../../Shared/useGetExcludedReasons/useGetExcludedReasons';
 
 // When making changes in this file, also check to see if you don't need to make changes to the below file
 // src/components/Contacts/ContactFlow/ContactFlowRow/ContactFlowRow.tsx
 
 interface Props extends Omit<ContactFlowRowProps, 'status' | 'contact'> {
   contact: AppealContactInfoFragment;
-  contactStatus?: StatusEnum | null;
   appealStatus: AppealStatusEnum;
+  excludedContacts: ExcludedAppealContactInfoFragment[];
 }
 
 export interface DraggedContact extends Omit<ContactsDraggedContact, 'status'> {
@@ -86,10 +87,10 @@ const CommitmentActionsBox = styled(Box)(() => ({
 export const ContactFlowRow: React.FC<Props> = ({
   accountListId,
   contact,
-  contactStatus,
   appealStatus,
   onContactSelected,
   columnWidth,
+  excludedContacts,
 }) => {
   const { id, name, starred } = contact;
   const { t } = useTranslation();
@@ -104,14 +105,19 @@ export const ContactFlowRow: React.FC<Props> = ({
   const { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue } =
     useGetPledgeOrDonation({ appealStatus, contact, appealId: appealId ?? '' });
 
+  const reasons = useGetExcludedReasons({
+    excludedContacts,
+    contactId: contact.id,
+  });
+
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: 'contact',
       item: {
         id,
         appealStatus,
-        status: contactStatus,
-        contactStatus,
+        status: contact.status,
+        contactStatus: contact.status,
         name,
         starred,
         width: columnWidth,
@@ -133,6 +139,8 @@ export const ContactFlowRow: React.FC<Props> = ({
   const handleRemovePledge = () => {
     setDeletePledgeModalOpen(true);
   };
+
+  const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
 
   return (
     <>
@@ -156,7 +164,7 @@ export const ContactFlowRow: React.FC<Props> = ({
                   {name}
                 </ContactLink>
                 <Typography variant="body2">
-                  {getLocalizedContactStatus(t, contactStatus)}
+                  {getLocalizedContactStatus(t, contact.status)}
                 </Typography>
               </Box>
             </FlexCenterAlignedBox>
@@ -172,6 +180,11 @@ export const ContactFlowRow: React.FC<Props> = ({
             </Box>
           </FlexCenterAlignedBox>
           <FlexCenterAlignedBox>
+            {isExcludedContact && reasons && (
+              <Box mt={2}>
+                <Typography variant="body2">{reasons}</Typography>
+              </Box>
+            )}
             <CommitmentsBox>
               <Box>
                 {appealStatus !== AppealStatusEnum.Processed && (
