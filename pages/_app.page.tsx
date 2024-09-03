@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React, { ReactElement, useMemo } from 'react';
-import { ApolloProvider as RawApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import { Box, StyledEngineProvider } from '@mui/material';
@@ -60,11 +60,11 @@ const GraphQLProviders: React.FC<{
   const client = useMemo(() => makeClient(apiToken), [apiToken]);
 
   return (
-    <RawApolloProvider client={client}>
+    <ApolloProvider client={client}>
       <UserPreferenceProvider>
         <TaskModalProvider>{children}</TaskModalProvider>
       </UserPreferenceProvider>
-    </RawApolloProvider>
+    </ApolloProvider>
   );
 };
 
