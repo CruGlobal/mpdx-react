@@ -2,7 +2,6 @@ import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { Box, ListItem, ListItemText, Theme, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -26,7 +25,6 @@ interface Props {
   title: string;
   isSelected: boolean;
   loading: boolean;
-  needsAttention: boolean;
   totalCount: number;
   toolId: string;
 }
@@ -36,13 +34,11 @@ export const Item = ({
   title,
   isSelected,
   loading,
-  needsAttention,
   totalCount,
   toolId,
 }: Props): ReactElement => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
-  const { t } = useTranslation();
 
   return (
     <NextLink
@@ -56,9 +52,9 @@ export const Item = ({
             variant: 'subtitle1',
             color: 'textPrimary',
           }}
-          primary={t(title)}
+          primary={title}
         />
-        {!loading && needsAttention && (
+        {!loading && !!totalCount && (
           <Box className={classes.notificationBox}>
             <Typography data-testid={`${toolId}-notifications`}>
               {totalCount < 10 ? totalCount : '9+'}

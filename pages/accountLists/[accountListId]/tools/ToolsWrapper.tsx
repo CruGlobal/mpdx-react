@@ -15,7 +15,7 @@ import { useToolsHelper } from './useToolsHelper';
 interface ToolsWrapperProps {
   pageTitle?: string;
   pageUrl: string;
-  selectedMenuId?: string; // for later use
+  selectedMenuId?: string;
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   styles?: React.ReactNode;
 }

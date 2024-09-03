@@ -4,26 +4,42 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import theme from '../../../theme';
 import NavToolList from './NavToolList';
 
-const accountListId = 'account-list-1';
+const accountListId = 'account-list-22';
+
+const toggleMock = jest.fn();
 
 const router = {
   query: { accountListId },
   isReady: true,
 };
 
-const toggleMock = jest.fn();
+const mocks = {
+  GetToolNotifications: {
+    // graphql-ergonomock doesn't handle renamed fields, so we have to mock
+    // using the name of the field in the GraphQL schema, not the renamed field
+    contacts: { totalCount: 2 },
+    people: { totalCount: 4 },
+    contactDuplicates: { totalCount: 6 },
+    personDuplicates: { totalCount: 10 },
+  },
+};
 
 const TestComponent = () => (
-  <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <GqlMockedProvider>
+  <TestRouter router={router}>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<{
+        GetToolNotifications: GetToolNotificationsQuery;
+      }>
+        mocks={mocks}
+      >
         <NavToolList toggle={toggleMock} isOpen={true} />
       </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
+    </ThemeProvider>
+  </TestRouter>
 );
 
 describe('NavToolList', () => {
@@ -46,16 +62,37 @@ describe('NavToolList', () => {
     const listItems = getAllByTestId('ToolNavListItem');
     expect(listItems).toHaveLength(4);
   });
-  it('test notifications', async () => {
+  it('renders notifications', async () => {
     const { getByTestId, findByTestId } = render(<TestComponent />);
     expect(getByTestId('ToolNavList')).toBeInTheDocument();
     expect(getByTestId('fixCommitmentInfo-list-item')).toBeInTheDocument();
-    expect(
-      await findByTestId('fixCommitmentInfo-notifications'),
-    ).toBeInTheDocument();
 
     expect(
       await findByTestId('fixCommitmentInfo-notifications'),
-    ).toHaveTextContent('9+');
+    ).toHaveTextContent('2');
+
+    expect(
+      await findByTestId('fixMailingAddresses-notifications'),
+    ).toHaveTextContent('2');
+
+    expect(
+      await findByTestId('fixSendNewsletter-notifications'),
+    ).toHaveTextContent('2');
+
+    expect(
+      await findByTestId('fixEmailAddresses-notifications'),
+    ).toHaveTextContent('4');
+
+    expect(
+      await findByTestId('fixPhoneNumbers-notifications'),
+    ).toHaveTextContent('4');
+
+    expect(await findByTestId('mergeContacts-notifications')).toHaveTextContent(
+      '6',
+    );
+
+    expect(await findByTestId('mergePeople-notifications')).toHaveTextContent(
+      '9+',
+    );
   });
 });

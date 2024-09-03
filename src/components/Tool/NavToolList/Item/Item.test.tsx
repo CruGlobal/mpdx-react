@@ -12,24 +12,45 @@ const item = {
   id: 'testItem',
 };
 
+const TestComponent = ({ totalCount = 0 }: { totalCount?: number }) => (
+  <ThemeProvider theme={theme}>
+    <TestWrapper>
+      <Item
+        url={item.url}
+        title={item.title}
+        isSelected={item.isSelected}
+        loading={false}
+        totalCount={totalCount}
+        toolId={item.id}
+      />
+    </TestWrapper>
+  </ThemeProvider>
+);
+
 describe('ToolItem', () => {
   it('default', () => {
-    const { queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper>
-          <Item
-            url={item.url}
-            title={item.title}
-            isSelected={item.isSelected}
-            loading={false}
-            needsAttention={false}
-            totalCount={0}
-            toolId={item.id}
-          />
-        </TestWrapper>
-        ,
-      </ThemeProvider>,
-    );
+    const { queryByText } = render(<TestComponent />);
     expect(queryByText(item.title)).toBeInTheDocument();
+  });
+
+  it('renders count less then 9', () => {
+    const { queryByText } = render(<TestComponent totalCount={8} />);
+    expect(queryByText(item.title)).toBeInTheDocument();
+    expect(queryByText('8')).toBeInTheDocument();
+  });
+
+  it('renders count greater then 9', () => {
+    const { queryByText } = render(<TestComponent totalCount={10} />);
+    expect(queryByText(item.title)).toBeInTheDocument();
+    expect(queryByText('9+')).toBeInTheDocument();
+  });
+
+  it('renders without Badge', () => {
+    const { queryByText, queryByTestId } = render(<TestComponent />);
+    expect(queryByText(item.title)).toBeInTheDocument();
+
+    expect(
+      queryByTestId('fixCommitmentInfo-notifications'),
+    ).not.toBeInTheDocument();
   });
 });
