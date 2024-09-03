@@ -84,7 +84,7 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-enum ToolName {
+export enum ToolName {
   FixCommitmentInfo = 'fixCommitmentInfo',
   FixMailingAddresses = 'fixMailingAddresses',
   FixSendNewsletter = 'fixSendNewsletter',
