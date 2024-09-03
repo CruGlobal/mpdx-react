@@ -43,8 +43,9 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'end',
-    width: '70%',
-    [theme.breakpoints.down('sm')]: {
+    width: '80%',
+    maxWidth: '1500px',
+    [theme.breakpoints.down('md')]: {
       width: '100%',
     },
   },

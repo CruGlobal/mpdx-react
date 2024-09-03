@@ -10,70 +10,19 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import FixPhoneNumbers from './FixPhoneNumbers';
+import { GetInvalidPhoneNumbersMocks } from './FixPhoneNumbersMocks';
 import { GetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
 
 const accountListId = 'test121';
+
+const testData =
+  GetInvalidPhoneNumbersMocks.GetInvalidPhoneNumbers.people.nodes;
 
 const router = {
   query: { accountListId },
   isReady: true,
 };
 const setContactFocus = jest.fn();
-const testData: ErgonoMockShape[] = [
-  {
-    id: 'testid',
-    firstName: 'Test',
-    lastName: 'Contact',
-    phoneNumbers: {
-      nodes: [
-        {
-          id: 'id1',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          number: '+3533895895',
-          primary: true,
-          source: 'MPDX',
-        },
-        {
-          id: 'id2',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          number: '3533895895',
-          primary: false,
-          source: 'MPDX',
-        },
-        {
-          id: 'id3',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          number: '+623533895895',
-          primary: false,
-          source: 'MPDX',
-        },
-      ],
-    },
-  },
-  {
-    id: 'testid2',
-    firstName: 'Simba',
-    lastName: 'Lion',
-    phoneNumbers: {
-      nodes: [
-        {
-          id: 'id4',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          number: '+3535785056',
-          primary: true,
-          source: 'MPDX',
-        },
-        {
-          id: 'id5',
-          updatedAt: new Date('2021-06-22T03:40:05-06:00').toISOString(),
-          number: '+623535785056',
-          primary: false,
-          source: 'MPDX',
-        },
-      ],
-    },
-  },
-];
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({

@@ -31,7 +31,7 @@ describe('FixPhoneNumbers-DeleteModal', () => {
 
     expect(getByText('Confirm')).toBeInTheDocument();
     expect(
-      getByText('Are you sure you wish to delete this phone number:'),
+      getByText('Are you sure you wish to delete this phone number?'),
     ).toBeInTheDocument();
     expect(getByText('"623533895895"')).toBeInTheDocument();
     expect(getByText('Cancel')).toBeInTheDocument();
