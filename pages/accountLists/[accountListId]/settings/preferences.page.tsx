@@ -124,7 +124,7 @@ const Preferences: React.FC = () => {
         });
       },
     });
-    push(`/accountLists/${accountListId}/settings/preferences`);
+    push(`/accountLists/${accountListId}/setup/start`);
   };
 
   const handleSetupChange = async () => {

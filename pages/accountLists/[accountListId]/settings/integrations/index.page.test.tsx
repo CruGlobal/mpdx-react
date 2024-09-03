@@ -166,7 +166,9 @@ describe('Connect Services page', () => {
           key: 'setup_position',
           value: 'finish',
         });
-        expect(push).toHaveBeenCalledWith('/accountLists/account-list-1/tools');
+        expect(push).toHaveBeenCalledWith(
+          '/accountLists/account-list-1/setup/finish',
+        );
       });
     });
   });

@@ -60,7 +60,7 @@ const Integrations: React.FC = () => {
           });
         },
       });
-      push(`/accountLists/${accountListId}/tools`);
+      push(`/accountLists/${accountListId}/setup/finish`);
     } else {
       setSetup(nextNav);
       setExpandedPanel(setupAccordions[nextNav]);
