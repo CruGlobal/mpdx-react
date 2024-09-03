@@ -10,6 +10,7 @@ query GetUser {
       email
     }
     preferences {
+      id
       language: locale
       locale: localeDisplay
     }

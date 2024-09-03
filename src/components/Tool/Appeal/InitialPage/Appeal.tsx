@@ -9,7 +9,7 @@ import { AppealFieldsFragment } from 'pages/accountLists/[accountListId]/tools/G
 import { useAccountListId } from '../../../../hooks/useAccountListId';
 import theme from '../../../../theme';
 import AnimatedCard from '../../../AnimatedCard';
-import AppealProgressBar from '../AppealProgressBar';
+import AppealProgressBar from '../AppealDetails/AppealProgressBar/AppealProgressBar';
 
 const useStyles = makeStyles()(() => ({
   cardContent: {

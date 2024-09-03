@@ -7,7 +7,11 @@ import { EditIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsT
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import AppealProgressBar from '../AppealProgressBar';
+import {
+  DynamicEditAppealHeaderInfoModal,
+  preloadEditAppealHeaderInfoModal,
+} from '../../Modals/EditAppealHeaderInfoModal/DynamicEditAppealHeaderInfoModal';
+import AppealProgressBar from '../AppealProgressBar/AppealProgressBar';
 
 export const appealHeaderInfoHeight = theme.spacing(9);
 
@@ -89,7 +93,9 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                     <AppealInfo variant="h5">{name}</AppealInfo>
                     <IconButton
                       onClick={() => setIsEditAppealModalOpen(true)}
+                      onMouseOver={preloadEditAppealHeaderInfoModal}
                       aria-label={t('Edit Icon')}
+                      data-testid="edit-appeal-name"
                     >
                       <EditIcon />
                     </IconButton>
@@ -119,7 +125,9 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                     </AppealInfo>
                     <IconButton
                       onClick={() => setIsEditAppealModalOpen(true)}
+                      onMouseOver={preloadEditAppealHeaderInfoModal}
                       aria-label={t('Edit Icon')}
+                      data-testid="edit-appeal-goal"
                     >
                       <EditIcon />
                     </IconButton>
@@ -140,8 +148,12 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
         </Grid>
       </GridContainer>
 
-      {/* TODO - Build modal */}
-      {isEditAppealModalOpen && <p>Modal</p>}
+      {isEditAppealModalOpen && appealInfo && (
+        <DynamicEditAppealHeaderInfoModal
+          handleClose={() => setIsEditAppealModalOpen(false)}
+          appealInfo={appealInfo}
+        />
+      )}
     </>
   );
 };

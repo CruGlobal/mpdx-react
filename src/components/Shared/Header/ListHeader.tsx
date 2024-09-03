@@ -86,7 +86,7 @@ export enum PageEnum {
 }
 
 interface ListHeaderProps {
-  page: 'contact' | 'task' | 'report' | 'appeal';
+  page: PageEnum;
   activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
@@ -106,6 +106,7 @@ interface ListHeaderProps {
   selectedIds: string[];
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
+  isExcludedAppealPage?: boolean;
 }
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
@@ -127,6 +128,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   selectedIds,
   massDeselectAll,
   showShowingCount = false,
+  isExcludedAppealPage = false,
 }) => {
   const { t } = useTranslation();
 
@@ -178,13 +180,15 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </Hidden>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
-        {page === PageEnum.Contact && (
+        {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
           <ContactsMassActionsDropdown
             filterPanelOpen={filterPanelOpen}
             contactDetailsOpen={contactDetailsOpen}
             buttonGroup={buttonGroup}
             contactsView={contactsView}
             selectedIds={selectedIds}
+            page={page}
+            isExcludedAppealPage={isExcludedAppealPage}
           />
         )}
         {page === PageEnum.Report && (
@@ -195,6 +199,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
               buttonGroup={buttonGroup}
               contactsView={contactsView}
               selectedIds={selectedIds}
+              page={page}
             />
           </Box>
         )}
@@ -210,8 +215,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             }
           />
         )}
-
-        {page === PageEnum.Appeal && <Box>{buttonGroup}</Box>}
 
         {starredFilter && toggleStarredFilter && (
           // This hidden doesn't remove from document

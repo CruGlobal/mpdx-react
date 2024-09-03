@@ -16,6 +16,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useContactsQuery } from './contacts.generated';
+import { useContactsCountQuery } from './contactsCount.generated';
 
 export enum AppealStatusEnum {
   Excluded = 'excluded',
@@ -29,6 +30,20 @@ export enum TableViewModeEnum {
   List = 'list',
   Flows = 'flows',
 }
+
+export const shouldSkipContactCount = (tour, filterPanelOpen, viewMode) => {
+  if (viewMode === TableViewModeEnum.Flows) {
+    return true;
+  } else if (viewMode === TableViewModeEnum.List && !filterPanelOpen) {
+    if (!tour) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};
 
 export interface AppealsType
   extends Omit<
@@ -47,10 +62,25 @@ export interface AppealsType
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   page: PageEnum | undefined;
+  tour: AppealTourEnum | null;
+  nextTourStep: () => void;
+  hideTour: () => void;
+  askedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  excludedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  committedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  givenCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  receivedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
 }
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
 
+export enum AppealTourEnum {
+  Start = 'start',
+  ReviewExcluded = 'reviewExcluded',
+  ReviewAsked = 'reviewAsked',
+  ExportContacts = 'exportContacts',
+  Finish = 'finish',
+}
 interface AppealsContextProps extends ContactsContextProps {
   appealId: string | undefined;
   page?: PageEnum;
@@ -79,6 +109,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
     TableViewModeEnum.Flows,
   );
+  const [tour, setTour] = useState<AppealTourEnum | null>(null);
 
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
@@ -122,7 +153,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       ids: [],
       appeal: [appealId || ''],
     }),
-    [sanitizedFilters, starredFilter, searchTerm],
+    [sanitizedFilters, starredFilter, searchTerm, appealId],
   );
 
   const contactsQueryResult = useContactsQuery({
@@ -171,10 +202,14 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     if (isReady && contactId) {
       if (
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'list'
+        contactId[contactId.length - 1] !== 'list' &&
+        contactId[contactId.length - 1] !== 'tour'
       ) {
         setContactDetailsId(contactId[contactId.length - 1]);
         setContactDetailsOpen(true);
+      }
+      if (contactId.includes('tour') && !tour) {
+        setTour(AppealTourEnum.Start);
       }
     } else if (isReady && !contactId) {
       setContactDetailsId('');
@@ -190,7 +225,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     setContactFocus(
       contactId &&
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'list'
+        contactId[contactId.length - 1] !== 'list' &&
+        contactId[contactId.length - 1] !== 'tour'
         ? contactId[contactId.length - 1]
         : undefined,
       contactId ? true : false,
@@ -203,6 +239,68 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     context: {
       doNotBatch: true,
     },
+  });
+
+  const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
+  const defaultFilters = {
+    appeal: [appealId || ''],
+    ...nameSearch,
+  };
+  const skip = shouldSkipContactCount(tour, filterPanelOpen, viewMode);
+
+  const askedCountQueryResult = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.Asked,
+      },
+    },
+    skip,
+  });
+
+  const excludedCountQueryResult = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.Excluded,
+      },
+    },
+    skip,
+  });
+
+  const committedCountQueryResult = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.NotReceived,
+      },
+    },
+    skip,
+  });
+
+  const givenCountQueryResult = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.Processed,
+      },
+    },
+    skip,
+  });
+
+  const receivedCountQueryResult = useContactsCountQuery({
+    variables: {
+      accountListId: accountListId || '',
+      contactsFilter: {
+        ...defaultFilters,
+        appealStatus: AppealStatusEnum.ReceivedNotProcessed,
+      },
+    },
+    skip,
   });
 
   const toggleFilterPanel = () => {
@@ -226,7 +324,11 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string, openDetails = true) => {
+  const setContactFocus = (
+    id?: string,
+    openDetails = true,
+    endTour = false,
+  ) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -252,6 +354,9 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     } else if (viewMode === TableViewModeEnum.List) {
       pathname += '/list';
     }
+    if (tour && !endTour) {
+      pathname += '/tour';
+    }
     if (id) {
       pathname += `/${id}`;
     }
@@ -269,22 +374,30 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     debounce((searchTerm: string) => {
       const { searchTerm: _, ...oldQuery } = query;
       if (searchTerm !== '') {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
-            ...(searchTerm && { searchTerm }),
+        replace(
+          {
+            pathname,
+            query: {
+              ...oldQuery,
+              accountListId,
+              ...(searchTerm && { searchTerm }),
+            },
           },
-        });
+          undefined,
+          { shallow: true },
+        );
       } else {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
+        replace(
+          {
+            pathname,
+            query: {
+              ...oldQuery,
+              accountListId,
+            },
           },
-        });
+          undefined,
+          { shallow: true },
+        );
       }
     }, 500),
     [accountListId],
@@ -314,6 +427,48 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         value: view,
       },
     });
+  };
+
+  const nextTourStep = () => {
+    switch (tour) {
+      case AppealTourEnum.Start:
+        setTour(AppealTourEnum.ReviewExcluded);
+        setActiveFilters({
+          appealStatus: AppealStatusEnum.Excluded,
+        });
+        break;
+      case AppealTourEnum.ReviewExcluded:
+        setTour(AppealTourEnum.ReviewAsked);
+        setActiveFilters({
+          appealStatus: AppealStatusEnum.Asked,
+        });
+        break;
+      case AppealTourEnum.ReviewAsked:
+        setFilterPanelOpen(true);
+        setTour(AppealTourEnum.ExportContacts);
+        setActiveFilters({
+          appealStatus: AppealStatusEnum.Asked,
+        });
+        deselectAll();
+        toggleSelectAll();
+        break;
+      case AppealTourEnum.ExportContacts:
+        setTour(AppealTourEnum.Finish);
+        setActiveFilters({
+          appealStatus: AppealStatusEnum.Asked,
+        });
+        break;
+      default:
+        setTour(null);
+        // Need to remove tour from URL
+        setContactFocus('', false, true);
+        break;
+    }
+  };
+  const hideTour = () => {
+    setTour(null);
+    // Need to remove tour from URL
+    setContactFocus('', false, true);
   };
 
   return (
@@ -355,6 +510,14 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         userOptionsLoading: userOptionsLoading,
         appealId,
         page,
+        tour,
+        nextTourStep,
+        hideTour,
+        askedCountQueryResult,
+        excludedCountQueryResult,
+        committedCountQueryResult,
+        givenCountQueryResult,
+        receivedCountQueryResult,
       }}
     >
       {children}

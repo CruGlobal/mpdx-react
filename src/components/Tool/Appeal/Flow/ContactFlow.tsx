@@ -11,8 +11,8 @@ import { ContactFlowDragLayer } from 'src/components/Contacts/ContactFlow/Contac
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo';
-import { AppealQuery } from '../AppealDetails/AppealsMainPanel/appealInfo.generated';
+import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
+import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 

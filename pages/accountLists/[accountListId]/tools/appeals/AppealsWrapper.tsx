@@ -65,8 +65,11 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     ) {
       setPage(PageEnum.DetailsPage);
       setContactId(appealIdParams);
-    } else if (length > 2) {
+    } else if (length === 3 && appealIdParams[2].toLowerCase() === 'tour') {
       setPage(PageEnum.ContactsPage);
+      setContactId(appealIdParams);
+    } else if (length > 2) {
+      setPage(PageEnum.DetailsPage);
       setContactId(appealIdParams);
     }
   }, [appealIdParams, accountListId]);

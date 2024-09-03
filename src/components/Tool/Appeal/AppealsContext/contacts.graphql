@@ -11,17 +11,48 @@ query Contacts(
     first: $first
   ) {
     nodes {
-      name
-      id
-      pledgeAmount
-      pledgeCurrency
-      pledgeFrequency
-      pledgeReceived
+      ...AppealContactInfo
     }
     pageInfo {
       hasNextPage
       endCursor
     }
     totalCount
+  }
+}
+
+fragment AppealContactInfo on Contact {
+  id
+  name
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  pledgeReceived
+  pledgeStartDate
+  starred
+  status
+  pledges {
+    id
+    amount
+    amountCurrency
+    appeal {
+      id
+    }
+    expectedDate
+    status
+  }
+  donations {
+    nodes {
+      appeal {
+        id
+      }
+      id
+      donationDate
+      appealAmount {
+        amount
+        convertedAmount
+        convertedCurrency
+      }
+    }
   }
 }

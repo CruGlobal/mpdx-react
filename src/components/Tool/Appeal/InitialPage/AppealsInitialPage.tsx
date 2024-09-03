@@ -1,8 +1,17 @@
 import React from 'react';
-import { Box, Divider, Grid, Theme, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  Theme,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm';
+import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -53,7 +62,19 @@ const AppealsInitialPage: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <Box width="100%" display="flex" justifyContent="center">
-            <AddAppealForm accountListId={accountListId || ''} />
+            <Box m={1}>
+              <Card>
+                <CardHeader
+                  title={t('Add Appeal')}
+                  sx={(theme) => ({
+                    backgroundColor: theme.palette.cruGrayLight.main,
+                  })}
+                />
+                <CardContent>
+                  <AddAppealForm accountListId={accountListId || ''} />
+                </CardContent>
+              </Card>
+            </Box>
           </Box>
         </Grid>
       </Grid>
