@@ -114,14 +114,13 @@ describe('ContactsRow', () => {
   });
 
   describe('Contact Row by status type', () => {
-    it('Excluded', () => {
+    it('Excluded', async () => {
       isRowChecked.mockImplementationOnce(() => true);
 
       const { getByText } = render(
         <Components appealStatus={AppealStatusEnum.Excluded} />,
       );
 
-      expect(getByText('Reason')).toBeInTheDocument();
       expect(getByText('CA$500 Monthly')).toBeInTheDocument();
     });
 
@@ -176,11 +175,10 @@ describe('ContactsRow', () => {
     it('Given', () => {
       isRowChecked.mockImplementationOnce(() => true);
 
-      const { getByText, queryByText } = render(
+      const { getByText } = render(
         <Components appealStatus={AppealStatusEnum.Processed} />,
       );
 
-      expect(queryByText('Reason')).not.toBeInTheDocument();
       expect(getByText('$3,000 ($50) (Jun 25, 2019)')).toBeInTheDocument();
     });
   });

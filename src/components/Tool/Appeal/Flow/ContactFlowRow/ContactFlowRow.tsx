@@ -66,7 +66,10 @@ export const ContactFlowRow: React.FC<Props> = ({
   const { isRowChecked: isChecked, toggleSelectionById: onContactCheckToggle } =
     React.useContext(AppealsContext) as AppealsType;
 
-  const reasons = useGetExcludedReasons(excludedContacts, contact.id);
+  const reasons = useGetExcludedReasons({
+    excludedContacts,
+    contactId: contact.id,
+  });
 
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({

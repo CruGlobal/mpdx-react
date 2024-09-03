@@ -139,7 +139,10 @@ export const ContactRow: React.FC<Props> = ({
   const [amountAndFrequency, setAmountAndFrequency] = useState<string>();
   const [pledgeDonations, setPledgeDonations] = useState<string[] | null>(null);
 
-  const reasons = useGetExcludedReasons(excludedContacts, contact.id);
+  const reasons = useGetExcludedReasons({
+    excludedContacts,
+    contactId: contact.id,
+  });
 
   const handleContactClick = () => {
     onContactSelected(contact.id);

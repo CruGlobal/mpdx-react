@@ -77,7 +77,7 @@ describe('ContactFlowRow', () => {
     const { getByText } = render(<Components />);
     userEvent.click(getByText('Test Name'));
     expect(getByText('Test Name')).toBeInTheDocument();
-    expect(onContactSelected).toHaveBeenCalledWith('123', true, true);
+    expect(onContactSelected).toHaveBeenCalledWith('contactID', true, true);
   });
 
   it('should call check contact', async () => {

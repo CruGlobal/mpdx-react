@@ -8,19 +8,28 @@ import {
 describe('useGetExcludedReasons', () => {
   it('should return empty string', () => {
     const { result } = renderHook(() =>
-      useGetExcludedReasons(defaultExcludedContacts, ''),
+      useGetExcludedReasons({
+        excludedContacts: defaultExcludedContacts,
+        contactId: '',
+      }),
     );
 
     expect(result.current.length).toEqual(0);
 
     const { result: resultOne } = renderHook(() =>
-      useGetExcludedReasons(defaultExcludedContacts, ''),
+      useGetExcludedReasons({
+        excludedContacts: defaultExcludedContacts,
+        contactId: '',
+      }),
     );
 
     expect(resultOne.current.length).toEqual(0);
 
     const { result: resultTwo } = renderHook(() =>
-      useGetExcludedReasons(defaultExcludedContacts, 'contactID3'),
+      useGetExcludedReasons({
+        excludedContacts: defaultExcludedContacts,
+        contactId: 'contactID3',
+      }),
     );
 
     expect(resultTwo.current.length).toEqual(0);
@@ -28,7 +37,10 @@ describe('useGetExcludedReasons', () => {
 
   it('should return the correct reason', () => {
     const { result } = renderHook(() =>
-      useGetExcludedReasons(defaultExcludedContacts, contactId),
+      useGetExcludedReasons({
+        excludedContacts: defaultExcludedContacts,
+        contactId,
+      }),
     );
 
     expect(result.current.length).toEqual(1);
@@ -37,7 +49,10 @@ describe('useGetExcludedReasons', () => {
 
   it('should return both the correct reasons', () => {
     const { result } = renderHook(() =>
-      useGetExcludedReasons(defaultExcludedContacts, 'contactID2'),
+      useGetExcludedReasons({
+        excludedContacts: defaultExcludedContacts,
+        contactId: 'contactID2',
+      }),
     );
 
     expect(result.current.length).toEqual(2);

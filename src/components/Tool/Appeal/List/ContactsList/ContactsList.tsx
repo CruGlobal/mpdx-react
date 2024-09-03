@@ -18,7 +18,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
-import { useExcludedAppealContactsLazyQuery } from '../../Shared/AppealExcludedContacts.generated';
+import { useExcludedAppealContactsQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { DynamicAppealTour } from '../AppealTour/DynamicAppealTour';
 import { ContactRow } from '../ContactRow/ContactRow';
 
@@ -34,9 +34,6 @@ const useStyles = makeStyles()(() => ({
   },
   givingHeader: {
     padding: theme.spacing(1, 2, 1, 0),
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(1, 2, 1, 0),
-    },
   },
 }));
 
@@ -67,23 +64,16 @@ export const ContactsList: React.FC<ContactsListProps> = ({
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
-  const [fetchExcludedAppealContacts, { data: excludedContacts }] =
-    useExcludedAppealContactsLazyQuery({
-      variables: {
-        appealId: appealId ?? '',
-        accountListId: accountListId ?? '',
-      },
-    });
+  const { data: excludedContacts } = useExcludedAppealContactsQuery({
+    variables: {
+      appealId: appealId ?? '',
+      accountListId: accountListId ?? '',
+    },
+    skip: activeFilters.appealStatus !== AppealStatusEnum.Excluded,
+  });
 
   const appealStatus =
     (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
-
-  useEffect(() => {
-    if (appealStatus !== AppealStatusEnum.Excluded) {
-      return;
-    }
-    fetchExcludedAppealContacts();
-  }, [appealStatus]);
 
   useEffect(() => {
     if (!activeFilters.appealStatus) {
@@ -194,9 +184,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
             appealStatus={appealStatus}
             useTopMargin={index === 0}
             excludedContacts={
-              isExcludedContact
-                ? excludedContacts?.appeal?.excludedAppealContacts ?? []
-                : []
+              excludedContacts?.appeal?.excludedAppealContacts ?? []
             }
           />
         )}

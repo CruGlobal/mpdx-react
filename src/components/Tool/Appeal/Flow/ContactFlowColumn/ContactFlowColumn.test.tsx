@@ -20,7 +20,7 @@ const title = 'Test Column';
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
 const contact = {
-  id: '123',
+  id: 'contactID',
   name: 'Test Person',
   status: StatusEnum.NotInterested,
   primaryAddress: {
