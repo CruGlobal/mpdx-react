@@ -4,11 +4,11 @@ import React, { useEffect } from 'react';
 import { Button } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useUpdateSetupPositionMutation } from './Finish.generated';
 
 // This is the last page of the tour, and it lets users choose to go to the
 // tools page. It is always shown.
@@ -17,12 +17,13 @@ const FinishPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const { push } = useRouter();
-  const [updateSetupPosition] = useUpdateSetupPositionMutation();
+  const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const setSetupPosition = (setupPosition: string) =>
-    updateSetupPosition({
+    updateUserOptions({
       variables: {
-        setupPosition,
+        key: 'setup_position',
+        value: setupPosition,
       },
     });
 

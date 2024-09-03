@@ -30,8 +30,9 @@ describe('Finish account page', () => {
     render(<TestComponent />);
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateSetupPosition', {
-        setupPosition: 'finish',
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        key: 'setup_position',
+        value: 'finish',
       }),
     );
   });
@@ -42,8 +43,9 @@ describe('Finish account page', () => {
     userEvent.click(getByRole('button', { name: /Yes/ }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateSetupPosition', {
-        setupPosition: '',
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        key: 'setup_position',
+        value: '',
       }),
     );
     expect(push).toHaveBeenCalledWith(
@@ -57,8 +59,9 @@ describe('Finish account page', () => {
     userEvent.click(getByRole('button', { name: /Nope/ }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateSetupPosition', {
-        setupPosition: '',
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        key: 'setup_position',
+        value: '',
       }),
     );
     expect(push).toHaveBeenCalledWith(`/accountLists/${accountListId}`);
