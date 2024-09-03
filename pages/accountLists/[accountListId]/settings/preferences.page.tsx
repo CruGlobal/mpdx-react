@@ -152,7 +152,7 @@ const Preferences: React.FC = () => {
     }
   };
 
-  const getSetupMessage = (setup) => {
+  const getSetupMessage = (setup: number) => {
     switch (setup) {
       case 0:
         return t("Let's set your locale!");

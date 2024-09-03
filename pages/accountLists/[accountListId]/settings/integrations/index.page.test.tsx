@@ -4,6 +4,10 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
+import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
+import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import Integrations from './index.page';
@@ -31,11 +35,20 @@ jest.mock('notistack', () => ({
     };
   },
 }));
+interface MocksProvidersProps {
+  children: JSX.Element;
+  setup?: string;
+}
 
-const MocksProviders = (props: { children: JSX.Element; setup?: string }) => (
+const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider
+      <GqlMockedProvider<{
+        GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
+        MailchimpAccount: MailchimpAccountQuery;
+        PrayerlettersAccount: PrayerlettersAccountQuery;
+        GetUserOptions: GetUserOptionsQuery;
+      }>
         mocks={{
           GetUsersOrganizationsAccounts: {
             userOrganizationAccounts: [
@@ -52,16 +65,16 @@ const MocksProviders = (props: { children: JSX.Element; setup?: string }) => (
           GetUserOptions: {
             userOptions: [
               {
-                id: 1,
+                id: '1',
                 key: 'setup_position',
-                value: props.setup || 'finish',
+                value: setup || 'finish',
               },
             ],
           },
         }}
         onCall={mutationSpy}
       >
-        {props.children}
+        {children}
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -132,8 +145,8 @@ describe('Connect Services page', () => {
       // Start with Google
       expect(await findByText(/Add Account/i)).toBeInTheDocument();
 
-      // // Moves to MailChimp
-      await waitFor(() => userEvent.click(nextButton));
+      // Moves to MailChimp
+      userEvent.click(nextButton);
       expect(await findByText(/Connect MailChimp/i)).toBeInTheDocument();
 
       // PrayerLetters.com

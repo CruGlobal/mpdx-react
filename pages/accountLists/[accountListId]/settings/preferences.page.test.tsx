@@ -4,6 +4,16 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
+import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
+import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
+import {
+  CanUserExportDataQuery,
+  GetAccountPreferencesQuery,
+} from 'src/components/Settings/preferences/GetAccountPreferences.generated';
+import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
+import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import theme from 'src/theme';
 import Preferences from './preferences.page';
 
@@ -30,15 +40,31 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const MocksProviders = (props: {
+interface MocksProvidersProps {
   children: JSX.Element;
   canUserExportData: boolean;
   singleOrg?: boolean;
   setup?: string;
+}
+
+const MocksProviders: React.FC<MocksProvidersProps> = ({
+  children,
+  canUserExportData,
+  singleOrg,
+  setup,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider
+      <GqlMockedProvider<{
+        GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
+        MailchimpAccount: MailchimpAccountQuery;
+        PrayerlettersAccount: PrayerlettersAccountQuery;
+        GetUserOptions: GetUserOptionsQuery;
+        GetAccountPreferences: GetAccountPreferencesQuery;
+        GetPersonalPreferences: GetPersonalPreferencesQuery;
+        GetProfileInfo: GetProfileInfoQuery;
+        CanUserExportData: CanUserExportDataQuery;
+      }>
         mocks={{
           GetAccountPreferences: {
             user: {
@@ -92,7 +118,7 @@ const MocksProviders = (props: {
             },
           },
           GetUsersOrganizationsAccounts: {
-            userOrganizationAccounts: props.singleOrg
+            userOrganizationAccounts: singleOrg
               ? [
                   {
                     organization: {},
@@ -109,23 +135,22 @@ const MocksProviders = (props: {
           },
           CanUserExportData: {
             canUserExportData: {
-              allowed: props.canUserExportData,
+              allowed: canUserExportData,
               exportedAt: null,
             },
           },
           GetUserOptions: {
             userOptions: [
               {
-                id: 1,
                 key: 'setup_position',
-                value: props.setup || 'finish',
+                value: setup || 'finish',
               },
             ],
           },
         }}
         onCall={mutationSpy}
       >
-        {props.children}
+        {children}
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>

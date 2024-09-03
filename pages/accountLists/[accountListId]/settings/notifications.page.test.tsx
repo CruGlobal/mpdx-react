@@ -4,6 +4,11 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import {
+  NotificationTypesQuery,
+  NotificationsPreferencesQuery,
+} from 'src/components/Settings/notifications/Notifications.generated';
 import { notificationSettingsMocks } from 'src/components/Settings/notifications/notificationSettingsMocks';
 import theme from 'src/theme';
 import Notifications from './notifications.page';
@@ -31,25 +36,34 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const MocksProviders = (props: { children: JSX.Element; setup?: string }) => (
+interface MocksProvidersProps {
+  children: JSX.Element;
+  setup?: string;
+}
+
+const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider
+      <GqlMockedProvider<{
+        GetUserOptions: GetUserOptionsQuery;
+        NotificationsPreferences: NotificationsPreferencesQuery;
+        NotificationTypes: NotificationTypesQuery;
+      }>
         mocks={{
-          notificationSettingsMocks,
+          ...notificationSettingsMocks,
           GetUserOptions: {
             userOptions: [
               {
-                id: 1,
+                id: '1',
                 key: 'setup_position',
-                value: props.setup || 'finish',
+                value: setup || 'finish',
               },
             ],
           },
         }}
         onCall={mutationSpy}
       >
-        {props.children}
+        {children}
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>

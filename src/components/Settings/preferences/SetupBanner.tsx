@@ -15,9 +15,7 @@ export const SetupBanner: React.FC<SetupBannerProps> = ({
   return (
     <Alert
       severity="info"
-      iconMapping={{
-        info: <CampaignIcon fontSize="large" />,
-      }}
+      icon={<CampaignIcon fontSize="large" />}
       action={button}
       sx={{ marginBottom: 2 }}
     >

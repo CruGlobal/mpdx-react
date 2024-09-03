@@ -23,10 +23,11 @@ const Notifications: React.FC = () => {
   const { data: userOptions } = useGetUserOptionsQuery();
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
-  const savedSetupPosition = userOptions?.userOptions.find(
-    (option) => option.key === 'setup_position',
-  )?.value;
-  const isSettingUp = savedSetupPosition === 'preferences.notifications';
+  const isSettingUp = userOptions?.userOptions.some(
+    (option) =>
+      option.key === 'setup_position' &&
+      option.value === 'preferences.notifications',
+  );
 
   const handleSetupChange = async () => {
     if (!isSettingUp) {

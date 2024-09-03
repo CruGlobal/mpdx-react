@@ -10,11 +10,3 @@ query Organizations {
     }
   }
 }
-
-mutation UpdateUser($input: UserUpdateMutationInput!) {
-  updateUser(input: $input) {
-    user {
-      setup
-    }
-  }
-}
