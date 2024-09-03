@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
@@ -50,7 +49,7 @@ const Components = () => (
           <GqlMockedProvider<{
             GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
           }>
-            mocks={GetInvalidPhoneNumbersMocks as ApolloErgonoMockMap}
+            mocks={GetInvalidPhoneNumbersMocks}
           >
             <FixPhoneNumbersPage />
           </GqlMockedProvider>
@@ -84,8 +83,15 @@ describe('FixPhoneNumbersPage', () => {
 
     await waitFor(() => {
       expect(pushFn).toHaveBeenCalledWith(
-        `/accountLists/${accountListId}/tools/fix/phoneNumbers/${'testid'}`,
+        `/accountLists/${accountListId}/tools/fix/phoneNumbers/${GetInvalidPhoneNumbersMocks.GetInvalidPhoneNumbers.people.nodes[0].id}`,
       );
     });
+  });
+
+  it('should show errors', async () => {
+    const { findAllByRole, findByText } = render(<Components />);
+
+    userEvent.clear((await findAllByRole('textbox'))[0]);
+    expect(await findByText('This field is required')).toBeInTheDocument();
   });
 });

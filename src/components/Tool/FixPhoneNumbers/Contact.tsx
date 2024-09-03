@@ -27,6 +27,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -152,7 +153,7 @@ const Contact: React.FC<Props> = ({
   const name: string = `${person.firstName} ${person.lastName}`;
 
   const handleContactNameClick = () => {
-    setContactFocus(person.contactId);
+    setContactFocus(person.contactId, TabKey.ContactDetails);
   };
 
   return (
@@ -299,7 +300,7 @@ const Contact: React.FC<Props> = ({
                                   </Typography>
                                 </Hidden>
                                 <Tooltip
-                                  title="Set as Primary"
+                                  title={t('Set as Primary')}
                                   placement="left"
                                 >
                                   <StarOutlineIcon
@@ -400,7 +401,10 @@ const Contact: React.FC<Props> = ({
                               }
                               className={classes.paddingX}
                             >
-                              <Tooltip title="Delete Number" placement="left">
+                              <Tooltip
+                                title={t('Delete Number')}
+                                placement="left"
+                              >
                                 <Icon
                                   path={mdiDelete}
                                   size={1}
@@ -534,8 +538,9 @@ const Contact: React.FC<Props> = ({
                                   : personValue,
                             ),
                           };
-                          values.people[personIndex].newPhoneNumber &&
+                          if (values.people[personIndex].newPhoneNumber) {
                             setValues(updatedValues as FormValues);
+                          }
                         }}
                         data-testid={`addButton-${person.id}`}
                       >
