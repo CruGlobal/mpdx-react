@@ -76,7 +76,7 @@ describe('AppealProgressBar', () => {
 
   describe('Renders correct amounts and currency', () => {
     it('renders progress bar in USD', async () => {
-      const { getByText } = render(
+      const { getByText, findByText } = render(
         <Components
           given={100}
           received={200}
@@ -86,15 +86,14 @@ describe('AppealProgressBar', () => {
         />,
       );
 
-      await waitFor(() => {
-        expect(getByText(/\$100 \(10%\)/i)).toBeInTheDocument();
-        expect(getByText(/\$300 \(30%\)/i)).toBeInTheDocument();
-        expect(getByText(/\$600 \(60%\)/i)).toBeInTheDocument();
-      });
+      expect(await findByText(/\$100 \(10%\)/i)).toBeInTheDocument();
+
+      expect(getByText(/\$300 \(30%\)/i)).toBeInTheDocument();
+      expect(getByText(/\$600 \(60%\)/i)).toBeInTheDocument();
     });
 
     it('renders progress bar in Euros', async () => {
-      const { getByText } = render(
+      const { getByText, findByText } = render(
         <Components
           given={100}
           received={200}
@@ -104,15 +103,14 @@ describe('AppealProgressBar', () => {
         />,
       );
 
-      await waitFor(() => {
-        expect(getByText(/\€100 \(10%\)/i)).toBeInTheDocument();
-        expect(getByText(/\€300 \(30%\)/i)).toBeInTheDocument();
-        expect(getByText(/\€600 \(60%\)/i)).toBeInTheDocument();
-      });
+      expect(await findByText(/\€100 \(10%\)/i)).toBeInTheDocument();
+
+      expect(getByText(/\€300 \(30%\)/i)).toBeInTheDocument();
+      expect(getByText(/\€600 \(60%\)/i)).toBeInTheDocument();
     });
 
     it('renders progress bar in NZ dollars', async () => {
-      const { getByText } = render(
+      const { getByText, findByText } = render(
         <Components
           given={100}
           received={200}
@@ -122,11 +120,9 @@ describe('AppealProgressBar', () => {
         />,
       );
 
-      await waitFor(() => {
-        expect(getByText(/nz\$100 \(10%\)/i)).toBeInTheDocument();
-        expect(getByText(/nz\$300 \(30%\)/i)).toBeInTheDocument();
-        expect(getByText(/nz\$600 \(60%\)/i)).toBeInTheDocument();
-      });
+      expect(await findByText(/nz\$100 \(10%\)/i)).toBeInTheDocument();
+      expect(getByText(/nz\$300 \(30%\)/i)).toBeInTheDocument();
+      expect(getByText(/nz\$600 \(60%\)/i)).toBeInTheDocument();
     });
   });
 });

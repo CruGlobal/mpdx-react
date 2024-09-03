@@ -1,6 +1,7 @@
 import { ExcludedAppealContactReasonEnum } from 'src/graphql/types.generated';
+import { defaultContact } from '../../List/ContactRow/ContactRowMock';
 
-export const contactId = 'contactID';
+export const contactId = defaultContact.id;
 
 export const defaultExcludedContacts = [
   {

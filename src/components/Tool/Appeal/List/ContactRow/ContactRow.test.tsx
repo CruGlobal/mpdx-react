@@ -13,10 +13,7 @@ import {
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { ExcludedAppealContactInfoFragment } from '../../Shared/AppealExcludedContacts.generated';
-import {
-  contactId,
-  defaultExcludedContacts,
-} from '../../Shared/useGetExcludedReasons/useGetExcludedReasonsMock';
+import { defaultExcludedContacts } from '../../Shared/useGetExcludedReasons/useGetExcludedReasonsMock';
 import { ContactRow } from './ContactRow';
 import { defaultContact } from './ContactRowMock';
 
@@ -75,7 +72,8 @@ describe('ContactsRow', () => {
     const { getByText } = render(<Components />);
 
     expect(getByText('Test, Name')).toBeInTheDocument();
-    expect(getByText('CA$500 Monthly')).toBeInTheDocument();
+    expect(getByText('CA$500')).toBeInTheDocument();
+    expect(getByText('Monthly')).toBeInTheDocument();
   });
 
   it('should render check event', async () => {
@@ -121,29 +119,30 @@ describe('ContactsRow', () => {
         <Components appealStatus={AppealStatusEnum.Excluded} />,
       );
 
-      expect(getByText('CA$500 Monthly')).toBeInTheDocument();
+      expect(getByText('CA$500')).toBeInTheDocument();
+      expect(getByText('Monthly')).toBeInTheDocument();
     });
 
     it('Asked', () => {
       isRowChecked.mockImplementationOnce(() => true);
 
-      const { getByText, queryByText } = render(
+      const { getByText } = render(
         <Components appealStatus={AppealStatusEnum.Asked} />,
       );
 
-      expect(queryByText('Reason')).not.toBeInTheDocument();
-      expect(getByText('CA$500 Monthly')).toBeInTheDocument();
+      expect(getByText('CA$500')).toBeInTheDocument();
+      expect(getByText('Monthly')).toBeInTheDocument();
     });
 
     it('Committed', () => {
       isRowChecked.mockImplementationOnce(() => true);
 
-      const { getByText, queryByText } = render(
+      const { getByText } = render(
         <Components appealStatus={AppealStatusEnum.NotReceived} />,
       );
 
-      expect(queryByText('Reason')).not.toBeInTheDocument();
-      expect(getByText('$3,000 (Aug 8, 2024)')).toBeInTheDocument();
+      expect(getByText('$3,000')).toBeInTheDocument();
+      expect(getByText('(Aug 8, 2024)')).toBeInTheDocument();
     });
 
     it('Committed - with no pledges', () => {
@@ -169,7 +168,8 @@ describe('ContactsRow', () => {
       );
 
       expect(queryByText('Reason')).not.toBeInTheDocument();
-      expect(getByText('$3,000 (Aug 8, 2024)')).toBeInTheDocument();
+      expect(getByText('$3,000')).toBeInTheDocument();
+      expect(getByText('(Aug 8, 2024)')).toBeInTheDocument();
     });
 
     it('Given', () => {
@@ -186,13 +186,7 @@ describe('ContactsRow', () => {
   describe('Excluded Reason', () => {
     it('should not display excluded reason if not excluded contact', async () => {
       const { queryByText } = render(
-        <Components
-          appealStatus={AppealStatusEnum.NotReceived}
-          contact={{
-            ...defaultContact,
-            id: contactId,
-          }}
-        />,
+        <Components appealStatus={AppealStatusEnum.NotReceived} />,
       );
 
       expect(queryByText('Send Appeals?" set to No')).not.toBeInTheDocument();
@@ -203,10 +197,6 @@ describe('ContactsRow', () => {
         <Components
           excludedContacts={defaultExcludedContacts}
           appealStatus={AppealStatusEnum.Excluded}
-          contact={{
-            ...defaultContact,
-            id: contactId,
-          }}
         />,
       );
 

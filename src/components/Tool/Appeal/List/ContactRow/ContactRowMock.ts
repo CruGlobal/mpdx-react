@@ -1,4 +1,4 @@
-import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 
 export const defaultContact: AppealContactInfoFragment = {
@@ -8,6 +8,8 @@ export const defaultContact: AppealContactInfoFragment = {
   pledgeCurrency: 'CAD',
   pledgeFrequency: PledgeFrequencyEnum.Monthly,
   pledgeReceived: true,
+  status: StatusEnum.AskInFuture,
+  starred: false,
   pledges: [
     {
       id: 'pledge-1',

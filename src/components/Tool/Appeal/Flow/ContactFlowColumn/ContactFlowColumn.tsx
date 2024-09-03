@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
-import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   CardContentInner,
   ColumnTitle,
@@ -28,6 +27,7 @@ import {
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
+import { useContactsQuery } from '../../AppealsContext/contacts.generated';
 import { useExcludedAppealContactsQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
