@@ -3,26 +3,19 @@ import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { Button } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
+import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import makeSsrClient from 'src/lib/apollo/ssrClient';
-import {
-  DefaultAccountListDocument,
-  DefaultAccountListQuery,
-  useUpdateSetupPositionMutation,
-} from './Finish.generated';
-
-interface PageProps {
-  defaultAccountListId: string;
-}
+import { useUpdateSetupPositionMutation } from './Finish.generated';
 
 // This is the last page of the tour, and it lets users choose to go to the
 // tools page. It is always shown.
-const FinishPage: React.FC<PageProps> = ({ defaultAccountListId }) => {
+const FinishPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
+  const accountListId = useAccountListId();
   const { push } = useRouter();
   const [updateSetupPosition] = useUpdateSetupPositionMutation();
 
@@ -39,12 +32,12 @@ const FinishPage: React.FC<PageProps> = ({ defaultAccountListId }) => {
 
   const handleNext = async () => {
     await setSetupPosition('');
-    push(`/accountLists/${defaultAccountListId}/tools?setup=1`);
+    push(`/accountLists/${accountListId}/tools?setup=1`);
   };
 
   const handleFinish = async () => {
     await setSetupPosition('');
-    push(`/accountLists/${defaultAccountListId}`);
+    push(`/accountLists/${accountListId}`);
   };
 
   return (
@@ -86,27 +79,6 @@ You can import from software like TntConnect, Google Contacts or a Spreadsheet.`
   );
 };
 
-export const getServerSideProps = makeGetServerSideProps<PageProps>(
-  async (session) => {
-    const ssrClient = makeSsrClient(session.user.apiToken);
-    const { data } = await ssrClient.query<DefaultAccountListQuery>({
-      query: DefaultAccountListDocument,
-    });
-    if (!data.user.defaultAccountList) {
-      return {
-        redirect: {
-          destination: '/setup/account',
-          permanent: false,
-        },
-      };
-    }
-
-    return {
-      props: {
-        defaultAccountListId: data.user.defaultAccountList,
-      },
-    };
-  },
-);
+export const getServerSideProps = loadSession;
 
 export default FinishPage;
