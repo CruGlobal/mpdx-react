@@ -3,17 +3,29 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import { SetupStageQuery } from './Setup.generated';
-import { SetupProvider } from './SetupProvider';
+import { SetupProvider, useSetupContext } from './SetupProvider';
 
 const push = jest.fn();
 
 interface TestComponentProps {
   setup: UserSetupStageEnum | null;
+  setupPosition?: string | null;
   pathname?: string;
 }
 
+const ContextTestingComponent = () => {
+  const { settingUp } = useSetupContext();
+
+  return (
+    <div data-testid="setting-up">
+      {typeof settingUp === 'undefined' ? 'undefined' : settingUp.toString()}
+    </div>
+  );
+};
+
 const TestComponent: React.FC<TestComponentProps> = ({
   setup,
+  setupPosition = null,
   pathname = '/',
 }) => (
   <TestRouter router={{ push, pathname }}>
@@ -23,10 +35,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
           user: {
             setup,
           },
+          userOptions: [
+            {
+              key: 'setup_position',
+              value: setupPosition,
+            },
+          ],
         },
       }}
     >
       <SetupProvider>
+        <ContextTestingComponent />
         <div>Page content</div>
       </SetupProvider>
     </GqlMockedProvider>
@@ -75,5 +94,48 @@ describe('SetupProvider', () => {
     render(<TestComponent setup={null} />);
 
     await waitFor(() => expect(push).not.toHaveBeenCalled());
+  });
+
+  describe('settingUp context', () => {
+    it('is undefined while data is loading', () => {
+      const { getByTestId } = render(
+        <TestComponent setup={null} setupPosition="" />,
+      );
+
+      expect(getByTestId('setting-up')).toHaveTextContent('undefined');
+    });
+
+    it('is true when setup is set', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          setup={UserSetupStageEnum.NoDefaultAccountList}
+          setupPosition=""
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('true'),
+      );
+    });
+
+    it('is true when setup_position is set', async () => {
+      const { getByTestId } = render(
+        <TestComponent setup={null} setupPosition="start" />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('true'),
+      );
+    });
+
+    it('is false when setup_position is not set', async () => {
+      const { getByTestId } = render(
+        <TestComponent setup={null} setupPosition="" />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('false'),
+      );
+    });
   });
 });

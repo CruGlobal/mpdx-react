@@ -1,13 +1,31 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactNode, createContext, useContext, useEffect } from 'react';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import { useSetupStageQuery } from './Setup.generated';
 
-interface Props {
-  children: ReactElement;
+export interface SetupContext {
+  settingUp?: boolean;
 }
 
-// This wrapper component ensures that users have gone through the setup process
+const SetupContext = createContext<SetupContext | null>(null);
+
+export const useSetupContext = (): SetupContext => {
+  const setupContext = useContext(SetupContext);
+  if (!setupContext) {
+    throw new Error(
+      'SetupProvider not found! Make sure that you are calling useSetupContext inside a component wrapped by <SetupProvider>.',
+    );
+  }
+
+  return setupContext;
+};
+
+interface Props {
+  children: ReactNode;
+}
+
+// This context component ensures that users have gone through the setup process
+// and provides the setup state to the rest of the application
 export const SetupProvider: React.FC<Props> = ({ children }) => {
   const { data } = useSetupStageQuery();
   const { push, pathname } = useRouter();
@@ -31,5 +49,15 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
     }
   }, [data]);
 
-  return children;
+  const settingUp = data
+    ? data.userOptions.some(
+        (option) => option.key === 'setup_position' && option.value !== '',
+      ) || data.user.setup !== null
+    : undefined;
+
+  return (
+    <SetupContext.Provider value={{ settingUp }}>
+      {children}
+    </SetupContext.Provider>
+  );
 };

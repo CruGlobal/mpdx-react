@@ -4,4 +4,9 @@ query SetupStage {
     defaultAccountList
     setup
   }
+  userOptions {
+    id
+    key
+    value
+  }
 }
