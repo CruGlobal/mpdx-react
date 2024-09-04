@@ -6,10 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { ContactFlowDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
-import {
-  ContactFilterSetInput,
-  PledgeStatusEnum,
-} from 'src/graphql/types.generated';
+import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
@@ -25,7 +22,6 @@ import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
 export interface ContactFlowProps {
   accountListId: string;
-  selectedFilters: ContactFilterSetInput;
   searchTerm?: string | string[];
   appealInfo?: AppealQuery;
   appealInfoLoading: boolean;
@@ -240,7 +236,6 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
               <ContactFlowColumn
                 accountListId={accountListId}
                 title={column.name}
-                selectedFilters={selectedFilters}
                 color={column.color}
                 onContactSelected={onContactSelected}
                 appealStatus={column.status}
