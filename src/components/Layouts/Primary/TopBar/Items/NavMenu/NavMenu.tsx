@@ -23,7 +23,7 @@ import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageM
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
-import { ToolsList } from '../../../../../Tool/Home/ToolList';
+import { ToolsListNav } from '../../../../../Tool/Home/ToolsListNav';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -322,7 +322,7 @@ const NavMenu: React.FC = () => {
               <Paper className={classes.subMenu}>
                 <ClickAwayListener onClickAway={handleToolsMenuClose}>
                   <MenuList autoFocusItem={toolsMenuOpen} id="menu-list-grow">
-                    {ToolsList.map((toolsGroup) => (
+                    {ToolsListNav.map((toolsGroup) => (
                       <Box key={toolsGroup.groupName}>
                         {toolsGroup.items.map((tool) => {
                           const needsAttention = toolData

@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ToolsList } from '../Home/ToolList';
+import { ToolsListNav } from '../Home/ToolsListNav';
 import { Item } from './Item/Item';
 
 const ToolNavListContainer = styled('div')(() => ({
@@ -89,7 +89,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
               </Box>
             </FilterHeader>
             <FilterList dense>
-              {ToolsList.map((group) => (
+              {ToolsListNav.map((group) => (
                 <Fragment key={group.groupName}>
                   <NavListItem data-testid="ToolNavListItem">
                     <ListItemIcon>

@@ -1,10 +1,12 @@
 import React, { ReactElement } from 'react';
 import { Box, Grid, Theme } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
+import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
+import { useAccountListId } from '../../../hooks/useAccountListId';
 import Tool from './Tool';
-import { ToolsList } from './ToolList';
+import { ToolsListHome } from './ToolsListHome';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   container: {
@@ -26,6 +28,16 @@ const useStyles = makeStyles()((theme: Theme) => ({
     width: '100%',
     justifyContent: 'center',
   },
+  notificationBox: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    borderRadius: '25%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: theme.spacing(2),
+  },
 }));
 
 const variants = {
@@ -43,8 +55,21 @@ const variants = {
 
 const ToolHome = (): ReactElement => {
   const { classes } = useStyles();
-  const toolsListFlattened = ToolsList.flatMap((tool) => tool.items);
-  const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { data, loading } = useGetToolNotificationsQuery({
+    variables: { accountListId: accountListId ?? '' },
+    skip: !accountListId,
+  });
+
+  const toolDataTotalCount: { [key: string]: number } = {
+    [ToolName.FixCommitmentInfo]: data?.fixCommitmentInfo.totalCount ?? 0,
+    [ToolName.FixMailingAddresses]: data?.fixMailingAddresses.totalCount ?? 0,
+    [ToolName.FixSendNewsletter]: data?.fixSendNewsletter.totalCount ?? 0,
+    [ToolName.FixEmailAddresses]: data?.fixEmailAddresses.totalCount ?? 0,
+    [ToolName.FixPhoneNumbers]: data?.fixPhoneNumbers.totalCount ?? 0,
+    [ToolName.MergeContacts]: data?.mergeContacts.totalCount ?? 0,
+    [ToolName.MergePeople]: data?.mergePeople.totalCount ?? 0,
+  };
 
   return (
     <motion.div
@@ -55,14 +80,21 @@ const ToolHome = (): ReactElement => {
     >
       <Box className={classes.outer} data-testid="Home">
         <Grid container spacing={3} className={classes.container}>
-          {toolsListFlattened.map((tool) => {
+          {ToolsListHome.map((tool) => {
+            const needsAttention = toolDataTotalCount
+              ? toolDataTotalCount[tool.id] > 0
+              : false;
             return (
               <Grid item xs={12} sm={6} lg={4} key={tool.tool}>
                 <Tool
-                  tool={t('{{toolname}}', { toolname: tool.tool })}
-                  desc={t('{{tooldesc}}', { tooldesc: tool.desc })}
+                  tool={tool.tool}
+                  desc={tool.desc}
                   icon={tool.icon}
                   url={tool.url}
+                  needsAttention={needsAttention}
+                  totalCount={toolDataTotalCount[tool.id]}
+                  loading={loading}
+                  toolId={tool.id}
                 />
               </Grid>
             );

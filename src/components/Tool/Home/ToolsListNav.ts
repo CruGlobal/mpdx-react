@@ -28,7 +28,7 @@ interface ToolsGroup {
   items: ToolItem[];
 }
 
-export const ToolsList: ToolsGroup[] = [
+export const ToolsListNav: ToolsGroup[] = [
   {
     groupName: i18n.t('Appeals'),
     groupIcon: mdiWrench,
@@ -131,7 +131,6 @@ export const ToolsList: ToolsGroup[] = [
         id: 'import/tnt',
         url: 'import/tnt',
       },
-
       {
         tool: i18n.t('Import from CSV'),
         desc: i18n.t('Import contacts you have saved in a CSV file'),

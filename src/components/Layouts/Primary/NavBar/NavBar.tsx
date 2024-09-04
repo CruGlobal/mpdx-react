@@ -6,7 +6,7 @@ import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
-import { ToolsList } from 'src/components/Tool/Home/ToolList';
+import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
@@ -138,7 +138,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     },
     {
       title: t('Tools'),
-      items: ToolsList.flatMap((toolsGroup) =>
+      items: ToolsListNav.flatMap((toolsGroup) =>
         toolsGroup.items.map((tool) => ({
           title: tool.tool,
           href: `https://${process.env.REWRITE_DOMAIN}/tools/${
