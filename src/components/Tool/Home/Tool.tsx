@@ -58,6 +58,12 @@ const useStyles = makeStyles()(() => ({
     outline: '1px solid',
     outlineColor: theme.palette.progressBarYellow.main,
   },
+  customBadge: {
+    backgroundColor: theme.palette.common.white,
+    color: theme.palette.progressBarYellow.main,
+    border: `1px solid ${theme.palette.progressBarYellow.main}`,
+    fontWeight: 'bold',
+  },
 }));
 
 export interface Props {
@@ -100,6 +106,8 @@ const Tool = ({
           <CardContent className={classes.cardContent}>
             <Box display="flex" justifyContent="center" alignItems="center">
               <Badge
+                classes={{ badge: classes.customBadge }}
+                overlap="circular"
                 badgeContent={
                   !loading && needsAttention ? toolNotifications : 0
                 }
@@ -109,7 +117,7 @@ const Tool = ({
                 <Icon
                   className={clsx(needsAttention && classes.iconNeedsAttention)}
                   path={icon}
-                  size={1.5}
+                  size={2}
                 />
               </Badge>
             </Box>
