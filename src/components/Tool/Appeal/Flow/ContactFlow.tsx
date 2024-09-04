@@ -14,6 +14,7 @@ import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.genera
 import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
 import { DynamicAddExcludedContactModal } from '../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
 import { DynamicDeleteAppealContactModal } from '../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
+import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDeletePledgeModal';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
@@ -91,6 +92,8 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     useState(false);
   const [deleteAppealContactModalOpen, setDeleteAppealContactModalOpen] =
     useState(false);
+  const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
+
   const [contact, setContact] = useState<DraggedContact | null>(null);
 
   const changeContactStatus = async (
@@ -119,10 +122,9 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
           setDeleteAppealContactModalOpen(true);
         break;
       case AppealStatusEnum.Asked:
-        // eslint-disable-next-line no-console
-        console.log('Asked');
-
-        if (oldAppealStatus === AppealStatusEnum.Excluded) {
+        if (contact.pledge) {
+          setDeletePledgeModalOpen(true);
+        } else {
           setAddExcludedContactModalOpen(true);
         }
         break;
@@ -196,13 +198,20 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         />
       )}
 
-      {deleteAppealContactModalOpen && contact?.id && (
+      {deleteAppealContactModalOpen && contact && (
         <DynamicDeleteAppealContactModal
           contactId={contact.id}
           handleClose={() => setDeleteAppealContactModalOpen(false)}
         />
       )}
 
+
+      {deletePledgeModalOpen && contact && (
+        <DynamicDeletePledgeModal
+          pledge={contact.pledge}
+          handleClose={() => setDeletePledgeModalOpen(false)}
+        />
+      )}
     </>
   );
 };

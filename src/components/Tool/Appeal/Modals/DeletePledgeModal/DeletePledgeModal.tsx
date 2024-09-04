@@ -17,6 +17,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import {
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { useDeleteAccountListPledgeMutation } from './DeletePledge.generated';
@@ -38,7 +39,9 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [deleteAccountListPledge, { loading }] =
     useDeleteAccountListPledgeMutation();
-  const { contactsQueryResult } = useContext(AppealsContext) as AppealsType;
+  const { contactsQueryResult, viewMode } = useContext(
+    AppealsContext,
+  ) as AppealsType;
 
   const handleConfirm = async () => {
     await deleteAccountListPledge({
@@ -77,7 +80,11 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
           </Box>
         ) : (
           <DialogContentText component="div">
-            {t('Are you sure you wish to remove this commitment?')}
+            {t(
+              viewMode === TableViewModeEnum.Flows
+                ? 'Moving this contact will result in the connected commitment being deleted. Are you sure?'
+                : 'Are you sure you wish to remove this commitment?',
+            )}
           </DialogContentText>
         )}
       </DialogContent>
