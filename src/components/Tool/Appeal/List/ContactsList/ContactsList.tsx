@@ -18,6 +18,8 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { useExcludedAppealContactsQuery } from '../../Shared/AppealExcludedContacts.generated';
+import { DynamicAppealTour } from '../AppealTour/DynamicAppealTour';
 import { ContactRow } from '../ContactRow/ContactRow';
 
 const useStyles = makeStyles()(() => ({
@@ -27,11 +29,11 @@ const useStyles = makeStyles()(() => ({
   contactHeader: {
     padding: theme.spacing(1, 2),
   },
+  excludedHeader: {
+    padding: theme.spacing(1, 2, 1, 0),
+  },
   givingHeader: {
-    padding: '8px 16px 8px 30px',
-    [theme.breakpoints.down('md')]: {
-      padding: '8px 16px 8px 8px',
-    },
+    padding: theme.spacing(1, 2, 1, 0),
   },
 }));
 
@@ -49,6 +51,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const {
+    appealId,
+    accountListId,
+    tour,
     contactsQueryResult,
     isFiltered,
     searchTerm,
@@ -58,6 +63,17 @@ export const ContactsList: React.FC<ContactsListProps> = ({
   } = React.useContext(AppealsContext) as AppealsType;
 
   const { data, loading, fetchMore } = contactsQueryResult;
+
+  const { data: excludedContacts } = useExcludedAppealContactsQuery({
+    variables: {
+      appealId: appealId ?? '',
+      accountListId: accountListId ?? '',
+    },
+    skip: activeFilters.appealStatus !== AppealStatusEnum.Excluded,
+  });
+
+  const appealStatus =
+    (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
 
   useEffect(() => {
     if (!activeFilters.appealStatus) {
@@ -106,20 +122,45 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     return name;
   }, [activeFilters]);
 
+  const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
+
   return (
     <>
+      {tour && <DynamicAppealTour />}
       <AppealHeaderInfo
         appealInfo={appealInfo?.appeal}
         loading={appealInfoLoading}
       />
 
       <Grid container alignItems="center" className={classes.headerContainer}>
-        <Grid item xs={10} md={6} className={classes.contactHeader}>
+        <Grid
+          item
+          xs={isExcludedContact ? 5 : 6}
+          className={classes.contactHeader}
+        >
           <Typography variant="subtitle1" fontWeight={800}>
             {t('Contact')}
           </Typography>
         </Grid>
-        <Grid item xs={2} md={6} className={classes.givingHeader}>
+        {isExcludedContact && (
+          <Grid
+            item
+            xs={3}
+            className={classes.excludedHeader}
+            style={{
+              paddingLeft: '0px',
+            }}
+          >
+            <Typography variant="subtitle1" fontWeight={800}>
+              {t('Reason')}
+            </Typography>
+          </Grid>
+        )}
+        <Grid
+          item
+          xs={isExcludedContact ? 4 : 6}
+          className={classes.givingHeader}
+        >
           <Box justifyContent={contactDetailsOpen ? 'flex-end' : undefined}>
             <Box>
               <Typography variant="subtitle1" fontWeight={800}>
@@ -140,7 +181,11 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           <ContactRow
             key={contact.id}
             contact={contact}
+            appealStatus={appealStatus}
             useTopMargin={index === 0}
+            excludedContacts={
+              excludedContacts?.appeal?.excludedAppealContacts ?? []
+            }
           />
         )}
         groupBy={(item) => ({ label: item.name[0].toUpperCase() })}

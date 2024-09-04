@@ -23,6 +23,7 @@ import { GoogleAccountAttributes } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
+  AccordionProps,
   StyledList,
   StyledListItem,
   StyledServicesButton,
@@ -31,11 +32,6 @@ import { useOauthUrl } from '../useOauthUrl';
 import { useGoogleAccountsQuery } from './GoogleAccounts.generated';
 import { DeleteGoogleAccountModal } from './Modals/DeleteGoogleAccountModal';
 import { EditGoogleAccountModal } from './Modals/EditGoogleAccountModal';
-
-interface GoogleAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
-}
 
 const EditIconButton = styled(IconButton)(() => ({
   color: theme.palette.primary.main,
@@ -74,9 +70,10 @@ export type GoogleAccountAttributesSlimmed = Pick<
   'id' | 'email' | 'primary' | 'remoteId' | 'tokenExpired'
 >;
 
-export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
+export const GoogleAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const [openEditGoogleAccount, setOpenEditGoogleAccount] = useState(false);
@@ -107,6 +104,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
         expandedPanel={expandedPanel}
         label={t('Google')}
         value={''}
+        disabled={disabled}
         image={
           <img
             src="/images/settings-preferences-intergrations-google.png"

@@ -70,7 +70,7 @@ describe('AppealsTest', () => {
   });
 
   it('should render an appeal', async () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, findByText, getByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
@@ -81,10 +81,9 @@ describe('AppealsTest', () => {
         </ThemeProvider>
       </SnackbarProvider>,
     );
-    await waitFor(() =>
-      expect(getByText('Primary Appeal')).toBeInTheDocument(),
-    );
-    await waitFor(() => expect(getByText('Appeals')).toBeInTheDocument());
+
+    expect(await findByText('Primary Appeal')).toBeInTheDocument();
+    expect(getByText('Appeals')).toBeInTheDocument();
     await waitFor(() =>
       expect(getByTestId('TypographyShowing').textContent).toEqual(
         'Showing 2 of 2',
@@ -93,7 +92,7 @@ describe('AppealsTest', () => {
   });
 
   it('should set appeal to primary', async () => {
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
@@ -104,7 +103,7 @@ describe('AppealsTest', () => {
         </ThemeProvider>
       </SnackbarProvider>,
     );
-    const setPrimaryButton = await waitFor(() => getByTestId('setPrimary-1'));
+    const setPrimaryButton = await findByTestId('setPrimary-1');
     expect(setPrimaryButton).toBeInTheDocument();
     userEvent.click(setPrimaryButton);
     await waitFor(() => {

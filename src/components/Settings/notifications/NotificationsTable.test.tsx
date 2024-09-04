@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { NotificationsTable } from './NotificationsTable';
+import { notificationSettingsMocks } from './notificationSettingsMocks';
 
 const mockEnqueue = jest.fn();
 
@@ -28,53 +28,18 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
-const createNotification = (type, id) => ({
-  app: false,
-  email: false,
-  task: false,
-  notificationType: {
-    id,
-    descriptionTemplate: type,
-    type,
-  },
-});
 
-const createNotificationType = (type, id) => ({
-  id: id,
-  type: type,
-  descriptionTemplate: type,
-});
-const mocks = {
-  NotificationsPreferences: {
-    notificationPreferences: {
-      nodes: [
-        createNotification(
-          NotificationTypeTypeEnum.CallPartnerOncePerYear,
-          '111',
-        ),
-        createNotification(NotificationTypeTypeEnum.LargerGift, '222'),
-        createNotification(NotificationTypeTypeEnum.LongTimeFrameGift, '333'),
-      ],
-    },
-  },
-  NotificationTypes: {
-    notificationTypes: [
-      createNotificationType(
-        NotificationTypeTypeEnum.CallPartnerOncePerYear,
-        '111',
-      ),
-      createNotificationType(NotificationTypeTypeEnum.LargerGift, '222'),
-      createNotificationType(NotificationTypeTypeEnum.LongTimeFrameGift, '333'),
-    ],
-  },
-};
 const mutationSpy = jest.fn();
+const handleSetupChange = jest.fn();
 const Components: React.FC = () => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider onCall={mutationSpy} mocks={mocks}>
-          <NotificationsTable />
+        <GqlMockedProvider
+          onCall={mutationSpy}
+          mocks={notificationSettingsMocks}
+        >
+          <NotificationsTable handleSetupChange={handleSetupChange} />
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>

@@ -22,11 +22,17 @@ interface HourToSendNotificationsAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   hourToSendNotifications: number | null;
+  disabled?: boolean;
 }
 
 export const HourToSendNotificationsAccordion: React.FC<
   HourToSendNotificationsAccordionProps
-> = ({ handleAccordionChange, expandedPanel, hourToSendNotifications }) => {
+> = ({
+  handleAccordionChange,
+  expandedPanel,
+  hourToSendNotifications,
+  disabled,
+}) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
@@ -77,6 +83,7 @@ export const HourToSendNotificationsAccordion: React.FC<
       label={label}
       value={selectedHour || ''}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

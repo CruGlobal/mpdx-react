@@ -12,6 +12,7 @@ const testData = {
   lastName: 'Contact',
   avatar: 'https://www.example.com',
   id: 'testid',
+  contactId: 'testid',
   isNewPhoneNumber: false,
   newPhoneNumber: '',
   phoneNumbers: {

@@ -1,0 +1,15 @@
+query ContactTags($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    contactTagList
+  }
+}
+
+query ContactFilters($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    contactFilterGroups {
+      ...FilterPanelGroup
+    }
+  }
+}

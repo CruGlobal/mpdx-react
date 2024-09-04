@@ -20,12 +20,14 @@ interface LanguageAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
   locale: string;
+  disabled?: boolean;
 }
 
 export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
   locale,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
@@ -69,6 +71,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
       label={label}
       value={selectedLanguage}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

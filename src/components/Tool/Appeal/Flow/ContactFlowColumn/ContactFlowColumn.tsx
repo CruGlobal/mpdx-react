@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
-import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   CardContentInner,
   ColumnTitle,
@@ -28,6 +27,8 @@ import {
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
+import { useContactsQuery } from '../../AppealsContext/contacts.generated';
+import { useExcludedAppealContactsQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
 
@@ -65,6 +66,14 @@ export const ContactFlowColumn: React.FC<Props> = ({
       },
     },
     skip: !accountListId || !appealStatus,
+  });
+
+  const { data: excludedContacts } = useExcludedAppealContactsQuery({
+    variables: {
+      appealId: appealId ?? '',
+      accountListId: accountListId ?? '',
+    },
+    skip: appealStatus !== AppealStatusEnum.Excluded,
   });
 
   const cardContentRef = useRef<HTMLDivElement>();
@@ -165,9 +174,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 accountListId={accountListId}
                 contact={contact}
                 appealStatus={appealStatus}
-                contactStatus={contact.status}
                 onContactSelected={onContactSelected}
                 columnWidth={cardContentRef.current?.offsetWidth}
+                excludedContacts={
+                  excludedContacts?.appeal?.excludedAppealContacts ?? []
+                }
               />
             )}
             endReached={() =>

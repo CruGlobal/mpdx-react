@@ -28,6 +28,7 @@ jest.mock('notistack', () => ({
 }));
 
 const handleAccordionChange = jest.fn();
+const handleSetupChange = jest.fn();
 const mutationSpy = jest.fn();
 
 interface ComponentsProps {
@@ -49,6 +50,7 @@ const Components: React.FC<ComponentsProps> = ({
             monthlyGoal={monthlyGoal}
             currency={'USD'}
             accountListId={accountListId}
+            handleSetupChange={handleSetupChange}
           />
         </GqlMockedProvider>
       </ThemeProvider>

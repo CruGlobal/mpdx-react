@@ -94,9 +94,13 @@ const DeleteModal: React.FC<Props> = ({
             justifyContent="center"
           >
             <Typography>
-              {t('Are you sure you wish to delete this phone number:')}
+              {t('Are you sure you wish to delete this phone number?')}
             </Typography>
-            <Typography>{`"${modalState.phoneNumber}"`}</Typography>
+            {modalState.phoneNumber && (
+              <Typography
+                sx={{ fontWeight: 'bold' }}
+              >{`"${modalState.phoneNumber}"`}</Typography>
+            )}
           </Box>
         </CardContent>
         <CardActions>

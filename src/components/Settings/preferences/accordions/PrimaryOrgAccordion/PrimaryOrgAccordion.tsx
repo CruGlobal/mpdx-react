@@ -23,6 +23,7 @@ interface PrimaryOrgAccordionProps {
   organizations: GetUsersOrganizationsAccountsQuery | undefined;
   salaryOrganizationId: string;
   accountListId: string;
+  disabled?: boolean;
 }
 
 export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
@@ -31,6 +32,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
   organizations,
   salaryOrganizationId,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -79,6 +81,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
       label={label}
       value={selectedOrgName}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

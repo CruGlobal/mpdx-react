@@ -1,16 +1,21 @@
 import Head from 'next/head';
-import React, { JSXElementConstructor, ReactElement } from 'react';
+import React, { JSXElementConstructor, ReactElement, useState } from 'react';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import {
+  HeaderTypeEnum,
+  MultiPageHeader,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import NavToolList from 'src/components/Tool/NavToolList/NavToolList';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from '../contacts/ContactsWrapper';
 import { useToolsHelper } from './useToolsHelper';
 
 interface ToolsWrapperProps {
-  pageTitle: string;
+  pageTitle?: string;
   pageUrl: string;
-  selectedMenuId: string; // for later use
+  selectedMenuId?: string;
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   styles?: React.ReactNode;
 }
@@ -18,12 +23,14 @@ interface ToolsWrapperProps {
 export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   pageTitle,
   pageUrl,
+  selectedMenuId,
   children,
   styles,
 }) => {
   const { appName } = useGetAppSettings();
   const { accountListId, selectedContactId, handleSelectContact } =
     useToolsHelper();
+  const [isToolDrawerOpen, setIsToolDrawerOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -33,11 +40,30 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
         </title>
         {styles}
       </Head>
+
       {accountListId ? (
         <SidePanelsLayout
-          leftOpen={false}
+          leftOpen={isToolDrawerOpen}
+          isScrollBox={false}
+          leftPanel={
+            <NavToolList
+              selectedId={selectedMenuId || ''}
+              isOpen={isToolDrawerOpen}
+              toggle={setIsToolDrawerOpen}
+            />
+          }
           leftWidth="290px"
-          mainContent={children}
+          mainContent={
+            <>
+              <MultiPageHeader
+                isNavListOpen={isToolDrawerOpen}
+                onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
+                title={pageTitle || ''}
+                headerType={HeaderTypeEnum.Tools}
+              />
+              {children}
+            </>
+          }
           rightPanel={
             selectedContactId ? (
               <ContactsWrapper>

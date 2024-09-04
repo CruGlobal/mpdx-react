@@ -18,7 +18,7 @@ import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmat
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
-import { StyledServicesButton } from '../integrationsHelper';
+import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
 import { useOauthUrl } from '../useOauthUrl';
 import { OrganizationAddAccountModal } from './Modals/OrganizationAddAccountModal';
 import { OrganizationEditAccountModal } from './Modals/OrganizationEditAccountModal';
@@ -29,11 +29,6 @@ import {
   useGetUsersOrganizationsAccountsQuery,
   useSyncOrganizationAccountMutation,
 } from './Organizations.generated';
-
-interface OrganizationAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
-}
 
 type OrganizationAccountPartial =
   GetUsersOrganizationsAccountsQuery['userOrganizationAccounts'][0];
@@ -83,9 +78,10 @@ export const getOrganizationType = (
   return undefined;
 };
 
-export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
+export const OrganizationAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -183,6 +179,7 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       expandedPanel={expandedPanel}
       label={t('Organization')}
       value={''}
+      disabled={disabled}
       image={
         <img
           src="/images/settings-preferences-intergrations-organizations.png"
@@ -338,8 +335,6 @@ export const OrganizationAccordion: React.FC<OrganizationAccordionProps> = ({
       {showAddAccountModal && (
         <OrganizationAddAccountModal
           handleClose={() => setShowAddAccountModal(false)}
-          accountListId={accountListId}
-          refetchOrganizations={refetchOrganizations}
         />
       )}
 
