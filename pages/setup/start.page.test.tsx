@@ -2,7 +2,15 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
 import StartPage from './start.page';
+
+jest.mock('src/components/Setup/useNextSetupPage');
+
+const next = jest.fn();
+(useNextSetupPage as jest.MockedFn<typeof useNextSetupPage>).mockReturnValue({
+  next,
+});
 
 const push = jest.fn();
 const router = {
@@ -34,6 +42,6 @@ describe('Setup start page', () => {
         input: { attributes: { locale: 'de' } },
       }),
     );
-    expect(push).toHaveBeenCalledWith('/setup/connect');
+    expect(next).toHaveBeenCalled();
   });
 });

@@ -1,11 +1,11 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUpdatePersonalPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdatePersonalPreferences.generated';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
+import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
 import {
   PrivacyPolicyLink,
   TermsOfUseLink,
@@ -18,7 +18,7 @@ import { loadSession } from '../api/utils/pagePropsHelpers';
 const StartPage = (): ReactElement => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const { push } = useRouter();
+  const { next } = useNextSetupPage();
   const [savePreferences] = useUpdatePersonalPreferencesMutation();
 
   const [locale, setLocale] = useState<string>(
@@ -37,7 +37,7 @@ const StartPage = (): ReactElement => {
         },
       },
     });
-    push('/setup/connect');
+    await next();
   };
 
   return (
