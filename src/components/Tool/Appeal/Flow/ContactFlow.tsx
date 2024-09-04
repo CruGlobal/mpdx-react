@@ -137,32 +137,8 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         }
         break;
       case AppealStatusEnum.NotReceived:
-        if (oldAppealStatus === AppealStatusEnum.Asked) {
-          setPledgeModalOpen(true);
-        }
-
-        if (oldAppealStatus === AppealStatusEnum.Processed) {
-          enqueueSnackbar(
-            t(
-              'Unable to move contact here as this gift is already proccessed.',
-            ),
-            {
-              variant: 'warning',
-            },
-          );
-        }
-
-        if (!contact.pledge) {
-          enqueueSnackbar(
-            t(
-              'Something went wrong. Please try again or contact support if the issue persists.',
-            ),
-            {
-              variant: 'error',
-            },
-          );
-        }
-
+      case AppealStatusEnum.ReceivedNotProcessed:
+        if (contact.pledge) {
         const {
           __typename,
           status: _status,
@@ -178,27 +154,48 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
                 ...pledgeDetails,
                 appealId: appeal.id,
                 contactId: contact.id,
-                status: PledgeStatusEnum.NotReceived,
+                  status:
+                    newAppealStatus === AppealStatusEnum.NotReceived
+                      ? PledgeStatusEnum.NotReceived
+                      : PledgeStatusEnum.ReceivedNotProcessed,
+                },
               },
             },
-          },
-          refetchQueries: ['Contacts'], // doesn't work
-          onCompleted: () => {
-            enqueueSnackbar(t('Successfully moved contact to commitment'), {
-              variant: 'success',
-            });
-          },
-          onError: () => {
-            enqueueSnackbar(t('Unable to move contact to commitment'), {
-              variant: 'error',
-            });
-          },
-        });
+            update: (_, data) => {
+              const newStatus =
+                data.data?.updateAccountListPledge?.pledge.status;
 
-        break;
-      case AppealStatusEnum.ReceivedNotProcessed:
-        // eslint-disable-next-line no-console
-        console.log('ReceivedNotProcessed');
+              if (
+                newStatus === PledgeStatusEnum.NotReceived &&
+                newAppealStatus === AppealStatusEnum.ReceivedNotProcessed
+              ) {
+          enqueueSnackbar(
+            t(
+              'Unable to move contact here as gift has not been received by Cru.',
+            ),
+            {
+              variant: 'warning',
+            },
+          );
+              } else if (
+                newStatus === PledgeStatusEnum.Processed &&
+                (newAppealStatus === AppealStatusEnum.ReceivedNotProcessed ||
+                  newAppealStatus === AppealStatusEnum.NotReceived)
+              ) {
+          enqueueSnackbar(
+            t(
+              'Unable to move contact here as this gift is already proccessed.',
+            ),
+            {
+              variant: 'warning',
+            },
+          );
+              }
+            },
+          });
+        } else {
+          setPledgeModalOpen(true);
+        }
         break;
       case AppealStatusEnum.Processed:
         // eslint-disable-next-line no-console
@@ -272,6 +269,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
       {pledgeModalOpen && contact && (
         <DynamicPledgeModal
           contact={contact}
+          pledge={contact.pledge}
           handleClose={() => setPledgeModalOpen(false)}
         />
       )}
