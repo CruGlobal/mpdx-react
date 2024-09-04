@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, Grid, Theme } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
@@ -56,33 +55,20 @@ const variants = {
 
 const ToolHome = (): ReactElement => {
   const { classes } = useStyles();
-  const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
-  const toolData: { [key: string]: { totalCount: number } } = {
-    [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
-      totalCount: 0,
-    },
-    [ToolName.FixMailingAddresses]: data?.[ToolName.FixMailingAddresses] ?? {
-      totalCount: 0,
-    },
-    [ToolName.FixSendNewsletter]: data?.[ToolName.FixSendNewsletter] ?? {
-      totalCount: 0,
-    },
-    [ToolName.FixEmailAddresses]: data?.[ToolName.FixEmailAddresses] ?? {
-      totalCount: 0,
-    },
-    [ToolName.FixPhoneNumbers]: data?.[ToolName.FixPhoneNumbers] ?? {
-      totalCount: 0,
-    },
-    [ToolName.MergeContacts]: data?.[ToolName.MergeContacts] ?? {
-      totalCount: 0,
-    },
-    [ToolName.MergePeople]: data?.[ToolName.MergePeople] ?? { totalCount: 0 },
+  const toolDataTotalCount: { [key: string]: number } = {
+    [ToolName.FixCommitmentInfo]: data?.fixCommitmentInfo.totalCount ?? 0,
+    [ToolName.FixMailingAddresses]: data?.fixMailingAddresses.totalCount ?? 0,
+    [ToolName.FixSendNewsletter]: data?.fixSendNewsletter.totalCount ?? 0,
+    [ToolName.FixEmailAddresses]: data?.fixEmailAddresses.totalCount ?? 0,
+    [ToolName.FixPhoneNumbers]: data?.fixPhoneNumbers.totalCount ?? 0,
+    [ToolName.MergeContacts]: data?.mergeContacts.totalCount ?? 0,
+    [ToolName.MergePeople]: data?.mergePeople.totalCount ?? 0,
   };
 
   return (
@@ -95,22 +81,18 @@ const ToolHome = (): ReactElement => {
       <Box className={classes.outer} data-testid="Home">
         <Grid container spacing={3} className={classes.container}>
           {ToolsListHome.map((tool) => {
-            const needsAttention = toolData
-              ? toolData[tool.id]?.totalCount > 0
+            const needsAttention = toolDataTotalCount
+              ? toolDataTotalCount[tool.id] > 0
               : false;
             return (
               <Grid item xs={12} sm={6} lg={4} key={tool.tool}>
                 <Tool
-                  tool={t('{{toolname}}', { toolname: tool.tool })}
-                  desc={t('{{tooldesc}}', { tooldesc: tool.desc })}
+                  tool={tool.tool}
+                  desc={tool.desc}
                   icon={tool.icon}
                   url={tool.url}
                   needsAttention={needsAttention}
-                  toolNotifications={
-                    toolData[tool.id]?.totalCount < 10
-                      ? toolData[tool.id].totalCount
-                      : '9+'
-                  }
+                  totalCount={toolDataTotalCount[tool.id]}
                   loading={loading}
                   toolId={tool.id}
                 />

@@ -11,6 +11,7 @@ import {
   mdiTable,
   mdiTrophy,
 } from '@mdi/js';
+import i18n from 'src/lib/i18n';
 
 export interface ToolItem {
   tool: string;
@@ -22,80 +23,82 @@ export interface ToolItem {
 
 export const ToolsListHome: ToolItem[] = [
   {
-    tool: 'Appeal',
-    desc: 'Set goals, create asks, and track progress for one-time needs',
+    tool: i18n.t('Appeal'),
+    desc: i18n.t(
+      'Set goals, create asks, and track progress for one-time needs',
+    ),
     icon: mdiTrophy,
     id: 'appeals',
     url: 'appeals',
   },
   {
-    tool: 'Import from Google',
-    desc: 'Import your contact information from your Google account',
+    tool: i18n.t('Import from Google'),
+    desc: i18n.t('Import your contact information from your Google account'),
 
     icon: mdiGoogle,
     id: 'import/google',
     url: 'import/google',
   },
   {
-    tool: 'Import from CSV',
-    desc: 'Import contacts you have saved in a CSV file',
+    tool: i18n.t('Import from CSV'),
+    desc: i18n.t('Import contacts you have saved in a CSV file'),
     icon: mdiTable,
     id: 'import/csv',
     url: 'import/csv',
   },
   {
-    tool: 'Import from TntConnect',
-    desc: 'Import your contacts from your TntConnect database',
+    tool: i18n.t('Import from TntConnect'),
+    desc: i18n.t('Import your contacts from your TntConnect database'),
     icon: mdiCloudUpload,
     id: 'import/tnt',
     url: 'import/tnt',
   },
   {
-    tool: 'Fix Commitment Info',
-    desc: 'Set the correct contacts commitment info for each contact',
+    tool: i18n.t('Fix Commitment Info'),
+    desc: i18n.t('Set the correct contacts commitment info for each contact'),
 
     icon: mdiCurrencyUsd,
     id: 'fixCommitmentInfo',
     url: 'fix/commitmentInfo',
   },
   {
-    tool: 'Fix Email Addresses',
-    desc: 'Set the correct primary email address for each person',
+    tool: i18n.t('Fix Email Addresses'),
+    desc: i18n.t('Set the correct primary email address for each person'),
     icon: mdiEmail,
     id: 'fixEmailAddresses',
     url: 'fix/emailAddresses',
   },
   {
-    tool: 'Fix Mailing Addresses',
-    desc: 'Set the correct primary mailing address for each contact',
+    tool: i18n.t('Fix Mailing Addresses'),
+    desc: i18n.t('Set the correct primary mailing address for each contact'),
     icon: mdiMap,
     id: 'fixMailingAddresses',
     url: 'fix/mailingAddresses',
   },
   {
-    tool: 'Fix Phone Numbers',
-    desc: 'Set the correct primary phone number for each person',
+    tool: i18n.t('Fix Phone Numbers'),
+    desc: i18n.t('Set the correct primary phone number for each person'),
     icon: mdiPhone,
     id: 'fixPhoneNumbers',
     url: 'fix/phoneNumbers',
   },
   {
-    tool: 'Fix Send Newsletter',
-    desc: 'Set the correct newsletter state for each contact',
+    tool: i18n.t('Fix Send Newsletter'),
+    desc: i18n.t('Set the correct newsletter state for each contact'),
     icon: mdiNewspaperVariantOutline,
     id: 'fixSendNewsletter',
     url: 'fix/sendNewsletter',
   },
   {
-    tool: 'Merge Contacts',
-    desc: 'Review and merge duplicate contacts',
+    tool: i18n.t('Merge Contacts'),
+    desc: i18n.t('Review and merge duplicate contacts'),
     icon: mdiHome,
     id: 'mergeContacts',
     url: 'merge/contacts',
   },
   {
-    tool: 'Merge People',
-    desc: 'Review and merge duplicate people',
+    tool: i18n.t('Merge People'),
+    desc: i18n.t('Review and merge duplicate people'),
     icon: mdiAccountGroup,
     id: 'mergePeople',
     url: 'merge/people',

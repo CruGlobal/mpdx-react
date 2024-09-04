@@ -72,7 +72,7 @@ export interface Props {
   icon: string;
   url: string;
   needsAttention: boolean;
-  toolNotifications: number | string;
+  totalCount: number | string;
   loading: boolean;
   toolId: string;
 }
@@ -83,7 +83,7 @@ const Tool = ({
   icon,
   url,
   needsAttention,
-  toolNotifications,
+  totalCount,
   loading,
   toolId,
 }: Props): ReactElement => {
@@ -97,6 +97,7 @@ const Tool = ({
         needsAttention && classes.cardNeedsAttention,
       )}
       elevation={3}
+      data-testid={`${toolId}-container`}
     >
       <NextLink
         href={`/accountLists/${accountListId}/tools/${url}`}
@@ -109,12 +110,17 @@ const Tool = ({
                 classes={{ badge: classes.customBadge }}
                 overlap="circular"
                 badgeContent={
-                  !loading && needsAttention ? toolNotifications : 0
+                  !loading && needsAttention
+                    ? totalCount < 10
+                      ? totalCount
+                      : '9+'
+                    : 0
                 }
                 data-testid={`${toolId}-notifications`}
                 color="secondary"
               >
                 <Icon
+                  data-testid={`${toolId}-icon`}
                   className={clsx(needsAttention && classes.iconNeedsAttention)}
                   path={icon}
                   size={2}
