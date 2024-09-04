@@ -1,12 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { useUpdateContactOtherMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactFlowDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
@@ -15,6 +13,7 @@ import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeader
 import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
+import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
 export interface ContactFlowProps {
   accountListId: string;
@@ -79,7 +78,6 @@ const flowOptions: ContactFlowOption[] = [
 
 export const ContactFlow: React.FC<ContactFlowProps> = ({
   accountListId,
-  selectedFilters,
   onContactSelected,
   searchTerm,
   appealInfo,
@@ -87,40 +85,39 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
 }: ContactFlowProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-
-  const [updateContactOther] = useUpdateContactOtherMutation();
+  const [contact, setContact] = useState<DraggedContact | null>(null);
 
   const changeContactStatus = async (
-    id: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    appealId: AppealStatusEnum,
+    contact: DraggedContact,
+    newAppealStatus: AppealStatusEnum,
   ): Promise<void> => {
-    // TODO Fix this when we have the appeal status added to contact
-    const attributes = {
-      id,
-    };
-    await updateContactOther({
-      variables: {
-        accountListId,
-        attributes,
-      },
-      refetchQueries: () =>
-        flowOptions.map((flowOption) => ({
-          query: ContactsDocument,
-          variables: {
-            accountListId,
-            contactsFilters: {
-              appeal: [appealInfo?.appeal.id],
-              appealStatus: [flowOption.status],
-              ...selectedFilters,
-            },
-          },
-        })),
-    });
-    enqueueSnackbar(t('Contact status info updated!'), {
-      variant: 'success',
-    });
-    // TODO - add functionality when appeal status is changed
+    const oldAppealStatus = contact.status;
+    setContact(contact);
+    switch (newAppealStatus) {
+      case AppealStatusEnum.Excluded:
+        // eslint-disable-next-line no-console
+        console.log('Excluded');
+        break;
+      case AppealStatusEnum.Asked:
+        // eslint-disable-next-line no-console
+        console.log('Asked');
+        break;
+      case AppealStatusEnum.NotReceived:
+        // eslint-disable-next-line no-console
+        console.log('NotReceived');
+        break;
+      case AppealStatusEnum.ReceivedNotProcessed:
+        // eslint-disable-next-line no-console
+        console.log('ReceivedNotProcessed');
+        break;
+      case AppealStatusEnum.Processed:
+        // eslint-disable-next-line no-console
+        console.log('Processed');
+        break;
+      default:
+        // eslint-disable-next-line no-console
+        console.log('default');
+    }
   };
 
   const ref = useRef<HTMLElement | null>(null);

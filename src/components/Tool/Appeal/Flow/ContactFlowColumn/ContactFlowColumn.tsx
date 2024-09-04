@@ -30,12 +30,18 @@ import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/App
 import { useContactsQuery } from '../../AppealsContext/contacts.generated';
 import { useExcludedAppealContactsQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
-import { ContactFlowRow } from '../ContactFlowRow/ContactFlowRow';
+import {
+  ContactFlowRow,
+  DraggedContact,
+} from '../ContactFlowRow/ContactFlowRow';
 
 interface Props
   extends Omit<ContactFlowColumnProps, 'statuses' | 'changeContactStatus'> {
   appealStatus: AppealStatusEnum;
-  changeContactStatus: (id: string, status: AppealStatusEnum) => Promise<void>;
+  changeContactStatus: (
+    contact: DraggedContact,
+    newStatus: AppealStatusEnum,
+  ) => Promise<void>;
 }
 
 export const ContactFlowColumn: React.FC<Props> = ({

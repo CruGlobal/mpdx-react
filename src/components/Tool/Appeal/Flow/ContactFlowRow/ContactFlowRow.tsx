@@ -52,6 +52,7 @@ interface Props extends Omit<ContactFlowRowProps, 'status' | 'contact'> {
 
 export interface DraggedContact extends Omit<ContactsDraggedContact, 'status'> {
   status: AppealStatusEnum;
+  pledge: AppealContactInfoFragment['pledges'][0];
 }
 
 const StyledCheckbox = styled(Checkbox)(() => ({
@@ -115,12 +116,11 @@ export const ContactFlowRow: React.FC<Props> = ({
       type: 'contact',
       item: {
         id,
-        appealStatus,
         status: contact.status,
-        contactStatus: contact.status,
         name,
         starred,
         width: columnWidth,
+        pledge: pledgeValues,
       },
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
