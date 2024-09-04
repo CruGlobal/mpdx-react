@@ -63,4 +63,21 @@ describe('MultiPageHeader', () => {
     expect(getByText('Toggle Preferences Menu')).toBeInTheDocument();
     expect(getByTestId('SettingsMenuIcon')).toBeInTheDocument();
   });
+
+  it('should render the Tools menu', async () => {
+    const { getByTestId, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <MultiPageHeader
+          isNavListOpen={true}
+          title={title}
+          onNavListToggle={onNavListToggle}
+          rightExtra={undefined}
+          headerType={HeaderTypeEnum.Tools}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Toggle Tools Menu')).toBeInTheDocument();
+    expect(getByTestId('ToolsMenuIcon')).toBeInTheDocument();
+  });
 });

@@ -1,19 +1,21 @@
 import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import { ListItem, ListItemText } from '@mui/material';
+import { Box, ListItem, ListItemText, Theme, Typography } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from '../../../../theme';
 
-const useStyles = makeStyles()(() => ({
-  liButton: {
-    '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
-    },
-  },
-  liSelected: {
-    backgroundColor: theme.palette.cruGrayLight.main,
+const useStyles = makeStyles()((theme: Theme) => ({
+  notificationBox: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    borderRadius: '25%',
+    color: theme.palette.common.white,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -22,29 +24,43 @@ interface Props {
   url: string;
   title: string;
   isSelected: boolean;
+  loading: boolean;
+  totalCount: number;
+  toolId: string;
 }
 
-export const Item = ({ url, title, isSelected }: Props): ReactElement => {
-  const accountListId = useAccountListId();
+export const Item = ({
+  url,
+  title,
+  isSelected,
+  loading,
+  totalCount,
+  toolId,
+}: Props): ReactElement => {
   const { classes } = useStyles();
+  const accountListId = useAccountListId();
 
   return (
     <NextLink
       href={`/accountLists/${accountListId}/tools/${url}`}
       scroll={false}
     >
-      <ListItem
-        button
-        selected={isSelected}
-        className={isSelected ? classes.liSelected : classes.liButton}
-      >
+      <ListItem button selected={isSelected}>
         <ListItemText
+          data-testid={`${toolId}-list-item`}
           primaryTypographyProps={{
             variant: 'subtitle1',
             color: 'textPrimary',
           }}
           primary={title}
         />
+        {!loading && !!totalCount && (
+          <Box className={classes.notificationBox}>
+            <Typography data-testid={`${toolId}-notifications`}>
+              {totalCount < 10 ? totalCount : '9+'}
+            </Typography>
+          </Box>
+        )}
         <ArrowForwardIos fontSize="small" color="disabled" />
       </ListItem>
     </NextLink>

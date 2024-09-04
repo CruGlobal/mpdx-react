@@ -9,6 +9,7 @@ import theme from 'src/theme';
 export enum HeaderTypeEnum {
   Report = 'reports',
   Settings = 'settings',
+  Tools = 'tools',
 }
 
 export const multiPageHeaderHeight = theme.spacing(10);
@@ -70,6 +71,8 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
     titleAccess = t('Toggle Navigation Panel');
   } else if (headerType === HeaderTypeEnum.Settings) {
     titleAccess = t('Toggle Preferences Menu');
+  } else if (headerType === HeaderTypeEnum.Tools) {
+    titleAccess = t('Toggle Tools Menu');
   }
 
   return (
@@ -91,6 +94,12 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
             <NavMenuIcon
               titleAccess={titleAccess}
               data-testid="SettingsMenuIcon"
+            />
+          )}
+          {headerType === HeaderTypeEnum.Tools && (
+            <NavMenuIcon
+              titleAccess={titleAccess}
+              data-testid="ToolsMenuIcon"
             />
           )}
         </NavListButton>
