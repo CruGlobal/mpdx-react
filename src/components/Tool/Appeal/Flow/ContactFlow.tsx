@@ -5,7 +5,6 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { ContactFlowDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -18,6 +17,7 @@ import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDel
 import { useUpdateAccountListPledgeMutation } from '../Modals/PledgeModal/ContactPledge.generated';
 import { DynamicPledgeModal } from '../Modals/PledgeModal/DynamicPledgeModal';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
+import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
 export interface ContactFlowProps {

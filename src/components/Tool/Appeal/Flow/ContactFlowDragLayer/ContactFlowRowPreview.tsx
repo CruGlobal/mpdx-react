@@ -2,40 +2,22 @@ import React, { memo } from 'react';
 import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 import { Avatar, Box, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { IdValue } from 'src/graphql/types.generated';
-import theme from '../../../../theme';
+import {
+  ContactFlowRowPreviewProps,
+  DetailsBox,
+  PreviewBox,
+  PreviewInnerBox,
+} from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowRowPreview';
+import { StatusEnum } from 'src/graphql/types.generated';
+import theme from 'src/theme';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
-export const PreviewBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  background: theme.palette.mpdxYellow.main,
-}));
-
-export const PreviewInnerBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-  padding: theme.spacing(2),
-}));
-
-export const DetailsBox = styled(Box)(() => ({
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-}));
-
-export interface ContactFlowRowPreviewProps {
-  name: string;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
-  starred: boolean;
-  width: number;
+interface Props extends Omit<ContactFlowRowPreviewProps, 'status'> {
+  status: StatusEnum;
 }
 
-export const ContactFlowRowPreview: React.FC<ContactFlowRowPreviewProps> = memo(
+export const ContactFlowRowPreview: React.FC<Props> = memo(
   function ContactFlowRowPreview({ name, status, starred, width }) {
     const { t } = useTranslation();
     return (
@@ -53,9 +35,7 @@ export const ContactFlowRowPreview: React.FC<ContactFlowRowPreviewProps> = memo(
               <Typography style={{ color: theme.palette.mpdxBlue.main }}>
                 {name}
               </Typography>
-              <Typography>
-                {t('{{status}}', { status: status.value })}
-              </Typography>
+              <Typography>{getLocalizedContactStatus(t, status)}</Typography>
             </Box>
           </DetailsBox>
           <Box display="flex" pr={2}>
