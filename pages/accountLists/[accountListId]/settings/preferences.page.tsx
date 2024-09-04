@@ -1,15 +1,19 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { Skeleton } from '@mui/material';
+import { Box, Button, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   useCanUserExportDataQuery,
   useGetAccountPreferencesQuery,
 } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { useGetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
+import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { AccountNameAccordion } from 'src/components/Settings/preferences/accordions/AccountNameAccordion/AccountNameAccordion';
 import { CurrencyAccordion } from 'src/components/Settings/preferences/accordions/CurrencyAccordion/CurrencyAccordion';
 import { DefaultAccountAccordion } from 'src/components/Settings/preferences/accordions/DefaultAccountAccordion/DefaultAccountAccordion';
@@ -36,24 +40,35 @@ const AccordionLoading = styled(Skeleton)(() => ({
   height: '48px',
 }));
 
+export const StickyBox = styled(Box)(({ theme }) => ({
+  position: 'sticky',
+  top: theme.spacing(10),
+  borderBottom: '1px solid',
+  borderBottomColor: theme.palette.grey[200],
+  height: theme.spacing(10),
+  zIndex: '700',
+  background: theme.palette.common.white,
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  marginBottom: theme.spacing(2),
+}));
+
 const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
-  const { query } = useRouter();
+  const { push, query } = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const setupAccordions = ['locale', 'monthly goal', 'home country'];
+  const [setup, setSetup] = useState(0);
   const [expandedPanel, setExpandedPanel] = useState(
     typeof query.selectedTab === 'string' ? query.selectedTab : '',
   );
   const countries = getCountries();
   const timeZones = useGetTimezones();
 
-  useEffect(() => {
-    suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
-  }, []);
-
-  const handleAccordionChange = (panel: string) => {
-    const panelLowercase = panel.toLowerCase();
-    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
-  };
+  const { data: userOptions } = useGetUserOptionsQuery();
+  const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const { data: personalPreferencesData, loading: personalPreferencesLoading } =
     useGetPersonalPreferencesQuery({
@@ -77,12 +92,97 @@ const Preferences: React.FC = () => {
   const { data: userOrganizationAccountsData } =
     useGetUsersOrganizationsAccountsQuery();
 
+  const savedSetupPosition = userOptions?.userOptions.find(
+    (option) => option.key === 'setup_position',
+  )?.value;
+  const isSettingUp = savedSetupPosition === 'preferences.personal';
+
+  useEffect(() => {
+    suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
+  }, []);
+
+  useEffect(() => {
+    if (isSettingUp) {
+      setExpandedPanel(setupAccordions[0]);
+    }
+  }, [isSettingUp]);
+
+  const handleAccordionChange = (panel: string) => {
+    const panelLowercase = panel.toLowerCase();
+    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
+  };
+
+  const resetWelcomeTour = async () => {
+    await updateUserOptions({
+      variables: {
+        key: 'setup_position',
+        value: 'start',
+      },
+      onError: () => {
+        enqueueSnackbar(t('Resetting the welcome tour failed.'), {
+          variant: 'error',
+        });
+      },
+    });
+    push(`/accountLists/${accountListId}/setup/start`);
+  };
+
+  const handleSetupChange = async () => {
+    if (!isSettingUp) {
+      return;
+    }
+    const nextNav = setup + 1;
+
+    if (setupAccordions.length === nextNav) {
+      await updateUserOptions({
+        variables: {
+          key: 'setup_position',
+          value: 'preferences.notifications',
+        },
+        onError: () => {
+          enqueueSnackbar(t('Saving setup phase failed.'), {
+            variant: 'error',
+          });
+        },
+      });
+      push(`/accountLists/${accountListId}/settings/notifications`);
+    } else {
+      setSetup(nextNav);
+      setExpandedPanel(setupAccordions[nextNav]);
+    }
+  };
+
+  const getSetupMessage = (setup: number) => {
+    switch (setup) {
+      case 0:
+        return t("Let's set your locale!");
+      case 1:
+        return t('Great progress comes from great goals!');
+      case 2:
+        return t('What country are you in?');
+      default:
+        return '';
+    }
+  };
+
   return (
     <SettingsWrapper
       pageTitle={t('Preferences')}
       pageHeading={t('Preferences')}
       selectedMenuId={'preferences'}
     >
+      {isSettingUp && (
+        <StickyBox>
+          <SetupBanner
+            button={
+              <Button variant="contained" onClick={handleSetupChange}>
+                {t('Skip Step')}
+              </Button>
+            }
+            title={getSetupMessage(setup)}
+          />
+        </StickyBox>
+      )}
       <ProfileInfo accountListId={accountListId} />
       <AccordionGroup title={t('Personal Preferences')}>
         {personalPreferencesLoading && (
@@ -100,6 +200,7 @@ const Preferences: React.FC = () => {
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
               locale={personalPreferencesData?.user?.preferences?.locale || ''}
+              disabled={isSettingUp}
             />
             <LocaleAccordion
               handleAccordionChange={handleAccordionChange}
@@ -107,6 +208,8 @@ const Preferences: React.FC = () => {
               localeDisplay={
                 personalPreferencesData?.user?.preferences?.localeDisplay || ''
               }
+              disabled={isSettingUp && setup !== 0}
+              handleSetupChange={handleSetupChange}
             />
             <DefaultAccountAccordion
               handleAccordionChange={handleAccordionChange}
@@ -116,6 +219,7 @@ const Preferences: React.FC = () => {
               defaultAccountList={
                 personalPreferencesData?.user?.defaultAccountList || ''
               }
+              disabled={isSettingUp}
             />
             <TimeZoneAccordion
               handleAccordionChange={handleAccordionChange}
@@ -124,6 +228,7 @@ const Preferences: React.FC = () => {
                 personalPreferencesData?.user?.preferences?.timeZone || ''
               }
               timeZones={timeZones}
+              disabled={isSettingUp}
             />
             <HourToSendNotificationsAccordion
               handleAccordionChange={handleAccordionChange}
@@ -132,6 +237,7 @@ const Preferences: React.FC = () => {
                 personalPreferencesData?.user?.preferences
                   ?.hourToSendNotifications || null
               }
+              disabled={isSettingUp}
             />
           </>
         )}
@@ -153,6 +259,7 @@ const Preferences: React.FC = () => {
               expandedPanel={expandedPanel}
               name={accountPreferencesData?.accountList?.name || ''}
               accountListId={accountListId}
+              disabled={isSettingUp}
             />
             <MonthlyGoalAccordion
               handleAccordionChange={handleAccordionChange}
@@ -165,6 +272,8 @@ const Preferences: React.FC = () => {
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
+              disabled={isSettingUp && setup !== 1}
+              handleSetupChange={handleSetupChange}
             />
             <HomeCountryAccordion
               handleAccordionChange={handleAccordionChange}
@@ -174,6 +283,8 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
               countries={countries}
+              disabled={isSettingUp && setup !== 2}
+              handleSetupChange={handleSetupChange}
             />
             <CurrencyAccordion
               handleAccordionChange={handleAccordionChange}
@@ -182,6 +293,7 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
               accountListId={accountListId}
+              disabled={isSettingUp}
             />
             {userOrganizationAccountsData?.userOrganizationAccounts &&
               userOrganizationAccountsData?.userOrganizationAccounts?.length >
@@ -195,6 +307,7 @@ const Preferences: React.FC = () => {
                     ''
                   }
                   accountListId={accountListId}
+                  disabled={isSettingUp}
                 />
               )}
             <EarlyAdopterAccordion
@@ -204,6 +317,7 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.settings?.tester || false
               }
               accountListId={accountListId}
+              disabled={isSettingUp}
             />
             <MpdInfoAccordion
               handleAccordionChange={handleAccordionChange}
@@ -222,6 +336,7 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.settings?.currency || ''
               }
               accountListId={accountListId}
+              disabled={isSettingUp}
             />
             {canUserExportData?.canUserExportData.allowed && (
               <ExportAllDataAccordion
@@ -232,11 +347,21 @@ const Preferences: React.FC = () => {
                 }
                 accountListId={accountListId}
                 data={personalPreferencesData}
+                disabled={isSettingUp}
               />
             )}
           </>
         )}
       </AccordionGroup>
+      <Box sx={{ overflow: 'auto' }}>
+        <Button
+          sx={{ float: 'right', marginTop: 2, marginBottom: 6 }}
+          variant="outlined"
+          onClick={resetWelcomeTour}
+        >
+          {t('Reset Welcome Tour')}
+        </Button>
+      </Box>
     </SettingsWrapper>
   );
 };

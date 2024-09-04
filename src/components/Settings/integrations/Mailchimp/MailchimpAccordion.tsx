@@ -26,6 +26,7 @@ import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
+  AccordionProps,
   StyledList,
   StyledListItem,
   StyledServicesButton,
@@ -47,11 +48,6 @@ const mailchimpSchema: yup.SchemaOf<
   primaryListId: yup.string().required(),
 });
 
-interface MailchimpAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
-}
-
 const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   flex: '0 1 50%',
   margin: '0 0 0 -11px',
@@ -61,9 +57,10 @@ const StyledButton = styled(Button)(() => ({
   marginLeft: '15px',
 }));
 
-export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
+export const MailchimpAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const [showSettings, setShowSettings] = useState(false);
@@ -172,6 +169,7 @@ export const MailchimpAccordion: React.FC<MailchimpAccordionProps> = ({
       expandedPanel={expandedPanel}
       label={t('MailChimp')}
       value={''}
+      disabled={disabled}
       image={
         <img
           src="/images/settings-preferences-intergrations-mailchimp.svg"

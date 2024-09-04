@@ -73,7 +73,13 @@ const notificationSchema: yup.SchemaOf<{
   ),
 });
 
-export const NotificationsTable: React.FC = () => {
+interface NotificationsTableProps {
+  handleSetupChange: () => Promise<void>;
+}
+
+export const NotificationsTable: React.FC<NotificationsTableProps> = ({
+  handleSetupChange,
+}) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
@@ -160,6 +166,7 @@ export const NotificationsTable: React.FC = () => {
     enqueueSnackbar(t('Notifications updated successfully'), {
       variant: 'success',
     });
+    handleSetupChange();
   };
 
   return (

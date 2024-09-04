@@ -37,6 +37,7 @@ interface MpdInfoAccordionProps {
   activeMpdFinishAt: string | null;
   currency: string;
   accountListId: string;
+  disabled?: boolean;
 }
 
 export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
@@ -47,6 +48,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   activeMpdFinishAt,
   currency,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -111,6 +113,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
       label={label}
       value={goalDateString}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

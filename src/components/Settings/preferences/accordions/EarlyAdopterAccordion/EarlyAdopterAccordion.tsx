@@ -23,6 +23,7 @@ interface EarlyAdopterAccordionProps {
   expandedPanel: string;
   tester: boolean;
   accountListId: string;
+  disabled?: boolean;
 }
 
 export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
@@ -30,6 +31,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   expandedPanel,
   tester,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { userId } = useUserPreferenceContext();
@@ -90,6 +92,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
       label={label}
       value={tester ? t('Yes') : t('No')}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

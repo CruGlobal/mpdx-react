@@ -13,6 +13,7 @@ import { useSendToChalklineMutation } from './SendToChalkline.generated';
 export const ChalklineAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const accordionName = t('Chalk Line');
@@ -54,6 +55,7 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
       expandedPanel={expandedPanel}
       label={accordionName}
       value={''}
+      disabled={disabled}
       image={
         <img
           src="/images/settings-preferences-intergrations-chalkline.png"

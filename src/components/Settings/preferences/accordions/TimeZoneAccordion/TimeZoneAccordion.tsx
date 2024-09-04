@@ -20,6 +20,7 @@ interface TimeZoneAccordionProps {
   expandedPanel: string;
   timeZone: string;
   timeZones: Array<Record<string, string>>;
+  disabled?: boolean;
 }
 
 export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
@@ -27,6 +28,7 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
   expandedPanel,
   timeZone,
   timeZones,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -72,6 +74,7 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
       label={label}
       value={selectedTimeZone}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{
