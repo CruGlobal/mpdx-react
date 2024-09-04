@@ -23,8 +23,8 @@ const RenderGoogleImportPage = () => (
 );
 describe('render', () => {
   it('google import page', async () => {
-    const { findByText } = render(<RenderGoogleImportPage />);
-
-    expect(await findByText('Import from Google')).toBeVisible();
+    const { findAllByText } = render(<RenderGoogleImportPage />);
+    const title = await findAllByText('Import from Google');
+    expect(title).toHaveLength(2);
   });
 });

@@ -1,30 +1,28 @@
-import Head from 'next/head';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
 import TntConnect from 'src/components/Tool/TntConnect/TntConnect';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { ToolsWrapper } from '../ToolsWrapper';
 
 const TntConnectPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { appName } = useGetAppSettings();
+  const pageUrl = 'tools/import/tnt';
 
   return (
-    <>
-      <Head>
-        <title>
-          {appName} | {t('Import Tnt')}
-        </title>
-      </Head>
+    <ToolsWrapper
+      pageTitle={t('Import from TntConnect')}
+      pageUrl={pageUrl}
+      selectedMenuId="import/tnt"
+    >
       {accountListId ? (
         <TntConnect accountListId={accountListId} />
       ) : (
         <Loading loading />
       )}
-    </>
+    </ToolsWrapper>
   );
 };
 
