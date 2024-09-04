@@ -21,6 +21,7 @@ import {
 } from 'src/components/Contacts/ContactFlow/ContactFlowRow/ContactFlowRow';
 import { StarContactIconButton } from 'src/components/Contacts/StarContactIconButton/StarContactIconButton';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import {
@@ -51,7 +52,8 @@ interface Props extends Omit<ContactFlowRowProps, 'status' | 'contact'> {
 }
 
 export interface DraggedContact extends Omit<ContactsDraggedContact, 'status'> {
-  status: AppealStatusEnum;
+  status: StatusEnum | null;
+  appealStatus: AppealStatusEnum;
   pledge: AppealContactInfoFragment['pledges'][0];
 }
 
@@ -117,6 +119,7 @@ export const ContactFlowRow: React.FC<Props> = ({
       item: {
         id,
         status: contact.status,
+        appealStatus,
         name,
         starred,
         width: columnWidth,

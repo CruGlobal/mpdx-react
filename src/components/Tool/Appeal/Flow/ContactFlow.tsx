@@ -104,7 +104,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     contact: DraggedContact,
     newAppealStatus: AppealStatusEnum,
   ): Promise<void> => {
-    const oldAppealStatus = contact.status;
+    const oldAppealStatus = contact.appealStatus;
     if (
       newAppealStatus !== AppealStatusEnum.Asked &&
       oldAppealStatus === AppealStatusEnum.Excluded
