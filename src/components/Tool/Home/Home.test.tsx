@@ -26,21 +26,23 @@ const mocks = {
   },
 };
 
+const TestComponent = () => (
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider<{
+      GetToolNotifications: GetToolNotificationsQuery;
+    }>
+      mocks={mocks}
+    >
+      <TestRouter router={router}>
+        <Home />
+      </TestRouter>
+    </GqlMockedProvider>
+  </ThemeProvider>
+);
+
 describe('ToolHome', () => {
   it('default', () => {
-    const { getByTestId, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetToolNotifications: GetToolNotificationsQuery;
-        }>
-          mocks={mocks}
-        >
-          <TestRouter router={router}>
-            <Home />
-          </TestRouter>
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByText } = render(<TestComponent />);
 
     expect(getByTestId('Home')).toBeInTheDocument();
     ToolsListHome.forEach((tool) => {
@@ -50,19 +52,7 @@ describe('ToolHome', () => {
   });
 
   it('renders notifications', async () => {
-    const { findAllByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetToolNotifications: GetToolNotificationsQuery;
-        }>
-          mocks={mocks}
-        >
-          <TestRouter router={router}>
-            <Home />
-          </TestRouter>
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { findAllByText } = render(<TestComponent />);
 
     const contacts = await findAllByText('2');
     expect(contacts).toHaveLength(3);

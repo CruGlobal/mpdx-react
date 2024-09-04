@@ -32,7 +32,6 @@ const TestComponent = ({
         loading={false}
         toolId={'fixCommitmentInfo'}
       />
-      ,
     </TestRouter>
   </ThemeProvider>
 );
