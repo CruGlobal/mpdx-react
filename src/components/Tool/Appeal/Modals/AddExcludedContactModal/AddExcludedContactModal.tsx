@@ -102,11 +102,11 @@ export const AddExcludedContactModal: React.FC<
   const title = addingManyContacts ? t('Add Contacts') : t('Add Contact');
   const text = addingManyContacts
     ? t(
-        'These {{number}} contacts have been previously excluded from this appeal. Are you certain you wish to add them?',
+        'You will not be able to exclude these {{number}} contacts once you add them to this appeal. Instead, you will be able to remove them from it. Are you sure?',
         { number: contactIds.length },
       )
     : t(
-        'This contact has been previously excluded from this appeal. Are you certain you wish to add them?',
+        'You will not be able to exclude this contact once you add them to this appeal. Instead, you will be able to remove them from it. Are you sure?',
       );
 
   return (

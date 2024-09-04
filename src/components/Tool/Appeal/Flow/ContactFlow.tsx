@@ -12,6 +12,8 @@ import theme from 'src/theme';
 import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
+import { DynamicAddExcludedContactModal } from '../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
+import { DynamicDeleteAppealContactModal } from '../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
@@ -85,6 +87,10 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
 }: ContactFlowProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
+    useState(false);
+  const [deleteAppealContactModalOpen, setDeleteAppealContactModalOpen] =
+    useState(false);
   const [contact, setContact] = useState<DraggedContact | null>(null);
 
   const changeContactStatus = async (
@@ -92,15 +98,33 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     newAppealStatus: AppealStatusEnum,
   ): Promise<void> => {
     const oldAppealStatus = contact.status;
+    if (
+      newAppealStatus !== AppealStatusEnum.Asked &&
+      oldAppealStatus === AppealStatusEnum.Excluded
+    ) {
+      enqueueSnackbar(
+        t(
+          'Unable to move Excluded Contact here. If you want to add this Excluded contact to this appeal, please add them to Asked.',
+        ),
+        {
+          variant: 'warning',
+        },
+      );
+    }
+
     setContact(contact);
+
     switch (newAppealStatus) {
       case AppealStatusEnum.Excluded:
-        // eslint-disable-next-line no-console
-        console.log('Excluded');
+          setDeleteAppealContactModalOpen(true);
         break;
       case AppealStatusEnum.Asked:
         // eslint-disable-next-line no-console
         console.log('Asked');
+
+        if (oldAppealStatus === AppealStatusEnum.Excluded) {
+          setAddExcludedContactModalOpen(true);
+        }
         break;
       case AppealStatusEnum.NotReceived:
         // eslint-disable-next-line no-console
@@ -164,6 +188,21 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
           ))}
         </Box>
       </DndProvider>
+
+      {addExcludedContactModalOpen && contact && (
+        <DynamicAddExcludedContactModal
+          contactIds={[contact.id]}
+          handleClose={() => setAddExcludedContactModalOpen(false)}
+        />
+      )}
+
+      {deleteAppealContactModalOpen && contact?.id && (
+        <DynamicDeleteAppealContactModal
+          contactId={contact.id}
+          handleClose={() => setDeleteAppealContactModalOpen(false)}
+        />
+      )}
+
     </>
   );
 };

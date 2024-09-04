@@ -17,6 +17,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import {
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import {
   AppealContactsInfoFragment,
@@ -38,7 +39,9 @@ export const DeleteAppealContactModal: React.FC<
 > = ({ contactId, handleClose }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appealId } = React.useContext(AppealsContext) as AppealsType;
+  const { appealId, viewMode } = React.useContext(
+    AppealsContext,
+  ) as AppealsType;
   const [deleteAppealContact] = useDeleteAppealContactMutation();
   const { data, fetchMore } = useAppealContactsQuery({
     variables: {
@@ -127,7 +130,11 @@ export const DeleteAppealContactModal: React.FC<
           </Box>
         ) : (
           <DialogContentText component="div">
-            {t('Are you sure you wish to remove this contact from the appeal?')}
+            {t(
+              viewMode === TableViewModeEnum.Flows
+                ? 'You cannot exclude a contact from this appeal. Would you like to remove them from this appeal instead?'
+                : 'Are you sure you wish to remove this contact from the appeal?',
+            )}
           </DialogContentText>
         )}
       </DialogContent>
