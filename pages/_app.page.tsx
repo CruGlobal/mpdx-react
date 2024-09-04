@@ -25,6 +25,7 @@ import HelpscoutBeacon from 'src/components/Helpscout/HelpscoutBeacon';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
 import TaskModalProvider from 'src/components/Task/Modal/TaskModalProvider';
@@ -61,9 +62,11 @@ const GraphQLProviders: React.FC<{
 
   return (
     <ApolloProvider client={client}>
-      <UserPreferenceProvider>
-        <TaskModalProvider>{children}</TaskModalProvider>
-      </UserPreferenceProvider>
+      <SetupProvider>
+        <UserPreferenceProvider>
+          <TaskModalProvider>{children}</TaskModalProvider>
+        </UserPreferenceProvider>
+      </SetupProvider>
     </ApolloProvider>
   );
 };
