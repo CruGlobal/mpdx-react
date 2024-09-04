@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
+import { session } from '__tests__/fixtures/session';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -27,12 +28,7 @@ describe('Account Lists page', () => {
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: {
-          apiToken: null,
-          userID: null,
-        },
-      });
+      (getSession as jest.Mock).mockResolvedValue(null);
 
       const { props, redirect } = (await getServerSideProps(
         context as GetServerSidePropsContext,
@@ -48,12 +44,7 @@ describe('Account Lists page', () => {
 
   describe('NextAuth authorized', () => {
     beforeEach(() => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: {
-          apiToken: 'apiToken',
-          userID: 'userID',
-        },
-      });
+      (getSession as jest.Mock).mockResolvedValue(session);
     });
 
     it('redirects user to their accountList page if only one accountList', async () => {
@@ -69,15 +60,6 @@ describe('Account Lists page', () => {
         context as GetServerSidePropsContext,
       )) as GetServerSidePropsReturn;
 
-      const { queryByText } = render(
-        <ThemeProvider theme={theme}>
-          <I18nextProvider i18n={i18n}>
-            <AccountListsPage {...props} />
-          </I18nextProvider>
-        </ThemeProvider>,
-      );
-
-      expect(queryByText('My Accounts')).not.toBeInTheDocument();
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
         destination: `/accountLists/${accountListId}`,

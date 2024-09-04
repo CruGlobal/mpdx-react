@@ -1,10 +1,9 @@
-import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import { getSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
 import {
   UpdateUserDefaultAccountDocument,
   UpdateUserDefaultAccountMutation,
@@ -92,63 +91,51 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (
-  context,
-) => {
-  const session = await getSession(context);
-  const apiToken = session?.user?.apiToken;
-  if (!apiToken) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
+export const getServerSideProps = makeGetServerSideProps<PageProps>(
+  async (session) => {
+    const ssrClient = makeSsrClient(session.user.apiToken);
+    const { data: accountListOptions } =
+      await ssrClient.query<AccountListOptionsQuery>({
+        query: AccountListOptionsDocument,
+      });
 
-  const ssrClient = makeSsrClient(apiToken);
-  const { data: accountListOptions } =
-    await ssrClient.query<AccountListOptionsQuery>({
-      query: AccountListOptionsDocument,
-    });
-
-  if (accountListOptions.accountLists.nodes.length === 1) {
-    // The user has exactly one account list, so set it as the default and go to preferences
-    const defaultAccountListId = accountListOptions.accountLists.nodes[0].id;
-    try {
-      await ssrClient.mutate<
-        UpdateUserDefaultAccountMutation,
-        UpdateUserDefaultAccountMutationVariables
-      >({
-        mutation: UpdateUserDefaultAccountDocument,
-        variables: {
-          input: {
-            attributes: {
-              defaultAccountList: defaultAccountListId,
+    if (accountListOptions.accountLists.nodes.length === 1) {
+      // The user has exactly one account list, so set it as the default and go to preferences
+      const defaultAccountListId = accountListOptions.accountLists.nodes[0].id;
+      try {
+        await ssrClient.mutate<
+          UpdateUserDefaultAccountMutation,
+          UpdateUserDefaultAccountMutationVariables
+        >({
+          mutation: UpdateUserDefaultAccountDocument,
+          variables: {
+            input: {
+              attributes: {
+                defaultAccountList: defaultAccountListId,
+              },
             },
           },
-        },
-      });
-      return {
-        redirect: {
-          destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
-          permanent: false,
-        },
-      };
-    } catch {
-      // If setting the account list failed, silently swallow the error and let
-      // the user view the page. If the error is persistent, the mutation will
-      // fail there when they try to choose a default account list, and they
-      // will at least get an error message.
+        });
+        return {
+          redirect: {
+            destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
+            permanent: false,
+          },
+        };
+      } catch {
+        // If setting the account list failed, silently swallow the error and let
+        // the user view the page. If the error is persistent, the mutation will
+        // fail there when they try to choose a default account list, and they
+        // will at least get an error message.
+      }
     }
-  }
 
-  return {
-    props: {
-      session,
-      accountListOptions,
-    },
-  };
-};
+    return {
+      props: {
+        accountListOptions,
+      },
+    };
+  },
+);
 
 export default AccountPage;

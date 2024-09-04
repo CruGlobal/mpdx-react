@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
@@ -30,12 +31,7 @@ describe('AccountListsId page', () => {
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: {
-          apiToken: null,
-          userID: null,
-        },
-      });
+      (getSession as jest.Mock).mockResolvedValue(null);
 
       const { props, redirect } = (await getServerSideProps(
         context,
@@ -51,12 +47,7 @@ describe('AccountListsId page', () => {
 
   describe('NextAuth authorized', () => {
     beforeEach(() => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: {
-          apiToken: 'apiToken',
-          userID: 'userID',
-        },
-      });
+      (getSession as jest.Mock).mockResolvedValue(session);
     });
 
     it('redirects to the home page on GraphQL query error', async () => {
