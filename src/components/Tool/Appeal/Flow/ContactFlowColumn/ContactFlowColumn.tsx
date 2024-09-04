@@ -36,7 +36,10 @@ import {
 } from '../ContactFlowRow/ContactFlowRow';
 
 interface Props
-  extends Omit<ContactFlowColumnProps, 'statuses' | 'changeContactStatus'> {
+  extends Omit<
+    ContactFlowColumnProps,
+    'statuses' | 'changeContactStatus' | 'selectedFilters'
+  > {
   appealStatus: AppealStatusEnum;
   changeContactStatus: (
     contact: DraggedContact,

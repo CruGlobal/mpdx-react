@@ -6,7 +6,10 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { ContactFlowDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  PledgeStatusEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
@@ -15,6 +18,8 @@ import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
 import { DynamicAddExcludedContactModal } from '../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
 import { DynamicDeleteAppealContactModal } from '../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
 import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDeletePledgeModal';
+import { useUpdateAccountListPledgeMutation } from '../Modals/PledgeModal/ContactPledge.generated';
+import { DynamicPledgeModal } from '../Modals/PledgeModal/DynamicPledgeModal';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
@@ -92,9 +97,12 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     useState(false);
   const [deleteAppealContactModalOpen, setDeleteAppealContactModalOpen] =
     useState(false);
+  const [pledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
 
   const [contact, setContact] = useState<DraggedContact | null>(null);
+
+  const [updateAccountListPledge] = useUpdateAccountListPledgeMutation();
 
   const changeContactStatus = async (
     contact: DraggedContact,
@@ -129,8 +137,64 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         }
         break;
       case AppealStatusEnum.NotReceived:
-        // eslint-disable-next-line no-console
-        console.log('NotReceived');
+        if (oldAppealStatus === AppealStatusEnum.Asked) {
+          setPledgeModalOpen(true);
+        }
+
+        if (oldAppealStatus === AppealStatusEnum.Processed) {
+          enqueueSnackbar(
+            t(
+              'Unable to move contact here as this gift is already proccessed.',
+            ),
+            {
+              variant: 'warning',
+            },
+          );
+        }
+
+        if (!contact.pledge) {
+          enqueueSnackbar(
+            t(
+              'Something went wrong. Please try again or contact support if the issue persists.',
+            ),
+            {
+              variant: 'error',
+            },
+          );
+        }
+
+        const {
+          __typename,
+          status: _status,
+          appeal,
+          ...pledgeDetails
+        } = contact.pledge;
+
+        await updateAccountListPledge({
+          variables: {
+            input: {
+              pledgeId: contact.pledge.id,
+              attributes: {
+                ...pledgeDetails,
+                appealId: appeal.id,
+                contactId: contact.id,
+                status: PledgeStatusEnum.NotReceived,
+              },
+            },
+          },
+          refetchQueries: ['Contacts'], // doesn't work
+          onCompleted: () => {
+            enqueueSnackbar(t('Successfully moved contact to commitment'), {
+              variant: 'success',
+            });
+          },
+          onError: () => {
+            enqueueSnackbar(t('Unable to move contact to commitment'), {
+              variant: 'error',
+            });
+          },
+        });
+
         break;
       case AppealStatusEnum.ReceivedNotProcessed:
         // eslint-disable-next-line no-console
@@ -205,6 +269,12 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         />
       )}
 
+      {pledgeModalOpen && contact && (
+        <DynamicPledgeModal
+          contact={contact}
+          handleClose={() => setPledgeModalOpen(false)}
+        />
+      )}
 
       {deletePledgeModalOpen && contact && (
         <DynamicDeletePledgeModal
