@@ -1,4 +1,3 @@
-import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
@@ -11,6 +10,7 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { LogoLink } from '../LogoLink/LogoLink';
 import AddMenu from './Items/AddMenu/AddMenu';
 import NavMenu from './Items/NavMenu/NavMenu';
 import NotificationMenu from './Items/NotificationMenu/NotificationMenu';
@@ -54,13 +54,7 @@ const TopBar = ({
               </IconButton>
             </Hidden>
           )}
-          <NextLink href="/">
-            <img
-              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
-              alt="logo"
-              style={{ cursor: 'pointer' }}
-            />
-          </NextLink>
+          <LogoLink />
           <Hidden mdDown>
             {accountListId && (
               <>

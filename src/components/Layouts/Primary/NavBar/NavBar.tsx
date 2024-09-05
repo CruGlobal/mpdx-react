@@ -1,4 +1,4 @@
-import NextLink, { LinkProps } from 'next/link';
+import { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
@@ -8,6 +8,7 @@ import { makeStyles } from 'tss-react/mui';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { LogoLink } from '../LogoLink/LogoLink';
 import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
@@ -174,13 +175,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
         variant="temporary"
       >
         <Box p={2} display="flex" justifyContent="center">
-          <NextLink href="/">
-            <img
-              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
-              alt="logo"
-              style={{ cursor: 'pointer' }}
-            />
-          </NextLink>
+          <LogoLink />
         </Box>
         <Box p={2}>
           {renderNavItems({
