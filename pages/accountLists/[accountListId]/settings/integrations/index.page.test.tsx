@@ -22,6 +22,7 @@ const push = jest.fn();
 
 const router = {
   query: { accountListId },
+  pathname: '/accountLists/[accountListId]/settings/integrations',
   isReady: true,
   push,
 };

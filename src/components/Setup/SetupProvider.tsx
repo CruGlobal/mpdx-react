@@ -10,7 +10,13 @@ import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import { useSetupStageQuery } from './Setup.generated';
 
 export interface SetupContext {
-  settingUp?: boolean;
+  /**
+   * `true` if the user is on a setup page and is in the process of completing
+   * the setup tour. `false` if the user isn't on a setup page or isn't setting
+   * up their account. `undefined` if the data needed to determine whether the
+   * user is on the setup tour hasn't loaded yet.
+   */
+  onSetupTour?: boolean;
 }
 
 const SetupContext = createContext<SetupContext | null>(null);
@@ -25,6 +31,17 @@ export const useSetupContext = (): SetupContext => {
 
   return setupContext;
 };
+
+// The list of page pathnames that are part of the setup tour
+const setupPages = new Set([
+  '/setup/start',
+  '/setup/connect',
+  '/setup/account',
+  '/accountLists/[accountListId]/settings/preferences',
+  '/accountLists/[accountListId]/settings/notifications',
+  '/accountLists/[accountListId]/settings/integrations',
+  '/accountLists/[accountListId]/setup/finish',
+]);
 
 interface Props {
   children: ReactNode;
@@ -59,7 +76,7 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
     }
   }, [data]);
 
-  const settingUp = useMemo(() => {
+  const onSetupTour = useMemo(() => {
     if (!data) {
       return undefined;
     }
@@ -68,15 +85,16 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
       return false;
     }
 
-    return (
+    const onSetupPage = setupPages.has(pathname);
+    const settingUp =
       data.userOptions.some(
         (option) => option.key === 'setup_position' && option.value !== '',
-      ) || data.user.setup !== null
-    );
-  }, [data]);
+      ) || data.user.setup !== null;
+    return onSetupPage && settingUp;
+  }, [data, pathname]);
 
   return (
-    <SetupContext.Provider value={{ settingUp }}>
+    <SetupContext.Provider value={{ onSetupTour }}>
       {children}
     </SetupContext.Provider>
   );

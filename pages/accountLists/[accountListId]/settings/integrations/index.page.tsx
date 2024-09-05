@@ -29,7 +29,7 @@ const Integrations: React.FC = () => {
   const accountListId = useAccountListId() || '';
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
-  const { settingUp } = useSetupContext();
+  const { onSetupTour } = useSetupContext();
   const [setup, setSetup] = useState(0);
 
   const setupAccordions = ['google', 'mailchimp', 'prayerletters.com'];
@@ -37,7 +37,7 @@ const Integrations: React.FC = () => {
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const handleSetupChange = async () => {
-    if (!settingUp) {
+    if (!onSetupTour) {
       return;
     }
     const nextNav = setup + 1;
@@ -70,10 +70,10 @@ const Integrations: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (settingUp) {
+    if (onSetupTour) {
       setExpandedPanel(setupAccordions[0]);
     }
-  }, [settingUp]);
+  }, [onSetupTour]);
 
   return (
     <SettingsWrapper
@@ -81,7 +81,7 @@ const Integrations: React.FC = () => {
       pageHeading={t('Connect Services')}
       selectedMenuId="integrations"
     >
-      {settingUp && (
+      {onSetupTour && (
         <StickyBox>
           <SetupBanner
             button={
@@ -99,34 +99,34 @@ const Integrations: React.FC = () => {
         <TheKeyAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={settingUp}
+          disabled={onSetupTour}
         />
         <OrganizationAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={settingUp}
+          disabled={onSetupTour}
         />
       </AccordionGroup>
       <AccordionGroup title={t('External Services')}>
         <GoogleAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={settingUp && setup !== 0}
+          disabled={onSetupTour && setup !== 0}
         />
         <MailchimpAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={settingUp && setup !== 1}
+          disabled={onSetupTour && setup !== 1}
         />
         <PrayerlettersAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={settingUp && setup !== 2}
+          disabled={onSetupTour && setup !== 2}
         />
         <ChalklineAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={settingUp}
+          disabled={onSetupTour}
         />
       </AccordionGroup>
     </SettingsWrapper>

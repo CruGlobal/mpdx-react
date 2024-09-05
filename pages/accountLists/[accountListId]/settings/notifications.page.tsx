@@ -19,12 +19,12 @@ const Notifications: React.FC = () => {
   const accountListId = useAccountListId() || '';
   const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const { settingUp } = useSetupContext();
+  const { onSetupTour } = useSetupContext();
 
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
   const handleSetupChange = async () => {
-    if (!settingUp) {
+    if (!onSetupTour) {
       return;
     }
 
@@ -48,7 +48,7 @@ const Notifications: React.FC = () => {
       pageHeading={t('Notifications')}
       selectedMenuId="notifications"
     >
-      {settingUp && (
+      {onSetupTour && (
         <StickyBox>
           <SetupBanner
             button={
