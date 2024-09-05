@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import React, { ReactNode, createContext, useContext, useEffect } from 'react';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import { useSetupStageQuery } from './Setup.generated';
 
@@ -49,11 +55,17 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
     }
   }, [data]);
 
-  const settingUp = data
-    ? data.userOptions.some(
+  const settingUp = useMemo(() => {
+    if (!data) {
+      return undefined;
+    }
+
+    return (
+      data.userOptions.some(
         (option) => option.key === 'setup_position' && option.value !== '',
       ) || data.user.setup !== null
-    : undefined;
+    );
+  }, [data]);
 
   return (
     <SetupContext.Provider value={{ settingUp }}>

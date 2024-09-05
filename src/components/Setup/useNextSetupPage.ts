@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useCallback } from 'react';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import { useUpdateUserOptionsMutation } from '../Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useSetupStageLazyQuery } from './Setup.generated';
@@ -21,7 +22,7 @@ export const useNextSetupPage = (): UseNextSetupPageResult => {
       },
     });
 
-  const next = async () => {
+  const next = useCallback(async () => {
     const { data } = await getSetupStage();
     switch (data?.user.setup) {
       case UserSetupStageEnum.NoAccountLists:
@@ -40,7 +41,7 @@ export const useNextSetupPage = (): UseNextSetupPageResult => {
         );
         return;
     }
-  };
+  }, []);
 
   return {
     next,
