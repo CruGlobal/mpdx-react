@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
@@ -15,29 +16,27 @@ const router = {
   push: jest.fn(),
 };
 
+const TestComponent = () => (
+  <ThemeProvider theme={theme}>
+    <TestWrapper mocks={[getTopBarMock()]}>
+      <TestRouter router={router}>
+        <SetupProvider>
+          <ProfileMenuPanel />
+        </SetupProvider>
+      </TestRouter>
+    </TestWrapper>
+  </ThemeProvider>
+);
+
 describe('ProfileMenuPanelForNavBar', () => {
   it('default', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <ProfileMenuPanel />
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('ProfileMenuPanelForNavBar')).toBeInTheDocument();
   });
 
   it('render an account list button', async () => {
-    const { getByTestId } = render(
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper mocks={[getTopBarMock()]}>
-            <ProfileMenuPanel />
-          </TestWrapper>
-        </ThemeProvider>
-      </TestRouter>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() =>
       expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
@@ -50,15 +49,7 @@ describe('ProfileMenuPanelForNavBar', () => {
   });
 
   it('should toggle the account list selector drawer', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper mocks={[getTopBarMock()]}>
-            <ProfileMenuPanel />
-          </TestWrapper>
-        </ThemeProvider>
-      </TestRouter>,
-    );
+    const { getByTestId, queryByTestId } = render(<TestComponent />);
 
     await waitFor(() =>
       expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
@@ -71,15 +62,7 @@ describe('ProfileMenuPanelForNavBar', () => {
   });
 
   it('should call router push', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={router}>
-            <ProfileMenuPanel />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() =>
       expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
@@ -95,15 +78,7 @@ describe('ProfileMenuPanelForNavBar', () => {
   });
 
   it('Ensure Sign Out is called with callback', async () => {
-    const { getByText } = render(
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper mocks={[getTopBarMock()]}>
-            <ProfileMenuPanel />
-          </TestWrapper>
-        </ThemeProvider>
-      </TestRouter>,
-    );
+    const { getByText } = render(<TestComponent />);
 
     await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
     userEvent.click(getByText(/sign out/i));

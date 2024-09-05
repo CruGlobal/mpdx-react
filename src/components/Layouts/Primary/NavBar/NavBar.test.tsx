@@ -2,6 +2,7 @@ import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import { getTopBarMultipleMock } from '../TopBar/TopBar.mock';
 import { NavBar } from './NavBar';
@@ -22,7 +23,11 @@ describe('NavBar', () => {
   it('default', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <NavBar onMobileClose={onMobileClose} openMobile={false} />
+        <MockedProvider>
+          <SetupProvider>
+            <NavBar onMobileClose={onMobileClose} openMobile={false} />
+          </SetupProvider>
+        </MockedProvider>
       </ThemeProvider>,
     );
 
@@ -33,7 +38,9 @@ describe('NavBar', () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <NavBar onMobileClose={onMobileClose} openMobile={true} />
+          <SetupProvider>
+            <NavBar onMobileClose={onMobileClose} openMobile={true} />
+          </SetupProvider>
         </MockedProvider>
       </ThemeProvider>,
     );

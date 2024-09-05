@@ -1,4 +1,6 @@
+import { NextRouter } from 'next/router';
 import React from 'react';
+import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'jest-fetch-mock';
@@ -7,6 +9,7 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
@@ -27,7 +30,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const router = {
+const defaultRouter = {
   pathname: '/accountLists/[accountListId]/test',
   query: { accountListId: '1' },
   isReady: true,
@@ -40,17 +43,26 @@ const routerNoAccountListId = {
   push: jest.fn(),
 };
 
+interface TestComponentProps {
+  router?: Partial<NextRouter>;
+  mocks?: MockedResponse[];
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
+  <ThemeProvider theme={theme}>
+    <TestWrapper mocks={mocks ?? [getTopBarMock()]}>
+      <SetupProvider>
+        <TestRouter router={router ?? defaultRouter}>
+          <ProfileMenu />
+        </TestRouter>
+      </SetupProvider>
+    </TestWrapper>
+  </ThemeProvider>
+);
+
 describe('ProfileMenu', () => {
   it('default', async () => {
-    const { getByTestId, queryByText, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={router}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+    const { getByTestId, queryByText, getByText } = render(<TestComponent />);
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
     expect(queryByText('Manage Organizations')).toBeInTheDocument();
@@ -61,13 +73,7 @@ describe('ProfileMenu', () => {
 
   it('should not show setting links when no accountListId selected', async () => {
     const { getByTestId, queryByText, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={routerNoAccountListId}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
+      <TestComponent router={routerNoAccountListId} />,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
@@ -78,21 +84,13 @@ describe('ProfileMenu', () => {
   });
 
   it('should change account list in the router', async () => {
-    const { getByTestId, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={router}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+    const { getByTestId, getByText } = render(<TestComponent />);
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
-    await waitFor(() => expect(router.push).toHaveBeenCalled());
-    expect(router.push).toHaveBeenCalledWith({
+    await waitFor(() => expect(defaultRouter.push).toHaveBeenCalled());
+    expect(defaultRouter.push).toHaveBeenCalledWith({
       pathname: '/accountLists/[accountListId]/test',
       query: {
         accountListId: '1',
@@ -102,26 +100,20 @@ describe('ProfileMenu', () => {
 
   it('should change account list in the router and persist query parameters', async () => {
     const { getByTestId, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter
-            router={{
-              ...router,
-              pathname: '/accountLists/[accountListId]/test?searchTerm=Cool',
-              query: { ...router.query, searchTerm: 'Cool' },
-            }}
-          >
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
+      <TestComponent
+        router={{
+          ...defaultRouter,
+          pathname: '/accountLists/[accountListId]/test?searchTerm=Cool',
+          query: { ...defaultRouter.query, searchTerm: 'Cool' },
+        }}
+      />,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
-    await waitFor(() => expect(router.push).toHaveBeenCalled());
-    expect(router.push).toHaveBeenCalledWith({
+    await waitFor(() => expect(defaultRouter.push).toHaveBeenCalled());
+    expect(defaultRouter.push).toHaveBeenCalledWith({
       pathname: '/accountLists/[accountListId]/test?searchTerm=Cool',
       query: {
         searchTerm: 'Cool',
@@ -132,13 +124,7 @@ describe('ProfileMenu', () => {
 
   it('should route to path with account list', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={routerNoAccountListId}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
+      <TestComponent router={routerNoAccountListId} />,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     expect(queryByTestId('accountListName')).not.toBeInTheDocument();
@@ -156,13 +142,7 @@ describe('ProfileMenu', () => {
 
   it('should display account name if user has two or more account lists', async () => {
     const { getByTestId, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMockWithMultipleAccountLists()]}>
-          <TestRouter router={router}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
+      <TestComponent mocks={[getTopBarMockWithMultipleAccountLists()]} />,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     expect(getByTestId('accountListName')).toBeInTheDocument();
@@ -171,13 +151,7 @@ describe('ProfileMenu', () => {
 
   it('Ensure Sign Out is called with callback', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={routerNoAccountListId}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
+      <TestComponent router={routerNoAccountListId} />,
     );
     await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
     expect(queryByTestId('accountListName')).not.toBeInTheDocument();
@@ -220,15 +194,7 @@ describe('ProfileMenu while Impersonating', () => {
       { status: 200 },
     ]);
 
-    const { getByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper mocks={[getTopBarMock()]}>
-          <TestRouter router={router}>
-            <ProfileMenu />
-          </TestRouter>
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+    const { getByTestId, getByText, queryByTestId } = render(<TestComponent />);
     await waitFor(() =>
       expect(getByText('Impersonating John Smith')).toBeInTheDocument(),
     );

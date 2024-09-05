@@ -5,6 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import TopBar from './TopBar';
@@ -51,10 +52,12 @@ describe('TopBar', () => {
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <MockedProvider mocks={mocks} addTypename={false}>
-              <TopBar
-                accountListId={accountListId}
-                onMobileNavOpen={onMobileNavOpen}
-              />
+              <SetupProvider>
+                <TopBar
+                  accountListId={accountListId}
+                  onMobileNavOpen={onMobileNavOpen}
+                />
+              </SetupProvider>
             </MockedProvider>
           </TestRouter>
         </ThemeProvider>

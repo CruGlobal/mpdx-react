@@ -5,6 +5,7 @@ import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -115,6 +116,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const accountListId = useAccountListId();
   const { pathname } = useRouter();
   const { t } = useTranslation();
+  const { onSetupTour } = useSetupContext();
 
   const sections: Section[] = [
     {
@@ -177,13 +179,15 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
         <Box p={2} display="flex" justifyContent="center">
           <LogoLink />
         </Box>
-        <Box p={2}>
-          {renderNavItems({
-            accountListId,
-            items: sections,
-            pathname,
-          })}
-        </Box>
+        {!onSetupTour && (
+          <Box p={2}>
+            {renderNavItems({
+              accountListId,
+              items: sections,
+              pathname,
+            })}
+          </Box>
+        )}
         <Box p={2}>
           <NavTools />
         </Box>

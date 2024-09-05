@@ -2,6 +2,7 @@ import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import { getTopBarMultipleMock } from '../../TopBar/TopBar.mock';
 import { NavTools } from './NavTools';
@@ -22,7 +23,9 @@ describe('AddMenuPanel', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <NavTools />
+          <SetupProvider>
+            <NavTools />
+          </SetupProvider>
         </MockedProvider>
       </ThemeProvider>,
     );

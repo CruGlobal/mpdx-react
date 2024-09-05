@@ -10,6 +10,7 @@ import {
   useScrollTrigger,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { LogoLink } from '../LogoLink/LogoLink';
 import AddMenu from './Items/AddMenu/AddMenu';
 import NavMenu from './Items/NavMenu/NavMenu';
@@ -32,6 +33,7 @@ const TopBar = ({
   accountListId,
   onMobileNavOpen,
 }: TopBarProps): ReactElement => {
+  const { onSetupTour } = useSetupContext();
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: 0,
@@ -56,7 +58,8 @@ const TopBar = ({
           )}
           <LogoLink />
           <Hidden mdDown>
-            {accountListId && (
+            {onSetupTour && <Box flexGrow={1} />}
+            {!onSetupTour && accountListId && (
               <>
                 <Box ml={10} flexGrow={1}>
                   <NavMenu />
