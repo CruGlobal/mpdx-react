@@ -16,6 +16,7 @@ import { DynamicDeleteAppealContactModal } from '../Modals/DeleteAppealContact/D
 import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDeletePledgeModal';
 import { useUpdateAccountListPledgeMutation } from '../Modals/PledgeModal/ContactPledge.generated';
 import { DynamicPledgeModal } from '../Modals/PledgeModal/DynamicPledgeModal';
+import { DynamicUpdateDonationsModal } from '../Modals/UpdateDonationsModal/DynamicUpdateDonationsModal';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
@@ -95,6 +96,8 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     useState(false);
   const [pledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
+  const [updateDonationsModalOpen, setUpdateDonationsModalOpen] =
+    useState(false);
 
   const [contact, setContact] = useState<DraggedContact | null>(null);
 
@@ -123,7 +126,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
 
     switch (newAppealStatus) {
       case AppealStatusEnum.Excluded:
-          setDeleteAppealContactModalOpen(true);
+        setDeleteAppealContactModalOpen(true);
         break;
       case AppealStatusEnum.Asked:
         if (contact.pledge) {
@@ -135,21 +138,21 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
       case AppealStatusEnum.NotReceived:
       case AppealStatusEnum.ReceivedNotProcessed:
         if (contact.pledge) {
-        const {
-          __typename,
-          status: _status,
-          appeal,
-          ...pledgeDetails
-        } = contact.pledge;
+          const {
+            __typename,
+            status: _status,
+            appeal,
+            ...pledgeDetails
+          } = contact.pledge;
 
-        await updateAccountListPledge({
-          variables: {
-            input: {
-              pledgeId: contact.pledge.id,
-              attributes: {
-                ...pledgeDetails,
-                appealId: appeal.id,
-                contactId: contact.id,
+          await updateAccountListPledge({
+            variables: {
+              input: {
+                pledgeId: contact.pledge.id,
+                attributes: {
+                  ...pledgeDetails,
+                  appealId: appeal.id,
+                  contactId: contact.id,
                   status:
                     newAppealStatus === AppealStatusEnum.NotReceived
                       ? PledgeStatusEnum.NotReceived
@@ -165,27 +168,27 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
                 newStatus === PledgeStatusEnum.NotReceived &&
                 newAppealStatus === AppealStatusEnum.ReceivedNotProcessed
               ) {
-          enqueueSnackbar(
-            t(
-              'Unable to move contact here as gift has not been received by Cru.',
-            ),
-            {
-              variant: 'warning',
-            },
-          );
+                enqueueSnackbar(
+                  t(
+                    'Unable to move contact here as gift has not been received by Cru.',
+                  ),
+                  {
+                    variant: 'warning',
+                  },
+                );
               } else if (
                 newStatus === PledgeStatusEnum.Processed &&
                 (newAppealStatus === AppealStatusEnum.ReceivedNotProcessed ||
                   newAppealStatus === AppealStatusEnum.NotReceived)
               ) {
-          enqueueSnackbar(
-            t(
-              'Unable to move contact here as this gift is already proccessed.',
-            ),
-            {
-              variant: 'warning',
-            },
-          );
+                enqueueSnackbar(
+                  t(
+                    'Unable to move contact here as this gift is already proccessed.',
+                  ),
+                  {
+                    variant: 'warning',
+                  },
+                );
               }
             },
           });
@@ -194,12 +197,8 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         }
         break;
       case AppealStatusEnum.Processed:
-        // eslint-disable-next-line no-console
-        console.log('Processed');
+        setUpdateDonationsModalOpen(true);
         break;
-      default:
-        // eslint-disable-next-line no-console
-        console.log('default');
     }
   };
 
@@ -273,6 +272,14 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         <DynamicDeletePledgeModal
           pledge={contact.pledge}
           handleClose={() => setDeletePledgeModalOpen(false)}
+        />
+      )}
+
+      {updateDonationsModalOpen && contact && (
+        <DynamicUpdateDonationsModal
+          contact={contact}
+          pledge={contact.pledge}
+          handleClose={() => setUpdateDonationsModalOpen(false)}
         />
       )}
     </>

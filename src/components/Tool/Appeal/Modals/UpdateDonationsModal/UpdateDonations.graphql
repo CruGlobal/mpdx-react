@@ -1,0 +1,7 @@
+mutation UpdateDonations($input: DonationsUpdateMutationInput!) {
+  updateDonations(input: $input) {
+    donations {
+      id
+    }
+  }
+}
