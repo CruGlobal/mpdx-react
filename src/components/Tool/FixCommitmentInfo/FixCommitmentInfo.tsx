@@ -114,7 +114,7 @@ export enum UpdateTypeEnum {
 }
 
 const ItemOverride: React.ComponentType<ItemProps> = (props) => (
-  <ItemWithBorders disableGutters disableHover={true} {...props} />
+  <ItemWithBorders disableGutters disableHover {...props} />
 );
 
 const FixCommitmentInfo: React.FC<Props> = ({
