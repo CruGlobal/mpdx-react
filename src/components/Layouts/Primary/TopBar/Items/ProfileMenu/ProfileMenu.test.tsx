@@ -9,13 +9,15 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
   getTopBarMockWithMultipleAccountLists,
 } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';
+
+jest.mock('src/components/Setup/SetupProvider');
 
 const mockEnqueue = jest.fn();
 
@@ -51,31 +53,39 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
   <ThemeProvider theme={theme}>
     <TestWrapper mocks={mocks ?? [getTopBarMock()]}>
-      <SetupProvider>
-        <TestRouter router={router ?? defaultRouter}>
-          <ProfileMenu />
-        </TestRouter>
-      </SetupProvider>
+      <TestRouter router={router ?? defaultRouter}>
+        <ProfileMenu />
+      </TestRouter>
     </TestWrapper>
   </ThemeProvider>
 );
 
 describe('ProfileMenu', () => {
+  beforeEach(() => {
+    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
+      onSetupTour: false,
+    });
+  });
+
   it('default', async () => {
-    const { getByTestId, queryByText, getByText } = render(<TestComponent />);
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    const { getByTestId, getByRole, getByText, findByText } = render(
+      <TestComponent />,
+    );
+    expect(await findByText('John Smith')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
-    expect(queryByText('Manage Organizations')).toBeInTheDocument();
-    expect(queryByText('Admin Console')).toBeInTheDocument();
-    expect(queryByText('Backend Admin')).toBeInTheDocument();
-    expect(queryByText('Sidekiq')).toBeInTheDocument();
+    expect(getByText('Preferences')).toBeInTheDocument();
+    expect(getByText('Manage Organizations')).toBeInTheDocument();
+    expect(getByText('Admin Console')).toBeInTheDocument();
+    expect(getByText('Backend Admin')).toBeInTheDocument();
+    expect(getByText('Sidekiq')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
   });
 
   it('should not show setting links when no accountListId selected', async () => {
-    const { getByTestId, queryByText, getByText } = render(
+    const { getByTestId, queryByText, findByText } = render(
       <TestComponent router={routerNoAccountListId} />,
     );
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(await findByText('John Smith')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     expect(queryByText('Manage Organizations')).not.toBeInTheDocument();
     expect(queryByText('Admin Console')).not.toBeInTheDocument();
@@ -84,8 +94,8 @@ describe('ProfileMenu', () => {
   });
 
   it('should change account list in the router', async () => {
-    const { getByTestId, getByText } = render(<TestComponent />);
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    const { getByTestId, findByText } = render(<TestComponent />);
+    expect(await findByText('John Smith')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
@@ -99,7 +109,7 @@ describe('ProfileMenu', () => {
   });
 
   it('should change account list in the router and persist query parameters', async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, findByText } = render(
       <TestComponent
         router={{
           ...defaultRouter,
@@ -108,7 +118,7 @@ describe('ProfileMenu', () => {
         }}
       />,
     );
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(await findByText('John Smith')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
     userEvent.click(getByTestId('accountListButton-1'));
@@ -123,10 +133,10 @@ describe('ProfileMenu', () => {
   });
 
   it('should route to path with account list', async () => {
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, findByText, queryByTestId } = render(
       <TestComponent router={routerNoAccountListId} />,
     );
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(await findByText('John Smith')).toBeInTheDocument();
     expect(queryByTestId('accountListName')).not.toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     userEvent.click(getByTestId('accountListSelector'));
@@ -141,19 +151,19 @@ describe('ProfileMenu', () => {
   });
 
   it('should display account name if user has two or more account lists', async () => {
-    const { getByTestId, getByText } = render(
+    const { findByText, getByTestId, getByText } = render(
       <TestComponent mocks={[getTopBarMockWithMultipleAccountLists()]} />,
     );
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(await findByText('John Smith')).toBeInTheDocument();
     expect(getByTestId('accountListName')).toBeInTheDocument();
     expect(getByText('Staff Account')).toBeInTheDocument();
   });
 
   it('Ensure Sign Out is called with callback', async () => {
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { findByText, getByTestId, getByText, queryByTestId } = render(
       <TestComponent router={routerNoAccountListId} />,
     );
-    await waitFor(() => expect(getByText('John Smith')).toBeInTheDocument());
+    expect(await findByText('John Smith')).toBeInTheDocument();
     expect(queryByTestId('accountListName')).not.toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
     await waitFor(() =>
@@ -162,6 +172,21 @@ describe('ProfileMenu', () => {
     await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
     userEvent.click(getByText(/sign out/i));
     expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+  });
+
+  it('hides links during the setup tour', async () => {
+    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
+      onSetupTour: true,
+    });
+
+    const { findByText, getByRole, getByTestId, queryByText } = render(
+      <TestComponent router={routerNoAccountListId} />,
+    );
+
+    expect(await findByText('John Smith')).toBeInTheDocument();
+    userEvent.click(getByTestId('profileMenuButton'));
+    expect(queryByText('Preferences')).not.toBeInTheDocument();
+    expect(getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
   });
 });
 

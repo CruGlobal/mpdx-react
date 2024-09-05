@@ -1,15 +1,16 @@
-import * as nextRouter from 'next/router';
 import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../theme';
 import { getNotificationsMocks } from './Items/NotificationMenu/NotificationMenu.mock';
 import TopBar from './TopBar';
 import { getTopBarMultipleMock } from './TopBar.mock';
+
+jest.mock('src/components/Setup/SetupProvider');
 
 const accountListId = 'accountListId';
 const onMobileNavOpen = jest.fn();
@@ -32,38 +33,43 @@ jest.mock('notistack', () => ({
   },
 }));
 
-describe('TopBar', () => {
-  const useRouter = jest.spyOn(nextRouter, 'useRouter');
-  const mocks = [getTopBarMultipleMock(), ...getNotificationsMocks()];
-  beforeEach(() => {
-    (
-      useRouter as jest.SpyInstance<
-        Pick<nextRouter.NextRouter, 'query' | 'isReady'>
-      >
-    ).mockImplementation(() => ({
-      query: { accountListId },
-      isReady: true,
-    }));
-  });
+const TestComponent = () => (
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <MockedProvider
+          mocks={[getTopBarMultipleMock(), ...getNotificationsMocks()]}
+          addTypename={false}
+        >
+          <TopBar
+            accountListId={accountListId}
+            onMobileNavOpen={onMobileNavOpen}
+          />
+        </MockedProvider>
+      </TestRouter>
+    </ThemeProvider>
+  </SnackbarProvider>
+);
 
+describe('TopBar', () => {
   it('default', () => {
-    const { getByTestId } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <SetupProvider>
-                <TopBar
-                  accountListId={accountListId}
-                  onMobileNavOpen={onMobileNavOpen}
-                />
-              </SetupProvider>
-            </MockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </SnackbarProvider>,
-    );
+    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
+      onSetupTour: false,
+    });
+
+    const { getByTestId, getByText } = render(<TestComponent />);
 
     expect(getByTestId('TopBar')).toBeInTheDocument();
+    expect(getByText('Dashboard')).toBeInTheDocument();
+  });
+
+  it('hides links during the setup tour', () => {
+    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
+      onSetupTour: true,
+    });
+
+    const { queryByText } = render(<TestComponent />);
+
+    expect(queryByText('Dashboard')).not.toBeInTheDocument();
   });
 });

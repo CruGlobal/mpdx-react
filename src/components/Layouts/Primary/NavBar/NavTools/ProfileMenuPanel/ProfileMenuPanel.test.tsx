@@ -5,10 +5,12 @@ import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
+
+jest.mock('src/components/Setup/SetupProvider');
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
@@ -20,40 +22,42 @@ const TestComponent = () => (
   <ThemeProvider theme={theme}>
     <TestWrapper mocks={[getTopBarMock()]}>
       <TestRouter router={router}>
-        <SetupProvider>
-          <ProfileMenuPanel />
-        </SetupProvider>
+        <ProfileMenuPanel />
       </TestRouter>
     </TestWrapper>
   </ThemeProvider>
 );
 
 describe('ProfileMenuPanelForNavBar', () => {
-  it('default', async () => {
+  beforeEach(() => {
+    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
+      onSetupTour: false,
+    });
+  });
+
+  it('default', () => {
     const { getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('ProfileMenuPanelForNavBar')).toBeInTheDocument();
   });
 
   it('render an account list button', async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { findByTestId, getByTestId, getByText } = render(<TestComponent />);
 
-    await waitFor(() =>
-      expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
-    );
-    userEvent.click(getByTestId('accountListSelectorButton'));
+    userEvent.click(await findByTestId('accountListSelectorButton'));
     expect(getByTestId('accountListButton-1')).toBeInTheDocument();
     expect(getByTestId('accountListButton-1')).toHaveStyle(
       'backgroundColor: #383F43;',
     );
+    expect(getByText('Preferences')).toBeInTheDocument();
   });
 
   it('should toggle the account list selector drawer', async () => {
-    const { getByTestId, queryByTestId } = render(<TestComponent />);
-
-    await waitFor(() =>
-      expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
+    const { findByTestId, getByTestId, queryByTestId } = render(
+      <TestComponent />,
     );
+
+    expect(await findByTestId('accountListSelectorButton')).toBeInTheDocument();
     expect(
       queryByTestId('closeAccountListDrawerButton'),
     ).not.toBeInTheDocument();
@@ -62,12 +66,9 @@ describe('ProfileMenuPanelForNavBar', () => {
   });
 
   it('should call router push', async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { findByTestId, getByTestId } = render(<TestComponent />);
 
-    await waitFor(() =>
-      expect(getByTestId('accountListSelectorButton')).toBeInTheDocument(),
-    );
-    userEvent.click(getByTestId('accountListSelectorButton'));
+    userEvent.click(await findByTestId('accountListSelectorButton'));
     userEvent.click(getByTestId('accountListButton-1'));
     await waitFor(() =>
       expect(router.push).toHaveBeenCalledWith({
@@ -77,11 +78,25 @@ describe('ProfileMenuPanelForNavBar', () => {
     );
   });
 
-  it('Ensure Sign Out is called with callback', async () => {
-    const { getByText } = render(<TestComponent />);
+  it('Ensure Sign Out is called with callback', () => {
+    const { getByRole } = render(<TestComponent />);
 
-    await waitFor(() => expect(getByText(/sign out/i)).toBeInTheDocument());
-    userEvent.click(getByText(/sign out/i));
+    userEvent.click(getByRole('button', { name: 'Sign Out' }));
     expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+  });
+
+  it('hides links during the setup tour', async () => {
+    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
+      onSetupTour: true,
+    });
+
+    const { findByTestId, getByRole, getByTestId, queryByText } = render(
+      <TestComponent />,
+    );
+
+    userEvent.click(await findByTestId('accountListSelectorButton'));
+    userEvent.click(getByTestId('accountListButton-1'));
+    expect(getByRole('button', { name: 'Sign Out' })).toBeInTheDocument();
+    expect(queryByText('Preferences')).not.toBeInTheDocument();
   });
 });
