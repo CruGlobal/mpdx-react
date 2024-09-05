@@ -9,8 +9,14 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import {
+  InfiniteList,
+  ItemWithBorders,
+} from 'src/components/InfiniteList/InfiniteList';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -107,6 +113,10 @@ export enum UpdateTypeEnum {
   Hide = 'HIDE',
 }
 
+const ItemOverride: React.ComponentType<ItemProps> = (props) => (
+  <ItemWithBorders disableGutters disableHover {...props} />
+);
+
 const FixCommitmentInfo: React.FC<Props> = ({
   accountListId,
   setContactFocus,
@@ -117,7 +127,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const { data } = useInvalidStatusesQuery({
+  const { data, loading, fetchMore } = useInvalidStatusesQuery({
     variables: { accountListId },
   });
 
@@ -251,36 +261,55 @@ const FixCommitmentInfo: React.FC<Props> = ({
                   </Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12}>
-                <Box>
-                  {data.contacts.nodes.map((contact) => (
-                    <Contact
-                      id={contact.id}
-                      name={contact.name}
-                      key={contact.id}
-                      donations={contact.donations?.nodes}
-                      statusTitle={
-                        contact.status
-                          ? contactPartnershipStatus[contact.status]
-                          : ''
-                      }
-                      statusValue={
-                        getLocalizedContactStatus(t, contact.status) || ''
-                      }
-                      amount={contact.pledgeAmount || 0}
-                      amountCurrency={contact.pledgeCurrency || ''}
-                      frequencyValue={contact.pledgeFrequency || null}
-                      showModal={handleShowModal}
-                      statuses={contactStatuses || []}
-                      setContactFocus={setContactFocus}
-                      avatar={contact?.avatar}
-                      suggestedChanges={formatSuggestedChanges(
-                        contact?.suggestedChanges,
-                      )}
-                    />
-                  ))}
-                </Box>
-              </Grid>
+              <InfiniteList
+                loading={loading}
+                data={data.contacts.nodes}
+                itemContent={(index, contact) => (
+                  <Grid item xs={12}>
+                    <Box>
+                      <Contact
+                        id={contact.id}
+                        name={contact.name}
+                        key={contact.id}
+                        donations={contact.donations?.nodes}
+                        statusTitle={
+                          contact.status &&
+                          contactPartnershipStatus[contact.status]
+                        }
+                        statusValue={
+                          getLocalizedContactStatus(t, contact.status) || ''
+                        }
+                        amount={contact.pledgeAmount || 0}
+                        amountCurrency={contact.pledgeCurrency || ''}
+                        frequencyValue={contact.pledgeFrequency || null}
+                        showModal={handleShowModal}
+                        statuses={contactStatuses || []}
+                        setContactFocus={setContactFocus}
+                        avatar={contact?.avatar}
+                        suggestedChanges={formatSuggestedChanges(
+                          contact?.suggestedChanges,
+                        )}
+                      />
+                    </Box>
+                  </Grid>
+                )}
+                endReached={() =>
+                  data.contacts.pageInfo.hasNextPage &&
+                  fetchMore({
+                    variables: { after: data.contacts.pageInfo.endCursor },
+                  })
+                }
+                EmptyPlaceholder={<NoData tool="fixEmailAddresses" />}
+                style={{
+                  height: `calc(100vh - ${navBarHeight} - ${theme.spacing(
+                    33,
+                  )})`,
+                  width: '100%',
+                  scrollbarWidth: 'none',
+                }}
+                ItemOverride={ItemOverride}
+                increaseViewportBy={{ top: 2000, bottom: 2000 }}
+              ></InfiniteList>
             </>
           ) : (
             <NoData tool="fixCommitmentInfo" />
