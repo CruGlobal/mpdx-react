@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,12 +8,12 @@ import {
 } from 'src/components/Tool/Import/Csv/CsvImportContext';
 import { CsvImportWrapper } from 'src/components/Tool/Import/Csv/CsvImportWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { ToolsWrapper } from '../ToolsWrapper';
 
 const CsvHome: React.FC = () => {
-  const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const pageUrl = 'tools/import/csv';
 
   const { query, replace, pathname, isReady } = useRouter();
   const urlTab = query?.tab as CsvImportViewStepEnum.Upload;
@@ -61,12 +60,11 @@ const CsvHome: React.FC = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>
-          {appName} | {t(pageTitle)}
-        </title>
-      </Head>
+    <ToolsWrapper
+      pageTitle={t('Import from CSV')}
+      pageUrl={pageUrl}
+      selectedMenuId="import/csv"
+    >
       <CsvImportProvider csvFileId={csvFileId}>
         <CsvImportWrapper
           accountListId={accountListId}
@@ -76,7 +74,7 @@ const CsvHome: React.FC = () => {
           t={t}
         />
       </CsvImportProvider>
-    </>
+    </ToolsWrapper>
   );
 };
 

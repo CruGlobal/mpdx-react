@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import theme from 'src/theme';
-import GoogleImportPage from './google.page';
+import TntConnectPage from './tnt.page';
 
 const accountListId = 'accountListId';
 const router = {
@@ -16,7 +16,7 @@ const RenderGoogleImportPage = () => (
   <TestWrapper>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GoogleImportPage />
+        <TntConnectPage />
       </ThemeProvider>
     </TestRouter>
   </TestWrapper>
@@ -24,7 +24,7 @@ const RenderGoogleImportPage = () => (
 describe('render', () => {
   it('google import page', async () => {
     const { findAllByText } = render(<RenderGoogleImportPage />);
-    const title = await findAllByText('Import from Google');
+    const title = await findAllByText('Import from TntConnect');
     expect(title).toHaveLength(2);
   });
 });
