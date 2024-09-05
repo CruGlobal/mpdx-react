@@ -76,13 +76,16 @@ describe('FixCommitmentContact', () => {
   });
 
   it('default with test data', async () => {
-    const { getByText, findByText } = render(<Components />);
+    const { getByText, getAllByText, findByText } = render(<Components />);
     await findByText('Fix Commitment Info');
     expect(getByText('Fix Commitment Info')).toBeInTheDocument();
 
     expect(
       getByText('You have 2 partner statuses to confirm.'),
     ).toBeInTheDocument();
+    expect(getAllByText('Current: Partner - Financial $1 Weekly')).toHaveLength(
+      2,
+    );
   });
 
   it('has correct styles', async () => {
@@ -178,5 +181,25 @@ describe('FixCommitmentContact', () => {
     userEvent.click((await findAllByTestId('contactSelect'))[0]);
 
     expect(setContactFocus).toHaveBeenCalled();
+  });
+
+  it('updates contact info with dontChange enum', async () => {
+    const { findAllByTestId, findByText, getAllByTestId, queryByText } = render(
+      <Components />,
+    );
+
+    userEvent.click((await findAllByTestId('doNotChangeButton'))[0]);
+
+    expect(
+      await findByText(
+        "Are you sure you wish to leave Tester 1's commitment information unchanged?",
+      ),
+    ).toBeInTheDocument();
+
+    userEvent.click(getAllByTestId('action-button')[1]);
+
+    await waitFor(() =>
+      expect(queryByText('Tester 1')).not.toBeInTheDocument(),
+    );
   });
 });

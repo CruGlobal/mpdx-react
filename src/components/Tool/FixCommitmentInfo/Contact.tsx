@@ -166,7 +166,7 @@ interface Props {
   id: string;
   name: string;
   donations: DonationsType[];
-  statusTitle: string;
+  statusTitle: string | null | undefined;
   statusValue: string;
   amount: number;
   amountCurrency: string;
@@ -304,7 +304,7 @@ const Contact: React.FC<Props> = ({
                             <Typography variant="subtitle1">{name}</Typography>
                           </Link>
                           <Typography variant="subtitle2">
-                            {`Current: ${statusTitle} ${
+                            {`Current: ${statusTitle || ''} ${
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''

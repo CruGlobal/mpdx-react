@@ -273,9 +273,8 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         key={contact.id}
                         donations={contact.donations?.nodes}
                         statusTitle={
-                          contact.status
-                            ? contactPartnershipStatus[contact.status]
-                            : ''
+                          contact.status &&
+                          contactPartnershipStatus[contact.status]
                         }
                         statusValue={
                           getLocalizedContactStatus(t, contact.status) || ''
