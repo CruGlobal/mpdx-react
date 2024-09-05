@@ -95,7 +95,7 @@ describe('AddExcludedContactModal', () => {
     expect(getByRole('heading', { name: 'Add Contact' })).toBeInTheDocument();
     expect(
       getByText(
-        'This contact has been previously excluded from this appeal. Are you certain you wish to add them?',
+        'You will not be able to exclude this contact once you add them to this appeal. Instead, you will be able to remove them from it. Are you sure?',
       ),
     ).toBeInTheDocument();
     expect(getByRole('button', { name: 'No' })).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe('AddExcludedContactModal', () => {
     expect(getByRole('heading', { name: 'Add Contacts' })).toBeInTheDocument();
     expect(
       getByText(
-        'These 3 contacts have been previously excluded from this appeal. Are you certain you wish to add them?',
+        'You will not be able to exclude these 3 contacts once you add them to this appeal. Instead, you will be able to remove them from it. Are you sure?',
       ),
     ).toBeInTheDocument();
   });

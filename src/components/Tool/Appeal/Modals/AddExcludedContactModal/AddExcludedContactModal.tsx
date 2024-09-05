@@ -111,7 +111,7 @@ export const AddExcludedContactModal: React.FC<
 
   return (
     <Modal isOpen={true} title={title} handleClose={handleClose}>
-      <DialogContent dividers>
+      <DialogContent dividers data-testid="AddExcludedContactModal">
         {mutating ? (
           <Box style={{ textAlign: 'center' }}>
             <LoadingIndicator color="primary" size={50} />

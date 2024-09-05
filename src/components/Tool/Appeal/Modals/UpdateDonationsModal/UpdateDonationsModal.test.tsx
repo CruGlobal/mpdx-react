@@ -162,8 +162,8 @@ const Components = ({
                                 },
                                 appeal: null,
                                 designationAccount: {
-                                  id: 'designation-account-1',
-                                  name: 'Designation Account 1',
+                                  id: 'designation-account-2',
+                                  name: 'Designation Account 2',
                                 },
                                 donationDate: '2023-03-01',
                                 donorAccount: {
@@ -263,7 +263,7 @@ describe('UpdateDonationsModal', () => {
 
   describe('Donations', () => {
     it('should show no donations', async () => {
-      const { findByText, getByRole } = render(<Components />);
+      const { findByText, getByRole } = render(<Components isEmpty />);
       expect(
         await findByText(`No donations received for ${defaultContact.name}`),
       ).toBeInTheDocument();
@@ -373,13 +373,15 @@ describe('UpdateDonationsModal', () => {
 
       userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
       const cellsAsc = getAllByRole('cell', { name: /CA/ });
-      expect(cellsAsc[0]).toHaveTextContent('CA$10');
-      expect(cellsAsc[1]).toHaveTextContent('CA$100');
+      expect(cellsAsc[0]).toHaveTextContent('CA$0');
+      expect(cellsAsc[1]).toHaveTextContent('CA$10');
+      expect(cellsAsc[2]).toHaveTextContent('CA$100');
 
       userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
       const cellsDesc = getAllByRole('cell', { name: /CA/ });
       expect(cellsDesc[0]).toHaveTextContent('CA$100');
       expect(cellsDesc[1]).toHaveTextContent('CA$10');
+      expect(cellsDesc[2]).toHaveTextContent('CA$0');
     });
 
     it('loads multiple pages and shows the progress bar', async () => {

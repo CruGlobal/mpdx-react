@@ -69,9 +69,9 @@ const flowOptions: ContactFlowOption[] = [
   },
   {
     id: uuidv4(),
-    name: i18n.t('Received‌⁠'),
+    name: i18n.t('Received'),
     status: AppealStatusEnum.ReceivedNotProcessed,
-    color: colorMap['color-received‌⁠'],
+    color: colorMap['color-received'],
   },
   {
     id: uuidv4(),
@@ -120,6 +120,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
           variant: 'warning',
         },
       );
+      return;
     }
 
     setContact(contact);
@@ -183,7 +184,16 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
               ) {
                 enqueueSnackbar(
                   t(
-                    'Unable to move contact here as this gift is already proccessed.',
+                    'Unable to move contact here as this gift is already processed.',
+                  ),
+                  {
+                    variant: 'warning',
+                  },
+                );
+              } else {
+                enqueueSnackbar(
+                  t(
+                    'Unable to move contact to Committed as part of the pledge has been Received.',
                   ),
                   {
                     variant: 'warning',
