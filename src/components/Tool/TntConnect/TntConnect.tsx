@@ -9,7 +9,6 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -207,10 +206,6 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
         <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
       )}
       <ContainerBox container>
-        <Grid item xs={12}>
-          <Typography variant="h4">{t('Import from TntConnect')}</Typography>
-          <Divider className={classes.divider} />
-        </Grid>
         <Typography>
           {t(
             "You can migrate all your contact information and history from TntConnect into {{appName}}. Most of your information will import straight into {{appName}}, including contact info, task history with notes, notes, user groups, and appeals. {{appName}} hides contacts with any of the not interested statuses, including 'Not Interested' and 'Never Ask' in {{appName}} (these contacts are imported, but will only show up if you search for hidden contacts).",

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Button, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -152,11 +152,6 @@ const FixSendNewsletter: React.FC<Props> = ({
   return (
     <Box className={classes.outer} data-testid="Home">
       <Grid container className={classes.container}>
-        <Grid item xs={12}>
-          <Typography variant="h4">{t('Fix Send Newsletter')}</Typography>
-          <Divider className={classes.divider} />
-        </Grid>
-
         <Grid item xs={12}>
           <Box className={classes.descriptionBox}>
             <Typography>

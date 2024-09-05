@@ -1,12 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  CircularProgress,
-  Divider,
-  Grid,
-  Theme,
-  Typography,
-} from '@mui/material';
+import { Box, CircularProgress, Grid, Theme, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -221,10 +214,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
     <Box className={classes.outer} data-testid="Home">
       {data ? (
         <Grid container className={classes.container} data-testid="Container">
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
-            <Divider className={classes.divider} data-testid="Divider" />
-          </Grid>
           {data.contacts?.nodes.length > 0 ? (
             <>
               <Grid item xs={12}>

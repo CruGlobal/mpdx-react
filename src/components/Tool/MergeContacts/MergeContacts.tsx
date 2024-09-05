@@ -1,11 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  CircularProgress,
-  Divider,
-  Grid,
-  Typography,
-} from '@mui/material';
+import { Box, CircularProgress, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -121,10 +115,6 @@ const MergeContacts: React.FC<Props> = ({
     >
       {!loading && data ? (
         <Grid container className={classes.container}>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Merge Contacts')}</Typography>
-            <Divider className={classes.divider} />
-          </Grid>
           {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>
