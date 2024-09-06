@@ -3,11 +3,19 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
 import {
   GetOrganizationsQuery,
   GetUsersOrganizationsAccountsQuery,
 } from '../Settings/integrations/Organization/Organizations.generated';
 import { Connect } from './Connect';
+
+jest.mock('src/components/Setup/useNextSetupPage');
+
+const next = jest.fn();
+(useNextSetupPage as jest.MockedFn<typeof useNextSetupPage>).mockReturnValue({
+  next,
+});
 
 const push = jest.fn();
 const router = {
@@ -143,7 +151,7 @@ describe('Connect', () => {
       const { findByRole } = render(<TestComponent />);
 
       userEvent.click(await findByRole('button', { name: 'No' }));
-      expect(push).toHaveBeenCalledWith('/setup/account');
+      expect(next).toHaveBeenCalled();
     });
   });
 });

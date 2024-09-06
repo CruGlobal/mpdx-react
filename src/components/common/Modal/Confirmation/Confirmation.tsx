@@ -30,6 +30,7 @@ export interface ConfirmationProps {
   mutation: () => Promise<unknown>;
   confirmButtonProps?: ActionButtonProps;
   handleClose: () => void;
+  handleDecline?: () => void;
 }
 
 export const Confirmation: React.FC<ConfirmationProps> = ({
@@ -40,12 +41,17 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
   message,
   mutation,
   handleClose,
+  handleDecline,
 }) => {
   const { t } = useTranslation();
   const [mutating, setMutating] = useState(false);
 
   const onClickDecline = () => {
-    handleClose();
+    if (handleDecline) {
+      handleDecline();
+    } else {
+      handleClose();
+    }
   };
 
   const onClickConfirm = () => {
@@ -78,7 +84,9 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
               </StyledDialogContentText>
             )}
             {message && (
-              <StyledDialogContentText>{message}</StyledDialogContentText>
+              <StyledDialogContentText data-testid="confirmModalMessage">
+                {message}
+              </StyledDialogContentText>
             )}
           </>
         )}

@@ -4,6 +4,18 @@ export const languages = [
     value: 'American English',
   },
   {
+    id: 'ar',
+    value: 'Arabic (العربية)',
+  },
+  {
+    id: 'zh-hans-cn',
+    value: 'Chinese (中文)',
+  },
+  {
+    id: 'fr-ca',
+    value: 'Canadian French (français canadien)',
+  },
+  {
     id: 'fr-fr',
     value: 'French (français)',
   },

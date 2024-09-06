@@ -14,6 +14,7 @@ const Appeals = (): ReactElement => {
       pageTitle={t('Appeals')}
       pageUrl={pageUrl}
       selectedMenuId="appeals"
+      showToolsHeader={false}
     >
       <AppealsDetailsPage />
     </ToolsWrapper>

@@ -5,7 +5,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
 import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
@@ -13,12 +12,13 @@ import { MailchimpAccordion } from 'src/components/Settings/integrations/Mailchi
 import { OrganizationAccordion } from 'src/components/Settings/integrations/Organization/OrganizationAccordion';
 import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from '../Wrapper';
-import { StickyBox } from '../preferences.page';
 
 const Integrations: React.FC = () => {
   const { t } = useTranslation();
@@ -29,21 +29,15 @@ const Integrations: React.FC = () => {
   const accountListId = useAccountListId() || '';
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
+  const { settingUp } = useSetupContext();
   const [setup, setSetup] = useState(0);
 
   const setupAccordions = ['google', 'mailchimp', 'prayerletters.com'];
 
-  const { data: userOptions } = useGetUserOptionsQuery();
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
-  const isSettingUp = userOptions?.userOptions.some(
-    (option) =>
-      option.key === 'setup_position' &&
-      option.value === 'preferences.integrations',
-  );
-
   const handleSetupChange = async () => {
-    if (!isSettingUp) {
+    if (!settingUp) {
       return;
     }
     const nextNav = setup + 1;
@@ -76,10 +70,10 @@ const Integrations: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (isSettingUp) {
+    if (settingUp) {
       setExpandedPanel(setupAccordions[0]);
     }
-  }, [isSettingUp]);
+  }, [settingUp]);
 
   return (
     <SettingsWrapper
@@ -87,7 +81,7 @@ const Integrations: React.FC = () => {
       pageHeading={t('Connect Services')}
       selectedMenuId="integrations"
     >
-      {isSettingUp && (
+      {settingUp && (
         <StickyBox>
           <SetupBanner
             button={
@@ -105,34 +99,34 @@ const Integrations: React.FC = () => {
         <TheKeyAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={isSettingUp}
+          disabled={settingUp}
         />
         <OrganizationAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={isSettingUp}
+          disabled={settingUp}
         />
       </AccordionGroup>
       <AccordionGroup title={t('External Services')}>
         <GoogleAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={isSettingUp && setup !== 0}
+          disabled={settingUp && setup !== 0}
         />
         <MailchimpAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={isSettingUp && setup !== 1}
+          disabled={settingUp && setup !== 1}
         />
         <PrayerlettersAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={isSettingUp && setup !== 2}
+          disabled={settingUp && setup !== 2}
         />
         <ChalklineAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
-          disabled={isSettingUp}
+          disabled={settingUp}
         />
       </AccordionGroup>
     </SettingsWrapper>

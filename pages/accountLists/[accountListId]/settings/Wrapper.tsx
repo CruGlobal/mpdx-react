@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Box, Container } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
@@ -14,16 +13,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const PageContentWrapper = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(3),
-  '&:after': {
-    content: '""',
-    width: '100%',
-    height: theme.spacing(10),
-    display: 'block',
-  },
-}));
+import { PageContentWrapper } from './styledComponents';
 
 interface SettingsWrapperProps {
   pageTitle: string;

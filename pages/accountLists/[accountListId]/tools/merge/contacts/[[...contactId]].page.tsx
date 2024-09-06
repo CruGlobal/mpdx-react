@@ -19,17 +19,6 @@ const MergeContactsPage: React.FC = () => {
       pageTitle={t('Merge Contacts')}
       pageUrl={pageUrl}
       selectedMenuId="mergeContacts"
-      styles={
-        <style>{`
-          div.MuiBox-root {
-            overflow-x: visible;
-            overflow-y: visible;
-          }
-          div.MuiBox-root#scrollOverride {
-            overflow-y: auto;
-          }
-    `}</style>
-      }
     >
       <MergeContacts
         accountListId={accountListId || ''}

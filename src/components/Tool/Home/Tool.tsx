@@ -43,16 +43,6 @@ const useStyles = makeStyles()(() => ({
     backgroundColor: theme.palette.progressBarYellow.main,
     color: theme.palette.common.white,
   },
-  notificationBox: {
-    backgroundColor: theme.palette.progressBarYellow.main,
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    borderRadius: '25%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: theme.spacing(2),
-  },
   cardNeedsAttention: {
     backgroundColor: '#fdf2d3',
     outline: '1px solid',

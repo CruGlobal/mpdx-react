@@ -19,17 +19,6 @@ const FixSendNewsletterPage: React.FC = () => {
       pageTitle={t('Fix Send Newsletter')}
       pageUrl={pageUrl}
       selectedMenuId="fixSendNewsletter'"
-      styles={
-        <style>{`
-          div.MuiBox-root {
-            overflow-x: visible;
-            overflow-y: visible;
-          }
-          div.MuiBox-root#scrollOverride {
-            overflow-y: auto;
-          }
-    `}</style>
-      }
     >
       <FixSendNewsletter
         accountListId={accountListId || ''}

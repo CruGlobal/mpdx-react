@@ -4,7 +4,7 @@ import theme from 'src/theme';
 import { ContactFlowRowPreview } from './ContactFlowRowPreview';
 import { useAutoScroll } from './useAutoScroll';
 
-const layerStyles: CSSProperties = {
+export const layerStyles: CSSProperties = {
   position: 'absolute',
   pointerEvents: 'none',
   zIndex: 100,
@@ -14,12 +14,12 @@ const layerStyles: CSSProperties = {
   height: '100%',
 };
 
-const dragPreviewStyle: CSSProperties = {
+export const dragPreviewStyle: CSSProperties = {
   display: 'inline-block',
   border: `1px solid ${theme.palette.cruGrayMedium.main}`,
 };
 
-function getItemStyles(
+export function getItemStyles(
   initialOffset: XYCoord | null,
   currentOffset: XYCoord | null,
 ) {
@@ -37,7 +37,7 @@ function getItemStyles(
   };
 }
 
-interface ContactFlowDragLayerProps {
+export interface ContactFlowDragLayerProps {
   containerRef: RefObject<HTMLElement>;
 }
 

@@ -6,10 +6,10 @@ import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
+import { StickyButtonHeaderBox } from 'src/components/Shared/Header/styledComponents';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
-import { ButtonHeaderBox } from '../MergeContacts/StickyConfirmButtons';
 import NoData from '../NoData';
 import Contact from './Contact';
 import {
@@ -175,7 +175,7 @@ const FixSendNewsletter: React.FC<Props> = ({
         </Grid>
         {!loading && data && !!numberOfContacts ? (
           <>
-            <ButtonHeaderBox mb={0}>
+            <StickyButtonHeaderBox mb={0}>
               <Box>
                 <Typography>
                   <Trans
@@ -207,7 +207,7 @@ const FixSendNewsletter: React.FC<Props> = ({
                   }
                 </Button>
               </Box>
-            </ButtonHeaderBox>
+            </StickyButtonHeaderBox>
             {contactsToFix?.map((contact) => (
               <Contact
                 contact={contact}

@@ -10,6 +10,8 @@ import {
   NotificationsPreferencesQuery,
 } from 'src/components/Settings/notifications/Notifications.generated';
 import { notificationSettingsMocks } from 'src/components/Settings/notifications/notificationSettingsMocks';
+import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import Notifications from './notifications.page';
 
@@ -48,22 +50,25 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
         GetUserOptions: GetUserOptionsQuery;
         NotificationsPreferences: NotificationsPreferencesQuery;
         NotificationTypes: NotificationTypesQuery;
+        SetupStage: SetupStageQuery;
       }>
         mocks={{
           ...notificationSettingsMocks,
-          GetUserOptions: {
+          SetupStage: {
+            user: {
+              setup: null,
+            },
             userOptions: [
               {
-                id: '1',
                 key: 'setup_position',
-                value: setup || 'finish',
+                value: setup || '',
               },
             ],
           },
         }}
         onCall={mutationSpy}
       >
-        {children}
+        <SetupProvider>{children}</SetupProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -86,7 +91,7 @@ describe('Notifications page', () => {
   describe('Setup Tour', () => {
     it('should not show setup banner', async () => {
       const { queryByText, findByText } = render(
-        <MocksProviders setup="start">
+        <MocksProviders>
           <Notifications />
         </MocksProviders>,
       );

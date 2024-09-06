@@ -1,30 +1,10 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import styled from '@emotion/styled';
 import { Box, Button, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
-import theme from 'src/theme';
+import { StickyButtonHeaderBox } from 'src/components/Shared/Header/styledComponents';
 import { ActionType } from './MergeContacts';
 
-export const ButtonHeaderBox = styled(Box)(() => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-  backgroundColor: 'white',
-  paddingTop: theme.spacing(2),
-  paddingBottom: theme.spacing(2),
-  position: 'sticky',
-  top: '64px',
-  zIndex: '100',
-  borderBottom: '1px solid',
-  borderBottomColor: theme.palette.cruGrayLight.main,
-  [theme.breakpoints.down('sm')]: {
-    flexDirection: 'column',
-    alignItems: 'start',
-    top: '56px',
-  },
-}));
 interface StickyConfirmButtonsProps {
   accountListId: string;
   confirmAction: () => void;
@@ -57,7 +37,7 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
     window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
   };
   return (
-    <ButtonHeaderBox>
+    <StickyButtonHeaderBox>
       <Box>
         <Typography>
           <Trans
@@ -91,6 +71,6 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
           {t('Confirm and Leave')}
         </Button>
       </Box>
-    </ButtonHeaderBox>
+    </StickyButtonHeaderBox>
   );
 };
