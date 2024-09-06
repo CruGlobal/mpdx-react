@@ -11,7 +11,7 @@ import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SettingsWrapper } from './Wrapper';
-import { StickyBox } from './preferences.page';
+import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 
 const Notifications: React.FC = () => {
   const { t } = useTranslation();

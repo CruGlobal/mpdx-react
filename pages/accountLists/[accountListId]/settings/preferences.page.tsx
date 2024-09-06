@@ -29,6 +29,7 @@ import { PrimaryOrgAccordion } from 'src/components/Settings/preferences/accordi
 import { TimeZoneAccordion } from 'src/components/Settings/preferences/accordions/TimeZoneAccordion/TimeZoneAccordion';
 import { ProfileInfo } from 'src/components/Settings/preferences/info/ProfileInfo';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
 import { getCountries } from 'src/lib/data/countries';
@@ -38,19 +39,6 @@ import { SettingsWrapper } from './Wrapper';
 const AccordionLoading = styled(Skeleton)(() => ({
   width: '100%',
   height: '48px',
-}));
-
-export const StickyBox = styled(Box)(({ theme }) => ({
-  position: 'sticky',
-  top: theme.spacing(10),
-  borderBottom: '1px solid',
-  borderBottomColor: theme.palette.grey[200],
-  height: theme.spacing(10),
-  zIndex: '700',
-  background: theme.palette.common.white,
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(1),
-  marginBottom: theme.spacing(2),
 }));
 
 const Preferences: React.FC = () => {
