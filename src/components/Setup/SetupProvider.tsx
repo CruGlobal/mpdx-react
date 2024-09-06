@@ -20,18 +20,9 @@ export interface SetupContext {
   onSetupTour?: boolean;
 }
 
-const SetupContext = createContext<SetupContext | null>(null);
+const SetupContext = createContext<SetupContext>({ onSetupTour: undefined });
 
-export const useSetupContext = (): SetupContext => {
-  const setupContext = useContext(SetupContext);
-  if (!setupContext) {
-    throw new Error(
-      'SetupProvider not found! Make sure that you are calling useSetupContext inside a component wrapped by <SetupProvider>.',
-    );
-  }
-
-  return setupContext;
-};
+export const useSetupContext = (): SetupContext => useContext(SetupContext);
 
 // The list of page pathnames that are part of the setup tour
 const setupPages = new Set([
