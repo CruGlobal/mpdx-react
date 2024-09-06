@@ -112,6 +112,23 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 );
 
 describe('Appeal navigation', () => {
+  it('does not show Appeals Tools menu', async () => {
+    const { queryByRole } = render(
+      <Components
+        router={{
+          ...defaultRouter,
+          query: {
+            ...defaultRouter.query,
+            appealId: ['1', 'list'],
+          },
+        }}
+      />,
+    );
+
+    expect(
+      queryByRole('button', { name: 'Toggle Tools Menu' }),
+    ).not.toBeInTheDocument();
+  });
   it('should show list detail appeal page and close filters', async () => {
     const { getByText, findByTestId, queryByText, getByRole, queryByRole } =
       render(

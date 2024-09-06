@@ -20,6 +20,7 @@ interface ToolsWrapperProps {
   pageTitle?: string;
   pageUrl: string;
   selectedMenuId?: string;
+  showToolsHeader?: boolean;
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
 }
 
@@ -27,6 +28,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   pageTitle,
   pageUrl,
   selectedMenuId,
+  showToolsHeader = true,
   children,
 }) => {
   const { appName } = useGetAppSettings();
@@ -56,20 +58,27 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
             leftWidth="290px"
             mainContent={
               <>
-                <MultiPageHeader
-                  isNavListOpen={isToolDrawerOpen}
-                  onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
-                  title={pageTitle || ''}
-                  headerType={HeaderTypeEnum.Tools}
-                />
-                <PageContentWrapper
-                  maxWidth="lg"
-                  style={{
-                    height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
-                  }}
-                >
-                  {children}
-                </PageContentWrapper>
+                {showToolsHeader && (
+                  <>
+                    <MultiPageHeader
+                      isNavListOpen={isToolDrawerOpen}
+                      onNavListToggle={() =>
+                        setIsToolDrawerOpen(!isToolDrawerOpen)
+                      }
+                      title={pageTitle || ''}
+                      headerType={HeaderTypeEnum.Tools}
+                    />
+                    <PageContentWrapper
+                      maxWidth="lg"
+                      style={{
+                        height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+                      }}
+                    >
+                      {children}
+                    </PageContentWrapper>
+                  </>
+                )}
+                {!showToolsHeader && children}
               </>
             }
             rightPanel={
