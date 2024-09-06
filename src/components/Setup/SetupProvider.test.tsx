@@ -53,6 +53,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('SetupProvider', () => {
+  beforeEach(() => {
+    process.env.DISABLE_SETUP_TOUR = undefined;
+  });
+
   it('renders child content', () => {
     const { getByText } = render(
       <TestComponent setup={UserSetupStageEnum.NoAccountLists} />,
@@ -131,6 +135,18 @@ describe('SetupProvider', () => {
     it('is false when setup_position is not set', async () => {
       const { getByTestId } = render(
         <TestComponent setup={null} setupPosition="" />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('false'),
+      );
+    });
+
+    it('is false when DISABLE_SETUP_TOUR is true', async () => {
+      process.env.DISABLE_SETUP_TOUR = 'true';
+
+      const { getByTestId } = render(
+        <TestComponent setup={null} setupPosition="start" />,
       );
 
       await waitFor(() =>

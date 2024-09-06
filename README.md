@@ -77,6 +77,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `HS_TASKS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the tasks page
 - `PRIVACY_POLICY_URL` - URL of the privacy policy
 - `TERMS_OF_USE_URL` - URL of the terms of use
+- `DISABLE_SETUP_TOUR` - Set to `true` to disable starting users on the welcome tour. This should be removed from the codebase once tools are live.
 
 #### Auth provider
 

@@ -37,7 +37,11 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
   const { push, pathname } = useRouter();
 
   useEffect(() => {
-    if (!data || pathname === '/setup/start') {
+    if (
+      !data ||
+      pathname === '/setup/start' ||
+      process.env.DISABLE_SETUP_TOUR === 'true'
+    ) {
       return;
     }
 
@@ -58,6 +62,10 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
   const settingUp = useMemo(() => {
     if (!data) {
       return undefined;
+    }
+
+    if (process.env.DISABLE_SETUP_TOUR === 'true') {
+      return false;
     }
 
     return (
