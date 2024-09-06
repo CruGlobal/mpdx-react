@@ -5,7 +5,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import theme from '../../../theme';
-import Home from './Home';
+import ToolsHome from './ToolsHome';
 import { ToolsListHome } from './ToolsListHome';
 
 const accountListId = 'account-list-1';
@@ -22,10 +22,10 @@ const mocks = {
 };
 
 interface TestComponentProps {
-  setup?: string;
+  setup?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ setup }) => (
+const TestComponent: React.FC<TestComponentProps> = ({ setup = false }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{
       GetToolNotifications: GetToolNotificationsQuery;
@@ -34,11 +34,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ setup }) => (
     >
       <TestRouter
         router={{
-          query: { accountListId, setup },
+          query: { accountListId },
           isReady: true,
         }}
       >
-        <Home />
+        <ToolsHome onSetupTour={setup} />
       </TestRouter>
     </GqlMockedProvider>
   </ThemeProvider>
@@ -72,7 +72,7 @@ describe('ToolHome', () => {
   });
 
   it('does not show notifications when on Setup Tour', async () => {
-    const { queryByText } = render(<TestComponent setup="1" />);
+    const { queryByText } = render(<TestComponent setup={true} />);
     await waitFor(() => {
       expect(queryByText('2')).not.toBeInTheDocument();
       expect(queryByText('6')).not.toBeInTheDocument();

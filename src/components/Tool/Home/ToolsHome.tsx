@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import { Box, Grid, Theme } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -36,13 +35,14 @@ const variants = {
     },
   },
 };
+interface ToolHomeProps {
+  onSetupTour: boolean;
+}
 
-const ToolHome = (): ReactElement => {
+const ToolsHome: React.FC<ToolHomeProps> = ({ onSetupTour }): ReactElement => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
-  const { query } = useRouter();
-  const { setup } = query;
-  const onSetupTour = setup === '1';
+
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
@@ -94,4 +94,4 @@ const ToolHome = (): ReactElement => {
   );
 };
 
-export default ToolHome;
+export default ToolsHome;

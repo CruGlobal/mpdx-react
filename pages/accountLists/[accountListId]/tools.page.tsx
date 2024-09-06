@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
-import ToolHome from 'src/components/Tool/Home/Home';
+import ToolsHome from 'src/components/Tool/Home/ToolsHome';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsWrapper } from './tools/ToolsWrapper';
 
@@ -37,7 +37,7 @@ const ToolsPage = (): ReactElement => {
             />
           </StickyBox>
         )}
-        <ToolHome />
+        <ToolsHome onSetupTour={onSetupTour} />
       </>
     </ToolsWrapper>
   );

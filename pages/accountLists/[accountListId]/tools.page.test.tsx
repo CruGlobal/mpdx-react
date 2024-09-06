@@ -4,7 +4,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import ToolsPage from './tools.page';
 
@@ -28,7 +27,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
           push,
         }}
       >
-        <SetupProvider>{children}</SetupProvider>
+        {children}
       </TestRouter>
     </ThemeProvider>
   </GqlMockedProvider>
