@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
@@ -9,11 +9,6 @@ import Home from './Home';
 import { ToolsListHome } from './ToolsListHome';
 
 const accountListId = 'account-list-1';
-
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
 
 const mocks = {
   GetToolNotifications: {
@@ -26,14 +21,23 @@ const mocks = {
   },
 };
 
-const TestComponent = () => (
+interface TestComponentProps {
+  setup?: string;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ setup }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{
       GetToolNotifications: GetToolNotificationsQuery;
     }>
       mocks={mocks}
     >
-      <TestRouter router={router}>
+      <TestRouter
+        router={{
+          query: { accountListId, setup },
+          isReady: true,
+        }}
+      >
         <Home />
       </TestRouter>
     </GqlMockedProvider>
@@ -65,5 +69,14 @@ describe('ToolHome', () => {
 
     const personDuplicates = await findAllByText('9+');
     expect(personDuplicates).toHaveLength(1);
+  });
+
+  it('does not show notifications when on Setup Tour', async () => {
+    const { queryByText } = render(<TestComponent setup="1" />);
+    await waitFor(() => {
+      expect(queryByText('2')).not.toBeInTheDocument();
+      expect(queryByText('6')).not.toBeInTheDocument();
+      expect(queryByText('9+')).not.toBeInTheDocument();
+    });
   });
 });

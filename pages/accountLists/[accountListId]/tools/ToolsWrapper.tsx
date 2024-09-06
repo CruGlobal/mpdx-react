@@ -86,7 +86,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
             headerHeight={'0px'}
           />
         ) : (
-          <Loading loading />
+          <Loading loading data-testid="ToolsWrapperLoading" />
         )}
       </Box>
     </>
