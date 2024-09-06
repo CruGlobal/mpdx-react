@@ -1,5 +1,12 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { debounce, omit } from 'lodash';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
@@ -70,6 +77,8 @@ export interface AppealsType
   committedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
   givenCountQueryResult: ReturnType<typeof useContactsCountQuery>;
   receivedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
+  refreshFlowsView: boolean;
+  seRefreshFlowsView: Dispatch<SetStateAction<boolean>>;
 }
 
 export const AppealsContext = React.createContext<AppealsType | null>(null);
@@ -110,6 +119,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     TableViewModeEnum.Flows,
   );
   const [tour, setTour] = useState<AppealTourEnum | null>(null);
+  const [refreshFlowsView, seRefreshFlowsView] = useState(false);
 
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
@@ -518,6 +528,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         committedCountQueryResult,
         givenCountQueryResult,
         receivedCountQueryResult,
+        refreshFlowsView,
+        seRefreshFlowsView,
       }}
     >
       {children}

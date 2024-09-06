@@ -12,13 +12,19 @@ import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Conta
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
+import {
+  AppealStatusEnum,
+  AppealsContext,
+  AppealsType,
+} from '../../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
-const accountListId = 'abc';
+const accountListId = 'accountListId';
+const appealId = 'appealId';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
+const seRefreshFlowsView = jest.fn();
 const contact = {
   id: 'contactID',
   name: 'Test Person',
@@ -33,7 +39,11 @@ const router = {
   isReady: true,
 };
 
-const Components = () => (
+interface ComponentsProps {
+  refreshFlowsView?: boolean;
+}
+
+const Components = ({ refreshFlowsView = false }: ComponentsProps) => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
       <ThemeProvider theme={theme}>
@@ -50,18 +60,32 @@ const Components = () => (
             }}
           >
             <AppealsWrapper>
-              <VirtuosoMockContext.Provider
-                value={{ viewportHeight: 300, itemHeight: 100 }}
+              <AppealsContext.Provider
+                value={
+                  {
+                    accountListId,
+                    appealId,
+                    sanitizedFilters: {},
+                    refreshFlowsView,
+                    seRefreshFlowsView,
+                    isRowChecked: jest.fn(),
+                    toggleSelectionById: jest.fn(),
+                  } as unknown as AppealsType
+                }
               >
-                <ContactFlowColumn
-                  accountListId={accountListId}
-                  color={theme.palette.mpdxBlue.main}
-                  title={title}
-                  onContactSelected={onContactSelected}
-                  changeContactStatus={changeContactStatus}
-                  appealStatus={AppealStatusEnum.Processed}
-                />
-              </VirtuosoMockContext.Provider>
+                <VirtuosoMockContext.Provider
+                  value={{ viewportHeight: 300, itemHeight: 100 }}
+                >
+                  <ContactFlowColumn
+                    accountListId={accountListId}
+                    color={theme.palette.mpdxBlue.main}
+                    title={title}
+                    onContactSelected={onContactSelected}
+                    changeContactStatus={changeContactStatus}
+                    appealStatus={AppealStatusEnum.Processed}
+                  />
+                </VirtuosoMockContext.Provider>
+              </AppealsContext.Provider>
             </AppealsWrapper>
           </GqlMockedProvider>
         </TestRouter>
@@ -94,5 +118,21 @@ describe('ContactFlowColumn', () => {
     await waitFor(() => {
       getByRole('menuitem', { name: 'Select 1 contact' });
     });
+  });
+
+  it('should not call seRefreshFlowsView', async () => {
+    const { findByText } = render(<Components />);
+
+    expect(await findByText(title)).toBeInTheDocument();
+
+    expect(seRefreshFlowsView).not.toHaveBeenCalled();
+  });
+
+  it('should have called seRefreshFlowsView', async () => {
+    const { findByText } = render(<Components refreshFlowsView />);
+
+    expect(await findByText(title)).toBeInTheDocument();
+
+    expect(seRefreshFlowsView).toHaveBeenCalled();
   });
 });
