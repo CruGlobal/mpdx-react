@@ -31,20 +31,11 @@ import { ContactTagInput } from 'src/components/Tags/Tags';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
+import { ToolsGridContainer } from '../styledComponents';
 import { uploadTnt, validateTnt } from './uploads/uploadTntConnect';
 
 const BoldTypography = styled(Typography)(() => ({
   fontWeight: 'bold',
-}));
-
-const ContainerBox = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginTop: theme.spacing(1),
-  width: '70%',
-  display: 'flex',
-  [theme.breakpoints.down('lg')]: {
-    width: '100%',
-  },
 }));
 
 const BottomBox = styled(Box)(({ theme }) => ({
@@ -206,7 +197,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
       {loading && (
         <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
       )}
-      <ContainerBox container>
+      <ToolsGridContainer container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h4">{t('Import from TntConnect')}</Typography>
           <Divider className={classes.divider} />
@@ -358,7 +349,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
             )}
           </Formik>
         </BorderBox>
-      </ContainerBox>
+      </ToolsGridContainer>
       <Modal
         isOpen={showModal}
         handleClose={handleCloseModal}
