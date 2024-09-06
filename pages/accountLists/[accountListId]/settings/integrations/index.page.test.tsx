@@ -8,6 +8,8 @@ import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUser
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
+import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import Integrations from './index.page';
@@ -48,6 +50,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
         MailchimpAccount: MailchimpAccountQuery;
         PrayerlettersAccount: PrayerlettersAccountQuery;
         GetUserOptions: GetUserOptionsQuery;
+        SetupStage: SetupStageQuery;
       }>
         mocks={{
           GetUsersOrganizationsAccounts: {
@@ -62,19 +65,21 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
           },
           MailchimpAccount: { mailchimpAccount: [] },
           PrayerlettersAccount: { prayerlettersAccount: [] },
-          GetUserOptions: {
+          SetupStage: {
+            user: {
+              setup: null,
+            },
             userOptions: [
               {
-                id: '1',
                 key: 'setup_position',
-                value: setup || 'finish',
+                value: setup || '',
               },
             ],
           },
         }}
         onCall={mutationSpy}
       >
-        {children}
+        <SetupProvider>{children}</SetupProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -99,7 +104,7 @@ describe('Connect Services page', () => {
   describe('Setup Tour', () => {
     it('should not show setup banner and accordions should not be disabled', async () => {
       const { queryByText, queryByRole, findByText, getByText } = render(
-        <MocksProviders setup="start">
+        <MocksProviders>
           <Integrations />
         </MocksProviders>,
       );

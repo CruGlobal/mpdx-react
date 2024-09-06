@@ -6,19 +6,24 @@ import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import AccountPage, { getServerSideProps } from './account.page';
 
+jest.mock('src/components/Setup/useNextSetupPage');
 jest.mock('src/lib/apollo/ssrClient');
+
+const next = jest.fn();
+(useNextSetupPage as jest.MockedFn<typeof useNextSetupPage>).mockReturnValue({
+  next,
+});
 
 const push = jest.fn();
 const router = {
   push,
 };
 
-const context = {
-  req: {},
-} as unknown as GetServerSidePropsContext;
+const context = {} as unknown as GetServerSidePropsContext;
 
 const mutationSpy = jest.fn();
 
@@ -60,9 +65,7 @@ describe('Setup account page', () => {
         input: { attributes: { defaultAccountList: 'account-list-1' } },
       }),
     );
-    expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/settings/preferences',
-    );
+    expect(next).toHaveBeenCalled();
   });
 
   it('disables save button until the user selects an account', () => {

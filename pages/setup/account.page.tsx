@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +11,7 @@ import {
 } from 'src/components/Settings/preferences/accordions/DefaultAccountAccordion/UpdateDefaultAccount.generated';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
+import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
@@ -31,7 +31,7 @@ interface PageProps {
 const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const { push } = useRouter();
+  const { next } = useNextSetupPage();
   const [updateUserDefaultAccount, { loading: isSubmitting }] =
     useUpdateUserDefaultAccountMutation();
 
@@ -52,7 +52,7 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
         },
       },
     });
-    push(`/accountLists/${defaultAccountList.id}/settings/preferences`);
+    await next();
   };
 
   return (

@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
 import { session } from '__tests__/fixtures/session';
+import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -22,16 +23,14 @@ interface GetServerSidePropsReturn {
 const accountListId = 'accountID1';
 
 describe('Account Lists page', () => {
-  const context = {
-    req: {} as any,
-  };
+  const context = {} as GetServerSidePropsContext;
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
       (getSession as jest.Mock).mockResolvedValue(null);
 
       const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
+        context,
       )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
@@ -44,20 +43,63 @@ describe('Account Lists page', () => {
 
   describe('NextAuth authorized', () => {
     beforeEach(() => {
+      process.env.DISABLE_SETUP_TOUR = undefined;
+
       (getSession as jest.Mock).mockResolvedValue(session);
+    });
+
+    it('redirects user to the setup tour is user.setup is not null', async () => {
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: jest.fn().mockResolvedValue({
+          data: {
+            user: { id: 'user-1', setup: UserSetupStageEnum.NoAccountLists },
+            accountLists: { nodes: [] },
+          },
+        }),
+      });
+
+      const result = await getServerSideProps(context);
+      expect(result).toEqual({
+        redirect: {
+          destination: '/setup/start',
+          permanent: false,
+        },
+      });
+    });
+
+    it('does not redirect to the setup tour when DISABLE_SETUP_TOUR is true', async () => {
+      process.env.DISABLE_SETUP_TOUR = 'true';
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: jest.fn().mockResolvedValue({
+          data: {
+            user: { id: 'user-1', setup: UserSetupStageEnum.NoAccountLists },
+            accountLists: { nodes: [] },
+          },
+        }),
+      });
+
+      const result = await getServerSideProps(context);
+      expect(result).not.toEqual({
+        redirect: {
+          destination: '/setup/start',
+          permanent: false,
+        },
+      });
     });
 
     it('redirects user to their accountList page if only one accountList', async () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest.fn().mockResolvedValue({
           data: {
+            user: { id: 'user-1', setup: null },
             accountLists: { nodes: [{ id: accountListId }] },
           },
         }),
       });
 
       const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
+        context,
       )) as GetServerSidePropsReturn;
 
       expect(props).toBeUndefined();
@@ -75,13 +117,14 @@ describe('Account Lists page', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest.fn().mockResolvedValue({
           data: {
+            user: { id: 'user-1', setup: null },
             accountLists,
           },
         }),
       });
 
       const { props, redirect } = (await getServerSideProps(
-        context as GetServerSidePropsContext,
+        context,
       )) as GetServerSidePropsReturn;
 
       const { getByText } = render(

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -19,6 +18,7 @@ import {
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SetupPage } from './SetupPage';
 import { LargeButton } from './styledComponents';
+import { useNextSetupPage } from './useNextSetupPage';
 
 const ButtonGroup = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -41,7 +41,7 @@ export const Connect: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
-  const { push } = useRouter();
+  const { next } = useNextSetupPage();
 
   const { data, refetch } = useGetUsersOrganizationsAccountsQuery();
   const organizationAccounts = data?.userOrganizationAccounts;
@@ -77,10 +77,6 @@ export const Connect: React.FC = () => {
       },
     });
     await refetch();
-  };
-
-  const handleContinue = () => {
-    push('/setup/account');
   };
 
   const CancelButton = useCallback(
@@ -156,11 +152,7 @@ export const Connect: React.FC = () => {
             >
               {t('Yes')}
             </LargeButton>
-            <LargeButton
-              variant="contained"
-              disabled={deleting}
-              onClick={handleContinue}
-            >
+            <LargeButton variant="contained" disabled={deleting} onClick={next}>
               {t('No')}
             </LargeButton>
           </ButtonGroup>

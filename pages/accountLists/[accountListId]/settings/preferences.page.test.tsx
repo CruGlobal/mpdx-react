@@ -14,6 +14,8 @@ import {
 } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
 import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
+import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import Preferences from './preferences.page';
 
@@ -64,6 +66,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
         GetPersonalPreferences: GetPersonalPreferencesQuery;
         GetProfileInfo: GetProfileInfoQuery;
         CanUserExportData: CanUserExportDataQuery;
+        SetupStage: SetupStageQuery;
       }>
         mocks={{
           GetAccountPreferences: {
@@ -139,18 +142,21 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
               exportedAt: null,
             },
           },
-          GetUserOptions: {
+          SetupStage: {
+            user: {
+              setup: null,
+            },
             userOptions: [
               {
                 key: 'setup_position',
-                value: setup || 'finish',
+                value: setup || '',
               },
             ],
           },
         }}
         onCall={mutationSpy}
       >
-        {children}
+        <SetupProvider>{children}</SetupProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -211,11 +217,7 @@ describe('Preferences page', () => {
     it('should not show setup banner and accordions should not be disabled', async () => {
       const { queryByText, queryByRole, findByText, getByText, getByRole } =
         render(
-          <MocksProviders
-            canUserExportData={false}
-            singleOrg={true}
-            setup="start"
-          >
+          <MocksProviders canUserExportData={false} singleOrg={true}>
             <Preferences />
           </MocksProviders>,
         );

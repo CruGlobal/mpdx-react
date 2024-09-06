@@ -45,6 +45,16 @@ export const getServerSideProps = makeGetServerSideProps(async (session) => {
       query: GetAccountListsDocument,
     });
 
+    if (data.user.setup && process.env.DISABLE_SETUP_TOUR !== 'true') {
+      // The user has not finished setting up, so start them on the tour
+      return {
+        redirect: {
+          destination: '/setup/start',
+          permanent: false,
+        },
+      };
+    }
+
     if (data.accountLists.nodes.length === 1) {
       return {
         redirect: {

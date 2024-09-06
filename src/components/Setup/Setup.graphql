@@ -1,0 +1,12 @@
+query SetupStage {
+  user {
+    id
+    defaultAccountList
+    setup
+  }
+  userOptions {
+    id
+    key
+    value
+  }
+}

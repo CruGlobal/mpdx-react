@@ -5,9 +5,9 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -19,18 +19,12 @@ const Notifications: React.FC = () => {
   const accountListId = useAccountListId() || '';
   const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { settingUp } = useSetupContext();
 
-  const { data: userOptions } = useGetUserOptionsQuery();
   const [updateUserOptions] = useUpdateUserOptionsMutation();
 
-  const isSettingUp = userOptions?.userOptions.some(
-    (option) =>
-      option.key === 'setup_position' &&
-      option.value === 'preferences.notifications',
-  );
-
   const handleSetupChange = async () => {
-    if (!isSettingUp) {
+    if (!settingUp) {
       return;
     }
 
@@ -54,7 +48,7 @@ const Notifications: React.FC = () => {
       pageHeading={t('Notifications')}
       selectedMenuId="notifications"
     >
-      {isSettingUp && (
+      {settingUp && (
         <StickyBox>
           <SetupBanner
             button={
