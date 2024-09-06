@@ -24,6 +24,7 @@ import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipS
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import Contact from './Contact';
 import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
@@ -230,7 +231,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
   return (
     <Box className={classes.outer} data-testid="Home">
       {data ? (
-        <Grid container className={classes.container} data-testid="Container">
+        <ToolsGridContainer container spacing={3} data-testid="Container">
           <Grid item xs={12}>
             <Typography variant="h4">{t('Fix Commitment Info')}</Typography>
             <Divider className={classes.divider} data-testid="Divider" />
@@ -314,7 +315,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
           ) : (
             <NoData tool="fixCommitmentInfo" />
           )}
-        </Grid>
+        </ToolsGridContainer>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
