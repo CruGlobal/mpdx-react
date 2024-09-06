@@ -24,7 +24,7 @@ const appealId = 'appealId';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
-const seRefreshFlowsView = jest.fn();
+const mutationSpy = jest.fn();
 const contact = {
   id: 'contactID',
   name: 'Test Person',
@@ -39,11 +39,7 @@ const router = {
   isReady: true,
 };
 
-interface ComponentsProps {
-  refreshFlowsView?: boolean;
-}
-
-const Components = ({ refreshFlowsView = false }: ComponentsProps) => (
+const Components = () => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
       <ThemeProvider theme={theme}>
@@ -58,6 +54,7 @@ const Components = ({ refreshFlowsView = false }: ComponentsProps) => (
                 },
               },
             }}
+            onCall={mutationSpy}
           >
             <AppealsWrapper>
               <AppealsContext.Provider
@@ -65,9 +62,6 @@ const Components = ({ refreshFlowsView = false }: ComponentsProps) => (
                   {
                     accountListId,
                     appealId,
-                    sanitizedFilters: {},
-                    refreshFlowsView,
-                    seRefreshFlowsView,
                     isRowChecked: jest.fn(),
                     toggleSelectionById: jest.fn(),
                   } as unknown as AppealsType
@@ -118,21 +112,5 @@ describe('ContactFlowColumn', () => {
     await waitFor(() => {
       getByRole('menuitem', { name: 'Select 1 contact' });
     });
-  });
-
-  it('should not call seRefreshFlowsView', async () => {
-    const { findByText } = render(<Components />);
-
-    expect(await findByText(title)).toBeInTheDocument();
-
-    expect(seRefreshFlowsView).not.toHaveBeenCalled();
-  });
-
-  it('should have called seRefreshFlowsView', async () => {
-    const { findByText } = render(<Components refreshFlowsView />);
-
-    expect(await findByText(title)).toBeInTheDocument();
-
-    expect(seRefreshFlowsView).toHaveBeenCalled();
   });
 });

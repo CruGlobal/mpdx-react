@@ -14,6 +14,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealsContext,
+  AppealsType,
   TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { DeletePledgeModal } from './DeletePledgeModal';
@@ -26,8 +27,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
-const seRefreshFlowsView = jest.fn();
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -62,15 +61,13 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => (
             <GqlMockedProvider onCall={mutationSpy}>
               <AppealsWrapper>
                 <AppealsContext.Provider
-                  value={{
-                    accountListId,
-                    appealId: appealId,
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    contactsQueryResult: { refetch },
-                    viewMode,
-                    seRefreshFlowsView,
-                  }}
+                  value={
+                    {
+                      accountListId,
+                      appealId: appealId,
+                      viewMode,
+                    } as unknown as AppealsType
+                  }
                 >
                   <DeletePledgeModal
                     pledge={pledge}
@@ -89,7 +86,6 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => (
 describe('DeletePledgeModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
   });
   it('default', async () => {
     const { getByRole } = render(<Components />);
@@ -136,19 +132,5 @@ describe('DeletePledgeModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
-    expect(seRefreshFlowsView).not.toHaveBeenCalled();
-  });
-
-  it('should refetch flows columns if on the flows view', async () => {
-    const { getByRole } = render(
-      <Components viewMode={TableViewModeEnum.Flows} />,
-    );
-
-    userEvent.click(getByRole('button', { name: 'Yes' }));
-
-    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
-    expect(refetch).not.toHaveBeenCalled();
   });
 });

@@ -13,6 +13,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealsContext,
+  AppealsType,
   TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { DeleteAppealContactModal } from './DeleteAppealContactModal';
@@ -39,8 +40,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
-const seRefreshFlowsView = jest.fn();
 
 interface ComponentsProps {
   viewMode?: TableViewModeEnum;
@@ -126,16 +125,14 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
                 >
                   <AppealsWrapper>
                     <AppealsContext.Provider
-                      value={{
-                        accountListId,
-                        appealId: appealId,
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        contactsQueryResult: { refetch },
-                        filterPanelOpen: false,
-                        viewMode,
-                        seRefreshFlowsView,
-                      }}
+                      value={
+                        {
+                          accountListId,
+                          appealId: appealId,
+                          filterPanelOpen: false,
+                          viewMode,
+                        } as unknown as AppealsType
+                      }
                     >
                       <DeleteAppealContactModal
                         handleClose={handleClose}
@@ -156,7 +153,6 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
 describe('DeleteAppealContactModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
   });
   it('default', () => {
     const { getByRole } = render(<Components />);
@@ -240,21 +236,5 @@ describe('DeleteAppealContactModal', () => {
         },
       );
     });
-
-    expect(seRefreshFlowsView).not.toHaveBeenCalled();
-  });
-
-  it('should refetch the flows columns after mutation', async () => {
-    const { getByRole } = render(
-      <Components viewMode={TableViewModeEnum.Flows} />,
-    );
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledTimes(8);
-    });
-
-    userEvent.click(getByRole('button', { name: 'Yes' }));
-
-    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
   });
 });

@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
@@ -10,12 +10,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.generated';
-import {
-  AppealStatusEnum,
-  AppealsContext,
-  AppealsType,
-  TableViewModeEnum,
-} from '../AppealsContext/AppealsContext';
+import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
 import { DynamicAddExcludedContactModal } from '../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
 import { DynamicDeleteAppealContactModal } from '../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
 import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDeletePledgeModal';
@@ -103,9 +98,6 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
   const [updateDonationsModalOpen, setUpdateDonationsModalOpen] =
     useState(false);
-  const { viewMode, seRefreshFlowsView } = useContext(
-    AppealsContext,
-  ) as AppealsType;
 
   const [contact, setContact] = useState<DraggedContact | null>(null);
 
@@ -169,6 +161,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
                 },
               },
             },
+            refetchQueries: ['Contacts'],
             update: (_, data) => {
               const newStatus =
                 data.data?.updateAccountListPledge?.pledge.status;
@@ -210,9 +203,6 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
               }
             },
           });
-          if (viewMode === TableViewModeEnum.Flows) {
-            seRefreshFlowsView(true);
-          }
         } else {
           setPledgeModalOpen(true);
         }

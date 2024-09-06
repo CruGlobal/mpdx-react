@@ -39,7 +39,7 @@ export const DeleteAppealContactModal: React.FC<
 > = ({ contactId, handleClose }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appealId, viewMode, seRefreshFlowsView } = React.useContext(
+  const { appealId, viewMode } = React.useContext(
     AppealsContext,
   ) as AppealsType;
   const [deleteAppealContact, { loading: mutating }] =
@@ -100,11 +100,7 @@ export const DeleteAppealContactModal: React.FC<
         },
       },
       update: (cache) => {
-        if (viewMode === TableViewModeEnum.Flows) {
-          seRefreshFlowsView(true);
-        } else {
-          cache.evict({ id: `Contact:${contactId}` });
-        }
+        cache.evict({ id: `Contact:${contactId}` });
       },
       onCompleted: () => {
         enqueueSnackbar('Successfully remove contact from appeal.', {

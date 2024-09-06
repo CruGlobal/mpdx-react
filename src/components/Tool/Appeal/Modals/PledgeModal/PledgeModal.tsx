@@ -35,7 +35,6 @@ import i18n from 'src/lib/i18n';
 import {
   AppealsContext,
   AppealsType,
-  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import {
@@ -83,13 +82,9 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [createAccountListPledge] = useCreateAccountListPledgeMutation();
   const [updateAccountListPledge] = useUpdateAccountListPledgeMutation();
-  const {
-    accountListId,
-    appealId,
-    contactsQueryResult,
-    seRefreshFlowsView,
-    viewMode,
-  } = React.useContext(AppealsContext) as AppealsType;
+  const { accountListId, appealId } = React.useContext(
+    AppealsContext,
+  ) as AppealsType;
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
@@ -118,12 +113,8 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
             },
           },
         },
+        refetchQueries: ['Contacts', 'Appeal'],
         onCompleted: () => {
-          if (viewMode === TableViewModeEnum.Flows) {
-            seRefreshFlowsView(true);
-          } else {
-            contactsQueryResult.refetch();
-          }
           enqueueSnackbar(t('Successfully added commitment to appeal'), {
             variant: 'success',
           });
@@ -151,13 +142,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
             },
           },
         },
-        update: () => {
-          if (viewMode === TableViewModeEnum.Flows) {
-            seRefreshFlowsView(true);
-          } else {
-            contactsQueryResult.refetch();
-          }
-        },
+        refetchQueries: ['Contacts', 'Appeal'],
         onCompleted: () => {
           enqueueSnackbar(t('Successfully edited commitment'), {
             variant: 'success',

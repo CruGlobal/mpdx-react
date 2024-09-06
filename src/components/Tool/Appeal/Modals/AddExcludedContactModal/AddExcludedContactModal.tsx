@@ -17,7 +17,6 @@ import Modal from 'src/components/common/Modal/Modal';
 import {
   AppealsContext,
   AppealsType,
-  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from '../AddContactToAppealModal/AddContactToAppeal.generated';
 import { useAppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
@@ -38,13 +37,7 @@ export const AddExcludedContactModal: React.FC<
   const { enqueueSnackbar } = useSnackbar();
   const [assignContactsToAppeal, { loading: mutating }] =
     useAssignContactsToAppealMutation();
-  const {
-    accountListId,
-    appealId,
-    contactsQueryResult,
-    viewMode,
-    seRefreshFlowsView,
-  } = useContext(AppealsContext) as AppealsType;
+  const { accountListId, appealId } = useContext(AppealsContext) as AppealsType;
 
   const { data, loading } = useAppealQuery({
     variables: {
@@ -74,13 +67,7 @@ export const AddExcludedContactModal: React.FC<
           },
         },
       },
-      update: () => {
-        if (viewMode === TableViewModeEnum.Flows) {
-          seRefreshFlowsView(true);
-        } else {
-          contactsQueryResult.refetch();
-        }
-      },
+      refetchQueries: ['Contacts'],
       onCompleted: () => {
         enqueueSnackbar(
           addingManyContacts

@@ -13,7 +13,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealsContext,
-  TableViewModeEnum,
+  AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
 import { AddExcludedContactModal } from './AddExcludedContactModal';
@@ -28,8 +28,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
-const seRefreshFlowsView = jest.fn();
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
@@ -52,10 +50,8 @@ const appealMock: AppealQuery = {
 
 const Components = ({
   contactIds = [contactId],
-  viewMode = TableViewModeEnum.List,
 }: {
   contactIds?: string[];
-  viewMode?: TableViewModeEnum;
 }) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -72,15 +68,12 @@ const Components = ({
             >
               <AppealsWrapper>
                 <AppealsContext.Provider
-                  value={{
-                    accountListId,
-                    appealId: appealId,
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    contactsQueryResult: { refetch },
-                    viewMode,
-                    seRefreshFlowsView,
-                  }}
+                  value={
+                    {
+                      accountListId,
+                      appealId: appealId,
+                    } as unknown as AppealsType
+                  }
                 >
                   <AddExcludedContactModal
                     handleClose={handleClose}
@@ -141,7 +134,6 @@ describe('AddExcludedContactModal', () => {
     const { getByRole } = render(<Components />);
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
-    expect(refetch).not.toHaveBeenCalled();
 
     await waitFor(() =>
       expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled(),
@@ -161,9 +153,6 @@ describe('AddExcludedContactModal', () => {
       });
     });
 
-    expect(refetch).toHaveBeenCalledTimes(1);
-    expect(seRefreshFlowsView).not.toHaveBeenCalled();
-
     expect(mockEnqueue).toHaveBeenCalledWith(
       'Successfully added contact to appeal',
       {
@@ -172,28 +161,10 @@ describe('AddExcludedContactModal', () => {
     );
   });
 
-  it('should refetch Flows columns contacts after', async () => {
-    const { getByRole } = render(
-      <Components viewMode={TableViewModeEnum.Flows} />,
-    );
-
-    expect(seRefreshFlowsView).toHaveBeenCalledTimes(0);
-    expect(refetch).not.toHaveBeenCalled();
-
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled(),
-    );
-    userEvent.click(getByRole('button', { name: 'Yes' }));
-
-    expect(refetch).not.toHaveBeenCalled();
-    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
-  });
-
   it('sends all contactIds in bulk mutation', async () => {
     const { getByRole } = render(<Components contactIds={bulkContactIds} />);
 
     expect(mutationSpy).toHaveBeenCalledTimes(0);
-    expect(refetch).not.toHaveBeenCalled();
 
     await waitFor(() =>
       expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled(),
@@ -212,8 +183,6 @@ describe('AddExcludedContactModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
 
     expect(mockEnqueue).toHaveBeenCalledWith(
       'Successfully added contacts to appeal',

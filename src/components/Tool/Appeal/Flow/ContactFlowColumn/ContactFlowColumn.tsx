@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
@@ -56,14 +56,15 @@ export const ContactFlowColumn: React.FC<Props> = ({
   onContactSelected,
   changeContactStatus,
 }) => {
-  const { appealId, sanitizedFilters, refreshFlowsView, seRefreshFlowsView } =
-    React.useContext(AppealsContext) as AppealsType;
+  const { appealId, sanitizedFilters } = React.useContext(
+    AppealsContext,
+  ) as AppealsType;
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const { data, loading, fetchMore, refetch } = useContactsQuery({
+  const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
@@ -75,14 +76,6 @@ export const ContactFlowColumn: React.FC<Props> = ({
     },
     skip: !accountListId || !appealStatus,
   });
-
-  useEffect(() => {
-    if (!refreshFlowsView) {
-      return;
-    }
-    refetch();
-    seRefreshFlowsView(false);
-  }, [refreshFlowsView]);
 
   const { data: excludedContacts } = useExcludedAppealContactsQuery({
     variables: {

@@ -14,7 +14,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealsContext,
-  TableViewModeEnum,
+  AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { defaultContact } from '../../List/ContactRow/ContactRowMock';
@@ -28,18 +28,12 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
-const seRefreshFlowsView = jest.fn();
 
 interface ComponentsProps {
   pledge?: AppealContactInfoFragment['pledges'][0];
-  viewMode?: TableViewModeEnum;
 }
 
-const Components = ({
-  pledge = undefined,
-  viewMode = TableViewModeEnum.List,
-}: ComponentsProps) => (
+const Components = ({ pledge = undefined }: ComponentsProps) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -48,15 +42,12 @@ const Components = ({
             <GqlMockedProvider onCall={mutationSpy}>
               <AppealsWrapper>
                 <AppealsContext.Provider
-                  value={{
-                    accountListId,
-                    appealId: appealId,
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    contactsQueryResult: { refetch },
-                    viewMode,
-                    seRefreshFlowsView,
-                  }}
+                  value={
+                    {
+                      accountListId,
+                      appealId: appealId,
+                    } as unknown as AppealsType
+                  }
                 >
                   <PledgeModal
                     handleClose={handleClose}
@@ -76,7 +67,6 @@ const Components = ({
 describe('PledgeModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
   });
   it('default', async () => {
     const { getByRole, getByText, findByRole } = render(<Components />);
@@ -156,8 +146,6 @@ describe('PledgeModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
   });
 
   it('Edit commitment', async () => {
@@ -214,47 +202,5 @@ describe('PledgeModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
-    expect(seRefreshFlowsView).not.toHaveBeenCalled();
-  });
-
-  it('should refetch the flows columns after adding Commitment on the flows view', async () => {
-    const { getByRole } = render(
-      <Components viewMode={TableViewModeEnum.Flows} />,
-    );
-
-    expect(mutationSpy).toHaveBeenCalledTimes(0);
-
-    const amountInput = getByRole('textbox', { name: 'Amount' });
-    userEvent.type(amountInput, '100');
-
-    userEvent.click(getByRole('button', { name: 'Save' }));
-
-    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
-    expect(refetch).not.toHaveBeenCalled();
-  });
-
-  it('should refetch the flows columns after editing Commitment on the flows view', async () => {
-    const pledgeId = 'pledge-1';
-    const { getByRole } = render(
-      <Components
-        pledge={{
-          id: pledgeId,
-          amount: 444,
-          amountCurrency: 'USD',
-          appeal: {
-            id: 'appeal-1',
-          },
-          expectedDate: '2024-08-08',
-          status: PledgeStatusEnum.ReceivedNotProcessed,
-        }}
-        viewMode={TableViewModeEnum.Flows}
-      />,
-    );
-
-    userEvent.click(getByRole('button', { name: 'Save' }));
-    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
-    expect(refetch).not.toHaveBeenCalled();
   });
 });

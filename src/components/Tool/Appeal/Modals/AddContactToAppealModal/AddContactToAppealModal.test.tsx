@@ -12,7 +12,7 @@ import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/Conta
 import theme from 'src/theme';
 import {
   AppealsContext,
-  TableViewModeEnum,
+  AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AddContactToAppealModal } from './AddContactToAppealModal';
 import { AppealQuery } from './AppealInfo.generated';
@@ -25,8 +25,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
-const seRefreshFlowsView = jest.fn();
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -41,7 +39,6 @@ jest.mock('notistack', () => ({
 interface ComponentsProps {
   appealMock?: AppealQuery;
   contactOptionsMock?: ContactOptionsQuery;
-  viewMode?: TableViewModeEnum;
 }
 
 const defaultAppealMock: AppealQuery = {
@@ -64,7 +61,6 @@ const defaultContactOptionsMock: ContactOptionsQuery = {
 const Components = ({
   appealMock = defaultAppealMock,
   contactOptionsMock = defaultContactOptionsMock,
-  viewMode = TableViewModeEnum.List,
 }: ComponentsProps) => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
@@ -82,15 +78,12 @@ const Components = ({
           >
             <AppealsWrapper>
               <AppealsContext.Provider
-                value={{
-                  accountListId,
-                  appealId: appealId,
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  contactsQueryResult: { refetch },
-                  viewMode,
-                  seRefreshFlowsView,
-                }}
+                value={
+                  {
+                    accountListId,
+                    appealId: appealId,
+                  } as unknown as AppealsType
+                }
               >
                 <AddContactToAppealModal handleClose={handleClose} />
               </AppealsContext.Provider>
@@ -105,7 +98,6 @@ const Components = ({
 describe('AddContactToAppealModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
     mockEnqueue.mockClear();
   });
   it('default', () => {
@@ -172,23 +164,5 @@ describe('AddContactToAppealModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
-    expect(seRefreshFlowsView).not.toHaveBeenCalled();
-  });
-
-  it('should refetch flows columns if on the flows view', async () => {
-    const { getByRole, findByRole } = render(
-      <Components viewMode={TableViewModeEnum.Flows} />,
-    );
-
-    userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-    expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
-    userEvent.click(getByRole('option', { name: 'Alice' }));
-
-    userEvent.click(getByRole('button', { name: 'Save' }));
-
-    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
-    expect(refetch).not.toHaveBeenCalled();
   });
 });
