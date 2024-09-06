@@ -10,7 +10,10 @@ i18next
   .init({
     nsSeparator: false,
     keySeparator: false,
-    fallbackLng: 'en',
+    fallbackLng: {
+      'fr-ca': ['fr-CA', 'fr-FR', 'en'],
+      default: ['en'],
+    },
     react: {
       useSuspense: false,
     },
