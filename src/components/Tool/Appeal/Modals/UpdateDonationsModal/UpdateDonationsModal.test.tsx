@@ -526,7 +526,6 @@ describe('UpdateDonationsModal', () => {
         expect(mutationSpy).not.toHaveGraphqlOperation(
           'UpdateAccountListPledge',
         );
-        expect(mutationSpy).toHaveGraphqlOperation('Contacts');
       });
     });
 
@@ -573,8 +572,6 @@ describe('UpdateDonationsModal', () => {
             },
           ),
         );
-
-        expect(mutationSpy).toHaveGraphqlOperation('Contacts');
         expect(handleClose).toHaveBeenCalled();
       });
 

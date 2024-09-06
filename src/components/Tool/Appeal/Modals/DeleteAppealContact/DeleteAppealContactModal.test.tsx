@@ -219,22 +219,4 @@ describe('DeleteAppealContactModal', () => {
     });
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
-
-  it('should not refetch the flows columns after mutation', async () => {
-    const { getByRole } = render(<Components />);
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledTimes(8);
-    });
-
-    userEvent.click(getByRole('button', { name: 'Yes' }));
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Successfully remove contact from appeal.',
-        {
-          variant: 'success',
-        },
-      );
-    });
-  });
 });

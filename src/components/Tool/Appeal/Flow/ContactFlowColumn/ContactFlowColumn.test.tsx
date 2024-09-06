@@ -12,15 +12,10 @@ import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Conta
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import {
-  AppealStatusEnum,
-  AppealsContext,
-  AppealsType,
-} from '../../AppealsContext/AppealsContext';
+import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'accountListId';
-const appealId = 'appealId';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
@@ -57,29 +52,18 @@ const Components = () => (
             onCall={mutationSpy}
           >
             <AppealsWrapper>
-              <AppealsContext.Provider
-                value={
-                  {
-                    accountListId,
-                    appealId,
-                    isRowChecked: jest.fn(),
-                    toggleSelectionById: jest.fn(),
-                  } as unknown as AppealsType
-                }
+              <VirtuosoMockContext.Provider
+                value={{ viewportHeight: 300, itemHeight: 100 }}
               >
-                <VirtuosoMockContext.Provider
-                  value={{ viewportHeight: 300, itemHeight: 100 }}
-                >
-                  <ContactFlowColumn
-                    accountListId={accountListId}
-                    color={theme.palette.mpdxBlue.main}
-                    title={title}
-                    onContactSelected={onContactSelected}
-                    changeContactStatus={changeContactStatus}
-                    appealStatus={AppealStatusEnum.Processed}
-                  />
-                </VirtuosoMockContext.Provider>
-              </AppealsContext.Provider>
+                <ContactFlowColumn
+                  accountListId={accountListId}
+                  color={theme.palette.mpdxBlue.main}
+                  title={title}
+                  onContactSelected={onContactSelected}
+                  changeContactStatus={changeContactStatus}
+                  appealStatus={AppealStatusEnum.Processed}
+                />
+              </VirtuosoMockContext.Provider>
             </AppealsWrapper>
           </GqlMockedProvider>
         </TestRouter>
