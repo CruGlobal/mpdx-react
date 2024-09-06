@@ -10,7 +10,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  AppealsType,
+} from '../../AppealsContext/AppealsContext';
 import { AddContactToAppealModal } from './AddContactToAppealModal';
 import { AppealQuery } from './AppealInfo.generated';
 
@@ -22,7 +25,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -76,13 +78,12 @@ const Components = ({
           >
             <AppealsWrapper>
               <AppealsContext.Provider
-                value={{
-                  accountListId,
-                  appealId: appealId,
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  contactsQueryResult: { refetch },
-                }}
+                value={
+                  {
+                    accountListId,
+                    appealId: appealId,
+                  } as unknown as AppealsType
+                }
               >
                 <AddContactToAppealModal handleClose={handleClose} />
               </AppealsContext.Provider>
@@ -97,7 +98,6 @@ const Components = ({
 describe('AddContactToAppealModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
     mockEnqueue.mockClear();
   });
   it('default', () => {
@@ -164,7 +164,5 @@ describe('AddContactToAppealModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

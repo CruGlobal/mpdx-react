@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   CircularProgress,
@@ -35,11 +35,9 @@ export const AddExcludedContactModal: React.FC<
 > = ({ contactIds, handleClose }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const [assignContactsToAppeal] = useAssignContactsToAppealMutation();
-  const { accountListId, appealId, contactsQueryResult } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
-  const [mutating, setMutating] = useState(false);
+  const [assignContactsToAppeal, { loading: mutating }] =
+    useAssignContactsToAppealMutation();
+  const { accountListId, appealId } = useContext(AppealsContext) as AppealsType;
 
   const { data, loading } = useAppealQuery({
     variables: {
@@ -52,8 +50,6 @@ export const AddExcludedContactModal: React.FC<
   const addingManyContacts = contactIds.length > 1;
 
   const handleConfirm = async () => {
-    setMutating(true);
-
     if (!contactIds.length) {
       enqueueSnackbar(t('Failed to add contact(s) to appeal'), {
         variant: 'error',
@@ -71,9 +67,7 @@ export const AddExcludedContactModal: React.FC<
           },
         },
       },
-      update: () => {
-        contactsQueryResult.refetch();
-      },
+      refetchQueries: ['Contacts'],
       onCompleted: () => {
         enqueueSnackbar(
           addingManyContacts
@@ -96,7 +90,6 @@ export const AddExcludedContactModal: React.FC<
         );
       },
     });
-    setMutating(false);
   };
 
   const title = addingManyContacts ? t('Add Contacts') : t('Add Contact');

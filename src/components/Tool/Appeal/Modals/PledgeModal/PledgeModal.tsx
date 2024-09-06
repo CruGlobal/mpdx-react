@@ -82,7 +82,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [createAccountListPledge] = useCreateAccountListPledgeMutation();
   const [updateAccountListPledge] = useUpdateAccountListPledgeMutation();
-  const { accountListId, appealId, contactsQueryResult } = React.useContext(
+  const { accountListId, appealId } = React.useContext(
     AppealsContext,
   ) as AppealsType;
   const isMobile = useMediaQuery((theme: Theme) =>
@@ -113,8 +113,8 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
             },
           },
         },
+        refetchQueries: ['Contacts', 'Appeal'],
         onCompleted: () => {
-          contactsQueryResult.refetch();
           enqueueSnackbar(t('Successfully added commitment to appeal'), {
             variant: 'success',
           });
@@ -142,9 +142,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
             },
           },
         },
-        update: () => {
-          contactsQueryResult.refetch();
-        },
+        refetchQueries: ['Contacts', 'Appeal'],
         onCompleted: () => {
           enqueueSnackbar(t('Successfully edited commitment'), {
             variant: 'success',

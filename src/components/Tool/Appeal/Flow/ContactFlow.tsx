@@ -161,6 +161,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
                 },
               },
             },
+            refetchQueries: ['Contacts'],
             update: (_, data) => {
               const newStatus =
                 data.data?.updateAccountListPledge?.pledge.status;
