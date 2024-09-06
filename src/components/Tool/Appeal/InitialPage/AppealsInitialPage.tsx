@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
+import { ToolsGridContainer } from 'src/components/Tool/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -38,7 +39,7 @@ const AppealsInitialPage: React.FC = () => {
 
   return (
     <Box className={classes.outer}>
-      <Grid container spacing={3} className={classes.container}>
+      <ToolsGridContainer container spacing={3}>
         <Grid item xs={12}>
           <Box m={1}>
             <Typography variant="h4">{t('Appeals')}</Typography>
@@ -77,7 +78,7 @@ const AppealsInitialPage: React.FC = () => {
             </Box>
           </Box>
         </Grid>
-      </Grid>
+      </ToolsGridContainer>
     </Box>
   );
 };
