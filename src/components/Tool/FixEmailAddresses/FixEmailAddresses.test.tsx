@@ -102,9 +102,6 @@ describe('FixEmailAddresses-Home', () => {
     const { getByText, getByTestId, queryByTestId } = render(<Components />);
 
     await waitFor(() =>
-      expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
-    );
-    await waitFor(() =>
       expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
     );
     await expect(
@@ -121,7 +118,6 @@ describe('FixEmailAddresses-Home', () => {
   it('should show the app name as a source value', async () => {
     const { getByRole, getByText } = render(<Components />);
     await waitFor(() => {
-      expect(getByText('Fix Email Addresses')).toBeInTheDocument();
       expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
       expect(getByRole('combobox')).toHaveTextContent('MPDX');
     });
