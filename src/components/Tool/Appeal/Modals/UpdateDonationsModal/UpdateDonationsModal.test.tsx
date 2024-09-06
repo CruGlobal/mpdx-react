@@ -572,6 +572,7 @@ describe('UpdateDonationsModal', () => {
             },
           ),
         );
+
         expect(handleClose).toHaveBeenCalled();
       });
 

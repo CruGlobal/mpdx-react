@@ -15,11 +15,10 @@ import theme from 'src/theme';
 import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
-const accountListId = 'accountListId';
+const accountListId = 'abc';
 const title = 'Test Column';
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
-const mutationSpy = jest.fn();
 const contact = {
   id: 'contactID',
   name: 'Test Person',
@@ -49,7 +48,6 @@ const Components = () => (
                 },
               },
             }}
-            onCall={mutationSpy}
           >
             <AppealsWrapper>
               <VirtuosoMockContext.Provider
