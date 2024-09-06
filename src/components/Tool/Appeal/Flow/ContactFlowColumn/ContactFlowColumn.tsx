@@ -56,7 +56,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   onContactSelected,
   changeContactStatus,
 }) => {
-  const { appealId, sanitizedFilters } = React.useContext(
+  const { appealId, sanitizedFilters, starredFilter } = React.useContext(
     AppealsContext,
   ) as AppealsType;
   const { t } = useTranslation();
@@ -69,6 +69,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
       accountListId: accountListId ?? '',
       contactsFilters: {
         ...sanitizedFilters,
+        ...starredFilter,
         appeal: [appealId ?? ''],
         appealStatus,
         wildcardSearch: searchTerm as string,
