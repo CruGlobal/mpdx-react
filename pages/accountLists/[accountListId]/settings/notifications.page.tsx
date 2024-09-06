@@ -8,10 +8,10 @@ import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlo
 import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
+import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { SettingsWrapper } from './Wrapper';
-import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 
 const Notifications: React.FC = () => {
   const { t } = useTranslation();
