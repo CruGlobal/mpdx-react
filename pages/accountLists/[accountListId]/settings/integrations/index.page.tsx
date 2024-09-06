@@ -14,11 +14,11 @@ import { OrganizationAccordion } from 'src/components/Settings/integrations/Orga
 import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from '../Wrapper';
-import { StickyBox } from '../preferences.page';
 
 const Integrations: React.FC = () => {
   const { t } = useTranslation();
