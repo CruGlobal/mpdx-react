@@ -13,8 +13,6 @@ export const AppealsMainPanel: React.FC = () => {
   const {
     accountListId,
     appealId,
-    activeFilters,
-    starredFilter,
     searchTerm,
     setContactFocus,
     viewMode,
@@ -41,10 +39,6 @@ export const AppealsMainPanel: React.FC = () => {
         ) : (
           <DynamicContactFlow
             accountListId={accountListId ?? ''}
-            selectedFilters={{
-              ...activeFilters,
-              ...starredFilter,
-            }}
             searchTerm={searchTerm}
             onContactSelected={setContactFocus}
             appealInfo={appealInfo}

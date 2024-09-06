@@ -186,7 +186,7 @@ describe('Appeal navigation', () => {
       expect(getByRole('heading', { name: 'Excluded' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Asked' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Committed' })).toBeInTheDocument();
-      expect(getByRole('heading', { name: 'Received‌⁠' })).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'Received' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Given' })).toBeInTheDocument();
     });
 

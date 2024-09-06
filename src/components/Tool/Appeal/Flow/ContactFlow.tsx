@@ -1,24 +1,28 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { useUpdateContactOtherMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { ContactFlowDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
+import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealHeaderInfo } from '../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { AppealQuery } from '../AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import { AppealStatusEnum } from '../AppealsContext/AppealsContext';
+import { DynamicAddExcludedContactModal } from '../Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
+import { DynamicDeleteAppealContactModal } from '../Modals/DeleteAppealContact/DynamicDeleteAppealContactModal';
+import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDeletePledgeModal';
+import { useUpdateAccountListPledgeMutation } from '../Modals/PledgeModal/ContactPledge.generated';
+import { DynamicPledgeModal } from '../Modals/PledgeModal/DynamicPledgeModal';
+import { DynamicUpdateDonationsModal } from '../Modals/UpdateDonationsModal/DynamicUpdateDonationsModal';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
+import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
+import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
 
 export interface ContactFlowProps {
   accountListId: string;
-  selectedFilters: ContactFilterSetInput;
   searchTerm?: string | string[];
   appealInfo?: AppealQuery;
   appealInfoLoading: boolean;
@@ -65,9 +69,9 @@ const flowOptions: ContactFlowOption[] = [
   },
   {
     id: uuidv4(),
-    name: i18n.t('Received‌⁠'),
+    name: i18n.t('Received'),
     status: AppealStatusEnum.ReceivedNotProcessed,
-    color: colorMap['color-received‌⁠'],
+    color: colorMap['color-received'],
   },
   {
     id: uuidv4(),
@@ -79,7 +83,6 @@ const flowOptions: ContactFlowOption[] = [
 
 export const ContactFlow: React.FC<ContactFlowProps> = ({
   accountListId,
-  selectedFilters,
   onContactSelected,
   searchTerm,
   appealInfo,
@@ -87,40 +90,126 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
 }: ContactFlowProps) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
+    useState(false);
+  const [deleteAppealContactModalOpen, setDeleteAppealContactModalOpen] =
+    useState(false);
+  const [pledgeModalOpen, setPledgeModalOpen] = useState(false);
+  const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
+  const [updateDonationsModalOpen, setUpdateDonationsModalOpen] =
+    useState(false);
 
-  const [updateContactOther] = useUpdateContactOtherMutation();
+  const [contact, setContact] = useState<DraggedContact | null>(null);
+
+  const [updateAccountListPledge] = useUpdateAccountListPledgeMutation();
 
   const changeContactStatus = async (
-    id: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    appealId: AppealStatusEnum,
+    contact: DraggedContact,
+    newAppealStatus: AppealStatusEnum,
   ): Promise<void> => {
-    // TODO Fix this when we have the appeal status added to contact
-    const attributes = {
-      id,
-    };
-    await updateContactOther({
-      variables: {
-        accountListId,
-        attributes,
-      },
-      refetchQueries: () =>
-        flowOptions.map((flowOption) => ({
-          query: ContactsDocument,
-          variables: {
-            accountListId,
-            contactsFilters: {
-              appeal: [appealInfo?.appeal.id],
-              appealStatus: [flowOption.status],
-              ...selectedFilters,
+    const oldAppealStatus = contact.appealStatus;
+    if (
+      newAppealStatus !== AppealStatusEnum.Asked &&
+      oldAppealStatus === AppealStatusEnum.Excluded
+    ) {
+      enqueueSnackbar(
+        t(
+          'Unable to move Excluded Contact here. If you want to add this Excluded contact to this appeal, please add them to Asked.',
+        ),
+        {
+          variant: 'warning',
+        },
+      );
+      return;
+    }
+
+    setContact(contact);
+
+    switch (newAppealStatus) {
+      case AppealStatusEnum.Excluded:
+        setDeleteAppealContactModalOpen(true);
+        break;
+      case AppealStatusEnum.Asked:
+        if (contact.pledge) {
+          setDeletePledgeModalOpen(true);
+        } else {
+          setAddExcludedContactModalOpen(true);
+        }
+        break;
+      case AppealStatusEnum.NotReceived:
+      case AppealStatusEnum.ReceivedNotProcessed:
+        if (contact.pledge) {
+          const {
+            __typename,
+            status: _status,
+            appeal,
+            ...pledgeDetails
+          } = contact.pledge;
+
+          await updateAccountListPledge({
+            variables: {
+              input: {
+                pledgeId: contact.pledge.id,
+                attributes: {
+                  ...pledgeDetails,
+                  appealId: appeal.id,
+                  contactId: contact.id,
+                  status:
+                    newAppealStatus === AppealStatusEnum.NotReceived
+                      ? PledgeStatusEnum.NotReceived
+                      : PledgeStatusEnum.ReceivedNotProcessed,
+                },
+              },
             },
-          },
-        })),
-    });
-    enqueueSnackbar(t('Contact status info updated!'), {
-      variant: 'success',
-    });
-    // TODO - add functionality when appeal status is changed
+            update: (_, data) => {
+              const newStatus =
+                data.data?.updateAccountListPledge?.pledge.status;
+
+              if (
+                newStatus === PledgeStatusEnum.NotReceived &&
+                newAppealStatus === AppealStatusEnum.ReceivedNotProcessed
+              ) {
+                enqueueSnackbar(
+                  t(
+                    'Unable to move contact here as gift has not been received by Cru.',
+                  ),
+                  {
+                    variant: 'warning',
+                  },
+                );
+              } else if (
+                newStatus === PledgeStatusEnum.Processed &&
+                (newAppealStatus === AppealStatusEnum.ReceivedNotProcessed ||
+                  newAppealStatus === AppealStatusEnum.NotReceived)
+              ) {
+                enqueueSnackbar(
+                  t(
+                    'Unable to move contact here as this gift is already processed.',
+                  ),
+                  {
+                    variant: 'warning',
+                  },
+                );
+              } else {
+                enqueueSnackbar(
+                  t(
+                    'Unable to move contact to Committed as part of the pledge has been Received.',
+                  ),
+                  {
+                    variant: 'warning',
+                  },
+                );
+              }
+            },
+          });
+        } else {
+          setPledgeModalOpen(true);
+        }
+        break;
+      case AppealStatusEnum.Processed:
+        setUpdateDonationsModalOpen(true);
+        break;
+    }
   };
 
   const ref = useRef<HTMLElement | null>(null);
@@ -156,7 +245,6 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
               <ContactFlowColumn
                 accountListId={accountListId}
                 title={column.name}
-                selectedFilters={selectedFilters}
                 color={column.color}
                 onContactSelected={onContactSelected}
                 appealStatus={column.status}
@@ -167,6 +255,43 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
           ))}
         </Box>
       </DndProvider>
+
+      {addExcludedContactModalOpen && contact && (
+        <DynamicAddExcludedContactModal
+          contactIds={[contact.id]}
+          handleClose={() => setAddExcludedContactModalOpen(false)}
+        />
+      )}
+
+      {deleteAppealContactModalOpen && contact && (
+        <DynamicDeleteAppealContactModal
+          contactId={contact.id}
+          handleClose={() => setDeleteAppealContactModalOpen(false)}
+        />
+      )}
+
+      {pledgeModalOpen && contact && (
+        <DynamicPledgeModal
+          contact={contact}
+          pledge={contact.pledge}
+          handleClose={() => setPledgeModalOpen(false)}
+        />
+      )}
+
+      {deletePledgeModalOpen && contact && (
+        <DynamicDeletePledgeModal
+          pledge={contact.pledge}
+          handleClose={() => setDeletePledgeModalOpen(false)}
+        />
+      )}
+
+      {updateDonationsModalOpen && contact && (
+        <DynamicUpdateDonationsModal
+          contact={contact}
+          pledge={contact.pledge}
+          handleClose={() => setUpdateDonationsModalOpen(false)}
+        />
+      )}
     </>
   );
 };

@@ -10,7 +10,10 @@ import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
 interface Props {
   status: AppealStatusEnum;
-  changeContactStatus: (id: string, status: AppealStatusEnum) => Promise<void>;
+  changeContactStatus: (
+    contact: DraggedContact,
+    newStatus: AppealStatusEnum,
+  ) => Promise<void>;
 }
 
 export const ContactFlowDropZone: React.FC<Props> = ({
@@ -22,7 +25,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
     canDrop: (contact) => String(contact.status) !== String(status),
     drop: (contact: DraggedContact) => {
       String(contact.status) !== String(status)
-        ? changeContactStatus(contact.id, status)
+        ? changeContactStatus(contact, status)
         : null;
     },
     collect: (monitor) => ({

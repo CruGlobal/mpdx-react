@@ -55,7 +55,6 @@ const Components = () => (
               >
                 <ContactFlowColumn
                   accountListId={accountListId}
-                  selectedFilters={{}}
                   color={theme.palette.mpdxBlue.main}
                   title={title}
                   onContactSelected={onContactSelected}

@@ -5,6 +5,7 @@ import theme from 'src/theme';
 import { Confirmation } from './Confirmation';
 
 const handleClose = jest.fn();
+const handleDecline = jest.fn();
 const mutation = jest.fn().mockResolvedValue(undefined);
 
 const TestComponent: React.FC = () => (
@@ -51,5 +52,24 @@ describe('Confirmation', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
     expect(mutation).toHaveBeenCalled();
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
+  });
+
+  it('performs handleDecline function', async () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <Confirmation
+          isOpen
+          title="Title"
+          message="Message"
+          handleClose={handleClose}
+          mutation={mutation}
+          handleDecline={handleDecline}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(handleDecline).not.toHaveBeenCalled();
+    userEvent.click(getByRole('button', { name: 'No' }));
+    await waitFor(() => expect(handleDecline).toHaveBeenCalled());
   });
 });

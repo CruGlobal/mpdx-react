@@ -44,7 +44,10 @@ import {
 
 interface PledgeModalProps {
   handleClose: () => void;
-  contact: AppealContactInfoFragment;
+  contact: {
+    id: string;
+    name: string;
+  };
   pledge?: AppealContactInfoFragment['pledges'][0];
 }
 

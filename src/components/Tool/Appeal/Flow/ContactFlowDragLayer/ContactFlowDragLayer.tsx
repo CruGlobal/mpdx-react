@@ -1,45 +1,13 @@
-import React, { CSSProperties, RefObject } from 'react';
-import { XYCoord, useDragLayer } from 'react-dnd';
-import theme from 'src/theme';
+import React from 'react';
+import { useDragLayer } from 'react-dnd';
+import {
+  ContactFlowDragLayerProps,
+  dragPreviewStyle,
+  getItemStyles,
+  layerStyles,
+} from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowDragLayer';
+import { useAutoScroll } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/useAutoScroll';
 import { ContactFlowRowPreview } from './ContactFlowRowPreview';
-import { useAutoScroll } from './useAutoScroll';
-
-export const layerStyles: CSSProperties = {
-  position: 'absolute',
-  pointerEvents: 'none',
-  zIndex: 100,
-  left: 0,
-  top: 0,
-  width: 300,
-  height: '100%',
-};
-
-export const dragPreviewStyle: CSSProperties = {
-  display: 'inline-block',
-  border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-};
-
-export function getItemStyles(
-  initialOffset: XYCoord | null,
-  currentOffset: XYCoord | null,
-) {
-  if (!initialOffset || !currentOffset) {
-    return {
-      display: 'none',
-    };
-  }
-  const { x, y } = currentOffset;
-
-  const transform = `translate(${x}px, ${y}px)`;
-  return {
-    transform,
-    WebkitTransform: transform,
-  };
-}
-
-export interface ContactFlowDragLayerProps {
-  containerRef: RefObject<HTMLElement>;
-}
 
 export const ContactFlowDragLayer: React.FC<ContactFlowDragLayerProps> = ({
   containerRef,

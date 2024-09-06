@@ -16,6 +16,7 @@ mutation UpdateAccountListPledge(
   updateAccountListPledge(input: $input) {
     pledge {
       id
+      status
     }
   }
 }
