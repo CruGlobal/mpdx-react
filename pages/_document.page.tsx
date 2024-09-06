@@ -28,19 +28,26 @@ class MyDocument extends Document {
               href={`${process.env.HELPJUICE_ORIGIN}/swifty.css`}
             />
           )}
+          {/* The swifty.js script initializes in response to a DOMContentLoaded
+           * event, but that event has fired by the time the script is executed
+           * when using the Next.js <Script> component. To workaround this, we
+           * have to use a native <script> element and cannot use async or
+           * defer. This is not ideal for first-load performance and should be
+           * switched to <Script> as soon as Helpjuice can fix their swifty.js
+           * script.
+           */}
           {process.env.HELPJUICE_ORIGIN && (
-            <Script id="helpjuice" strategy="afterInteractive">
-              {`window.helpjuice_account_url = '${process.env.HELPJUICE_ORIGIN}';
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.helpjuice_account_url = '${process.env.HELPJUICE_ORIGIN}';
 window.helpjuice_contact_us_url = '${process.env.HELPJUICE_ORIGIN}/contact-us';
 window.helpjuiceSwiftyConfig = { widgetPosition: 'bottomRight' };
-window.helpjuiceSwiftyUrlMap = {};`}
-            </Script>
+window.helpjuiceSwiftyUrlMap = {};`,
+              }}
+            />
           )}
           {process.env.HELPJUICE_ORIGIN && (
-            <Script
-              src={`${process.env.HELPJUICE_ORIGIN}/swifty.js`}
-              strategy="afterInteractive"
-            />
+            <script src={`${process.env.HELPJUICE_ORIGIN}/swifty.js`} />
           )}
           {process.env.DATADOG_CONFIGURED === 'true' && (
             <Script id="datadog-rum" strategy="afterInteractive">
