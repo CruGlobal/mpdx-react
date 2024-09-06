@@ -13,6 +13,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import {
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from './AddContactToAppeal.generated';
 import { useAppealQuery } from './AppealInfo.generated';
@@ -35,9 +36,13 @@ export const AddContactToAppealModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [assignContactsToAppeal] = useAssignContactsToAppealMutation();
-  const { accountListId, appealId, contactsQueryResult } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const {
+    accountListId,
+    appealId,
+    contactsQueryResult,
+    viewMode,
+    seRefreshFlowsView,
+  } = React.useContext(AppealsContext) as AppealsType;
 
   const { data } = useAppealQuery({
     variables: {
@@ -60,7 +65,11 @@ export const AddContactToAppealModal: React.FC<
         },
       },
       update: () => {
-        contactsQueryResult.refetch();
+        if (viewMode === TableViewModeEnum.Flows) {
+          seRefreshFlowsView(true);
+        } else {
+          contactsQueryResult.refetch();
+        }
       },
       onCompleted: () => {
         const successMessage =

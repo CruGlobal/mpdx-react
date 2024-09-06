@@ -22,6 +22,7 @@ import theme from 'src/theme';
 import {
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import {
@@ -48,9 +49,8 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
 }) => {
   const locale = useLocale();
   const { t } = useTranslation();
-  const { accountListId, appealId } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const { accountListId, appealId, viewMode, seRefreshFlowsView } =
+    React.useContext(AppealsContext) as AppealsType;
   const [selectedDonations, setSelectedDonations] = useState<DonationRow[]>([]);
   const [zeroAmountConfirmationMessage, setZeroAmountConfirmationMessage] =
     useState<ReactNode | null>(null);
@@ -255,6 +255,9 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
           },
         },
       });
+    }
+    if (viewMode === TableViewModeEnum.Flows) {
+      seRefreshFlowsView(true);
     }
     handleClose();
   };

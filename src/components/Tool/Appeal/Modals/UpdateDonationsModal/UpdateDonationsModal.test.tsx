@@ -20,6 +20,7 @@ import theme from 'src/theme';
 import {
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import {
@@ -29,6 +30,7 @@ import {
 } from './DeleteAppealContactModalMocks';
 import { UpdateDonationsModal } from './UpdateDonationsModal';
 
+const seRefreshFlowsView = jest.fn();
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -67,6 +69,7 @@ interface ComponentsProps {
   hasForeignCurrency?: boolean;
   hasMultiplePages?: boolean;
   zeroAmount?: boolean;
+  viewMode?: TableViewModeEnum;
 }
 
 const Components = ({
@@ -75,6 +78,7 @@ const Components = ({
   hasForeignCurrency = false,
   hasMultiplePages = false,
   zeroAmount = false,
+  viewMode = TableViewModeEnum.Flows,
 }: ComponentsProps) => {
   return (
     <I18nextProvider i18n={i18n}>
@@ -196,6 +200,8 @@ const Components = ({
                         {
                           accountListId,
                           appealId: appealId,
+                          viewMode,
+                          seRefreshFlowsView,
                         } as unknown as AppealsType
                       }
                     >
@@ -490,6 +496,7 @@ describe('UpdateDonationsModal', () => {
             ],
           },
         });
+        expect(seRefreshFlowsView).toHaveBeenCalled();
       });
 
       it('should move contact to Asked when pledge is NOT present', async () => {
@@ -526,6 +533,7 @@ describe('UpdateDonationsModal', () => {
         expect(mutationSpy).not.toHaveGraphqlOperation(
           'UpdateAccountListPledge',
         );
+        expect(seRefreshFlowsView).toHaveBeenCalled();
       });
     });
 
@@ -573,6 +581,7 @@ describe('UpdateDonationsModal', () => {
           ),
         );
 
+        expect(seRefreshFlowsView).toHaveBeenCalled();
         expect(handleClose).toHaveBeenCalled();
       });
 

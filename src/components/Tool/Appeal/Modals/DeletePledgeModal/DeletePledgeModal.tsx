@@ -39,7 +39,7 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [deleteAccountListPledge, { loading }] =
     useDeleteAccountListPledgeMutation();
-  const { contactsQueryResult, viewMode } = useContext(
+  const { contactsQueryResult, viewMode, seRefreshFlowsView } = useContext(
     AppealsContext,
   ) as AppealsType;
 
@@ -51,7 +51,11 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
         },
       },
       update: () => {
-        contactsQueryResult.refetch();
+        if (viewMode === TableViewModeEnum.Flows) {
+          seRefreshFlowsView(true);
+        } else {
+          contactsQueryResult.refetch();
+        }
       },
       onCompleted: () => {
         enqueueSnackbar(t('Successfully removed commitment from appeal'), {

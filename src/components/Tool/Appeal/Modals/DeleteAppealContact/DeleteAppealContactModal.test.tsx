@@ -11,8 +11,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
-import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import {
+  AppealsContext,
+  TableViewModeEnum,
+} from '../../AppealsContext/AppealsContext';
 import { DeleteAppealContactModal } from './DeleteAppealContactModal';
 
 const mockEnqueue = jest.fn();
@@ -38,12 +40,13 @@ const router = {
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
 const refetch = jest.fn();
+const seRefreshFlowsView = jest.fn();
 
 interface ComponentsProps {
-  contact?: AppealContactInfoFragment;
+  viewMode?: TableViewModeEnum;
 }
 
-const Components = ({}: ComponentsProps) => {
+const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
   let requestCount = 0;
   return (
     <I18nextProvider i18n={i18n}>
@@ -130,6 +133,8 @@ const Components = ({}: ComponentsProps) => {
                         // @ts-ignore
                         contactsQueryResult: { refetch },
                         filterPanelOpen: false,
+                        viewMode,
+                        seRefreshFlowsView,
                       }}
                     >
                       <DeleteAppealContactModal
@@ -217,5 +222,39 @@ describe('DeleteAppealContactModal', () => {
       });
     });
     expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not refetch the flows columns after mutation', async () => {
+    const { getByRole } = render(<Components />);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(8);
+    });
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully remove contact from appeal.',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+    expect(seRefreshFlowsView).not.toHaveBeenCalled();
+  });
+
+  it('should refetch the flows columns after mutation', async () => {
+    const { getByRole } = render(
+      <Components viewMode={TableViewModeEnum.Flows} />,
+    );
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(8);
+    });
+
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
   });
 });

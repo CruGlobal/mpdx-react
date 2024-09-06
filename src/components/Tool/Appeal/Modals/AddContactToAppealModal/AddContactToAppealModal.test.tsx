@@ -10,7 +10,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  TableViewModeEnum,
+} from '../../AppealsContext/AppealsContext';
 import { AddContactToAppealModal } from './AddContactToAppealModal';
 import { AppealQuery } from './AppealInfo.generated';
 
@@ -23,6 +26,7 @@ const router = {
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
 const refetch = jest.fn();
+const seRefreshFlowsView = jest.fn();
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -37,6 +41,7 @@ jest.mock('notistack', () => ({
 interface ComponentsProps {
   appealMock?: AppealQuery;
   contactOptionsMock?: ContactOptionsQuery;
+  viewMode?: TableViewModeEnum;
 }
 
 const defaultAppealMock: AppealQuery = {
@@ -59,6 +64,7 @@ const defaultContactOptionsMock: ContactOptionsQuery = {
 const Components = ({
   appealMock = defaultAppealMock,
   contactOptionsMock = defaultContactOptionsMock,
+  viewMode = TableViewModeEnum.List,
 }: ComponentsProps) => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
@@ -82,6 +88,8 @@ const Components = ({
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   // @ts-ignore
                   contactsQueryResult: { refetch },
+                  viewMode,
+                  seRefreshFlowsView,
                 }}
               >
                 <AddContactToAppealModal handleClose={handleClose} />
@@ -166,5 +174,21 @@ describe('AddContactToAppealModal', () => {
     });
 
     expect(refetch).toHaveBeenCalledTimes(1);
+    expect(seRefreshFlowsView).not.toHaveBeenCalled();
+  });
+
+  it('should refetch flows columns if on the flows view', async () => {
+    const { getByRole, findByRole } = render(
+      <Components viewMode={TableViewModeEnum.Flows} />,
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Contacts' }));
+    expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
+    userEvent.click(getByRole('option', { name: 'Alice' }));
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
+    expect(refetch).not.toHaveBeenCalled();
   });
 });

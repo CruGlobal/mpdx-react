@@ -11,7 +11,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  TableViewModeEnum,
+} from '../../AppealsContext/AppealsContext';
 import { AppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
 import { AddExcludedContactModal } from './AddExcludedContactModal';
 
@@ -26,6 +29,7 @@ const router = {
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
 const refetch = jest.fn();
+const seRefreshFlowsView = jest.fn();
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
@@ -48,8 +52,10 @@ const appealMock: AppealQuery = {
 
 const Components = ({
   contactIds = [contactId],
+  viewMode = TableViewModeEnum.List,
 }: {
   contactIds?: string[];
+  viewMode?: TableViewModeEnum;
 }) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -72,6 +78,8 @@ const Components = ({
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     contactsQueryResult: { refetch },
+                    viewMode,
+                    seRefreshFlowsView,
                   }}
                 >
                   <AddExcludedContactModal
@@ -154,6 +162,7 @@ describe('AddExcludedContactModal', () => {
     });
 
     expect(refetch).toHaveBeenCalledTimes(1);
+    expect(seRefreshFlowsView).not.toHaveBeenCalled();
 
     expect(mockEnqueue).toHaveBeenCalledWith(
       'Successfully added contact to appeal',
@@ -161,6 +170,23 @@ describe('AddExcludedContactModal', () => {
         variant: 'success',
       },
     );
+  });
+
+  it('should refetch Flows columns contacts after', async () => {
+    const { getByRole } = render(
+      <Components viewMode={TableViewModeEnum.Flows} />,
+    );
+
+    expect(seRefreshFlowsView).toHaveBeenCalledTimes(0);
+    expect(refetch).not.toHaveBeenCalled();
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Yes' })).not.toBeDisabled(),
+    );
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    expect(refetch).not.toHaveBeenCalled();
+    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
   });
 
   it('sends all contactIds in bulk mutation', async () => {

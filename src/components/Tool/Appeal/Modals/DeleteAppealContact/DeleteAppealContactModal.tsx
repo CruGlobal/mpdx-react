@@ -39,16 +39,16 @@ export const DeleteAppealContactModal: React.FC<
 > = ({ contactId, handleClose }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appealId, viewMode } = React.useContext(
+  const { appealId, viewMode, seRefreshFlowsView } = React.useContext(
     AppealsContext,
   ) as AppealsType;
-  const [deleteAppealContact] = useDeleteAppealContactMutation();
+  const [deleteAppealContact, { loading: mutating }] =
+    useDeleteAppealContactMutation();
   const { data, fetchMore } = useAppealContactsQuery({
     variables: {
       appealId: appealId ?? '',
     },
   });
-  const [mutating, setMutating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [appealContactsIds, setAppealContactsIds] = useState<
     AppealContactsInfoFragment[]
@@ -100,7 +100,11 @@ export const DeleteAppealContactModal: React.FC<
         },
       },
       update: (cache) => {
-        cache.evict({ id: `Contact:${contactId}` });
+        if (viewMode === TableViewModeEnum.Flows) {
+          seRefreshFlowsView(true);
+        } else {
+          cache.evict({ id: `Contact:${contactId}` });
+        }
       },
       onCompleted: () => {
         enqueueSnackbar('Successfully remove contact from appeal.', {
@@ -114,7 +118,6 @@ export const DeleteAppealContactModal: React.FC<
         });
       },
     });
-    setMutating(false);
   };
 
   const onClickDecline = () => {

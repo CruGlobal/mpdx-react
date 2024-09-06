@@ -12,7 +12,10 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  TableViewModeEnum,
+} from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { defaultContact } from '../../List/ContactRow/ContactRowMock';
 import { PledgeModal } from './PledgeModal';
@@ -26,12 +29,17 @@ const router = {
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
 const refetch = jest.fn();
+const seRefreshFlowsView = jest.fn();
 
 interface ComponentsProps {
   pledge?: AppealContactInfoFragment['pledges'][0];
+  viewMode?: TableViewModeEnum;
 }
 
-const Components = ({ pledge = undefined }: ComponentsProps) => (
+const Components = ({
+  pledge = undefined,
+  viewMode = TableViewModeEnum.List,
+}: ComponentsProps) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -46,6 +54,8 @@ const Components = ({ pledge = undefined }: ComponentsProps) => (
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     contactsQueryResult: { refetch },
+                    viewMode,
+                    seRefreshFlowsView,
                   }}
                 >
                   <PledgeModal
@@ -206,5 +216,45 @@ describe('PledgeModal', () => {
     });
 
     expect(refetch).toHaveBeenCalledTimes(1);
+    expect(seRefreshFlowsView).not.toHaveBeenCalled();
+  });
+
+  it('should refetch the flows columns after adding Commitment on the flows view', async () => {
+    const { getByRole } = render(
+      <Components viewMode={TableViewModeEnum.Flows} />,
+    );
+
+    expect(mutationSpy).toHaveBeenCalledTimes(0);
+
+    const amountInput = getByRole('textbox', { name: 'Amount' });
+    userEvent.type(amountInput, '100');
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
+    expect(refetch).not.toHaveBeenCalled();
+  });
+
+  it('should refetch the flows columns after editing Commitment on the flows view', async () => {
+    const pledgeId = 'pledge-1';
+    const { getByRole } = render(
+      <Components
+        pledge={{
+          id: pledgeId,
+          amount: 444,
+          amountCurrency: 'USD',
+          appeal: {
+            id: 'appeal-1',
+          },
+          expectedDate: '2024-08-08',
+          status: PledgeStatusEnum.ReceivedNotProcessed,
+        }}
+        viewMode={TableViewModeEnum.Flows}
+      />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(seRefreshFlowsView).toHaveBeenCalledTimes(1));
+    expect(refetch).not.toHaveBeenCalled();
   });
 });
