@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import { Box, Grid, Theme } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -5,18 +6,11 @@ import { makeStyles } from 'tss-react/mui';
 import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
 import { useAccountListId } from '../../../hooks/useAccountListId';
+import { ToolsGridContainer } from '../styledComponents';
 import Tool from './Tool';
 import { ToolsListHome } from './ToolsListHome';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '70%',
-    display: 'flex',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
   toolIcon: {
     height: theme.spacing(5),
     width: theme.spacing(5),
@@ -27,16 +21,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'center',
-  },
-  notificationBox: {
-    backgroundColor: theme.palette.progressBarYellow.main,
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    borderRadius: '25%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -56,6 +40,9 @@ const variants = {
 const ToolHome = (): ReactElement => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
+  const { query } = useRouter();
+  const { setup } = query;
+  const onSetupTour = setup === '1';
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
@@ -79,27 +66,29 @@ const ToolHome = (): ReactElement => {
       variants={variants}
     >
       <Box className={classes.outer} data-testid="Home">
-        <Grid container spacing={3} className={classes.container}>
+        <ToolsGridContainer container spacing={3}>
           {ToolsListHome.map((tool) => {
-            const needsAttention = toolDataTotalCount
-              ? toolDataTotalCount[tool.id] > 0
-              : false;
+            const needsAttention =
+              (!onSetupTour &&
+                toolDataTotalCount &&
+                toolDataTotalCount[tool.id] > 0) ||
+              (onSetupTour && tool.id.includes('import'));
             return (
-              <Grid item xs={12} sm={6} lg={4} key={tool.tool}>
+              <Grid item xs={12} sm={6} md={4} key={tool.tool}>
                 <Tool
                   tool={tool.tool}
                   desc={tool.desc}
                   icon={tool.icon}
                   url={tool.url}
                   needsAttention={needsAttention}
-                  totalCount={toolDataTotalCount[tool.id]}
+                  totalCount={!onSetupTour ? toolDataTotalCount[tool.id] : 0}
                   loading={loading}
                   toolId={tool.id}
                 />
               </Grid>
             );
           })}
-        </Grid>
+        </ToolsGridContainer>
       </Box>
     </motion.div>
   );
