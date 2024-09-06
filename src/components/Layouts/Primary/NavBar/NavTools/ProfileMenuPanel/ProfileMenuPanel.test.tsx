@@ -5,12 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
 import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
-
-jest.mock('src/components/Setup/SetupProvider');
 
 const router = {
   pathname: '/accountLists/[accountListId]/test',
@@ -18,23 +16,23 @@ const router = {
   push: jest.fn(),
 };
 
-const TestComponent = () => (
+interface TestComponentProps {
+  onSetupTour?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
   <ThemeProvider theme={theme}>
     <TestWrapper mocks={[getTopBarMock()]}>
       <TestRouter router={router}>
-        <ProfileMenuPanel />
+        <TestSetupProvider onSetupTour={onSetupTour}>
+          <ProfileMenuPanel />
+        </TestSetupProvider>
       </TestRouter>
     </TestWrapper>
   </ThemeProvider>
 );
 
 describe('ProfileMenuPanelForNavBar', () => {
-  beforeEach(() => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: false,
-    });
-  });
-
   it('default', () => {
     const { getByTestId } = render(<TestComponent />);
 
@@ -86,12 +84,8 @@ describe('ProfileMenuPanelForNavBar', () => {
   });
 
   it('hides links during the setup tour', async () => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: true,
-    });
-
     const { findByTestId, getByRole, getByTestId, queryByText } = render(
-      <TestComponent />,
+      <TestComponent onSetupTour />,
     );
 
     userEvent.click(await findByTestId('accountListSelectorButton'));

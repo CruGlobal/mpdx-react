@@ -3,12 +3,10 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import { getTopBarMultipleMock } from '../../TopBar/TopBar.mock';
 import { NavTools } from './NavTools';
-
-jest.mock('src/components/Setup/SetupProvider');
 
 const router = {
   query: { accountListId: 'abc' },
@@ -16,11 +14,17 @@ const router = {
   push: jest.fn(),
 };
 
-const TestComponent = () => (
+interface TestComponentProps {
+  onSetupTour?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <MockedProvider mocks={[getTopBarMultipleMock()]} addTypename={false}>
-        <NavTools />
+        <TestSetupProvider onSetupTour={onSetupTour}>
+          <NavTools />
+        </TestSetupProvider>
       </MockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -28,10 +32,6 @@ const TestComponent = () => (
 
 describe('NavTools', () => {
   it('default', async () => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: false,
-    });
-
     const { findByText, getByTestId, getByText } = render(<TestComponent />);
 
     expect(getByTestId('NavTools')).toBeInTheDocument();
@@ -40,11 +40,7 @@ describe('NavTools', () => {
   });
 
   it('hides links during the setup tour', async () => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: true,
-    });
-
-    const { queryByText, getByTestId } = render(<TestComponent />);
+    const { queryByText, getByTestId } = render(<TestComponent onSetupTour />);
 
     expect(getByTestId('NavTools')).toBeInTheDocument();
     expect(queryByText('Add')).not.toBeInTheDocument();

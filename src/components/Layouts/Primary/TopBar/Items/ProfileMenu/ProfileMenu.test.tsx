@@ -9,15 +9,13 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
 import {
   getTopBarMock,
   getTopBarMockWithMultipleAccountLists,
 } from '../../TopBar.mock';
 import ProfileMenu from './ProfileMenu';
-
-jest.mock('src/components/Setup/SetupProvider');
 
 const mockEnqueue = jest.fn();
 
@@ -48,25 +46,26 @@ const routerNoAccountListId = {
 interface TestComponentProps {
   router?: Partial<NextRouter>;
   mocks?: MockedResponse[];
+  onSetupTour?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  router,
+  mocks,
+  onSetupTour,
+}) => (
   <ThemeProvider theme={theme}>
     <TestWrapper mocks={mocks ?? [getTopBarMock()]}>
       <TestRouter router={router ?? defaultRouter}>
-        <ProfileMenu />
+        <TestSetupProvider onSetupTour={onSetupTour}>
+          <ProfileMenu />
+        </TestSetupProvider>
       </TestRouter>
     </TestWrapper>
   </ThemeProvider>
 );
 
 describe('ProfileMenu', () => {
-  beforeEach(() => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: false,
-    });
-  });
-
   it('default', async () => {
     const { getByTestId, getByRole, getByText, findByText } = render(
       <TestComponent />,
@@ -175,12 +174,8 @@ describe('ProfileMenu', () => {
   });
 
   it('hides links during the setup tour', async () => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: true,
-    });
-
     const { findByText, getByRole, getByTestId, queryByText } = render(
-      <TestComponent router={routerNoAccountListId} />,
+      <TestComponent router={routerNoAccountListId} onSetupTour />,
     );
 
     expect(await findByText('John Smith')).toBeInTheDocument();

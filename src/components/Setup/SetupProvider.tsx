@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import React, {
+  PropsWithChildren,
   ReactNode,
   createContext,
   useContext,
@@ -43,13 +44,13 @@ const setupPages = new Set([
   '/accountLists/[accountListId]/setup/finish',
 ]);
 
-interface Props {
+interface SetupProviderProps {
   children: ReactNode;
 }
 
 // This context component ensures that users have gone through the setup process
 // and provides the setup state to the rest of the application
-export const SetupProvider: React.FC<Props> = ({ children }) => {
+export const SetupProvider: React.FC<SetupProviderProps> = ({ children }) => {
   const { data } = useSetupStageQuery();
   const { push, pathname } = useRouter();
 
@@ -99,3 +100,15 @@ export const SetupProvider: React.FC<Props> = ({ children }) => {
     </SetupContext.Provider>
   );
 };
+
+// This provider is meant for use in tests. It lets tests easily override the
+// onSetupTour without needing to mock useSetupProvider or the pathname and
+// SetupStage GraphQL query.
+export const TestSetupProvider: React.FC<PropsWithChildren<SetupContext>> = ({
+  children,
+  onSetupTour,
+}) => (
+  <SetupContext.Provider value={{ onSetupTour }}>
+    {children}
+  </SetupContext.Provider>
+);

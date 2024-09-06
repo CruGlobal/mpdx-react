@@ -3,12 +3,10 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import { getTopBarMultipleMock } from '../TopBar/TopBar.mock';
 import { NavBar } from './NavBar';
-
-jest.mock('src/components/Setup/SetupProvider');
 
 const router = {
   query: { accountListId: 'abc' },
@@ -18,15 +16,19 @@ const router = {
 
 interface TestComponentProps {
   openMobile?: boolean;
+  onSetupTour?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   openMobile = false,
+  onSetupTour,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <MockedProvider mocks={mocks} addTypename={false}>
-        <NavBar onMobileClose={onMobileClose} openMobile={openMobile} />
+        <TestSetupProvider onSetupTour={onSetupTour}>
+          <NavBar onMobileClose={onMobileClose} openMobile={openMobile} />
+        </TestSetupProvider>
       </MockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -36,12 +38,6 @@ const onMobileClose = jest.fn();
 const mocks = [getTopBarMultipleMock()];
 
 describe('NavBar', () => {
-  beforeEach(() => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: false,
-    });
-  });
-
   it('default', () => {
     const { queryByTestId } = render(<TestComponent />);
 
@@ -60,11 +56,7 @@ describe('NavBar', () => {
   });
 
   it('hides links during the setup tour', () => {
-    (useSetupContext as jest.MockedFn<typeof useSetupContext>).mockReturnValue({
-      onSetupTour: true,
-    });
-
-    const { queryByRole } = render(<TestComponent openMobile />);
+    const { queryByRole } = render(<TestComponent openMobile onSetupTour />);
 
     expect(
       queryByRole('button', { name: 'Dashboard' }),
