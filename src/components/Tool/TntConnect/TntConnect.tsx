@@ -6,6 +6,7 @@ import {
   Autocomplete,
   Box,
   Button,
+  Card,
   DialogActions,
   DialogContent,
   DialogContentText,
@@ -63,14 +64,7 @@ const OuterBox = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'center',
   width: '100%',
-  padding: theme.spacing(3),
-}));
-
-const BorderBox = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-  width: '100%',
+  paddingX: theme.spacing(3),
 }));
 
 const Section = styled(Box)(({ theme }) => ({
@@ -217,7 +211,14 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
             { appName },
           )}
         </Typography>
-        <BorderBox>
+        <Card
+          sx={{
+            marginY: theme.spacing(2),
+            border: '1px solid',
+            borderColor: theme.palette.cruGrayLight.main,
+            width: '100%',
+          }}
+        >
           <Formik
             initialValues={{ selectedTags: [], override: 'false' }}
             validationSchema={tntSchema}
@@ -357,7 +358,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
               </form>
             )}
           </Formik>
-        </BorderBox>
+        </Card>
       </ContainerBox>
       <Modal
         isOpen={showModal}

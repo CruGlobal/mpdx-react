@@ -44,6 +44,10 @@ const useStyles = makeStyles()(() => ({
   contactBasic: {
     width: '100%',
     marginTop: '15px',
+    marginLeft: '2px',
+    marginRight: '2px',
+    border: '1px solid',
+    borderColor: theme.palette.cruGrayLight.main,
     [theme.breakpoints.down('sm')]: {
       backgroundColor: 'white',
       width: '100%',
@@ -144,7 +148,7 @@ const Contact = ({
   };
 
   return (
-    <Card variant="outlined" className={classes.contactBasic}>
+    <Card className={classes.contactBasic}>
       <CardHeader
         avatar={
           <Avatar
