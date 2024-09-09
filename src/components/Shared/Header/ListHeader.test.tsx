@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
-import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
@@ -22,7 +25,7 @@ const toggleFilterPanel = jest.fn();
 const onSearchTermChanged = jest.fn();
 const onCheckAllItems = jest.fn();
 const toggleStarredFilter = jest.fn();
-const selectedIds: string[] = ['abc'];
+const defaultSelectedIds: string[] = ['abc'];
 const mockedProps = {
   toggleStarredFilter,
   toggleFilterPanel,
@@ -51,11 +54,53 @@ jest.mock('../../Shared/MassActions/TasksMassActionsDropdown', () => ({
   ),
 }));
 
-const MocksProviders = (props: { children: JSX.Element }) => (
+type StarredFilter = ContactFilterSetInput | TaskFilterSetInput | undefined;
+interface ComponentsProps {
+  selectedIds?: string[];
+  page?: PageEnum;
+  activeFilters?: boolean;
+  starredFilter?: StarredFilter | null;
+  contactsView?: TableViewModeEnum;
+  headerCheckboxState?: ListHeaderCheckBoxState;
+  filterPanelOpen?: boolean;
+  contactDetailsOpen?: boolean;
+  buttonGroup?: ReactElement;
+  totalItems?: number;
+  showShowingCount?: boolean;
+}
+
+const Components = ({
+  selectedIds = defaultSelectedIds,
+  page = PageEnum.Contact,
+  activeFilters = false,
+  starredFilter = {},
+  contactsView,
+  headerCheckboxState = ListHeaderCheckBoxState.Unchecked,
+  filterPanelOpen = false,
+  contactDetailsOpen = false,
+  buttonGroup,
+  totalItems,
+  showShowingCount,
+}: ComponentsProps) => (
   <ThemeProvider theme={theme}>
     <I18nextProvider i18n={i18n}>
       <GqlMockedProvider>
-        <SnackbarProvider>{props.children}</SnackbarProvider>
+        <SnackbarProvider>
+          <ListHeader
+            selectedIds={selectedIds}
+            page={page}
+            activeFilters={activeFilters}
+            starredFilter={starredFilter as StarredFilter}
+            contactsView={contactsView}
+            headerCheckboxState={headerCheckboxState}
+            filterPanelOpen={filterPanelOpen}
+            contactDetailsOpen={contactDetailsOpen}
+            buttonGroup={buttonGroup}
+            totalItems={totalItems}
+            showShowingCount={showShowingCount}
+            {...mockedProps}
+          />
+        </SnackbarProvider>
       </GqlMockedProvider>
     </I18nextProvider>
   </ThemeProvider>
@@ -94,18 +139,7 @@ describe('ListHeader', () => {
   describe('Contact', () => {
     it('renders contact header', () => {
       const { getByPlaceholderText, getByTestId, getByText } = render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={selectedIds}
-            page={PageEnum.Contact}
-            activeFilters={false}
-            starredFilter={{}}
-            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            {...mockedProps}
-          />
-        </MocksProviders>,
+        <Components />,
       );
 
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -116,19 +150,11 @@ describe('ListHeader', () => {
 
     it('renders contact header with contact card open', () => {
       const { getByPlaceholderText, queryByTestId, queryByText } = render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={selectedIds}
-            page={PageEnum.Contact}
-            activeFilters={false}
-            starredFilter={{}}
-            contactsView={TableViewModeEnum.List}
-            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-            filterPanelOpen={true}
-            contactDetailsOpen={true}
-            {...mockedProps}
-          />
-        </MocksProviders>,
+        <Components
+          contactsView={TableViewModeEnum.List}
+          filterPanelOpen={true}
+          contactDetailsOpen={true}
+        />,
       );
 
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
@@ -139,22 +165,12 @@ describe('ListHeader', () => {
 
     it('renders a button group and switches views', async () => {
       const { getByTestId } = render(
-        <TestRouter router={router}>
-          <MocksProviders>
-            <ListHeader
-              selectedIds={selectedIds}
-              page={PageEnum.Contact}
-              activeFilters={false}
-              starredFilter={{}}
-              contactsView={TableViewModeEnum.List}
-              headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-              filterPanelOpen={true}
-              contactDetailsOpen={true}
-              buttonGroup={<ButtonGroup />}
-              {...mockedProps}
-            />
-          </MocksProviders>
-        </TestRouter>,
+        <Components
+          contactsView={TableViewModeEnum.List}
+          filterPanelOpen={true}
+          contactDetailsOpen={true}
+          buttonGroup={<ButtonGroup />}
+        />,
       );
 
       expect(getByTestId('list-button')).toBeInTheDocument();
@@ -185,20 +201,7 @@ describe('ListHeader', () => {
       getByTestId,
       getByText,
       queryByText,
-    } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          starredFilter={{}}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    } = render(<Components />);
 
     expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     expect(queryByText('Add Tags')).not.toBeInTheDocument();
@@ -218,18 +221,7 @@ describe('ListHeader', () => {
   describe('Task', () => {
     it('renders task header', () => {
       const { getByPlaceholderText } = render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={selectedIds}
-            page={PageEnum.Task}
-            activeFilters={false}
-            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-            starredFilter={{}}
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            {...mockedProps}
-          />
-        </MocksProviders>,
+        <Components page={PageEnum.Task} />,
       );
 
       expect(getByPlaceholderText('Search Tasks')).toBeVisible();
@@ -237,21 +229,7 @@ describe('ListHeader', () => {
   });
 
   it('checkbox is unchecked', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          totalItems={50}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components totalItems={50} />);
 
     const checkbox = getByRole('checkbox');
 
@@ -264,41 +242,14 @@ describe('ListHeader', () => {
   });
 
   it('has disabled checkbox', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          totalItems={0}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components totalItems={0} />);
 
     const checkbox = getByRole('checkbox');
     expect(checkbox).toHaveProperty('disabled', true);
   });
 
   it('checkbox is checked', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          totalItems={50}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components totalItems={50} />);
 
     const checkbox = getByRole('checkbox');
     userEvent.click(checkbox);
@@ -308,20 +259,7 @@ describe('ListHeader', () => {
   });
 
   it('filters button displays for no filters', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components />);
 
     const filterButton = getByRole('button', {
       name: 'Toggle Filter Panel',
@@ -333,20 +271,7 @@ describe('ListHeader', () => {
   });
 
   it('filters button displays for open filter panel', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={true}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components />);
 
     const filterButton = getByRole('button', {
       name: 'Toggle Filter Panel',
@@ -360,20 +285,7 @@ describe('ListHeader', () => {
   });
 
   it('filters button displays for active filters', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components activeFilters={true} />);
 
     const filterButton = getByRole('button', {
       name: 'Toggle Filter Panel',
@@ -388,18 +300,7 @@ describe('ListHeader', () => {
 
   it('filters button displays for active filters and filter panel open', async () => {
     const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={true}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components activeFilters={true} filterPanelOpen={true} />,
     );
 
     const filterButton = getByRole('button', {
@@ -414,20 +315,7 @@ describe('ListHeader', () => {
   });
 
   it('filters button pressed', async () => {
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={false}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components />);
 
     const filterButton = getByRole('button', {
       name: 'Toggle Filter Panel',
@@ -442,20 +330,7 @@ describe('ListHeader', () => {
   it('search text changed', async () => {
     const searchText = 'name';
 
-    const { getByRole } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByRole } = render(<Components activeFilters={true} />);
     const textbox = getByRole('textbox');
 
     userEvent.type(textbox, searchText);
@@ -468,20 +343,7 @@ describe('ListHeader', () => {
   });
 
   it('press star filter button and set to true', async () => {
-    const { getByTestId } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{}}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
-    );
+    const { getByTestId } = render(<Components activeFilters={true} />);
     const starFilterButton = getByTestId('star-filter-button');
 
     userEvent.click(starFilterButton);
@@ -491,18 +353,7 @@ describe('ListHeader', () => {
 
   it('reset the star filter', async () => {
     const { getByTestId } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{ starred: true }}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components activeFilters={true} starredFilter={{ starred: true }} />,
     );
     const starFilterButton = getByTestId('star-filter-button');
 
@@ -513,61 +364,39 @@ describe('ListHeader', () => {
 
   it('renders the total count', async () => {
     const { getByText } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{ starred: true }}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          contactsView={TableViewModeEnum.List}
-          totalItems={100}
-          showShowingCount={true}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components
+        activeFilters={true}
+        starredFilter={{ starred: true }}
+        contactsView={TableViewModeEnum.List}
+        totalItems={100}
+        showShowingCount={true}
+      />,
     );
     expect(getByText('Showing 100')).toBeInTheDocument();
   });
 
   it('does not renders the total count', async () => {
     const { queryByText } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Contact}
-          activeFilters={true}
-          contactsView={TableViewModeEnum.Flows}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          starredFilter={{ starred: true }}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          totalItems={100}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components
+        activeFilters={true}
+        starredFilter={{ starred: true }}
+        contactsView={TableViewModeEnum.Flows}
+        totalItems={100}
+      />,
     );
     expect(queryByText('Showing', { exact: false })).not.toBeInTheDocument();
   });
 
   it('counts total tasks when all are selected', async () => {
     render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={selectedIds}
-          page={PageEnum.Task}
-          activeFilters={true}
-          headerCheckboxState={ListHeaderCheckBoxState.Checked}
-          starredFilter={{ starred: true }}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          contactsView={TableViewModeEnum.List}
-          totalItems={100}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components
+        page={PageEnum.Task}
+        activeFilters={true}
+        headerCheckboxState={ListHeaderCheckBoxState.Checked}
+        starredFilter={{ starred: true }}
+        contactsView={TableViewModeEnum.List}
+        totalItems={100}
+      />,
     );
     expect(
       (
@@ -581,18 +410,12 @@ describe('ListHeader', () => {
   describe('Report', () => {
     it('does not render the total count or map/list view icons', async () => {
       const { queryByText, getByPlaceholderText, queryByTestId } = render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={[]}
-            page={PageEnum.Report}
-            activeFilters={false}
-            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            totalItems={100}
-            {...mockedProps}
-          />
-        </MocksProviders>,
+        <Components
+          selectedIds={[]}
+          starredFilter={null}
+          page={PageEnum.Report}
+          totalItems={100}
+        />,
       );
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
       expect(queryByText('Actions')).not.toBeInTheDocument();
@@ -603,18 +426,7 @@ describe('ListHeader', () => {
 
     it('display mass actions menu when an contact is checked', async () => {
       const { queryByText, getByText, getByRole } = render(
-        <MocksProviders>
-          <ListHeader
-            selectedIds={selectedIds}
-            page={PageEnum.Report}
-            activeFilters={false}
-            headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-            filterPanelOpen={false}
-            contactDetailsOpen={false}
-            totalItems={100}
-            {...mockedProps}
-          />
-        </MocksProviders>,
+        <Components page={PageEnum.Report} totalItems={100} />,
       );
 
       const checkbox = getByRole('checkbox');
@@ -638,19 +450,11 @@ describe('ListHeader', () => {
 
   it('shows the selected count', () => {
     const { getByText } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={['a', 'b', 'c']}
-          page={PageEnum.Appeal}
-          contactsView={TableViewModeEnum.Flows}
-          activeFilters={false}
-          starredFilter={{}}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components
+        selectedIds={['a', 'b', 'c']}
+        page={PageEnum.Appeal}
+        contactsView={TableViewModeEnum.Flows}
+      />,
     );
 
     expect(getByText('3 Selected')).toBeInTheDocument();
@@ -659,19 +463,11 @@ describe('ListHeader', () => {
 
   it('does not shows the selected count', () => {
     const { queryByText } = render(
-      <MocksProviders>
-        <ListHeader
-          selectedIds={[]}
-          page={PageEnum.Appeal}
-          contactsView={TableViewModeEnum.Flows}
-          activeFilters={false}
-          starredFilter={{}}
-          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
-          filterPanelOpen={false}
-          contactDetailsOpen={false}
-          {...mockedProps}
-        />
-      </MocksProviders>,
+      <Components
+        selectedIds={[]}
+        page={PageEnum.Appeal}
+        contactsView={TableViewModeEnum.Flows}
+      />,
     );
     expect(queryByText('Selected')).not.toBeInTheDocument();
     expect(queryByText('Actions')).not.toBeInTheDocument();
