@@ -95,9 +95,6 @@ const useStyles = makeStyles()(() => ({
       margin: '5px',
     },
   },
-  divider: {
-    margin: theme.spacing(2, 0),
-  },
 }));
 
 const tntSchema = yup.object({

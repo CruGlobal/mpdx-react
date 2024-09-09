@@ -34,10 +34,6 @@ const useStyles = makeStyles()(() => ({
     justifyContent: 'center',
     width: '100%',
   },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
   descriptionBox: {
     marginBottom: theme.spacing(1),
   },
