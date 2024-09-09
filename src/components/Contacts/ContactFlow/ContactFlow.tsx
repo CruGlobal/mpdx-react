@@ -119,7 +119,7 @@ export const ContactFlow: React.FC<Props> = ({
           },
         })),
     });
-    enqueueSnackbar(t('Contact status info updated!'), {
+    enqueueSnackbar(t('Contact status updated!'), {
       variant: 'success',
     });
 
