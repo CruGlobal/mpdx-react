@@ -1,3 +1,8 @@
+#helpjuice-widget .article .footer {
+  /* Hide the estimated reading time and last updated time in search results */
+  display: none !important;
+}
+
 #helpjuice-widget.bottomRight {
   right: 130px !important;
   bottom: 90px !important;
