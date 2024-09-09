@@ -1,11 +1,15 @@
-query GetInvalidPhoneNumbers($accountListId: ID!) {
+query GetInvalidPhoneNumbers($accountListId: ID!, $after: String) {
   # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
   people(
     accountListId: $accountListId
     peopleFilter: { phoneNumberValid: false }
-    first: 50
+    after: $after
   ) {
     totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
     nodes {
       ...PersonInvalidNumber
     }
