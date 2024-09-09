@@ -299,7 +299,7 @@ describe('TaskModalForm', () => {
       }),
     ).toBeInTheDocument();
 
-    expect(getByText('Notifications')).toBeInTheDocument();
+    expect(getByText('Reminders')).toBeInTheDocument();
     expect(queryByText('Both')).not.toBeInTheDocument();
     userEvent.click(getByRole('combobox', { hidden: true, name: 'Type' }));
     expect(getByText('Both')).toBeInTheDocument();
@@ -431,7 +431,7 @@ describe('TaskModalForm', () => {
     expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
       '01/05/2016',
     );
-    expect(queryByText('Notifications')).not.toBeInTheDocument();
+    expect(queryByText('Reminders')).not.toBeInTheDocument();
 
     expect(getByRole('combobox', { name: 'Action' })).toHaveValue('In Person');
 

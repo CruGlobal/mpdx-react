@@ -596,23 +596,21 @@ const TaskModalForm = ({
               </Grid>
               {!initialTask.completedAt && (
                 <Grid item>
-                  <Tooltip
-                    title={
-                      <Typography>
-                        {t('If blank you will not be notified')}
-                      </Typography>
-                    }
+                  <Typography
+                    style={{
+                      display: 'flex',
+                      marginBottom: theme.spacing(1),
+                    }}
                   >
-                    <Typography
-                      style={{
-                        display: 'flex',
-                        marginBottom: theme.spacing(1),
-                      }}
+                    {t('Reminders')}
+                    <Tooltip
+                      placement="right"
+                      title={t('If blank you will not be reminded')}
                     >
-                      {t('Notifications')}
                       <InfoIcon style={{ marginLeft: '5px' }} />
-                    </Typography>
-                  </Tooltip>
+                    </Tooltip>
+                  </Typography>
+
                   <Grid container spacing={2}>
                     <Grid xs={4} item>
                       <FormControl fullWidth>
@@ -624,11 +622,7 @@ const TaskModalForm = ({
                         </InputLabel>
                         <Tooltip
                           placement="top"
-                          title={
-                            <Typography>
-                              {t('How the notification will be sent')}
-                            </Typography>
-                          }
+                          title={t('How the reminder will be sent')}
                         >
                           <NullableSelect
                             labelId="notificationType"
@@ -650,11 +644,7 @@ const TaskModalForm = ({
                     <Grid xs={3} item>
                       <Tooltip
                         placement="top"
-                        title={
-                          <Typography>
-                            {t('Amount of time before notification')}
-                          </Typography>
-                        }
+                        title={t('Amount of time before reminder')}
                       >
                         <TextField
                           label={
@@ -686,11 +676,7 @@ const TaskModalForm = ({
                         </InputLabel>
                         <Tooltip
                           placement="top"
-                          title={
-                            <Typography>
-                              {t('Days, hours, or minutes')}
-                            </Typography>
-                          }
+                          title={t('Days, hours, or minutes')}
                         >
                           <NullableSelect
                             labelId="notificationTimeUnit"

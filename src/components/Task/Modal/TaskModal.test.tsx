@@ -190,7 +190,7 @@ describe('TaskModal', () => {
       const dialog = getByRole('dialog', {
         name: 'Add Task',
       });
-      expect(within(dialog).getByText('Notifications')).toBeInTheDocument();
+      expect(within(dialog).getByText('Reminders')).toBeInTheDocument();
     });
   });
 });
