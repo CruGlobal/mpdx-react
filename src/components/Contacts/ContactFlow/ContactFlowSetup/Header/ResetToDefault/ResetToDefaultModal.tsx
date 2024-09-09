@@ -90,7 +90,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
             <DialogContent dividers>
               <FormControl fullWidth>
                 <Typography>
-                  {t('Pick a list to use for your newsletter')}
+                  {t('Pick a default set of columns to use')}
                 </Typography>
                 <Select
                   name="resetToDefaultType"
