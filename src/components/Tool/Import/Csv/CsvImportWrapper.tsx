@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TFunction } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -110,10 +110,6 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
     >
       <ContainerGrid container spacing={3}>
         <Grid item xs={12}>
-          <Box m={1}>
-            <Typography variant="h4">{t('Import from CSV')}</Typography>
-          </Box>
-          <Divider />
           <Box>
             <StepBox
               m={2}

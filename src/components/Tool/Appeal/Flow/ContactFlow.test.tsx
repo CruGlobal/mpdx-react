@@ -180,6 +180,38 @@ describe('ContactFlow', () => {
       );
     });
 
+    it('should not allow the contact to be dragged to the column it came from', async () => {
+      const { getAllByText, getByTestId } = render(<Components />);
+
+      await waitFor(() =>
+        expect(getAllByText(defaultContact.name)[0]).toBeInTheDocument(),
+      );
+
+      const contactBox = getAllByText(defaultContact.name)[0];
+      const columnAsked = within(getByTestId('contactsFlowAsked')).getByTestId(
+        'contact-flow-drop-zone',
+      );
+      const columnExcluded = within(
+        getByTestId('contactsFlowExcluded'),
+      ).getByTestId('contact-flow-drop-zone');
+
+      fireEvent.dragStart(contactBox);
+      fireEvent.dragEnter(columnAsked);
+      fireEvent.dragOver(columnAsked);
+      fireEvent.dragEnter(columnExcluded);
+      fireEvent.dragOver(columnExcluded);
+      fireEvent.drop(columnExcluded);
+
+      await waitFor(() =>
+        expect(mockEnqueue).not.toHaveBeenCalledWith(
+          'Unable to move Excluded Contact here. If you want to add this Excluded contact to this appeal, please add them to Asked.',
+          {
+            variant: 'warning',
+          },
+        ),
+      );
+    });
+
     it('Excluded to Committed', async () => {
       const { getAllByText, getByTestId, queryByRole } = render(<Components />);
 

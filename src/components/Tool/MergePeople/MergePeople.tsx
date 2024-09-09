@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Divider, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -34,10 +34,6 @@ const useStyles = makeStyles()(() => ({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
   },
   descriptionBox: {
     marginBottom: theme.spacing(1),
@@ -119,10 +115,7 @@ const MergePeople: React.FC<Props> = ({
     >
       {!loading && data && (
         <Grid container className={classes.container}>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Merge People')}</Typography>
-            <Divider className={classes.divider} />
-          </Grid>
+          <Grid item xs={12}></Grid>
           {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>

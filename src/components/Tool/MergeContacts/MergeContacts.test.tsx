@@ -70,10 +70,11 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
 
 describe('Tools - MergeContacts', () => {
   it('should render', async () => {
-    const { findByText, getByTestId } = render(<MergeContactsWrapper />);
-
-    expect(await findByText('Merge Contacts')).toBeInTheDocument();
-    expect(getByTestId('ContactMergeDescription').textContent).toMatch(
+    const { findByTestId } = render(<MergeContactsWrapper />);
+    const ContactMergeDescription = await findByTestId(
+      'ContactMergeDescription',
+    );
+    expect(ContactMergeDescription.textContent).toMatch(
       'You have 55 possible duplicate contacts',
     );
   });

@@ -35,7 +35,7 @@ export const AddContactToAppealModal: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [assignContactsToAppeal] = useAssignContactsToAppealMutation();
-  const { accountListId, appealId, contactsQueryResult } = React.useContext(
+  const { accountListId, appealId } = React.useContext(
     AppealsContext,
   ) as AppealsType;
 
@@ -59,9 +59,7 @@ export const AddContactToAppealModal: React.FC<
           },
         },
       },
-      update: () => {
-        contactsQueryResult.refetch();
-      },
+      refetchQueries: ['Contacts'],
       onCompleted: () => {
         const successMessage =
           attributes.contactIds.length === 1

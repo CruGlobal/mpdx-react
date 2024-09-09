@@ -12,7 +12,11 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  AppealsType,
+  TableViewModeEnum,
+} from '../../AppealsContext/AppealsContext';
 import { DeletePledgeModal } from './DeletePledgeModal';
 
 const accountListId = 'abc';
@@ -23,7 +27,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -46,8 +49,10 @@ const pledge = {
   expectedDate: '2020-01-01',
   status: PledgeStatusEnum.NotReceived,
 };
-
-const Components = () => (
+interface ComponentsProps {
+  viewMode?: TableViewModeEnum;
+}
+const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -56,13 +61,13 @@ const Components = () => (
             <GqlMockedProvider onCall={mutationSpy}>
               <AppealsWrapper>
                 <AppealsContext.Provider
-                  value={{
-                    accountListId,
-                    appealId: appealId,
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    contactsQueryResult: { refetch },
-                  }}
+                  value={
+                    {
+                      accountListId,
+                      appealId: appealId,
+                      viewMode,
+                    } as unknown as AppealsType
+                  }
                 >
                   <DeletePledgeModal
                     pledge={pledge}
@@ -81,7 +86,6 @@ const Components = () => (
 describe('DeletePledgeModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
   });
   it('default', async () => {
     const { getByRole } = render(<Components />);
@@ -128,7 +132,5 @@ describe('DeletePledgeModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

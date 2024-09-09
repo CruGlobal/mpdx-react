@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
+  Button,
   Card,
   CircularProgress,
   IconButton,
@@ -9,6 +10,7 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,14 +28,25 @@ import {
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { useContactsQuery } from '../../AppealsContext/contacts.generated';
+import {
+  DynamicAddContactToAppealModal,
+  preloadAddContactToAppealModal,
+} from '../../Modals/AddContactToAppealModal/DynamicAddContactToAppealModal';
 import { useExcludedAppealContactsQuery } from '../../Shared/AppealExcludedContacts.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
 import {
   ContactFlowRow,
   DraggedContact,
 } from '../ContactFlowRow/ContactFlowRow';
+
+const AddContactToAppealBox = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(1),
+  height: '52px',
+  background: '#fff',
+}));
 
 interface Props
   extends Omit<
@@ -56,26 +69,52 @@ export const ContactFlowColumn: React.FC<Props> = ({
   onContactSelected,
   changeContactStatus,
 }) => {
-  const { appealId, sanitizedFilters } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const {
+    appealId,
+    sanitizedFilters,
+    starredFilter,
+    selectMultipleIds,
+    deselectMultipleIds,
+  } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const open = Boolean(anchorEl);
+
+  const contactsFilters = useMemo(
+    () => ({
+      ...sanitizedFilters,
+      ...starredFilter,
+      appeal: [appealId ?? ''],
+      appealStatus,
+      wildcardSearch: searchTerm as string,
+    }),
+    [sanitizedFilters, starredFilter, searchTerm, appealId],
+  );
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...sanitizedFilters,
-        appeal: [appealId ?? ''],
-        appealStatus,
-        wildcardSearch: searchTerm as string,
-      },
+      contactsFilters,
     },
     skip: !accountListId || !appealStatus,
   });
+
+  const contactCount = data?.contacts.totalCount ?? 0;
+  const { data: allContacts } = useGetIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: contactCount,
+      contactsFilters,
+    },
+    skip: contactCount === 0,
+  });
+
+  const allContactIds = useMemo(
+    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
+    [allContacts],
+  );
 
   const { data: excludedContacts } = useExcludedAppealContactsQuery({
     variables: {
@@ -102,13 +141,17 @@ export const ContactFlowColumn: React.FC<Props> = ({
   };
 
   const handleSelectAll = () => {
+    selectMultipleIds(allContactIds);
     setAnchorEl(null);
-    // TODO implement select all
   };
 
   const handleDeselectAll = () => {
+    deselectMultipleIds(allContactIds);
     setAnchorEl(null);
-    // TODO implement deselect all
+  };
+
+  const handleAddContactToAppeal = () => {
+    setAddContactsModalOpen(true);
   };
 
   const totalContacts = data?.contacts.totalCount || 0;
@@ -162,6 +205,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
       <StyledCardContent
         style={{
           height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${appealHeaderInfoHeight} - 87px)`,
+          padding: 0,
         }}
       >
         <CardContentInner
@@ -174,7 +218,15 @@ export const ContactFlowColumn: React.FC<Props> = ({
             changeContactStatus={changeContactStatus}
           />
         </CardContentInner>
-        <Box ref={cardContentRef} width="100%" height="100%">
+        <Box
+          ref={cardContentRef}
+          width="100%"
+          height={
+            appealStatus === AppealStatusEnum.Asked
+              ? 'calc(100% - 52px)'
+              : '100%'
+          }
+        >
           <InfiniteList
             loading={loading}
             data={data?.contacts.nodes}
@@ -199,7 +251,25 @@ export const ContactFlowColumn: React.FC<Props> = ({
             EmptyPlaceholder={undefined}
           />
         </Box>
+        {appealStatus === AppealStatusEnum.Asked && (
+          <AddContactToAppealBox>
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleAddContactToAppeal}
+              onMouseEnter={preloadAddContactToAppealModal}
+            >
+              {t('Add Contact to Appeal')}
+            </Button>
+          </AddContactToAppealBox>
+        )}
       </StyledCardContent>
+
+      {addContactsModalOpen && (
+        <DynamicAddContactToAppealModal
+          handleClose={() => setAddContactsModalOpen(false)}
+        />
+      )}
     </Card>
   );
 };

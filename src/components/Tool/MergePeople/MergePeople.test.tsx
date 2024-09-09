@@ -70,10 +70,10 @@ const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
 
 describe('Tools - MergePeople', () => {
   it('should render', async () => {
-    const { findByText, getByTestId } = render(<MergePeopleWrapper />);
+    const { findByTestId } = render(<MergePeopleWrapper />);
 
-    expect(await findByText('Merge People')).toBeInTheDocument();
-    expect(getByTestId('PeopleMergeDescription').textContent).toMatch(
+    const PeopleMergeDescription = await findByTestId('PeopleMergeDescription');
+    expect(PeopleMergeDescription.textContent).toMatch(
       'You have 55 possible duplicate people',
     );
   });
