@@ -180,6 +180,13 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         </Hidden>
       </HeaderWrapInner>
       <HeaderWrapInner style={{ marginLeft: 8 }}>
+        {!!selectedIds.length && (
+          <Hidden smDown>
+            <ItemsShowingText sx={{ marginRight: 2 }}>
+              {t('{{count}} Selected', { count: selectedIds.length })}
+            </ItemsShowingText>
+          </Hidden>
+        )}
         {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
           <ContactsMassActionsDropdown
             filterPanelOpen={filterPanelOpen}

@@ -635,4 +635,45 @@ describe('ListHeader', () => {
       ).toBeInTheDocument();
     });
   });
+
+  it('shows the selected count', () => {
+    const { getByText } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={['a', 'b', 'c']}
+          page={PageEnum.Appeal}
+          contactsView={TableViewModeEnum.Flows}
+          activeFilters={false}
+          starredFilter={{}}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
+
+    expect(getByText('3 Selected')).toBeInTheDocument();
+    expect(getByText('Actions')).toBeInTheDocument();
+  });
+
+  it('does not shows the selected count', () => {
+    const { queryByText } = render(
+      <MocksProviders>
+        <ListHeader
+          selectedIds={[]}
+          page={PageEnum.Appeal}
+          contactsView={TableViewModeEnum.Flows}
+          activeFilters={false}
+          starredFilter={{}}
+          headerCheckboxState={ListHeaderCheckBoxState.Unchecked}
+          filterPanelOpen={false}
+          contactDetailsOpen={false}
+          {...mockedProps}
+        />
+      </MocksProviders>,
+    );
+    expect(queryByText('Selected')).not.toBeInTheDocument();
+    expect(queryByText('Actions')).not.toBeInTheDocument();
+  });
 });

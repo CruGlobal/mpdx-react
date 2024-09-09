@@ -57,6 +57,8 @@ export interface AppealsType
     | 'setContactFocus'
     | 'setViewMode'
   > {
+  selectMultipleIds: (ids: string[]) => void;
+  deselectMultipleIds: (ids: string[]) => void;
   setViewMode: (mode: TableViewModeEnum) => void;
   setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
@@ -189,6 +191,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     toggleSelectAll,
     toggleSelectionById,
     deselectAll,
+    selectMultipleIds,
+    deselectMultipleIds,
   } = useMassSelection(
     contactCount,
     allContactIds,
@@ -482,6 +486,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         isRowChecked: isRowChecked,
         toggleSelectAll: toggleSelectAll,
         toggleSelectionById: toggleSelectionById,
+        selectMultipleIds: selectMultipleIds,
+        deselectMultipleIds: deselectMultipleIds,
         filterData: filterData,
         filtersLoading: filtersLoading,
         toggleFilterPanel: toggleFilterPanel,
