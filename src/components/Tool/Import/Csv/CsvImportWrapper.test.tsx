@@ -102,9 +102,8 @@ describe('CsvImportWrapper', () => {
       uploadData.sampleContacts = [{} as CsvContact];
       initialData = { ...uploadData };
 
-      const { queryByRole, findByText } = renderCsvImportWrapper('Fail');
+      const { queryByRole } = renderCsvImportWrapper('Fail');
 
-      expect(await findByText('Import from CSV')).toBeVisible();
       expect(
         await queryByRole('columnheader', { name: 'Your CSV Header' }),
       ).not.toBeInTheDocument();

@@ -223,6 +223,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
             attributes: donationsAttributes,
           },
         },
+        refetchQueries: ['Contacts', 'Appeal'],
       });
     }
     if (updatedPledge?.id) {
@@ -239,6 +240,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
             },
           },
         },
+        refetchQueries: ['Contacts', 'Appeal'],
       });
     } else if (!donationsAttributes.length) {
       // Create pledge if no pledge and no donations
@@ -254,6 +256,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
             },
           },
         },
+        refetchQueries: ['Contacts', 'Appeal'],
       });
     }
     handleClose();

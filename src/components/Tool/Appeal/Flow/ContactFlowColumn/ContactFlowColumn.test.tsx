@@ -33,7 +33,13 @@ const router = {
   isReady: true,
 };
 
-const Components = () => (
+interface ComponentsProps {
+  appealStatus?: AppealStatusEnum;
+}
+
+const Components = ({
+  appealStatus = AppealStatusEnum.Processed,
+}: ComponentsProps) => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
       <ThemeProvider theme={theme}>
@@ -59,7 +65,7 @@ const Components = () => (
                   title={title}
                   onContactSelected={onContactSelected}
                   changeContactStatus={changeContactStatus}
-                  appealStatus={AppealStatusEnum.Processed}
+                  appealStatus={appealStatus}
                 />
               </VirtuosoMockContext.Provider>
             </AppealsWrapper>
@@ -94,5 +100,25 @@ describe('ContactFlowColumn', () => {
     await waitFor(() => {
       getByRole('menuitem', { name: 'Select 1 contact' });
     });
+  });
+
+  it('"asked" column should has the "Add Contact to Appeal" button', async () => {
+    const { findByText } = render(
+      <Components appealStatus={AppealStatusEnum.Asked} />,
+    );
+
+    expect(await findByText('Add Contact to Appeal')).toBeInTheDocument();
+
+    userEvent.click(await findByText('Add Contact to Appeal'));
+
+    expect(await findByText('Add Contact(s) to Appeal')).toBeInTheDocument();
+  });
+
+  it('other columns should not have the "Add Contact to Appeal" button', async () => {
+    const { findByText, queryByText } = render(<Components />);
+
+    expect(await findByText(title)).toBeInTheDocument();
+
+    expect(queryByText('Add Contact to Appeal')).not.toBeInTheDocument();
   });
 });

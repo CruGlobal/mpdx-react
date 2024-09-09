@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Divider,
   Grid,
   MenuItem,
   Select,
@@ -56,11 +55,6 @@ const SourceSelect = styled(Select)(() => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
-}));
-
-const ContentDivider = styled(Divider)(() => ({
-  marginTop: theme.spacing(2),
-  marginBottom: theme.spacing(2),
 }));
 
 const ConfirmButton = styled(Button)(({ theme }) => ({
@@ -314,8 +308,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       {data && dataState ? (
         <ToolsGridContainer container spacing={3}>
           <Grid item xs={12}>
-            <Typography variant="h4">{t('Fix Email Addresses')}</Typography>
-            <ContentDivider />
             <Box mb={2}>
               {!!data.people.nodes.length && (
                 <>

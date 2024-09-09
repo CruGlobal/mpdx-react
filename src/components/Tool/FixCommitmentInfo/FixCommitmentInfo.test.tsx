@@ -76,12 +76,10 @@ describe('FixCommitmentContact', () => {
   });
 
   it('default with test data', async () => {
-    const { getByText, getAllByText, findByText } = render(<Components />);
-    await findByText('Fix Commitment Info');
-    expect(getByText('Fix Commitment Info')).toBeInTheDocument();
-
+    const { findByText, getAllByText } = render(<Components />);
+    // await findByText('You have 2 partner statuses to confirm.');
     expect(
-      getByText('You have 2 partner statuses to confirm.'),
+      await findByText('You have 2 partner statuses to confirm.'),
     ).toBeInTheDocument();
     expect(getAllByText('Current: Partner - Financial $1 Weekly')).toHaveLength(
       2,
@@ -94,14 +92,10 @@ describe('FixCommitmentContact', () => {
 
     expect(home).toHaveStyle('display: flex');
     const container = await findByTestId('Container');
-    const divider = await findByTestId('Divider');
     const description = await findByTestId('Description');
 
     expect(container.className).toEqual(expect.stringContaining('container'));
     expect(container).toHaveStyle('width: calc(100% + 24px);');
-
-    expect(divider.className).toEqual(expect.stringContaining('divider'));
-    expect(divider).toHaveStyle('margin-top: 16px');
 
     expect(description.className).toEqual(
       expect.stringContaining('descriptionBox'),

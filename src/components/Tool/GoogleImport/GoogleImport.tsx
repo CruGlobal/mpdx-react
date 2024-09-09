@@ -15,7 +15,6 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -214,10 +213,6 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
       )}
       <ToolsGridContainer container spacing={3}>
         <>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Import from Google')}</Typography>
-            <Divider sx={{ margin: theme.spacing(2, 0) }} />
-          </Grid>
           {loading && !data && (
             <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
           )}

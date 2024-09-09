@@ -11,8 +11,11 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
-import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import {
+  AppealsContext,
+  AppealsType,
+  TableViewModeEnum,
+} from '../../AppealsContext/AppealsContext';
 import { DeleteAppealContactModal } from './DeleteAppealContactModal';
 
 const mockEnqueue = jest.fn();
@@ -37,13 +40,12 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
 
 interface ComponentsProps {
-  contact?: AppealContactInfoFragment;
+  viewMode?: TableViewModeEnum;
 }
 
-const Components = ({}: ComponentsProps) => {
+const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
   let requestCount = 0;
   return (
     <I18nextProvider i18n={i18n}>
@@ -123,14 +125,14 @@ const Components = ({}: ComponentsProps) => {
                 >
                   <AppealsWrapper>
                     <AppealsContext.Provider
-                      value={{
-                        accountListId,
-                        appealId: appealId,
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        contactsQueryResult: { refetch },
-                        filterPanelOpen: false,
-                      }}
+                      value={
+                        {
+                          accountListId,
+                          appealId: appealId,
+                          filterPanelOpen: false,
+                          viewMode,
+                        } as unknown as AppealsType
+                      }
                     >
                       <DeleteAppealContactModal
                         handleClose={handleClose}
@@ -151,7 +153,6 @@ const Components = ({}: ComponentsProps) => {
 describe('DeleteAppealContactModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
   });
   it('default', () => {
     const { getByRole } = render(<Components />);

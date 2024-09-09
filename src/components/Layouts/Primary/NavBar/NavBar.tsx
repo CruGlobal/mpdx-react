@@ -1,13 +1,15 @@
-import NextLink, { LinkProps } from 'next/link';
+import { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { LogoLink } from '../LogoLink/LogoLink';
 import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
@@ -114,6 +116,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const accountListId = useAccountListId();
   const { pathname } = useRouter();
   const { t } = useTranslation();
+  const { onSetupTour } = useSetupContext();
 
   const sections: Section[] = [
     {
@@ -174,21 +177,17 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
         variant="temporary"
       >
         <Box p={2} display="flex" justifyContent="center">
-          <NextLink href="/">
-            <img
-              src={process.env.NEXT_PUBLIC_MEDIA_LOGO}
-              alt="logo"
-              style={{ cursor: 'pointer' }}
-            />
-          </NextLink>
+          <LogoLink />
         </Box>
-        <Box p={2}>
-          {renderNavItems({
-            accountListId,
-            items: sections,
-            pathname,
-          })}
-        </Box>
+        {!onSetupTour && (
+          <Box p={2}>
+            {renderNavItems({
+              accountListId,
+              items: sections,
+              pathname,
+            })}
+          </Box>
+        )}
         <Box p={2}>
           <NavTools />
         </Box>

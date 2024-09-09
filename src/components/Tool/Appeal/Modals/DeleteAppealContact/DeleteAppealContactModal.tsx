@@ -42,13 +42,13 @@ export const DeleteAppealContactModal: React.FC<
   const { appealId, viewMode } = React.useContext(
     AppealsContext,
   ) as AppealsType;
-  const [deleteAppealContact] = useDeleteAppealContactMutation();
+  const [deleteAppealContact, { loading: mutating }] =
+    useDeleteAppealContactMutation();
   const { data, fetchMore } = useAppealContactsQuery({
     variables: {
       appealId: appealId ?? '',
     },
   });
-  const [mutating, setMutating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [appealContactsIds, setAppealContactsIds] = useState<
     AppealContactsInfoFragment[]
@@ -114,7 +114,6 @@ export const DeleteAppealContactModal: React.FC<
         });
       },
     });
-    setMutating(false);
   };
 
   const onClickDecline = () => {

@@ -6,6 +6,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 import { List } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { useGetTopBarQuery } from '../../TopBar/GetTopBar.generated';
 import NotificationMenu from '../../TopBar/Items/NotificationMenu/NotificationMenu';
 import { NavItem } from '../NavItem/NavItem';
@@ -16,18 +17,23 @@ import { SearchMenuPanel } from './SearchMenuPanel/SearchMenuPanel';
 export const NavTools: FC = () => {
   const { data } = useGetTopBarQuery();
   const { t } = useTranslation();
+  const { onSetupTour } = useSetupContext();
 
   return (
     <List disablePadding data-testid="NavTools">
-      <NavItem icon={SearchIcon} title={t('Search')}>
-        <SearchMenuPanel />
-      </NavItem>
-      <NavItem icon={AddIcon} title={t('Add')}>
-        <AddMenuPanel />
-      </NavItem>
-      <NavItem icon={NotificationsIcon} title={t('Notifications')}>
-        <NotificationMenu isInDrawer={true} />
-      </NavItem>
+      {!onSetupTour && (
+        <>
+          <NavItem icon={SearchIcon} title={t('Search')}>
+            <SearchMenuPanel />
+          </NavItem>
+          <NavItem icon={AddIcon} title={t('Add')}>
+            <AddMenuPanel />
+          </NavItem>
+          <NavItem icon={NotificationsIcon} title={t('Notifications')}>
+            <NotificationMenu isInDrawer={true} />
+          </NavItem>
+        </>
+      )}
       <NavItem
         icon={AccountCircleIcon}
         title={[data?.user.firstName, data?.user.lastName]

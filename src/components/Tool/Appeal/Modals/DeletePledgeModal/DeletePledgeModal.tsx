@@ -39,9 +39,7 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [deleteAccountListPledge, { loading }] =
     useDeleteAccountListPledgeMutation();
-  const { contactsQueryResult, viewMode } = useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const { viewMode } = useContext(AppealsContext) as AppealsType;
 
   const handleConfirm = async () => {
     await deleteAccountListPledge({
@@ -50,9 +48,7 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
           id: pledge.id,
         },
       },
-      update: () => {
-        contactsQueryResult.refetch();
-      },
+      refetchQueries: ['Contacts', 'Appeal'],
       onCompleted: () => {
         enqueueSnackbar(t('Successfully removed commitment from appeal'), {
           variant: 'success',

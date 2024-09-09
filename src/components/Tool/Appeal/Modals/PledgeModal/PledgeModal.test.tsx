@@ -12,7 +12,10 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AppealsContext } from '../../AppealsContext/AppealsContext';
+import {
+  AppealsContext,
+  AppealsType,
+} from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { defaultContact } from '../../List/ContactRow/ContactRowMock';
 import { PledgeModal } from './PledgeModal';
@@ -25,7 +28,6 @@ const router = {
 };
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
-const refetch = jest.fn();
 
 interface ComponentsProps {
   pledge?: AppealContactInfoFragment['pledges'][0];
@@ -40,13 +42,12 @@ const Components = ({ pledge = undefined }: ComponentsProps) => (
             <GqlMockedProvider onCall={mutationSpy}>
               <AppealsWrapper>
                 <AppealsContext.Provider
-                  value={{
-                    accountListId,
-                    appealId: appealId,
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    contactsQueryResult: { refetch },
-                  }}
+                  value={
+                    {
+                      accountListId,
+                      appealId: appealId,
+                    } as unknown as AppealsType
+                  }
                 >
                   <PledgeModal
                     handleClose={handleClose}
@@ -66,7 +67,6 @@ const Components = ({ pledge = undefined }: ComponentsProps) => (
 describe('PledgeModal', () => {
   beforeEach(() => {
     handleClose.mockClear();
-    refetch.mockClear();
   });
   it('default', async () => {
     const { getByRole, getByText, findByRole } = render(<Components />);
@@ -146,8 +146,6 @@ describe('PledgeModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
   });
 
   it('Edit commitment', async () => {
@@ -204,7 +202,5 @@ describe('PledgeModal', () => {
         },
       });
     });
-
-    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });
