@@ -14,11 +14,13 @@ interface TestComponentProps {
 }
 
 const ContextTestingComponent = () => {
-  const { settingUp } = useSetupContext();
+  const { onSetupTour } = useSetupContext();
 
   return (
     <div data-testid="setting-up">
-      {typeof settingUp === 'undefined' ? 'undefined' : settingUp.toString()}
+      {typeof onSetupTour === 'undefined'
+        ? 'undefined'
+        : onSetupTour.toString()}
     </div>
   );
 };
@@ -100,7 +102,7 @@ describe('SetupProvider', () => {
     await waitFor(() => expect(push).not.toHaveBeenCalled());
   });
 
-  describe('settingUp context', () => {
+  describe('onSetupTour context', () => {
     it('is undefined while data is loading', () => {
       const { getByTestId } = render(
         <TestComponent setup={null} setupPosition="" />,
@@ -109,11 +111,12 @@ describe('SetupProvider', () => {
       expect(getByTestId('setting-up')).toHaveTextContent('undefined');
     });
 
-    it('is true when setup is set', async () => {
+    it('is true when setup is set on a tour page', async () => {
       const { getByTestId } = render(
         <TestComponent
           setup={UserSetupStageEnum.NoDefaultAccountList}
           setupPosition=""
+          pathname="/setup/start"
         />,
       );
 
@@ -122,13 +125,27 @@ describe('SetupProvider', () => {
       );
     });
 
-    it('is true when setup_position is set', async () => {
+    it('is true when setup_position is set on a tour page', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          setup={null}
+          setupPosition="start"
+          pathname="/setup/start"
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('true'),
+      );
+    });
+
+    it('is false when not on a tour page', async () => {
       const { getByTestId } = render(
         <TestComponent setup={null} setupPosition="start" />,
       );
 
       await waitFor(() =>
-        expect(getByTestId('setting-up')).toHaveTextContent('true'),
+        expect(getByTestId('setting-up')).toHaveTextContent('false'),
       );
     });
 

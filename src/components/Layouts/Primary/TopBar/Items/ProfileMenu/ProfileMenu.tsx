@@ -21,6 +21,7 @@ import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import {
   PrivacyPolicyLink,
   TermsOfUseLink,
@@ -124,6 +125,7 @@ const ProfileMenu = (): ReactElement => {
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
+  const { onSetupTour } = useSetupContext();
   const [profileMenuAnchorEl, setProfileMenuAnchorEl] =
     useState<HTMLButtonElement>();
   const profileMenuOpen = Boolean(profileMenuAnchorEl);
@@ -275,7 +277,7 @@ const ProfileMenu = (): ReactElement => {
             ))}
           </AccountListSelectorDetails>
         </Accordion>
-        {accountListId && (
+        {!onSetupTour && accountListId && (
           <div>
             <Divider />
             <Link
