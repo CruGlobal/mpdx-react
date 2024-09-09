@@ -23,15 +23,6 @@ import { StickyConfirmButtons } from './StickyConfirmButtons';
 import { bulkUpdateDuplicates } from './mergeDuplicatesHelper';
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '80%',
-    display: 'flex',
-    height: 'auto',
-    [theme.breakpoints.down('lg')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',

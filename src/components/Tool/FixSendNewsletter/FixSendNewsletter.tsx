@@ -20,15 +20,6 @@ import {
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '80%',
-    display: 'flex',
-    height: 'auto',
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',

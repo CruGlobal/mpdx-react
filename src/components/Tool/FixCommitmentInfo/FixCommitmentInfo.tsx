@@ -30,14 +30,6 @@ import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '70%',
-    display: 'flex',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
   toolIcon: {
     height: theme.spacing(5),
     width: theme.spacing(5),

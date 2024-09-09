@@ -17,10 +17,6 @@ import { ToolsGridContainer } from 'src/components/Tool/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  container: {
-    padding: `${theme.spacing(3)} ${theme.spacing(3)} 0`,
-    display: 'flex',
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',

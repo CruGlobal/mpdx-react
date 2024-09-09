@@ -40,14 +40,6 @@ export type HandleSingleConfirmProps = {
 };
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '70%',
-    display: 'flex',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
