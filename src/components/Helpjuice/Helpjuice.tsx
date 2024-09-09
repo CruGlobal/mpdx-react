@@ -16,15 +16,23 @@ export const Helpjuice: React.FC = () => {
 
     // Add some extra information about the current user and page to the contact us Helpjuice link. Out custom JS on the
     // Helpjuice page will extract this data from the URL and use it to pre-populate the contact form.
-    const link = document.getElementById('helpjuice-contact-link');
-    if (link instanceof HTMLAnchorElement) {
+    const contactLink = document.getElementById('helpjuice-contact-link');
+    if (contactLink instanceof HTMLAnchorElement) {
       const url = new URL(`${process.env.HELPJUICE_ORIGIN}/contact-us`);
       if (session) {
         url.searchParams.set('mpdxName', session.user.name);
         url.searchParams.set('mpdxEmail', session.user.email);
       }
       url.searchParams.set('mpdxUrl', window.location.href);
-      link.href = url.toString();
+      contactLink.href = url.toString();
+    }
+
+    const knowledgeBaseLink = document.querySelector('a.knowledge-base-link');
+    if (
+      process.env.HELPJUICE_KNOWLEDGE_BASE_URL &&
+      knowledgeBaseLink instanceof HTMLAnchorElement
+    ) {
+      knowledgeBaseLink.href = process.env.HELPJUICE_KNOWLEDGE_BASE_URL;
     }
   }, [session, href]);
 

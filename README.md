@@ -70,6 +70,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `DD_ENV` - Datadog environment.
 - `HELPJUICE_ORIGIN` - Helpjuice origin for documentation and user support (example: `https://www.helpducks.org`)
+- `HELPJUICE_KNOWLEDGE_BASE_URL` - Knowledge base page to make the Helpjuice "Visit Knowledge Base" page link to (example: `https://www.helpducks.org/mpdx`)
 - `HELP_URL_COACHING_ACTIVITY` - Link to an article explaining the coaching activity table
 - `HELP_URL_COACHING_APPOINTMENTS_AND_RESULTS` - Link to an article explaining the coaching appointments and results table
 - `HELP_URL_SETUP_FIND_ORGANIZATION` - Link to an article explaining how to find an organization

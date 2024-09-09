@@ -6,7 +6,10 @@ import { Helpjuice } from './Helpjuice';
 describe('Helpjuice', () => {
   beforeEach(() => {
     process.env.HELPJUICE_ORIGIN = 'https://domain.helpjuice.com';
-    document.body.innerHTML = '<a id="helpjuice-contact-link">';
+    process.env.HELPJUICE_KNOWLEDGE_BASE_URL =
+      'https://domain.helpjuice.com/kb';
+    document.body.innerHTML =
+      '<a id="helpjuice-contact-link">Contact Us</a><a class="knowledge-base-link">Visit Knowledge Base</a>';
     location.href = 'https://example.com/';
   });
 
@@ -83,6 +86,15 @@ describe('Helpjuice', () => {
     expect(document.getElementById('helpjuice-contact-link')).toHaveProperty(
       'href',
       'https://domain.helpjuice.com/contact-us?mpdxUrl=https%3A%2F%2Fexample.com%2F',
+    );
+  });
+
+  it('updates the knowledge base link', () => {
+    render(<Helpjuice />);
+
+    expect(document.querySelector('a.knowledge-base-link')).toHaveProperty(
+      'href',
+      'https://domain.helpjuice.com/kb',
     );
   });
 });
