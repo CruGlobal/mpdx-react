@@ -10,24 +10,26 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
-import { StatusEnum } from 'src/graphql/types.generated';
+import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
-import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
+import {
+  AppealStatusEnum,
+  AppealsContext,
+  AppealsType,
+} from '../../AppealsContext/AppealsContext';
+import { defaultContact } from '../../List/ContactRow/ContactRowMock';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
+const appealId = 'appealId';
+const isChecked = jest.fn().mockImplementation(() => false);
+const selectMultipleIds = jest.fn();
+const deselectMultipleIds = jest.fn();
+const toggleSelectionById = jest.fn();
 const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
-const contact = {
-  id: 'contactID',
-  name: 'Test Person',
-  status: StatusEnum.NotInterested,
-  primaryAddress: {
-    id: 'address',
-    updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-  },
-};
+
 const router = {
   query: { accountListId },
   isReady: true,
@@ -44,30 +46,66 @@ const Components = ({
     <DndProvider backend={HTML5Backend}>
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{ Contacts: ContactsQuery }>
+          <GqlMockedProvider<{
+            Contacts: ContactsQuery;
+            GetIdsForMassSelection: GetIdsForMassSelectionQuery;
+          }>
             mocks={{
               Contacts: {
                 contacts: {
-                  nodes: [contact],
+                  nodes: [
+                    defaultContact,
+                    {
+                      ...defaultContact,
+                      id: `${defaultContact.id}2`,
+                    },
+                  ],
                   pageInfo: { endCursor: 'Mg', hasNextPage: false },
-                  totalCount: 1,
+                  totalCount: 2,
+                },
+              },
+              GetIdsForMassSelection: {
+                contacts: {
+                  nodes: [
+                    {
+                      id: defaultContact.id,
+                    },
+                    {
+                      id: `${defaultContact.id}2`,
+                    },
+                  ],
+                  totalCount: 2,
                 },
               },
             }}
           >
             <AppealsWrapper>
-              <VirtuosoMockContext.Provider
-                value={{ viewportHeight: 300, itemHeight: 100 }}
+              <AppealsContext.Provider
+                value={
+                  {
+                    appealId,
+                    sanitizedFilters: {},
+                    starredFilter: {},
+                    selectMultipleIds,
+                    deselectMultipleIds,
+                    toggleSelectionById,
+                    isRowChecked: isChecked,
+                  } as unknown as AppealsType
+                }
               >
-                <ContactFlowColumn
-                  accountListId={accountListId}
-                  color={theme.palette.mpdxBlue.main}
-                  title={title}
-                  onContactSelected={onContactSelected}
-                  changeContactStatus={changeContactStatus}
-                  appealStatus={appealStatus}
-                />
-              </VirtuosoMockContext.Provider>
+                <VirtuosoMockContext.Provider
+                  value={{ viewportHeight: 300, itemHeight: 100 }}
+                >
+                  <ContactFlowColumn
+                    accountListId={accountListId}
+                    color={theme.palette.mpdxBlue.main}
+                    title={title}
+                    onContactSelected={onContactSelected}
+                    changeContactStatus={changeContactStatus}
+                    appealStatus={appealStatus}
+                  />
+                </VirtuosoMockContext.Provider>
+              </AppealsContext.Provider>
             </AppealsWrapper>
           </GqlMockedProvider>
         </TestRouter>
@@ -78,28 +116,62 @@ const Components = ({
 
 describe('ContactFlowColumn', () => {
   it('should render a column with correct details', async () => {
-    const { getByText, findByText, getByTestId } = render(<Components />);
+    const { getByText, getAllByText, findByText, getByTestId } = render(
+      <Components />,
+    );
     expect(await findByText(title)).toBeInTheDocument();
-    expect(getByText('1')).toBeInTheDocument();
-    expect(getByText('Test Person')).toBeInTheDocument();
+    expect(getByText('2')).toBeInTheDocument();
+    expect(getAllByText('Test, Name')[0]).toBeInTheDocument();
     expect(getByTestId('column-header')).toHaveStyle({
       backgroundColor: 'theme.palette.mpdxBlue.main',
     });
   });
 
   it('should open menu', async () => {
-    const { getByText, findByText, getByTestId, getByRole } = render(
+    const { getAllByText, findByText, getByTestId, findByRole } = render(
       <Components />,
     );
 
     expect(await findByText(title)).toBeInTheDocument();
+    expect(getAllByText('Ask In Future')[0]).toBeInTheDocument();
+    userEvent.click(getByTestId('MoreVertIcon'));
+
+    expect(
+      await findByRole('menuitem', { name: 'Select all 2 contacts' }),
+    ).toBeInTheDocument();
+  });
+
+  it('should select all contacts', async () => {
+    const { getByTestId, findByText, findByRole } = render(<Components />);
+
+    expect(await findByText(title)).toBeInTheDocument();
+    userEvent.click(getByTestId('MoreVertIcon'));
+    userEvent.click(
+      await findByRole('menuitem', { name: 'Select all 2 contacts' }),
+    );
+
+    await waitFor(() =>
+      expect(selectMultipleIds).toHaveBeenCalledWith([
+        defaultContact.id,
+        `${defaultContact.id}2`,
+      ]),
+    );
+  });
+
+  it('should deselect all contacts', async () => {
+    const { getByTestId, findByText, findByRole } = render(<Components />);
+
+    expect(await findByText(title)).toBeInTheDocument();
 
     userEvent.click(getByTestId('MoreVertIcon'));
-    expect(getByText('Not Interested')).toBeInTheDocument();
+    userEvent.click(await findByRole('menuitem', { name: 'Deselect All' }));
 
-    await waitFor(() => {
-      getByRole('menuitem', { name: 'Select 1 contact' });
-    });
+    await waitFor(() =>
+      expect(deselectMultipleIds).toHaveBeenCalledWith([
+        defaultContact.id,
+        `${defaultContact.id}2`,
+      ]),
+    );
   });
 
   it('"asked" column should has the "Add Contact to Appeal" button', async () => {

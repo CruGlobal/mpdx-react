@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   Box,
@@ -28,6 +28,7 @@ import {
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { useContactsQuery } from '../../AppealsContext/contacts.generated';
 import {
@@ -68,28 +69,52 @@ export const ContactFlowColumn: React.FC<Props> = ({
   onContactSelected,
   changeContactStatus,
 }) => {
-  const { appealId, sanitizedFilters, starredFilter } = React.useContext(
-    AppealsContext,
-  ) as AppealsType;
+  const {
+    appealId,
+    sanitizedFilters,
+    starredFilter,
+    selectMultipleIds,
+    deselectMultipleIds,
+  } = React.useContext(AppealsContext) as AppealsType;
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [addContactsModalOpen, setAddContactsModalOpen] = useState(false);
   const open = Boolean(anchorEl);
 
+  const contactsFilters = useMemo(
+    () => ({
+      ...sanitizedFilters,
+      ...starredFilter,
+      appeal: [appealId ?? ''],
+      appealStatus,
+      wildcardSearch: searchTerm as string,
+    }),
+    [sanitizedFilters, starredFilter, searchTerm, appealId],
+  );
+
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
-      contactsFilters: {
-        ...sanitizedFilters,
-        ...starredFilter,
-        appeal: [appealId ?? ''],
-        appealStatus,
-        wildcardSearch: searchTerm as string,
-      },
+      contactsFilters,
     },
     skip: !accountListId || !appealStatus,
   });
+
+  const contactCount = data?.contacts.totalCount ?? 0;
+  const { data: allContacts } = useGetIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: contactCount,
+      contactsFilters,
+    },
+    skip: contactCount === 0,
+  });
+
+  const allContactIds = useMemo(
+    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
+    [allContacts],
+  );
 
   const { data: excludedContacts } = useExcludedAppealContactsQuery({
     variables: {
@@ -116,13 +141,13 @@ export const ContactFlowColumn: React.FC<Props> = ({
   };
 
   const handleSelectAll = () => {
+    selectMultipleIds(allContactIds);
     setAnchorEl(null);
-    // TODO implement select all
   };
 
   const handleDeselectAll = () => {
+    deselectMultipleIds(allContactIds);
     setAnchorEl(null);
-    // TODO implement deselect all
   };
 
   const handleAddContactToAppeal = () => {
