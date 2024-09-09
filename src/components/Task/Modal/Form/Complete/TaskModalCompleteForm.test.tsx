@@ -580,4 +580,24 @@ describe('TaskModalCompleteForm', () => {
   });
 
   taskModalTests(Components);
+
+  describe('flows status change message', () => {
+    it('does not show by default', () => {
+      const { queryByText } = render(<Components />);
+
+      expect(
+        queryByText(/The contact's status has been updated/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows when showFlowsMessage is set', () => {
+      const { getByText } = render(
+        <Components props={{ showFlowsMessage: true }} />,
+      );
+
+      expect(
+        getByText(/The contact's status has been updated/),
+      ).toBeInTheDocument();
+    });
+  });
 });
