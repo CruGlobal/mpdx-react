@@ -116,7 +116,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
 
                 <Alert severity="warning" style={{ marginTop: '15px' }}>
                   {t(
-                    'Resetting to default will change the columns back to the five phases of MPD.  Are you sure you want to revert to the default columns?',
+                    'Resetting to default will change the columns back to the five phases of MPD. Any customizations you have made will be lost. Are you sure you want to revert to the default columns?',
                   )}
                 </Alert>
               </FormControl>

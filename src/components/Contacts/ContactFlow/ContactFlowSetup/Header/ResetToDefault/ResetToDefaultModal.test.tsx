@@ -69,7 +69,7 @@ describe('ResetToDefaultModal', () => {
 
     expect(
       getByText(
-        'Resetting to default will change the columns back to the five phases of MPD. Are you sure you want to revert to the default columns?',
+        'Resetting to default will change the columns back to the five phases of MPD. Any customizations you have made will be lost. Are you sure you want to revert to the default columns?',
       ),
     ).toBeInTheDocument();
   });
