@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { StickyButtonHeaderBox } from 'src/components/Shared/Header/styledComponents';
 import { ActionType } from './MergeContacts';
 
@@ -9,21 +8,17 @@ interface StickyConfirmButtonsProps {
   accountListId: string;
   confirmAction: () => void;
   disabled: boolean;
-  loading: boolean;
   setActions: Dispatch<SetStateAction<Record<string, ActionType>>>;
   duplicatesDisplayedCount: number;
   totalCount: number;
-  updating: boolean;
 }
 export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
   accountListId,
   confirmAction,
   disabled,
-  loading,
   setActions,
   duplicatesDisplayedCount,
   totalCount,
-  updating,
 }) => {
   const { t } = useTranslation();
 
@@ -51,9 +46,6 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
           />
         </Typography>
       </Box>
-      {(loading || updating) && (
-        <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
-      )}
       <Box>
         <Button
           variant="contained"
