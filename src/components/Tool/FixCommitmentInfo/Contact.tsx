@@ -205,7 +205,11 @@ const Contact: React.FC<Props> = ({
 
   const suggestedAmount = suggestedChanges?.pledge_amount || null;
 
-  const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
+  const suggestedFrequency =
+    suggestedChanges?.pledge_frequency &&
+    suggestedChanges.pledge_frequency in PledgeFrequencyEnum
+      ? suggestedChanges.pledge_frequency
+      : '';
 
   const suggestedStatus = suggestedChanges?.status || null;
 
@@ -363,51 +367,53 @@ const Contact: React.FC<Props> = ({
                             {errors.statusValue && errors.statusValue}
                           </FormHelperText>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
-                          <Box className={classes.boxBottom}>
-                            <FormControl fullWidth size="small">
-                              <InputLabel id="currency-label">
-                                {t('Currency')}
-                              </InputLabel>
-                              <Select
-                                className={classes.select}
-                                labelId="currency-label"
-                                size="small"
-                                label={t('Currency')}
-                                placeholder="Currency"
-                                data-testid="pledgeCurrency"
-                                inputProps={{
-                                  'data-testid': 'pledgeCurrency-input',
-                                }}
-                                value={pledgeCurrency}
-                                onChange={(e) =>
-                                  setFieldValue(
-                                    'pledgeCurrency',
-                                    e.target.value,
-                                  )
-                                }
+                        {pledgeCurrencies && (
+                          <Grid item xs={12} md={6} lg={4}>
+                            <Box className={classes.boxBottom}>
+                              <FormControl fullWidth size="small">
+                                <InputLabel id="currency-label">
+                                  {t('Currency')}
+                                </InputLabel>
+
+                                <Select
+                                  className={classes.select}
+                                  labelId="currency-label"
+                                  size="small"
+                                  label={t('Currency')}
+                                  placeholder="Currency"
+                                  data-testid="pledgeCurrency"
+                                  inputProps={{
+                                    'data-testid': 'pledgeCurrency-input',
+                                  }}
+                                  value={pledgeCurrency}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      'pledgeCurrency',
+                                      e.target.value,
+                                    )
+                                  }
+                                >
+                                  {pledgeCurrencies &&
+                                    getPledgeCurrencyOptions(
+                                      pledgeCurrencies,
+                                      PledgeCurrencyOptionFormatEnum.Short,
+                                    )}
+                                </Select>
+                              </FormControl>
+                              <FormHelperText
+                                error={true}
+                                data-testid="pledgeCurrencyError"
                               >
-                                {pledgeCurrencies &&
-                                  getPledgeCurrencyOptions(
-                                    pledgeCurrencies,
-                                    PledgeCurrencyOptionFormatEnum.Short,
-                                  )}
-                              </Select>
-                            </FormControl>
-                            <FormHelperText
-                              error={true}
-                              data-testid="pledgeCurrencyError"
-                            >
-                              {errors.pledgeCurrency && errors.pledgeCurrency}
-                            </FormHelperText>
-                          </Box>
-                        </Grid>
+                                {errors.pledgeCurrency && errors.pledgeCurrency}
+                              </FormHelperText>
+                            </Box>
+                          </Grid>
+                        )}
                         <Grid item xs={12} lg={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <Field
                                 id="standard-number"
-                                as={TextField}
                                 input={<StyledInput />}
                                 label={t('Amount')}
                                 labelId="amount-label"
@@ -416,7 +422,8 @@ const Contact: React.FC<Props> = ({
                                 variant="standard"
                                 size="small"
                                 fullWidth
-                                render={() => (
+                              >
+                                {() => (
                                   <TextField
                                     label={t('Amount')}
                                     className={classes.select}
@@ -431,12 +438,12 @@ const Contact: React.FC<Props> = ({
                                     onChange={(event) =>
                                       setFieldValue(
                                         'pledgeAmount',
-                                        parseFloat(event.target.value),
+                                        event.target.value,
                                       )
                                     }
                                   />
                                 )}
-                              />
+                              </Field>
                             </FormControl>
                             <FormHelperText
                               error={true}
@@ -498,11 +505,7 @@ const Contact: React.FC<Props> = ({
                       </Grid>
                     </Grid>
                     {!!donations.length && (
-                      <Grid
-                        container
-                        className={classes.donationsTable}
-                        lg={12}
-                      >
+                      <Grid container className={classes.donationsTable}>
                         {donations
                           .map((donation) => (
                             <Grid

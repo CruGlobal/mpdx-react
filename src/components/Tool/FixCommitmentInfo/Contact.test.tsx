@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   fireEvent,
   render,
@@ -51,21 +52,47 @@ const TestComponent = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
-      <Contact
-        id={testData.id}
-        name={testData.name}
-        donations={testData.donations.nodes}
-        key={testData.name}
-        showModal={handleShowModal}
-        statusTitle={testData.statusTitle}
-        statusValue={testData.statusValue}
-        amount={testData.amount}
-        amountCurrency={testData.amountCurrency}
-        frequencyValue={testData.frequencyValue}
-        statuses={statuses}
-        setContactFocus={setContactFocus}
-        avatar={testData.avatar}
-      />
+      <GqlMockedProvider
+        mocks={{
+          LoadConstants: {
+            constant: {
+              pledgeCurrency: [
+                {
+                  code: 'CAD',
+                  codeSymbolString: 'CAD ($)',
+                  name: 'Canadian Dollar',
+                },
+                {
+                  code: 'CDF',
+                  codeSymbolString: 'CDF (CDF)',
+                  name: 'Congolese Franc',
+                },
+                {
+                  code: 'CHE',
+                  codeSymbolString: 'CHE (CHE)',
+                  name: 'WIR Euro',
+                },
+              ],
+            },
+          },
+        }}
+      >
+        <Contact
+          id={testData.id}
+          name={testData.name}
+          donations={testData.donations.nodes}
+          key={testData.name}
+          showModal={handleShowModal}
+          statusTitle={testData.statusTitle}
+          statusValue={testData.statusValue}
+          amount={testData.amount}
+          amountCurrency={testData.amountCurrency}
+          frequencyValue={testData.frequencyValue}
+          statuses={statuses}
+          setContactFocus={setContactFocus}
+          avatar={testData.avatar}
+        />
+      </GqlMockedProvider>
     </TestWrapper>
   </ThemeProvider>
 );
@@ -76,13 +103,13 @@ describe('FixCommitmentContact', () => {
     setContactFocus.mockClear();
   });
 
-  it('default', () => {
-    const { getByText, getByTestId } = render(<TestComponent />);
+  it('default', async () => {
+    const { getByText, findByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(
       getByText('Current: Partner - Financial ARM 50 Monthly'),
     ).toBeInTheDocument();
-    expect(getByTestId('pledgeCurrency-input')).toBeInTheDocument();
+    expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
   });
 
   it('should call hide and update functions', async () => {
@@ -139,7 +166,7 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should should render select field options and inputs', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, findByTestId } = render(
       <TestComponent statuses={['Partner - Financial', 'test_option_1']} />,
     );
 
@@ -149,7 +176,7 @@ describe('FixCommitmentContact', () => {
     });
     expect(frequency).toHaveValue('WEEKLY');
 
-    const currency = getByTestId('pledgeCurrency-input');
+    const currency = await findByTestId('pledgeCurrency-input');
     fireEvent.select(currency, {
       target: { value: 'USD ($)' },
     });
