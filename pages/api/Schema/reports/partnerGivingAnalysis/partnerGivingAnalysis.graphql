@@ -334,7 +334,7 @@ input ReportContactFilterSetInput {
   """
   Filter by Action; Accepts multiple parameters, with values 'none', or an activity type like 'Call'
   """
-  relatedTaskAction: [String!]
+  relatedTaskAction: [ContactFilterActivityTypeEnum!]
   reverseAlmaMater: Boolean
   reverseAppeal: Boolean
   reverseChurch: Boolean
