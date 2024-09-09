@@ -6,7 +6,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Divider,
   Grid,
   MenuItem,
   Select,
@@ -346,11 +345,6 @@ const FixMailingAddresses: React.FC<Props> = ({
     <Box className={classes.outer} data-testid="Home">
       <Box className={classes.outer}>
         <Grid container className={classes.container}>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Fix Mailing Addresses')}</Typography>
-            <Divider className={classes.divider} />
-          </Grid>
-
           {loading && !data && (
             <Box className={classes.outer}>
               <CircularProgress

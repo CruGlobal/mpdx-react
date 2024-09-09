@@ -70,13 +70,10 @@ const Components: React.FC<{
 
 describe('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
-    const { getByText, queryByTestId } = render(<Components />);
+    const { getByText, queryByTestId, findByText } = render(<Components />);
 
-    await waitFor(() =>
-      expect(getByText('Fix Phone Numbers')).toBeInTheDocument(),
-    );
     await expect(
-      getByText('You have 2 phone numbers to confirm.'),
+      await findByText('You have 2 phone numbers to confirm.'),
     ).toBeInTheDocument();
     expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
     expect(getByText('Test Contact')).toBeInTheDocument();

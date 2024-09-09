@@ -23,8 +23,8 @@ const RenderGoogleImportPage = () => (
 );
 describe('render', () => {
   it('google import page', async () => {
-    const { findAllByText } = render(<RenderGoogleImportPage />);
-    const title = await findAllByText('Import from TntConnect');
-    expect(title).toHaveLength(2);
+    const { findByText } = render(<RenderGoogleImportPage />);
+    const title = await findByText('Import from TntConnect');
+    expect(title).toBeInTheDocument();
   });
 });

@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   CircularProgress,
-  Divider,
   Grid,
   MenuItem,
   Select,
@@ -325,12 +324,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
               {({ errors, setValues, values }): ReactElement => (
                 <>
                   <Grid container className={classes.outter}>
-                    <Grid item xs={12}>
-                      <Typography variant="h4">
-                        {t('Fix Phone Numbers')}
-                      </Typography>
-                      <Divider className={classes.divider} />
-                    </Grid>
                     <Grid item xs={12}>
                       <Box mb={2}>
                         <Typography fontWeight="bold">
