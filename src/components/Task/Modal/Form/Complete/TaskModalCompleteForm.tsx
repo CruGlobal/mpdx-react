@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -77,12 +78,14 @@ interface Props {
   accountListId: string;
   task: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
+  showFlowsMessage?: boolean;
 }
 
 const TaskModalCompleteForm = ({
   accountListId,
   task,
   onClose,
+  showFlowsMessage = false,
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
@@ -288,6 +291,13 @@ const TaskModalCompleteForm = ({
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
+            {showFlowsMessage && (
+              <Alert sx={{ marginBottom: 2 }}>
+                {t(
+                  "The contact's status has been updated. Now you can complete the contact's most recent task.",
+                )}
+              </Alert>
+            )}
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">

@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
+  Alert,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -113,6 +114,7 @@ interface Props {
   defaultValues?: Partial<TaskCreateInput & TaskUpdateInput> & {
     taskPhase?: PhaseEnum;
   };
+  showFlowsMessage?: boolean;
   view?: 'comments' | 'log' | 'add' | 'complete' | 'edit';
 }
 
@@ -121,9 +123,11 @@ const TaskModalForm = ({
   task,
   onClose,
   defaultValues,
+  showFlowsMessage = false,
   view,
 }: Props): ReactElement => {
   const session = useSession();
+
   // const formikRef = useRef<any>(null);
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
@@ -401,6 +405,13 @@ const TaskModalForm = ({
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
+            {showFlowsMessage && (
+              <Alert sx={{ marginBottom: 2 }}>
+                {t(
+                  "The contact's status has been updated. Now you can add a task to reflect your next step with this contact.",
+                )}
+              </Alert>
+            )}
             <FormFieldsGridContainer>
               <Grid item>
                 <Grid container spacing={2}>
