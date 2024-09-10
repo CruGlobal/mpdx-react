@@ -38,7 +38,11 @@ export const defaultContact: AppealContactInfoFragment = {
           id: 'appeal-1',
         },
         donationDate: '2024-08-23',
-        appealAmount: null,
+        amount: {
+          amount: 200,
+          convertedAmount: 200,
+          convertedCurrency: 'USD',
+        },
       },
       {
         id: 'donation-2',
@@ -46,7 +50,11 @@ export const defaultContact: AppealContactInfoFragment = {
           id: 'appeal-2',
         },
         donationDate: '2024-08-22',
-        appealAmount: null,
+        amount: {
+          amount: 150,
+          convertedAmount: 150,
+          convertedCurrency: 'USD',
+        },
       },
       {
         id: 'donation-3',
@@ -54,7 +62,7 @@ export const defaultContact: AppealContactInfoFragment = {
           id: 'appealId',
         },
         donationDate: '2019-06-25',
-        appealAmount: {
+        amount: {
           amount: 50,
           convertedAmount: 50,
           convertedCurrency: 'USD',

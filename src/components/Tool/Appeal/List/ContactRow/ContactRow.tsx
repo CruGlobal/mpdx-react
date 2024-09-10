@@ -99,12 +99,16 @@ export const ContactRow: React.FC<Props> = ({
 
   const { id: contactId, name } = contact;
 
-  const { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue } =
-    useGetPledgeOrDonation({
-      appealStatus,
-      contact,
-      appealId: appealId ?? '',
-    });
+  const {
+    pledgeValues,
+    amountAndFrequency,
+    totalPledgedDonations,
+    pledgeOverdue,
+  } = useGetPledgeOrDonation({
+    appealStatus,
+    contact,
+    appealId: appealId ?? '',
+  });
 
   const handleCreatePledge = () => {
     setPledgeModalOpen(true);
@@ -213,16 +217,15 @@ export const ContactRow: React.FC<Props> = ({
                   </Typography>
                 )}
 
-                {appealStatus === AppealStatusEnum.Processed &&
-                  pledgeDonations?.map((donation, idx) => (
-                    <Typography key={`${donation}-${idx}`} component="span">
-                      <AmountAndFrequency
-                        amountAndFrequency={amountAndFrequency}
-                        pledgeOverdue={pledgeOverdue}
-                      />
-                      {donation}
-                    </Typography>
-                  ))}
+                {appealStatus === AppealStatusEnum.Processed && (
+                  <Typography component="span">
+                    <AmountAndFrequency
+                      amountAndFrequency={amountAndFrequency}
+                      pledgeOverdue={pledgeOverdue}
+                    />
+                    {totalPledgedDonations}
+                  </Typography>
+                )}
               </Box>
             </Box>
 

@@ -19,7 +19,7 @@ describe('useGetPledgeOrDonation', () => {
       dateOrFrequency: 'Monthly',
     });
 
-    expect(result.current.pledgeDonations).toBeNull();
+    expect(result.current.totalPledgedDonations).toBeNull();
     expect(result.current.pledgeValues).toBeUndefined();
   });
 
@@ -37,7 +37,7 @@ describe('useGetPledgeOrDonation', () => {
       dateOrFrequency: 'Monthly',
     });
 
-    expect(result.current.pledgeDonations).toBeNull();
+    expect(result.current.totalPledgedDonations).toBeNull();
     expect(result.current.pledgeValues).toBeUndefined();
   });
 
@@ -55,7 +55,7 @@ describe('useGetPledgeOrDonation', () => {
       dateOrFrequency: '(Aug 8, 2024)',
     });
 
-    expect(result.current.pledgeDonations).toBeNull();
+    expect(result.current.totalPledgedDonations).toBeNull();
     expect(result.current.pledgeValues).toEqual({
       amount: 3000,
       amountCurrency: 'USD',
@@ -79,7 +79,7 @@ describe('useGetPledgeOrDonation', () => {
       dateOrFrequency: '(Aug 8, 2024)',
     });
 
-    expect(result.current.pledgeDonations).toBeNull();
+    expect(result.current.totalPledgedDonations).toBeNull();
     expect(result.current.pledgeValues).toEqual({
       amount: 3000,
       amountCurrency: 'USD',
@@ -103,7 +103,9 @@ describe('useGetPledgeOrDonation', () => {
       dateOrFrequency: '',
     });
 
-    expect(result.current.pledgeDonations).toEqual(['($50) (Jun 25, 2019)']);
+    expect(result.current.totalPledgedDonations).toEqual(
+      '($50) (Jun 25, 2019)',
+    );
     expect(result.current.pledgeValues).toEqual({
       amount: 3000,
       amountCurrency: 'USD',
@@ -154,7 +156,7 @@ describe('useGetPledgeOrDonation', () => {
                 id: 'appealId',
               },
               donationDate: '2001-06-25',
-              appealAmount: {
+              amount: {
                 amount: 50,
                 convertedAmount: 50,
                 convertedCurrency: 'USD',
@@ -170,8 +172,66 @@ describe('useGetPledgeOrDonation', () => {
           appealId: appealId,
         }),
       );
-      expect(result.current.pledgeDonations).toEqual(['($50) (Jun 25, 2001)']);
+      expect(result.current.totalPledgedDonations).toEqual(
+        '($50) (Jun 25, 2001)',
+      );
       expect(result.current.pledgeOverdue).toEqual(false);
     });
+  });
+
+  it('adds up the total of all donations given and shows the last donated date', () => {
+    const contact = {
+      ...defaultContact,
+      donations: {
+        nodes: [
+          ...defaultContact.donations.nodes,
+          {
+            id: 'donation-4',
+            appeal: {
+              id: 'appealId',
+            },
+            donationDate: '2024-08-08',
+            amount: {
+              amount: 1000,
+              convertedAmount: 1000,
+              convertedCurrency: 'USD',
+            },
+          },
+        ],
+      },
+    };
+    const { result } = renderHook(() =>
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.Processed,
+        contact: contact,
+        appealId: appealId,
+      }),
+    );
+    expect(result.current.totalPledgedDonations).toEqual(
+      '($1,050) (Aug 8, 2024)',
+    );
+  });
+
+  // This only happens when the donations are re-assigned to a new appeal after the pledge is processed
+  // This is a bug, but not likely to be fixed in a near future.
+  // Testing it to make sure it's working as expected
+  it('should show $0 when pledge is processed but no donations have been given', () => {
+    const contact = {
+      ...defaultContact,
+      donations: {
+        nodes: [
+          defaultContact.donations.nodes[0],
+          defaultContact.donations.nodes[1],
+        ],
+      },
+    };
+    const { result } = renderHook(() =>
+      useGetPledgeOrDonation({
+        appealStatus: AppealStatusEnum.Processed,
+        contact: contact,
+        appealId: appealId,
+      }),
+    );
+    expect(result.current.totalPledgedDonations).toEqual('($0) ');
   });
 });
