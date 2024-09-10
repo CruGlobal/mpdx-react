@@ -15,7 +15,7 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AddContactToAppealModal } from './AddContactToAppealModal';
-import { AppealQuery } from './AppealInfo.generated';
+import { AppealContactsQuery } from './AppealContacts.generated';
 
 const accountListId = 'abc';
 const appealId = 'appealId';
@@ -37,14 +37,22 @@ jest.mock('notistack', () => ({
   },
 }));
 interface ComponentsProps {
-  appealMock?: AppealQuery;
+  appealMock?: AppealContactsQuery;
   contactOptionsMock?: ContactOptionsQuery;
 }
 
-const defaultAppealMock: AppealQuery = {
+const excludedContact = { id: 'contact-5', name: 'Charlie' };
+
+const defaultAppealMock: AppealContactsQuery = {
   appeal: {
     id: appealId,
     contactIds: ['contact-1', 'contact-2'],
+    excludedAppealContacts: [
+      {
+        id: 'excluded-contacts1',
+        contact: excludedContact,
+      },
+    ],
   },
 };
 
@@ -53,7 +61,7 @@ const defaultContactOptionsMock: ContactOptionsQuery = {
     nodes: [
       { id: 'contact-3', name: 'Alice' },
       { id: 'contact-4', name: 'Bob' },
-      { id: 'contact-5', name: 'Charlie' },
+      excludedContact,
     ],
   },
 };
@@ -67,11 +75,11 @@ const Components = ({
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<{
-            Appeal: AppealQuery;
+            AppealContacts: AppealContactsQuery;
             ContactOptions: ContactOptionsQuery;
           }>
             mocks={{
-              Appeal: appealMock,
+              AppealContacts: appealMock,
               ContactOptions: contactOptionsMock,
             }}
             onCall={mutationSpy}
@@ -160,6 +168,48 @@ describe('AddContactToAppealModal', () => {
           attributes: {
             id: appealId,
             contactIds: ['contact-1', 'contact-2', 'contact-3', 'contact-4'],
+          },
+        },
+      });
+    });
+  });
+
+  it('adds an excluded contact and shows excluded message', async () => {
+    const { getByRole, getAllByText, findByRole, findByTestId, queryByTestId } =
+      render(<Components />);
+
+    userEvent.click(getByRole('combobox', { name: 'Contacts' }));
+    expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
+    userEvent.click(getByRole('option', { name: 'Alice' }));
+
+    expect(queryByTestId('excludedContactMessage')).not.toBeInTheDocument();
+
+    userEvent.click(getByRole('combobox', { name: 'Contacts' }));
+    expect(await findByRole('option', { name: 'Charlie' })).toBeInTheDocument();
+    userEvent.click(getByRole('option', { name: 'Charlie' }));
+
+    expect(await findByTestId('excludedContactMessage')).toBeInTheDocument();
+
+    expect(getAllByText('Alice').length).toEqual(1);
+    expect(getAllByText('Charlie').length).toEqual(2);
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        '2 contacts successfully added to your appeal.',
+        { variant: 'success' },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('AssignContactsToAppeal', {
+        input: {
+          accountListId,
+          attributes: {
+            id: appealId,
+            contactIds: ['contact-1', 'contact-2', 'contact-3', 'contact-5'],
+            forceListDeletion: true,
           },
         },
       });

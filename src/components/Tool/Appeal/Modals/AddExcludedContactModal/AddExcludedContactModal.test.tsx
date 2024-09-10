@@ -15,7 +15,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
-import { AppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
+import { AppealContactsQuery } from '../AddContactToAppealModal/AppealContacts.generated';
 import { AddExcludedContactModal } from './AddExcludedContactModal';
 
 const accountListId = 'abc';
@@ -41,7 +41,7 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const appealMock: AppealQuery = {
+const appealMock: AppealContactsQuery = {
   appeal: {
     id: appealId,
     contactIds: ['contact-1', 'contact-2'],
@@ -59,10 +59,10 @@ const Components = ({
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <GqlMockedProvider<{
-              Appeal: AppealQuery;
+              AppealContacts: AppealContactsQuery;
             }>
               mocks={{
-                Appeal: appealMock,
+                AppealContacts: appealMock,
               }}
               onCall={mutationSpy}
             >
