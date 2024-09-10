@@ -553,7 +553,7 @@ export const EditPartnershipInfoModal: React.FC<
                   renderInput={(params): ReactElement => (
                     <TextField
                       {...params}
-                      label={t('Referred By')}
+                      label={t('Connecting Partner')}
                       onChange={(e) =>
                         handleUpdateReferredBySearch(e.target.value)
                       }

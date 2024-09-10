@@ -129,7 +129,7 @@ describe('EditContactOtherModal', () => {
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
     const referredByElement = getByRole('combobox', {
       hidden: true,
-      name: 'Referred By',
+      name: 'Connecting Partner',
     });
     userEvent.click(referredByElement);
     await waitFor(() => expect(getByText('Ccc Ddd')).toBeInTheDocument());

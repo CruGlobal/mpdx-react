@@ -100,7 +100,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
 
         <ContactOtherTextContainer>
           <ContactOtherTextLabel variant="subtitle1">
-            {t('Referred By')}
+            {t('Connecting Partner')}
           </ContactOtherTextLabel>
           {referredBy && (
             <ReferralName

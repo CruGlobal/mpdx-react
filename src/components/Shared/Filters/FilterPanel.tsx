@@ -50,7 +50,7 @@ import {
 import { FilterKey, FilterValue } from './FilterPanelTypes';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
-import { reverseFiltersMap } from './helpers';
+import { renameFilterNames, reverseFiltersMap } from './helpers';
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -705,6 +705,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                     )
                     ?.map((group) => {
                       const selectedOptions = getOptionsSelected(group);
+                      const groupName = renameFilterNames(group.name);
                       return (
                         <Collapse
                           key={group.name}
@@ -719,7 +720,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           >
                             <AccordionSummary expandIcon={<ExpandMore />}>
                               <Typography>
-                                {group.name}
+                                {groupName}
                                 {selectedOptions.length > 0
                                   ? ` (${selectedOptions.length})`
                                   : ''}
