@@ -95,11 +95,7 @@ const TaskModal = ({
               defaultValues={defaultValues}
             />
           )}
-          {[
-            TaskModalEnum.Complete,
-            TaskModalEnum.Comments,
-            TaskModalEnum.Log,
-          ].indexOf(view) === -1 && (
+          {(view === TaskModalEnum.Add || view === TaskModalEnum.Edit) && (
             <DynamicTaskModalForm
               accountListId={accountListId}
               task={task}
