@@ -12,7 +12,6 @@ import { StickyConfirmButtons } from '../MergeContacts/StickyConfirmButtons';
 import { bulkUpdateDuplicates } from '../MergeContacts/mergeDuplicatesHelper';
 import NoData from '../NoData';
 import { StyledFabLoading } from '../StyledFabLoading';
-import { LoadingBox } from '../styledComponents';
 import {
   useGetPersonDuplicatesQuery,
   useMergePeopleBulkMutation,
@@ -166,11 +165,7 @@ const MergePeople: React.FC<Props> = ({
           )}
         </Grid>
       )}
-      {(loading || updating) && (
-        <LoadingBox>
-          <StyledFabLoading />
-        </LoadingBox>
-      )}
+      {(loading || updating) && <StyledFabLoading />}
     </Box>
   );
 };

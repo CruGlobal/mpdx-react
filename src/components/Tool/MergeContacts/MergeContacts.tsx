@@ -11,7 +11,6 @@ import theme from '../../../theme';
 import { useUpdateDuplicateMutation } from '../MergePeople/GetPersonDuplicates.generated';
 import NoData from '../NoData';
 import { StyledFabLoading } from '../StyledFabLoading';
-import { LoadingBox } from '../styledComponents';
 import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import { StickyConfirmButtons } from './StickyConfirmButtons';
@@ -163,11 +162,7 @@ const MergeContacts: React.FC<Props> = ({
           )}
         </Grid>
       )}
-      {(loading || updating) && (
-        <LoadingBox>
-          <StyledFabLoading />
-        </LoadingBox>
-      )}
+      {(loading || updating) && <StyledFabLoading />}
     </Box>
   );
 };
