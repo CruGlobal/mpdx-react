@@ -12,6 +12,7 @@ import { StickyConfirmButtons } from '../MergeContacts/StickyConfirmButtons';
 import { bulkUpdateDuplicates } from '../MergeContacts/mergeDuplicatesHelper';
 import NoData from '../NoData';
 import { StyledFabLoading } from '../StyledFabLoading';
+import { ToolsGridContainer } from '../styledComponents';
 import {
   useGetPersonDuplicatesQuery,
   useMergePeopleBulkMutation,
@@ -19,15 +20,6 @@ import {
 } from './GetPersonDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '80%',
-    display: 'flex',
-    height: 'auto',
-    [theme.breakpoints.down('lg')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
@@ -113,7 +105,7 @@ const MergePeople: React.FC<Props> = ({
       data-testid="Home"
     >
       {!loading && data && (
-        <Grid container className={classes.container}>
+        <ToolsGridContainer container spacing={3}>
           <Grid item xs={12}></Grid>
           {duplicatesDisplayedCount ? (
             <>
@@ -163,7 +155,7 @@ const MergePeople: React.FC<Props> = ({
           ) : (
             <NoData tool="mergePeople" />
           )}
-        </Grid>
+        </ToolsGridContainer>
       )}
       {(loading || updating) && <StyledFabLoading />}
     </Box>

@@ -17,19 +17,12 @@ import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipS
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import Contact from './Contact';
 import { useInvalidStatusesQuery } from './GetInvalidStatuses.generated';
 import { useUpdateStatusMutation } from './UpdateStatus.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '70%',
-    display: 'flex',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
   toolIcon: {
     height: theme.spacing(5),
     width: theme.spacing(5),
@@ -223,7 +216,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
   return (
     <Box className={classes.outer} data-testid="Home">
       {data ? (
-        <Grid container className={classes.container} data-testid="Container">
+        <ToolsGridContainer container spacing={3} data-testid="Container">
           {data.contacts?.nodes.length > 0 ? (
             <>
               <Grid item xs={12}>
@@ -303,7 +296,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
           ) : (
             <NoData tool="fixCommitmentInfo" />
           )}
-        </Grid>
+        </ToolsGridContainer>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}

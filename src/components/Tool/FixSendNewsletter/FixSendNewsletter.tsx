@@ -11,6 +11,7 @@ import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmat
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import Contact from './Contact';
 import {
   InvalidNewsletterDocument,
@@ -19,15 +20,6 @@ import {
 import { useUpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '80%',
-    display: 'flex',
-    height: 'auto',
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
@@ -147,7 +139,7 @@ const FixSendNewsletter: React.FC<Props> = ({
 
   return (
     <Box className={classes.outer} data-testid="Home">
-      <Grid container className={classes.container}>
+      <ToolsGridContainer container spacing={3}>
         <Grid item xs={12}>
           <Box className={classes.descriptionBox}>
             <Typography>
@@ -220,7 +212,7 @@ const FixSendNewsletter: React.FC<Props> = ({
         ) : (
           <NoData tool="fixSendNewsletter" />
         )}
-      </Grid>
+      </ToolsGridContainer>
       <Confirmation
         isOpen={showBulkConfirmModal}
         handleClose={() => setShowBulkConfirmModal(false)}

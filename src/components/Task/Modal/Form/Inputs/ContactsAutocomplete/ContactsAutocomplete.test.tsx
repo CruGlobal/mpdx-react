@@ -66,24 +66,21 @@ describe('ContactsAutocomplete', () => {
       <TestComponent value={['contact-1', 'contact-2']} />,
     );
 
-    await waitFor(() => expect(mutationSpy).toHaveBeenCalledTimes(2));
-    expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-      'ContactOptions',
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ContactOptions', {
+        accountListId,
+        first: 10,
+        contactsFilters: { wildcardSearch: '' },
+      }),
     );
-    expect(mutationSpy.mock.calls[0][0].operation.variables).toEqual({
-      accountListId,
-      first: 10,
-      contactsFilters: { wildcardSearch: '' },
-    });
 
-    expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
-      'ContactOptions',
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ContactOptions', {
+        accountListId,
+        first: 2,
+        contactsFilters: { ids: ['contact-1', 'contact-2'], status: [] },
+      }),
     );
-    expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
-      accountListId,
-      first: 2,
-      contactsFilters: { ids: ['contact-1', 'contact-2'] },
-    });
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
     expect(getAllByRole('option')).toHaveLength(3);

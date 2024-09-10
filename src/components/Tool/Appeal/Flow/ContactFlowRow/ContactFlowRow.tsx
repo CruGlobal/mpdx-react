@@ -105,8 +105,16 @@ export const ContactFlowRow: React.FC<Props> = ({
   const [createPledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
 
-  const { pledgeValues, amountAndFrequency, pledgeDonations, pledgeOverdue } =
-    useGetPledgeOrDonation({ appealStatus, contact, appealId: appealId ?? '' });
+  const {
+    pledgeValues,
+    amountAndFrequency,
+    totalPledgedDonations,
+    pledgeOverdue,
+  } = useGetPledgeOrDonation({
+    appealStatus,
+    contact,
+    appealId: appealId ?? '',
+  });
 
   const reasons = useGetExcludedReasons({
     excludedContacts,
@@ -199,16 +207,15 @@ export const ContactFlowRow: React.FC<Props> = ({
                   </Typography>
                 )}
 
-                {appealStatus === AppealStatusEnum.Processed &&
-                  pledgeDonations?.map((donation, idx) => (
-                    <Typography key={`${donation}-${idx}`} variant="body2">
-                      <AmountAndFrequency
-                        amountAndFrequency={amountAndFrequency}
-                        pledgeOverdue={pledgeOverdue}
-                      />{' '}
-                      {donation}
-                    </Typography>
-                  ))}
+                {appealStatus === AppealStatusEnum.Processed && (
+                  <Typography variant="body2">
+                    <AmountAndFrequency
+                      amountAndFrequency={amountAndFrequency}
+                      pledgeOverdue={pledgeOverdue}
+                    />{' '}
+                    {totalPledgedDonations}
+                  </Typography>
+                )}
               </Box>
               <CommitmentActionsBox>
                 {(appealStatus === AppealStatusEnum.NotReceived ||

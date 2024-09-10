@@ -20,6 +20,7 @@ import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToo
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
 import {
@@ -323,7 +324,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
             >
               {({ errors, setValues, values }): ReactElement => (
                 <>
-                  <Grid container className={classes.outter}>
+                  <ToolsGridContainer container spacing={3}>
                     <Grid item xs={12}>
                       <Box mb={2}>
                         <Typography fontWeight="bold">
@@ -412,7 +413,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                         </Typography>
                       </Box>
                     </Grid>
-                  </Grid>
+                  </ToolsGridContainer>
                   <DeleteModal
                     modalState={deleteModalState}
                     handleClose={handleDeleteModalClose}

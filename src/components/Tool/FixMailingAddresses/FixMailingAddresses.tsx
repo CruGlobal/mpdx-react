@@ -22,6 +22,7 @@ import { useUpdateContactAddressMutation } from 'src/components/Contacts/Contact
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import theme from '../../../theme';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import Contact from './Contact';
 import {
   ContactAddressFragment,
@@ -38,14 +39,6 @@ export type HandleSingleConfirmProps = {
 };
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '70%',
-    display: 'flex',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
@@ -344,7 +337,7 @@ const FixMailingAddresses: React.FC<Props> = ({
   return (
     <Box className={classes.outer} data-testid="Home">
       <Box className={classes.outer}>
-        <Grid container className={classes.container}>
+        <ToolsGridContainer container spacing={3}>
           {loading && !data && (
             <Box className={classes.outer}>
               <CircularProgress
@@ -445,7 +438,7 @@ const FixMailingAddresses: React.FC<Props> = ({
               )}
             </React.Fragment>
           )}
-        </Grid>
+        </ToolsGridContainer>
       </Box>
       {showEditAddressModal && (
         <DynamicEditContactAddressModal

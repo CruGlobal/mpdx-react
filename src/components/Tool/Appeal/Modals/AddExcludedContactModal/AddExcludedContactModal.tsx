@@ -19,7 +19,7 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from '../AddContactToAppealModal/AddContactToAppeal.generated';
-import { useAppealQuery } from '../AddContactToAppealModal/AppealInfo.generated';
+import { useAppealContactsQuery } from '../AddContactToAppealModal/AppealContacts.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -39,7 +39,7 @@ export const AddExcludedContactModal: React.FC<
     useAssignContactsToAppealMutation();
   const { accountListId, appealId } = useContext(AppealsContext) as AppealsType;
 
-  const { data, loading } = useAppealQuery({
+  const { data, loading } = useAppealContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       appealId: appealId ?? '',
