@@ -11,6 +11,7 @@ import ContactPair from '../MergeContacts/ContactPair';
 import { StickyConfirmButtons } from '../MergeContacts/StickyConfirmButtons';
 import { bulkUpdateDuplicates } from '../MergeContacts/mergeDuplicatesHelper';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import {
   useGetPersonDuplicatesQuery,
   useMergePeopleBulkMutation,
@@ -18,15 +19,6 @@ import {
 } from './GetPersonDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '80%',
-    display: 'flex',
-    height: 'auto',
-    [theme.breakpoints.down('lg')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
@@ -112,8 +104,7 @@ const MergePeople: React.FC<Props> = ({
       data-testid="Home"
     >
       {!loading && data ? (
-        <Grid container className={classes.container}>
-          <Grid item xs={12}></Grid>
+        <ToolsGridContainer container spacing={3}>
           {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>
@@ -164,7 +155,7 @@ const MergePeople: React.FC<Props> = ({
           ) : (
             <NoData tool="mergePeople" />
           )}
-        </Grid>
+        </ToolsGridContainer>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}

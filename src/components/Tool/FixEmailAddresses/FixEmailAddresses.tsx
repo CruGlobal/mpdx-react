@@ -33,6 +33,7 @@ import {
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import { FixEmailAddressPerson } from './FixEmailAddressPerson/FixEmailAddressPerson';
 
 const Container = styled(Box)(() => ({
@@ -41,16 +42,6 @@ const Container = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}));
-
-const FixEmailAddressesWrapper = styled(Grid)(() => ({
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'end',
-  width: '70%',
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-  },
 }));
 
 const SourceSelect = styled(Select)(() => ({
@@ -315,7 +306,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   return (
     <Container>
       {data && dataState ? (
-        <FixEmailAddressesWrapper container>
+        <ToolsGridContainer container spacing={3}>
           <Grid item xs={12}>
             <Box mb={2}>
               {!!data.people.nodes.length && (
@@ -422,7 +413,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           ) : (
             <NoData tool="fixEmailAddresses" />
           )}
-        </FixEmailAddressesWrapper>
+        </ToolsGridContainer>
       ) : (
         <CircularProgress
           data-testid="loading"

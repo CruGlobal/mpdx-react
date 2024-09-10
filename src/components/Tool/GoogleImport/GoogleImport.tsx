@@ -39,20 +39,11 @@ import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import { useGoogleContactGroupsQuery } from './googleContactGroups.generated';
 
 const BoldTypography = styled(Typography)(() => ({
   fontWeight: 'bold',
-}));
-
-const ContainerBox = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(3),
-  width: '70%',
-  display: 'flex',
-  minWidth: '450px',
-  [theme.breakpoints.down('lg')]: {
-    width: '100%',
-  },
 }));
 
 const OuterBox = styled(Box)(() => ({
@@ -220,7 +211,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
       {redirecting && (
         <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
       )}
-      <ContainerBox container>
+      <ToolsGridContainer container spacing={3}>
         <>
           {loading && !data && (
             <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
@@ -578,7 +569,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
             </>
           )}
         </>
-      </ContainerBox>
+      </ToolsGridContainer>
       <Modal
         isOpen={showModal}
         handleClose={handleCloseModal}

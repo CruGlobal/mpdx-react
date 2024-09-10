@@ -95,7 +95,7 @@ describe('FixCommitmentContact', () => {
     const description = await findByTestId('Description');
 
     expect(container.className).toEqual(expect.stringContaining('container'));
-    expect(container).toHaveStyle('width: 70%');
+    expect(container).toHaveStyle('width: calc(100% + 24px);');
 
     expect(description.className).toEqual(
       expect.stringContaining('descriptionBox'),

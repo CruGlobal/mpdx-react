@@ -11,7 +11,6 @@ import {
   DialogContentText,
   FormControl,
   FormControlLabel,
-  Grid,
   LinearProgress,
   Link,
   Radio,
@@ -30,20 +29,11 @@ import { ContactTagInput } from 'src/components/Tags/Tags';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
+import { ToolsGridContainer } from '../styledComponents';
 import { uploadTnt, validateTnt } from './uploads/uploadTntConnect';
 
 const BoldTypography = styled(Typography)(() => ({
   fontWeight: 'bold',
-}));
-
-const ContainerBox = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginTop: theme.spacing(1),
-  width: '70%',
-  display: 'flex',
-  [theme.breakpoints.down('lg')]: {
-    width: '100%',
-  },
 }));
 
 const BottomBox = styled(Box)(({ theme }) => ({
@@ -202,7 +192,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
       {loading && (
         <LoadingSpinner firstLoad={true} data-testid="LoadingSpinner" />
       )}
-      <ContainerBox container>
+      <ToolsGridContainer container spacing={3}>
         <Typography>
           {t(
             "You can migrate all your contact information and history from TntConnect into {{appName}}. Most of your information will import straight into {{appName}}, including contact info, task history with notes, notes, user groups, and appeals. {{appName}} hides contacts with any of the not interested statuses, including 'Not Interested' and 'Never Ask' in {{appName}} (these contacts are imported, but will only show up if you search for hidden contacts).",
@@ -350,7 +340,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
             )}
           </Formik>
         </BorderBox>
-      </ContainerBox>
+      </ToolsGridContainer>
       <Modal
         isOpen={showModal}
         handleClose={handleCloseModal}

@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { TFunction } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import Loading from 'src/components/Loading';
+import { ToolsGridContainer } from '../../styledComponents';
 import { CsvImportViewStepEnum } from './CsvImportContext';
 import { DynamicCsvHeaders } from './DynamicCsvHeaders';
 import { DynamicCsvPreview } from './DynamicCsvPreview';
@@ -15,18 +16,6 @@ const useStyles = makeStyles()(() => ({
     backgroundColor: '#dff0d8',
     borderColor: '#d6e9c6',
     color: '#3c763d',
-  },
-}));
-
-const ContainerGrid = styled(Grid)(({ theme }) => ({
-  padding: theme.spacing(3),
-  width: '70%',
-  display: 'flex',
-  [theme.breakpoints.down('lg')]: {
-    width: '90%',
-  },
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
   },
 }));
 
@@ -108,7 +97,7 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
         width: '100%',
       }}
     >
-      <ContainerGrid container spacing={3}>
+      <ToolsGridContainer container spacing={3}>
         <Grid item xs={12}>
           <Box>
             <StepBox
@@ -161,7 +150,7 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
           <br />
           {renderTab(accountListId)}
         </Grid>
-      </ContainerGrid>
+      </ToolsGridContainer>
     </Box>
   ) : (
     <Loading loading />

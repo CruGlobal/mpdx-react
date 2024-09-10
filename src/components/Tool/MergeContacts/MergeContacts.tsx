@@ -10,21 +10,13 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { useUpdateDuplicateMutation } from '../MergePeople/GetPersonDuplicates.generated';
 import NoData from '../NoData';
+import { ToolsGridContainer } from '../styledComponents';
 import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import { StickyConfirmButtons } from './StickyConfirmButtons';
 import { bulkUpdateDuplicates } from './mergeDuplicatesHelper';
 
 const useStyles = makeStyles()(() => ({
-  container: {
-    padding: theme.spacing(3),
-    width: '80%',
-    display: 'flex',
-    height: 'auto',
-    [theme.breakpoints.down('lg')]: {
-      width: '100%',
-    },
-  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
@@ -110,7 +102,7 @@ const MergeContacts: React.FC<Props> = ({
       data-testid="Home"
     >
       {!loading && data ? (
-        <Grid container className={classes.container}>
+        <ToolsGridContainer container spacing={3}>
           {duplicatesDisplayedCount ? (
             <>
               <Grid item xs={12}>
@@ -161,7 +153,7 @@ const MergeContacts: React.FC<Props> = ({
           ) : (
             <NoData tool="mergeContacts" />
           )}
-        </Grid>
+        </ToolsGridContainer>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
