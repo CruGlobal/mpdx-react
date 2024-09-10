@@ -138,18 +138,12 @@ describe('AddContactToAppealModal', () => {
     expect(mutationSpy).toHaveBeenCalledTimes(0);
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-
-    expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
-
-    userEvent.click(getByRole('option', { name: 'Alice' }));
+    userEvent.click(await findByRole('option', { name: 'Alice' }));
     expect(getByText('Alice')).toBeInTheDocument();
 
     expect(queryByText('Bob')).not.toBeInTheDocument();
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-
-    expect(await findByRole('option', { name: 'Bob' })).toBeInTheDocument();
-
-    userEvent.click(getByRole('option', { name: 'Bob' }));
+    userEvent.click(await findByRole('option', { name: 'Bob' }));
     expect(getByText('Bob')).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Save' }));
@@ -175,18 +169,16 @@ describe('AddContactToAppealModal', () => {
   });
 
   it('adds an excluded contact and shows excluded message', async () => {
-    const { getByRole, getAllByText, findByRole, findByTestId, queryByTestId } =
+    const { getByRole, getAllByText, findByTestId, findByRole, queryByTestId } =
       render(<Components />);
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-    expect(await findByRole('option', { name: 'Alice' })).toBeInTheDocument();
-    userEvent.click(getByRole('option', { name: 'Alice' }));
+    userEvent.click(await findByRole('option', { name: 'Alice' }));
 
     expect(queryByTestId('excludedContactMessage')).not.toBeInTheDocument();
 
     userEvent.click(getByRole('combobox', { name: 'Contacts' }));
-    expect(await findByRole('option', { name: 'Charlie' })).toBeInTheDocument();
-    userEvent.click(getByRole('option', { name: 'Charlie' }));
+    userEvent.click(await findByRole('option', { name: 'Charlie' }));
 
     expect(await findByTestId('excludedContactMessage')).toBeInTheDocument();
 

@@ -30,12 +30,6 @@ const AddContactSchema: yup.SchemaOf<AddContactFormikSchema> = yup.object({
   contactIds: yup.array().of(yup.string().required()).default([]),
 });
 
-interface Attributes {
-  id: string | undefined;
-  contactIds: string[];
-  forceListDeletion?: boolean;
-}
-
 export const AddContactToAppealModal: React.FC<
   AddContactToAppealModalProps
 > = ({ handleClose }) => {
@@ -64,20 +58,15 @@ export const AddContactToAppealModal: React.FC<
       excludedContactIds.includes(contactId),
     );
 
-    const attributes: Attributes = {
-      id: appealId,
-      contactIds: [...existingContactIds, ...contactIds],
-    };
-
-    if (addingExcludedContact) {
-      attributes.forceListDeletion = true;
-    }
-
     await assignContactsToAppeal({
       variables: {
         input: {
           accountListId: accountListId ?? '',
-          attributes,
+          attributes: {
+            id: appealId,
+            contactIds: [...existingContactIds, ...contactIds],
+            forceListDeletion: addingExcludedContact,
+          },
         },
       },
       refetchQueries: ['Contacts'],
@@ -132,13 +121,17 @@ export const AddContactToAppealModal: React.FC<
               }
               return result;
             }, []);
-          }, [contactIds]);
+          }, [contactIds, excludedContacts]);
           return (
             <form onSubmit={handleSubmit} data-testid="addContactToAppealModal">
               <DialogContent>
                 <Grid item>
                   {!!excludedContactNames.length && (
-                    <Alert severity="info" data-testid="excludedContactMessage">
+                    <Alert
+                      severity="info"
+                      data-testid="excludedContactMessage"
+                      sx={{ marginBottom: 1 }}
+                    >
                       {t(
                         'Some of the contact(s) you have selected to add to this appeal are currently excluded. You will not be able to exclude these contacts once you add them to this appeal. Instead, you will be able to remove them from it.',
                       )}
