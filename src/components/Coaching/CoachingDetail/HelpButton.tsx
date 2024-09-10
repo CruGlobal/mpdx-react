@@ -13,7 +13,13 @@ export const HelpButton: React.FC<HelpButtonProps> = ({ articleVar }) => {
   }
 
   return (
-    <IconButton href={url} target="_blank" size="small" aria-label="Help">
+    <IconButton
+      href={url}
+      target="_blank"
+      rel="nofollow noreferrer"
+      size="small"
+      aria-label="Help"
+    >
       <QuestionMark />
     </IconButton>
   );
