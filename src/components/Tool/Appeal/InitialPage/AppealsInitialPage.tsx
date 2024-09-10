@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Divider,
   Grid,
   Theme,
   Typography,
@@ -12,10 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
-import { ToolsGridContainer } from 'src/components/Tool/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const useStyles = makeStyles()((theme: Theme) => ({
+  container: {
+    padding: `${theme.spacing(3)} ${theme.spacing(3)} 0`,
+    display: 'flex',
+  },
   outer: {
     display: 'flex',
     flexDirection: 'row',
@@ -34,8 +38,12 @@ const AppealsInitialPage: React.FC = () => {
 
   return (
     <Box className={classes.outer}>
-      <ToolsGridContainer container spacing={3}>
+      <Grid container spacing={3} className={classes.container}>
         <Grid item xs={12}>
+          <Box m={1}>
+            <Typography variant="h4">{t('Appeals')}</Typography>
+          </Box>
+          <Divider />
           <Box m={1}>
             <Typography variant="body2">
               {t(
@@ -69,7 +77,7 @@ const AppealsInitialPage: React.FC = () => {
             </Box>
           </Box>
         </Grid>
-      </ToolsGridContainer>
+      </Grid>
     </Box>
   );
 };
