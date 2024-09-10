@@ -203,4 +203,32 @@ describe('PledgeModal', () => {
       });
     });
   });
+
+  it('Edit Processed commitment', async () => {
+    const pledgeId = 'pledge-1';
+    const { getByRole, findByText } = render(
+      <Components
+        pledge={{
+          id: pledgeId,
+          amount: 444,
+          amountCurrency: 'USD',
+          appeal: {
+            id: 'appeal-1',
+          },
+          expectedDate: '2024-08-08',
+          status: PledgeStatusEnum.Processed,
+        }}
+      />,
+    );
+
+    expect(
+      getByRole('heading', { name: 'Edit Commitment' }),
+    ).toBeInTheDocument();
+
+    expect(getByRole('textbox', { name: 'Amount' })).toBeDisabled();
+    expect(await findByText('Given')).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Status' })).toHaveClass(
+      'Mui-disabled',
+    );
+  });
 });

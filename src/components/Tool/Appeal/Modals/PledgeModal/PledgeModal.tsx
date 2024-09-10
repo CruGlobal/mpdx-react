@@ -228,6 +228,9 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                             size="small"
                             variant="outlined"
                             fullWidth
+                            disabled={
+                              pledge?.status === PledgeStatusEnum.Processed
+                            }
                             type="text"
                             inputProps={{
                               'aria-labelledby': 'amount-input-label',
@@ -382,6 +385,11 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                             >
                               {t('Received')}
                             </MenuItem>
+                            {pledge?.status === PledgeStatusEnum.Processed && (
+                            <MenuItem value={PledgeStatusEnum.Processed}>
+                              {t('Given')}
+                            </MenuItem>
+                            )}
                           </Select>
                         </Box>
                       )}
