@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Box, CircularProgress, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -10,6 +10,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { useUpdateDuplicateMutation } from '../MergePeople/GetPersonDuplicates.generated';
 import NoData from '../NoData';
+import { StyledFabLoading } from '../StyledFabLoading';
 import { ToolsGridContainer } from '../styledComponents';
 import ContactPair from './ContactPair';
 import { useGetContactDuplicatesQuery } from './GetContactDuplicates.generated';
@@ -101,7 +102,7 @@ const MergeContacts: React.FC<Props> = ({
       flexDirection="column"
       data-testid="Home"
     >
-      {!loading && data ? (
+      {!loading && data && (
         <ToolsGridContainer container spacing={3}>
           {duplicatesDisplayedCount ? (
             <>
@@ -128,8 +129,6 @@ const MergeContacts: React.FC<Props> = ({
               </Grid>
               <StickyConfirmButtons
                 accountListId={accountListId}
-                loading={loading}
-                updating={updating}
                 duplicatesDisplayedCount={duplicatesDisplayedCount}
                 disabled={disabled}
                 totalCount={totalCount}
@@ -154,9 +153,8 @@ const MergeContacts: React.FC<Props> = ({
             <NoData tool="mergeContacts" />
           )}
         </ToolsGridContainer>
-      ) : (
-        <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
+      {(loading || updating) && <StyledFabLoading />}
     </Box>
   );
 };
