@@ -25,6 +25,7 @@ import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
   filterPanelNoteSearchMock,
+  filterPanelRenameMock,
   filterPanelSlidersMock,
   filterPanelTagsMock,
   noteSearchSavedFilterMock,
@@ -660,6 +661,35 @@ describe('FilterPanel', () => {
       expect(queryByTestId('ErrorState')).toBeNull();
       expect(queryAllByTestId('FilterGroup').length).toEqual(0);
       expect(queryByTestId('FilterListItemShowAll')).toBeNull();
+    });
+
+    it('displays renamed filter names', async () => {
+      const { getByText, queryByTestId, getAllByText } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <ContactsProviderFilterWrapper
+                filters={[filterPanelRenameMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+                onHandleClearSearch={onHandleClearSearch}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      userEvent.click(getByText('See More Filters'));
+      userEvent.click(getByText('Connecting Partner'));
+      await waitFor(() =>
+        expect(getAllByText('Connecting Partner')).toHaveLength(4),
+      );
     });
   });
 

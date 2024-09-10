@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
-import { reverseFiltersMap } from './helpers';
+import { renameFilterNames, reverseFiltersMap } from './helpers';
 
 interface Props {
   filter: MultiselectFilter;
@@ -45,6 +45,8 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
     }
   };
 
+  const filterTitle = renameFilterNames(filter.title);
+
   return (
     <div className="FilterListItemMultiselect-root">
       <ListItem
@@ -66,7 +68,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
         }
       >
         <ListItemText
-          primary={filter.title}
+          primary={filterTitle}
           primaryTypographyProps={{ variant: 'subtitle1' }}
         />
       </ListItem>
@@ -94,8 +96,8 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder={filter.title}
-                label={filter.title}
+                placeholder={filterTitle}
+                label={filterTitle}
                 data-testid="multiSelectFilter"
               />
             )}

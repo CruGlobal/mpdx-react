@@ -34,6 +34,18 @@ export const mockMultiselectFilter: MultiselectFilter = {
     },
   ],
 };
+export const mockReferrerMultiSelectFilter: MultiselectFilter = {
+  __typename: 'MultiselectFilter',
+  filterKey: 'referrer',
+  title: 'Referrer',
+  options: [
+    {
+      name: 'John',
+      value: '1234',
+    },
+  ],
+};
+
 export const mockTextFilter: TextFilter = {
   __typename: 'TextFilter',
   filterKey: 'text',
@@ -137,6 +149,16 @@ export const filterPanelNoteSearchMock = gqlMock<FilterPanelGroupFragment>(
       name: 'Search Notes',
       featured: false,
       filters: [mockNoteSearchFilter],
+    },
+  },
+);
+export const filterPanelRenameMock = gqlMock<FilterPanelGroupFragment>(
+  FilterPanelGroupFragmentDoc,
+  {
+    mocks: {
+      name: 'Referrer',
+      featured: false,
+      filters: [mockTextFilter, mockReferrerMultiSelectFilter],
     },
   },
 );
