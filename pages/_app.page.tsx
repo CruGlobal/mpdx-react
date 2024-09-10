@@ -170,7 +170,6 @@ const App = ({
         <ErrorBoundary>
           <AppSettingsProvider>
             <SessionProvider session={session}>
-              <Helpjuice />
               <I18nextProvider i18n={i18n}>
                 <StyledEngineProvider injectFirst>
                   <CacheProvider value={emotionCache}>
@@ -203,6 +202,7 @@ const App = ({
                 </StyledEngineProvider>
               </I18nextProvider>
               <DataDog />
+              <Helpjuice />
             </SessionProvider>
             {process.env.ALERT_MESSAGE ? (
               <AlertBanner
