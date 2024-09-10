@@ -48,7 +48,7 @@ fragment AppealContactInfo on Contact {
       }
       id
       donationDate
-      appealAmount {
+      amount {
         amount
         convertedAmount
         convertedCurrency

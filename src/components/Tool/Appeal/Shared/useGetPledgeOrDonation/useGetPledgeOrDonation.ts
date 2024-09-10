@@ -69,7 +69,7 @@ interface AmountAndFrequency {
 export interface UseGetPledgeOrDonation {
   pledgeValues: AppealContactInfoFragment['pledges'][0] | undefined;
   amountAndFrequency: AmountAndFrequency | null;
-  pledgeDonations: string[] | null;
+  totalPledgedDonations: string | null;
   pledgeOverdue: boolean;
 }
 
@@ -90,7 +90,7 @@ export const useGetPledgeOrDonation = (
     amountAndFrequency: null,
     pledgeValues: undefined,
     pledgeOverdue: false,
-    pledgeDonations: null,
+    totalPledgedDonations: null,
   };
 
   const pledgeOrDonation = useMemo(() => {
@@ -193,28 +193,42 @@ export const useGetPledgeOrDonation = (
         (donation) => donation?.appeal?.id === appealId,
       );
 
-      const givenDonations = appealDonations.map((donation) => {
-        const amount = donation?.appealAmount?.amount;
-        const currency = donation?.appealAmount?.convertedCurrency;
-        const donationAmount = currencyFormat(
-          amount && currency ? amount : 0,
-          currency,
-          locale,
-        );
+      const totalDonatedToAppeal = appealDonations.reduce(
+        (acc: number, donation) => {
+          return acc + (donation?.amount?.amount ?? 0);
+        },
+        0,
+      );
 
-        const donationDate = dateFormat(
-          DateTime.fromISO(donation.donationDate),
-          locale,
-        );
+      const lastDonatedToAppeal = appealDonations.reduce(
+        (acc: DateTime | null, donation) => {
+          const donationDate = DateTime.fromISO(donation.donationDate);
+          if (!acc) {
+            return donationDate;
+          }
+          return donationDate > acc ? donationDate : acc;
+        },
+        null,
+      );
 
-        return `(${donationAmount}) (${donationDate})`;
-      });
+      const lastDonated = lastDonatedToAppeal
+        ? dateFormat(lastDonatedToAppeal, locale)
+        : '';
+      const totalDonated = currencyFormat(
+        totalDonatedToAppeal,
+        appealPledge?.amountCurrency ?? 'USD',
+        locale,
+      );
+
+      const pledgeDonation = `(${totalDonated}) ${
+        lastDonated && `(${lastDonated})`
+      }`;
 
       return {
         ...defaultValues,
         amountAndFrequency,
         pledgeValues,
-        pledgeDonations: givenDonations,
+        totalPledgedDonations: pledgeDonation,
       };
     }
   }, [appealStatus, contact, locale]);
