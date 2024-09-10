@@ -1,5 +1,6 @@
-import React, { ReactElement } from 'react';
-import { DialogActions, DialogContent, Grid } from '@mui/material';
+import React, { ReactElement, useMemo } from 'react';
+import { Alert, DialogActions, DialogContent, Grid } from '@mui/material';
+import { Box } from '@mui/system';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,7 @@ import {
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from './AddContactToAppeal.generated';
-import { useAppealQuery } from './AppealInfo.generated';
+import { useAppealContactsQuery } from './AppealContacts.generated';
 
 interface AddContactToAppealModalProps {
   handleClose: () => void;
@@ -39,7 +40,7 @@ export const AddContactToAppealModal: React.FC<
     AppealsContext,
   ) as AppealsType;
 
-  const { data } = useAppealQuery({
+  const { data } = useAppealContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       appealId: appealId ?? '',
@@ -47,25 +48,34 @@ export const AddContactToAppealModal: React.FC<
   });
 
   const existingContactIds = data?.appeal?.contactIds ?? [];
+  const excludedContacts = data?.appeal?.excludedAppealContacts ?? [];
 
-  const onSubmit = async (attributes: AddContactFormikSchema) => {
+  const onSubmit = async ({ contactIds }: AddContactFormikSchema) => {
+    const excludedContactIds = excludedContacts.map(
+      (excludedContact) => excludedContact.contact?.id,
+    );
+    const addingExcludedContact = contactIds.some((contactId) =>
+      excludedContactIds.includes(contactId),
+    );
+
     await assignContactsToAppeal({
       variables: {
         input: {
           accountListId: accountListId ?? '',
           attributes: {
             id: appealId,
-            contactIds: [...existingContactIds, ...attributes.contactIds],
+            contactIds: [...existingContactIds, ...contactIds],
+            forceListDeletion: addingExcludedContact,
           },
         },
       },
       refetchQueries: ['Contacts'],
       onCompleted: () => {
         const successMessage =
-          attributes.contactIds.length === 1
+          contactIds.length === 1
             ? t('1 contact successfully added to your appeal.')
             : t('{{count}} contacts successfully added to your appeal.', {
-                count: attributes.contactIds.length,
+                count: contactIds.length,
               });
         enqueueSnackbar(successMessage, {
           variant: 'success',
@@ -100,29 +110,58 @@ export const AddContactToAppealModal: React.FC<
           handleSubmit,
           isSubmitting,
           isValid,
-        }): ReactElement => (
-          <form onSubmit={handleSubmit} data-testid="addContactToAppealModal">
-            <DialogContent>
-              <Grid item>
-                <ContactsAutocomplete
-                  accountListId={accountListId ?? ''}
-                  value={contactIds}
-                  onChange={(contactIds) => {
-                    setFieldValue('contactIds', contactIds);
-                  }}
-                  excludeContactIds={existingContactIds}
-                />
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <CancelButton onClick={handleClose} disabled={isSubmitting} />
+        }): ReactElement => {
+          const excludedContactNames = useMemo(() => {
+            return contactIds.reduce<string[]>((result, contactId) => {
+              const excludedContact = excludedContacts.find(
+                (excludedContact) => excludedContact.contact?.id === contactId,
+              );
+              if (excludedContact && excludedContact.contact?.name) {
+                return [...result, excludedContact.contact?.name];
+              }
+              return result;
+            }, []);
+          }, [contactIds, excludedContacts]);
+          return (
+            <form onSubmit={handleSubmit} data-testid="addContactToAppealModal">
+              <DialogContent>
+                <Grid item>
+                  {!!excludedContactNames.length && (
+                    <Alert
+                      severity="info"
+                      data-testid="excludedContactMessage"
+                      sx={{ marginBottom: 1 }}
+                    >
+                      {t(
+                        'Some of the contact(s) you have selected to add to this appeal are currently excluded. You will not be able to exclude these contacts once you add them to this appeal. Instead, you will be able to remove them from it.',
+                      )}
+                      <Box pt={1} display="flex" gap={1}>
+                        {excludedContactNames.map((name) => (
+                          <Box key={name}>{name}</Box>
+                        ))}
+                      </Box>
+                    </Alert>
+                  )}
+                  <ContactsAutocomplete
+                    accountListId={accountListId ?? ''}
+                    value={contactIds}
+                    onChange={(contactIds) => {
+                      setFieldValue('contactIds', contactIds);
+                    }}
+                    excludeContactIds={existingContactIds}
+                  />
+                </Grid>
+              </DialogContent>
+              <DialogActions>
+                <CancelButton onClick={handleClose} disabled={isSubmitting} />
 
-              <SubmitButton disabled={!isValid || isSubmitting}>
-                {t('Save')}
-              </SubmitButton>
-            </DialogActions>
-          </form>
-        )}
+                <SubmitButton disabled={!isValid || isSubmitting}>
+                  {t('Save')}
+                </SubmitButton>
+              </DialogActions>
+            </form>
+          );
+        }}
       </Formik>
     </Modal>
   );
