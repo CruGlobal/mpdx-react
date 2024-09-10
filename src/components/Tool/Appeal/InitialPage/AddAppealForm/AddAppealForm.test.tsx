@@ -223,6 +223,7 @@ describe('AddAppealForm', () => {
 
       expect(await findByText('New Connection')).toBeInTheDocument();
       expect(getByText('Ask in Future')).toBeInTheDocument();
+      expect(getByText('-- None --')).toBeInTheDocument();
       // Ensures the '--- All Active ---' option isn't added
       expect(queryByText('--- All Active ---')).not.toBeInTheDocument();
     });
@@ -315,12 +316,36 @@ describe('AddAppealForm', () => {
       const tags = ['tag-1', 'tag-2'];
       const statuses = [
         {
+          name: '-- None --',
+          value: 'NULL',
+        },
+        {
+          name: '--- All Active ---',
+          value: 'ACTIVE',
+        },
+        {
+          name: '--- All Hidden ---',
+          value: 'HIDDEN',
+        },
+        {
           name: 'New Connection',
           value: 'NEVER_CONTACTED',
         },
         {
           name: 'Ask in Future',
           value: 'ASK_IN_FUTURE',
+        },
+        {
+          name: 'Call For Decision',
+          value: 'CALL_FOR_DECISION',
+        },
+        {
+          name: 'Not Interested',
+          value: 'NOT_INTERESTED',
+        },
+        {
+          name: 'Expired Referral',
+          value: 'EXPIRED_REFERRAL',
         },
       ];
 
@@ -377,7 +402,8 @@ describe('AddAppealForm', () => {
         ).toStrictEqual({
           any_tags: true,
           tags: 'tag-1,tag-2',
-          status: 'NEVER_CONTACTED,ASK_IN_FUTURE',
+          status:
+            'null,active,hidden,never_contacted,ask_in_future,call_for_decision,not_interested,expired_referral',
         });
       });
     });
@@ -436,8 +462,8 @@ describe('AddAppealForm', () => {
 
       // Contact to include
       const contactStatusSelect = await findByTestId('contactStatusSelect');
-      userEvent.type(contactStatusSelect, 'New Connection');
-      userEvent.selectOptions(getByRole('listbox'), 'New Connection');
+      userEvent.type(contactStatusSelect, 'Partner - Financial');
+      userEvent.selectOptions(getByRole('listbox'), 'Partner - Financial');
 
       // Contact with tags to include
       const selectAllTagsButton = await findByTestId(
@@ -474,7 +500,7 @@ describe('AddAppealForm', () => {
           inclusionFilter: {
             any_tags: true,
             tags: 'tag-1,tag-2,tag-3,tag-4',
-            status: 'NEVER_CONTACTED',
+            status: 'partner_financial',
           },
           exclusionFilter: {
             gave_more_than_pledged_range: '2019-10-01..2020-01-01',

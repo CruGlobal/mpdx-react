@@ -80,6 +80,27 @@ export const calculateGoal = (
   return Math.round(((initialGoal + letterCost) / adminPercent) * 100) / 100;
 };
 
+const gqlStatusesToDBStatusMap: { [key: string]: string } = {
+  NULL: 'null',
+  ACTIVE: 'active',
+  HIDDEN: 'hidden',
+  NEVER_CONTACTED: 'never_contacted',
+  ASK_IN_FUTURE: 'ask_in_future',
+  CULTIVATE_RELATIONSHIP: 'cultivate_relationship',
+  CONTACT_FOR_APPOINTMENT: 'contact_for_appointment',
+  APPOINTMENT_SCHEDULED: 'appointment_scheduled',
+  CALL_FOR_DECISION: 'call_for_decision',
+  PARTNER_FINANCIAL: 'partner_financial',
+  PARTNER_SPECIAL: 'partner_special',
+  PARTNER_PRAY: 'partner_pray',
+  NOT_INTERESTED: 'not_interested',
+  UNRESPONSIVE: 'unresponsive',
+  NEVER_ASK: 'never_ask',
+  RESEARCH_ABANDONED: 'research_abandoned',
+  EXPIRED_REFERRAL: 'expired_referral',
+  RESEARCH_CONTACT_INFO: 'research_contact_info',
+};
+
 type BuildInclusionFilterProps = {
   appealIncludes: object;
   tags: Attributes['tags'];
@@ -94,13 +115,18 @@ export const buildInclusionFilter = ({
     any_tags: true,
   };
 
+  const dbStatues =
+    statuses && statuses.length
+      ? statuses
+          .map((status) =>
+            status.value ? gqlStatusesToDBStatusMap[status.value] : '',
+          )
+          .join(',')
+      : null;
   const inclusionFilter = removeObjectNulls({
     ...defaultInclusionFilter,
     tags: tags && tags.length ? tags.join(',') : null,
-    status:
-      statuses && statuses.length
-        ? statuses.map((status) => status.value).join(',')
-        : null,
+    status: dbStatues,
     ...appealIncludes,
   });
 
@@ -323,9 +349,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
       'statuses',
       contactStatuses?.filter(
         (status: { value: string }) =>
-          status.value !== 'ACTIVE' &&
-          status.value !== 'HIDDEN' &&
-          status.value !== 'NULL',
+          status.value !== 'ACTIVE' && status.value !== 'HIDDEN',
       ),
     );
   };

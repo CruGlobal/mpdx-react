@@ -53,6 +53,12 @@ export const contactFiltersMock: ContactFiltersQuery = {
                 __typename: 'FilterOption',
               },
               {
+                name: '-- None --',
+                placeholder: null,
+                value: 'NULL',
+                __typename: 'FilterOption',
+              },
+              {
                 name: 'New Connection',
                 placeholder: null,
                 value: 'NEVER_CONTACTED',
@@ -62,6 +68,12 @@ export const contactFiltersMock: ContactFiltersQuery = {
                 name: 'Ask in Future',
                 placeholder: null,
                 value: 'ASK_IN_FUTURE',
+                __typename: 'FilterOption',
+              },
+              {
+                name: 'Partner - Financial',
+                placeholder: null,
+                value: 'PARTNER_FINANCIAL',
                 __typename: 'FilterOption',
               },
             ],
