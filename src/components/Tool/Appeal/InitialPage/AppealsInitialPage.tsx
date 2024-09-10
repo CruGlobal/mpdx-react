@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Divider,
   Grid,
   Theme,
   Typography,
@@ -40,10 +39,6 @@ const AppealsInitialPage: React.FC = () => {
     <Box className={classes.outer}>
       <Grid container spacing={3} className={classes.container}>
         <Grid item xs={12}>
-          <Box m={1}>
-            <Typography variant="h4">{t('Appeals')}</Typography>
-          </Box>
-          <Divider />
           <Box m={1}>
             <Typography variant="body2">
               {t(
