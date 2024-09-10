@@ -65,7 +65,14 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
     variables: {
       accountListId,
       first: value.length,
-      contactsFilters: { ids: value },
+      contactsFilters: {
+        ids: value,
+        // When the status filter is omitted, only contacts with an active status are loaded. But
+        // we need to load hidden contacts as well in case the user is adding a task to a hidden
+        // contact. Setting status to an empty array overrides the default status filter and loads
+        // contacts with any status.
+        status: [],
+      },
     },
     skip: value.length === 0,
   });
