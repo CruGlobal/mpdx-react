@@ -40,6 +40,7 @@ export interface TaskModalProps {
       },
     ];
   };
+  showFlowsMessage?: boolean;
 }
 
 const StyledCheckIcon = styled(CheckCircle)(({ theme }) => ({
@@ -60,6 +61,7 @@ const TaskModal = ({
   onClose,
   view,
   defaultValues,
+  showFlowsMessage,
 }: TaskModalProps): ReactElement => {
   const accountListId = useAccountListId();
   const [open, setOpen] = useState(!taskId);
@@ -123,6 +125,7 @@ const TaskModal = ({
               accountListId={accountListId}
               task={task}
               onClose={onModalClose}
+              showFlowsMessage={showFlowsMessage}
             />
           )}
           {view === TaskModalEnum.Comments && (
@@ -138,6 +141,7 @@ const TaskModal = ({
               accountListId={accountListId}
               onClose={onModalClose}
               defaultValues={defaultValues}
+              showFlowsMessage={showFlowsMessage}
             />
           )}
           {[
@@ -151,6 +155,7 @@ const TaskModal = ({
               onClose={onModalClose}
               defaultValues={defaultValues}
               view={view}
+              showFlowsMessage={showFlowsMessage}
             />
           )}
         </>

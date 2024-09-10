@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Alert,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -95,12 +96,14 @@ interface Props {
     taskPhase?: PhaseEnum;
     contactNodes?: [{ id: string; status: StatusEnum | undefined }];
   };
+  showFlowsMessage?: boolean;
 }
 
 const TaskModalLogForm = ({
   accountListId,
   onClose,
   defaultValues,
+  showFlowsMessage = false,
 }: Props): ReactElement => {
   const session = useSession();
   const { t } = useTranslation();
@@ -335,6 +338,13 @@ const TaskModalLogForm = ({
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
+            {showFlowsMessage && (
+              <Alert sx={{ marginBottom: 2 }}>
+                {t(
+                  "The contact's status has been updated. Now you can log the task that motivated this change.",
+                )}
+              </Alert>
+            )}
             <FormFieldsGridContainer>
               <Grid item>
                 <Grid container spacing={2}>

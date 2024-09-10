@@ -119,7 +119,7 @@ export const ContactFlow: React.FC<Props> = ({
           },
         })),
     });
-    enqueueSnackbar(t('Contact status info updated!'), {
+    enqueueSnackbar(t('Contact status updated!'), {
       variant: 'success',
     });
 
@@ -147,6 +147,7 @@ export const ContactFlow: React.FC<Props> = ({
               openTaskModal({
                 view: TaskModalEnum.Complete,
                 taskId,
+                showFlowsMessage: true,
               });
             } else {
               if (
@@ -156,6 +157,7 @@ export const ContactFlow: React.FC<Props> = ({
               ) {
                 openTaskModal({
                   view: TaskModalEnum.Log,
+                  showFlowsMessage: true,
                   defaultValues: {
                     taskPhase: newContactPhase,
                     contactIds: [id],
@@ -175,6 +177,7 @@ export const ContactFlow: React.FC<Props> = ({
         ) {
           openTaskModal({
             view: TaskModalEnum.Add,
+            showFlowsMessage: true,
             defaultValues: {
               taskPhase: newContactPhase,
               contactIds: [id],

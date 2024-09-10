@@ -520,4 +520,47 @@ describe('TaskModalLogForm', () => {
       });
     });
   }, 25000);
+
+  describe('flows status change message', () => {
+    const onClose = jest.fn();
+
+    it('does not show by default', () => {
+      const { queryByText } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <TaskModalLogForm
+                accountListId={accountListId}
+                onClose={onClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>,
+      );
+
+      expect(
+        queryByText(/The contact's status has been updated/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows when showFlowsMessage is set', () => {
+      const { getByText } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <TaskModalLogForm
+                accountListId={accountListId}
+                onClose={onClose}
+                showFlowsMessage
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>,
+      );
+
+      expect(
+        getByText(/The contact's status has been updated/),
+      ).toBeInTheDocument();
+    });
+  });
 });

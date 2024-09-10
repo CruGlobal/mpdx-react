@@ -60,12 +60,14 @@ type TaskModalComponentProps = {
   view: TaskModalEnum;
   GetTaskForTaskModalMock: GetTaskForTaskModalQuery;
   taskId?: string;
+  showFlowsMessage?: boolean;
 };
 
 const TaskModalComponent = ({
   GetTaskForTaskModalMock,
   taskId,
   view,
+  showFlowsMessage,
 }: TaskModalComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -82,6 +84,7 @@ const TaskModalComponent = ({
               taskId={taskId}
               defaultValues={defaultValues}
               view={view}
+              showFlowsMessage={showFlowsMessage}
             />
           </GqlMockedProvider>
         </SnackbarProvider>
@@ -192,5 +195,25 @@ describe('TaskModal', () => {
       });
       expect(within(dialog).getByText('Notifications')).toBeInTheDocument();
     });
+  });
+
+  describe('flows status change message', () => {
+    it.each([TaskModalEnum.Add, TaskModalEnum.Complete, TaskModalEnum.Log])(
+      'shows in %s modal when showFlowsMessage is set',
+      async (view) => {
+        const { findByText } = render(
+          <TaskModalComponent
+            GetTaskForTaskModalMock={completedTask}
+            view={view}
+            taskId={taskId}
+            showFlowsMessage
+          />,
+        );
+
+        expect(
+          await findByText(/The contact's status has been updated/),
+        ).toBeInTheDocument();
+      },
+    );
   });
 });
