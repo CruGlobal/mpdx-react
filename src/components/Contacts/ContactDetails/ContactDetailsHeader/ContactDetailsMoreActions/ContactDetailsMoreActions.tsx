@@ -92,8 +92,6 @@ const ActionPanel = ({
 }: {
   actionContent: AddMenuItem[];
 }): ReactElement => {
-  const { t } = useTranslation();
-
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
       {actionContent
@@ -106,7 +104,7 @@ const ActionPanel = ({
             onMouseEnter={onMouseEnter}
           >
             {icon}
-            <MenuItemText primary={t(`${text}`)} />
+            <MenuItemText primary={text} />
           </RowContainer>
         ))}
     </Box>
@@ -217,7 +215,7 @@ export const ContactDetailsMoreAcitions: React.FC<
   const actionContent = [
     {
       visibility: true,
-      text: 'Add Referrals',
+      text: t('Add Connections'),
       icon: <PersonIcon />,
       onClick: () => {
         setReferralsModalOpen(true);
@@ -227,7 +225,7 @@ export const ContactDetailsMoreAcitions: React.FC<
     },
     {
       visibility: true,
-      text: 'Add Task',
+      text: t('Add Task'),
       icon: <ListIcon />,
       onClick: () => {
         openTaskModal({
@@ -240,7 +238,7 @@ export const ContactDetailsMoreAcitions: React.FC<
     },
     {
       visibility: true,
-      text: 'Log Task',
+      text: t('Log Task'),
       icon: <EditIcon />,
       onClick: () => {
         openTaskModal({
@@ -253,7 +251,7 @@ export const ContactDetailsMoreAcitions: React.FC<
     },
     {
       visibility: status !== StatusEnum.NeverAsk,
-      text: 'Hide Contact',
+      text: t('Hide Contact'),
       icon: <VisibilityOffIcon />,
       onClick: () => {
         setOpenHideModal(true);
@@ -263,7 +261,7 @@ export const ContactDetailsMoreAcitions: React.FC<
     },
     {
       visibility: true,
-      text: 'Delete Contact',
+      text: t('Delete Contact'),
       icon: <DeleteIcon />,
       onClick: () => {
         setDeleteModalOpen(true);
@@ -300,8 +298,8 @@ export const ContactDetailsMoreAcitions: React.FC<
       <Modal
         isOpen={referralsModalOpen}
         handleClose={handleModalClose}
-        title={t('Add Referrals')}
-        aria-labelledby={t('Create Referral Dialog')}
+        title={t('Add Connections')}
+        aria-labelledby={t('Create Connection Dialog')}
         fullWidth
         size={'xl'} // TODO: Expand logic as more menu modals are added
       >

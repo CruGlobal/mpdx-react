@@ -597,7 +597,7 @@ describe('EditPartnershipInfoModal', () => {
       </SnackbarProvider>,
     );
 
-    const referredByInput = getByLabelText('Referred By');
+    const referredByInput = getByLabelText('Connecting Partner');
     await waitFor(() => expect(referredByInput).toBeInTheDocument());
     userEvent.click(referredByInput);
     expect(getByText('Person, Cool')).toBeInTheDocument();
@@ -655,7 +655,7 @@ describe('EditPartnershipInfoModal', () => {
       </SnackbarProvider>,
     );
 
-    const referredByInput = getByLabelText('Referred By');
+    const referredByInput = getByLabelText('Connecting Partner');
     await waitFor(() => expect(referredByInput).toBeInTheDocument());
     userEvent.click(referredByInput);
     userEvent.type(referredByInput, 'G');
@@ -674,7 +674,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('should handle editing the referred by | No Contacts or Referrals', async () => {
+  it('should handle editing the referred by | No Contacts or Connections', async () => {
     const { getByLabelText, getByText } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -700,7 +700,7 @@ describe('EditPartnershipInfoModal', () => {
       </SnackbarProvider>,
     );
 
-    const referredByInput = getByLabelText('Referred By');
+    const referredByInput = getByLabelText('Connecting Partner');
     await waitFor(() => expect(referredByInput).toBeInTheDocument());
     userEvent.click(referredByInput);
     expect(getByText('No options')).toBeInTheDocument();

@@ -122,7 +122,7 @@ export const ContactDetails: React.FC<Props> = ({ onClose }) => {
             />
             <ContactTab
               value={TabKey.Referrals}
-              label={t('Referrals')}
+              label={t('Connections')}
               onMouseEnter={preloadContactReferralTab}
             />
             <ContactTab
