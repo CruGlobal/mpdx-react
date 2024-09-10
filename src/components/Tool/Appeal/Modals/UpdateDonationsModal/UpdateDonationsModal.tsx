@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { DialogActions, DialogContent, DialogContentText } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGetContactDonationsQuery } from 'src/components/Contacts/ContactDetails/ContactDonationsTab/ContactDonationsTab.generated';
 import { DonationRow } from 'src/components/DonationTable/DonationTable';
@@ -48,18 +49,16 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
 }) => {
   const locale = useLocale();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { accountListId, appealId } = React.useContext(
     AppealsContext,
   ) as AppealsType;
   const [selectedDonations, setSelectedDonations] = useState<DonationRow[]>([]);
-  const [zeroAmountConfirmationMessage, setZeroAmountConfirmationMessage] =
-    useState<ReactNode | null>(null);
   const [
     lessThanPledgeConfirmationMessage,
     setLessThanPledgeConfirmationMessage,
   ] = useState<ReactNode | null>(null);
   const [saveDisabled, setSaveDisabled] = useState(true);
-  const [status, setStatus] = useState<PledgeStatusEnum>();
   const [pageSize, setPageSize] = useState(25);
 
   const { data } = useGetContactDonationsQuery({
@@ -108,18 +107,10 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
 
   const handleUpdateDonations = async () => {
     if (!totalSelectedDonationsAmount) {
-      if (pledge) {
-        setStatus(PledgeStatusEnum.ReceivedNotProcessed);
-      }
-      setZeroAmountConfirmationMessage(
-        <Trans
-          defaults="The total amount is zero. As a result, the contact will be moved to the <bold>{{statusText}}</bold> column. Are you sure?"
-          values={{
-            statusText: pledge ? t('Received') : t('Asked'),
-          }}
-          components={{ bold: <strong /> }}
-        />,
-      );
+      enqueueSnackbar(t('Unable to create a pledge with the amount of $0'), {
+        variant: 'error',
+      });
+      return;
     } else if (pledge && totalSelectedDonationsAmount < pledge.amount) {
       setLessThanPledgeConfirmationMessage(
         <Trans
@@ -127,7 +118,6 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
           components={{ bold: <strong /> }}
         />,
       );
-      setStatus(PledgeStatusEnum.Processed);
     } else {
       if (pledge) {
         await commit({
@@ -142,20 +132,6 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
         await commit({});
       }
     }
-  };
-
-  const zeroAmountConfirmationMutation = async () => {
-    if (pledge) {
-      await commit({
-        updatedPledge: {
-          ...pledge,
-          status,
-        },
-      });
-    } else {
-      await commit({});
-    }
-    setZeroAmountConfirmationMessage(null);
   };
 
   const lessThanPledgeConfirmationMutation = async () => {
@@ -224,6 +200,16 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
+        onCompleted: () => {
+          enqueueSnackbar(t('Successfully updated donations'), {
+            variant: 'success',
+          });
+        },
+        onError: () => {
+          enqueueSnackbar(t('Error while updating donations'), {
+            variant: 'error',
+          });
+        },
       });
     }
     if (updatedPledge?.id) {
@@ -241,6 +227,16 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
+        onCompleted: () => {
+          enqueueSnackbar(t('Successfully updated commitment'), {
+            variant: 'success',
+          });
+        },
+        onError: () => {
+          enqueueSnackbar(t('Error while updating commitment'), {
+            variant: 'error',
+          });
+        },
       });
     } else if (!donationsAttributes.length) {
       // Create pledge if no pledge and no donations
@@ -253,10 +249,21 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
               contactId: contact.id,
               expectedDate: DateTime.local().startOf('day').toISODate(),
               amount: totalSelectedDonationsAmount,
+              amountCurrency: 'USD',
             },
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
+        onCompleted: () => {
+          enqueueSnackbar(t('Successfully created a new commitment'), {
+            variant: 'success',
+          });
+        },
+        onError: () => {
+          enqueueSnackbar(t('Error while trying to create a commitment'), {
+            variant: 'error',
+          });
+        },
       });
     }
     handleClose();
@@ -345,15 +352,6 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
         </DialogActions>
       </Modal>
 
-      {zeroAmountConfirmationMessage && (
-        <Confirmation
-          isOpen={true}
-          title={t('Confirm')}
-          handleClose={() => setZeroAmountConfirmationMessage(null)}
-          message={zeroAmountConfirmationMessage}
-          mutation={zeroAmountConfirmationMutation}
-        />
-      )}
       {lessThanPledgeConfirmationMessage && (
         <Confirmation
           isOpen={true}

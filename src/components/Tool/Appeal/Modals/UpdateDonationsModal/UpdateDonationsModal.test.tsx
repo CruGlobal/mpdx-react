@@ -419,9 +419,9 @@ describe('UpdateDonationsModal', () => {
   describe('Update donations functionality', () => {
     const { appeal: _appeal, ...restOfPledge } = defaultPledge;
     describe('Zero amount', () => {
-      it('should show zero amount confirmation', async () => {
-        const { getByRole, getByTestId, findByRole, findAllByRole } = render(
-          <Components />,
+      it('should show error message if total is zero and no pledge', async () => {
+        const { getByRole, findByRole, findAllByRole } = render(
+          <Components pledge={null} />,
         );
 
         const checkboxes = await findAllByRole('checkbox');
@@ -440,91 +440,30 @@ describe('UpdateDonationsModal', () => {
 
         userEvent.click(getByRole('button', { name: 'Save' }));
 
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-
-        expect(getByTestId('confirmModalMessage')).toHaveTextContent(
-          'The total amount is zero.',
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Unable to create a pledge with the amount of $0',
+            {
+              variant: 'error',
+            },
+          ),
         );
       });
 
-      it('should move contact to Received when pledge is present', async () => {
+      it('should show error message if total is zero and has a pledge', async () => {
         const { getByRole, findAllByRole } = render(<Components />);
         const checkboxes = await findAllByRole('checkbox');
         userEvent.click(checkboxes[0]);
         userEvent.click(checkboxes[2]);
         userEvent.click(getByRole('button', { name: 'Save' }));
 
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-
-        userEvent.click(getByRole('button', { name: 'Yes' }));
-
         await waitFor(() =>
-          expect(mutationSpy).toHaveGraphqlOperation(
-            'UpdateAccountListPledge',
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Unable to create a pledge with the amount of $0',
             {
-              input: {
-                pledgeId: defaultPledge.id,
-                attributes: {
-                  ...restOfPledge,
-                  appealId: appealId,
-                  contactId: defaultContact.id,
-                  status: PledgeStatusEnum.ReceivedNotProcessed,
-                },
-              },
+              variant: 'error',
             },
           ),
-        );
-
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateDonations', {
-          input: {
-            accountListId,
-            attributes: [
-              {
-                id: 'donation-1',
-                appealId: 'none',
-              },
-              {
-                id: 'donation-3',
-                appealId: 'appealId',
-              },
-            ],
-          },
-        });
-      });
-
-      it('should move contact to Asked when pledge is NOT present', async () => {
-        const { getByRole } = render(<Components pledge={null} zeroAmount />);
-
-        await waitFor(() =>
-          expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
-        );
-
-        userEvent.click(getByRole('button', { name: 'Save' }));
-
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-
-        userEvent.click(getByRole('button', { name: 'Yes' }));
-
-        await waitFor(() =>
-          expect(mutationSpy).toHaveGraphqlOperation(
-            'CreateAccountListPledge',
-            {
-              input: {
-                accountListId,
-                attributes: {
-                  appealId: appealId,
-                  contactId: defaultContact.id,
-                  expectedDate: '2020-01-01',
-                  amount: 0,
-                },
-              },
-            },
-          ),
-        );
-
-        expect(mutationSpy).not.toHaveGraphqlOperation('UpdateDonations');
-        expect(mutationSpy).not.toHaveGraphqlOperation(
-          'UpdateAccountListPledge',
         );
       });
     });
