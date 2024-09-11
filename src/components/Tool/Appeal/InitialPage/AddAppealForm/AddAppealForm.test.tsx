@@ -154,7 +154,7 @@ describe('AddAppealForm', () => {
         getByText(/must use a positive number for letter cost/i),
       ).toBeInTheDocument();
       expect(
-        getByText(/must use a positive number for admin cost/i),
+        getByText(/must use a positive whole number for admin cost/i),
       ).toBeInTheDocument();
 
       userEvent.clear(initialGoal);
@@ -176,9 +176,15 @@ describe('AddAppealForm', () => {
         ).not.toBeInTheDocument();
         expect(queryByText(/admin cost is required/i)).not.toBeInTheDocument();
         expect(
-          queryByText(/must use a positive number for admin cost/i),
+          queryByText(/must use a positive whole number for admin cost/i),
         ).not.toBeInTheDocument();
       });
+
+      userEvent.clear(adminPercent);
+      userEvent.type(adminPercent, '5.1');
+      expect(
+        await findByText(/must use a positive whole number for admin cost/i),
+      ).toBeInTheDocument();
     });
 
     it('should calculate the Goal amount correctly', async () => {

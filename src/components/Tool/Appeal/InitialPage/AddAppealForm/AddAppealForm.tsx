@@ -177,7 +177,7 @@ const appealFormSchema = yup.object({
     .test(
       i18n.t('Is positive?'),
       i18n.t('Must use a positive number for Initial Goal'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      (value) => typeof value === 'number' && value >= 0,
     ),
   letterCost: yup
     .number()
@@ -186,7 +186,7 @@ const appealFormSchema = yup.object({
     .test(
       i18n.t('Is positive?'),
       i18n.t('Must use a positive number for Letter Cost'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      (value) => typeof value === 'number' && value >= 0,
     ),
   adminPercentage: yup
     .number()
@@ -194,8 +194,9 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Admin Cost is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Admin Cost'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Admin Cost'),
+      (value) =>
+        typeof value === 'number' && value >= 0 && value === Math.floor(value),
     ),
   statuses: yup.array().of(
     yup.object({
