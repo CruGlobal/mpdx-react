@@ -12,6 +12,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
@@ -83,6 +84,7 @@ export const FourteenMonthReportTable: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   return (
     <PrintableContainer className="fourteen-month-report">
@@ -139,7 +141,11 @@ export const FourteenMonthReportTable: React.FC<
                 </StyledTableCell>
                 {isExpanded && (
                   <React.Fragment>
-                    <StyledTableCell>{contact.status}</StyledTableCell>
+                    <StyledTableCell>
+                      {contact.status &&
+                        contactStatuses[contact.status.toUpperCase()]
+                          ?.translated}
+                    </StyledTableCell>
                     <StyledTableCell data-testid="pledgeAmount">
                       {contact.pledgeAmount &&
                         `${numberFormat(

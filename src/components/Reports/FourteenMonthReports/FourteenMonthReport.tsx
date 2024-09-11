@@ -6,7 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import {
+  FourteenMonthReportCurrencyType,
+  StatusEnum,
+} from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import { useFourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
@@ -42,6 +46,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
   const { t } = useTranslation();
   const locale = useLocale();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -143,7 +148,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         );
 
         const pledgedMonthlyEquivalent =
-          contact.status === 'Partner - Financial' &&
+          contact?.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
           contact.pledgeAmount &&
           contact.pledgeFrequency
             ? Math.round(
@@ -157,7 +162,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         );
 
         const inHandMonthlyEquivalent =
-          contact.status === 'Partner - Financial' &&
+          contact?.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
           contact.pledgeFrequency &&
           inHandMonths
             ? Math.round(
@@ -175,7 +180,9 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
         return [
           contact.name,
-          contact.status ?? '',
+          contact.status
+            ? contactStatuses[contact.status.toUpperCase()]?.translated
+            : '',
           contact.pledgeAmount ?? '',
           contact.pledgeCurrency ?? '',
           apiConstants?.pledgeFrequencies?.find(
