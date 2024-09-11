@@ -36,6 +36,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -453,11 +454,11 @@ export const CreateMultipleContacts = ({
                                 }
                               >
                                 <MenuItem>
-                                  <em>None</em>
+                                  <em>{t('None')}</em>
                                 </MenuItem>
                                 {phases?.map((phase) => [
-                                  <ListSubheader key={phase?.name}>
-                                    {phase?.name}
+                                  <ListSubheader key={phase?.id}>
+                                    {getLocalizedPhase(t, phase?.id)}
                                   </ListSubheader>,
                                   phase?.contactStatuses.map(
                                     (s: StatusEnum) => (
