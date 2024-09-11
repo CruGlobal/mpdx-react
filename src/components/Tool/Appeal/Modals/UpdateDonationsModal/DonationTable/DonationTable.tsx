@@ -85,6 +85,13 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   const locale = useLocale();
 
   const { data, error, loading, fetchMore } = donationTableQueryResult;
+  const preselectedDonations = useMemo(
+    () =>
+      data?.donations.nodes
+        .filter((donation) => donation.appeal?.id === appealId)
+        .map(createDonationRow) ?? [],
+    [data],
+  );
 
   // Load the rest of the pages asynchronously so that we can calculate the total donations
   useFetchAllPages({
@@ -94,20 +101,19 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   });
 
   useEffect(() => {
-    if (!data?.donations.nodes.length) {
-      return;
+    if (preselectedDonations?.length) {
+      setSelectedDonations(preselectedDonations);
     }
-
-    const preselectedDonations = data.donations.nodes
-      .filter((donation) => donation.appeal?.id === appealId)
-      .map(createDonationRow);
-
-    setSelectedDonations(preselectedDonations);
-  }, [data]);
+  }, [preselectedDonations]);
 
   const nodes = data?.donations.nodes || [];
 
   const donations = useMemo(() => nodes.map(createDonationRow), [nodes]);
+
+  const isPreselectedDonation = (donation: DonationRow) =>
+    preselectedDonations.some((donationRow) => donationRow.id === donation.id);
+  const isDonationChecked = (donation: DonationRow) =>
+    selectedDonations.some((donationRow) => donationRow.id === donation.id);
 
   const date: RenderCell = ({ row }) => dateFormatShort(row.date, locale);
 
@@ -123,7 +129,18 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     </Tooltip>
   );
 
-  const appeal: RenderCell = ({ row: donation }) => donation.appealName;
+  const appeal: RenderCell = ({ row: donation }) => (
+    <span
+      style={{
+        textDecoration:
+          isPreselectedDonation(donation) && !isDonationChecked(donation)
+            ? 'line-through'
+            : undefined,
+      }}
+    >
+      {donation.appealName}
+    </span>
+  );
 
   const onDonationCheckToggle = (donation: DonationRow) => {
     if (!setSelectedDonations) {
@@ -142,8 +159,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       setSelectedDonations([...selectedDonations, donation]);
     }
   };
-  const isDonationChecked = (donation: DonationRow) =>
-    selectedDonations.some((donationRow) => donationRow.id === donation.id);
+
   const select: RenderCell = ({ row: donation }) => (
     <StyledListItemIcon>
       <StyledCheckbox
