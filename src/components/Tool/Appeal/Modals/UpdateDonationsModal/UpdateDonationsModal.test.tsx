@@ -643,4 +643,44 @@ describe('UpdateDonationsModal', () => {
       });
     });
   });
+  describe('Creating a new pledge', () => {
+    it('should show create pledge with pre-selected donations', async () => {
+      const { getByRole, findByRole, findAllByRole } = render(
+        <Components pledge={null} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+
+      const totalRow = within(
+        await findByRole('table', { name: 'Donation Totals' }),
+      ).getByRole('row');
+      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('CreateAccountListPledge', {
+          input: {
+            accountListId,
+            attributes: {
+              appealId: appealId,
+              contactId: defaultContact.id,
+              expectedDate: '2020-01-01',
+              amount: 10,
+              amountCurrency: 'CAD',
+            },
+          },
+        }),
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully created a new commitment',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+  });
 });

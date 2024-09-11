@@ -7,6 +7,7 @@ import { useGetContactDonationsQuery } from 'src/components/Contacts/ContactDeta
 import { DonationRow } from 'src/components/DonationTable/DonationTable';
 import {
   DonationTableQueryVariables,
+  useAccountListCurrencyQuery,
   useDonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
 import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
@@ -60,6 +61,12 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
   ] = useState<ReactNode | null>(null);
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [pageSize, setPageSize] = useState(25);
+
+  const { data: accountListData, loading: loadingAccountListData } =
+    useAccountListCurrencyQuery({
+      variables: { accountListId: accountListId ?? '' },
+    });
+  const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const { data } = useGetContactDonationsQuery({
     variables: {
@@ -249,7 +256,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
               contactId: contact.id,
               expectedDate: DateTime.local().startOf('day').toISODate(),
               amount: totalSelectedDonationsAmount,
-              amountCurrency: 'USD',
+              amountCurrency: accountCurrency,
             },
           },
         },
@@ -320,10 +327,9 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
           </DialogContentText>
 
           <DonationTable
-            accountListId={accountListId ?? ''}
             appealId={appealId ?? ''}
             filter={{ donorAccountIds }}
-            loading={!donorAccountIds}
+            loading={!donorAccountIds && loadingAccountListData}
             emptyPlaceholder={
               <EmptyDonationsTable
                 title={t('No donations received for {{name}}', {
@@ -331,6 +337,7 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
                 })}
               />
             }
+            accountCurrency={accountCurrency}
             visibleColumnsStorageKey="contact-donations"
             selectedDonations={selectedDonations}
             setSelectedDonations={setSelectedDonations}
