@@ -431,7 +431,7 @@ describe('ContactFlow', () => {
 
       await waitFor(() =>
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Unable to move contact here as gift has not been received by Cru.',
+          'Unable to move contact to the "Received" column as gift has not been received by Cru. Status set to "Committed".',
           {
             variant: 'warning',
           },
@@ -559,7 +559,7 @@ describe('ContactFlow', () => {
 
       await waitFor(() =>
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Unable to move contact to Committed as part of the pledge has been Received.',
+          'Unable to move contact to the "Committed" column as part of the pledge has been Received.',
           {
             variant: 'warning',
           },

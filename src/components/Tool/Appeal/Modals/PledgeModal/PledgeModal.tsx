@@ -33,10 +33,12 @@ import { requiredDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import i18n from 'src/lib/i18n';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
+import handleReceivedSnackBarNotifications from '../../Shared/handleReceivedSnackBarNotifications/handleReceivedSnackBarNotifications';
 import {
   useCreateAccountListPledgeMutation,
   useUpdateAccountListPledgeMutation,
@@ -49,6 +51,7 @@ interface PledgeModalProps {
     name: string;
   };
   pledge?: AppealContactInfoFragment['pledges'][0];
+  selectedAppealStatus?: AppealStatusEnum | null;
 }
 
 const CreatePledgeSchema = yup.object({
@@ -77,6 +80,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
   contact,
   pledge,
   handleClose,
+  selectedAppealStatus,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -114,6 +118,22 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
+        update: (_, data) => {
+          const newStatus = data.data?.createAccountListPledge?.pledge.status;
+
+          if (selectedAppealStatus) {
+            const { message, snackbarOptions } =
+              handleReceivedSnackBarNotifications({
+                dbStatus: newStatus,
+                selectedAppealStatus,
+                t,
+              });
+
+            if (message) {
+              enqueueSnackbar(message, snackbarOptions);
+            }
+          }
+        },
         onCompleted: () => {
           enqueueSnackbar(t('Successfully added commitment to appeal'), {
             variant: 'success',
@@ -143,6 +163,22 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
+        update: (_, data) => {
+          const newStatus = data.data?.updateAccountListPledge?.pledge.status;
+
+          if (selectedAppealStatus) {
+            const { message, snackbarOptions } =
+              handleReceivedSnackBarNotifications({
+                dbStatus: newStatus,
+                selectedAppealStatus,
+                t,
+              });
+
+            if (message) {
+              enqueueSnackbar(message, snackbarOptions);
+            }
+          }
+        },
         onCompleted: () => {
           enqueueSnackbar(t('Successfully edited commitment'), {
             variant: 'success',

@@ -13,11 +13,16 @@ import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
+  AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from '../../AppealsContext/contacts.generated';
 import { defaultContact } from '../../List/ContactRow/ContactRowMock';
+import {
+  CreateAccountListPledgeMutation,
+  UpdateAccountListPledgeMutation,
+} from './ContactPledge.generated';
 import { PledgeModal } from './PledgeModal';
 
 const accountListId = 'abc';
@@ -26,20 +31,58 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
+const defaultPledge = {
+  id: 'pledgeId',
+  amount: 110,
+  amountCurrency: 'USD',
+  appeal: {
+    id: appealId,
+  },
+  expectedDate: '2024-08-08',
+  status: PledgeStatusEnum.NotReceived,
+};
 const handleClose = jest.fn();
 const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 interface ComponentsProps {
   pledge?: AppealContactInfoFragment['pledges'][0];
+  selectedAppealStatus?: AppealStatusEnum;
+  updateAccountListPledge?: UpdateAccountListPledgeMutation;
+  createAccountListPledge?: CreateAccountListPledgeMutation;
 }
 
-const Components = ({ pledge = undefined }: ComponentsProps) => (
+const Components = ({
+  pledge = undefined,
+  selectedAppealStatus,
+  updateAccountListPledge = {},
+  createAccountListPledge = {},
+}: ComponentsProps) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider onCall={mutationSpy}>
+            <GqlMockedProvider<{
+              UpdateAccountListPledge: UpdateAccountListPledgeMutation;
+              CreateAccountListPledge: CreateAccountListPledgeMutation;
+            }>
+              onCall={mutationSpy}
+              mocks={{
+                UpdateAccountListPledge: updateAccountListPledge,
+                CreateAccountListPledge: createAccountListPledge,
+              }}
+            >
               <AppealsWrapper>
                 <AppealsContext.Provider
                   value={
@@ -53,6 +96,7 @@ const Components = ({ pledge = undefined }: ComponentsProps) => (
                     handleClose={handleClose}
                     contact={defaultContact}
                     pledge={pledge}
+                    selectedAppealStatus={selectedAppealStatus}
                   />
                 </AppealsContext.Provider>
               </AppealsWrapper>
@@ -101,6 +145,148 @@ describe('PledgeModal', () => {
 
     userEvent.click(getByRole('button', { name: 'Close' }));
     expect(handleClose).toHaveBeenCalledTimes(2);
+  });
+
+  describe('Warnings when trying to change pledge status but the server does not update', () => {
+    it('shows a warning when moving contact from Asked to Received', async () => {
+      const { getByRole } = render(
+        <Components
+          selectedAppealStatus={AppealStatusEnum.ReceivedNotProcessed}
+          createAccountListPledge={{
+            createAccountListPledge: {
+              pledge: {
+                id: 'abc',
+                status: PledgeStatusEnum.NotReceived,
+                amount: defaultPledge.amount,
+                amountCurrency: defaultPledge.amountCurrency,
+              },
+            },
+          }}
+        />,
+      );
+
+      const amountInput = getByRole('textbox', { name: 'Amount' });
+      userEvent.type(amountInput, '100');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Unable to move contact to the "Received" column as gift has not been received by Cru. Status set to "Committed".',
+          {
+            variant: 'warning',
+          },
+        ),
+      );
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully added commitment to appeal',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+    it('shows a warning when moving contact from Commitment to Received', async () => {
+      const { getByRole } = render(
+        <Components
+          pledge={defaultPledge}
+          selectedAppealStatus={AppealStatusEnum.ReceivedNotProcessed}
+          updateAccountListPledge={{
+            updateAccountListPledge: {
+              pledge: {
+                id: defaultPledge.id,
+                status: PledgeStatusEnum.NotReceived,
+              },
+            },
+          }}
+        />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Unable to move contact to the "Received" column as gift has not been received by Cru. Status set to "Committed".',
+          {
+            variant: 'warning',
+          },
+        ),
+      );
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully edited commitment',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+    it('shows a warning when moving contact from Received to Commitment', async () => {
+      const { getByRole } = render(
+        <Components
+          pledge={defaultPledge}
+          selectedAppealStatus={AppealStatusEnum.NotReceived}
+          updateAccountListPledge={{
+            updateAccountListPledge: {
+              pledge: {
+                id: defaultPledge.id,
+                status: PledgeStatusEnum.ReceivedNotProcessed,
+              },
+            },
+          }}
+        />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Unable to move contact to the "Committed" column as part of the pledge has been Received.',
+          {
+            variant: 'warning',
+          },
+        ),
+      );
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully edited commitment',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+    it('shows a warning when moving contact from Processed to Commitment', async () => {
+      const { getByRole } = render(
+        <Components
+          pledge={defaultPledge}
+          selectedAppealStatus={AppealStatusEnum.NotReceived}
+          updateAccountListPledge={{
+            updateAccountListPledge: {
+              pledge: {
+                id: defaultPledge.id,
+                status: PledgeStatusEnum.Processed,
+              },
+            },
+          }}
+        />,
+      );
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Unable to move contact here as this gift is already processed.',
+          {
+            variant: 'warning',
+          },
+        ),
+      );
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully edited commitment',
+        {
+          variant: 'success',
+        },
+      );
+    });
   });
 
   it('Add commitment', async () => {
