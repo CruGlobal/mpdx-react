@@ -39,6 +39,7 @@ import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipSt
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -354,8 +355,8 @@ export const EditPartnershipInfoModal: React.FC<
                     }}
                   >
                     {phases?.map((phase) => [
-                      <ListSubheader key={phase?.name}>
-                        {phase?.name}
+                      <ListSubheader key={phase?.id}>
+                        {getLocalizedPhase(t, phase?.id)}
                       </ListSubheader>,
                       phase?.contactStatuses.map((s: StatusEnum) => (
                         <MenuItem key={s} value={s}>

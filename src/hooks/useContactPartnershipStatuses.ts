@@ -43,6 +43,13 @@ export const useContactPartnershipStatuses = () => {
     },
   };
 
+  // contactStatuses: {
+  //   APPOINTMENT_SCHEDULED: {
+  //     name: "Appointment Scheduled"
+  //     phase: "APPOINTMENT"
+  //     translated: "Appointment Scheduled"
+  //   }
+  // }
   const contactStatuses: ContactStatuses = phases
     ? phases?.reduce((acc, phase) => {
         phase?.contactStatuses?.map((status) => {
@@ -57,6 +64,11 @@ export const useContactPartnershipStatuses = () => {
       }, otherStatuses)
     : otherStatuses;
 
+  //   statusMap: {
+  //     "Never Ask": "NEVER_ASK",
+  //     "Research Abandoned": "RESEARCH_ABANDONED",
+  //     "Expired Connection": "EXPIRED_REFERRAL"
+  // }
   const statusMap: { [statusKey: string]: string } =
     contactStatuses &&
     Object.fromEntries(
@@ -65,6 +77,7 @@ export const useContactPartnershipStatuses = () => {
         .map(([statusKey, status]) => [status?.name, statusKey]),
     );
 
+  //same as statusMap but also includes HIDDEN, ACTIVE & NULL
   const statusMapForFilters: { [statusKey: string]: string } =
     Object.fromEntries(
       Object.entries(contactStatuses).map(([statusKey, status]) => [
@@ -73,6 +86,21 @@ export const useContactPartnershipStatuses = () => {
       ]),
     );
 
+  //   statusArray = [
+  //     {
+  //         "id": "CALL_FOR_DECISION",
+  //         "name": "Call for Decision",
+  //         "translated": "Follow Up for Decision",
+  //         "phase": "FOLLOW_UP"
+  //     },
+  //     {
+  //         "id": "PARTNER_FINANCIAL",
+  //         "name": "Partner - Financial",
+  //         "translated": "Partner - Financial",
+  //         "phase": "PARTNER_CARE"
+  //     },
+  // ];
+  // it does not include HIDDEN, ACTIVE, NULL
   const statusArray = Object.entries(contactStatuses)
     .filter(([_, status]) => status.phase)
     .map(([statusKey, s]) => {
