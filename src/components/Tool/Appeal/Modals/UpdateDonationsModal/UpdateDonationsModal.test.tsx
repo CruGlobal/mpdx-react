@@ -67,6 +67,8 @@ interface ComponentsProps {
   hasForeignCurrency?: boolean;
   hasMultiplePages?: boolean;
   zeroAmount?: boolean;
+  noDonationsMatchAppeal?: boolean;
+  mutationsThrowErrors?: boolean;
 }
 
 const Components = ({
@@ -75,6 +77,8 @@ const Components = ({
   hasForeignCurrency = false,
   hasMultiplePages = false,
   zeroAmount = false,
+  noDonationsMatchAppeal = false,
+  mutationsThrowErrors = false,
 }: ComponentsProps) => {
   return (
     <I18nextProvider i18n={i18n}>
@@ -89,6 +93,21 @@ const Components = ({
                   DonationTable: DonationTableQuery;
                 }>
                   mocks={{
+                    UpdateDonations: mutationsThrowErrors
+                      ? () => {
+                          throw new Error('Server Error');
+                        }
+                      : {},
+                    UpdateAccountListPledge: mutationsThrowErrors
+                      ? () => {
+                          throw new Error('Server Error');
+                        }
+                      : {},
+                    CreateAccountListPledge: mutationsThrowErrors
+                      ? () => {
+                          throw new Error('Server Error');
+                        }
+                      : {},
                     AccountListCurrency: {
                       accountList: {
                         currency: 'CAD',
@@ -112,7 +131,9 @@ const Components = ({
                                   currency: 'CAD',
                                 },
                                 appeal: {
-                                  id: appealId,
+                                  id: noDonationsMatchAppeal
+                                    ? 'appeal-99'
+                                    : appealId,
                                   name: 'Appeal 1',
                                 },
                                 designationAccount: {
@@ -220,11 +241,13 @@ const Components = ({
 
 describe('UpdateDonationsModal', () => {
   it('default', () => {
-    const { getByRole } = render(<Components />);
+    const { getByRole, getByTestId } = render(<Components />);
 
     expect(
       getByRole('heading', { name: 'Update Donations' }),
     ).toBeInTheDocument();
+
+    expect(getByTestId('LoadingBox')).toBeInTheDocument();
 
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
@@ -263,10 +286,14 @@ describe('UpdateDonationsModal', () => {
 
   describe('Donations', () => {
     it('should show no donations', async () => {
-      const { findByText, getByRole } = render(<Components isEmpty />);
+      const { findByText, getByRole, queryByTestId } = render(
+        <Components isEmpty />,
+      );
       expect(
         await findByText(`No donations received for ${defaultContact.name}`),
       ).toBeInTheDocument();
+
+      expect(queryByTestId('LoadingBox')).not.toBeInTheDocument();
 
       expect(
         getByRole('button', {
@@ -311,12 +338,26 @@ describe('UpdateDonationsModal', () => {
   });
 
   describe('Donations - Table functionality', () => {
+    it('uses the default total and disabled save when no donations are selected', async () => {
+      const { findByRole, getByRole } = render(
+        <Components noDonationsMatchAppeal={true} />,
+      );
+
+      const totalRow = within(
+        await findByRole('table', { name: 'Donation Totals' }),
+      ).getByRole('row');
+      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$0');
+
+      expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
     it('hides currency column when all currencies match the account currency', async () => {
-      const { queryByRole, findByRole } = render(<Components />);
+      const { queryByRole, findByRole, queryByTestId } = render(<Components />);
 
       expect(
         await findByRole('cell', { name: 'Designation Account 1' }),
       ).toBeInTheDocument();
+      expect(queryByTestId('LoadingBox')).not.toBeInTheDocument();
       expect(
         queryByRole('columnheader', { name: 'Foreign Amount' }),
       ).not.toBeInTheDocument();
@@ -413,6 +454,55 @@ describe('UpdateDonationsModal', () => {
           pageSize: 50,
         }),
       );
+    });
+  });
+
+  describe('Handle mutation errors', () => {
+    it('Update pledge errors', async () => {
+      const { getByRole, findAllByRole } = render(
+        <Components mutationsThrowErrors={true} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+      userEvent.click(checkboxes[1]);
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error while updating donations',
+          {
+            variant: 'error',
+          },
+        );
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error while updating commitment',
+          {
+            variant: 'error',
+          },
+        );
+      });
+    });
+
+    it('Create pledge errors', async () => {
+      const { getByRole, findAllByRole } = render(
+        <Components mutationsThrowErrors={true} pledge={null} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error while trying to create a commitment',
+          {
+            variant: 'error',
+          },
+        );
+      });
     });
   });
 
