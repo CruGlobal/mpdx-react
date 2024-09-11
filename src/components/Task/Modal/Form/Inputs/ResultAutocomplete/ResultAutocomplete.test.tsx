@@ -6,7 +6,10 @@ import TestWrapper from '__tests__/util/TestWrapper';
 import { Phase, ResultEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { SetResultSelected, handleResultChange } from '../../TaskModalHelper';
-import { ResultSelect, ResultSelectProps } from './ResultSelect';
+import {
+  ResultAutocomplete,
+  ResultAutocompleteProps,
+} from './ResultAutocomplete';
 
 jest.mock('../../TaskModalHelper');
 
@@ -27,13 +30,13 @@ const phaseData = {
 } as Phase;
 
 type ComponentsProps = {
-  availableResults: ResultSelectProps['availableResults'];
+  availableResults: ResultAutocompleteProps['availableResults'];
 };
 
 const Components = ({ availableResults }: ComponentsProps) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
-      <ResultSelect
+      <ResultAutocomplete
         availableResults={availableResults}
         setFieldValue={setFieldValue}
         setResultSelected={setResultSelected as unknown as SetResultSelected}

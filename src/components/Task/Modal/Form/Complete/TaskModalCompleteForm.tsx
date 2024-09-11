@@ -45,7 +45,7 @@ import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
-import { ResultSelect } from '../Inputs/ResultSelect/ResultSelect';
+import { ResultAutocomplete } from '../Inputs/ResultAutocomplete/ResultAutocomplete';
 import { SuggestedContactStatus } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus';
 import {
   TagTypeEnum,
@@ -353,7 +353,7 @@ const TaskModalCompleteForm = ({
                 </FormControl>
               </Grid>
 
-              <ResultSelect
+              <ResultAutocomplete
                 availableResults={availableResults}
                 result={displayResult}
                 setFieldValue={setFieldValue}
