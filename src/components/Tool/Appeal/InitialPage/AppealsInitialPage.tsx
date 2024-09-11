@@ -71,6 +71,12 @@ const AppealsInitialPage: React.FC = () => {
                 <CardContent>
                   <AddAppealForm
                     accountListId={accountListId || ''}
+                    appealStatuses={[
+                      {
+                        name: '-- All Active --',
+                        value: 'ACTIVE',
+                      },
+                    ]}
                     appealExcludes={contactExclusions.filter(
                       (exclusion) =>
                         exclusion.value === ExclusionEnum.DoNotAskAppeals,
