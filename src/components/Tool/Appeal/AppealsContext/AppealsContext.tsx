@@ -125,24 +125,23 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //User options for display view
   const { loading: userOptionsLoading } = useGetUserOptionsQuery({
     onCompleted: ({ userOptions }) => {
-      if (contactId?.includes('list')) {
+      const defaultView =
+        (userOptions.find((option) => option.key === 'contacts_view')
+          ?.value as TableViewModeEnum) || TableViewModeEnum.Flows;
+      if (
+        contactId?.includes('list') ||
+        defaultView === TableViewModeEnum.List
+      ) {
         setViewMode(TableViewModeEnum.List);
         setFilterPanelOpen(true);
-        setActiveFilters({
-          appealStatus: AppealStatusEnum.Asked,
-        });
-      } else {
-        const defaultView =
-          (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.Flows;
-        setViewMode(defaultView);
-
-        if (defaultView === TableViewModeEnum.List) {
-          setFilterPanelOpen(true);
+        // Default to showing the asked contacts
+        if (!activeFilters.appealStatus) {
           setActiveFilters({
             appealStatus: AppealStatusEnum.Asked,
           });
         }
+      } else {
+        setViewMode(defaultView);
       }
     },
   });
