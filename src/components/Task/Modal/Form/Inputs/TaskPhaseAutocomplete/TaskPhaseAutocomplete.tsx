@@ -27,6 +27,7 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
     <Autocomplete<PhaseEnum>
       openOnFocus
       autoHighlight
+      autoSelect
       value={value || contactPhase}
       options={options}
       getOptionLabel={(phase) => getLocalizedPhase(t, phase)}
