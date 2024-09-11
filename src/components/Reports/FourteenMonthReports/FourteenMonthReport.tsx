@@ -148,7 +148,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         );
 
         const pledgedMonthlyEquivalent =
-          contact?.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
+          contact.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
           contact.pledgeAmount &&
           contact.pledgeFrequency
             ? Math.round(
@@ -162,7 +162,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         );
 
         const inHandMonthlyEquivalent =
-          contact?.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
+          contact.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
           contact.pledgeFrequency &&
           inHandMonths
             ? Math.round(
