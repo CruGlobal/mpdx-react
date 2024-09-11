@@ -203,4 +203,54 @@ describe('PledgeModal', () => {
       });
     });
   });
+
+  it('Edit Processed commitment', async () => {
+    const { getByRole, findByText } = render(
+      <Components
+        pledge={{
+          id: 'abc',
+          amount: 444,
+          amountCurrency: 'USD',
+          appeal: {
+            id: 'appeal-1',
+          },
+          expectedDate: '2024-08-08',
+          status: PledgeStatusEnum.Processed,
+        }}
+      />,
+    );
+
+    expect(
+      getByRole('heading', { name: 'Edit Commitment' }),
+    ).toBeInTheDocument();
+
+    expect(getByRole('textbox', { name: 'Amount' })).toBeDisabled();
+    expect(await findByText('Given')).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Status' })).toHaveClass(
+      'Mui-disabled',
+    );
+  });
+
+  it('can not select the status given or received if the pledge does not have one of those statuses already', async () => {
+    const { getByRole, queryByRole } = render(
+      <Components
+        pledge={{
+          id: 'abc',
+          amount: 444,
+          amountCurrency: 'USD',
+          appeal: {
+            id: 'appeal-1',
+          },
+          expectedDate: '2024-08-08',
+          status: PledgeStatusEnum.NotReceived,
+        }}
+      />,
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Status' }));
+
+    expect(getByRole('option', { name: 'Committed' })).toBeInTheDocument();
+    expect(queryByRole('option', { name: 'Received' })).not.toBeInTheDocument();
+    expect(queryByRole('option', { name: 'Given' })).not.toBeInTheDocument();
+  });
 });
