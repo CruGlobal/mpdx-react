@@ -108,7 +108,7 @@ export const AppealHeaderInfo: React.FC<AppealHeaderInfoProps> = ({
                 {t('Goal')}:
               </AppealInfoHeader>
               <AppealInfoContainer>
-                {loading || !amount ? (
+                {loading || !appealInfo ? (
                   <Skeleton
                     variant="text"
                     data-testid="appeal-goal-skeleton"

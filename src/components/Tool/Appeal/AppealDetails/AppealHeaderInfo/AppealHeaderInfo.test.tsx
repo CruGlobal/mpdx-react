@@ -57,6 +57,16 @@ describe('AppealHeaderInfo', () => {
     expect(getByText(/\$100 \(100%\)/i)).toBeInTheDocument();
   });
 
+  it('renders amount when goal is 0 info', async () => {
+    const { getByText, findByText } = render(
+      <Components appealInfo={{ ...appealInfo, amount: 0 }} loading={false} />,
+    );
+
+    expect(await findByText('Test Appeal')).toBeInTheDocument();
+
+    expect(getByText('$0')).toBeInTheDocument();
+  });
+
   it('should allow user to open the edit appeal info modal', async () => {
     const { findByText, findByRole, getByTestId, getByRole, queryByRole } =
       render(<Components appealInfo={appealInfo} loading={false} />);
