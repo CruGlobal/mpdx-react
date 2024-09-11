@@ -67,6 +67,8 @@ interface ComponentsProps {
   hasForeignCurrency?: boolean;
   hasMultiplePages?: boolean;
   zeroAmount?: boolean;
+  noDonationsMatchAppeal?: boolean;
+  mutationsThrowErrors?: boolean;
 }
 
 const Components = ({
@@ -75,6 +77,8 @@ const Components = ({
   hasForeignCurrency = false,
   hasMultiplePages = false,
   zeroAmount = false,
+  noDonationsMatchAppeal = false,
+  mutationsThrowErrors = false,
 }: ComponentsProps) => {
   return (
     <I18nextProvider i18n={i18n}>
@@ -89,6 +93,21 @@ const Components = ({
                   DonationTable: DonationTableQuery;
                 }>
                   mocks={{
+                    UpdateDonations: mutationsThrowErrors
+                      ? () => {
+                          throw new Error('Server Error');
+                        }
+                      : {},
+                    UpdateAccountListPledge: mutationsThrowErrors
+                      ? () => {
+                          throw new Error('Server Error');
+                        }
+                      : {},
+                    CreateAccountListPledge: mutationsThrowErrors
+                      ? () => {
+                          throw new Error('Server Error');
+                        }
+                      : {},
                     AccountListCurrency: {
                       accountList: {
                         currency: 'CAD',
@@ -112,7 +131,9 @@ const Components = ({
                                   currency: 'CAD',
                                 },
                                 appeal: {
-                                  id: appealId,
+                                  id: noDonationsMatchAppeal
+                                    ? 'appeal-99'
+                                    : appealId,
                                   name: 'Appeal 1',
                                 },
                                 designationAccount: {
@@ -220,11 +241,13 @@ const Components = ({
 
 describe('UpdateDonationsModal', () => {
   it('default', () => {
-    const { getByRole } = render(<Components />);
+    const { getByRole, getByTestId } = render(<Components />);
 
     expect(
       getByRole('heading', { name: 'Update Donations' }),
     ).toBeInTheDocument();
+
+    expect(getByTestId('LoadingBox')).toBeInTheDocument();
 
     expect(getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
@@ -263,10 +286,14 @@ describe('UpdateDonationsModal', () => {
 
   describe('Donations', () => {
     it('should show no donations', async () => {
-      const { findByText, getByRole } = render(<Components isEmpty />);
+      const { findByText, getByRole, queryByTestId } = render(
+        <Components isEmpty />,
+      );
       expect(
         await findByText(`No donations received for ${defaultContact.name}`),
       ).toBeInTheDocument();
+
+      expect(queryByTestId('LoadingBox')).not.toBeInTheDocument();
 
       expect(
         getByRole('button', {
@@ -311,12 +338,26 @@ describe('UpdateDonationsModal', () => {
   });
 
   describe('Donations - Table functionality', () => {
+    it('uses the default total and disabled save when no donations are selected', async () => {
+      const { findByRole, getByRole } = render(
+        <Components noDonationsMatchAppeal={true} />,
+      );
+
+      const totalRow = within(
+        await findByRole('table', { name: 'Donation Totals' }),
+      ).getByRole('row');
+      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$0');
+
+      expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
     it('hides currency column when all currencies match the account currency', async () => {
-      const { queryByRole, findByRole } = render(<Components />);
+      const { queryByRole, findByRole, queryByTestId } = render(<Components />);
 
       expect(
         await findByRole('cell', { name: 'Designation Account 1' }),
       ).toBeInTheDocument();
+      expect(queryByTestId('LoadingBox')).not.toBeInTheDocument();
       expect(
         queryByRole('columnheader', { name: 'Foreign Amount' }),
       ).not.toBeInTheDocument();
@@ -416,12 +457,61 @@ describe('UpdateDonationsModal', () => {
     });
   });
 
+  describe('Handle mutation errors', () => {
+    it('Update pledge errors', async () => {
+      const { getByRole, findAllByRole } = render(
+        <Components mutationsThrowErrors={true} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+      userEvent.click(checkboxes[1]);
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error while updating donations',
+          {
+            variant: 'error',
+          },
+        );
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error while updating commitment',
+          {
+            variant: 'error',
+          },
+        );
+      });
+    });
+
+    it('Create pledge errors', async () => {
+      const { getByRole, findAllByRole } = render(
+        <Components mutationsThrowErrors={true} pledge={null} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error while trying to create a commitment',
+          {
+            variant: 'error',
+          },
+        );
+      });
+    });
+  });
+
   describe('Update donations functionality', () => {
     const { appeal: _appeal, ...restOfPledge } = defaultPledge;
     describe('Zero amount', () => {
-      it('should show zero amount confirmation', async () => {
-        const { getByRole, getByTestId, findByRole, findAllByRole } = render(
-          <Components />,
+      it('should show error message if total is zero and no pledge', async () => {
+        const { getByRole, findByRole, findAllByRole } = render(
+          <Components pledge={null} />,
         );
 
         const checkboxes = await findAllByRole('checkbox');
@@ -440,91 +530,30 @@ describe('UpdateDonationsModal', () => {
 
         userEvent.click(getByRole('button', { name: 'Save' }));
 
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-
-        expect(getByTestId('confirmModalMessage')).toHaveTextContent(
-          'The total amount is zero.',
+        await waitFor(() =>
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Unable to create a pledge with the amount of $0',
+            {
+              variant: 'error',
+            },
+          ),
         );
       });
 
-      it('should move contact to Received when pledge is present', async () => {
+      it('should show error message if total is zero and has a pledge', async () => {
         const { getByRole, findAllByRole } = render(<Components />);
         const checkboxes = await findAllByRole('checkbox');
         userEvent.click(checkboxes[0]);
         userEvent.click(checkboxes[2]);
         userEvent.click(getByRole('button', { name: 'Save' }));
 
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-
-        userEvent.click(getByRole('button', { name: 'Yes' }));
-
         await waitFor(() =>
-          expect(mutationSpy).toHaveGraphqlOperation(
-            'UpdateAccountListPledge',
+          expect(mockEnqueue).toHaveBeenCalledWith(
+            'Unable to create a pledge with the amount of $0',
             {
-              input: {
-                pledgeId: defaultPledge.id,
-                attributes: {
-                  ...restOfPledge,
-                  appealId: appealId,
-                  contactId: defaultContact.id,
-                  status: PledgeStatusEnum.ReceivedNotProcessed,
-                },
-              },
+              variant: 'error',
             },
           ),
-        );
-
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateDonations', {
-          input: {
-            accountListId,
-            attributes: [
-              {
-                id: 'donation-1',
-                appealId: 'none',
-              },
-              {
-                id: 'donation-3',
-                appealId: 'appealId',
-              },
-            ],
-          },
-        });
-      });
-
-      it('should move contact to Asked when pledge is NOT present', async () => {
-        const { getByRole } = render(<Components pledge={null} zeroAmount />);
-
-        await waitFor(() =>
-          expect(getByRole('button', { name: 'Save' })).not.toBeDisabled(),
-        );
-
-        userEvent.click(getByRole('button', { name: 'Save' }));
-
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-
-        userEvent.click(getByRole('button', { name: 'Yes' }));
-
-        await waitFor(() =>
-          expect(mutationSpy).toHaveGraphqlOperation(
-            'CreateAccountListPledge',
-            {
-              input: {
-                accountListId,
-                attributes: {
-                  appealId: appealId,
-                  contactId: defaultContact.id,
-                  expectedDate: '2020-01-01',
-                  amount: 0,
-                },
-              },
-            },
-          ),
-        );
-
-        expect(mutationSpy).not.toHaveGraphqlOperation('UpdateDonations');
-        expect(mutationSpy).not.toHaveGraphqlOperation(
-          'UpdateAccountListPledge',
         );
       });
     });
@@ -702,6 +731,94 @@ describe('UpdateDonationsModal', () => {
         }),
           expect(handleClose).toHaveBeenCalled();
       });
+    });
+  });
+  describe('Creating a new pledge', () => {
+    it('should show create pledge with pre-selected donations', async () => {
+      const { getByRole, findByRole, findAllByRole } = render(
+        <Components pledge={null} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+
+      const totalRow = within(
+        await findByRole('table', { name: 'Donation Totals' }),
+      ).getByRole('row');
+      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('CreateAccountListPledge', {
+          input: {
+            accountListId,
+            attributes: {
+              appealId: appealId,
+              contactId: defaultContact.id,
+              expectedDate: '2020-01-01',
+              amount: 10,
+              amountCurrency: 'CAD',
+            },
+          },
+        }),
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully created a new commitment',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+    it('should show create pledge via updating donations', async () => {
+      const { getByRole, findByRole, findAllByRole } = render(
+        <Components pledge={null} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      userEvent.click(checkboxes[0]);
+      userEvent.click(checkboxes[1]);
+
+      const totalRow = within(
+        await findByRole('table', { name: 'Donation Totals' }),
+      ).getByRole('row');
+      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateDonations', {
+          input: {
+            accountListId,
+            attributes: [
+              {
+                id: 'donation-1',
+                appealId: 'none',
+              },
+              {
+                id: 'donation-2',
+                appealId: 'appealId',
+              },
+            ],
+          },
+        }),
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully updated donations',
+        {
+          variant: 'success',
+        },
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully created a new commitment',
+        {
+          variant: 'success',
+        },
+      );
     });
   });
 });

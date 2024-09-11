@@ -22,7 +22,6 @@ import {
 } from 'src/components/DonationTable/DonationTable';
 import {
   DonationTableQueryVariables,
-  useAccountListCurrencyQuery,
   useDonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
@@ -33,13 +32,13 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 type RenderCell = GridColDef<DonationRow>['renderCell'];
 
 export interface DonationTableProps {
-  accountListId: string;
   appealId: string;
   filter: Partial<DonationTableQueryVariables>;
   loading?: boolean;
   onSelectContact?: (contactId: string) => void;
   visibleColumnsStorageKey: string;
   emptyPlaceholder: React.ReactElement;
+  accountCurrency: string;
   selectedDonations: DonationRow[];
   setSelectedDonations: React.Dispatch<React.SetStateAction<DonationRow[]>>;
   totalSelectedDonationsAmount: number;
@@ -69,12 +68,12 @@ const StyledListItemIcon = styled(ListItemIcon)(() => ({
 }));
 
 export const DonationTable: React.FC<DonationTableProps> = ({
-  accountListId,
   appealId,
   filter,
   loading: skipped = false,
   visibleColumnsStorageKey,
   emptyPlaceholder,
+  accountCurrency,
   selectedDonations = [],
   setSelectedDonations,
   totalSelectedDonationsAmount = 0,
@@ -106,14 +105,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     setSelectedDonations(preselectedDonations);
   }, [data]);
 
-  const { data: accountListData, loading: loadingAccountListData } =
-    useAccountListCurrencyQuery({
-      variables: { accountListId },
-    });
-
   const nodes = data?.donations.nodes || [];
-
-  const accountCurrency = accountListData?.accountList.currency || 'USD';
 
   const donations = useMemo(() => nodes.map(createDonationRow), [nodes]);
 
@@ -269,7 +261,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
         </TotalsTable>
       )}
     </>
-  ) : loadingAccountListData || loading || skipped ? (
+  ) : loading || skipped ? (
     <LoadingBox>
       <LoadingIndicator data-testid="LoadingBox" color="primary" size={50} />
     </LoadingBox>
