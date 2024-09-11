@@ -211,6 +211,11 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
           enqueueSnackbar(t('Successfully updated donations'), {
             variant: 'success',
           });
+          if (!updatedPledge) {
+            enqueueSnackbar(t('Successfully created a new commitment'), {
+              variant: 'success',
+            });
+          }
         },
         onError: () => {
           enqueueSnackbar(t('Error while updating donations'), {

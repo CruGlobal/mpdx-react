@@ -682,5 +682,53 @@ describe('UpdateDonationsModal', () => {
       );
     });
 
+    it('should show create pledge via updating donations', async () => {
+      const { getByRole, findByRole, findAllByRole } = render(
+        <Components pledge={null} />,
+      );
+
+      const checkboxes = await findAllByRole('checkbox');
+      userEvent.click(checkboxes[0]);
+      userEvent.click(checkboxes[1]);
+
+      const totalRow = within(
+        await findByRole('table', { name: 'Donation Totals' }),
+      ).getByRole('row');
+      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+
+      userEvent.click(getByRole('button', { name: 'Save' }));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateDonations', {
+          input: {
+            accountListId,
+            attributes: [
+              {
+                id: 'donation-1',
+                appealId: 'none',
+              },
+              {
+                id: 'donation-2',
+                appealId: 'appealId',
+              },
+            ],
+          },
+        }),
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully updated donations',
+        {
+          variant: 'success',
+        },
+      );
+
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully created a new commitment',
+        {
+          variant: 'success',
+        },
+      );
+    });
   });
 });
