@@ -17,6 +17,7 @@ import { DynamicDeletePledgeModal } from '../Modals/DeletePledgeModal/DynamicDel
 import { useUpdateAccountListPledgeMutation } from '../Modals/PledgeModal/ContactPledge.generated';
 import { DynamicPledgeModal } from '../Modals/PledgeModal/DynamicPledgeModal';
 import { DynamicUpdateDonationsModal } from '../Modals/UpdateDonationsModal/DynamicUpdateDonationsModal';
+import handleReceivedSnackBarNotifications from '../Shared/handleReceivedSnackBarNotifications/handleReceivedSnackBarNotifications';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
 import { DraggedContact } from './ContactFlowRow/ContactFlowRow';
@@ -100,6 +101,8 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     useState(false);
 
   const [contact, setContact] = useState<DraggedContact | null>(null);
+  const [selectedAppealStatus, setSelectedAppealStatus] =
+    useState<AppealStatusEnum | null>(null);
 
   const [updateAccountListPledge] = useUpdateAccountListPledgeMutation();
 
@@ -124,6 +127,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
     }
 
     setContact(contact);
+    setSelectedAppealStatus(newAppealStatus);
 
     switch (newAppealStatus) {
       case AppealStatusEnum.Excluded:
@@ -166,41 +170,12 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
               const newStatus =
                 data.data?.updateAccountListPledge?.pledge.status;
 
-              if (
-                newStatus === PledgeStatusEnum.NotReceived &&
-                newAppealStatus === AppealStatusEnum.ReceivedNotProcessed
-              ) {
-                enqueueSnackbar(
-                  t(
-                    'Unable to move contact here as gift has not been received by Cru.',
-                  ),
-                  {
-                    variant: 'warning',
-                  },
-                );
-              } else if (
-                newStatus === PledgeStatusEnum.Processed &&
-                (newAppealStatus === AppealStatusEnum.ReceivedNotProcessed ||
-                  newAppealStatus === AppealStatusEnum.NotReceived)
-              ) {
-                enqueueSnackbar(
-                  t(
-                    'Unable to move contact here as this gift is already processed.',
-                  ),
-                  {
-                    variant: 'warning',
-                  },
-                );
-              } else {
-                enqueueSnackbar(
-                  t(
-                    'Unable to move contact to Committed as part of the pledge has been Received.',
-                  ),
-                  {
-                    variant: 'warning',
-                  },
-                );
-              }
+              handleReceivedSnackBarNotifications({
+                dbStatus: newStatus,
+                selectedAppealStatus: newAppealStatus,
+                t,
+                enqueueSnackbar,
+              });
             },
           });
         } else {
@@ -275,6 +250,7 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
         <DynamicPledgeModal
           contact={contact}
           pledge={contact.pledge}
+          selectedAppealStatus={selectedAppealStatus}
           handleClose={() => setPledgeModalOpen(false)}
         />
       )}
