@@ -262,6 +262,8 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                             }}
                             id="amount-input"
                             error={!!errors.amount && touched.amount}
+                            // eslint-disable-next-line jsx-a11y/no-autofocus
+                            autoFocus
                           />
                           <FormHelperText>
                             {meta.touched && meta.error}
