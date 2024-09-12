@@ -159,7 +159,7 @@ export const filterTags = (tagList, phaseTags) => {
   const additionalTags: string[] = [];
   const suggestedTags: string[] = [];
   tagList.forEach((tag) => {
-    if (phaseTags.includes(tag)) {
+    if (phaseTags.map((tag) => tag.toLowerCase()).includes(tag)) {
       suggestedTags.push(tag);
     } else {
       additionalTags.push(tag);

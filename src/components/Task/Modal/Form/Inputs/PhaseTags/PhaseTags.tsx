@@ -60,8 +60,8 @@ export const PhaseTags: React.FC<PhaseTagsProps> = ({
             label={tag}
             sx={{ margin: 0.5 }}
             key={`task-phase-${idx}`}
-            selectType={getChipSelectType(tag)}
-            onClick={() => toggleSelect(tag)}
+            selectType={getChipSelectType(tag.toLowerCase())}
+            onClick={() => toggleSelect(tag.toLowerCase())}
             size="small"
           />
         ))}
