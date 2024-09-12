@@ -38,6 +38,9 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 const TextArea = styled(TextareaAutosize)(() => ({
   width: '100%',
 }));
+const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
+  color: theme.palette.cruGrayDark.main,
+}));
 
 const ExportEmail = ({
   accountListId,
@@ -66,24 +69,24 @@ const ExportEmail = ({
   return (
     <>
       <ExportEmailTitle>
-        {t('Email Newsletter List')}
+        {t('Digital Newsletter List')}
         <CloseButton onClick={handleClose}>
           <CloseIcon titleAccess={t('Close')} />
         </CloseButton>
       </ExportEmailTitle>
       <DialogContent dividers>
         <>
-          <DialogContentText>
+          <StyledDialogContentText>
             {t(
-              'This is the primary email for every person in contacts marked as Newsletter-Email or Newsletter-Both. If they are marked as "Opted out of Email Newsletter", they are not included in this list.',
+              'This is the primary email for every person in contacts marked as Newsletter-Digital or Newsletter-Both. If they are marked as "Opted out of Digital Newsletter", they are not included in this list.',
             )}
-          </DialogContentText>
+          </StyledDialogContentText>
           <br />
-          <DialogContentText>
+          <StyledDialogContentText>
             {t(
               'Reminder: Please only use the Bcc: field when sending emails to groups of partners.',
             )}
-          </DialogContentText>
+          </StyledDialogContentText>
           {loading ? (
             <Skeleton
               variant="text"

@@ -200,17 +200,17 @@ const LogNewsletter = ({
                   >
                     <LogFormControlLabel
                       value={ActivityTypeEnum.PartnerCarePhysicalNewsletter}
-                      control={<Radio color="secondary" required />}
-                      label={t('Newsletter - Physical')}
+                      control={<Radio color="secondary" />}
+                      label={t('Physical Newsletter')}
                     />
                     <LogFormControlLabel
                       value={ActivityTypeEnum.PartnerCareDigitalNewsletter}
-                      control={<Radio color="secondary" required />}
-                      label={t('Newsletter - Email')}
+                      control={<Radio color="secondary" />}
+                      label={t('Digital Newsletter')}
                     />
                     <LogFormControlLabel
                       value="BOTH"
-                      control={<Radio color="secondary" required />}
+                      control={<Radio color="secondary" />}
                       label={t('Both')}
                     />
                   </RadioGroup>

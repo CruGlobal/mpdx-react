@@ -144,7 +144,7 @@ export const PersonEmail: React.FC<PersonEmailProps> = ({
                           }
                         />
                       }
-                      label={t('Opt-out of Email Newsletter')}
+                      label={t('Opt-out of Digital Newsletter')}
                     />
                   )}
                 </Grid>

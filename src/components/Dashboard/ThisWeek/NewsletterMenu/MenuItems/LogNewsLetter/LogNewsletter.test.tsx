@@ -90,7 +90,7 @@ describe('LogNewsletter', () => {
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
 
-    it('Logs Email Newsletter', async () => {
+    it('Logs Digital Newsletter', async () => {
       const { getByLabelText, getByRole, getByText, findByText } = render(
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -112,7 +112,7 @@ describe('LogNewsletter', () => {
 
       userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
-      userEvent.click(getByRole('radio', { name: 'Newsletter - Email' }));
+      userEvent.click(getByRole('radio', { name: 'Digital Newsletter' }));
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
     });
