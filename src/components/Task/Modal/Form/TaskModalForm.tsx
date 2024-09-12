@@ -8,13 +8,12 @@ import React, {
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
   Alert,
+  Autocomplete,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
   TextField,
   Tooltip,
   Typography,
@@ -25,7 +24,6 @@ import { useSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
 import {
   CancelButton,
   DeleteButton,
@@ -62,7 +60,7 @@ import { ActivityTypeAutocomplete } from './Inputs/ActivityTypeAutocomplete/Acti
 import { AssigneeAutocomplete } from './Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { ContactsAutocomplete } from './Inputs/ContactsAutocomplete/ContactsAutocomplete';
 import { PhaseTags } from './Inputs/PhaseTags/PhaseTags';
-import { ResultSelect } from './Inputs/ResultSelect/ResultSelect';
+import { ResultAutocomplete } from './Inputs/ResultAutocomplete/ResultAutocomplete';
 import { SuggestedContactStatus } from './Inputs/SuggestedContactStatus/SuggestedContactStatus';
 import {
   TagTypeEnum,
@@ -549,7 +547,7 @@ const TaskModalForm = ({
                 />
               </Grid>
               {initialTask.completedAt && (
-                <ResultSelect
+                <ResultAutocomplete
                   availableResults={availableResults}
                   result={displayResult}
                   setFieldValue={setFieldValue}
@@ -624,33 +622,27 @@ const TaskModalForm = ({
 
                   <Grid container spacing={2}>
                     <Grid xs={4} item>
-                      <FormControl fullWidth>
-                        <InputLabel
-                          style={{ display: 'flex', alignItems: 'center' }}
-                          id="notificationType"
-                        >
-                          {t('Type')}
-                        </InputLabel>
-                        <Tooltip
-                          placement="top"
-                          title={t('How the reminder will be sent')}
-                        >
-                          <NullableSelect
-                            labelId="notificationType"
-                            value={notificationType}
-                            onChange={(e) =>
-                              setFieldValue('notificationType', e.target.value)
-                            }
-                            label={t('Type')}
-                          >
-                            {Object.values(NotificationTypeEnum).map((val) => (
-                              <MenuItem key={val} value={val}>
-                                {getLocalizedNotificationType(t, val)}
-                              </MenuItem>
-                            ))}
-                          </NullableSelect>
-                        </Tooltip>
-                      </FormControl>
+                      <Tooltip
+                        placement="top"
+                        title={t('How the reminder will be sent')}
+                      >
+                        <Autocomplete
+                          openOnFocus
+                          autoHighlight
+                          autoSelect
+                          value={notificationType}
+                          options={Object.values(NotificationTypeEnum)}
+                          getOptionLabel={(value) =>
+                            getLocalizedNotificationType(t, value)
+                          }
+                          renderInput={(params) => (
+                            <TextField {...params} label={t('Type')} />
+                          )}
+                          onChange={(_, value) =>
+                            setFieldValue('notificationType', value)
+                          }
+                        />
+                      </Tooltip>
                     </Grid>
                     <Grid xs={3} item>
                       <Tooltip
@@ -677,39 +669,27 @@ const TaskModalForm = ({
                       </Tooltip>
                     </Grid>
                     <Grid xs={5} item>
-                      <FormControl fullWidth>
-                        <InputLabel id="notificationTimeUnit">
-                          <Typography
-                            style={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            {t('Unit')}
-                          </Typography>
-                        </InputLabel>
-                        <Tooltip
-                          placement="top"
-                          title={t('Days, hours, or minutes')}
-                        >
-                          <NullableSelect
-                            labelId="notificationTimeUnit"
-                            value={notificationTimeUnit}
-                            onChange={(e) =>
-                              setFieldValue(
-                                'notificationTimeUnit',
-                                e.target.value,
-                              )
-                            }
-                            label={t('Unit')}
-                          >
-                            {Object.values(NotificationTimeUnitEnum).map(
-                              (val) => (
-                                <MenuItem key={val} value={val}>
-                                  {getLocalizedNotificationTimeUnit(t, val)}
-                                </MenuItem>
-                              ),
-                            )}
-                          </NullableSelect>
-                        </Tooltip>
-                      </FormControl>
+                      <Tooltip
+                        placement="top"
+                        title={t('Days, hours, or minutes')}
+                      >
+                        <Autocomplete
+                          openOnFocus
+                          autoHighlight
+                          autoSelect
+                          value={notificationTimeUnit}
+                          options={Object.values(NotificationTimeUnitEnum)}
+                          getOptionLabel={(value) =>
+                            getLocalizedNotificationTimeUnit(t, value)
+                          }
+                          renderInput={(params) => (
+                            <TextField {...params} label={t('Unit')} />
+                          )}
+                          onChange={(_, value) =>
+                            setFieldValue('notificationTimeUnit', value)
+                          }
+                        />
+                      </Tooltip>
                     </Grid>
                   </Grid>
                 </Grid>

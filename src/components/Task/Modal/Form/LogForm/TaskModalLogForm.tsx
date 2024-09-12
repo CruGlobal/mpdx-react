@@ -49,7 +49,7 @@ import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/Act
 import { AssigneeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { ContactsAutocomplete } from '../Inputs/ContactsAutocomplete/ContactsAutocomplete';
 import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
-import { ResultSelect } from '../Inputs/ResultSelect/ResultSelect';
+import { ResultAutocomplete } from '../Inputs/ResultAutocomplete/ResultAutocomplete';
 import { SuggestedContactStatus } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus';
 import {
   TagTypeEnum,
@@ -425,7 +425,7 @@ const TaskModalLogForm = ({
                 </Grid>
               )}
 
-              <ResultSelect
+              <ResultAutocomplete
                 availableResults={availableResults}
                 result={displayResult}
                 setFieldValue={setFieldValue}
