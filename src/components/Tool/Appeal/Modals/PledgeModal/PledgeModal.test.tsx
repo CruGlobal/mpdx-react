@@ -55,18 +55,33 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const defaultUpdateAccountListPledge = {
+  pledge: {
+    id: defaultPledge.id,
+    status: PledgeStatusEnum.NotReceived,
+  },
+};
+const defaultCreateAccountListPledge = {
+  pledge: {
+    id: 'abc',
+    status: PledgeStatusEnum.NotReceived,
+    amount: defaultPledge.amount,
+    amountCurrency: defaultPledge.amountCurrency,
+  },
+};
+
 interface ComponentsProps {
   pledge?: AppealContactInfoFragment['pledges'][0];
   selectedAppealStatus?: AppealStatusEnum;
-  updateAccountListPledge?: UpdateAccountListPledgeMutation;
-  createAccountListPledge?: CreateAccountListPledgeMutation;
+  updateAccountListPledge?: UpdateAccountListPledgeMutation['updateAccountListPledge'];
+  createAccountListPledge?: CreateAccountListPledgeMutation['createAccountListPledge'];
 }
 
 const Components = ({
   pledge = undefined,
   selectedAppealStatus,
-  updateAccountListPledge = {},
-  createAccountListPledge = {},
+  updateAccountListPledge = defaultUpdateAccountListPledge,
+  createAccountListPledge = defaultCreateAccountListPledge,
 }: ComponentsProps) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -79,8 +94,8 @@ const Components = ({
             }>
               onCall={mutationSpy}
               mocks={{
-                UpdateAccountListPledge: updateAccountListPledge,
-                CreateAccountListPledge: createAccountListPledge,
+                UpdateAccountListPledge: { updateAccountListPledge },
+                CreateAccountListPledge: { createAccountListPledge },
               }}
             >
               <AppealsWrapper>
@@ -152,16 +167,6 @@ describe('PledgeModal', () => {
       const { getByRole } = render(
         <Components
           selectedAppealStatus={AppealStatusEnum.ReceivedNotProcessed}
-          createAccountListPledge={{
-            createAccountListPledge: {
-              pledge: {
-                id: 'abc',
-                status: PledgeStatusEnum.NotReceived,
-                amount: defaultPledge.amount,
-                amountCurrency: defaultPledge.amountCurrency,
-              },
-            },
-          }}
         />,
       );
 
@@ -191,14 +196,6 @@ describe('PledgeModal', () => {
         <Components
           pledge={defaultPledge}
           selectedAppealStatus={AppealStatusEnum.ReceivedNotProcessed}
-          updateAccountListPledge={{
-            updateAccountListPledge: {
-              pledge: {
-                id: defaultPledge.id,
-                status: PledgeStatusEnum.NotReceived,
-              },
-            },
-          }}
         />,
       );
 
@@ -226,11 +223,9 @@ describe('PledgeModal', () => {
           pledge={defaultPledge}
           selectedAppealStatus={AppealStatusEnum.NotReceived}
           updateAccountListPledge={{
-            updateAccountListPledge: {
-              pledge: {
-                id: defaultPledge.id,
-                status: PledgeStatusEnum.ReceivedNotProcessed,
-              },
+            pledge: {
+              ...defaultUpdateAccountListPledge.pledge,
+              status: PledgeStatusEnum.ReceivedNotProcessed,
             },
           }}
         />,
@@ -260,11 +255,9 @@ describe('PledgeModal', () => {
           pledge={defaultPledge}
           selectedAppealStatus={AppealStatusEnum.NotReceived}
           updateAccountListPledge={{
-            updateAccountListPledge: {
-              pledge: {
-                id: defaultPledge.id,
-                status: PledgeStatusEnum.Processed,
-              },
+            pledge: {
+              ...defaultUpdateAccountListPledge.pledge,
+              status: PledgeStatusEnum.Processed,
             },
           }}
         />,

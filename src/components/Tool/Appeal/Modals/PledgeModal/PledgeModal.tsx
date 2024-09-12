@@ -118,23 +118,17 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
-        update: (_, data) => {
-          const newStatus = data.data?.createAccountListPledge?.pledge.status;
-
+        onCompleted: ({ createAccountListPledge }) => {
+          const newStatus = createAccountListPledge?.pledge.status;
           if (selectedAppealStatus) {
-            const { message, snackbarOptions } =
-              handleReceivedSnackBarNotifications({
-                dbStatus: newStatus,
-                selectedAppealStatus,
-                t,
-              });
-
-            if (message) {
-              enqueueSnackbar(message, snackbarOptions);
-            }
+            handleReceivedSnackBarNotifications({
+              dbStatus: newStatus,
+              selectedAppealStatus,
+              t,
+              enqueueSnackbar,
+            });
           }
-        },
-        onCompleted: () => {
+
           enqueueSnackbar(t('Successfully added commitment to appeal'), {
             variant: 'success',
           });
@@ -163,23 +157,18 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
           },
         },
         refetchQueries: ['Contacts', 'Appeal'],
-        update: (_, data) => {
-          const newStatus = data.data?.updateAccountListPledge?.pledge.status;
+        onCompleted: ({ updateAccountListPledge }) => {
+          const newStatus = updateAccountListPledge?.pledge.status;
 
           if (selectedAppealStatus) {
-            const { message, snackbarOptions } =
-              handleReceivedSnackBarNotifications({
-                dbStatus: newStatus,
-                selectedAppealStatus,
-                t,
-              });
-
-            if (message) {
-              enqueueSnackbar(message, snackbarOptions);
-            }
+            handleReceivedSnackBarNotifications({
+              dbStatus: newStatus,
+              selectedAppealStatus,
+              t,
+              enqueueSnackbar,
+            });
           }
-        },
-        onCompleted: () => {
+
           enqueueSnackbar(t('Successfully edited commitment'), {
             variant: 'success',
           });

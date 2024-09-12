@@ -170,16 +170,12 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
               const newStatus =
                 data.data?.updateAccountListPledge?.pledge.status;
 
-              const { message, snackbarOptions } =
-                handleReceivedSnackBarNotifications({
-                  dbStatus: newStatus,
-                  selectedAppealStatus: newAppealStatus,
-                  t,
-                });
-
-              if (message) {
-                enqueueSnackbar(message, snackbarOptions);
-              }
+              handleReceivedSnackBarNotifications({
+                dbStatus: newStatus,
+                selectedAppealStatus: newAppealStatus,
+                t,
+                enqueueSnackbar,
+              });
             },
           });
         } else {

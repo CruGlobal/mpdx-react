@@ -7,11 +7,13 @@ interface HandleReceivedSnackBarNotificationsProps {
   dbStatus: Maybe<PledgeStatusEnum> | undefined;
   selectedAppealStatus: AppealStatusEnum;
   t: TFunction;
+  enqueueSnackbar: (message: string, options?: OptionsObject) => void;
 }
 const handleReceivedSnackBarNotifications = ({
   dbStatus,
   selectedAppealStatus,
   t,
+  enqueueSnackbar,
 }: HandleReceivedSnackBarNotificationsProps) => {
   let message = '';
   const snackbarOptions: OptionsObject = {
@@ -40,10 +42,10 @@ const handleReceivedSnackBarNotifications = ({
       'Unable to move contact to the "Committed" column as part of the pledge has been Received.',
     );
   }
-  return {
-    message,
-    snackbarOptions,
-  };
+
+  if (message) {
+    enqueueSnackbar(message, snackbarOptions);
+  }
 };
 
 export default handleReceivedSnackBarNotifications;
