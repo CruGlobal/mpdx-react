@@ -88,6 +88,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
       alignSelf: 'center',
     },
   },
+  buttonIcon: {
+    marginRight: theme.spacing(1),
+  },
 }));
 
 export interface FixEmailAddressPersonProps {
@@ -249,7 +252,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                         }
                         disabled={!hasOnePrimaryEmail()}
                       >
-                        <Icon path={mdiCheckboxMarkedCircle} size={0.8} />
+                        <Icon
+                          path={mdiCheckboxMarkedCircle}
+                          size={0.8}
+                          className={classes.buttonIcon}
+                        />
                         {t('Confirm')}
                       </Button>
                     }
@@ -347,6 +354,9 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                   <StarIcon
                                     data-testid={`starIcon-${id}-${index}`}
                                     className={classes.hoverHighlight}
+                                    onClick={() =>
+                                      handleChangePrimary(id, index)
+                                    }
                                   />
                                 </>
                               ) : (
@@ -365,7 +375,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                     placement="left"
                                   >
                                     <StarOutlineIcon
-                                      data-testid={`starOutlineIcon-${person.id}-${index}`}
+                                      data-testid={`starOutlineIcon-${id}-${index}`}
                                       className={classes.hoverHighlight}
                                       onClick={() =>
                                         handleChangePrimary(id, index)
