@@ -36,6 +36,7 @@ query GetDesignationAccounts($accountListId: ID!) {
       id
       name
       active
+      designationNumber
     }
   }
 }
