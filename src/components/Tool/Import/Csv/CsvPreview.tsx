@@ -3,6 +3,8 @@ import {
   Autocomplete,
   Box,
   Button,
+  Card,
+  CardHeader,
   Checkbox,
   FormControlLabel,
   Table,
@@ -19,6 +21,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import theme from 'src/theme';
 import {
   CsvImportContext,
   CsvImportType,
@@ -26,7 +29,6 @@ import {
   CsvImportViewStepEnum,
 } from './CsvImportContext';
 import { CsvImportSuccessModal } from './CsvImportSuccessModal';
-import { HeaderBox } from './HeaderBox';
 import { get, save } from './csvImportService';
 import { useSupportedHeaders } from './uploadCsvFile';
 
@@ -162,10 +164,13 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
           </Box>
         </Box>
       </Box>
-      <Box sx={{ border: '1px solid', minWidth: '340px' }}>
-        <HeaderBox>
-          <Typography variant="body1">{t('Preview')}</Typography>
-        </HeaderBox>
+      <Card sx={{ minWidth: '340px' }}>
+        <CardHeader
+          sx={{
+            backgroundColor: theme.palette.cruGrayLight.main,
+          }}
+          title={t('Preview')}
+        />
         <Box sx={{ padding: '10px 15px' }}>
           <Typography variant="body1">
             {t(
@@ -223,7 +228,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
                 <TableCell>{t('Church')}</TableCell>
                 <TableCell>{t('Website')}</TableCell>
                 <TableCell>{t('Send Goals?')}</TableCell>
-                <TableCell>{t('Referred By')}</TableCell>
+                <TableCell>{t('Connecting Partner')}</TableCell>
                 <LastColumn>{t('Relationship Code')}</LastColumn>
               </TableRow>
             </TableHead>
@@ -287,9 +292,10 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
                     </LastColumn>
 
                     <TableCell>{contact.notes}</TableCell>
-                    <TableCell>{`${JSON.stringify(
-                      contact.tagList,
-                    )}`}</TableCell>
+                    <TableCell>
+                      {!!contact.tagList?.length &&
+                        `${JSON.stringify(contact.tagList)}`}
+                    </TableCell>
                     <TableCell>{contact.churchName}</TableCell>
                     <TableCell>{contact.website}</TableCell>
                     <TableCell>{`${contact.noAppeals}`}</TableCell>
@@ -312,14 +318,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
             flexWrap: 'wrap',
           }}
         >
-          <Button
-            onClick={handleBack}
-            sx={{
-              bgcolor: 'cruGrayDark.main',
-              color: 'white',
-              height: '34px',
-            }}
-          >
+          <Button onClick={handleBack} variant="contained">
             {t('Back')}
           </Button>
           <Box
@@ -335,21 +334,12 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
                 <Checkbox id="accept" onClick={() => setAccept(!accept)} />
               }
             />
-            <Button
-              onClick={handleSave}
-              disabled={!accept}
-              sx={{
-                bgcolor: 'mpdxBlue.main',
-                color: 'white',
-                height: '34px',
-                marginTop: { xs: '6px', sm: 0 },
-              }}
-            >
+            <Button onClick={handleSave} disabled={!accept} variant="contained">
               {t('Import')}
             </Button>
           </Box>
         </Box>
-      </Box>
+      </Card>
     </>
   );
 };

@@ -3,6 +3,10 @@ import {
   Alert,
   Box,
   Button,
+  Card,
+  CardHeader,
+  List,
+  ListItem,
   MenuItem,
   Select,
   Table,
@@ -10,20 +14,19 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import theme from 'src/theme';
 import {
   CsvImportContext,
   CsvImportType,
   CsvImportValue,
   CsvImportViewStepEnum,
 } from './CsvImportContext';
-import { HeaderBox } from './HeaderBox';
 import { get, save } from './csvImportService';
 import { useRequiredHeaders, useSupportedHeaders } from './uploadCsvFile';
 
@@ -208,15 +211,21 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
         </Alert>
       )}
 
-      <Alert severity="info" sx={{ marginBottom: '12px', minWidth: '340px' }}>
-        <ul>
-          <li>
+      <Alert
+        severity="info"
+        icon={false}
+        sx={{ marginBottom: '12px', minWidth: '340px' }}
+      >
+        <List sx={{ listStyleType: 'disc', pl: 2 }}>
+          <ListItem sx={{ display: 'list-item', p: 0 }}>
             {t(
               'Columns with duplicate or empty headers are ignored. Please ensure your CSV does not have any such headers!',
             )}
-          </li>
-          <li>{t('Street is required to import any address information.')}</li>
-        </ul>
+          </ListItem>
+          <ListItem sx={{ display: 'list-item', p: 0 }}>
+            {t('Street is required to import any address information.')}
+          </ListItem>
+        </List>
       </Alert>
 
       {showBackWarningModal && (
@@ -233,10 +242,13 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
         ></Confirmation>
       )}
 
-      <Box sx={{ border: '1px solid', minWidth: '340px' }}>
-        <HeaderBox>
-          <Typography variant="body1">{t('Map your headers')}</Typography>
-        </HeaderBox>
+      <Card sx={{ minWidth: '340px' }}>
+        <CardHeader
+          sx={{
+            backgroundColor: theme.palette.cruGrayLight.main,
+          }}
+          title={t('Map your headers')}
+        />
         <Table>
           <TableHead>
             <TableRow>
@@ -248,15 +260,16 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
           </TableHead>
 
           <TableBody>
-            {Object.keys(importHeaders).map((header) => {
+            {Object.entries(importHeaders).map(([header, headerName]) => {
               return (
                 <TableRow key={header}>
-                  <TableCell>{header}</TableCell>
+                  <TableCell>{headerName}</TableCell>
                   <TableCell>
                     <Select
                       onChange={(e) => handleUpdateHeaders(e, header)}
                       value={fileHeadersMappings[header] || -1}
                       sx={{ minWidth: '210px' }}
+                      size="small"
                     >
                       <MenuItem value={-1} selected={true}>
                         {t('Do Not Import')}
@@ -289,29 +302,18 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
             justifyContent: 'space-between',
           }}
         >
-          <Button
-            sx={{
-              bgcolor: 'cruGrayDark.main',
-              color: 'white',
-              height: '34px',
-            }}
-            onClick={handleBack}
-          >
+          <Button variant="contained" onClick={handleBack}>
             {t('Back')}
           </Button>
           <Button
-            sx={{
-              bgcolor: 'mpdxBlue.main',
-              color: 'white',
-              height: '34px',
-            }}
+            variant="contained"
             onClick={handleSave}
             disabled={!uploadData || unmappedHeaders.length !== 0}
           >
             {t('Next')}
           </Button>
         </Box>
-      </Box>
+      </Card>
     </>
   );
 };
