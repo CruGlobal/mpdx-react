@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useEffect, useMemo } from 'react';
 import { mdiClose, mdiEqual, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -76,8 +76,11 @@ export const calculateGoal = (
   adminPercentage: number,
 ): number => {
   const adminPercent = 1 - adminPercentage / 100;
+  const totalGoal =
+    Math.round(((initialGoal + letterCost) / adminPercent) * 100) / 100;
 
-  return Math.round(((initialGoal + letterCost) / adminPercent) * 100) / 100;
+  // Convert to string and remove ".00" if present
+  return parseFloat(totalGoal.toFixed(2));
 };
 
 const gqlStatusesToDBStatusMap: { [key: string]: string } = {
@@ -197,6 +200,15 @@ const appealFormSchema = yup.object({
       i18n.t('Must use a positive number for Admin Cost'),
       (value) => parseFloat(value as unknown as string) >= 0,
     ),
+  goal: yup
+    .number()
+    .typeError(i18n.t('Goal must be a valid number'))
+    .required(i18n.t('Goal is required'))
+    .test(
+      i18n.t('Is positive?'),
+      i18n.t('Must use a positive number for Goal'),
+      (value) => parseFloat(value as unknown as string) >= 0,
+    ),
   statuses: yup.array().of(
     yup.object({
       name: yup.string(),
@@ -219,6 +231,7 @@ type FormikRefType = React.RefObject<
     initialGoal: number;
     letterCost: number;
     adminPercentage: number;
+    goal: number;
     statuses: Pick<FilterOption, 'name' | 'value'>[];
     tags: never[];
     exclusions: ContactExclusion[];
@@ -306,11 +319,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   const onSubmit = async (props: Attributes) => {
     const attributes: AppealCreateInput = {
       name: props.name,
-      amount: calculateGoal(
-        props.initialGoal,
-        props.letterCost,
-        props.adminPercentage,
-      ),
+      amount: props.goal,
     };
 
     const inclusionFilter = buildInclusionFilter({
@@ -365,6 +374,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         initialGoal: appealGoal ?? 0,
         letterCost: 0,
         adminPercentage: 12,
+        goal: 0,
         statuses: appealStatuses ?? [],
         tags: [],
         exclusions: appealExcludes ?? [],
@@ -380,6 +390,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
           initialGoal,
           letterCost,
           adminPercentage,
+          goal,
           statuses,
           tags,
           exclusions,
@@ -389,287 +400,299 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         isSubmitting,
         isValid,
         errors,
-      }): ReactElement => (
-        <Form className={classes.form} onSubmit={handleSubmit}>
-          <Box mb={2}>
-            <FormControl fullWidth>
-              <Field
-                error={errors.name}
-                helperText={errors.name}
-                label={t('Name')}
-                placeholder={t('Appeal Name')}
-                name="name"
-                type="input"
-                variant="outlined"
-                className={classes.input}
-                as={TextField}
-                inputProps={{ 'data-testid': 'nameInput' }}
-              />
-            </FormControl>
-          </Box>
-          <Box mt={1} mb={1}>
-            <Grid container spacing={0}>
-              <Grid item xs={12} sm={2}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="start"
-                >
-                  <Field
-                    name="initialGoal"
-                    label={t('Initial Goal')}
-                    data-testid="initialGoalInput"
-                    type="number"
-                    variant="outlined"
-                    size="small"
-                    className={classes.input}
-                    error={errors.initialGoal}
-                    helperText={errors.initialGoal}
-                    as={TextField}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{
-                    height: '100%',
-                  }}
-                >
-                  <Icon path={mdiPlus} size={1} />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="start"
-                >
-                  <Field
-                    name="letterCost"
-                    type="number"
-                    variant="outlined"
-                    label={t('Letter Cost')}
-                    size="small"
-                    className={classes.input}
-                    error={errors.letterCost}
-                    helperText={errors.letterCost}
-                    as={TextField}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{
-                    height: '100%',
-                  }}
-                >
-                  <Icon path={mdiClose} size={1} />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={2}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="start"
-                >
-                  <Field
-                    name="adminPercentage"
-                    type="number"
-                    variant="outlined"
-                    label={t('Admin %')}
-                    size="small"
-                    className={classes.input}
-                    error={errors.adminPercentage}
-                    helperText={errors.adminPercentage}
-                    as={TextField}
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={1}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  style={{
-                    height: '100%',
-                  }}
-                >
-                  <Icon path={mdiEqual} size={1} />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="start"
-                >
-                  <TextField
-                    data-testid="goalInput"
-                    name="goal"
-                    type="number"
-                    label={t('Goal')}
-                    variant="outlined"
-                    size="small"
-                    className={classes.input}
-                    value={calculateGoal(
-                      initialGoal,
-                      letterCost,
-                      adminPercentage,
-                    ).toFixed(2)}
-                  />
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-          <Alert severity="info">
-            {t(
-              'You can add contacts to your appeal based on their status and/or tags. You can also add additional contacts individually at a later time.',
-            )}
-          </Alert>
-          <Box mt={1} mb={1}>
-            <Typography display="inline">
-              {t('Add contacts with the following status(es):')}
-            </Typography>
-            {!!contactStatuses && (
-              <Typography
-                display="inline"
-                className={classes.selectAll}
-                onClick={() => handleSelectAllStatuses(setFieldValue)}
-                data-testid="contactStatusSelect-selectAll"
-              >
-                {t('select all')}
-              </Typography>
-            )}
+      }): ReactElement => {
+        useEffect(() => {
+          setFieldValue(
+            'goal',
+            calculateGoal(initialGoal, letterCost, adminPercentage),
+          );
+        }, [initialGoal, letterCost, adminPercentage]);
 
-            {loadingStatuses && <Skeleton height={40} />}
-
-            {!!contactStatuses && !loadingStatuses && (
-              <Autocomplete
-                multiple
-                autoHighlight
-                data-testid="contactStatusSelect"
-                id="tags-standard"
-                filterSelectedOptions
-                options={contactStatuses}
-                getOptionLabel={(option) => option.name}
-                value={statuses}
-                onChange={(_event, values) => setFieldValue('statuses', values)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size="small"
-                    placeholder={t('Select Some Options')}
-                  />
-                )}
-              />
-            )}
-          </Box>
-
-          <Box mt={1} mb={1}>
-            <Typography display="inline">
-              {t('Add contacts with the following tag(s):')}
-            </Typography>
-            {!!contactTagsList.length && (
-              <Typography
-                display="inline"
-                className={classes.selectAll}
-                onClick={() => handleSelectAllTags(setFieldValue)}
-                data-testid="contactTagsSelect-selectAll"
-              >
-                {t('select all')}
-              </Typography>
-            )}
-
-            {loadingTags && <Skeleton height={40} />}
-
-            {contactTagsList && !loadingTags && (
-              <Autocomplete
-                multiple
-                autoHighlight
-                data-testid="contactTagsSelect"
-                id="tags-standard"
-                filterSelectedOptions
-                options={contactTagsList}
-                getOptionLabel={(option) => option}
-                value={tags}
-                onChange={(_event, values) => setFieldValue('tags', values)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size="small"
-                    placeholder={t('Select Some Options')}
-                  />
-                )}
-              />
-            )}
-          </Box>
-          <Box mt={1} mb={1}>
-            <Typography>{t('Do not add contacts who:')}</Typography>
-            <Autocomplete
-              multiple
-              autoHighlight
-              data-testid="exclusionsSelect"
-              id="exclusions-standard"
-              filterSelectedOptions
-              options={contactExclusions}
-              getOptionLabel={(option) => option.name}
-              value={exclusions}
-              onChange={(_event, values) => setFieldValue('exclusions', values)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
+        return (
+          <Form className={classes.form} onSubmit={handleSubmit}>
+            <Box mb={2}>
+              <FormControl fullWidth>
+                <Field
+                  error={errors.name}
+                  helperText={errors.name}
+                  label={t('Name')}
+                  placeholder={t('Appeal Name')}
+                  name="name"
+                  type="input"
                   variant="outlined"
-                  size="small"
-                  placeholder={t('Select Some Options')}
+                  className={classes.input}
+                  as={TextField}
+                  inputProps={{ 'data-testid': 'nameInput' }}
+                />
+              </FormControl>
+            </Box>
+            <Box mt={1} mb={1}>
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="start"
+                  >
+                    <Field
+                      name="initialGoal"
+                      label={t('Initial Goal')}
+                      data-testid="initialGoalInput"
+                      type="number"
+                      variant="outlined"
+                      size="small"
+                      className={classes.input}
+                      error={errors.initialGoal}
+                      helperText={errors.initialGoal}
+                      as={TextField}
+                    />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{
+                      height: '100%',
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1} />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="start"
+                  >
+                    <Field
+                      name="letterCost"
+                      type="number"
+                      variant="outlined"
+                      label={t('Letter Cost')}
+                      size="small"
+                      className={classes.input}
+                      error={errors.letterCost}
+                      helperText={errors.letterCost}
+                      as={TextField}
+                    />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{
+                      height: '100%',
+                    }}
+                  >
+                    <Icon path={mdiClose} size={1} />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="start"
+                  >
+                    <Field
+                      name="adminPercentage"
+                      type="number"
+                      variant="outlined"
+                      label={t('Admin %')}
+                      size="small"
+                      className={classes.input}
+                      error={errors.adminPercentage}
+                      helperText={errors.adminPercentage}
+                      as={TextField}
+                    />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    style={{
+                      height: '100%',
+                    }}
+                  >
+                    <Icon path={mdiEqual} size={1} />
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={3}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="start"
+                  >
+                    <TextField
+                      data-testid="goalInput"
+                      name="goal"
+                      type="number"
+                      label={t('Goal')}
+                      variant="outlined"
+                      size="small"
+                      className={classes.input}
+                      value={goal}
+                      onChange={(value) => {
+                        setFieldValue('goal', value.target.value);
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+            <Alert severity="info">
+              {t(
+                'You can add contacts to your appeal based on their status and/or tags. You can also add additional contacts individually at a later time.',
+              )}
+            </Alert>
+            <Box mt={1} mb={1}>
+              <Typography display="inline">
+                {t('Add contacts with the following status(es):')}
+              </Typography>
+              {!!contactStatuses && (
+                <Typography
+                  display="inline"
+                  className={classes.selectAll}
+                  onClick={() => handleSelectAllStatuses(setFieldValue)}
+                  data-testid="contactStatusSelect-selectAll"
+                >
+                  {t('select all')}
+                </Typography>
+              )}
+
+              {loadingStatuses && <Skeleton height={40} />}
+
+              {!!contactStatuses && !loadingStatuses && (
+                <Autocomplete
+                  multiple
+                  autoHighlight
+                  data-testid="contactStatusSelect"
+                  id="tags-standard"
+                  filterSelectedOptions
+                  options={contactStatuses}
+                  getOptionLabel={(option) => option.name}
+                  value={statuses}
+                  onChange={(_event, values) =>
+                    setFieldValue('statuses', values)
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size="small"
+                      placeholder={t('Select Some Options')}
+                    />
+                  )}
                 />
               )}
-            />
-          </Box>
+            </Box>
 
-          {[errors.statuses, errors.tags, errors.exclusions].map(
-            (error, idx) => {
-              if (error && typeof error === 'string') {
-                return (
-                  <Alert severity="error" key={`error-${idx}`}>
-                    {error}
-                  </Alert>
-                );
-              }
-            },
-          )}
+            <Box mt={1} mb={1}>
+              <Typography display="inline">
+                {t('Add contacts with the following tag(s):')}
+              </Typography>
+              {!!contactTagsList.length && (
+                <Typography
+                  display="inline"
+                  className={classes.selectAll}
+                  onClick={() => handleSelectAllTags(setFieldValue)}
+                  data-testid="contactTagsSelect-selectAll"
+                >
+                  {t('select all')}
+                </Typography>
+              )}
 
-          {/* As this form can be added a modal, we allow the modal to submit the form through a ref.
-          (The modal will have their own submit button that will call submit.)
-          However, if you're using the form as normally, the below buttons will show and you don't have to touch ref. */}
-          {!formRef && (
-            <Box mt={2} mb={1}>
-              <Button
-                type="submit"
-                variant="contained"
-                className={classes.submitButton}
-                disabled={!isValid || isSubmitting}
-              >
-                {updating && (
-                  <CircularProgress
-                    className={classes.loadingIndicator}
-                    color="primary"
-                    size={20}
+              {loadingTags && <Skeleton height={40} />}
+
+              {contactTagsList && !loadingTags && (
+                <Autocomplete
+                  multiple
+                  autoHighlight
+                  data-testid="contactTagsSelect"
+                  id="tags-standard"
+                  filterSelectedOptions
+                  options={contactTagsList}
+                  getOptionLabel={(option) => option}
+                  value={tags}
+                  onChange={(_event, values) => setFieldValue('tags', values)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      size="small"
+                      placeholder={t('Select Some Options')}
+                    />
+                  )}
+                />
+              )}
+            </Box>
+            <Box mt={1} mb={1}>
+              <Typography>{t('Do not add contacts who:')}</Typography>
+              <Autocomplete
+                multiple
+                autoHighlight
+                data-testid="exclusionsSelect"
+                id="exclusions-standard"
+                filterSelectedOptions
+                options={contactExclusions}
+                getOptionLabel={(option) => option.name}
+                value={exclusions}
+                onChange={(_event, values) =>
+                  setFieldValue('exclusions', values)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    size="small"
+                    placeholder={t('Select Some Options')}
                   />
                 )}
-                {t('Add Appeal')}
-              </Button>
+              />
             </Box>
-          )}
-        </Form>
-      )}
+
+            {[errors.statuses, errors.tags, errors.exclusions].map(
+              (error, idx) => {
+                if (error && typeof error === 'string') {
+                  return (
+                    <Alert severity="error" key={`error-${idx}`}>
+                      {error}
+                    </Alert>
+                  );
+                }
+              },
+            )}
+
+            {/* As this form can be added a modal, we allow the modal to submit the form through a ref.
+          (The modal will have their own submit button that will call submit.)
+          However, if you're using the form as normally, the below buttons will show and you don't have to touch ref. */}
+            {!formRef && (
+              <Box mt={2} mb={1}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  className={classes.submitButton}
+                  disabled={!isValid || isSubmitting}
+                >
+                  {updating && (
+                    <CircularProgress
+                      className={classes.loadingIndicator}
+                      color="primary"
+                      size={20}
+                    />
+                  )}
+                  {t('Add Appeal')}
+                </Button>
+              </Box>
+            )}
+          </Form>
+        );
+      }}
     </Formik>
   );
 };
