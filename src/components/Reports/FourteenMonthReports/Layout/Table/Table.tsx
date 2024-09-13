@@ -24,9 +24,9 @@ import {
 } from './TableHead/TableHead';
 import type { Contact } from './TableHead/TableHead';
 
-interface FourteenMonthReportTableProps extends TableHeadProps {
+export interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
-  orderedContacts: Contact[] | undefined;
+  orderedContacts: Contact[];
   totals: MonthTotal[];
   onSelectContact: (contactId: string) => void;
 }

@@ -78,7 +78,7 @@ export const mapFourteenMonthReport = (
     salaryCurrency: data.attributes.salary_currency,
     currencyGroups: Object.entries(data.attributes.currency_groups).map(
       ([currency, currencyGroup]) => ({
-        currency,
+        currency: currency.toUpperCase(),
         totals: {
           year: Number(
             isSalaryType
