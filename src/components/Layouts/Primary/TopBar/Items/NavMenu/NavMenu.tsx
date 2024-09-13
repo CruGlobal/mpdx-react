@@ -175,8 +175,9 @@ const NavMenu: React.FC = () => {
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}`}>
+        <NextLink href={`/accountLists/${accountListId}`} passHref>
           <MenuItem
+            component="a"
             tabIndex={0}
             className={classes.menuItem}
             aria-current={
@@ -188,8 +189,9 @@ const NavMenu: React.FC = () => {
         </NextLink>
       </Grid>
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/contacts`}>
+        <NextLink href={`/accountLists/${accountListId}/contacts`} passHref>
           <MenuItem
+            component="a"
             tabIndex={0}
             className={classes.menuItem}
             aria-current={router.asPath?.includes('contacts') && 'page'}
@@ -199,8 +201,9 @@ const NavMenu: React.FC = () => {
         </NextLink>
       </Grid>
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/tasks`}>
+        <NextLink href={`/accountLists/${accountListId}/tasks`} passHref>
           <MenuItem
+            component="a"
             tabIndex={0}
             className={classes.menuItem}
             aria-current={router.asPath?.includes('tasks') && 'page'}
@@ -253,8 +256,10 @@ const NavMenu: React.FC = () => {
                       <NextLink
                         key={id}
                         href={`/accountLists/${accountListId}/reports/${id}`}
+                        passHref
                       >
                         <MenuItem
+                          component="a"
                           onClick={handleReportsMenuClose}
                           tabIndex={0}
                           aria-current={
@@ -335,6 +340,10 @@ const NavMenu: React.FC = () => {
                                 process.env.REWRITE_DOMAIN
                               }/tools/${toolsRedirectLinks[tool.id]}`}
                             >
+                              {/* When switching to pointing tools at this app we need to add these attributes
+                                href={`/accountLists/${accountListId}/tools/${tool.id}`}
+                                component="a"
+                              */}
                               <MenuItem
                                 tabIndex={0}
                                 onClick={handleToolsMenuClose}
@@ -393,8 +402,9 @@ const NavMenu: React.FC = () => {
         </Popper>
       </Grid>
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/coaching`}>
+        <NextLink href={`/accountLists/${accountListId}/coaching`} passHref>
           <MenuItem
+            component="a"
             tabIndex={0}
             className={classes.menuItem}
             aria-current={router.asPath?.includes(`/coaching`) && 'page'}
