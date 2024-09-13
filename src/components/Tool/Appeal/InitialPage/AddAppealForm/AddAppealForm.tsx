@@ -168,6 +168,9 @@ export const buildExclusionFilter = (
   });
 };
 
+const isPositiveInteger = (value: number | undefined) =>
+  typeof value === 'number' && value >= 0 && value === Math.floor(value);
+
 const appealFormSchema = yup.object({
   name: yup.string().required('Please enter a name'),
   initialGoal: yup
@@ -176,8 +179,8 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Initial Goal is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Initial Goal'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Initial Goal'),
+      isPositiveInteger,
     ),
   letterCost: yup
     .number()
@@ -185,8 +188,8 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Letter Cost is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Letter Cost'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Letter Cost'),
+      isPositiveInteger,
     ),
   adminPercentage: yup
     .number()
@@ -194,8 +197,8 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Admin Cost is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Admin Cost'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Admin Cost'),
+      isPositiveInteger,
     ),
   statuses: yup.array().of(
     yup.object({
