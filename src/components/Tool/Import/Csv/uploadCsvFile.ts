@@ -176,13 +176,13 @@ export const useSupportedHeaders = () => {
         determineSupportedHeaders();
       }
     };
-  });
+  }, []);
 
   return supportedHeaders;
 };
 
 export const useRequiredHeaders = () => {
-  const hardCodedRequiredHeaders = ['first_name', 'last_name'];
+  const hardCodedRequiredHeaders = ['first_name', 'last_name', 'full_name'];
 
   const [requiredHeaders, setRequiredHeaders] = useState(
     hardCodedRequiredHeaders,
@@ -199,7 +199,7 @@ export const useRequiredHeaders = () => {
         determineRequiredHeaders();
       }
     };
-  });
+  }, []);
 
   return requiredHeaders;
 };

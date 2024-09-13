@@ -269,7 +269,7 @@ describe('uploadCsvFile', () => {
   describe('useRequiredHeaders', () => {
     it('should bring back headers', () => {
       const { result } = renderHook(() => useRequiredHeaders());
-      expect(result.current).toEqual(['first_name', 'last_name']);
+      expect(result.current).toEqual(['first_name', 'last_name', 'full_name']);
     });
   });
 });
