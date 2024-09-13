@@ -301,8 +301,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       acc[foreignCurrency] = {
         convertedTotal:
           convertedAmount + (acc[foreignCurrency]?.convertedTotal ?? 0),
-        foreignTotal:
-          foreignAmount + (acc[foreignCurrency]?.convertedTotal ?? 0),
+        foreignTotal: foreignAmount + (acc[foreignCurrency]?.foreignTotal ?? 0),
       };
       return acc;
     },
