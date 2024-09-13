@@ -1,14 +1,21 @@
 import React, { useMemo, useRef } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+} from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
+import theme from 'src/theme';
 import {
   CsvImportContext,
   CsvImportType,
   CsvImportViewStepEnum,
 } from './CsvImportContext';
-import { HeaderBox } from './HeaderBox';
 import { getMaxFileSize, uploadFile } from './uploadCsvFile';
 
 interface CsvUploadProps {
@@ -75,17 +82,20 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
   };
 
   return (
-    <Box sx={{ border: '1px solid' }}>
-      <HeaderBox>
-        <Typography variant="body1">{t('Upload your CSV File')}</Typography>
-      </HeaderBox>
-      <Box sx={{ padding: '15px' }}>
+    <Card>
+      <CardHeader
+        sx={{
+          backgroundColor: theme.palette.cruGrayLight.main,
+        }}
+        title={t('Upload your CSV File')}
+      />
+      <CardContent>
         <Typography variant="body1">
           {t(
             'A CSV is a comma-seperated spreadsheet format that can be created by many programs such as Excel, Google Sheets, Google Contacts or Numbers.',
           )}
         </Typography>
-      </Box>
+      </CardContent>
       <Box
         sx={{
           backgroundColor: 'cruGrayLight.main',
@@ -103,10 +113,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
             type="submit"
             variant="contained"
             sx={{
-              bgcolor: 'mpdxBlue.main',
-              color: 'white',
-              height: '34px',
-              width: '150px',
+              marginLeft: 2,
             }}
             onClick={handleFileClick}
           >
@@ -122,7 +129,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
           />
         </form>
       </Box>
-    </Box>
+    </Card>
   );
 };
 
