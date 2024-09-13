@@ -23,7 +23,7 @@ interface Props {
   currencyType: FourteenMonthReportCurrencyType;
   onSelectContact: (contactId: string) => void;
 }
-export interface Totals {
+export interface MonthTotal {
   total: number;
   month: string;
 }
@@ -39,7 +39,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
 }) => {
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<OrderBy | number | null>(null);
+  const [orderBy, setOrderBy] = useState<OrderBy | null>(null);
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -96,7 +96,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: OrderBy | number,
+    property: OrderBy,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -231,8 +231,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
     return [...csvHeaders, ...csvBody, csvTotals];
   }, [apiConstants, contacts]);
 
-  const totals: Totals[] = useMemo(() => {
-    const totals: Totals[] = [];
+  const totals: MonthTotal[] = useMemo(() => {
+    const totals: MonthTotal[] = [];
     data?.fourteenMonthReport.currencyGroups.forEach((current) => {
       current.contacts.forEach((contact) => {
         if (contact?.months) {
