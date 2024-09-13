@@ -49,7 +49,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
   const apiConstants = useApiConstants();
 
-  const { data, loading, error } = useFourteenMonthReportQuery({
+  const { data, error } = useFourteenMonthReportQuery({
     variables: {
       accountListId,
       designationAccountIds: designationAccounts?.length
@@ -265,7 +265,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         onPrint={handlePrint}
         title={title}
       />
-      {loading ? (
+      {!data && !error ? (
         <Box
           display="flex"
           justifyContent="center"
