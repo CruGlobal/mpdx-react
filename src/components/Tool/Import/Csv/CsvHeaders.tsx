@@ -59,8 +59,21 @@ const updateUnmappedHeaders = (
   fileHeadersMappings: object,
   setUnmappedHeaders: React.Dispatch<React.SetStateAction<string[]>>,
 ) => {
-  const unmapped = requiredHeaders.filter((header) => {
-    return !Object.values(fileHeadersMappings).includes(header);
+  const fileHeaderMappingsValues = Object.values(fileHeadersMappings);
+
+  const containsName =
+    (fileHeaderMappingsValues.includes('first_name') &&
+      fileHeaderMappingsValues.includes('last_name')) ||
+    fileHeaderMappingsValues.includes('full_name');
+
+  // If the file's headers contain a name, then remove names from required headers.
+  const newRequiredHeaders = containsName
+    ? requiredHeaders.filter(
+        (header) => !['first_name', 'last_name', 'full_name'].includes(header),
+      )
+    : requiredHeaders;
+  const unmapped = newRequiredHeaders.filter((header) => {
+    return !fileHeaderMappingsValues.includes(header);
   });
   setUnmappedHeaders(unmapped);
 };
@@ -203,11 +216,16 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
           {unmappedHeaders.map((header) => {
             return (
               <p key={header}>
-                {header}
+                {supportedHeaders[header]}
                 {t(' is required')}
               </p>
             );
           })}
+          {unmappedHeaders.includes('full_name') && (
+            <p>
+              {t('* You need to include both First & Last Name OR Full Name')}
+            </p>
+          )}
         </Alert>
       )}
 
@@ -264,7 +282,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
               return (
                 <TableRow key={header}>
                   <TableCell>{headerName}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ paddingY: 1 }}>
                     <Select
                       onChange={(e) => handleUpdateHeaders(e, header)}
                       value={fileHeadersMappings[header] || -1}

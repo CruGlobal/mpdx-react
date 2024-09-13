@@ -99,8 +99,9 @@ describe('CsvHeaders', () => {
         ></CsvHeadersMockComponent>,
       );
 
-      expect(queryByText('first_name is required')).toBeInTheDocument();
-      expect(queryByText('last_name is required')).toBeInTheDocument();
+      expect(queryByText('First Name is required')).toBeInTheDocument();
+      expect(queryByText('Last Name is required')).toBeInTheDocument();
+      expect(queryByText('Full Name is required')).toBeInTheDocument();
     });
 
     it('should not show errors if required headers are mapped', async () => {
@@ -112,9 +113,9 @@ describe('CsvHeaders', () => {
         ></CsvHeadersMockComponent>,
       );
 
-      expect(queryByText('first_name is required')).not.toBeInTheDocument();
-      expect(queryByText('last_name is required')).not.toBeInTheDocument();
-      expect(queryByText('full_name is required')).not.toBeInTheDocument();
+      expect(queryByText('First Name is required')).not.toBeInTheDocument();
+      expect(queryByText('Last Name is required')).not.toBeInTheDocument();
+      expect(queryByText('Full Name is required')).not.toBeInTheDocument();
     });
 
     it('should allow the user to map every header', async () => {
