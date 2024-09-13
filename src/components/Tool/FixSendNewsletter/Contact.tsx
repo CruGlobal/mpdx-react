@@ -213,17 +213,19 @@ const Contact = ({
                 {contact.primaryPerson?.firstName &&
                   contact.primaryPerson?.lastName && (
                     <Typography variant="subtitle1">
-                      {`${contact.primaryPerson?.firstName} ${contact.primaryPerson?.lastName}`}
+                      {`${contact.primaryPerson.firstName} ${contact.primaryPerson.lastName}`}
                     </Typography>
                   )}
-                <Link
-                  underline="hover"
-                  href={`mailto:${contact.primaryPerson?.primaryEmailAddress?.email}`}
-                >
-                  <Typography variant="body2">
-                    {contact.primaryPerson?.primaryEmailAddress?.email || ''}
-                  </Typography>
-                </Link>
+                {contact.primaryPerson?.primaryEmailAddress?.email && (
+                  <Link
+                    underline="hover"
+                    href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
+                  >
+                    <Typography variant="body2">
+                      {contact.primaryPerson?.primaryEmailAddress.email}
+                    </Typography>
+                  </Link>
+                )}
                 {contact.primaryPerson?.optoutEnewsletter && (
                   <Typography variant="body2">
                     {t('opted out of newsletter')}
