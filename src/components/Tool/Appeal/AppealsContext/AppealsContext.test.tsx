@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import React, { useContext } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
@@ -48,9 +49,39 @@ jest.mock('notistack', () => ({
   },
 }));
 
+interface AppealStatusFilterTestComponentProps {
+  query?: NextRouter['query'];
+}
+
+const AppealStatusFilterTestComponent: React.FC<
+  AppealStatusFilterTestComponentProps
+> = ({ query }) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter
+      router={{
+        query: {
+          accountListId,
+          ...query,
+        },
+        pathname:
+          '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+        isReady,
+        push,
+      }}
+    >
+      <GqlMockedProvider>
+        <AppealsWrapper>
+          <TestRender />
+        </AppealsWrapper>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
+
 const TestRender: React.FC = () => {
   const {
     viewMode,
+    activeFilters,
     handleViewModeChange,
     userOptionsLoading,
     appealId,
@@ -64,6 +95,7 @@ const TestRender: React.FC = () => {
           <Typography>appealId: {appealId}</Typography>
           <Typography>contactDetailsId: {contactDetailsId}</Typography>
           <Typography>{viewMode}</Typography>
+          <Typography>appealStatus: {activeFilters.appealStatus}</Typography>
           <Button
             onClick={(event) =>
               handleViewModeChange(event, TableViewModeEnum.List)
@@ -264,6 +296,41 @@ describe('ContactsPageContext', () => {
         query: {},
       }),
     );
+  });
+
+  describe('activeFilters.appealStatus', () => {
+    it('should default to showing asked contacts in list view', async () => {
+      const { findByText } = render(
+        <AppealStatusFilterTestComponent
+          query={{ appealId: [appealIdentifier, 'list', contactId] }}
+        />,
+      );
+
+      expect(await findByText('appealStatus: asked')).toBeInTheDocument();
+    });
+
+    it('should not override the appeal status filter in list view', async () => {
+      const { findByText } = render(
+        <AppealStatusFilterTestComponent
+          query={{
+            appealId: [appealIdentifier, 'list', contactId],
+            filters: encodeURI('{"appealStatus":"given"}'),
+          }}
+        />,
+      );
+
+      expect(await findByText('appealStatus: given')).toBeInTheDocument();
+    });
+
+    it('should not change the appeal status filter in flows view', async () => {
+      const { findByText } = render(
+        <AppealStatusFilterTestComponent
+          query={{ appealId: [appealIdentifier, 'flows', contactId] }}
+        />,
+      );
+
+      expect(await findByText('appealStatus:')).toBeInTheDocument();
+    });
   });
 
   it('Saved filters with correct JSON', async () => {
