@@ -44,29 +44,18 @@ const NameTypography = styled(Typography, {
   },
 }));
 
-const PrintableContainer = styled(TableContainer)(() => ({
-  // First style set size as landscape
-  height: 'calc(100vh - 160px)',
+const PrintableContainer = styled(TableContainer)({
+  // First style sets size as landscape
   '@media print': {
-    ['@page']: { size: 'landscape' },
-    overflow: 'auto',
-    height: '100%',
+    '@page': { size: 'landscape' },
   },
-}));
+});
 
-const StickyTable = styled(Table)(({}) => ({
-  height: 'calc(100vh - 96px)',
-  '@media print': {
-    overflow: 'auto',
-    height: '100%',
-  },
-}));
-
-const StyledInfoIcon = styled(InfoIcon)(({}) => ({
+const StyledInfoIcon = styled(InfoIcon)({
   '@media print': {
     display: 'none',
   },
-}));
+});
 
 const StyledTotalsRow = styled(TableRow)({
   '.MuiTableCell-root': {
@@ -113,7 +102,7 @@ export const FourteenMonthReportTable: React.FC<
 
   return (
     <PrintableContainer className="fourteen-month-report">
-      <StickyTable
+      <Table
         stickyHeader={true}
         aria-label={t('Fourteen month report table')}
         data-testid="FourteenMonthReport"
@@ -236,7 +225,7 @@ export const FourteenMonthReportTable: React.FC<
             </StyledTableCell>
           </StyledTotalsRow>
         </TableBody>
-      </StickyTable>
+      </Table>
     </PrintableContainer>
   );
 };
