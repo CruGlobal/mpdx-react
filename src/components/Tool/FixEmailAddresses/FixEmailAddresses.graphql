@@ -19,6 +19,7 @@ fragment PersonInvalidEmail on Person {
   id
   firstName
   lastName
+  avatar
   contactId
   emailAddresses(first: 25) {
     nodes {

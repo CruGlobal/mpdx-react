@@ -59,7 +59,6 @@ const SourceSelect = styled(Select)(() => ({
 
 const ConfirmButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.mpdxBlue.main,
-  paddingRight: theme.spacing(1.5),
   color: 'white',
   [theme.breakpoints.down('xs')]: {
     marginTop: theme.spacing(1),
@@ -338,6 +337,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       ))}
                     </SourceSelect>
                     <ConfirmButton
+                      variant="contained"
                       onClick={() => setShowBulkConfirmModal(true)}
                     >
                       <ConfirmButtonIcon />
@@ -352,29 +352,24 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
             </Box>
           </Grid>
           {!!data.people.nodes.length ? (
-            <>
+            <Grid item xs={12}>
               <InfiniteList
                 loading={loading}
                 data={data.people.nodes}
                 itemContent={(index, person) => (
-                  <Grid
-                    key={index}
-                    item
-                    xs={12}
-                    sx={{
-                      marginBottom: `${theme.spacing(2)}`,
-                    }}
-                  >
-                    <FixEmailAddressPerson
-                      person={person}
-                      key={person.id}
-                      dataState={dataState}
-                      accountListId={accountListId}
-                      handleChange={handleChange}
-                      handleChangePrimary={handleChangePrimary}
-                      handleSingleConfirm={handleSingleConfirm}
-                      setContactFocus={setContactFocus}
-                    />
+                  <Grid item xs={12}>
+                    <Box>
+                      <FixEmailAddressPerson
+                        person={person}
+                        key={person.id}
+                        dataState={dataState}
+                        accountListId={accountListId}
+                        handleChange={handleChange}
+                        handleChangePrimary={handleChangePrimary}
+                        handleSingleConfirm={handleSingleConfirm}
+                        setContactFocus={setContactFocus}
+                      />
+                    </Box>
                   </Grid>
                 )}
                 endReached={() =>
@@ -409,7 +404,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                   </Typography>
                 </Box>
               </Grid>
-            </>
+            </Grid>
           ) : (
             <NoData tool="fixEmailAddresses" />
           )}

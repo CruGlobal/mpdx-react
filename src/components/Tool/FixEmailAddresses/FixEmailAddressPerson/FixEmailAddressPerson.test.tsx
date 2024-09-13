@@ -24,6 +24,7 @@ const person: PersonInvalidEmailFragment = {
   firstName: 'Test',
   lastName: 'Contact',
   contactId: 'contactTestId',
+  avatar: '',
   emailAddresses: {
     nodes: [
       {

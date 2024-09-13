@@ -63,6 +63,7 @@ export const mockInvalidEmailAddressesResponse: ErgonoMockShape[] = [
     firstName: 'Test',
     lastName: 'Contact',
     contactId,
+    avatar: '',
     emailAddresses: {
       nodes: contactOneEmailAddressNodes,
     },
@@ -72,6 +73,7 @@ export const mockInvalidEmailAddressesResponse: ErgonoMockShape[] = [
     firstName: 'Simba',
     lastName: 'Lion',
     contactId: 'contactId2',
+    avatar: '',
     emailAddresses: {
       nodes: contactTwoEmailAddressNodes,
     },
