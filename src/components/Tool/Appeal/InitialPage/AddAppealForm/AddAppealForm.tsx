@@ -368,9 +368,18 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         initialGoal: appealGoal ?? 0,
         letterCost: 0,
         adminPercentage: 12,
-        statuses: appealStatuses ?? [],
+        statuses: appealStatuses ?? [
+          {
+            name: '-- All Active --',
+            value: 'ACTIVE',
+          },
+        ],
         tags: [],
-        exclusions: appealExcludes ?? [],
+        exclusions:
+          appealExcludes ??
+          contactExclusions.filter(
+            (exclusion) => exclusion.value === ExclusionEnum.DoNotAskAppeals,
+          ),
       }}
       onSubmit={async (values) => {
         await onSubmit(values);
@@ -562,6 +571,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 options={contactStatuses}
                 getOptionLabel={(option) => option.name}
                 value={statuses}
+                isOptionEqualToValue={(option1, option2) =>
+                  option1.value === option2.value
+                }
                 onChange={(_event, values) => setFieldValue('statuses', values)}
                 renderInput={(params) => (
                   <TextField
@@ -624,6 +636,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               filterSelectedOptions
               options={contactExclusions}
               getOptionLabel={(option) => option.name}
+              isOptionEqualToValue={(option1, option2) =>
+                option1.value === option2.value
+              }
               value={exclusions}
               onChange={(_event, values) => setFieldValue('exclusions', values)}
               renderInput={(params) => (
