@@ -200,6 +200,28 @@ describe('AddAppealForm', () => {
 
       expect(goalAmount).toHaveValue(3333.33);
     });
+
+    it('should allow the user to manually enter the Goal amount', async () => {
+      const { getByRole } = render(<Components />);
+
+      const initialGoal = getByRole('spinbutton', { name: 'Initial Goal' });
+      const goalAmount = getByRole('spinbutton', { name: 'Goal' });
+
+      userEvent.clear(initialGoal);
+      userEvent.type(initialGoal, '2500');
+
+      expect(goalAmount).toHaveValue(2840.91);
+
+      userEvent.clear(goalAmount);
+      userEvent.type(goalAmount, '3000');
+
+      expect(goalAmount).toHaveValue(3000);
+
+      userEvent.clear(initialGoal);
+      userEvent.type(initialGoal, '250');
+
+      expect(goalAmount).toHaveValue(284.09);
+    });
   });
 
   describe('Select all buttons', () => {

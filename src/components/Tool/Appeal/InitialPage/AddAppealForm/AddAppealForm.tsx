@@ -76,11 +76,11 @@ export const calculateGoal = (
   adminPercentage: number,
 ): number => {
   const adminPercent = 1 - adminPercentage / 100;
-  const totalGoal =
-    Math.round(((initialGoal + letterCost) / adminPercent) * 100) / 100;
 
-  // Convert to string and remove ".00" if present
-  return parseFloat(totalGoal.toFixed(2));
+  const totalGoal = (initialGoal + letterCost) / adminPercent;
+
+  // Round to two decimal places
+  return Math.round(totalGoal * 100) / 100;
 };
 
 const gqlStatusesToDBStatusMap: { [key: string]: string } = {
