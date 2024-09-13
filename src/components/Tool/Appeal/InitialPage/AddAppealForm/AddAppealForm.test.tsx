@@ -148,10 +148,10 @@ describe('AddAppealForm', () => {
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '-5');
       expect(
-        await findByText(/must use a positive number for initial goal/i),
+        await findByText(/must use a positive whole number for initial goal/i),
       ).toBeInTheDocument();
       expect(
-        getByText(/must use a positive number for letter cost/i),
+        getByText(/must use a positive whole number for letter cost/i),
       ).toBeInTheDocument();
       expect(
         getByText(/must use a positive whole number for admin cost/i),
@@ -168,11 +168,11 @@ describe('AddAppealForm', () => {
           queryByText(/initial goal is required/i),
         ).not.toBeInTheDocument();
         expect(
-          queryByText(/must use a positive number for initial goal/i),
+          queryByText(/must use a positive whole number for initial goal/i),
         ).not.toBeInTheDocument();
         expect(queryByText(/letter cost is required/i)).not.toBeInTheDocument();
         expect(
-          queryByText(/must use a positive number for letter cost/i),
+          queryByText(/must use a positive whole number for letter cost/i),
         ).not.toBeInTheDocument();
         expect(queryByText(/admin cost is required/i)).not.toBeInTheDocument();
         expect(
@@ -180,8 +180,18 @@ describe('AddAppealForm', () => {
         ).not.toBeInTheDocument();
       });
 
+      userEvent.clear(initialGoal);
+      userEvent.type(initialGoal, '2000.1');
+      userEvent.clear(letterCost);
+      userEvent.type(letterCost, '0.1');
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '5.1');
+      expect(
+        await findByText(/must use a positive whole number for initial goal/i),
+      ).toBeInTheDocument();
+      expect(
+        await findByText(/must use a positive whole number for letter cost/i),
+      ).toBeInTheDocument();
       expect(
         await findByText(/must use a positive whole number for admin cost/i),
       ).toBeInTheDocument();
