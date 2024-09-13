@@ -365,9 +365,18 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         initialGoal: appealGoal ?? 0,
         letterCost: 0,
         adminPercentage: 12,
-        statuses: appealStatuses ?? [],
+        statuses: appealStatuses ?? [
+          {
+            name: '-- All Active --',
+            value: 'ACTIVE',
+          },
+        ],
         tags: [],
-        exclusions: appealExcludes ?? [],
+        exclusions:
+          appealExcludes ??
+          contactExclusions.filter(
+            (exclusion) => exclusion.value === ExclusionEnum.DoNotAskAppeals,
+          ),
       }}
       onSubmit={async (values) => {
         await onSubmit(values);

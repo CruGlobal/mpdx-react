@@ -10,10 +10,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import AddAppealForm, {
-  ExclusionEnum,
-  contactExclusions,
-} from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
+import AddAppealForm from 'src/components/Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm';
 import Appeals from 'src/components/Tool/Appeal/InitialPage/Appeals';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -69,19 +66,7 @@ const AppealsInitialPage: React.FC = () => {
                   })}
                 />
                 <CardContent>
-                  <AddAppealForm
-                    accountListId={accountListId || ''}
-                    appealStatuses={[
-                      {
-                        name: '-- All Active --',
-                        value: 'ACTIVE',
-                      },
-                    ]}
-                    appealExcludes={contactExclusions.filter(
-                      (exclusion) =>
-                        exclusion.value === ExclusionEnum.DoNotAskAppeals,
-                    )}
-                  />
+                  <AddAppealForm accountListId={accountListId || ''} />
                 </CardContent>
               </Card>
             </Box>
