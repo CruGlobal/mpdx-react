@@ -146,7 +146,7 @@ export const useSupportedHeaders = () => {
     phone_2: 'Phone 2',
     phone_3: 'Phone 3',
     relationship_code: 'Relationship Code',
-    referred_by: 'Referred By',
+    referred_by: 'Connecting Partner',
     region: 'Region',
     send_appeals: 'Send Appeals?',
     spouse_email: 'Spouse Email',
@@ -182,7 +182,7 @@ export const useSupportedHeaders = () => {
 };
 
 export const useRequiredHeaders = () => {
-  const hardCodedRequiredHeaders = ['first_name', 'last_name', 'full_name'];
+  const hardCodedRequiredHeaders = ['first_name', 'last_name'];
 
   const [requiredHeaders, setRequiredHeaders] = useState(
     hardCodedRequiredHeaders,
