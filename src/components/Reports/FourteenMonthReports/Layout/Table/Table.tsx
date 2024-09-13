@@ -116,82 +116,71 @@ export const FourteenMonthReportTable: React.FC<
           onRequestSort={onRequestSort}
         />
         <TableBody>
-          {orderedContacts?.map((contact) => {
-            const totalDonated = useMemo(() => {
-              if (contact?.months) {
-                return contact.months.reduce((partialSum, month) => {
-                  return partialSum + month.salaryCurrencyTotal;
-                }, 0);
-              } else {
-                return 0;
-              }
-            }, [contact]);
-            return (
-              <TableRow
-                key={contact.id}
-                hover
-                data-testid="FourteenMonthReportTableRow"
-              >
-                <StyledTableCell>
-                  <Box display="flex" flexDirection="column">
-                    <Box display="flex" alignItems="center">
-                      {!isExpanded && <StyledInfoIcon fontSize="small" />}
-                      <NameTypography variant="body1" expanded={isExpanded}>
-                        <Link
-                          onClick={() => onSelectContact(contact.id)}
-                          onMouseEnter={preloadContactsRightPanel}
-                          underline="hover"
-                        >
-                          {contact.name}
-                        </Link>
-                      </NameTypography>
-                    </Box>
-                    {isExpanded && (
-                      <Typography variant="body2" color="textSecondary">
-                        {contact.accountNumbers.join(', ')}
-                      </Typography>
-                    )}
+          {orderedContacts?.map((contact) => (
+            <TableRow
+              key={contact.id}
+              hover
+              data-testid="FourteenMonthReportTableRow"
+            >
+              <StyledTableCell>
+                <Box display="flex" flexDirection="column">
+                  <Box display="flex" alignItems="center">
+                    {!isExpanded && <StyledInfoIcon fontSize="small" />}
+                    <NameTypography variant="body1" expanded={isExpanded}>
+                      <Link
+                        onClick={() => onSelectContact(contact.id)}
+                        onMouseEnter={preloadContactsRightPanel}
+                        underline="hover"
+                      >
+                        {contact.name}
+                      </Link>
+                    </NameTypography>
                   </Box>
-                </StyledTableCell>
-                {isExpanded && (
-                  <>
-                    <StyledTableCell>{contact.status}</StyledTableCell>
-                    <StyledTableCell data-testid="pledgeAmount">
-                      {contact.pledgeAmount &&
-                        `${numberFormat(
-                          Math.round(contact.pledgeAmount),
-                          locale,
-                        )} ${contact.pledgeCurrency} ${
-                          apiConstants?.pledgeFrequency?.find(
-                            ({ key }) => key === contact.pledgeFrequency,
-                          )?.value ?? ''
-                        }`}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {numberFormat(Math.round(contact.average), locale)}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {numberFormat(Math.round(contact.minimum), locale)}
-                    </StyledTableCell>
-                  </>
-                )}
-                {contact.months?.map((month) => (
-                  <StyledTableCell key={month.month} align="center">
-                    {month?.salaryCurrencyTotal &&
-                      numberFormat(
-                        Math.round(month?.salaryCurrencyTotal),
+                  {isExpanded && (
+                    <Typography variant="body2" color="textSecondary">
+                      {contact.accountNumbers.join(', ')}
+                    </Typography>
+                  )}
+                </Box>
+              </StyledTableCell>
+              {isExpanded && (
+                <>
+                  <StyledTableCell>{contact.status}</StyledTableCell>
+                  <StyledTableCell data-testid="pledgeAmount">
+                    {contact.pledgeAmount &&
+                      `${numberFormat(
+                        Math.round(contact.pledgeAmount),
                         locale,
-                      )}
+                      )} ${contact.pledgeCurrency} ${
+                        apiConstants?.pledgeFrequency?.find(
+                          ({ key }) => key === contact.pledgeFrequency,
+                        )?.value ?? ''
+                      }`}
                   </StyledTableCell>
-                ))}
-                <StyledTableCell align="right">
-                  <strong data-testid="totalGivenByContact">
-                    {numberFormat(Math.round(totalDonated), locale)}
-                  </strong>
+                  <StyledTableCell>
+                    {numberFormat(Math.round(contact.average), locale)}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {numberFormat(Math.round(contact.minimum), locale)}
+                  </StyledTableCell>
+                </>
+              )}
+              {contact.months?.map((month) => (
+                <StyledTableCell key={month.month} align="center">
+                  {month?.salaryCurrencyTotal &&
+                    numberFormat(
+                      Math.round(month?.salaryCurrencyTotal),
+                      locale,
+                    )}
                 </StyledTableCell>
-              </TableRow>
-            );
-          })}
+              ))}
+              <StyledTableCell align="right">
+                <strong data-testid="totalGivenByContact">
+                  {numberFormat(Math.round(contact.total), locale)}
+                </strong>
+              </StyledTableCell>
+            </TableRow>
+          ))}
           <StyledTotalsRow>
             <StyledTableCell>{t('Totals')}</StyledTableCell>
             {isExpanded && (
