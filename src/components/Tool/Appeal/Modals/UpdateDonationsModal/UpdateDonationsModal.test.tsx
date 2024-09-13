@@ -391,6 +391,19 @@ describe('UpdateDonationsModal', () => {
       expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$110');
     });
 
+    it('unselecting preselected donations crosses out the appeal name', async () => {
+      const { getByText, findAllByRole } = render(<Components />);
+
+      const checkboxes = await findAllByRole('checkbox');
+
+      expect(checkboxes[0]).toBeChecked();
+      userEvent.click(checkboxes[0]);
+
+      expect(getByText('Appeal 1')).toHaveStyle(
+        'text-decoration: line-through',
+      );
+    });
+
     it('shows currency column when a currency does not match the account currency', async () => {
       const { findByRole } = render(<Components hasForeignCurrency />);
 
