@@ -1,7 +1,7 @@
 import React from 'react';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
@@ -21,6 +21,7 @@ const defaultProps = {
   title,
   onNavListToggle,
   onSelectContact,
+  isNavListOpen: false,
 };
 
 const mocks = {
@@ -47,8 +48,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -60,8 +60,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -73,8 +72,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -86,8 +84,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
               ],
               name: 'test name',
@@ -115,8 +112,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -128,8 +124,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -141,8 +136,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -154,8 +148,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
               ],
               name: 'test name',
@@ -166,7 +159,7 @@ const mocks = {
               total: 1290,
             },
           ],
-          currency: 'cad',
+          currency: 'CAD',
           totals: {
             months: [
               {
@@ -208,8 +201,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -221,8 +213,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -234,8 +225,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
                 {
                   donations: [
@@ -247,8 +237,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 50,
-                  total: 35,
+                  total: 50,
                 },
               ],
               name: 'test name',
@@ -259,7 +248,7 @@ const mocks = {
               total: 1290,
             },
           ],
-          currency: 'usd',
+          currency: 'USD',
           totals: {
             months: [
               {
@@ -299,7 +288,7 @@ const errorMock: MockedResponse = {
 
 describe('FourteenMonthReport', () => {
   it('salary report loading', async () => {
-    const { queryByTestId, queryByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider>
           <FourteenMonthReport
@@ -314,13 +303,13 @@ describe('FourteenMonthReport', () => {
       </ThemeProvider>,
     );
 
-    expect(queryByText(title)).toBeInTheDocument();
-    expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
-    expect(queryByTestId('Notification')).toBeNull();
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
+    expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
   it('salary report loaded', async () => {
-    const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
+    const { getAllByTestId, queryByTestId, getAllByRole } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
@@ -343,13 +332,13 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('FourteenMonthReportTableRow').length).toBe(3);
-    expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
+    expect(getAllByRole('table')).toHaveLength(2);
+    expect(getAllByTestId('FourteenMonthReportTableRow')).toHaveLength(3);
+    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
   });
 
   it('partner report loading', async () => {
-    const { queryByTestId, queryByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider>
           <FourteenMonthReport
@@ -364,13 +353,13 @@ describe('FourteenMonthReport', () => {
       </ThemeProvider>,
     );
 
-    expect(queryByText(title)).toBeInTheDocument();
-    expect(queryByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
-    expect(queryByTestId('Notification')).toBeNull();
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
+    expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
   it('partner report loaded', async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
+    const { getAllByTestId, queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
@@ -393,12 +382,12 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(queryByText(title)).toBeInTheDocument();
-    expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
   });
 
   it('salary report error', async () => {
-    const { queryByTestId, getByTestId, queryByText } = render(
+    const { queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={[errorMock]}>
           <FourteenMonthReport
@@ -419,12 +408,12 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(queryByText(title)).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
     expect(getByTestId('Notification')).toBeInTheDocument();
   });
 
   it('partner report error', async () => {
-    const { queryByTestId, getByTestId, queryByText } = render(
+    const { queryByTestId, getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
         <MockedProvider mocks={[errorMock]}>
           <FourteenMonthReport
@@ -445,12 +434,12 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(queryByText(title)).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
     expect(getByTestId('Notification')).toBeInTheDocument();
   });
 
   it('nav list closed', async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
+    const { getAllByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{ FourteenMonthReport: FourteenMonthReportQuery }>
           mocks={mocks}
@@ -473,9 +462,9 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(queryByText(title)).toBeInTheDocument();
-    expect(getByTestId('FourteenMonthReport')).toBeInTheDocument();
-    expect(queryByTestId('MultiPageMenu')).toBeNull();
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
+    expect(queryByTestId('MultiPageMenu')).not.toBeInTheDocument();
   });
 
   it('filters report by designation account', async () => {
@@ -570,37 +559,53 @@ describe('FourteenMonthReport', () => {
     expect(onSelectContact).toHaveBeenCalledWith('contact-1');
   });
 
-  it('should calulate totals correctly', async () => {
-    const mutationSpy = jest.fn();
-    const { getAllByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<FourteenMonthReportQuery>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <FourteenMonthReport
-            {...defaultProps}
-            isNavListOpen={true}
-            currencyType={FourteenMonthReportCurrencyType.Donor}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+  describe('partner report', () => {
+    it('should render one table for each partner currency', async () => {
+      const { findAllByRole } = render(
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<FourteenMonthReportQuery> mocks={mocks}>
+            <FourteenMonthReport
+              {...defaultProps}
+              currencyType={FourteenMonthReportCurrencyType.Donor}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>,
+      );
 
-    await waitFor(() => {
+      const tables = await findAllByRole('table', {
+        name: 'Fourteen month report table',
+      });
+      expect(tables).toHaveLength(2);
+
       expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+        within(tables[0]).getByRole('heading', { name: 'CAD' }),
+      ).toBeInTheDocument();
+      const table1MonthlyTotals = within(tables[0]).getAllByTestId(
+        'monthlyTotals',
+      );
+      // There are 2 contacts in this table who each gave 50
+      expect(table1MonthlyTotals[0]).toHaveTextContent('100');
+      expect(table1MonthlyTotals[1]).toHaveTextContent('100');
+      expect(table1MonthlyTotals[2]).toHaveTextContent('100');
+      expect(table1MonthlyTotals[3]).toHaveTextContent('100');
+      expect(within(tables[0]).getByTestId('overallTotal')).toHaveTextContent(
+        '400',
+      );
+
+      expect(
+        within(tables[1]).getByRole('heading', { name: 'USD' }),
+      ).toBeInTheDocument();
+      const table2MonthlyTotals = within(tables[1]).getAllByTestId(
+        'monthlyTotals',
+      );
+      // There is 1 contact in this table who gave 50
+      expect(table2MonthlyTotals[0]).toHaveTextContent('50');
+      expect(table2MonthlyTotals[1]).toHaveTextContent('50');
+      expect(table2MonthlyTotals[2]).toHaveTextContent('50');
+      expect(table2MonthlyTotals[3]).toHaveTextContent('50');
+      expect(within(tables[1]).getByTestId('overallTotal')).toHaveTextContent(
+        '200',
+      );
     });
-
-    const contactTotal = getAllByTestId('monthlyTotals');
-    // 50 * 3 contacts with different currencies
-    expect(contactTotal[0].innerHTML).toEqual('150');
-    expect(contactTotal[1].innerHTML).toEqual('150');
-    expect(contactTotal[2].innerHTML).toEqual('150');
-    expect(contactTotal[3].innerHTML).toEqual('150');
-
-    // 50 * 12 (All dontions from all currecnies)
-    expect(getAllByTestId('overallTotal')[0].innerHTML).toEqual('600');
   });
 });

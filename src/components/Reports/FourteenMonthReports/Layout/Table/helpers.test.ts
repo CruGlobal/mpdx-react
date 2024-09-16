@@ -78,9 +78,9 @@ describe('calculateTotals', () => {
   const makeContact = (month1: number, month2: number, month3: number) =>
     mockContact({
       months: [
-        { month: 'Jan', salaryCurrencyTotal: month1 },
-        { month: 'Feb', salaryCurrencyTotal: month2 },
-        { month: 'Mar', salaryCurrencyTotal: month3 },
+        { month: 'Jan', total: month1 },
+        { month: 'Feb', total: month2 },
+        { month: 'Mar', total: month3 },
       ],
     });
 
