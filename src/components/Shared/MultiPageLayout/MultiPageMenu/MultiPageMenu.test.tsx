@@ -70,9 +70,10 @@ describe('MultiPageMenu', () => {
         designationAccounts: [
           {
             designationAccounts: [
-              { id: 'account-1', name: 'Account 1' },
-              { id: 'account-2', name: 'Account 2' },
-              { id: 'account-3', name: 'Account 3' },
+              { id: 'account-1', name: 'Account 1', designationNumber: '' },
+              { id: 'account-2', name: 'Account 2', designationNumber: '' },
+              { id: 'account-3', name: 'Account 3', designationNumber: '' },
+              { id: 'account-4', name: '', designationNumber: '4444' },
             ],
           },
         ],
@@ -111,6 +112,7 @@ describe('MultiPageMenu', () => {
     expect(getAllByRole('option').map((option) => option.textContent)).toEqual([
       'Account 2',
       'Account 3',
+      '4444',
     ]);
     userEvent.click(getByRole('option', { name: 'Account 2' }));
     expect(setDesignationAccounts).toHaveBeenLastCalledWith([

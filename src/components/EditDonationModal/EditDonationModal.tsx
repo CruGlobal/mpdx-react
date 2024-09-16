@@ -300,7 +300,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                         )
                         .map((account) => (
                           <MenuItem key={account.id} value={account.id}>
-                            {account.name}
+                            {account.name || account.designationNumber}
                           </MenuItem>
                         ))}
                     </Select>
