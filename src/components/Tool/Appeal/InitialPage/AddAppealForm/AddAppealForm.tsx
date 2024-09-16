@@ -71,13 +71,16 @@ export const contactExclusions: ContactExclusion[] = [
 ];
 
 export const calculateGoal = (
-  initialGoal: number,
-  letterCost: number,
-  adminPercentage: number,
+  initialGoal: number | string,
+  letterCost: number | string,
+  adminPercentage: number | string,
 ): number => {
-  const adminPercent = 1 - adminPercentage / 100;
+  const adminPercent = 1 - Number(adminPercentage) / 100;
 
-  return Math.round(((initialGoal + letterCost) / adminPercent) * 100) / 100;
+  const totalGoal = (Number(initialGoal) + Number(letterCost)) / adminPercent;
+
+  // Round to two decimal places
+  return Math.round(totalGoal * 100) / 100;
 };
 
 const gqlStatusesToDBStatusMap: { [key: string]: string } = {
@@ -200,6 +203,15 @@ const appealFormSchema = yup.object({
       i18n.t('Must use a positive whole number for Admin Cost'),
       isPositiveInteger,
     ),
+  goal: yup
+    .number()
+    .typeError(i18n.t('Goal must be a valid number'))
+    .required(i18n.t('Goal is required'))
+    .test(
+      i18n.t('Is positive?'),
+      i18n.t('Must use a positive number for Goal'),
+      (value) => parseFloat(value as unknown as string) >= 0,
+    ),
   statuses: yup.array().of(
     yup.object({
       name: yup.string(),
@@ -222,6 +234,7 @@ type FormikRefType = React.RefObject<
     initialGoal: number;
     letterCost: number;
     adminPercentage: number;
+    goal: number;
     statuses: Pick<FilterOption, 'name' | 'value'>[];
     tags: never[];
     exclusions: ContactExclusion[];
@@ -309,11 +322,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   const onSubmit = async (props: Attributes) => {
     const attributes: AppealCreateInput = {
       name: props.name,
-      amount: calculateGoal(
-        props.initialGoal,
-        props.letterCost,
-        props.adminPercentage,
-      ),
+      amount: props.goal,
     };
 
     const inclusionFilter = buildInclusionFilter({
@@ -368,6 +377,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         initialGoal: appealGoal ?? 0,
         letterCost: 0,
         adminPercentage: 12,
+        goal: 0,
         statuses: appealStatuses ?? [
           {
             name: '-- All Active --',
@@ -392,6 +402,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
           initialGoal,
           letterCost,
           adminPercentage,
+          goal,
           statuses,
           tags,
           exclusions,
@@ -438,6 +449,17 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                     error={errors.initialGoal}
                     helperText={errors.initialGoal}
                     as={TextField}
+                    onChange={(event) => {
+                      setFieldValue('initialGoal', event.target.value);
+                      setFieldValue(
+                        'goal',
+                        calculateGoal(
+                          event.target.value,
+                          letterCost,
+                          adminPercentage,
+                        ),
+                      );
+                    }}
                   />
                 </Box>
               </Grid>
@@ -469,6 +491,17 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                     error={errors.letterCost}
                     helperText={errors.letterCost}
                     as={TextField}
+                    onChange={(event) => {
+                      setFieldValue('letterCost', event.target.value);
+                      setFieldValue(
+                        'goal',
+                        calculateGoal(
+                          initialGoal,
+                          event.target.value,
+                          adminPercentage,
+                        ),
+                      );
+                    }}
                   />
                 </Box>
               </Grid>
@@ -500,6 +533,17 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                     error={errors.adminPercentage}
                     helperText={errors.adminPercentage}
                     as={TextField}
+                    onChange={(event) => {
+                      setFieldValue('adminPercentage', event.target.value);
+                      setFieldValue(
+                        'goal',
+                        calculateGoal(
+                          initialGoal,
+                          letterCost,
+                          event.target.value,
+                        ),
+                      );
+                    }}
                   />
                 </Box>
               </Grid>
@@ -529,11 +573,10 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                     variant="outlined"
                     size="small"
                     className={classes.input}
-                    value={calculateGoal(
-                      initialGoal,
-                      letterCost,
-                      adminPercentage,
-                    ).toFixed(2)}
+                    value={goal}
+                    onChange={(event) => {
+                      setFieldValue('goal', Number(event.target.value));
+                    }}
                   />
                 </Box>
               </Grid>

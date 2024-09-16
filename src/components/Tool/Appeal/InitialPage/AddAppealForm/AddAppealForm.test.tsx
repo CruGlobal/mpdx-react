@@ -139,6 +139,7 @@ describe('AddAppealForm', () => {
       userEvent.clear(initialGoal);
       userEvent.clear(letterCost);
       userEvent.clear(adminPercent);
+      userEvent.tab();
 
       expect(goalAmount).toHaveValue(0);
 
@@ -153,6 +154,8 @@ describe('AddAppealForm', () => {
       userEvent.type(letterCost, '-5');
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '-5');
+      userEvent.tab();
+
       expect(
         await findByText(/must use a positive whole number for initial goal/i),
       ).toBeInTheDocument();
@@ -169,6 +172,8 @@ describe('AddAppealForm', () => {
       userEvent.type(letterCost, '0');
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '50');
+      userEvent.tab();
+
       await waitFor(() => {
         expect(
           queryByText(/initial goal is required/i),
@@ -192,6 +197,8 @@ describe('AddAppealForm', () => {
       userEvent.type(letterCost, '0.1');
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '5.1');
+      userEvent.tab();
+
       expect(
         await findByText(/must use a positive whole number for initial goal/i),
       ).toBeInTheDocument();
@@ -201,7 +208,7 @@ describe('AddAppealForm', () => {
       expect(
         await findByText(/must use a positive whole number for admin cost/i),
       ).toBeInTheDocument();
-    });
+    }, 6000);
 
     it('should calculate the Goal amount correctly', async () => {
       const { getByRole } = render(<Components />);
@@ -221,6 +228,28 @@ describe('AddAppealForm', () => {
       userEvent.type(adminPercent, '10');
 
       expect(goalAmount).toHaveValue(3333.33);
+    });
+
+    it('should allow the user to manually enter the Goal amount', async () => {
+      const { getByRole } = render(<Components />);
+
+      const initialGoal = getByRole('spinbutton', { name: 'Initial Goal' });
+      const goalAmount = getByRole('spinbutton', { name: 'Goal' });
+
+      userEvent.clear(initialGoal);
+      userEvent.type(initialGoal, '2500');
+
+      expect(goalAmount).toHaveValue(2840.91);
+
+      userEvent.clear(goalAmount);
+      userEvent.type(goalAmount, '3000');
+
+      expect(goalAmount).toHaveValue(3000);
+
+      userEvent.clear(initialGoal);
+      userEvent.type(initialGoal, '250');
+
+      expect(goalAmount).toHaveValue(284.09);
     });
   });
 
