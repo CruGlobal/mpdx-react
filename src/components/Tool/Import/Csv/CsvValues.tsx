@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from 'react';
 import {
   Box,
   Button,
+  Card,
+  CardHeader,
   MenuItem,
   Select,
   Table,
@@ -9,7 +11,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { invert } from 'lodash';
 import { cloneDeep } from 'lodash/fp';
@@ -17,13 +18,13 @@ import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
+import theme from 'src/theme';
 import {
   CsvImportContext,
   CsvImportType,
   CsvImportValue,
   CsvImportViewStepEnum,
 } from './CsvImportContext';
-import { HeaderBox } from './HeaderBox';
 import { get, save } from './csvImportService';
 import { useSupportedHeaders } from './uploadCsvFile';
 
@@ -110,10 +111,13 @@ const CsvValues: React.FC<CsvValuesProps> = ({
   }
 
   return (
-    <Box sx={{ border: '1px solid', minWidth: '340px' }}>
-      <HeaderBox>
-        <Typography variant="body1">{t('Map your values')}</Typography>
-      </HeaderBox>
+    <Card sx={{ minWidth: '340px' }}>
+      <CardHeader
+        sx={{
+          backgroundColor: theme.palette.cruGrayLight.main,
+        }}
+        title={t('Map your values')}
+      />
 
       <Table sx={{ width: '100%', maxWidth: '100%' }}>
         <TableHead>
@@ -152,6 +156,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                               </TableCell>
                               <TableCell>
                                 <Select
+                                  size="small"
                                   onChange={(e) =>
                                     handleUpdateValues(e, constantKey, valueKey)
                                   }
@@ -243,28 +248,14 @@ const CsvValues: React.FC<CsvValuesProps> = ({
           justifyContent: 'space-between',
         }}
       >
-        <Button
-          sx={{
-            bgcolor: 'cruGrayDark.main',
-            color: 'white',
-            height: '34px',
-          }}
-          onClick={handleBack}
-        >
+        <Button variant="contained" onClick={handleBack}>
           {t('Back')}
         </Button>
-        <Button
-          sx={{
-            bgcolor: 'mpdxBlue.main',
-            color: 'white',
-            height: '34px',
-          }}
-          onClick={handleSave}
-        >
+        <Button variant="contained" onClick={handleSave}>
           {t('Next')}
         </Button>
       </Box>
-    </Box>
+    </Card>
   );
 };
 

@@ -197,109 +197,103 @@ const Contact = ({
         className={classes.minimalPadding}
         sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
       >
-        {contact.primaryPerson && (
-          <Grid container alignItems="center">
-            <Grid item xs={6} sm={5} md={4}>
-              <Box
-                display="flex"
-                alignItems="center"
-                style={{ height: '100%' }}
-              >
-                {contact.primaryPerson.firstName && matches && (
-                  <Avatar
-                    src={contact?.avatar}
-                    style={{
-                      width: theme.spacing(4),
-                      height: theme.spacing(4),
-                    }}
-                  />
-                )}
-                <Box display="flex" flexDirection="column" ml={2}>
-                  <Typography variant="subtitle1">
-                    {`${contact.primaryPerson.firstName} ${contact.primaryPerson.lastName}`}
-                  </Typography>
-                  <Link
-                    underline="hover"
-                    href={`mailto:${contact.primaryPerson.primaryEmailAddress?.email}`}
-                  >
-                    <Typography variant="body2">
-                      {contact.primaryPerson.primaryEmailAddress?.email || ''}
-                    </Typography>
-                  </Link>
-                  {contact.primaryPerson.optoutEnewsletter && (
-                    <Typography variant="body2">
-                      {t('opted out of newsletter')}
+        <Grid container alignItems="center">
+          <Grid item xs={6} sm={5} md={4}>
+            <Box display="flex" alignItems="center" style={{ height: '100%' }}>
+              {contact.primaryPerson?.firstName && matches && (
+                <Avatar
+                  src={contact?.avatar}
+                  style={{
+                    width: theme.spacing(4),
+                    height: theme.spacing(4),
+                  }}
+                />
+              )}
+              <Box display="flex" flexDirection="column" ml={2}>
+                {contact.primaryPerson?.firstName &&
+                  contact.primaryPerson?.lastName && (
+                    <Typography variant="subtitle1">
+                      {`${contact.primaryPerson.firstName} ${contact.primaryPerson.lastName}`}
                     </Typography>
                   )}
-                </Box>
-              </Box>
-            </Grid>
-            <Grid item xs={6} sm={4} md={4}>
-              <Box
-                display="flex"
-                alignItems="start"
-                flexDirection="column"
-                p={2}
-              >
-                <Typography variant="body2">
-                  {contact?.primaryAddress?.street || ''}
-                </Typography>
-                <Typography variant="body2">
-                  {`${contact.primaryAddress?.city || ''} ${
-                    contact.primaryAddress?.state
-                      ? contact.primaryAddress.state
-                      : ''
-                  } ${contact.primaryAddress?.postalCode || ''}`}
-                </Typography>
-                <Typography variant="body2">
-                  {contact.primaryAddress?.country || ''}
-                </Typography>
-                {contact.primaryAddress?.source && (
+                {contact.primaryPerson?.primaryEmailAddress?.email && (
+                  <Link
+                    underline="hover"
+                    href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
+                  >
+                    <Typography variant="body2">
+                      {contact.primaryPerson?.primaryEmailAddress.email}
+                    </Typography>
+                  </Link>
+                )}
+                {contact.primaryPerson?.optoutEnewsletter && (
                   <Typography variant="body2">
-                    <Trans
-                      defaults="<bold>Source:</bold> {{where}} ({{date}})"
-                      shouldUnescape
-                      values={{
-                        where: contact?.primaryAddress?.source,
-                        date: dateFormatShort(
-                          DateTime.fromISO(contact?.primaryAddress?.createdAt),
-                          locale,
-                        ),
-                      }}
-                      components={{ bold: <strong /> }}
-                    />
+                    {t('opted out of newsletter')}
                   </Typography>
                 )}
               </Box>
-            </Grid>
-            <Grid item xs={12} sm={3} md={4} sx={{ textAlign: 'right' }}>
-              <Typography variant="body2">
-                <Trans
-                  defaults="<bold>Send newsletter?</bold>"
-                  components={{ bold: <strong /> }}
-                />
-              </Typography>
-
-              <Select
-                className={classes.select}
-                value={newsletter}
-                onChange={handleChange}
-                size="small"
-              >
-                {Object.values(SendNewsletterEnum).map((value) => (
-                  <MenuItem key={value} value={value}>
-                    {getLocalizedSendNewsletter(t, value)}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Box
-                display="flex"
-                flexDirection="column"
-                style={{ paddingLeft: theme.spacing(1), textAlign: 'right' }}
-              ></Box>
-            </Grid>
+            </Box>
           </Grid>
-        )}
+          <Grid item xs={6} sm={4} md={4}>
+            <Box display="flex" alignItems="start" flexDirection="column" p={2}>
+              <Typography variant="body2">
+                {contact?.primaryAddress?.street || ''}
+              </Typography>
+              <Typography variant="body2">
+                {`${contact.primaryAddress?.city || ''} ${
+                  contact.primaryAddress?.state
+                    ? contact.primaryAddress.state
+                    : ''
+                } ${contact.primaryAddress?.postalCode || ''}`}
+              </Typography>
+              <Typography variant="body2">
+                {contact.primaryAddress?.country || ''}
+              </Typography>
+              {contact.primaryAddress?.source && (
+                <Typography variant="body2">
+                  <Trans
+                    defaults="<bold>Source:</bold> {{where}} ({{date}})"
+                    shouldUnescape
+                    values={{
+                      where: contact?.primaryAddress?.source,
+                      date: dateFormatShort(
+                        DateTime.fromISO(contact?.primaryAddress?.createdAt),
+                        locale,
+                      ),
+                    }}
+                    components={{ bold: <strong /> }}
+                  />
+                </Typography>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={3} md={4} sx={{ textAlign: 'right' }}>
+            <Typography variant="body2">
+              <Trans
+                defaults="<bold>Send newsletter?</bold>"
+                components={{ bold: <strong /> }}
+              />
+            </Typography>
+
+            <Select
+              className={classes.select}
+              value={newsletter}
+              onChange={handleChange}
+              size="small"
+            >
+              {Object.values(SendNewsletterEnum).map((value) => (
+                <MenuItem key={value} value={value}>
+                  {getLocalizedSendNewsletter(t, value)}
+                </MenuItem>
+              ))}
+            </Select>
+            <Box
+              display="flex"
+              flexDirection="column"
+              style={{ paddingLeft: theme.spacing(1), textAlign: 'right' }}
+            ></Box>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );

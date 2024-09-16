@@ -92,7 +92,7 @@ describe('AddAppealForm', () => {
   });
 
   it('default', async () => {
-    const { getByRole, getByTestId } = render(<Components />);
+    const { findByTestId, getByRole, getByTestId } = render(<Components />);
 
     expect(getByRole('textbox', { name: 'Name' })).toBeInTheDocument();
     expect(
@@ -105,12 +105,18 @@ describe('AddAppealForm', () => {
     expect(getByRole('spinbutton', { name: 'Admin %' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Add Appeal' })).toBeInTheDocument();
     expect(getByTestId('contactStatusSelect-selectAll')).toBeInTheDocument();
-    await waitFor(() =>
-      expect(getByTestId('contactStatusSelect')).toBeInTheDocument(),
-    );
-    expect(getByTestId('contactTagsSelect-selectAll')).toBeInTheDocument();
+    expect(await findByTestId('contactStatusSelect')).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: '-- All Active --' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByTestId('contactTagsSelect-selectAll'),
+    ).toBeInTheDocument();
     expect(getByTestId('contactTagsSelect')).toBeInTheDocument();
     expect(getByTestId('exclusionsSelect')).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'Have "Send Appeals" set to No' }),
+    ).toBeInTheDocument();
   });
 
   describe('Goal calculations', () => {
@@ -148,13 +154,13 @@ describe('AddAppealForm', () => {
       userEvent.clear(adminPercent);
       userEvent.type(adminPercent, '-5');
       expect(
-        await findByText(/must use a positive number for initial goal/i),
+        await findByText(/must use a positive whole number for initial goal/i),
       ).toBeInTheDocument();
       expect(
-        getByText(/must use a positive number for letter cost/i),
+        getByText(/must use a positive whole number for letter cost/i),
       ).toBeInTheDocument();
       expect(
-        getByText(/must use a positive number for admin cost/i),
+        getByText(/must use a positive whole number for admin cost/i),
       ).toBeInTheDocument();
 
       userEvent.clear(initialGoal);
@@ -168,17 +174,33 @@ describe('AddAppealForm', () => {
           queryByText(/initial goal is required/i),
         ).not.toBeInTheDocument();
         expect(
-          queryByText(/must use a positive number for initial goal/i),
+          queryByText(/must use a positive whole number for initial goal/i),
         ).not.toBeInTheDocument();
         expect(queryByText(/letter cost is required/i)).not.toBeInTheDocument();
         expect(
-          queryByText(/must use a positive number for letter cost/i),
+          queryByText(/must use a positive whole number for letter cost/i),
         ).not.toBeInTheDocument();
         expect(queryByText(/admin cost is required/i)).not.toBeInTheDocument();
         expect(
-          queryByText(/must use a positive number for admin cost/i),
+          queryByText(/must use a positive whole number for admin cost/i),
         ).not.toBeInTheDocument();
       });
+
+      userEvent.clear(initialGoal);
+      userEvent.type(initialGoal, '2000.1');
+      userEvent.clear(letterCost);
+      userEvent.type(letterCost, '0.1');
+      userEvent.clear(adminPercent);
+      userEvent.type(adminPercent, '5.1');
+      expect(
+        await findByText(/must use a positive whole number for initial goal/i),
+      ).toBeInTheDocument();
+      expect(
+        await findByText(/must use a positive whole number for letter cost/i),
+      ).toBeInTheDocument();
+      expect(
+        await findByText(/must use a positive whole number for admin cost/i),
+      ).toBeInTheDocument();
     });
 
     it('should calculate the Goal amount correctly', async () => {
@@ -522,7 +544,7 @@ describe('AddAppealForm', () => {
           inclusionFilter: {
             any_tags: true,
             tags: 'tag-1,tag-2,tag-3,tag-4',
-            status: 'partner_financial',
+            status: 'active,partner_financial',
           },
           exclusionFilter: {
             gave_more_than_pledged_range: '2019-10-01..2020-01-01',

@@ -171,6 +171,9 @@ export const buildExclusionFilter = (
   });
 };
 
+const isPositiveInteger = (value: number | undefined) =>
+  typeof value === 'number' && value >= 0 && value === Math.floor(value);
+
 const appealFormSchema = yup.object({
   name: yup.string().required('Please enter a name'),
   initialGoal: yup
@@ -179,8 +182,8 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Initial Goal is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Initial Goal'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Initial Goal'),
+      isPositiveInteger,
     ),
   letterCost: yup
     .number()
@@ -188,8 +191,8 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Letter Cost is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Letter Cost'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Letter Cost'),
+      isPositiveInteger,
     ),
   adminPercentage: yup
     .number()
@@ -197,8 +200,8 @@ const appealFormSchema = yup.object({
     .required(i18n.t('Admin Cost is required'))
     .test(
       i18n.t('Is positive?'),
-      i18n.t('Must use a positive number for Admin Cost'),
-      (value) => parseFloat(value as unknown as string) >= 0,
+      i18n.t('Must use a positive whole number for Admin Cost'),
+      isPositiveInteger,
     ),
   goal: yup
     .number()
@@ -375,9 +378,18 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         letterCost: 0,
         adminPercentage: 12,
         goal: 0,
-        statuses: appealStatuses ?? [],
+        statuses: appealStatuses ?? [
+          {
+            name: '-- All Active --',
+            value: 'ACTIVE',
+          },
+        ],
         tags: [],
-        exclusions: appealExcludes ?? [],
+        exclusions:
+          appealExcludes ??
+          contactExclusions.filter(
+            (exclusion) => exclusion.value === ExclusionEnum.DoNotAskAppeals,
+          ),
       }}
       onSubmit={async (values) => {
         await onSubmit(values);
@@ -602,6 +614,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
                 options={contactStatuses}
                 getOptionLabel={(option) => option.name}
                 value={statuses}
+                isOptionEqualToValue={(option1, option2) =>
+                  option1.value === option2.value
+                }
                 onChange={(_event, values) => setFieldValue('statuses', values)}
                 renderInput={(params) => (
                   <TextField
@@ -664,6 +679,9 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               filterSelectedOptions
               options={contactExclusions}
               getOptionLabel={(option) => option.name}
+              isOptionEqualToValue={(option1, option2) =>
+                option1.value === option2.value
+              }
               value={exclusions}
               onChange={(_event, values) => setFieldValue('exclusions', values)}
               renderInput={(params) => (

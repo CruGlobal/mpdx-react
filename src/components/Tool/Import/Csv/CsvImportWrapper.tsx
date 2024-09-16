@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Card, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TFunction } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -9,7 +9,6 @@ import { DynamicCsvHeaders } from './DynamicCsvHeaders';
 import { DynamicCsvPreview } from './DynamicCsvPreview';
 import { DynamicCsvUpload } from './DynamicCsvUpload';
 import { DynamicCsvValues } from './DynamicCsvValues';
-import { HeaderBox } from './HeaderBox';
 
 const useStyles = makeStyles()(() => ({
   panelSuccess: {
@@ -19,20 +18,10 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-const StepBox = styled(HeaderBox)(({ theme }) => ({
-  border: '1px solid transparent',
+const StepCard = styled(Card)(({ theme }) => ({
   textAlign: 'center',
-  width: '22%',
-  marginLeft: '10px',
-  marginRight: '10px',
-  [theme.breakpoints.down('lg')]: {
-    width: '22%',
-  },
-  [theme.breakpoints.down('md')]: {
-    width: '100%',
-    marginLeft: 0,
-    minWidth: '340px',
-  },
+  backgroundColor: theme.palette.cruGrayLight.main,
+  padding: '10px',
 }));
 
 export interface CsvImportWrapperProps {
@@ -95,58 +84,63 @@ export const CsvImportWrapper: React.FC<CsvImportWrapperProps> = ({
         flexDirection: 'row',
         justifyContent: 'center',
         width: '100%',
+        minWidth: '340px',
       }}
     >
       <ToolsGridContainer container spacing={3}>
         <Grid item xs={12}>
-          <Box>
-            <StepBox
-              m={2}
-              className={
-                currentTab === CsvImportViewStepEnum.Upload
-                  ? classes.panelSuccess
-                  : ''
-              }
-            >
-              <Typography variant="h5">{t('Step 1')}</Typography>
-              <Typography variant="body1">
-                {t('Upload your CSV File')}
-              </Typography>
-            </StepBox>
-            <StepBox
-              m={2}
-              className={
-                currentTab === CsvImportViewStepEnum.Headers
-                  ? classes.panelSuccess
-                  : ''
-              }
-            >
-              <Typography variant="h5">{t('Step 2')}</Typography>
-              <Typography variant="body1">{t('Map your headers')}</Typography>
-            </StepBox>
-            <StepBox
-              m={2}
-              className={
-                currentTab === CsvImportViewStepEnum.Values
-                  ? classes.panelSuccess
-                  : ''
-              }
-            >
-              <Typography variant="h5">{t('Step 3')}</Typography>
-              <Typography variant="body1">{t('Map your values')}</Typography>
-            </StepBox>
-            <StepBox
-              m={2}
-              className={
-                currentTab === CsvImportViewStepEnum.Preview
-                  ? classes.panelSuccess
-                  : ''
-              }
-            >
-              <Typography variant="h5">{t('Step 4')}</Typography>
-              <Typography variant="body1">{t('Preview')}</Typography>
-            </StepBox>
-          </Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={3}>
+              <StepCard
+                className={
+                  currentTab === CsvImportViewStepEnum.Upload
+                    ? classes.panelSuccess
+                    : ''
+                }
+              >
+                <Typography variant="h5">{t('Step 1')}</Typography>
+                <Typography variant="body1">
+                  {t('Upload your CSV File')}
+                </Typography>
+              </StepCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StepCard
+                className={
+                  currentTab === CsvImportViewStepEnum.Headers
+                    ? classes.panelSuccess
+                    : ''
+                }
+              >
+                <Typography variant="h5">{t('Step 2')}</Typography>
+                <Typography variant="body1">{t('Map your headers')}</Typography>
+              </StepCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StepCard
+                className={
+                  currentTab === CsvImportViewStepEnum.Values
+                    ? classes.panelSuccess
+                    : ''
+                }
+              >
+                <Typography variant="h5">{t('Step 3')}</Typography>
+                <Typography variant="body1">{t('Map your values')}</Typography>
+              </StepCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StepCard
+                className={
+                  currentTab === CsvImportViewStepEnum.Preview
+                    ? classes.panelSuccess
+                    : ''
+                }
+              >
+                <Typography variant="h5">{t('Step 4')}</Typography>
+                <Typography variant="body1">{t('Preview')}</Typography>
+              </StepCard>
+            </Grid>
+          </Grid>
           <br />
           {renderTab(accountListId)}
         </Grid>
