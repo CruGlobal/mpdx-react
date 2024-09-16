@@ -81,7 +81,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
           return [
             contact.name,
             contact.status ?? '',
-            contact.pledgeAmount ?? '',
+            contact.pledgeAmount ? Math.round(contact.pledgeAmount) : 0,
             contact.pledgeCurrency ?? '',
             apiConstants?.pledgeFrequency?.find(
               ({ key }) => key === contact.pledgeFrequency,
