@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { useApolloClient } from '@apollo/client';
@@ -280,62 +280,77 @@ const ProfileMenu = (): ReactElement => {
         {!onSetupTour && accountListId && (
           <div>
             <Divider />
-            <Link
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/preferences`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Preferences')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/notifications`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Notifications')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/integrations`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Connect Services')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/manageAccounts`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Manage Accounts')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/manageCoaches`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Manage Coaches')} />
               </MenuItem>
-            </Link>
+            </NextLink>
+
             {(data?.user?.admin ||
               !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-              <Link
+              <NextLink
                 href={`/accountLists/${accountListId}/settings/organizations`}
+                passHref
               >
                 <MenuItem onClick={handleProfileMenuClose} component="a">
                   <ListItemText primary={t('Manage Organizations')} />
                 </MenuItem>
-              </Link>
+              </NextLink>
             )}
             {(data?.user?.admin || data?.user?.developer) && (
-              <Link href={`/accountLists/${accountListId}/settings/admin`}>
+              <NextLink
+                href={`/accountLists/${accountListId}/settings/admin`}
+                passHref
+              >
                 <MenuItem onClick={handleProfileMenuClose} component="a">
                   <ListItemText primary={t('Admin Console')} />
                 </MenuItem>
-              </Link>
+              </NextLink>
             )}
             {data?.user?.developer && (
               <HandoffLink path="/auth/user/admin" auth>

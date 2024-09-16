@@ -46,7 +46,7 @@ export const Item: React.FC<Props> = ({
   };
 
   const children = (
-    <ListItem button selected={isSelected} {...rest}>
+    <ListItem component="a" button selected={isSelected} {...rest}>
       <ListItemText
         primaryTypographyProps={{
           variant: 'subtitle1',
@@ -81,6 +81,7 @@ export const Item: React.FC<Props> = ({
         <NextLink
           href={`/accountLists/${accountListId}/${navType}/${item.id}`}
           scroll={false}
+          passHref
         >
           {children}
         </NextLink>
