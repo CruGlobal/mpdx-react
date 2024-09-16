@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, ReactElement, useMemo } from 'react';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
@@ -11,6 +11,7 @@ import {
   CardContent,
   CardHeader,
   FormControl,
+  FormHelperText,
   Grid,
   Hidden,
   Link,
@@ -20,15 +21,18 @@ import {
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
+import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import EmailValidationForm from '../EmailValidationForm';
@@ -100,7 +104,7 @@ export interface FixEmailAddressPersonProps {
   handleChange: (
     personId: string,
     numberIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    newEmail: string,
   ) => void;
   handleChangePrimary: (personId: string, emailIndex: number) => void;
   handleSingleConfirm: (
@@ -126,6 +130,13 @@ interface EmailToDelete {
   id: string;
   email: Email;
 }
+
+const validationSchema = yup.object({
+  newEmail: yup
+    .string()
+    .email(i18n.t('Invalid Email Address Format'))
+    .required(i18n.t('Please enter a valid email address')),
+});
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   person,
@@ -308,152 +319,192 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Grid>
                     </Hidden>
                     {emails.map((email, index) => (
-                      <Fragment key={email.id}>
-                        <Grid item xs={6} sm={4} className={classes.paddingB2}>
-                          <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            className={classes.paddingX}
-                          >
-                            <Box>
-                              <Hidden smUp>
-                                <Typography
-                                  display="inline"
-                                  variant="body2"
-                                  fontWeight="bold"
-                                >
-                                  {t('Source')}:
+                      <Formik
+                        key={index}
+                        enableReinitialize={true}
+                        initialValues={{
+                          newEmail: email.email,
+                        }}
+                        validationSchema={validationSchema}
+                        onSubmit={async (values) => {
+                          await handleChange(id, index, values.newEmail);
+                        }}
+                      >
+                        {({
+                          values: { newEmail },
+                          setFieldValue,
+                          handleSubmit,
+                          errors,
+                        }): ReactElement => (
+                          <Fragment>
+                            <Grid
+                              item
+                              xs={6}
+                              sm={4}
+                              className={classes.paddingB2}
+                            >
+                              <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                className={classes.paddingX}
+                              >
+                                <Box>
+                                  <Hidden smUp>
+                                    <Typography
+                                      display="inline"
+                                      variant="body2"
+                                      fontWeight="bold"
+                                    >
+                                      {t('Source')}:
+                                    </Typography>
+                                  </Hidden>
+                                  <Typography display="inline" variant="body2">
+                                    {`${email.source} (${dateFormatShort(
+                                      DateTime.fromISO(email.updatedAt),
+                                      locale,
+                                    )})`}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </Grid>
+                            <Grid
+                              item
+                              xs={6}
+                              sm={2}
+                              className={classes.paddingB2}
+                            >
+                              <Box
+                                display="flex"
+                                justifyContent="center"
+                                className={classes.paddingX}
+                              >
+                                <Typography display="flex" alignItems="center">
+                                  {email.isPrimary ? (
+                                    <>
+                                      <Hidden smUp>
+                                        <Typography
+                                          display="inline"
+                                          variant="body2"
+                                          fontWeight="bold"
+                                        >
+                                          {t('Source')}:
+                                        </Typography>
+                                      </Hidden>
+                                      <StarIcon
+                                        data-testid={`starIcon-${id}-${index}`}
+                                        className={classes.hoverHighlight}
+                                        onClick={() =>
+                                          handleChangePrimary(id, index)
+                                        }
+                                      />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Hidden smUp>
+                                        <Typography
+                                          display="inline"
+                                          variant="body2"
+                                          fontWeight="bold"
+                                        >
+                                          {t('Source')}:
+                                        </Typography>
+                                      </Hidden>
+                                      <Tooltip
+                                        title={t('Set as Primary')}
+                                        placement="left"
+                                      >
+                                        <StarOutlineIcon
+                                          data-testid={`starOutlineIcon-${id}-${index}`}
+                                          className={classes.hoverHighlight}
+                                          onClick={() =>
+                                            handleChangePrimary(id, index)
+                                          }
+                                        />
+                                      </Tooltip>
+                                    </>
+                                  )}
                                 </Typography>
-                              </Hidden>
-                              <Typography display="inline" variant="body2">
-                                {`${email.source} (${dateFormatShort(
-                                  DateTime.fromISO(email.updatedAt),
-                                  locale,
-                                )})`}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Grid>
-
-                        <Grid item xs={6} sm={2} className={classes.paddingB2}>
-                          <Box
-                            display="flex"
-                            justifyContent="center"
-                            className={classes.paddingX}
-                          >
-                            <Typography display="flex" alignItems="center">
-                              {email.isPrimary ? (
-                                <>
-                                  <Hidden smUp>
-                                    <Typography
-                                      display="inline"
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {t('Source')}:
-                                    </Typography>
-                                  </Hidden>
-                                  <StarIcon
-                                    data-testid={`starIcon-${id}-${index}`}
-                                    className={classes.hoverHighlight}
-                                    onClick={() =>
-                                      handleChangePrimary(id, index)
-                                    }
+                              </Box>
+                            </Grid>
+                            <Grid
+                              item
+                              xs={12}
+                              sm={6}
+                              className={classes.paddingB2}
+                            >
+                              <Box
+                                display="flex"
+                                justifyContent="flex-start"
+                                className={clsx(
+                                  classes.responsiveBorder,
+                                  classes.paddingX,
+                                )}
+                              >
+                                <FormControl fullWidth>
+                                  <TextField
+                                    style={{ width: '100%' }}
+                                    size="small"
+                                    inputProps={{
+                                      'data-testid': `textfield-${id}-${index}`,
+                                    }}
+                                    name="newEmail"
+                                    value={newEmail}
+                                    onChange={(e) => {
+                                      setFieldValue('newEmail', e.target.value);
+                                      handleSubmit();
+                                    }}
+                                    disabled={email.source !== appName}
                                   />
-                                </>
-                              ) : (
-                                <>
-                                  <Hidden smUp>
-                                    <Typography
-                                      display="inline"
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {t('Source')}:
-                                    </Typography>
-                                  </Hidden>
-                                  <Tooltip
-                                    title={t('Set as Primary')}
-                                    placement="left"
+                                  <FormHelperText
+                                    error={true}
+                                    data-testid="statusSelectError"
                                   >
-                                    <StarOutlineIcon
-                                      data-testid={`starOutlineIcon-${id}-${index}`}
-                                      className={classes.hoverHighlight}
-                                      onClick={() =>
-                                        handleChangePrimary(id, index)
-                                      }
+                                    {errors.newEmail && errors.newEmail}
+                                  </FormHelperText>
+                                </FormControl>
+
+                                {email.source === appName ? (
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    data-testid={`delete-${id}-${index}`}
+                                    onClick={() =>
+                                      handleDeleteEmailOpen({ id, email })
+                                    }
+                                    className={classes.paddingX}
+                                  >
+                                    <Tooltip
+                                      title={t('Delete Email')}
+                                      placement="left"
+                                    >
+                                      <Icon
+                                        path={mdiDelete}
+                                        size={1}
+                                        className={classes.hoverHighlight}
+                                      />
+                                    </Tooltip>
+                                  </Box>
+                                ) : (
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    className={classes.paddingX}
+                                  >
+                                    <Icon
+                                      path={mdiLock}
+                                      size={1}
+                                      style={{
+                                        color: theme.palette.cruGrayMedium.main,
+                                      }}
                                     />
-                                  </Tooltip>
-                                </>
-                              )}
-                            </Typography>
-                          </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                          <Box
-                            display="flex"
-                            justifyContent="flex-start"
-                            className={clsx(
-                              classes.responsiveBorder,
-                              classes.paddingX,
-                            )}
-                          >
-                            <FormControl fullWidth>
-                              <TextField
-                                style={{ width: '100%' }}
-                                size="small"
-                                inputProps={{
-                                  'data-testid': `textfield-${id}-${index}`,
-                                }}
-                                onChange={(
-                                  event: React.ChangeEvent<HTMLInputElement>,
-                                ) => handleChange(id, index, event)}
-                                value={email.email}
-                                disabled={email.source !== appName}
-                              />
-                            </FormControl>
-
-                            {email.source === appName ? (
-                              <Box
-                                display="flex"
-                                alignItems="center"
-                                data-testid={`delete-${id}-${index}`}
-                                onClick={() =>
-                                  handleDeleteEmailOpen({ id, email })
-                                }
-                                className={classes.paddingX}
-                              >
-                                <Tooltip
-                                  title={t('Delete Email')}
-                                  placement="left"
-                                >
-                                  <Icon
-                                    path={mdiDelete}
-                                    size={1}
-                                    className={classes.hoverHighlight}
-                                  />
-                                </Tooltip>
+                                  </Box>
+                                )}
                               </Box>
-                            ) : (
-                              <Box
-                                display="flex"
-                                alignItems="center"
-                                className={classes.paddingX}
-                              >
-                                <Icon
-                                  path={mdiLock}
-                                  size={1}
-                                  style={{
-                                    color: theme.palette.cruGrayMedium.main,
-                                  }}
-                                />
-                              </Box>
-                            )}
-                          </Box>
-                        </Grid>
-                      </Fragment>
+                            </Grid>
+                          </Fragment>
+                        )}
+                      </Formik>
                     ))}
-
                     <Grid item xs={12} sm={6} className={classes.paddingB2}>
                       <Box
                         display="flex"

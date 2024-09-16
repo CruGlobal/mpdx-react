@@ -183,10 +183,10 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   const handleChange = (
     personId: string,
     numberIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    newEmail: string,
   ): void => {
     const temp = { ...dataState };
-    dataState[personId].emailAddresses[numberIndex].email = event.target.value;
+    dataState[personId].emailAddresses[numberIndex].email = newEmail;
     setDataState(temp);
   };
 
