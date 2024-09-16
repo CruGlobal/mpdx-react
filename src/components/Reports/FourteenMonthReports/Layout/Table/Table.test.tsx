@@ -379,8 +379,8 @@ describe('FourteenMonthReportTable', () => {
     expect(contactTotal[0].innerHTML).toEqual('0');
   });
 
-  it('should calulate the correct monthly totals', async () => {
-    const { queryByTestId, getAllByTestId } = render(
+  it('should calculate the correct monthly totals', async () => {
+    const { queryByTestId, getByTestId, getAllByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider>
           <FourteenMonthReportTable
@@ -416,5 +416,8 @@ describe('FourteenMonthReportTable', () => {
     expect(contactTotal[3].innerHTML).toEqual('1,836');
 
     expect(getAllByTestId('overallTotal')[0].innerHTML).toEqual('6,996');
+
+    expect(getByTestId('averageTotal')).toHaveTextContent('516');
+    expect(getByTestId('minimumTotal')).toHaveTextContent('510');
   });
 });

@@ -4,7 +4,6 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-// eslint-disable-next-line import/extensions
 import { Totals } from '../../../FourteenMonthReport';
 import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
 import { StyledTableCell } from '../StyledComponents';
@@ -76,6 +75,14 @@ export const FourteenMonthReportTableHead: FC<
         <StyledTableCell>
           <Typography variant="h6">{salaryCurrency}</Typography>
         </StyledTableCell>
+        {isExpanded && (
+          <>
+            <YearTableCell />
+            <YearTableCell />
+            <YearTableCell />
+            <YearTableCell />
+          </>
+        )}
         {monthCount &&
           monthCount.map((year) => (
             <YearTableCell
@@ -99,7 +106,7 @@ export const FourteenMonthReportTableHead: FC<
           {t('Partner')}
         </TableHeadCell>
         {isExpanded && (
-          <React.Fragment>
+          <>
             <TableHeadCell
               isActive={orderBy === 'status'}
               sortDirection={orderBy === 'status' ? order : false}
@@ -132,16 +139,16 @@ export const FourteenMonthReportTableHead: FC<
             >
               {t('Min')}
             </TableHeadCell>
-          </React.Fragment>
+          </>
         )}
-        {totals?.map((month, i: number) => (
+        {totals?.map((month, index) => (
           <TableHeadCell
-            key={i}
-            isActive={orderBy === i}
+            key={index}
+            isActive={orderBy === index}
             align="center"
-            sortDirection={orderBy === i ? order : false}
-            direction={orderBy === i ? order : 'asc'}
-            onClick={createSortHandler(i)}
+            sortDirection={orderBy === index ? order : false}
+            direction={orderBy === index ? order : 'asc'}
+            onClick={createSortHandler(index)}
           >
             {DateTime.fromISO(month.month)
               .toJSDate()

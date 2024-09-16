@@ -68,6 +68,12 @@ const StyledInfoIcon = styled(InfoIcon)(({}) => ({
   },
 }));
 
+const StyledTotalsRow = styled(TableRow)({
+  '.MuiTableCell-root': {
+    fontWeight: 'bold',
+  },
+});
+
 export const FourteenMonthReportTable: React.FC<
   FourteenMonthReportTableProps
 > = ({
@@ -83,6 +89,27 @@ export const FourteenMonthReportTable: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
+
+  const totalAverage = useMemo(
+    () =>
+      Math.round(
+        orderedContacts?.reduce(
+          (totalAverage, contact) => totalAverage + contact.average,
+          0,
+        ) ?? 0,
+      ),
+    [orderedContacts],
+  );
+  const totalMinimum = useMemo(
+    () =>
+      Math.round(
+        orderedContacts?.reduce(
+          (totalMinimum, contact) => totalMinimum + contact.minimum,
+          0,
+        ) ?? 0,
+      ),
+    [orderedContacts],
+  );
 
   return (
     <PrintableContainer className="fourteen-month-report">
@@ -138,7 +165,7 @@ export const FourteenMonthReportTable: React.FC<
                   </Box>
                 </StyledTableCell>
                 {isExpanded && (
-                  <React.Fragment>
+                  <>
                     <StyledTableCell>{contact.status}</StyledTableCell>
                     <StyledTableCell data-testid="pledgeAmount">
                       {contact.pledgeAmount &&
@@ -157,7 +184,7 @@ export const FourteenMonthReportTable: React.FC<
                     <StyledTableCell>
                       {numberFormat(Math.round(contact.minimum), locale)}
                     </StyledTableCell>
-                  </React.Fragment>
+                  </>
                 )}
                 {contact.months?.map((month: Month) => (
                   <StyledTableCell key={month?.month} align="center">
@@ -176,28 +203,38 @@ export const FourteenMonthReportTable: React.FC<
               </TableRow>
             );
           })}
-          <TableRow>
-            <StyledTableCell>
-              <strong>{t('Totals')}</strong>
-            </StyledTableCell>
+          <StyledTotalsRow>
+            <StyledTableCell>{t('Totals')}</StyledTableCell>
+            {isExpanded && (
+              <>
+                <StyledTableCell />
+                <StyledTableCell />
+                <StyledTableCell data-testid="averageTotal">
+                  {numberFormat(totalAverage, locale)}
+                </StyledTableCell>
+                <StyledTableCell data-testid="minimumTotal">
+                  {numberFormat(totalMinimum, locale)}
+                </StyledTableCell>
+              </>
+            )}
             {totals?.map((month) => (
-              <StyledTableCell key={month.month} align="center">
-                <strong data-testid="monthlyTotals">
-                  {numberFormat(Math.round(month.total), locale)}
-                </strong>
+              <StyledTableCell
+                key={month.month}
+                align="center"
+                data-testid="monthlyTotals"
+              >
+                {numberFormat(Math.round(month.total), locale)}
               </StyledTableCell>
             ))}
-            <StyledTableCell align="right">
-              <strong data-testid="overallTotal">
-                {numberFormat(
-                  Math.round(
-                    totals?.reduce((sum, month) => sum + month.total, 0) ?? 0,
-                  ),
-                  locale,
-                )}
-              </strong>
+            <StyledTableCell align="right" data-testid="overallTotal">
+              {numberFormat(
+                Math.round(
+                  totals?.reduce((sum, month) => sum + month.total, 0) ?? 0,
+                ),
+                locale,
+              )}
             </StyledTableCell>
-          </TableRow>
+          </StyledTotalsRow>
         </TableBody>
       </StickyTable>
     </PrintableContainer>
