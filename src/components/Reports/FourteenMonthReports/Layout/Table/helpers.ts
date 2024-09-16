@@ -58,10 +58,10 @@ export const calculateTotals = (contacts: Contact[]): MonthTotal[] => {
       if (!totals[idx]) {
         totals.push({
           month: month.month,
-          total: month.salaryCurrencyTotal,
+          total: month.total,
         });
       } else {
-        totals[idx].total += month.salaryCurrencyTotal;
+        totals[idx].total += month.total;
       }
     });
   });

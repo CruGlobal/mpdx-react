@@ -167,11 +167,8 @@ export const FourteenMonthReportTable: React.FC<
               )}
               {contact.months?.map((month) => (
                 <StyledTableCell key={month.month} align="center">
-                  {month?.salaryCurrencyTotal &&
-                    numberFormat(
-                      Math.round(month?.salaryCurrencyTotal),
-                      locale,
-                    )}
+                  {month?.total &&
+                    numberFormat(Math.round(month?.total), locale)}
                 </StyledTableCell>
               ))}
               <StyledTableCell align="right">
