@@ -46,7 +46,7 @@ import {
 interface FormAttributes {
   status?: string;
   pledgeCurrency?: string;
-  pledgeAmount?: number | null;
+  pledgeAmount?: number | string;
   pledgeFrequency?: PledgeFrequencyEnum | string | null;
 }
 
@@ -249,10 +249,16 @@ const Contact: React.FC<Props> = ({
         initialValues={{
           statusValue: statusValue,
           pledgeCurrency: amountCurrency,
-          pledgeAmount: suggestedAmount || amount,
-          pledgeFrequency:
-            (suggestedFrequency as PledgeFrequencyEnum) ||
-            (frequencyValue as PledgeFrequencyEnum),
+          pledgeAmount: suggestedAmount
+            ? suggestedAmount
+            : amount
+            ? amount
+            : '',
+          pledgeFrequency: (suggestedFrequency as PledgeFrequencyEnum)
+            ? suggestedFrequency
+            : frequencyValue
+            ? frequencyValue
+            : '',
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
@@ -309,10 +315,13 @@ const Contact: React.FC<Props> = ({
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''
-                            } ${getLocalizedPledgeFrequency(
-                              t,
-                              pledgeFrequency,
-                            )}`}
+                            } ${
+                              pledgeFrequency &&
+                              getLocalizedPledgeFrequency(
+                                t,
+                                pledgeFrequency as PledgeFrequencyEnum,
+                              )
+                            }`}
                           </Typography>
                         </Box>
                       </Box>

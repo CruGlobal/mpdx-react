@@ -66,7 +66,7 @@ export interface ContactType {
   status?: string | undefined;
   name?: string | undefined;
   pledgeCurrency?: string | undefined;
-  pledgeAmount?: number | undefined | null;
+  pledgeAmount?: string | number | undefined;
   pledgeFrequency?: PledgeFrequencyEnum | string | null;
   donations?: DonationsType[] | [];
   suggestedChanges?: SuggestedChangesType | string | undefined;
