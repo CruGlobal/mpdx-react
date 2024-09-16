@@ -262,7 +262,9 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                     }
                     title={
                       <Link underline="hover" onClick={handleContactNameClick}>
-                        <Typography variant="subtitle1">{name}</Typography>
+                        <Typography variant="subtitle1" display="inline">
+                          {name}
+                        </Typography>
                       </Link>
                     }
                   />
@@ -422,7 +424,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                 className={classes.paddingX}
                               >
                                 <Tooltip
-                                  title={t('Delete Address')}
+                                  title={t('Delete Email')}
                                   placement="left"
                                 >
                                   <Icon
