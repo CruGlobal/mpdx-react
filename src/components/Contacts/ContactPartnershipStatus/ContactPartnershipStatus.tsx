@@ -70,7 +70,7 @@ export const ContactPartnershipStatus: React.FC<
           <Typography component="span">
             {pledgeAmount && pledgeCurrency
               ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
-              : pledgeAmount}{' '}
+              : pledgeAmount || ''}{' '}
             {pledgeFrequency && getLocalizedPledgeFrequency(t, pledgeFrequency)}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&
               lateStatusEnum !== undefined && (
