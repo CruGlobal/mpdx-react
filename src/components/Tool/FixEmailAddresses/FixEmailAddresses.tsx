@@ -58,14 +58,10 @@ const SourceSelect = styled(Select)(() => ({
 }));
 
 const ConfirmButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.mpdxBlue.main,
   color: 'white',
   [theme.breakpoints.down('xs')]: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.mpdxBlue.main,
   },
 }));
 
