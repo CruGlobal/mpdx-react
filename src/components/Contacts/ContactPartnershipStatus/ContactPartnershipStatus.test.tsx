@@ -54,4 +54,45 @@ describe('ContactPartnershipStatus', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  describe('pledge amount', () => {
+    it('renders pledge amount', () => {
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <I18nextProvider i18n={i18n}>
+            <ContactPartnershipStatus
+              lateAt={null}
+              contactDetailsOpen={false}
+              pledgeAmount={100}
+              pledgeCurrency={'USD'}
+              pledgeFrequency={null}
+              pledgeReceived={false}
+              status={ContactPartnershipStatusEnum.PartnerPray}
+            />
+          </I18nextProvider>
+        </ThemeProvider>,
+      );
+      expect(getByText('$100')).toBeInTheDocument();
+    });
+
+    it('does not render pledge amount when 0', () => {
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <I18nextProvider i18n={i18n}>
+            <ContactPartnershipStatus
+              lateAt={null}
+              contactDetailsOpen={false}
+              pledgeAmount={0}
+              pledgeCurrency={'USD'}
+              pledgeFrequency={null}
+              pledgeReceived={false}
+              status={ContactPartnershipStatusEnum.PartnerPray}
+            />
+          </I18nextProvider>
+        </ThemeProvider>,
+      );
+      expect(queryByText('$0')).not.toBeInTheDocument();
+      expect(queryByText('0')).not.toBeInTheDocument();
+    });
+  });
 });
