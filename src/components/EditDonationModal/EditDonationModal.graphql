@@ -23,6 +23,7 @@ fragment EditDonationModalDonation on Donation {
   designationAccount {
     id
     name
+    accountNumber
   }
   memo
   motivation

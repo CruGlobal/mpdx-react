@@ -121,11 +121,7 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
     data?.designationAccounts
       .flatMap((group) => group.designationAccounts)
       .map((account) => ({
-        name: account.name
-          ? account.name
-          : account.designationNumber
-          ? account.designationNumber
-          : '',
+        name: account.name || account.designationNumber || '',
         value: account.id,
         placeholder: null,
       })) ?? [];

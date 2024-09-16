@@ -118,9 +118,8 @@ export const createDonationRow = (
   currency: data.amount.convertedCurrency,
   foreignAmount: data.amount.amount,
   foreignCurrency: data.amount.currency,
-  designationAccount: data.designationAccount.name
-    ? data.designationAccount.name
-    : data.designationAccount.accountNumber,
+  designationAccount:
+    data.designationAccount.name || data.designationAccount.accountNumber,
   paymentMethod: data.paymentMethod ?? null,
   appealName: data.appeal?.name ?? null,
   rawDonation: data,
