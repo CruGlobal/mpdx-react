@@ -249,9 +249,10 @@ const Contact: React.FC<Props> = ({
         initialValues={{
           statusValue: statusValue,
           pledgeCurrency: amountCurrency,
-          pledgeAmount: amount || suggestedAmount,
+          pledgeAmount: suggestedAmount || amount,
           pledgeFrequency:
-            (frequencyValue as PledgeFrequencyEnum) || suggestedFrequency,
+            (suggestedFrequency as PledgeFrequencyEnum) ||
+            (frequencyValue as PledgeFrequencyEnum),
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
