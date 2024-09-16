@@ -139,27 +139,24 @@ export const FourteenMonthReport: React.FC<Props> = ({
                 )
               : '';
 
-          const inHandMonths = contact.months?.slice(
+          const inHandMonths = contact.months.slice(
             15 - numMonthsForMonthlyEquivalent - 1,
             15 - 1,
           );
 
           const inHandMonthlyEquivalent =
-            contact.status === 'Partner - Financial' &&
-            contact.pledgeFrequency &&
-            inHandMonths
+            contact.status === 'Partner - Financial' && contact.pledgeFrequency
               ? Math.round(
                   inHandMonths.reduce((sum, month) => sum + month.total, 0) /
                     numMonthsForMonthlyEquivalent,
                 )
               : '';
 
-          const inHandDateRange =
-            inHandMonths && inHandMonthlyEquivalent
-              ? `${formatMonth(inHandMonths[0].month)} - ${formatMonth(
-                  inHandMonths[inHandMonths.length - 1].month,
-                )}`
-              : '';
+          const inHandDateRange = inHandMonthlyEquivalent
+            ? `${formatMonth(inHandMonths[0].month)} - ${formatMonth(
+                inHandMonths[inHandMonths.length - 1].month,
+              )}`
+            : '';
 
           return [
             contact.name,
@@ -183,7 +180,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
                 ) * numMonthsForMonthlyEquivalent
               : Math.round(contact.total),
             inHandDateRange,
-            ...(contact.months?.map((month) => Math.round(month.total)) || []),
+            ...contact.months.map((month) => Math.round(month.total)),
             Math.round(contact.total),
           ];
         });

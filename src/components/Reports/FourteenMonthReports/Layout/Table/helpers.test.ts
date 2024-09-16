@@ -84,12 +84,11 @@ describe('calculateTotals', () => {
       ],
     });
 
-  it('sums totals for each month across contacts ignoring contacts without months', () => {
+  it('sums totals for each month across contacts', () => {
     expect(
       calculateTotals([
         makeContact(100, 200, 150),
         makeContact(70, 90, 40),
-        mockContact({ months: null }),
         makeContact(400, 250, 125),
       ]),
     ).toEqual([

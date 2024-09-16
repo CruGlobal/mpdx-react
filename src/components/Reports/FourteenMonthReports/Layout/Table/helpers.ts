@@ -10,7 +10,7 @@ export const extractSortKey = (
 ): string => {
   const sortKey =
     typeof sortField === 'number'
-      ? contact.months?.[sortField].total
+      ? contact.months[sortField].total
       : contact[sortField];
   return sortKey?.toString() ?? contact.name;
 };
@@ -50,10 +50,6 @@ export const sortContacts = (
 export const calculateTotals = (contacts: Contact[]): MonthTotal[] => {
   const totals: MonthTotal[] = [];
   contacts.forEach((contact) => {
-    if (!contact.months) {
-      return;
-    }
-
     contact.months.forEach((month, idx) => {
       if (!totals[idx]) {
         totals.push({
