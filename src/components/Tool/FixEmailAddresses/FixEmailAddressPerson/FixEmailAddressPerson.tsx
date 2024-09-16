@@ -1,18 +1,25 @@
 import React, { Fragment, useMemo } from 'react';
-import { mdiDelete, mdiLock, mdiStar, mdiStarOutline } from '@mdi/js';
+import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
   Grid,
   Hidden,
   Link,
   TextField,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import clsx from 'clsx';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -24,75 +31,65 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { ConfirmButtonIcon } from '../../ConfirmButtonIcon';
 import EmailValidationForm from '../EmailValidationForm';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
 import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
 
-const PersonCard = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+const useStyles = makeStyles()((theme: Theme) => ({
+  responsiveBorder: {
+    [theme.breakpoints.down('xs')]: {
+      paddingBottom: theme.spacing(2),
+      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    },
   },
-}));
-
-const Container = styled(Grid)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'flex-end',
-  [theme.breakpoints.down('sm')]: {
-    border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  paddingX: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
-}));
-
-const EmailAddressListWrapper = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  width: '100%',
-  [theme.breakpoints.down('xs')]: {
+  paddingY: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+  paddingB2: {
+    paddingBottom: theme.spacing(1),
+  },
+  hoverHighlight: {
+    '&:hover': {
+      color: theme.palette.mpdxBlue.main,
+      cursor: 'pointer',
+    },
+  },
+  contactAvatar: {
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+  },
+  contactCardContent: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
     paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
   },
-}));
-
-const ConfirmButtonWrapper = styled(Box)(({ theme }) => ({
-  marginLeft: theme.spacing(2),
-  [theme.breakpoints.down('sm')]: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(2),
-    marginTop: theme.spacing(2),
+  confirmButon: {
+    marginRight: theme.spacing(1),
+  },
+  contactCard: {
     marginBottom: theme.spacing(2),
   },
-  '& .MuiButton-root': {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    color: 'white',
+  contactContainer: {
+    display: 'block',
+    alignItems: 'center',
+    width: '99%',
+    margin: 'auto',
+    height: '100%',
+    marginBottom: theme.spacing(3),
   },
-}));
-
-const BoxWithResponsiveBorder = styled(Box)(({ theme }) => ({
-  [theme.breakpoints.down('xs')]: {
-    paddingBottom: theme.spacing(2),
-    borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  contactHeader: {
+    '.MuiCardHeader-action': {
+      alignSelf: 'center',
+    },
   },
-}));
-
-const ColumnHeaderWrapper = styled(Grid)(({ theme }) => ({
-  paddingTop: theme.spacing(2),
-  paddingBottom: theme.spacing(2),
-}));
-
-export const RowWrapper = styled(Grid)(({ theme }) => ({
-  paddingBottom: theme.spacing(2),
-}));
-
-const HoverableIcon = styled(Icon)(({ theme }) => ({
-  '&:hover': {
-    color: theme.palette.mpdxBlue.main,
-    cursor: 'pointer',
-  },
-}));
-
-const useStyles = makeStyles()((theme: Theme) => ({
-  avatar: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
+  buttonIcon: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -227,186 +224,270 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
   return (
     <>
-      <Container container>
+      <Grid container className={classes.contactContainer}>
         <Grid container>
-          <Grid item md={10} xs={12}>
-            <PersonCard display="flex" alignItems="center">
+          <Card className={classes.contactCard}>
+            <Box display="flex" alignItems="center">
               <Grid container>
                 <Grid item xs={12}>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    style={{ height: '100%' }}
-                    p={2}
-                  >
-                    <Avatar src="" className={classes.avatar} />
-                    <Box display="flex" flexDirection="column" ml={2}>
+                  <CardHeader
+                    className={classes.contactHeader}
+                    avatar={
+                      <Avatar
+                        className={classes.contactAvatar}
+                        src={person?.avatar || ''}
+                        aria-label="Contact Avatar"
+                        onClick={handleContactNameClick}
+                      />
+                    }
+                    action={
+                      <Button
+                        className={classes.confirmButon}
+                        variant="contained"
+                        onClick={() =>
+                          handleSingleConfirm(
+                            person,
+                            emails as EmailAddressData[],
+                          )
+                        }
+                        disabled={!hasOnePrimaryEmail()}
+                      >
+                        <Icon
+                          path={mdiCheckboxMarkedCircle}
+                          size={0.8}
+                          className={classes.buttonIcon}
+                        />
+                        {t('Confirm')}
+                      </Button>
+                    }
+                    title={
                       <Link underline="hover" onClick={handleContactNameClick}>
-                        <Typography variant="h6">{name}</Typography>
+                        <Typography variant="subtitle1" display="inline">
+                          {name}
+                        </Typography>
                       </Link>
-                    </Box>
-                  </Box>
+                    }
+                  />
                 </Grid>
-                <EmailAddressListWrapper item xs={12}>
-                  <Grid container>
-                    <Hidden xsDown>
-                      <ColumnHeaderWrapper item xs={12} sm={6}>
+
+                <CardContent className={classes.contactCardContent}>
+                  <Grid container display="flex" alignItems="center">
+                    <Hidden smDown>
+                      <Grid item xs={6} sm={4} className={classes.paddingY}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
-                          px={2}
+                          className={classes.paddingX}
                         >
-                          <Typography>
-                            <strong>{t('Source')}</strong>
-                          </Typography>
-                          <Typography>
-                            <strong>{t('Primary')}</strong>
+                          <Typography variant="body2" fontWeight="bold">
+                            {t('Source')}
                           </Typography>
                         </Box>
-                      </ColumnHeaderWrapper>
-                      <ColumnHeaderWrapper item xs={12} sm={6}>
+                      </Grid>
+                      <Grid item xs={6} sm={2} className={classes.paddingY}>
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          className={classes.paddingX}
+                        >
+                          <Typography variant="body2" fontWeight="bold">
+                            {t('Primary')}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={6} className={classes.paddingY}>
                         <Box
                           display="flex"
                           justifyContent="flex-start"
-                          px={3.25}
+                          className={classes.paddingX}
                         >
-                          <Typography>
-                            <strong>{t('Address')}</strong>
+                          <Typography variant="body2" fontWeight="bold">
+                            {t('Email Address')}
                           </Typography>
                         </Box>
-                      </ColumnHeaderWrapper>
+                      </Grid>
                     </Hidden>
                     {emails.map((email, index) => (
                       <Fragment key={email.id}>
-                        <RowWrapper item xs={12} sm={6}>
+                        <Grid item xs={6} sm={4} className={classes.paddingB2}>
                           <Box
                             display="flex"
                             justifyContent="space-between"
-                            px={2}
+                            className={classes.paddingX}
                           >
                             <Box>
                               <Hidden smUp>
-                                <Typography display="inline">
-                                  <strong>{t('Source')}: </strong>
+                                <Typography
+                                  display="inline"
+                                  variant="body2"
+                                  fontWeight="bold"
+                                >
+                                  {t('Source')}:
                                 </Typography>
                               </Hidden>
-                              <Typography display="inline">
+                              <Typography display="inline" variant="body2">
                                 {`${email.source} (${dateFormatShort(
                                   DateTime.fromISO(email.updatedAt),
                                   locale,
                                 )})`}
                               </Typography>
                             </Box>
-                            {email.isPrimary ? (
-                              <Box
-                                data-testid={`starIcon-${id}-${index}`}
-                                onClick={() => handleChangePrimary(id, index)}
-                              >
-                                <HoverableIcon path={mdiStar} size={1} />
-                              </Box>
-                            ) : (
-                              <Box
-                                data-testid={`starOutlineIcon-${id}-${index}`}
-                                onClick={() => handleChangePrimary(id, index)}
-                              >
-                                <HoverableIcon path={mdiStarOutline} size={1} />
-                              </Box>
-                            )}
                           </Box>
-                        </RowWrapper>
-                        <RowWrapper item xs={12} sm={6}>
-                          <BoxWithResponsiveBorder
+                        </Grid>
+
+                        <Grid item xs={6} sm={2} className={classes.paddingB2}>
+                          <Box
                             display="flex"
-                            px={2}
-                            justifyContent="flex-start"
+                            justifyContent="center"
+                            className={classes.paddingX}
                           >
-                            <TextField
-                              style={{ width: '100%' }}
-                              inputProps={{
-                                'data-testid': `textfield-${id}-${index}`,
-                              }}
-                              onChange={(
-                                event: React.ChangeEvent<HTMLInputElement>,
-                              ) => handleChange(id, index, event)}
-                              value={email.email}
-                              disabled={email.source !== appName}
-                            />
+                            <Typography display="flex" alignItems="center">
+                              {email.isPrimary ? (
+                                <>
+                                  <Hidden smUp>
+                                    <Typography
+                                      display="inline"
+                                      variant="body2"
+                                      fontWeight="bold"
+                                    >
+                                      {t('Source')}:
+                                    </Typography>
+                                  </Hidden>
+                                  <StarIcon
+                                    data-testid={`starIcon-${id}-${index}`}
+                                    className={classes.hoverHighlight}
+                                    onClick={() =>
+                                      handleChangePrimary(id, index)
+                                    }
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <Hidden smUp>
+                                    <Typography
+                                      display="inline"
+                                      variant="body2"
+                                      fontWeight="bold"
+                                    >
+                                      {t('Source')}:
+                                    </Typography>
+                                  </Hidden>
+                                  <Tooltip
+                                    title={t('Set as Primary')}
+                                    placement="left"
+                                  >
+                                    <StarOutlineIcon
+                                      data-testid={`starOutlineIcon-${id}-${index}`}
+                                      className={classes.hoverHighlight}
+                                      onClick={() =>
+                                        handleChangePrimary(id, index)
+                                      }
+                                    />
+                                  </Tooltip>
+                                </>
+                              )}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                          <Box
+                            display="flex"
+                            justifyContent="flex-start"
+                            className={clsx(
+                              classes.responsiveBorder,
+                              classes.paddingX,
+                            )}
+                          >
+                            <FormControl fullWidth>
+                              <TextField
+                                style={{ width: '100%' }}
+                                size="small"
+                                inputProps={{
+                                  'data-testid': `textfield-${id}-${index}`,
+                                }}
+                                onChange={(
+                                  event: React.ChangeEvent<HTMLInputElement>,
+                                ) => handleChange(id, index, event)}
+                                value={email.email}
+                                disabled={email.source !== appName}
+                              />
+                            </FormControl>
 
                             {email.source === appName ? (
                               <Box
+                                display="flex"
+                                alignItems="center"
                                 data-testid={`delete-${id}-${index}`}
                                 onClick={() =>
                                   handleDeleteEmailOpen({ id, email })
                                 }
+                                className={classes.paddingX}
                               >
-                                <HoverableIcon path={mdiDelete} size={1} />
+                                <Tooltip
+                                  title={t('Delete Email')}
+                                  placement="left"
+                                >
+                                  <Icon
+                                    path={mdiDelete}
+                                    size={1}
+                                    className={classes.hoverHighlight}
+                                  />
+                                </Tooltip>
                               </Box>
                             ) : (
-                              <Icon
-                                path={mdiLock}
-                                size={1}
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                className={classes.paddingX}
+                              >
+                                <Icon
+                                  path={mdiLock}
+                                  size={1}
+                                  style={{
+                                    color: theme.palette.cruGrayMedium.main,
+                                  }}
+                                />
+                              </Box>
                             )}
-                          </BoxWithResponsiveBorder>
-                        </RowWrapper>
+                          </Box>
+                        </Grid>
                       </Fragment>
                     ))}
-                    <RowWrapper item xs={12} sm={6}>
-                      <Box display="flex" justifyContent="space-between" px={2}>
+
+                    <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        className={classes.paddingX}
+                      >
                         <Box>
                           <Hidden smUp>
-                            <Typography display="inline">
-                              <strong>{t('Source')}: </strong>
+                            <Typography
+                              display="inline"
+                              variant="body2"
+                              fontWeight="bold"
+                            >
+                              {t('Source')}:
                             </Typography>
                           </Hidden>
-                          <Typography display="inline">{appName}</Typography>
+                          <Typography display="inline" variant="body2">
+                            {appName}
+                          </Typography>
                         </Box>
                       </Box>
-                    </RowWrapper>
-                    <RowWrapper item xs={12} sm={6}>
-                      <BoxWithResponsiveBorder
-                        display="flex"
-                        justifyContent="flex-start"
-                        px={2}
-                      >
-                        <EmailValidationForm
-                          personId={id}
-                          accountListId={accountListId}
-                        />
-                      </BoxWithResponsiveBorder>
-                    </RowWrapper>
-                  </Grid>
-                </EmailAddressListWrapper>
-              </Grid>
-            </PersonCard>
-          </Grid>
-          <Grid item xs={12} md={2}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              style={{ paddingLeft: theme.spacing(1) }}
-            >
-              <ConfirmButtonWrapper>
-                <Button
-                  variant="contained"
-                  style={{ width: '100%' }}
-                  onClick={() =>
-                    handleSingleConfirm(person, emails as EmailAddressData[])
-                  }
-                  disabled={!hasOnePrimaryEmail()}
-                >
-                  <ConfirmButtonIcon />
-                  {t('Confirm')}
-                </Button>
-              </ConfirmButtonWrapper>
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
+                    </Grid>
 
+                    <EmailValidationForm
+                      personId={id}
+                      accountListId={accountListId}
+                    />
+                  </Grid>
+                </CardContent>
+              </Grid>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
       {deleteModalOpen && emailToDelete && (
         <Confirmation
           title={t('Confirm')}

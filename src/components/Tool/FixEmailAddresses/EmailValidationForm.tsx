@@ -1,17 +1,49 @@
-import { Grid, IconButton, TextField } from '@mui/material';
+import {
+  Box,
+  FormControl,
+  FormHelperText,
+  Grid,
+  IconButton,
+  TextField,
+  Theme,
+  Tooltip,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Form, Formik } from 'formik';
+import clsx from 'clsx';
+import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { AddIcon } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import i18n from 'src/lib/i18n';
 import { useEmailAddressesMutation } from './AddEmailAddress.generated';
-import { RowWrapper } from './FixEmailAddressPerson/FixEmailAddressPerson';
 import {
   GetInvalidEmailAddressesDocument,
   GetInvalidEmailAddressesQuery,
 } from './FixEmailAddresses.generated';
+
+const useStyles = makeStyles()((theme: Theme) => ({
+  responsiveBorder: {
+    [theme.breakpoints.down('xs')]: {
+      paddingBottom: theme.spacing(2),
+      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+    },
+  },
+  paddingX: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+  paddingB2: {
+    paddingBottom: theme.spacing(1),
+  },
+  iconButton: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+}));
 
 const ContactInputField = styled(TextField, {
   shouldForwardProp: (prop) => prop !== 'destroyed',
@@ -52,6 +84,7 @@ const EmailValidationForm = ({
   const { t } = useTranslation();
   const [emailAddressesMutation] = useEmailAddressesMutation();
   const { enqueueSnackbar } = useSnackbar();
+  const { classes } = useStyles();
 
   const initialEmail = {
     email: '',
@@ -134,34 +167,60 @@ const EmailValidationForm = ({
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
-      {({ values, handleChange, handleBlur, isValid, touched, errors }) => (
-        <Form>
-          <RowWrapper>
-            <Grid container>
-              <ContactInputField
-                destroyed={false}
-                label={t('New Email Address')}
-                type="email"
-                name="email"
-                value={values.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.email && Boolean(errors.email)}
-                helperText={
-                  touched.email && Boolean(errors.email) ? errors.email : ''
-                }
-              />
+      {({
+        values,
+        handleChange,
+        handleBlur,
+        touched,
+        errors,
+        handleSubmit,
+        isValid,
+      }) => (
+        <>
+          <Grid item xs={12} sm={6} className={classes.paddingB2}>
+            <Box
+              display="flex"
+              justifyContent="flex-start"
+              className={clsx(classes.responsiveBorder, classes.paddingX)}
+            >
+              <FormControl fullWidth>
+                <ContactInputField
+                  destroyed={false}
+                  label={t('New Email Address')}
+                  type="email"
+                  name="email"
+                  value={values.email}
+                  style={{ width: '100%' }}
+                  size="small"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+              </FormControl>
+
               <IconButton
-                type="submit"
-                color="primary"
+                onClick={() => handleSubmit()}
+                className={classes.iconButton}
                 disabled={!isValid || values.email === ''}
                 data-testid={`addButton-${initialEmail.personId}`}
               >
-                <AddIcon fontSize="large" />
+                <Tooltip title="Add Address">
+                  <AddIcon fontSize="small" />
+                </Tooltip>
               </IconButton>
-            </Grid>
-          </RowWrapper>
-        </Form>
+            </Box>
+          </Grid>
+
+          {touched.email && Boolean(errors.email) && (
+            <>
+              <Grid item xs={12} sm={6}></Grid>
+              <Grid item xs={12} sm={6}>
+                <FormHelperText error={true} className={classes.paddingX}>
+                  {errors.email}
+                </FormHelperText>
+              </Grid>
+            </>
+          )}
+        </>
       )}
     </Formik>
   );
