@@ -96,7 +96,7 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
   onContactSelected,
   changeContactStatus,
 }) => {
-  const { sanitizedFilters } = React.useContext(
+  const { sanitizedFilters, starredFilter } = React.useContext(
     ContactsContext,
   ) as ContactsType;
 
@@ -105,6 +105,7 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
       accountListId: accountListId ?? '',
       contactsFilters: {
         ...sanitizedFilters,
+        ...starredFilter,
         status: statuses,
         wildcardSearch: searchTerm as string,
       },
