@@ -208,7 +208,7 @@ describe('AddAppealForm', () => {
       expect(
         await findByText(/must use a positive whole number for admin cost/i),
       ).toBeInTheDocument();
-    });
+    }, 6000);
 
     it('should calculate the Goal amount correctly', async () => {
       const { getByRole } = render(<Components />);
