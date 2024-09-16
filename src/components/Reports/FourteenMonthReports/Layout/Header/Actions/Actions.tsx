@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 
 interface FourteenMonthReportActionsProps {
-  csvData: (string | number | undefined)[][];
+  csvData: (string | number)[][];
   currencyType: FourteenMonthReportCurrencyType;
   isExpanded: boolean;
   isMobile: boolean;

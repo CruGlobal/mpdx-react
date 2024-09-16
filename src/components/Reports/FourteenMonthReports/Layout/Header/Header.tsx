@@ -8,7 +8,7 @@ import theme from 'src/theme';
 import { FourteenMonthReportActions } from './Actions/Actions';
 
 interface FourteenMonthReportHeaderProps {
-  csvData: (string | number | undefined)[][];
+  csvData: (string | number)[][];
   currencyType: FourteenMonthReportCurrencyType;
   isExpanded: boolean;
   isMobile: boolean;
