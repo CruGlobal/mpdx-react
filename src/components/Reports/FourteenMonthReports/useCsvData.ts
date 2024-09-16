@@ -100,7 +100,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
                 ) * numMonthsForMonthlyEquivalent
               : Math.round(contact.total),
             inHandDateRange,
-            ...(contact.months.map((month) => Math.round(month.total)) || []),
+            ...contact.months.map((month) => Math.round(month.total)),
             Math.round(contact.total),
           ];
         });
