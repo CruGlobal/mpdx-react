@@ -9,7 +9,7 @@ export type CsvData = (string | number)[][];
 
 const formatMonth = (month: string, locale: string): string =>
   DateTime.fromISO(month).toJSDate().toLocaleDateString(locale, {
-    month: 'numeric',
+    month: 'short',
     year: '2-digit',
   });
 
@@ -43,7 +43,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
             t('Missing In Hand Monthly Equivalent'),
             t('In Hand Special Gifts'),
             t('In Hand Date Range'),
-            ...totals.map(({ month }) => month),
+            ...totals.map(({ month }) => formatMonth(month, locale)),
             t('Total (last month excluded from total)'),
           ],
         ];
@@ -77,10 +77,10 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
               : '';
 
           const inHandDateRange = inHandMonthlyEquivalent
-            ? `${formatMonth(inHandMonths[0].month, locale)} - ${formatMonth(
+            ? `${formatMonth(
                 inHandMonths[inHandMonths.length - 1].month,
                 locale,
-              )}`
+              )} - ${formatMonth(inHandMonths[0].month, locale)}`
             : '';
 
           return [
