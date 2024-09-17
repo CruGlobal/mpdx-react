@@ -9,15 +9,15 @@ import {
   TableRow,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatMonthOnly } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, HeaderRow } from '../StyledComponents';
+import { getMonthOrWeekDateRange } from '../helpers';
 import { useAppointmentResultsQuery } from './AppointmentResults.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
@@ -25,13 +25,13 @@ const ContentContainer = styled(CardContent)(({ theme }) => ({
   overflowX: 'scroll',
 }));
 
-interface AppointmentResultsProps {
+interface PartnersProgressProps {
   accountListId: string;
   period: CoachingPeriodEnum;
   currency?: string;
 }
 
-export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
+export const PartnersProgress: React.FC<PartnersProgressProps> = ({
   accountListId,
   period,
   currency,
@@ -96,19 +96,12 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   <AlignedTableCell></AlignedTableCell>
                   {appointmentResults.map(({ startDate, endDate }) => (
                     <AlignedTableCell key={startDate}>
-                      {startDate &&
-                      endDate &&
-                      period === CoachingPeriodEnum.Weekly
-                        ? new Intl.DateTimeFormat(locale, {
-                            month: 'short',
-                            day: 'numeric',
-                          }).formatRange(new Date(startDate), new Date(endDate))
-                        : startDate
-                        ? dateFormatMonthOnly(
-                            DateTime.fromISO(startDate),
-                            locale,
-                          )
-                        : null}
+                      {getMonthOrWeekDateRange(
+                        locale,
+                        period,
+                        startDate,
+                        endDate,
+                      )}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>

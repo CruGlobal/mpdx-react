@@ -12,19 +12,18 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { toLower } from 'lodash';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { usePhaseData } from 'src/hooks/usePhaseData';
-import { dateFormatMonthOnly } from 'src/lib/intlFormat';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
+import { getMonthOrWeekDateRange } from '../helpers';
 import { useActivitySummaryQuery } from './ActivitySummary.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
@@ -32,12 +31,12 @@ const ContentContainer = styled(CardContent)(({ theme }) => ({
   overflowX: 'scroll',
 }));
 
-interface ActivitySummaryProps {
+interface LevelOfEffortProps {
   accountListId: string;
   period: CoachingPeriodEnum;
 }
 
-export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
+export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
   accountListId,
   period,
 }) => {
@@ -109,31 +108,21 @@ export const ActivitySummary: React.FC<ActivitySummaryProps> = ({
       />
       <ContentContainer>
         {loading ? (
-          <MultilineSkeleton lines={4} />
+          <MultilineSkeleton lines={24} />
         ) : (
           <TableContainer sx={{ minWidth: 600 }}>
             <Table size="small" aria-label={t('activity summary table')}>
               <TableBody>
                 <HeaderRow role="rowheader">
-                  <AlignedTableCell></AlignedTableCell>
+                  <AlignedTableCell />
                   {periods.map(({ startDate, endDate }) => (
                     <AlignedTableCell key={startDate}>
-                      {startDate &&
-                        endDate &&
-                        (period === CoachingPeriodEnum.Weekly
-                          ? new Intl.DateTimeFormat(locale, {
-                              month: 'short',
-                              day: 'numeric',
-                            }).formatRange(
-                              Date.parse(startDate),
-                              Date.parse(endDate),
-                            )
-                          : startDate
-                          ? dateFormatMonthOnly(
-                              DateTime.fromISO(startDate),
-                              locale,
-                            )
-                          : null)}
+                      {getMonthOrWeekDateRange(
+                        locale,
+                        period,
+                        startDate,
+                        endDate,
+                      )}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>

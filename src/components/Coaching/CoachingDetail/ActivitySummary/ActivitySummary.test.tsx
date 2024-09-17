@@ -2,21 +2,21 @@ import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { activitySummaryMocks } from '../coachingMocks';
-import { ActivitySummary } from './ActivitySummary';
+import { levelOfEffortMocks } from '../coachingMocks';
+import { LevelOfEffort } from './ActivitySummary';
 
 const mutationSpy = jest.fn();
 
-describe('ActivitySummary', () => {
+describe('LevelOfEffort', () => {
   it('renders the table data', async () => {
     const { findByRole, getAllByRole } = render(
       <GqlMockedProvider
         mocks={{
-          ActivitySummary: activitySummaryMocks,
+          ...levelOfEffortMocks,
           LoadConstants: loadConstantsMockData,
         }}
       >
-        <ActivitySummary
+        <LevelOfEffort
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Monthly}
         />
@@ -30,9 +30,9 @@ describe('ActivitySummary', () => {
     const headers = getAllByRole('rowheader');
     const dateRow = headers[0];
     expect(dateRow.children[0]).toHaveTextContent('');
-    expect(dateRow.children[1].textContent).toContain('Mar');
-    expect(dateRow.children[2].textContent).toContain('Apr');
-    expect(dateRow.children[3].textContent).toContain('May');
+    expect(dateRow.children[1]).toHaveTextContent('Mar');
+    expect(dateRow.children[2]).toHaveTextContent('Apr');
+    expect(dateRow.children[3]).toHaveTextContent('May');
     expect(dateRow.children[4]).toHaveTextContent('Jun');
     expect(dateRow.children[5]).toHaveTextContent('Average');
     expect(headers[2]).toHaveTextContent('Initiations');
@@ -47,6 +47,30 @@ describe('ActivitySummary', () => {
     expect(namestormedRow.children[3]).toHaveTextContent('30');
     expect(namestormedRow.children[4]).toHaveTextContent('30');
     expect(namestormedRow.children[5]).toHaveTextContent('38');
+
+    const referralsRow = rows[1];
+    expect(referralsRow.children[0]).toHaveTextContent('Connected by Others');
+    expect(referralsRow.children[1]).toHaveTextContent('7');
+    expect(referralsRow.children[2]).toHaveTextContent('5');
+    expect(referralsRow.children[3]).toHaveTextContent('8');
+    expect(referralsRow.children[4]).toHaveTextContent('8');
+    expect(referralsRow.children[4]).toHaveTextContent('8');
+
+    const initiationsTotalRow = headers[2];
+    expect(initiationsTotalRow.children[0]).toHaveTextContent('Initiations');
+    expect(initiationsTotalRow.children[1]).toHaveTextContent('36');
+    expect(initiationsTotalRow.children[2]).toHaveTextContent('16');
+    expect(initiationsTotalRow.children[3]).toHaveTextContent('6');
+    expect(initiationsTotalRow.children[4]).toHaveTextContent('6');
+    expect(initiationsTotalRow.children[5]).toHaveTextContent('16');
+
+    const appointmentsTotalRow = headers[3];
+    expect(appointmentsTotalRow.children[0]).toHaveTextContent('Appointments');
+    expect(appointmentsTotalRow.children[1]).toHaveTextContent('35');
+    expect(appointmentsTotalRow.children[2]).toHaveTextContent('15');
+    expect(appointmentsTotalRow.children[3]).toHaveTextContent('5');
+    expect(appointmentsTotalRow.children[4]).toHaveTextContent('5');
+    expect(appointmentsTotalRow.children[5]).toHaveTextContent('15');
 
     const initiationSocialMediaRow = rows[6];
     expect(initiationSocialMediaRow.children[0]).toHaveTextContent(
@@ -73,14 +97,6 @@ describe('ActivitySummary', () => {
     expect(followUpTextRow.children[4]).toHaveTextContent('8');
     expect(followUpTextRow.children[5]).toHaveTextContent('18');
 
-    const appointmentsTotalRow = headers[3];
-    expect(appointmentsTotalRow.children[0]).toHaveTextContent('Appointments');
-    expect(appointmentsTotalRow.children[1]).toHaveTextContent('35');
-    expect(appointmentsTotalRow.children[2]).toHaveTextContent('15');
-    expect(appointmentsTotalRow.children[3]).toHaveTextContent('5');
-    expect(appointmentsTotalRow.children[4]).toHaveTextContent('5');
-    expect(appointmentsTotalRow.children[5]).toHaveTextContent('15');
-
     const thankRow = rows[21];
     expect(thankRow.children[0]).toHaveTextContent('Thank You Note');
     expect(thankRow.children[1]).toHaveTextContent('33');
@@ -88,31 +104,12 @@ describe('ActivitySummary', () => {
     expect(thankRow.children[3]).toHaveTextContent('3');
     expect(thankRow.children[4]).toHaveTextContent('3');
     expect(thankRow.children[5]).toHaveTextContent('13');
-
-    const initiationsTotalRow = headers[2];
-    expect(initiationsTotalRow.children[0]).toHaveTextContent('Initiations');
-    expect(initiationsTotalRow.children[1]).toHaveTextContent('36');
-    expect(initiationsTotalRow.children[2]).toHaveTextContent('16');
-    expect(initiationsTotalRow.children[3]).toHaveTextContent('6');
-    expect(initiationsTotalRow.children[4]).toHaveTextContent('6');
-    expect(initiationsTotalRow.children[5]).toHaveTextContent('16');
-
-    const referralsRow = rows[1];
-    expect(referralsRow.children[0]).toHaveTextContent('Connected by Others');
-    expect(referralsRow.children[1]).toHaveTextContent('7');
-    expect(referralsRow.children[2]).toHaveTextContent('5');
-    expect(referralsRow.children[3]).toHaveTextContent('8');
-    expect(referralsRow.children[4]).toHaveTextContent('8');
-    expect(referralsRow.children[4]).toHaveTextContent('8');
   });
 
   it('loads data for the weekly period', async () => {
     render(
-      <GqlMockedProvider
-        mocks={{ ActivitySummary: activitySummaryMocks }}
-        onCall={mutationSpy}
-      >
-        <ActivitySummary
+      <GqlMockedProvider mocks={levelOfEffortMocks} onCall={mutationSpy}>
+        <LevelOfEffort
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Weekly}
         />
@@ -129,7 +126,7 @@ describe('ActivitySummary', () => {
   it('loads data for the monthly period', async () => {
     render(
       <GqlMockedProvider onCall={mutationSpy}>
-        <ActivitySummary
+        <LevelOfEffort
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Monthly}
         />

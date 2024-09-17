@@ -20,8 +20,8 @@ import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated'
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
-import { ActivitySummary } from './ActivitySummary/ActivitySummary';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
+import { LevelOfEffort } from './ActivitySummary/ActivitySummary';
+import { PartnersProgress } from './AppointmentResults/AppointmentResults';
 import { CoachingSidebar } from './CoachingSidebar';
 import {
   useGetCoachingDonationGraphQuery,
@@ -211,12 +211,12 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currencyCode={accountListData?.currency}
                 goal={accountListData?.monthlyGoal ?? 0}
               />
-              <AppointmentResults
+              <PartnersProgress
                 accountListId={accountListId}
                 currency={accountListData?.currency}
                 period={period}
               />
-              <ActivitySummary accountListId={accountListId} period={period} />
+              <LevelOfEffort accountListId={accountListId} period={period} />
               <TagsSummary
                 accountListId={accountListId}
                 period={period}

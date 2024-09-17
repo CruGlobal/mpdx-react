@@ -1,18 +1,16 @@
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { appointmentResultsMocks } from '../coachingMocks';
-import { AppointmentResults } from './AppointmentResults';
+import { partnersProgressMocks } from '../coachingMocks';
+import { PartnersProgress } from './AppointmentResults';
 
 const mutationSpy = jest.fn();
 
 describe('AppointmentResults', () => {
   it('renders the table data', async () => {
     const { findAllByRole } = render(
-      <GqlMockedProvider
-        mocks={{ AppointmentResults: appointmentResultsMocks }}
-      >
-        <AppointmentResults
+      <GqlMockedProvider mocks={partnersProgressMocks}>
+        <PartnersProgress
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Weekly}
           currency="USD"
@@ -59,11 +57,8 @@ describe('AppointmentResults', () => {
 
   it('loads data for the weekly period', async () => {
     render(
-      <GqlMockedProvider
-        onCall={mutationSpy}
-        mocks={{ AppointmentResults: appointmentResultsMocks }}
-      >
-        <AppointmentResults
+      <GqlMockedProvider onCall={mutationSpy} mocks={partnersProgressMocks}>
+        <PartnersProgress
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Weekly}
           currency="USD"
@@ -81,7 +76,7 @@ describe('AppointmentResults', () => {
   it('loads data for the monthly period', async () => {
     render(
       <GqlMockedProvider onCall={mutationSpy}>
-        <AppointmentResults
+        <PartnersProgress
           accountListId="account-list-1"
           period={CoachingPeriodEnum.Monthly}
           currency="USD"

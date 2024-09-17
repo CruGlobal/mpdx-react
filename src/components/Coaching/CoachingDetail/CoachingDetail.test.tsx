@@ -24,7 +24,7 @@ import {
   LoadAccountListCoachingNeedsQuery,
   LoadCoachingNeedsQuery,
 } from './OutstandingNeeds/OutstandingNeeds.generated';
-import { activitySummaryMocks } from './coachingMocks';
+import { levelOfEffortMocks } from './coachingMocks';
 
 jest.mock('./AppointmentResults/AppointmentResults');
 
@@ -103,7 +103,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             },
           },
-          ActivitySummary: activitySummaryMocks,
+          ...levelOfEffortMocks,
         }}
       >
         <CoachingDetail
