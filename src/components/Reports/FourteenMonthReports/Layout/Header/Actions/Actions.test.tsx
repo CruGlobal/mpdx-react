@@ -10,6 +10,10 @@ const onExpandToggle = jest.fn();
 const onPrint = jest.fn();
 
 describe('FourteenMonthReportActions', () => {
+  beforeAll(() => {
+    URL.revokeObjectURL = jest.fn();
+  });
+
   it('default', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
@@ -29,7 +33,10 @@ describe('FourteenMonthReportActions', () => {
     ).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Expand' }));
     userEvent.click(getByRole('button', { name: 'Print' }));
-    userEvent.click(getByRole('button', { name: 'Export' }));
+    expect(getByRole('link', { name: 'Export' })).toHaveAttribute(
+      'href',
+      'data:text/csv;charset=utf-8,',
+    );
   });
 
   it('expand toggle event', async () => {
