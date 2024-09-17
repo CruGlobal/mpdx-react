@@ -26,7 +26,12 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
       currencyTables.flatMap(({ currency, orderedContacts, totals }) => {
         // Each table starts with two rows of headers
         const csvHeaders = [
-          [t('Currency'), currency],
+          [
+            t('Currency'),
+            currency,
+            apiConstants?.pledgeCurrency?.find(({ code }) => code === currency)
+              ?.symbol ?? '',
+          ],
           [
             t('Partner'),
             t('Status'),

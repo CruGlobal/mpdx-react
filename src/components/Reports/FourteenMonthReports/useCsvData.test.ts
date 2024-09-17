@@ -21,6 +21,16 @@ jest.mock('src/components/Constants/UseApiConstants.tsx');
   gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
     mocks: {
       constant: {
+        pledgeCurrency: [
+          {
+            code: 'USD',
+            symbol: '$',
+          },
+          {
+            code: 'CAD',
+            symbol: '$',
+          },
+        ],
         pledgeFrequency: [
           {
             key: '3.0',
@@ -126,7 +136,7 @@ describe('useCsvData', () => {
     const { result } = renderHook(() => useCsvData(tables), {});
 
     expect(result.current).toEqual([
-      ['Currency', 'USD'],
+      ['Currency', 'USD', '$'],
       [
         'Partner',
         'Status',
@@ -227,7 +237,7 @@ describe('useCsvData', () => {
         150,
         1800,
       ],
-      ['Currency', 'CAD'],
+      ['Currency', 'CAD', '$'],
       [
         'Partner',
         'Status',
