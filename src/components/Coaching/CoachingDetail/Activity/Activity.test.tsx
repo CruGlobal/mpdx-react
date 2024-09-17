@@ -253,17 +253,31 @@ describe('Activity', () => {
         'Financial Partners',
       ),
     );
+    await waitFor(() =>
+      expect(getByTestId('CurrentRealityPartnerFinancial')).toHaveTextContent(
+        '9',
+      ),
+    );
     expect(getByTestId('CurrentRealityPartnerSpecial')).toHaveTextContent(
       'Special Gift Partners',
     );
+    expect(getByTestId('CurrentRealityPartnerSpecial')).toHaveTextContent('7');
+
     expect(getByTestId('CurrentRealityPartnerPrayer')).toHaveTextContent(
       'Prayer Partners',
     );
+    expect(getByTestId('CurrentRealityPartnerPrayer')).toHaveTextContent('7');
+
     expect(getByTestId('CurrentRealityConnections')).toHaveTextContent(
       'Connections Remaining',
     );
+    expect(getByTestId('CurrentRealityConnections')).toHaveTextContent('25');
+
     expect(getByTestId('CurrentRealityPartnerInitiations')).toHaveTextContent(
       'Partners Currently Initiating With',
+    );
+    expect(getByTestId('CurrentRealityPartnerInitiations')).toHaveTextContent(
+      '19',
     );
   });
 

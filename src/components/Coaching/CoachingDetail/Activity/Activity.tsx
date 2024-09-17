@@ -10,6 +10,7 @@ import {
   ButtonGroup,
   CardHeader,
   Link as MuiLink,
+  Skeleton,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -476,7 +477,7 @@ export const Activity: React.FC<ActivityProps> = ({
         </ActivitySection>
         <ActivitySection data-testid="CurrentRealityPartnerFinancial">
           {loading ? (
-            <MultilineSkeleton lines={1} width="90%" height="90%" />
+            <Skeleton width="147px" height="147px" />
           ) : (
             <StatsLargeNumber>
               {data?.accountListAnalytics.contactsByStatus.financial}
@@ -493,7 +494,7 @@ export const Activity: React.FC<ActivityProps> = ({
         </ActivitySection>
         <ActivitySection data-testid="CurrentRealityPartnerSpecial">
           {loading ? (
-            <MultilineSkeleton lines={1} width="90%" height="90%" />
+            <Skeleton width="147px" height="147px" />
           ) : (
             <StatsLargeNumber>
               {data?.accountListAnalytics.contactsByStatus.special}
@@ -510,7 +511,7 @@ export const Activity: React.FC<ActivityProps> = ({
         </ActivitySection>
         <ActivitySection data-testid="CurrentRealityPartnerPrayer">
           {loading ? (
-            <MultilineSkeleton lines={1} width="90%" height="90%" />
+            <Skeleton width="147px" height="147px" />
           ) : (
             <StatsLargeNumber>
               {data?.accountListAnalytics.contactsByStatus.prayer}

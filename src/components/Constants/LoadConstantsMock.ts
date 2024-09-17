@@ -855,6 +855,6 @@ export const loadConstantsMockData = {
       },
     ],
   },
-} as unknown as LoadConstantsQuery;
+} as LoadConstantsQuery;
 
 export default LoadConstantsMock;
