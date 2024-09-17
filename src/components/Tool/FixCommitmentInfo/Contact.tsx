@@ -203,13 +203,11 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
 
-  const suggestedAmount = !suggestedChanges?.pledge_amount
-    ? null
-    : typeof suggestedChanges.pledge_amount === 'string'
-    ? parseInt(suggestedChanges.pledge_amount)
-    : suggestedChanges.pledge_amount;
+  const suggestedAmount = suggestedChanges?.pledge_amount || null;
 
   const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
+
+  const suggestedStatus = suggestedChanges?.status || null;
 
   const onSubmit = async ({
     status,
@@ -247,18 +245,10 @@ const Contact: React.FC<Props> = ({
     <Grid container className={classes.container}>
       <Formik
         initialValues={{
-          statusValue: statusValue,
+          statusValue: suggestedStatus || statusValue,
           pledgeCurrency: amountCurrency,
-          pledgeAmount: suggestedAmount
-            ? suggestedAmount
-            : amount
-            ? amount
-            : '',
-          pledgeFrequency: (suggestedFrequency as PledgeFrequencyEnum)
-            ? suggestedFrequency
-            : frequencyValue
-            ? frequencyValue
-            : '',
+          pledgeAmount: suggestedAmount || amount,
+          pledgeFrequency: suggestedFrequency || frequencyValue,
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
@@ -315,13 +305,10 @@ const Contact: React.FC<Props> = ({
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''
-                            } ${
-                              pledgeFrequency &&
-                              getLocalizedPledgeFrequency(
-                                t,
-                                pledgeFrequency as PledgeFrequencyEnum,
-                              )
-                            }`}
+                            } ${getLocalizedPledgeFrequency(
+                              t,
+                              frequencyValue as PledgeFrequencyEnum,
+                            )}`}
                           </Typography>
                         </Box>
                       </Box>

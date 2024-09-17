@@ -57,6 +57,7 @@ export interface DonationsType {
 }
 
 export interface SuggestedChangesType {
+  status: string;
   pledge_amount: string | number;
   pledge_frequency: string;
 }
