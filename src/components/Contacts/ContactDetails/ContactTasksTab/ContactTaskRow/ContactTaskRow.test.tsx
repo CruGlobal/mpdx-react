@@ -330,30 +330,7 @@ describe('ContactTaskRow', () => {
       expect(getByText('Social Media')).toBeVisible();
     });
 
-    it('displays Letter', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.InitiationLetter,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Letter')).toBeVisible();
-    });
-
-    it('displays Newsletter - Email', () => {
+    it('displays Digital Newsletter', () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.PartnerCareDigitalNewsletter,
@@ -376,7 +353,7 @@ describe('ContactTaskRow', () => {
       expect(getByText('Digital Newsletter')).toBeVisible();
     });
 
-    it('displays Newsletter - Physical', () => {
+    it('displays Physical Newsletter', () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
@@ -422,7 +399,7 @@ describe('ContactTaskRow', () => {
       expect(getByText('Prayer Request')).toBeVisible();
     });
 
-    it('displays Initation Letter', () => {
+    it('displays Letter', () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           activityType: ActivityTypeEnum.InitiationLetter,

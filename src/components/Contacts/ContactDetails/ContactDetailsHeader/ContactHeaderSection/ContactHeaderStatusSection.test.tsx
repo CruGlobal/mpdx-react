@@ -93,14 +93,14 @@ describe('ContactHeaderStatusSection', () => {
     const { queryByText, findByText } = render(
       <Components
         loading={false}
-        contact={contactMock('PARTNER_FINANCIAL' as StatusEnum)}
+        contact={contactMock(StatusEnum.PartnerFinancial)}
       />,
     );
     expect(await findByText('Partner - Financial')).toBeInTheDocument();
     expect(queryByText('$500 - Monthly')).toBeInTheDocument();
   });
 
-  const statuses = Object.entries(StatusEnum).map(([_, status]) => {
+  const statuses = Object.values(StatusEnum).map((status) => {
     return [
       status,
       loadConstantsMockData.constant.statuses?.find((s) => s.id === status)

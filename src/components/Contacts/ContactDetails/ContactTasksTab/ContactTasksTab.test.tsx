@@ -323,9 +323,11 @@ describe('ContactTasksTab', () => {
 
     // Wait for the fetchMore to be called
     await waitFor(() => {
-      const { operation } = querySpy.mock.calls[4][0];
-      expect(operation.operationName).toBe('ContactTasksTab');
-      expect(operation.variables.after).toBe('MjU');
+      expect(querySpy).toHaveGraphqlOperation('ContactTasksTab', {
+        accountListId: '123',
+        after: 'MjU',
+        tasksFilter: { contactIds: ['abc'], wildcardSearch: undefined },
+      });
     });
   });
 });
