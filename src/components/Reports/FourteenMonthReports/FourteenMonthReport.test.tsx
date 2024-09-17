@@ -489,13 +489,8 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[1][0]).toMatchObject({
-        operation: {
-          operationName: 'FourteenMonthReport',
-          variables: {
-            designationAccountIds: ['account-1'],
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('FourteenMonthReport', {
+        designationAccountIds: ['account-1'],
       }),
     );
   });
@@ -521,13 +516,8 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[1][0]).toMatchObject({
-        operation: {
-          operationName: 'FourteenMonthReport',
-          variables: {
-            designationAccountIds: null,
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('FourteenMonthReport', {
+        designationAccountIds: null,
       }),
     );
   });
