@@ -326,8 +326,8 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                           newEmail: email.email,
                         }}
                         validationSchema={validationSchema}
-                        onSubmit={async (values) => {
-                          await handleChange(id, index, values.newEmail);
+                        onSubmit={(values) => {
+                          handleChange(id, index, values.newEmail);
                         }}
                       >
                         {({
@@ -459,7 +459,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                     error={true}
                                     data-testid="statusSelectError"
                                   >
-                                    {errors.newEmail && errors.newEmail}
+                                    {errors.newEmail}
                                   </FormHelperText>
                                 </FormControl>
 
