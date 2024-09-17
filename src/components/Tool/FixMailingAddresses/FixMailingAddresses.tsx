@@ -350,7 +350,7 @@ const FixMailingAddresses: React.FC<Props> = ({
           {!loading && data && (
             <React.Fragment>
               {!totalContacts && <NoData tool="fixMailingAddresses" />}
-              {totalContacts && (
+              {!!totalContacts && (
                 <>
                   <Grid item xs={12}>
                     <Box className={classes.descriptionBox}>
