@@ -10,10 +10,6 @@ const onExpandToggle = jest.fn();
 const onPrint = jest.fn();
 
 describe('FourteenMonthReportActions', () => {
-  beforeAll(() => {
-    URL.revokeObjectURL = jest.fn();
-  });
-
   it('default', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
