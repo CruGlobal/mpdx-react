@@ -20,9 +20,8 @@ import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated'
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
-import { LevelOfEffort } from './ActivitySummary/ActivitySummary';
-import { PartnersProgress } from './AppointmentResults/AppointmentResults';
 import { CoachingSidebar } from './CoachingSidebar';
+import { LevelOfEffort } from './LevelOfEffort/LevelOfEffort';
 import {
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
@@ -31,6 +30,7 @@ import {
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { OutstandingCommitments } from './OutstandingCommitments/OutstandingCommitments';
 import { OutstandingNeeds } from './OutstandingNeeds/OutstandingNeeds';
+import { PartnersProgress } from './PartnersProgress/PartnersProgress';
 import { TagsSummary } from './TagsSummary/TagsSummary';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 

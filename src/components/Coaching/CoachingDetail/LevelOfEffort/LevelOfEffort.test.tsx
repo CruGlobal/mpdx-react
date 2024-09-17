@@ -3,7 +3,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { levelOfEffortMocks } from '../coachingMocks';
-import { LevelOfEffort } from './ActivitySummary';
+import { LevelOfEffort } from './LevelOfEffort';
 
 const mutationSpy = jest.fn();
 

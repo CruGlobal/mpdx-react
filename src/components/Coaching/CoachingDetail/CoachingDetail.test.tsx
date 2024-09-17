@@ -10,8 +10,8 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
-import { ActivitySummaryQuery } from './ActivitySummary/ActivitySummary.generated';
 import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
+import { LevelOfEffortQuery } from './LevelOfEffort/LevelOfEffort.generated';
 import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
@@ -26,7 +26,7 @@ import {
 } from './OutstandingNeeds/OutstandingNeeds.generated';
 import { levelOfEffortMocks } from './coachingMocks';
 
-jest.mock('./AppointmentResults/AppointmentResults');
+jest.mock('./PartnersProgress/PartnersProgress');
 
 const push = jest.fn();
 
@@ -54,7 +54,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         LoadAccountListCoachingCommitments: LoadAccountListCoachingCommitmentsQuery;
         LoadCoachingNeeds: LoadCoachingNeedsQuery;
         LoadAccountListCoachingNeeds: LoadAccountListCoachingNeedsQuery;
-        ActivitySummary: ActivitySummaryQuery;
+        LevelOfEffort: LevelOfEffortQuery;
       }>
         mocks={{
           LoadCoachingDetail: {

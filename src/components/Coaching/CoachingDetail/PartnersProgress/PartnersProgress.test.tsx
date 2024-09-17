@@ -2,7 +2,7 @@ import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { partnersProgressMocks } from '../coachingMocks';
-import { PartnersProgress } from './AppointmentResults';
+import { PartnersProgress } from './PartnersProgress';
 
 const mutationSpy = jest.fn();
 

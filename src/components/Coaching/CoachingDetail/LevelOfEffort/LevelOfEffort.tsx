@@ -24,7 +24,7 @@ import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
 import { getMonthOrWeekDateRange } from '../helpers';
-import { useActivitySummaryQuery } from './ActivitySummary.generated';
+import { useLevelOfEffortQuery } from './LevelOfEffort.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -44,7 +44,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
   const locale = useLocale();
   const { activitiesByPhase } = usePhaseData();
 
-  const { data, loading } = useActivitySummaryQuery({
+  const { data, loading } = useLevelOfEffortQuery({
     variables: {
       accountListId,
       range: period === CoachingPeriodEnum.Weekly ? '4w' : '4m',
@@ -186,8 +186,8 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                     const activityVariableName = snakeToCamel(
                       toLower(activity),
                     );
-                    return !isNaN(averages[activityVariableName]) &&
-                      averages[activityVariableName] !== null ? (
+                    return typeof averages[activityVariableName] ===
+                      'number' ? (
                       <TableRow>
                         <AlignedTableCell>
                           {getLocalizedTaskType(t, activity)}
@@ -225,8 +225,8 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                     const activityVariableName = snakeToCamel(
                       toLower(activity),
                     );
-                    return !isNaN(averages[activityVariableName]) &&
-                      averages[activityVariableName] !== null ? (
+                    return typeof averages[activityVariableName] ===
+                      'number' ? (
                       <TableRow>
                         <AlignedTableCell>
                           {getLocalizedTaskType(t, activity)}
@@ -260,8 +260,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                 </HeaderRow>
                 {activitiesByPhase.get(PhaseEnum.FollowUp)?.map((activity) => {
                   const activityVariableName = snakeToCamel(toLower(activity));
-                  return !isNaN(averages[activityVariableName]) &&
-                    averages[activityVariableName] !== null ? (
+                  return typeof averages[activityVariableName] === 'number' ? (
                     <TableRow>
                       <AlignedTableCell>
                         {getLocalizedTaskType(t, activity)}
@@ -299,8 +298,8 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                     const activityVariableName = snakeToCamel(
                       toLower(activity),
                     );
-                    return !isNaN(averages[activityVariableName]) &&
-                      averages[activityVariableName] !== null ? (
+                    return typeof averages[activityVariableName] ===
+                      'number' ? (
                       <TableRow>
                         <AlignedTableCell>
                           {getLocalizedTaskType(t, activity)}

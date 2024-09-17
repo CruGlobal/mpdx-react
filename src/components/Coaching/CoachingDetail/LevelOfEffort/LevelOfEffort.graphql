@@ -1,4 +1,4 @@
-query ActivitySummary($accountListId: ID!, $range: String!) {
+query LevelOfEffort($accountListId: ID!, $range: String!) {
   reportsActivityResults(accountListId: $accountListId, range: $range) {
     periods {
       appointmentInPerson

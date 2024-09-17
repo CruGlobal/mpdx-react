@@ -18,7 +18,7 @@ import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, HeaderRow } from '../StyledComponents';
 import { getMonthOrWeekDateRange } from '../helpers';
-import { useAppointmentResultsQuery } from './AppointmentResults.generated';
+import { usePartnersProgressQuery } from './PartnersProgress.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -39,7 +39,7 @@ export const PartnersProgress: React.FC<PartnersProgressProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data, loading } = useAppointmentResultsQuery({
+  const { data, loading } = usePartnersProgressQuery({
     variables: {
       accountListId,
       range: period === CoachingPeriodEnum.Weekly ? '4w' : '4m',

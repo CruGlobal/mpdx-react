@@ -64,7 +64,7 @@ export const levelOfEffortMocks = {
 };
 
 export const partnersProgressMocks = {
-  AppointmentResults: {
+  PartnersProgress: {
     appointmentResults: [
       {
         startDate: '2023-09-02',
