@@ -57,6 +57,7 @@ export interface DonationsType {
 }
 
 export interface SuggestedChangesType {
+  status: string;
   pledge_amount: string | number;
   pledge_frequency: string;
 }
@@ -66,7 +67,7 @@ export interface ContactType {
   status?: string | undefined;
   name?: string | undefined;
   pledgeCurrency?: string | undefined;
-  pledgeAmount?: number | undefined | null;
+  pledgeAmount?: string | number | undefined;
   pledgeFrequency?: PledgeFrequencyEnum | string | null;
   donations?: DonationsType[] | [];
   suggestedChanges?: SuggestedChangesType | string | undefined;

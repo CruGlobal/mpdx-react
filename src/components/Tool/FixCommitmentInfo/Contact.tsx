@@ -46,7 +46,7 @@ import {
 interface FormAttributes {
   status?: string;
   pledgeCurrency?: string;
-  pledgeAmount?: number | null;
+  pledgeAmount?: number | string;
   pledgeFrequency?: PledgeFrequencyEnum | string | null;
 }
 
@@ -203,13 +203,11 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
 
-  const suggestedAmount = !suggestedChanges?.pledge_amount
-    ? null
-    : typeof suggestedChanges.pledge_amount === 'string'
-    ? parseInt(suggestedChanges.pledge_amount)
-    : suggestedChanges.pledge_amount;
+  const suggestedAmount = suggestedChanges?.pledge_amount || null;
 
   const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
+
+  const suggestedStatus = suggestedChanges?.status || null;
 
   const onSubmit = async ({
     status,
@@ -247,11 +245,10 @@ const Contact: React.FC<Props> = ({
     <Grid container className={classes.container}>
       <Formik
         initialValues={{
-          statusValue: statusValue,
+          statusValue: suggestedStatus || statusValue,
           pledgeCurrency: amountCurrency,
-          pledgeAmount: amount || suggestedAmount,
-          pledgeFrequency:
-            (frequencyValue as PledgeFrequencyEnum) || suggestedFrequency,
+          pledgeAmount: suggestedAmount || amount,
+          pledgeFrequency: suggestedFrequency || frequencyValue,
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
@@ -310,7 +307,7 @@ const Contact: React.FC<Props> = ({
                                 : ''
                             } ${getLocalizedPledgeFrequency(
                               t,
-                              pledgeFrequency,
+                              frequencyValue as PledgeFrequencyEnum,
                             )}`}
                           </Typography>
                         </Box>
