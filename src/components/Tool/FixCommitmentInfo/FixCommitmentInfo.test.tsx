@@ -8,6 +8,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
@@ -47,9 +49,11 @@ const Components = ({
             value={{ viewportHeight: 1000, itemHeight: 100 }}
           >
             <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
               InvalidStatuses: InvalidStatusesQuery;
             }>
               mocks={{
+                LoadConstants: loadConstantsMockData,
                 InvalidStatuses: {
                   contacts: {
                     nodes: mockNodes,
