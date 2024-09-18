@@ -23,7 +23,7 @@ export const useContactPartnershipStatuses = () => {
   const constants = useApiConstants();
   const { t } = useTranslation();
   const phases = constants?.phases;
-  const statuses = constants?.statuses;
+  const statuses = constants?.status;
 
   const otherStatuses = {
     NULL: {

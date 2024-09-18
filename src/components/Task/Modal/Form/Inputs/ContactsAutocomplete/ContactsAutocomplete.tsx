@@ -8,12 +8,16 @@ interface ContactsAutocompleteProps {
   accountListId: string;
   value: string[];
   onChange: (value: string[]) => void;
+  excludeContactIds?: string[];
+  disabled?: boolean;
 }
 
 export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
   accountListId,
   value,
   onChange,
+  excludeContactIds = [],
+  disabled = false,
 }) => {
   const { t } = useTranslation();
 
@@ -27,6 +31,15 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
 
   // There are too many contacts to display all of them as options, so we load the contacts that
   // the user has selected and the contacts matching the user's current search, and merge the results
+
+  const contactsFilters = excludeContactIds.length
+    ? {
+        wildcardSearch: searchTerm,
+        ids: excludeContactIds,
+        reverseIds: true,
+      }
+    : { wildcardSearch: searchTerm };
+
   const {
     data: currentSearchedContacts,
     previousData: previousSearchedContacts,
@@ -35,7 +48,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
     variables: {
       accountListId,
       first: 10,
-      contactsFilters: { wildcardSearch: searchTerm },
+      contactsFilters,
     },
   });
   // When this query loads contacts once and the user changes the search query, `data` will be
@@ -52,7 +65,14 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
     variables: {
       accountListId,
       first: value.length,
-      contactsFilters: { ids: value },
+      contactsFilters: {
+        ids: value,
+        // When the status filter is omitted, only contacts with an active status are loaded. But
+        // we need to load hidden contacts as well in case the user is adding a task to a hidden
+        // contact. Setting status to an empty array overrides the default status filter and loads
+        // contacts with any status.
+        status: [],
+      },
     },
     skip: value.length === 0,
   });
@@ -76,6 +96,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
       multiple
       openOnFocus
       autoSelect
+      disabled={disabled}
       options={options
         .slice()
         .sort((a, b) => a.name.localeCompare(b.name))

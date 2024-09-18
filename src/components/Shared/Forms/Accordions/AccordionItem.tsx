@@ -24,6 +24,10 @@ const StyledAccordion = styled(Accordion)(({ theme }) => ({
   '&:not(:last-child)': {
     borderBottom: 0,
   },
+  '&.MuiAccordion-rounded.Mui-disabled': {
+    color: theme.palette.cruGrayDark,
+    backgroundColor: 'white',
+  },
   ...accordionShared,
 }));
 
@@ -121,6 +125,7 @@ interface AccordionItemProps {
   children?: React.ReactNode;
   fullWidth?: boolean;
   image?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({
@@ -131,9 +136,10 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   children,
   fullWidth = false,
   image,
+  disabled,
 }) => {
   const expanded = useMemo(
-    () => expandedPanel.toLowerCase() === label.toLowerCase(),
+    () => expandedPanel?.toLowerCase() === label.toLowerCase(),
     [expandedPanel, label],
   );
   return (
@@ -141,6 +147,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
       onChange={() => onAccordionChange(label)}
       expanded={expanded}
       disableGutters
+      disabled={disabled}
     >
       <StyledAccordionSummary expandIcon={<ExpandMore />}>
         <StyledAccordionColumn>

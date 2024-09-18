@@ -185,7 +185,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
             : '',
           contact.pledgeAmount ?? '',
           contact.pledgeCurrency ?? '',
-          apiConstants?.pledgeFrequencies?.find(
+          apiConstants?.pledgeFrequency?.find(
             ({ key }) => key === contact.pledgeFrequency,
           )?.value ?? '',
           pledgedMonthlyEquivalent,

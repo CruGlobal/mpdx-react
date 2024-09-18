@@ -20,6 +20,7 @@ import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.ge
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import {
   ListHeader,
+  PageEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
@@ -330,7 +331,7 @@ const TasksPage: React.FC = () => {
               mainContent={
                 <>
                   <ListHeader
-                    page="task"
+                    page={PageEnum.Task}
                     activeFilters={isFiltered}
                     filterPanelOpen={filterPanelOpen}
                     toggleFilterPanel={toggleFilterPanel}

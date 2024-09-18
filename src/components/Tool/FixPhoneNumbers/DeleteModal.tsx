@@ -78,10 +78,12 @@ const DeleteModal: React.FC<Props> = ({
               <Typography variant="h5" style={{ marginTop: -theme.spacing(1) }}>
                 {t('Confirm')}
               </Typography>
-              <IconButton onClick={handleClose} className={classes.iconButton}>
-                <Icon path={mdiCloseThick} size={1} />
-              </IconButton>
             </Box>
+          }
+          action={
+            <IconButton onClick={handleClose}>
+              <Icon path={mdiCloseThick} size={1} />
+            </IconButton>
           }
         />
         <CardContent>
@@ -92,9 +94,13 @@ const DeleteModal: React.FC<Props> = ({
             justifyContent="center"
           >
             <Typography>
-              {t('Are you sure you wish to delete this phone number:')}
+              {t('Are you sure you wish to delete this phone number?')}
             </Typography>
-            <Typography>{`"${modalState.phoneNumber}"`}</Typography>
+            {modalState.phoneNumber && (
+              <Typography
+                sx={{ fontWeight: 'bold' }}
+              >{`"${modalState.phoneNumber}"`}</Typography>
+            )}
           </Box>
         </CardContent>
         <CardActions>

@@ -4,20 +4,26 @@ import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
   Box,
+  Button,
   Card,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
   IconButton,
   Skeleton,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
+import Modal from 'src/components/common/Modal/Modal';
 import { GoogleAccountAttributes } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
+  AccordionProps,
   StyledList,
   StyledListItem,
   StyledServicesButton,
@@ -26,11 +32,6 @@ import { useOauthUrl } from '../useOauthUrl';
 import { useGoogleAccountsQuery } from './GoogleAccounts.generated';
 import { DeleteGoogleAccountModal } from './Modals/DeleteGoogleAccountModal';
 import { EditGoogleAccountModal } from './Modals/EditGoogleAccountModal';
-
-interface GoogleAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
-}
 
 const EditIconButton = styled(IconButton)(() => ({
   color: theme.palette.primary.main,
@@ -69,13 +70,15 @@ export type GoogleAccountAttributesSlimmed = Pick<
   'id' | 'email' | 'primary' | 'remoteId' | 'tokenExpired'
 >;
 
-export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
+export const GoogleAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const [openEditGoogleAccount, setOpenEditGoogleAccount] = useState(false);
   const [openDeleteGoogleAccount, setOpenDeleteGoogleAccount] = useState(false);
+  const [openAddGoogleAccount, setOpenAddGoogleAccount] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<
     GoogleAccountAttributesSlimmed | undefined
   >();
@@ -101,6 +104,7 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
         expandedPanel={expandedPanel}
         label={t('Google')}
         value={''}
+        disabled={disabled}
         image={
           <img
             src="/images/settings-preferences-intergrations-google.png"
@@ -187,7 +191,10 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
                       { appName },
                     )}
                   </Alert>
-                  <StyledServicesButton variant="outlined" href={getOauthUrl()}>
+                  <StyledServicesButton
+                    variant="outlined"
+                    onClick={() => setOpenAddGoogleAccount(true)}
+                  >
                     {t('Refresh Google Account')}
                   </StyledServicesButton>
                 </>
@@ -195,7 +202,10 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
             </Card>
           ))}
         <Box>
-          <StyledServicesButton variant="contained" href={getOauthUrl()}>
+          <StyledServicesButton
+            variant="contained"
+            onClick={() => setOpenAddGoogleAccount(true)}
+          >
             {t('Add Account')}
           </StyledServicesButton>
 
@@ -211,6 +221,32 @@ export const GoogleAccordion: React.FC<GoogleAccordionProps> = ({
           )}
         </Box>
       </AccordionItem>
+      <Modal
+        isOpen={openAddGoogleAccount}
+        title={t('Add Google Account')}
+        handleClose={() => setOpenAddGoogleAccount(false)}
+      >
+        <DialogContent dividers>
+          <DialogContentText
+            component="div"
+            color={theme.palette.cruGrayDark.main}
+          >
+            {
+              <Trans
+                defaults="When you add a Google account to {{appName}}, Google will ask you what {{appName}} should be allowed to access. <bold>Please select ALL of the checkboxes.</bold><br/><br/>Otherwise, {{appName}} may not work properly."
+                shouldUnescape
+                values={{ appName }}
+                components={{ bold: <strong /> }}
+              />
+            }
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" href={getOauthUrl()}>
+            {t('Continue')}
+          </Button>
+        </DialogActions>
+      </Modal>
       {openEditGoogleAccount && selectedAccount && (
         <EditGoogleAccountModal
           handleClose={() => setOpenEditGoogleAccount(false)}

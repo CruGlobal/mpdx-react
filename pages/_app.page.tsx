@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React, { ReactElement, useMemo } from 'react';
-import { ApolloProvider as RawApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import { Box, StyledEngineProvider } from '@mui/material';
@@ -25,6 +25,7 @@ import HelpscoutBeacon from 'src/components/Helpscout/HelpscoutBeacon';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
 import TaskModalProvider from 'src/components/Task/Modal/TaskModalProvider';
@@ -60,11 +61,13 @@ const GraphQLProviders: React.FC<{
   const client = useMemo(() => makeClient(apiToken), [apiToken]);
 
   return (
-    <RawApolloProvider client={client}>
-      <UserPreferenceProvider>
-        <TaskModalProvider>{children}</TaskModalProvider>
-      </UserPreferenceProvider>
-    </RawApolloProvider>
+    <ApolloProvider client={client}>
+      <SetupProvider>
+        <UserPreferenceProvider>
+          <TaskModalProvider>{children}</TaskModalProvider>
+        </UserPreferenceProvider>
+      </SetupProvider>
+    </ApolloProvider>
   );
 };
 

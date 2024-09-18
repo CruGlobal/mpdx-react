@@ -24,6 +24,8 @@ interface MonthlyGoalAccordionProps {
   monthlyGoal: number | null;
   accountListId: string;
   currency: string;
+  disabled?: boolean;
+  handleSetupChange: () => Promise<void>;
 }
 
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
@@ -32,6 +34,8 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   monthlyGoal,
   accountListId,
   currency,
+  disabled,
+  handleSetupChange,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -72,6 +76,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
         });
       },
     });
+    handleSetupChange();
   };
 
   return (
@@ -81,6 +86,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
       label={label}
       value={monthlyGoalString}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{
@@ -123,6 +129,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                 autoFocus
                 label={label}
                 sx={{ marginTop: 1 }}
+                id="monthlyGoalInput"
               />
             </FieldWrapper>
           </FormWrapper>

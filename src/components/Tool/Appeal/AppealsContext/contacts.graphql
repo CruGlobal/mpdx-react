@@ -1,0 +1,58 @@
+query Contacts(
+  $accountListId: ID!
+  $contactsFilters: ContactFilterSetInput
+  $after: String
+  $first: Int
+) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: $contactsFilters
+    after: $after
+    first: $first
+  ) {
+    nodes {
+      ...AppealContactInfo
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+  }
+}
+
+fragment AppealContactInfo on Contact {
+  id
+  name
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  pledgeReceived
+  pledgeStartDate
+  starred
+  status
+  pledges {
+    id
+    amount
+    amountCurrency
+    appeal {
+      id
+    }
+    expectedDate
+    status
+  }
+  donations {
+    nodes {
+      appeal {
+        id
+      }
+      id
+      donationDate
+      amount {
+        amount
+        convertedAmount
+        convertedCurrency
+      }
+    }
+  }
+}

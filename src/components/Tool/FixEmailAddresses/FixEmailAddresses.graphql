@@ -1,0 +1,62 @@
+query GetInvalidEmailAddresses($accountListId: ID!, $after: String) {
+  people(
+    accountListId: $accountListId
+    peopleFilter: { emailAddressValid: false }
+    after: $after
+  ) {
+    nodes {
+      ...PersonInvalidEmail
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+fragment PersonInvalidEmail on Person {
+  id
+  firstName
+  lastName
+  avatar
+  contactId
+  emailAddresses(first: 25) {
+    nodes {
+      ...PersonEmailAddress
+    }
+  }
+}
+
+fragment PersonEmailAddress on EmailAddress {
+  id
+  primary
+  email
+  updatedAt
+  source
+}
+
+mutation UpdateEmailAddresses($input: PersonUpdateMutationInput!) {
+  updatePerson(input: $input) {
+    person {
+      emailAddresses {
+        nodes {
+          ...PersonEmailAddress
+        }
+      }
+    }
+  }
+}
+
+mutation UpdatePeople($input: PeopleUpdateMutationInput!) {
+  updatePeople(input: $input) {
+    people {
+      emailAddresses {
+        nodes {
+          ...PersonEmailAddress
+          validValues
+        }
+      }
+    }
+  }
+}

@@ -5,27 +5,28 @@ import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { IdValue, PhaseEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
+import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 
-interface Props {
+// When making changes in this file, also check to see if you don't need to make changes to the below file
+// src/components/Tool/Appeal/Flow/ContactFlowRow/ContactFlowRow.tsx
+
+export interface ContactFlowRowProps {
   accountListId: string;
-  id: string;
-  name: string;
+  contact: ContactRowFragment;
   status: {
     __typename?: 'IdValue' | undefined;
   } & Pick<IdValue, 'id' | 'value'>;
   contactPhase?: PhaseEnum | null;
-  starred: boolean;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
     flows: boolean,
   ) => void;
   columnWidth?: number;
-  avatar?: string;
 }
 
-const ContactLink = styled(Typography)(() => ({
+export const ContactLink = styled(Typography)(() => ({
   color: theme.palette.mpdxBlue.main,
   '&:hover': {
     textDecoration: 'underline',
@@ -33,7 +34,17 @@ const ContactLink = styled(Typography)(() => ({
   },
 }));
 
-const DraggableBox = styled(Box)(() => ({
+export const ContainerBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isDragging',
+})(({ isDragging }: { isDragging: boolean }) => ({
+  display: 'flex',
+  width: '100%',
+  background: 'white',
+  zIndex: isDragging ? 3 : 0,
+  opacity: isDragging ? 0 : 1,
+}));
+
+export const DraggableBox = styled(Box)(() => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -44,6 +55,11 @@ const DraggableBox = styled(Box)(() => ({
     cursor: 'move',
     backgroundColor: theme.palette.mpdxYellow.main,
   },
+}));
+
+export const StyledAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
 }));
 
 export interface DraggedContact {
@@ -57,17 +73,16 @@ export interface DraggedContact {
   contactPhase?: PhaseEnum | null;
 }
 
-export const ContactFlowRow: React.FC<Props> = ({
+export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   accountListId,
-  id,
-  name,
+  contact,
   status,
   contactPhase,
-  starred,
   onContactSelected,
   columnWidth,
-  avatar,
-}: Props) => {
+}) => {
+  const { id, name, starred, avatar } = contact;
+
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: 'contact',
@@ -91,25 +106,13 @@ export const ContactFlowRow: React.FC<Props> = ({
   }, []);
 
   return (
-    <Box
+    <ContainerBox
+      isDragging={isDragging}
       {...{ ref: drag }} //TS gives an error if you try to pass a ref normally, seems to be a MUI issue
-      display="flex"
-      width="100%"
-      style={{
-        background: 'white',
-        zIndex: isDragging ? 3 : 0,
-        opacity: isDragging ? 0 : 1,
-      }}
     >
       <DraggableBox>
         <Box display="flex" alignItems="center" width="100%">
-          <Avatar
-            src={avatar || ''}
-            style={{
-              width: theme.spacing(4),
-              height: theme.spacing(4),
-            }}
-          />
+          <StyledAvatar src={avatar || ''} />
           <Box display="flex" flexDirection="column" ml={2} draggable>
             <ContactLink onClick={() => onContactSelected(id, true, true)}>
               {name}
@@ -125,6 +128,6 @@ export const ContactFlowRow: React.FC<Props> = ({
           />
         </Box>
       </DraggableBox>
-    </Box>
+    </ContainerBox>
   );
 };

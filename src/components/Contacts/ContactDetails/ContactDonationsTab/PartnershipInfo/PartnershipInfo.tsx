@@ -71,11 +71,11 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { data } = useLoadConstantsQuery();
   const constants = data?.constant;
   const [status, setStatus] = React.useState(
-    constants?.statuses?.find(({ id }) => id === contact?.status),
+    constants?.status?.find(({ id }) => id === contact?.status),
   );
 
   React.useEffect(() => {
-    setStatus(constants?.statuses?.find(({ id }) => id === contact?.status));
+    setStatus(constants?.status?.find(({ id }) => id === contact?.status));
   }, [data?.constant]);
 
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =

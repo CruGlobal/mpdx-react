@@ -26,6 +26,7 @@ interface ExportAllDataAccordionProps {
   exportedAt?: string;
   accountListId: string;
   data?: GetPersonalPreferencesQuery | undefined;
+  disabled?: boolean;
 }
 
 export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
@@ -33,6 +34,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
   expandedPanel,
   exportedAt,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -81,6 +83,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
       label={label}
       value={''}
       fullWidth
+      disabled={disabled}
     >
       <form onSubmit={onSubmit}>
         <FieldWrapper>

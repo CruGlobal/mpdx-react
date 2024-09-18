@@ -103,7 +103,7 @@ describe('ContactHeaderStatusSection', () => {
   const statuses = Object.values(StatusEnum).map((status) => {
     return [
       status,
-      loadConstantsMockData.constant.statuses?.find((s) => s.id === status)
+      loadConstantsMockData.constant.status?.find((s) => s.id === status)
         ?.value || '',
     ];
   });

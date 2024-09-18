@@ -84,6 +84,25 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
     }
   };
 
+  const handleValidation = async ({
+    tagList,
+  }: {
+    tagList: string[] & never[];
+  }): Promise<void> => {
+    for (let i = 0; i < tagList.length; i++) {
+      if (contactTags.includes(tagList[i])) {
+        enqueueSnackbar(
+          t('Cannot add duplicate tags, duplicate tag has been removed'),
+          {
+            variant: 'error',
+          },
+        );
+        tagList.pop();
+      }
+    }
+    return;
+  };
+
   const onSubmit = async (
     { tagList }: { tagList: string[] & never[] },
     { resetForm }: FormikHelpers<{ tagList: string[] & never[] }>,
@@ -133,6 +152,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
       <Formik
         initialValues={{ tagList: [] }}
         validationSchema={tagSchema}
+        validate={handleValidation}
         onSubmit={onSubmit}
       >
         {({
@@ -150,7 +170,6 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                 autoHighlight
                 fullWidth
                 loading={loading}
-                popupIcon={<ContactTagIcon />}
                 filterSelectedOptions
                 value={tagList}
                 options={unusedTags || []}

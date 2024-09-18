@@ -11,6 +11,7 @@ module.exports = {
   output: 'public/locales/$LOCALE/$NAMESPACE.json',
   input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{jsx,tsx}'],
   verbose: true,
+  sort: true,
   nsSeparator: false,
   namespaceSeparator: false,
   keySeparator: false,

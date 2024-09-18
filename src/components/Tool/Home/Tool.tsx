@@ -1,9 +1,16 @@
 import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import Icon from '@mdi/react';
-import { Box, CardActionArea, CardContent, Typography } from '@mui/material';
+import {
+  Badge,
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+} from '@mui/material';
+import clsx from 'clsx';
 import { makeStyles } from 'tss-react/mui';
-import AnimatedCard from 'src/components/AnimatedCard';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import theme from '../../../theme';
 
@@ -12,13 +19,11 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    border: '1px solid',
-    height: '200px',
+    height: '250px',
     borderColor: theme.palette.cruGrayMedium.main,
-    backgroundColor: theme.palette.cruGrayLight.main,
     '&:hover': {
-      border: '2px solid',
-      borderColor: theme.palette.mpdxBlue.main,
+      outline: '2px solid',
+      outlineColor: theme.palette.mpdxBlue.main,
       cursor: 'pointer',
     },
   },
@@ -28,14 +33,26 @@ const useStyles = makeStyles()(() => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    height: '200px',
+    height: '250px',
   },
-  iconBG: {
-    padding: theme.spacing(2),
+  iconNeedsAttention: {
+    padding: theme.spacing(1),
     borderRadius: '50%',
     height: theme.spacing(8),
     width: theme.spacing(8),
-    backgroundColor: 'white',
+    backgroundColor: theme.palette.progressBarYellow.main,
+    color: theme.palette.common.white,
+  },
+  cardNeedsAttention: {
+    backgroundColor: '#fdf2d3',
+    outline: '1px solid',
+    outlineColor: theme.palette.progressBarYellow.main,
+  },
+  customBadge: {
+    backgroundColor: theme.palette.common.white,
+    color: theme.palette.progressBarYellow.main,
+    border: `1px solid ${theme.palette.progressBarYellow.main}`,
+    fontWeight: 'bold',
   },
 }));
 
@@ -43,35 +60,69 @@ export interface Props {
   tool: string;
   desc: string;
   icon: string;
-  id: string;
+  url: string;
+  needsAttention: boolean;
+  totalCount: number | string;
+  loading: boolean;
+  toolId: string;
 }
 
-const Tool = ({ tool, desc, icon, id }: Props): ReactElement => {
+const Tool = ({
+  tool,
+  desc,
+  icon,
+  url,
+  needsAttention,
+  totalCount,
+  loading,
+  toolId,
+}: Props): ReactElement => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
 
   return (
-    <AnimatedCard className={classes.cardContainer}>
+    <Card
+      className={clsx(
+        classes.cardContainer,
+        needsAttention && classes.cardNeedsAttention,
+      )}
+      elevation={3}
+      data-testid={`${toolId}-container`}
+    >
       <NextLink
-        href={`/accountLists/${accountListId}/tools/${id}`}
+        href={`/accountLists/${accountListId}/tools/${url}`}
         scroll={false}
       >
         <CardActionArea>
           <CardContent className={classes.cardContent}>
-            <Box
-              className={classes.iconBG}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Icon path={icon} size={3} />
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <Badge
+                classes={{ badge: classes.customBadge }}
+                overlap="circular"
+                badgeContent={
+                  !loading && needsAttention
+                    ? totalCount < 10
+                      ? totalCount
+                      : '9+'
+                    : 0
+                }
+                data-testid={`${toolId}-notifications`}
+                color="secondary"
+              >
+                <Icon
+                  data-testid={`${toolId}-icon`}
+                  className={clsx(needsAttention && classes.iconNeedsAttention)}
+                  path={icon}
+                  size={2}
+                />
+              </Badge>
             </Box>
             <Typography variant="h6">{tool}</Typography>
-            <Typography variant="body2">{desc}</Typography>
+            <Typography variant="subtitle2">{desc}</Typography>
           </CardContent>
         </CardActionArea>
       </NextLink>
-    </AnimatedCard>
+    </Card>
   );
 };
 

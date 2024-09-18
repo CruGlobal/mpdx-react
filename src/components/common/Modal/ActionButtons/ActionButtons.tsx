@@ -7,109 +7,53 @@ const StyledButton = styled(Button)(() => ({
   fontWeight: 700,
 }));
 
-interface ActionButtonProps {
-  onClick?: () => void;
-  size?: ButtonProps['size'];
-  color?: ButtonProps['color'];
-  disabled?: ButtonProps['disabled'];
-  type?: ButtonProps['type'];
-  sx?: ButtonProps['sx'];
-  variant?: ButtonProps['variant'];
+export interface ActionButtonProps extends ButtonProps {
   dataTestId?: string;
-  children?: ButtonProps['children'];
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = ({
-  onClick,
-  size,
-  color,
-  disabled,
-  type,
-  sx,
-  variant = 'text',
   dataTestId = 'action-button',
-  children,
-}) => {
-  return (
-    <StyledButton
-      onClick={onClick}
-      size={size}
-      color={color}
-      disabled={disabled}
-      type={type}
-      sx={sx}
-      variant={variant}
-      data-testid={dataTestId}
-    >
-      {children}
-    </StyledButton>
-  );
-};
+  ...props
+}) => <StyledButton variant="text" data-testid={dataTestId} {...props} />;
 
 export const SubmitButton: React.FC<ActionButtonProps> = ({
-  onClick,
-  size,
-  disabled,
-  type = 'submit',
-  variant,
   children,
+  ...props
 }) => {
   const { t } = useTranslation();
   return (
-    <ActionButton
-      onClick={onClick}
-      size={size}
-      disabled={disabled}
-      color="info"
-      type={type}
-      variant={variant}
-    >
-      {children ? children : t('Submit')}
+    <ActionButton type="submit" color="info" {...props}>
+      {children ?? t('Submit')}
     </ActionButton>
   );
 };
 
 export const DeleteButton: React.FC<ActionButtonProps> = ({
-  onClick,
-  size,
-  disabled,
-  variant,
-  sx = { marginRight: 'auto' },
+  dataTestId = 'modal-delete-button',
   children,
+  ...props
 }) => {
   const { t } = useTranslation();
   return (
     <ActionButton
-      onClick={onClick}
-      size={size}
-      dataTestId="modal-delete-button"
-      disabled={disabled}
+      data-testid={dataTestId}
       color="error"
-      sx={sx}
-      variant={variant}
+      sx={{ marginRight: 'auto' }}
+      {...props}
     >
-      {children ? children : t('Delete')}
+      {children ?? t('Delete')}
     </ActionButton>
   );
 };
 
 export const CancelButton: React.FC<ActionButtonProps> = ({
-  onClick,
-  size,
-  disabled,
-  variant,
   children,
+  ...props
 }) => {
   const { t } = useTranslation();
   return (
-    <ActionButton
-      onClick={onClick}
-      size={size}
-      disabled={disabled}
-      color="inherit"
-      variant={variant}
-    >
-      {children ? children : t('Cancel')}
+    <ActionButton color="inherit" {...props}>
+      {children ?? t('Cancel')}
     </ActionButton>
   );
 };

@@ -17,3 +17,9 @@ export const LoadingSpinner: React.FC<{ firstLoad: boolean }> = ({
     }}
   />
 );
+
+export const SmallLoadingSpinner: React.FC<{ spacing?: string }> = ({
+  spacing = '5px',
+}) => (
+  <CircularProgress color="primary" size={20} sx={{ marginRight: spacing }} />
+);

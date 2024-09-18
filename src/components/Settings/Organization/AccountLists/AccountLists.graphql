@@ -11,6 +11,7 @@ query SearchOrganizationsAccountLists(
     accountLists {
       name
       id
+      organizationCount
       designationAccounts {
         id
         displayName
@@ -34,11 +35,14 @@ query SearchOrganizationsAccountLists(
         userFirstName
         userLastName
         allowDeletion
+        userId
+        lastSyncedAt
         userEmailAddresses {
           id
           email
           primary
         }
+        organizationCount
       }
       accountListCoaches {
         id

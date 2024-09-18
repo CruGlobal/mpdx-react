@@ -1,6 +1,6 @@
-import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
@@ -36,14 +36,18 @@ const setSearch = jest.fn().mockImplementation((value) => {
   search = value;
 });
 const clearFilters = jest.fn();
-const selectedOrganizationId = 'org111';
 
-const Components = ({ children }: PropsWithChildren) => (
+const Components = ({
+  children,
+  selectedOrganizationId = 'org111',
+  selectedOrganizationName = 'Cru',
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <OrganizationsContextProvider
           selectedOrganizationId={selectedOrganizationId}
+          selectedOrganizationName={selectedOrganizationName}
           search={search}
           setSearch={setSearch}
           clearFilters={clearFilters}
@@ -87,6 +91,22 @@ describe('Contacts', () => {
 
   it('should show default screen', async () => {
     const { getByText } = render(
+      <Components selectedOrganizationId="" selectedOrganizationName="">
+        <GqlMockedProvider<{
+          SearchOrganizationsContacts: SearchOrganizationsContactsQuery;
+        }>>
+          <Contacts />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Start by adding search filters')).toBeInTheDocument();
+    });
+  });
+
+  it('should show message when not contacts are found', async () => {
+    const { getByText } = render(
       <Components>
         <GqlMockedProvider<{
           SearchOrganizationsContacts: SearchOrganizationsContactsQuery;
@@ -112,12 +132,7 @@ describe('Contacts', () => {
 
     await waitFor(() => {
       expect(
-        getByText(
-          'Unfortunately none of the contacts match your current search or filters.',
-        ),
-      ).toBeInTheDocument();
-      expect(
-        getByText('Try searching for a different keyword or organization.'),
+        getByText('No contacts match your search filters'),
       ).toBeInTheDocument();
     });
   });
@@ -141,12 +156,40 @@ describe('Contacts', () => {
 
     await waitFor(() => {
       expect(
-        queryByText('Try searching for a different keyword or organization.'),
+        queryByText('No contacts match your search filters'),
       ).not.toBeInTheDocument();
     });
 
     await waitFor(() => {
       expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
+    });
+  });
+
+  it('should remove contact when anonymized', async () => {
+    const mutationSpy = jest.fn();
+    const { getByText, queryByText, getAllByRole, getByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          SearchOrganizationsContacts: SearchOrganizationsContactsQuery;
+        }>
+          onCall={mutationSpy}
+          mocks={{
+            ...SearchOrganizationsContactsMock,
+          }}
+        >
+          <Contacts />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
+    });
+    userEvent.click(getAllByRole('button', { name: 'Anonymize' })[0]);
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() => {
+      expect(queryByText('Lastname, Firstnames')).not.toBeInTheDocument();
     });
   });
 });

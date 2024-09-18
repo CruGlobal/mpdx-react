@@ -48,7 +48,7 @@ export interface DonationTableProps {
   emptyPlaceholder: React.ReactElement;
 }
 
-const StyledGrid = styled(DataGrid)(({ theme }) => ({
+export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },
@@ -69,7 +69,7 @@ const TotalsTable = styled(Table)({
   },
 });
 
-const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
+export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   height: '0.5rem',
   borderRadius: theme.shape.borderRadius,
   ['& .MuiLinearProgress-bar']: {
@@ -77,7 +77,7 @@ const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const LoadingBox = styled(Box)(({ theme }) => ({
+export const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
   height: 300,
   minWidth: 700,
@@ -88,11 +88,11 @@ const LoadingBox = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-interface DonationRow {
+export interface DonationRow {
   id: string;
   date: DateTime;
   contactId: string | null;
@@ -107,7 +107,9 @@ interface DonationRow {
   rawDonation: DonationTableRowFragment;
 }
 
-const createDonationRow = (data: DonationTableRowFragment): DonationRow => ({
+export const createDonationRow = (
+  data: DonationTableRowFragment,
+): DonationRow => ({
   id: data.id,
   date: DateTime.fromISO(data.donationDate),
   contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
@@ -116,7 +118,8 @@ const createDonationRow = (data: DonationTableRowFragment): DonationRow => ({
   currency: data.amount.convertedCurrency,
   foreignAmount: data.amount.amount,
   foreignCurrency: data.amount.currency,
-  designationAccount: data.designationAccount.name,
+  designationAccount:
+    data.designationAccount.name || data.designationAccount.accountNumber,
   paymentMethod: data.paymentMethod ?? null,
   appealName: data.appeal?.name ?? null,
   rawDonation: data,
@@ -299,8 +302,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       acc[foreignCurrency] = {
         convertedTotal:
           convertedAmount + (acc[foreignCurrency]?.convertedTotal ?? 0),
-        foreignTotal:
-          foreignAmount + (acc[foreignCurrency]?.convertedTotal ?? 0),
+        foreignTotal: foreignAmount + (acc[foreignCurrency]?.foreignTotal ?? 0),
       };
       return acc;
     },

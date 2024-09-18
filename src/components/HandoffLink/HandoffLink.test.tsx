@@ -3,6 +3,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { UserPreferenceContext } from '../User/Preferences/UserPreferenceProvider';
 import HandoffLink from '.';
 
 describe('HandoffLink', () => {
@@ -10,6 +11,7 @@ describe('HandoffLink', () => {
   let originalOpen: Window['open'];
   const useRouter = jest.spyOn(nextRouter, 'useRouter');
   const rewriteDomain = process.env.REWRITE_DOMAIN;
+  const userId = 'userID123';
 
   beforeEach(() => {
     open = jest.fn();
@@ -32,9 +34,11 @@ describe('HandoffLink', () => {
   it('default', async () => {
     const { getByRole } = render(
       <GqlMockedProvider>
-        <HandoffLink path="/contacts">
-          <a>Link</a>
-        </HandoffLink>
+        <UserPreferenceContext.Provider value={{ userId, locale: 'en-US' }}>
+          <HandoffLink path="/contacts">
+            <a>Link</a>
+          </HandoffLink>
+        </UserPreferenceContext.Provider>
       </GqlMockedProvider>,
     );
     const linkElement = getByRole('link', { hidden: true, name: 'Link' });
@@ -43,9 +47,8 @@ describe('HandoffLink', () => {
       `https://${rewriteDomain}/contacts`,
     );
     userEvent.click(linkElement);
-    // TODO investigate why the user is undefined when click fires
     expect(open).toHaveBeenCalledWith(
-      `${process.env.SITE_URL}/api/handoff?accountListId=accountListId&userId=user-1&path=%2Fcontacts`,
+      `${process.env.SITE_URL}/api/handoff?accountListId=accountListId&userId=${userId}&path=%2Fcontacts`,
       '_blank',
     );
   });

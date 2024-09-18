@@ -1,19 +1,36 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
+import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
+import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
+import {
+  CanUserExportDataQuery,
+  GetAccountPreferencesQuery,
+} from 'src/components/Settings/preferences/GetAccountPreferences.generated';
+import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
+import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
+import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
+import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import Preferences from './preferences.page';
 
 const accountListId = 'account-list-1';
 
+const mockEnqueue = jest.fn();
+const mutationSpy = jest.fn();
+const push = jest.fn();
+
 const router = {
   query: { accountListId },
+  pathname: '/accountLists/[accountListId]/settings/preferences',
   isReady: true,
+  push,
 };
-
-const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -26,14 +43,32 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const MocksProviders = (props: {
+interface MocksProvidersProps {
   children: JSX.Element;
   canUserExportData: boolean;
   singleOrg?: boolean;
+  setup?: string;
+}
+
+const MocksProviders: React.FC<MocksProvidersProps> = ({
+  children,
+  canUserExportData,
+  singleOrg,
+  setup,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider
+      <GqlMockedProvider<{
+        GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
+        MailchimpAccount: MailchimpAccountQuery;
+        PrayerlettersAccount: PrayerlettersAccountQuery;
+        GetUserOptions: GetUserOptionsQuery;
+        GetAccountPreferences: GetAccountPreferencesQuery;
+        GetPersonalPreferences: GetPersonalPreferencesQuery;
+        GetProfileInfo: GetProfileInfoQuery;
+        CanUserExportData: CanUserExportDataQuery;
+        SetupStage: SetupStageQuery;
+      }>
         mocks={{
           GetAccountPreferences: {
             user: {
@@ -87,7 +122,7 @@ const MocksProviders = (props: {
             },
           },
           GetUsersOrganizationsAccounts: {
-            userOrganizationAccounts: props.singleOrg
+            userOrganizationAccounts: singleOrg
               ? [
                   {
                     organization: {},
@@ -104,13 +139,25 @@ const MocksProviders = (props: {
           },
           CanUserExportData: {
             canUserExportData: {
-              allowed: props.canUserExportData,
+              allowed: canUserExportData,
               exportedAt: null,
             },
           },
+          SetupStage: {
+            user: {
+              setup: null,
+            },
+            userOptions: [
+              {
+                key: 'setup_position',
+                value: setup || '',
+              },
+            ],
+          },
         }}
+        onCall={mutationSpy}
       >
-        {props.children}
+        <SetupProvider>{children}</SetupProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -165,5 +212,96 @@ describe('Preferences page', () => {
     await waitFor(() =>
       expect(queryByText('Primary Organization')).not.toBeInTheDocument(),
     );
+  });
+
+  describe('Setup Tour', () => {
+    it('should not show setup banner and accordions should not be disabled', async () => {
+      const { queryByText, queryByRole, findByText, getByText, getByRole } =
+        render(
+          <MocksProviders canUserExportData={false} singleOrg={true}>
+            <Preferences />
+          </MocksProviders>,
+        );
+
+      expect(
+        getByRole('button', { name: 'Reset Welcome Tour' }),
+      ).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(queryByText("Let's set your locale!")).not.toBeInTheDocument();
+        expect(
+          queryByRole('button', { name: 'Skip Step' }),
+        ).not.toBeInTheDocument();
+      });
+
+      //Accordions should be clickable
+      userEvent.click(await findByText('Language'));
+      await waitFor(() => {
+        expect(
+          getByText('The language determines your default language for .'),
+        ).toBeVisible();
+      });
+    });
+
+    it('should show setup banner and open locale', async () => {
+      const { findByText, getByRole, queryByText, getByText } = render(
+        <MocksProviders
+          canUserExportData={false}
+          singleOrg={true}
+          setup="preferences.personal"
+        >
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      //Accordions should be disabled
+      await waitFor(() => {
+        const label = getByText('Language');
+        expect(() => userEvent.click(label)).toThrow();
+        expect(
+          queryByText('The language determines your default language for .'),
+        ).not.toBeInTheDocument();
+      });
+
+      // Start with Locale
+      expect(await findByText("Let's set your locale!")).toBeInTheDocument();
+      expect(
+        await findByText(
+          'The locale determines how numbers, dates and other information are formatted.',
+        ),
+      ).toBeInTheDocument();
+
+      // Moves to Monthly Goal
+      userEvent.click(getByRole('button', { name: 'Save' }));
+      expect(
+        await findByText('Great progress comes from great goals!'),
+      ).toBeInTheDocument();
+      expect(
+        await findByText(
+          'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
+        ),
+      ).toBeInTheDocument();
+
+      // Home Country
+      const skipButton = getByRole('button', { name: 'Skip Step' });
+      userEvent.click(skipButton);
+      expect(
+        await findByText(
+          'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
+        ),
+      ).toBeInTheDocument();
+
+      // Move to Notifications
+      userEvent.click(skipButton);
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+          key: 'setup_position',
+          value: 'preferences.notifications',
+        });
+        expect(push).toHaveBeenCalledWith(
+          '/accountLists/account-list-1/settings/notifications',
+        );
+      });
+    });
   });
 });

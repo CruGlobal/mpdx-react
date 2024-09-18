@@ -22,6 +22,7 @@ interface CurrencyAccordionProps {
   expandedPanel: string;
   currency: string;
   accountListId: string;
+  disabled?: boolean;
 }
 
 export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
@@ -29,12 +30,13 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   expandedPanel,
   currency,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const constants = useApiConstants();
-  const currencies = constants?.pledgeCurrencies ?? [];
+  const currencies = constants?.pledgeCurrency ?? [];
   const label = t('Default Currency');
 
   const onSubmit = async (
@@ -73,6 +75,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
       label={label}
       value={currency}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

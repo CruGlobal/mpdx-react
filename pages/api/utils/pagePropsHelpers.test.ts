@@ -1,6 +1,11 @@
 import { GetServerSidePropsContext } from 'next';
 import { getSession } from 'next-auth/react';
-import { enforceAdmin, loadSession } from './pagePropsHelpers';
+import { session } from '__tests__/fixtures/session';
+import {
+  enforceAdmin,
+  loadSession,
+  makeGetServerSideProps,
+} from './pagePropsHelpers';
 
 jest.mock('next-auth/react');
 
@@ -48,5 +53,75 @@ describe('loadSession', () => {
         destination: '/login',
       },
     });
+  });
+});
+
+describe('makeGetServerSideProps', () => {
+  it('redirects to the login page if the session is missing', async () => {
+    (getSession as jest.Mock).mockResolvedValue(null);
+
+    const getServerSidePropsFromSession = jest.fn();
+    const getServerSideProps = makeGetServerSideProps(
+      getServerSidePropsFromSession,
+    );
+
+    await expect(getServerSideProps(context)).resolves.toEqual({
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    });
+    expect(getServerSidePropsFromSession).not.toHaveBeenCalled();
+  });
+
+  it('calls the custom function and adds the session to the returned props', async () => {
+    (getSession as jest.Mock).mockResolvedValue(session);
+
+    const getServerSidePropsFromSession = jest.fn().mockResolvedValue({
+      props: {
+        data1: 1,
+        dataA: 'A',
+      },
+    });
+    const getServerSideProps = makeGetServerSideProps(
+      getServerSidePropsFromSession,
+    );
+
+    await expect(getServerSideProps(context)).resolves.toEqual({
+      props: {
+        session,
+        data1: 1,
+        dataA: 'A',
+      },
+    });
+    expect(getServerSidePropsFromSession).toHaveBeenCalledWith(
+      session,
+      context,
+    );
+  });
+
+  it('calls the custom function and passes through redirects', async () => {
+    (getSession as jest.Mock).mockResolvedValue(session);
+
+    const getServerSidePropsFromSession = jest.fn().mockResolvedValue({
+      redirect: {
+        destination: '/new/url',
+        permanent: false,
+      },
+    });
+    const getServerSideProps = makeGetServerSideProps(
+      getServerSidePropsFromSession,
+    );
+
+    await expect(getServerSideProps(context)).resolves.toEqual({
+      redirect: {
+        destination: '/new/url',
+        permanent: false,
+      },
+    });
+    expect(getServerSidePropsFromSession).toHaveBeenCalledWith(
+      session,
+      context,
+    );
   });
 });

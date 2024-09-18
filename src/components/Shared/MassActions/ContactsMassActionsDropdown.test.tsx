@@ -7,13 +7,14 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
-import { TableViewModeEnum } from '../Header/ListHeader';
+import { PageEnum, TableViewModeEnum } from '../Header/ListHeader';
 import { ContactsMassActionsDropdown } from './ContactsMassActionsDropdown';
 
 const selectedIds: string[] = ['abc'];
@@ -46,6 +47,7 @@ const ContactComponents = () => (
               contactDetailsOpen={false}
               contactsView={TableViewModeEnum.List}
               selectedIds={selectedIds}
+              page={PageEnum.Contact}
             />
           </SnackbarProvider>
         </LocalizationProvider>
@@ -277,6 +279,7 @@ describe('ContactsMassActionsDropdown', () => {
                     contactDetailsOpen={false}
                     contactsView={TableViewModeEnum.List}
                     selectedIds={selectedIdsMerge}
+                    page={PageEnum.Contact}
                   />
                 </ContactsProvider>
               </SnackbarProvider>
@@ -307,5 +310,52 @@ describe('ContactsMassActionsDropdown', () => {
       { variant: 'error' },
     );
     expect(queryByTestId('MergeModal')).not.toBeInTheDocument();
+  });
+
+  it('should not be able to view add excluded contacts when page is not appeal', async () => {
+    const { getByText, queryByText } = render(<ContactComponents />);
+
+    const actionsButton = getByText('Actions') as HTMLInputElement;
+    userEvent.click(actionsButton);
+
+    expect(
+      queryByText('Add Excluded Contacts To Appeal'),
+    ).not.toBeInTheDocument();
+    expect(getByText('Add to Appeal')).toBeInTheDocument();
+    expect(getByText('Add to New Appeal')).toBeInTheDocument();
+  });
+
+  it('opens add excluded contacts modal when page is appeal', async () => {
+    const selectedIdsMerge = ['abc', 'def'];
+    const { getByTestId, getByText, findByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <SnackbarProvider>
+                <AppealsWrapper>
+                  <ContactsMassActionsDropdown
+                    filterPanelOpen={false}
+                    contactDetailsOpen={false}
+                    contactsView={TableViewModeEnum.List}
+                    selectedIds={selectedIdsMerge}
+                    page={PageEnum.Appeal}
+                    isExcludedAppealPage={true}
+                  />
+                </AppealsWrapper>
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(queryByText('Add to Appeal')).not.toBeInTheDocument();
+    expect(queryByText('Add to New Appeal')).not.toBeInTheDocument();
+    expect(getByText('Add Excluded Contacts To Appeal')).toBeInTheDocument();
+    userEvent.click(getByText('Add Excluded Contacts To Appeal'));
+    expect(await findByText('Add Contacts')).toBeInTheDocument();
+    userEvent.click(getByTestId('CloseIcon'));
   });
 });

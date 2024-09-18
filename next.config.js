@@ -96,7 +96,10 @@ const config = {
       process.env.HS_SETTINGS_SERVICES_SUGGESTIONS,
     HS_SETUP_FIND_ORGANIZATION: process.env.HS_SETUP_FIND_ORGANIZATION,
     ALERT_MESSAGE: process.env.ALERT_MESSAGE,
+    PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL,
+    TERMS_OF_USE_URL: process.env.TERMS_OF_USE_URL,
     DD_ENV: process.env.DD_ENV ?? 'development',
+    DISABLE_SETUP_TOUR: process.env.DISABLE_SETUP_TOUR,
   },
   experimental: {
     modularizeImports: {

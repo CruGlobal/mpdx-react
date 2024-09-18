@@ -2,8 +2,10 @@ import { OrganizationsAccountList } from 'src/graphql/types.generated';
 
 export class AccountListsMocks {
   accountList: OrganizationsAccountList = {
+    __typename: 'OrganizationsAccountList',
     id: '1111',
-    name: 'Name1',
+    name: 'Test Account List Name',
+    organizationCount: 1,
     designationAccounts: [
       {
         id: '297b398f',
@@ -33,6 +35,9 @@ export class AccountListsMocks {
         userFirstName: 'userFirstName',
         userLastName: 'userLastName',
         allowDeletion: true,
+        userId: 'e8a19920',
+        lastSyncedAt: '',
+        organizationCount: 1,
         userEmailAddresses: [
           {
             id: '507548d6',

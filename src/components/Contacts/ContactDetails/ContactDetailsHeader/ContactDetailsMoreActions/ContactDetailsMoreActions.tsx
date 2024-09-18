@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -10,10 +9,7 @@ import { Box, IconButton, ListItemText, Menu } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import {
-  ContactsDocument,
-  ContactsQuery,
-} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
   ContactsContext,
   ContactsType,
@@ -23,9 +19,14 @@ import {
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import {
+  AppealsContext,
+  AppealsType,
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -115,17 +116,23 @@ interface ContactDetailsMoreAcitionsProps {
   contactId: string;
   status: StatusEnum;
   onClose: () => void;
+  contextType?: ContactContextTypesEnum;
 }
 
 export const ContactDetailsMoreAcitions: React.FC<
   ContactDetailsMoreAcitionsProps
-> = ({ contactId, status, onClose }) => {
+> = ({
+  contactId,
+  status,
+  onClose,
+  contextType = ContactContextTypesEnum.Contacts,
+}) => {
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { t } = useTranslation();
-  const { query, push } = useRouter();
-  const { accountListId, searchTerm } = React.useContext(
-    ContactsContext,
-  ) as ContactsType;
+  const { accountListId } =
+    contextType === ContactContextTypesEnum.Contacts
+      ? (React.useContext(ContactsContext) as ContactsType)
+      : (React.useContext(AppealsContext) as AppealsType);
 
   const {
     referralsModalOpen,
@@ -142,7 +149,6 @@ export const ContactDetailsMoreAcitions: React.FC<
 
   const [openHideModal, setOpenHideModal] = useState(false);
   const [updateHiding, setUpdateHiding] = useState(false);
-  const { contactId: _, ...queryWithoutContactId } = query;
   const hideContact = async (): Promise<void> => {
     setUpdateHiding(true);
     const attributes = {
@@ -173,39 +179,14 @@ export const ContactDetailsMoreAcitions: React.FC<
         accountListId: accountListId ?? '',
         contactId,
       },
-      update: (cache, { data: deletedContactData }) => {
-        const deletedContactId = deletedContactData?.deleteContact?.id;
-        const query = {
-          query: ContactsDocument,
-          variables: {
-            accountListId,
-            searchTerm,
-          },
-        };
+      update: (cache) => {
+        cache.evict({ id: `Contact:${contactId}` });
+        cache.gc();
 
-        const dataFromCache = cache.readQuery<ContactsQuery>(query);
-
-        if (dataFromCache) {
-          const data = {
-            ...dataFromCache,
-            contacts: {
-              ...dataFromCache.contacts,
-              nodes: dataFromCache.contacts.nodes.filter(
-                (contact) => contact.id !== deletedContactId,
-              ),
-              totalCount: dataFromCache.contacts.totalCount - 1,
-            },
-          };
-          cache.writeQuery({ ...query, data });
-
-          push({
-            pathname: '/accountLists/[accountListId]/contacts',
-            query: { searchTerm, ...queryWithoutContactId },
-          });
-          enqueueSnackbar(t('Contact successfully deleted'), {
-            variant: 'success',
-          });
-        }
+        enqueueSnackbar(t('Contact successfully deleted'), {
+          variant: 'success',
+        });
+        onClose();
       },
     });
     setDeleteModalOpen(false);

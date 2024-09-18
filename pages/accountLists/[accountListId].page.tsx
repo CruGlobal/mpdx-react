@@ -1,8 +1,6 @@
-import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { Session } from 'next-auth';
-import { getSession } from 'next-auth/react';
+import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
 import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import Dashboard from 'src/components/Dashboard';
 import {
@@ -23,7 +21,6 @@ import {
 export interface AccountListIdPageProps {
   data: GetDashboardQuery;
   modal: string;
-  session: Session | null;
 }
 
 const AccountListIdPage = ({
@@ -80,59 +77,48 @@ const AccountListIdPage = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
-  const apiToken = session?.user.apiToken;
-  // If no token from session, redirect to login page
-  if (!apiToken) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
+export const getServerSideProps = makeGetServerSideProps(
+  async (session, context) => {
+    try {
+      const { query } = context;
+      if (typeof query.accountListId !== 'string') {
+        throw new Error('Invalid accountListId');
+      }
 
-  try {
-    const { query } = context;
-    if (typeof query.accountListId !== 'string') {
-      throw new Error('Invalid accountListId');
+      const ssrClient = makeSsrClient(session.user.apiToken);
+      const { data } = await ssrClient.query<
+        GetDashboardQuery,
+        GetDashboardQueryVariables
+      >({
+        query: GetDashboardDocument,
+        variables: {
+          accountListId: query.accountListId,
+          // TODO: implement these variables in query
+          // endOfDay: DateTime.local().endOf('day').toISO(),
+          // today: DateTime.local().endOf('day').toISODate(),
+          // twoWeeksFromNow: DateTime.local()
+          //   .endOf('day')
+          //   .plus({ weeks: 2 })
+          //   .toISODate(),
+        },
+      });
+
+      return {
+        props: {
+          data,
+          modal: query?.modal?.toString() ?? '',
+        },
+      };
+    } catch (error) {
+      logErrorOnRollbar(error, '/accountLists/[accountListId].page');
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
     }
-
-    const ssrClient = makeSsrClient(apiToken);
-    const { data } = await ssrClient.query<
-      GetDashboardQuery,
-      GetDashboardQueryVariables
-    >({
-      query: GetDashboardDocument,
-      variables: {
-        accountListId: query.accountListId,
-        // TODO: implement these variables in query
-        // endOfDay: DateTime.local().endOf('day').toISO(),
-        // today: DateTime.local().endOf('day').toISODate(),
-        // twoWeeksFromNow: DateTime.local()
-        //   .endOf('day')
-        //   .plus({ weeks: 2 })
-        //   .toISODate(),
-      },
-    });
-
-    return {
-      props: {
-        data,
-        modal: query?.modal?.toString() ?? '',
-        session,
-      },
-    };
-  } catch (error) {
-    logErrorOnRollbar(error, '/accountLists/[accountListId].page');
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
-};
+  },
+);
 
 export default AccountListIdPage;

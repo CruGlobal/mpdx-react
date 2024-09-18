@@ -10,6 +10,7 @@ import {
   monthYearFormat,
   numberFormat,
   percentageFormat,
+  validateAndFormatInvalidDate,
 } from './intlFormat';
 
 describe('intlFormat', () => {
@@ -81,6 +82,13 @@ describe('intlFormat', () => {
     describe('currency', () => {
       it('handles undefined case', () => {
         expect(currencyFormat(1000, undefined, 'en-US')).toEqual('$1,000');
+      });
+      it('handles empty string case', () => {
+        expect(currencyFormat(1234.56, '', 'en-GB')).toEqual('US$1,234.56');
+      });
+
+      it('handles an error', () => {
+        expect(currencyFormat(1234.56, ' ', 'en-GB')).toEqual('1234.56  ');
       });
     });
 
@@ -196,6 +204,44 @@ describe('intlFormat', () => {
       const date = dateFromParts(null, null, 6, locale);
 
       expect(date).toBeNull();
+    });
+
+    it('handle an invalid date', () => {
+      const date = dateFromParts(2000, 0, 0, locale);
+
+      expect(date).toBe('0/0/2000 - Invalid Date, please fix.');
+    });
+
+    it('handle an invalid date without a year', () => {
+      const date = dateFromParts(null, 0, 0, locale);
+
+      expect(date).toBe('0/0/2020 - Invalid Date, please fix.');
+    });
+
+    it('handle an invalid date where we can not format the invalid date', () => {
+      const date = dateFromParts(0, 0, 2000, locale);
+
+      expect(date).toBe(
+        'Invalid Date - you specified 0 (of type number) as a month, which is invalid',
+      );
+    });
+  });
+
+  describe('validateAndFormatInvalidDate', () => {
+    const locale = 'en-US';
+    it('returns invalid date en-US formatted', () => {
+      const date = validateAndFormatInvalidDate(2000, 0, 0, locale);
+      expect(date.formattedInvalidDate).toBe('0/0/2000');
+    });
+
+    it('returns invalid date en-UK formatted', () => {
+      const date = validateAndFormatInvalidDate(2000, 0, 0, 'en-UK');
+      expect(date.formattedInvalidDate).toBe('0/00/2000');
+    });
+
+    it('returns invalid date de formatted', () => {
+      const date = validateAndFormatInvalidDate(2000, 0, 0, 'de');
+      expect(date.formattedInvalidDate).toBe('0.0.2000');
     });
   });
   //this test often fails locally. It passes on github.

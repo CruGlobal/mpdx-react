@@ -1,105 +1,106 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ErgonoMockShape } from 'graphql-ergonomock';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import {
+  GetInvalidEmailAddressesQuery,
+  UpdateEmailAddressesMutation,
+  UpdatePeopleMutation,
+} from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
-import { FixEmailAddresses } from './FixEmailAddresses';
-import { GetInvalidEmailAddressesQuery } from './GetInvalidEmailAddresses.generated';
+import { EmailAddressesMutation } from './AddEmailAddress.generated';
+import {
+  FixEmailAddresses,
+  PersonEmailAddresses,
+  determineBulkDataToSend,
+} from './FixEmailAddresses';
+import {
+  contactId,
+  contactOneEmailAddressNodes,
+  mockInvalidEmailAddressesResponse,
+  newEmail,
+} from './FixEmailAddressesMocks';
 
-const accountListId = 'test121';
-
+const accountListId = 'accountListId';
 const router = {
   query: { accountListId },
   isReady: true,
 };
 
-const testData: ErgonoMockShape[] = [
-  {
-    id: 'testid',
-    firstName: 'Test',
-    lastName: 'Contact',
-    emailAddresses: {
-      nodes: [
-        {
-          id: 'id1',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          email: 'email1@gmail.com',
-          primary: true,
-          source: 'MPDX',
-        },
-        {
-          id: 'id12',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          email: 'email2@gmail.com',
-          primary: false,
-          source: 'MPDX',
-        },
-        {
-          id: 'id3',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          email: 'email3@gmail.com',
-          primary: false,
-          source: 'MPDX',
-        },
-      ],
-    },
-  },
-  {
-    id: 'testid2',
-    firstName: 'Simba',
-    lastName: 'Lion',
-    emailAddresses: {
-      nodes: [
-        {
-          id: 'id4',
-          updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-          number: 'email4@gmail.com',
-          primary: true,
-          source: 'MPDX',
-        },
-        {
-          id: 'id5',
-          updatedAt: new Date('2021-06-22T03:40:05-06:00').toISOString(),
-          number: 'email5@gmail.com',
-          primary: false,
-          source: 'MPDX',
-        },
-      ],
-    },
-  },
-];
+const setContactFocus = jest.fn();
+const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
 
-describe('FixPhoneNumbers-Home', () => {
-  it('default with test data', async () => {
-    const { getByText, getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+jest.mock('src/hooks/useGetAppSettings');
+
+const defaultGraphQLMock = {
+  GetInvalidEmailAddresses: {
+    people: {
+      nodes: mockInvalidEmailAddressesResponse,
+      pageInfo: { hasNextPage: false },
+    },
+  },
+};
+
+interface ComponentsProps {
+  mocks?: ApolloErgonoMockMap;
+}
+
+const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <TestWrapper>
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
             <GqlMockedProvider<{
               GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+              EmailAddresses: EmailAddressesMutation;
+              UpdateEmailAddresses: UpdateEmailAddressesMutation;
+              UpdatePeople: UpdatePeopleMutation;
             }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
+              mocks={mocks}
+              onCall={mutationSpy}
             >
-              <FixEmailAddresses accountListId={accountListId} />
+              <FixEmailAddresses
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
             </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+          </VirtuosoMockContext.Provider>
+        </TestWrapper>
+      </TestRouter>
+    </ThemeProvider>
+  </SnackbarProvider>
+);
 
-    await waitFor(() =>
-      expect(getByText('Fix Email Addresses')).toBeInTheDocument(),
-    );
+describe('FixEmailAddresses-Home', () => {
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
+  it('default with test data', async () => {
+    const { getByText, getByTestId, queryByTestId } = render(<Components />);
+
     await waitFor(() =>
       expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
     );
@@ -114,90 +115,136 @@ describe('FixPhoneNumbers-Home', () => {
     expect(queryByTestId('no-data')).not.toBeInTheDocument();
   });
 
-  it('change primary of first email', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
+  it('should show the app name as a source value', async () => {
+    const { getByRole, getByText } = render(<Components />);
+    await waitFor(() => {
+      expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
+      expect(getByRole('combobox')).toHaveTextContent('MPDX');
+    });
+  });
+
+  describe('handleChangePrimary()', () => {
+    it('changes primary of first email', async () => {
+      const { getByTestId, queryByTestId } = render(<Components />);
+
+      const star1 = await waitFor(() =>
+        getByTestId('starOutlineIcon-testid-1'),
+      );
+      userEvent.click(star1);
+
+      expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+      expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
+      expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+    });
+
+    it('should choose primary and deselect primary from others', async () => {
+      const { getByTestId, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: [
+                  {
+                    ...mockInvalidEmailAddressesResponse[0],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          primary: true,
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          primary: true,
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[2],
+                          primary: true,
+                        },
+                      ],
+                    },
                   },
-                },
-              }}
-            >
-              <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
+                  {
+                    ...mockInvalidEmailAddressesResponse[1],
+                  },
+                ],
+              },
+            },
+          }}
+        />,
+      );
+
+      let newPrimary;
+      await waitFor(() => {
+        expect(getByTestId('starIcon-testid-0')).toBeInTheDocument();
+        expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
+        newPrimary = getByTestId('starIcon-testid-2');
+        expect(newPrimary).toBeInTheDocument();
+      });
+      userEvent.click(newPrimary);
+
+      await waitFor(() => {
+        expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
+        expect(queryByTestId('starIcon-testid-1')).not.toBeInTheDocument();
+        expect(getByTestId('starIcon-testid-2')).toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+        expect(
+          queryByTestId('starOutlineIcon-testid-2'),
+        ).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  it('should add an new email address, firing a GraphQL mutation and resetting the form', async () => {
+    const { getByTestId, getAllByLabelText } = render(<Components />);
+    await waitFor(() => {
+      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+    });
+    const textFieldNew = getAllByLabelText('New Email Address')[0];
+    userEvent.type(textFieldNew, newEmail.email);
+    const addButton = getByTestId('addButton-testid');
+    expect(textFieldNew).toHaveValue(newEmail.email);
+
+    userEvent.click(addButton);
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Added email address', {
+        variant: 'success',
+      }),
     );
-
-    const star1 = await waitFor(() => getByTestId('starOutlineIcon-testid-1'));
-    userEvent.click(star1);
-
-    expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
-    expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+    expect(mutationSpy).toHaveGraphqlOperation('EmailAddresses', {
+      input: {
+        accountListId: accountListId,
+        attributes: {
+          id: 'testid',
+          emailAddresses: [{ email: newEmail.email }],
+        },
+      },
+    });
+    await waitFor(() => expect(textFieldNew).toHaveValue(''));
   });
 
   it('delete third email from first person', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
+    const { getByTestId, getByText, getByRole, queryByTestId } = render(
+      <Components />,
     );
 
     const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
     userEvent.click(delete02);
 
-    const deleteButton = getByTestId('modal-delete-button');
-    userEvent.click(deleteButton);
+    await waitFor(() =>
+      getByText(`Are you sure you wish to delete this email address:`),
+    );
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+    });
   });
 
   it('change second email for second person to primary then delete it', async () => {
-    const { getByTestId, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
+    const { getByTestId, queryByTestId, getByText, getByRole } = render(
+      <Components />,
     );
 
     const star11 = await waitFor(() =>
@@ -205,76 +252,29 @@ describe('FixPhoneNumbers-Home', () => {
     );
     userEvent.click(star11);
 
-    const delete11 = getByTestId('delete-testid2-1');
+    const delete11 = await waitFor(() => getByTestId('delete-testid2-1'));
     userEvent.click(delete11);
 
-    const deleteButton = getByTestId('modal-delete-button');
-    userEvent.click(deleteButton);
-
-    expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
-  });
-
-  it('add an email address to second person', async () => {
-    const { getByTestId, getByDisplayValue } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
     await waitFor(() =>
-      expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument(),
+      getByText(`Are you sure you wish to delete this email address:`),
     );
-    expect(getByTestId('textfield-testid2-0')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    const textfieldNew1 = getByTestId(
-      'addNewEmailInput-testid2',
-    ) as HTMLInputElement;
-    userEvent.type(textfieldNew1, 'email12345@gmail.com');
-    const addButton1 = getByTestId('addButton-testid2');
-    userEvent.click(addButton1);
-
-    expect(textfieldNew1.value).toBe('');
-    expect(getByTestId('textfield-testid2-2')).toBeInTheDocument();
-    expect(getByDisplayValue('email12345@gmail.com')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
+      expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
+    });
   });
 
   it('should render no contacts with no data', async () => {
     const { getByText, getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: [],
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
+      <Components
+        mocks={{
+          GetInvalidEmailAddresses: {
+            people: { nodes: [] },
+          },
+        }}
+      />,
     );
     await waitFor(() =>
       expect(getByTestId('fixEmailAddresses-null-state')).toBeInTheDocument(),
@@ -285,34 +285,352 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should modify first email of first contact', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-            }>
-              mocks={{
-                GetInvalidEmailAddresses: {
-                  people: {
-                    nodes: testData,
-                  },
-                },
-              }}
-            >
-              <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<Components />);
     await waitFor(() => {
       expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
     });
-    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
+    const firstInput = getByTestId('textfield-testid-0');
 
-    expect(firstInput.value).toBe('email1@gmail.com');
+    expect(firstInput).toHaveValue('email1@gmail.com');
     userEvent.type(firstInput, '123');
-    expect(firstInput.value).toBe('email1@gmail.com123');
+    expect(firstInput).toHaveValue('email1@gmail.com123');
+  });
+
+  describe('setContactFocus()', () => {
+    it('should open up contact details', async () => {
+      const { getByText, queryByTestId } = render(<Components />);
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+      expect(setContactFocus).not.toHaveBeenCalled();
+
+      const contactName = getByText('Test Contact');
+
+      expect(contactName).toBeInTheDocument();
+      userEvent.click(contactName);
+      expect(setContactFocus).toHaveBeenCalledWith(contactId);
+    });
+  });
+
+  describe('Add email address - Testing cache', () => {
+    it('should add an email address to the first person', async () => {
+      const { getAllByTestId, getByTestId, queryByTestId, getAllByRole } =
+        render(<Components />);
+
+      const emailInput = await waitFor(
+        () => getAllByRole('textbox', { name: 'New Email Address' })[0],
+      );
+      const addButton = getAllByTestId('addButton-testid')[0];
+      expect(queryByTestId('starOutlineIcon-testid-2')).not.toBeInTheDocument();
+
+      expect(addButton).toBeDisabled();
+      userEvent.type(emailInput, 'test@cru.org');
+      expect(addButton).not.toBeDisabled();
+      userEvent.click(addButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith('Added email address', {
+          variant: 'success',
+        });
+      });
+
+      await waitFor(() =>
+        expect(getByTestId('starOutlineIcon-testid-2')).toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe('handleSingleConfirm', () => {
+    it('should successfully submit changes to multiple emails', async () => {
+      const personName = 'Test Contact';
+      const { getAllByRole, getByTestId, getByText, queryByText } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      });
+
+      expect(getByText(personName)).toBeInTheDocument();
+
+      const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
+      userEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully updated email addresses for ${personName}`,
+          { variant: 'success' },
+        );
+        expect(queryByText(personName)).not.toBeInTheDocument();
+      });
+    }, 999999);
+
+    it('should handle an error', async () => {
+      const { getAllByRole, getByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+            UpdateEmailAddresses: () => {
+              throw new Error('Server Error');
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument(),
+      );
+
+      const confirmButton = getAllByRole('button', { name: 'Confirm' })[0];
+      userEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Error updating email addresses for Test Contact',
+          { variant: 'error', autoHideDuration: 7000 },
+        );
+      });
+    });
+  });
+
+  describe('handleBulkConfirm', () => {
+    it('should save all the email changes for all people', async () => {
+      const noPeopleMessage = 'No people with email addresses need attention';
+
+      const { getByRole, getByText, getByTestId, queryByTestId } = render(
+        <Components />,
+      );
+
+      await waitFor(() => {
+        expect(queryByTestId('loading')).not.toBeInTheDocument();
+        expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      });
+      userEvent.click(getByTestId('starOutlineIcon-testid-1'));
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully updated email addresses`,
+          { variant: 'success' },
+        );
+        expect(getByText(noPeopleMessage)).toBeVisible();
+      });
+    });
+
+    it('should handle errors', async () => {
+      const personName1 = 'Test Contact';
+      const personName2 = 'Simba Lion';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+            UpdatePeople: () => {
+              throw new Error('Server error');
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Error updating email addresses`,
+          { variant: 'error', autoHideDuration: 7000 },
+        );
+        expect(getByText(personName1)).toBeVisible();
+        expect(getByText(personName2)).toBeVisible();
+      });
+    });
+
+    it('should cancel the bulk confirmation', async () => {
+      const personName1 = 'Test Contact';
+      const personName2 = 'Simba Lion';
+
+      const { getByRole, getByText, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: mockInvalidEmailAddressesResponse,
+              },
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('loading')).not.toBeInTheDocument(),
+      );
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'No' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).not.toHaveBeenCalled();
+        expect(getByText(personName1)).toBeVisible();
+        expect(getByText(personName2)).toBeVisible();
+      });
+    });
+
+    it('should not update if there is no email for the default source', async () => {
+      const noPrimaryEmailMessage =
+        'No MPDX primary email address exists to update';
+
+      const { getByRole, queryByTestId } = render(
+        <Components
+          mocks={{
+            GetInvalidEmailAddresses: {
+              people: {
+                nodes: [
+                  {
+                    ...mockInvalidEmailAddressesResponse[0],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          source: 'DataServer',
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          source: 'DonorHub',
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    ...mockInvalidEmailAddressesResponse[1],
+                    emailAddresses: {
+                      nodes: [
+                        {
+                          ...contactOneEmailAddressNodes[0],
+                          source: 'DataServer',
+                        },
+                        {
+                          ...contactOneEmailAddressNodes[1],
+                          source: 'DonorHub',
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(queryByTestId('loading')).not.toBeInTheDocument();
+      });
+      userEvent.click(getByRole('combobox'));
+      userEvent.click(getByRole('option', { name: 'MPDX' }));
+
+      const bulkConfirmButton = getByRole('button', {
+        name: 'Confirm 2 as MPDX',
+      });
+      userEvent.click(bulkConfirmButton);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(noPrimaryEmailMessage, {
+          variant: 'warning',
+          autoHideDuration: 7000,
+        });
+        expect(bulkConfirmButton).toBeVisible();
+      });
+    });
+  });
+
+  describe('determineBulkDataToSend', () => {
+    it('should set the first email of the given source to primary', () => {
+      const dataState = {
+        testid: {
+          emailAddresses: [
+            {
+              ...contactOneEmailAddressNodes[0],
+              primary: false,
+            },
+            {
+              ...contactOneEmailAddressNodes[1],
+            },
+            {
+              ...contactOneEmailAddressNodes[2],
+              primary: true,
+            },
+          ],
+        },
+      } as { [key: string]: PersonEmailAddresses };
+      const defaultSource = 'MPDX';
+
+      const dataToSend = determineBulkDataToSend(
+        dataState,
+        defaultSource,
+        'MPDX',
+      );
+
+      const emails = dataToSend[0].emailAddresses ?? [];
+      expect(emails[0].primary).toEqual(true);
+      expect(emails[2].primary).toEqual(false);
+    });
+
+    it('should be empty if there is no email of the given source', () => {
+      const dataState = {
+        testid: {
+          emailAddresses: [
+            {
+              ...contactOneEmailAddressNodes[0],
+            },
+            {
+              ...contactOneEmailAddressNodes[1],
+            },
+            {
+              ...contactOneEmailAddressNodes[2],
+            },
+          ],
+        },
+      } as { [key: string]: PersonEmailAddresses };
+      const defaultSource = 'DonorHub';
+
+      const dataToSend = determineBulkDataToSend(
+        dataState,
+        defaultSource,
+        'MPDX',
+      );
+      expect(dataToSend.length).toEqual(0);
+    });
   });
 });

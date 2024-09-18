@@ -1,4 +1,8 @@
 query GetAccountLists {
+  user {
+    id
+    setup
+  }
   accountLists(first: 50) {
     nodes {
       id

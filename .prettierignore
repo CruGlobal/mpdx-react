@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# lighthouse generated
+.lighthouseci/*
+/lighthouse/lighthouse-results.md
+
+# Generated translation files
+/public/locales/

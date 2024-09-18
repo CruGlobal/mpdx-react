@@ -329,7 +329,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       </MenuItem>
                       {!loadingConstants &&
                         getPledgeCurrencyOptions(
-                          constants?.constant?.pledgeCurrencies,
+                          constants?.constant?.pledgeCurrency,
                         )}
                     </Select>
                   </FormControl>

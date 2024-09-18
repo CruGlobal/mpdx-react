@@ -9,6 +9,10 @@ export const Default = (): ReactElement => {
   return (
     <AccountLists
       data={{
+        user: {
+          id: 'user-1',
+          setup: null,
+        },
         accountLists: {
           nodes: [
             {

@@ -1,9 +1,10 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, RefObject } from 'react';
 import { XYCoord, useDragLayer } from 'react-dnd';
-import theme from '../../../../theme';
+import theme from 'src/theme';
 import { ContactFlowRowPreview } from './ContactFlowRowPreview';
+import { useAutoScroll } from './useAutoScroll';
 
-const layerStyles: CSSProperties = {
+export const layerStyles: CSSProperties = {
   position: 'absolute',
   pointerEvents: 'none',
   zIndex: 100,
@@ -13,12 +14,12 @@ const layerStyles: CSSProperties = {
   height: '100%',
 };
 
-const dragPreviewStyle: CSSProperties = {
+export const dragPreviewStyle: CSSProperties = {
   display: 'inline-block',
   border: `1px solid ${theme.palette.cruGrayMedium.main}`,
 };
 
-function getItemStyles(
+export function getItemStyles(
   initialOffset: XYCoord | null,
   currentOffset: XYCoord | null,
 ) {
@@ -36,15 +37,36 @@ function getItemStyles(
   };
 }
 
-export const ContactFlowDragLayer: React.FC = () => {
-  const { isDragging, item, itemType, initialOffset, currentOffset } =
-    useDragLayer((monitor) => ({
-      item: monitor.getItem(),
-      itemType: monitor.getItemType(),
-      initialOffset: monitor.getInitialSourceClientOffset(),
-      currentOffset: monitor.getSourceClientOffset(),
-      isDragging: monitor.isDragging(),
-    }));
+export interface ContactFlowDragLayerProps {
+  containerRef: RefObject<HTMLElement>;
+}
+
+export const ContactFlowDragLayer: React.FC<ContactFlowDragLayerProps> = ({
+  containerRef,
+}) => {
+  const {
+    isDragging,
+    item,
+    itemType,
+    initialOffset,
+    currentOffset,
+    clientOffset,
+  } = useDragLayer((monitor) => ({
+    item: monitor.getItem(),
+    itemType: monitor.getItemType(),
+    initialOffset: monitor.getInitialSourceClientOffset(),
+    currentOffset: monitor.getSourceClientOffset(),
+    isDragging: monitor.isDragging(),
+    clientOffset: monitor.getClientOffset(),
+  }));
+
+  useAutoScroll({
+    containerRef,
+    enabled: clientOffset !== null,
+    mouseX: clientOffset?.x ?? 0,
+    scrollThreshold: 100,
+    scrollVelocity: 800,
+  });
 
   function renderItem() {
     switch (itemType) {

@@ -74,6 +74,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             displayName: 'Donor 1',
                           },
                           paymentMethod: 'Check',
+                          designationAccount: {
+                            name: 'Tony Starks Account',
+                            accountNumber: '111111',
+                          },
                         },
                         {
                           id: 'donation-2',
@@ -92,6 +96,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
                             displayName: 'Donor 2',
                           },
                           paymentMethod: 'Credit Card',
+                          designationAccount: {
+                            name: '',
+                            accountNumber: '080808',
+                          },
                         },
                       ],
                   pageInfo: {
@@ -281,5 +289,12 @@ describe('DonationTable', () => {
         pageSize: 50,
       }),
     );
+  });
+
+  it('shows designation number if there is no designation name', async () => {
+    const { findByText } = render(<TestComponent />);
+
+    expect(await findByText('Tony Starks Account')).toBeInTheDocument();
+    expect(await findByText('080808')).toBeInTheDocument();
   });
 });

@@ -37,7 +37,7 @@ describe('ContactPartnershipStatus', () => {
     );
     expect(
       await findByText(
-        loadConstantsMockData.constant.statuses?.find((s) => s.id === status)
+        loadConstantsMockData.constant.status?.find((s) => s.id === status)
           ?.value || '',
       ),
     ).toBeInTheDocument();
@@ -67,10 +67,63 @@ describe('ContactPartnershipStatus', () => {
     );
     expect(
       await findByText(
-        loadConstantsMockData.constant.statuses?.find(
+        loadConstantsMockData.constant.status?.find(
           (s) => s.id === StatusEnum.PartnerPray,
         )?.value || '',
       ),
     ).toBeInTheDocument();
+  });
+
+  describe('pledge amount', () => {
+    it('renders pledge amount', () => {
+      const { getByText } = render(
+        <GqlMockedProvider<{
+          LoadConstants: LoadConstantsQuery;
+        }>
+          mocks={{ LoadConstants: loadConstantsMockData }}
+        >
+          <ThemeProvider theme={theme}>
+            <I18nextProvider i18n={i18n}>
+              <ContactPartnershipStatus
+                lateAt={null}
+                contactDetailsOpen={false}
+                pledgeAmount={100}
+                pledgeCurrency={'USD'}
+                pledgeFrequency={null}
+                pledgeReceived={false}
+                status={StatusEnum.PartnerPray}
+              />
+            </I18nextProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>,
+      );
+      expect(getByText('$100')).toBeInTheDocument();
+    });
+
+    it('does not render pledge amount when 0', () => {
+      const { queryByText } = render(
+        <GqlMockedProvider<{
+          LoadConstants: LoadConstantsQuery;
+        }>
+          mocks={{ LoadConstants: loadConstantsMockData }}
+        >
+          <ThemeProvider theme={theme}>
+            <I18nextProvider i18n={i18n}>
+              <ContactPartnershipStatus
+                lateAt={null}
+                contactDetailsOpen={false}
+                pledgeAmount={0}
+                pledgeCurrency={'USD'}
+                pledgeFrequency={null}
+                pledgeReceived={false}
+                status={StatusEnum.PartnerPray}
+              />
+            </I18nextProvider>
+          </ThemeProvider>
+        </GqlMockedProvider>,
+      );
+      expect(queryByText('$0')).not.toBeInTheDocument();
+      expect(queryByText('0')).not.toBeInTheDocument();
+    });
   });
 });

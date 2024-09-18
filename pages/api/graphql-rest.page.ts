@@ -5,12 +5,14 @@ import {
   Response,
 } from 'apollo-datasource-rest';
 import { ApolloServer } from 'apollo-server-micro';
-import { DateTime, Duration, Interval } from 'luxon';
+import { DateTime } from 'luxon';
 import Cors from 'micro-cors';
 import {
   ExportFormatEnum,
   ExportLabelTypeEnum,
   ExportSortEnum,
+  MergeContactsInput,
+  MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { getLocalizedContactStatus } from '../../src/utils/functions/getLocalizedContactStatus';
@@ -203,21 +205,40 @@ class MpdxRestApi extends RESTDataSource {
     return `${process.env.REST_API_URL}contacts/exports${pathAddition}/${data.id}.${format}`;
   }
 
-  async mergeContacts(loserContactIds: Array<string>, winnerContactId: string) {
+  async mergeContacts(
+    winnersAndLosers: MergeContactsInput['winnersAndLosers'],
+  ) {
     const response = await this.post('contacts/merges/bulk', {
-      data: loserContactIds.map((loserId) => ({
+      data: winnersAndLosers.map((contact) => ({
         data: {
           type: 'contacts',
           attributes: {
-            loser_id: loserId,
-            winner_id: winnerContactId,
+            loser_id: contact.loserId,
+            winner_id: contact.winnerId,
           },
         },
       })),
     });
 
-    // Return the id of the winner
-    return response[0].data.id;
+    // Return the id of the winners
+    return response.map((contact) => contact.data.id);
+  }
+
+  async mergePeopleBulk(
+    winnersAndLosers: MergePeopleBulkInput['winnersAndLosers'],
+  ) {
+    const response = await this.post('contacts/people/merges/bulk', {
+      data: winnersAndLosers.map((person) => ({
+        data: {
+          type: 'people',
+          attributes: {
+            loser_id: person.loserId,
+            winner_id: person.winnerId,
+          },
+        },
+      })),
+    });
+    return response.map((person) => person.data.id);
   }
 
   async getAccountListAnalytics(
@@ -424,12 +445,9 @@ class MpdxRestApi extends RESTDataSource {
         currencyType === 'salary'
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
-      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${Interval.before(
-        DateTime.now().endOf('month'),
-        Duration.fromObject({ months: 14 }).minus({ day: 1 }),
-      )
-        .toISODate()
-        .replace('/', '...')}`,
+      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
+        .minus({ months: 13 })
+        .toISODate()}...${DateTime.now().toISODate()}`,
     );
     return mapFourteenMonthReport(data, currencyType);
   }
@@ -853,14 +871,14 @@ class MpdxRestApi extends RESTDataSource {
   //
 
   async googleAccounts() {
-    const { data }: { data: GoogleAccountsResponse[] } = await this.get(
+    const response: GoogleAccountsResponse[] = await this.get(
       'user/google_accounts',
       {
         sort: 'created_at',
         include: 'contact_groups',
       },
     );
-    return GoogleAccounts(data);
+    return GoogleAccounts(response);
   }
 
   async googleAccountIntegrations(
@@ -1155,7 +1173,7 @@ class MpdxRestApi extends RESTDataSource {
   ) {
     const include =
       'people,people.email_addresses,people.phone_numbers,addresses,account_list,' +
-      'account_list.account_list_users,account_list.account_list_users.email_addresses';
+      'account_list.account_list_users,account_list.account_list_users.user_email_addresses';
     const filters =
       `filter[organization_id]=${organizationId}` +
       `&filter[wildcard_search]=${search}` +
@@ -1166,7 +1184,7 @@ class MpdxRestApi extends RESTDataSource {
       '&fields[email_addresses]=email,primary,historic' +
       '&fields[phone_numbers]=number,primary,historic' +
       '&fields[account_lists]=name,account_list_users' +
-      '&fields[account_list_users]=first_name,last_name,email_addresses' +
+      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses' +
       '&fields[addresses]=primary_mailing_address,street,city,state,postal_code';
 
     const data: SearchOrganizationsContactsResponse = await this.get(
@@ -1209,9 +1227,9 @@ class MpdxRestApi extends RESTDataSource {
       : '';
     const filters = `filter[wildcard_search]=${search}` + organizationIdFilter;
     const fields =
-      'fields[account_lists]=name,account_list_coaches,account_list_users,account_list_invites,designation_accounts' +
+      'fields[account_lists]=name,account_list_coaches,account_list_users,account_list_invites,designation_accounts,organization_count' +
       '&fields[account_list_coaches]=coach_first_name,coach_last_name,coach_email_addresses' +
-      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses,allow_deletion' +
+      '&fields[account_list_users]=user_first_name,user_last_name,user_email_addresses,allow_deletion,user_id,last_synced_at,organization_count' +
       '&fields[email_addresses]=email,primary' +
       '&fields[designation_accounts]=display_name,organization' +
       '&fields[organizations]=name' +

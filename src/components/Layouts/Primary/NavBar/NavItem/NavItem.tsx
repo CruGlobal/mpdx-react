@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { Button, Collapse, ListItemButton } from '@mui/material';
+import { Button, Collapse, ListItemButton, MenuItem } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import HandoffLink from 'src/components/HandoffLink';
-import { LeafButton, LeafListItem, Title } from '../StyledComponents';
+import { LeafListItem, Title } from '../StyledComponents';
 
 interface NavItemProps {
   children?: ReactNode;
@@ -58,14 +58,12 @@ export const NavItem: FC<NavItemProps> = ({
   const handleToggle = (): void => {
     setOpen((prevOpen) => !prevOpen);
   };
-
-  let paddingLeft = 8;
-
-  if (depth > 0) {
-    paddingLeft = 32 + 8 * depth;
-  }
-
-  const style = { paddingLeft, paddingTop: 11, paddingBottom: 11 };
+  const style = {
+    paddingLeft: depth > 0 ? 32 + 8 * depth : 8,
+    paddingTop: 11,
+    paddingBottom: 11,
+    width: '100%',
+  };
   const iconStyle = {
     color: theme.palette.common.white,
     fontSize: 18,
@@ -101,17 +99,17 @@ export const NavItem: FC<NavItemProps> = ({
     <LeafListItem disableGutters key={title} {...rest}>
       {(href as string).includes('tools') ? (
         <HandoffLink key={title} path={href as string}>
-          <LeafButton style={style}>
+          <MenuItem style={style}>
             {Icon && <Icon style={iconStyle} size="20" />}
             <Title>{title}</Title>
-          </LeafButton>
+          </MenuItem>
         </HandoffLink>
       ) : (
-        <NextLink href={href}>
-          <LeafButton style={style}>
+        <NextLink href={href} passHref>
+          <MenuItem component="a" style={style}>
             {Icon && <Icon style={iconStyle} size="20" />}
             <Title>{title}</Title>
-          </LeafButton>
+          </MenuItem>
         </NextLink>
       )}
     </LeafListItem>

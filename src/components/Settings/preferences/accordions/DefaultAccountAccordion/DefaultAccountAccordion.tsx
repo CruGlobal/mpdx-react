@@ -18,6 +18,7 @@ interface DefaultAccountAccordionProps {
   data: GetPersonalPreferencesQuery | undefined;
   accountListId: string;
   defaultAccountList: string;
+  disabled?: boolean;
 }
 
 const preferencesSchema: yup.SchemaOf<Pick<User, 'defaultAccountList'>> =
@@ -27,7 +28,13 @@ const preferencesSchema: yup.SchemaOf<Pick<User, 'defaultAccountList'>> =
 
 export const DefaultAccountAccordion: React.FC<
   DefaultAccountAccordionProps
-> = ({ handleAccordionChange, expandedPanel, data, defaultAccountList }) => {
+> = ({
+  handleAccordionChange,
+  expandedPanel,
+  data,
+  defaultAccountList,
+  disabled,
+}) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
@@ -71,6 +78,7 @@ export const DefaultAccountAccordion: React.FC<
       label={label}
       value={selectedAccount}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

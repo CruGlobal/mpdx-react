@@ -7,7 +7,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
+import {
+  loadConstantsMockData as LoadConstants,
+  loadConstantsMockData,
+} from 'src/components/Constants/LoadConstantsMock';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -208,14 +211,88 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing status | Non-Financial', async () => {
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByText, getByRole, getByTestId, queryByText } =
+      render(
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<{
+                LoadConstants: LoadConstantsQuery;
+              }>
+                mocks={{ LoadConstants }}
+              >
+                <EditPartnershipInfoModal
+                  contact={contactMock}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>,
+      );
+    const statusInput = getByLabelText('Status');
+    const amountInput = getByLabelText('Amount');
+    const frequencyInput = getByRole('combobox', { name: 'Frequency' });
+
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
+
+    expect(amountInput).toHaveValue(50);
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask in Future'));
+
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'No' }));
+
+    expect(amountInput).toHaveValue(50);
+    expect(frequencyInput.textContent).toEqual('Every 2 Months');
+    expect(getByText('Every 2 Months')).toBeInTheDocument();
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask in Future'));
+
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    expect(amountInput).toHaveValue(0);
+    expect(amountInput).toBeDisabled();
+    expect(queryByText('Every 2 Months')).not.toBeInTheDocument();
+    expect(statusInput.textContent).toEqual('Ask in Future');
+
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Partnership information updated successfully.',
+        {
+          variant: 'success',
+        },
+      ),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle when remove commitment warning shows', async () => {
+    const {
+      getByLabelText,
+      getByText,
+      getByRole,
+      findByText,
+      getByTestId,
+      queryByTestId,
+    } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider<{
               LoadConstants: LoadConstantsQuery;
             }>
-              mocks={{ LoadConstants }}
+              mocks={{ LoadConstants: loadConstantsMockData }}
             >
               <EditPartnershipInfoModal
                 contact={contactMock}
@@ -228,24 +305,40 @@ describe('EditPartnershipInfoModal', () => {
     );
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
-    const frequencyInput = getByLabelText('Frequency');
-    await waitFor(() =>
-      expect(statusInput.textContent).toEqual('Partner - Financial'),
-    );
+    const frequencyInput = getByRole('combobox', { name: 'Frequency' });
 
-    expect(amountInput).toHaveValue(50);
-    expect(frequencyInput.textContent).toEqual('Every 2 Months');
+    // Clear amount and frequency
+    userEvent.click(statusInput);
+    userEvent.click(await findByText('Ask in Future'));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    // Due to the amount being zero, we don't show the remove commitment message
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
     userEvent.click(statusInput);
     userEvent.click(getByText('Ask in Future'));
+    expect(queryByTestId('removeCommitmentMessage')).not.toBeInTheDocument();
 
-    // Values get reset and inputs becomes disabled when status is not PARTNER_FINANCIAL
+    // If frequency and not amount is set we show the remove commitment message
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+    userEvent.click(frequencyInput);
+    userEvent.click(getByText('Every 2 Months'));
     expect(amountInput).toHaveValue(0);
-    expect(amountInput).toBeDisabled();
-    expect(statusInput.textContent).toEqual('Ask in Future');
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask in Future'));
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
 
-    // these are flaky for some reason, disabling for now
-    // await waitFor(() => expect(frequencyInput.textContent).toBe(''));
-    // await waitFor(() => expect(frequencyInput).toBeDisabled());
+    // Clear amount and frequency
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    // If amount and not frequency is set we show the remove commitment message
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+    userEvent.type(amountInput, '50');
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Ask in Future'));
+    expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -389,7 +482,7 @@ describe('EditPartnershipInfoModal', () => {
               mocks={{
                 LoadConstants: {
                   constant: {
-                    pledgeCurrencies: [
+                    pledgeCurrency: [
                       {
                         code: 'CAD',
                         codeSymbolString: 'CAD ($)',
@@ -491,7 +584,7 @@ describe('EditPartnershipInfoModal', () => {
               mocks={{
                 LoadConstants: {
                   constant: {
-                    pledgeCurrencies: [
+                    pledgeCurrency: [
                       {
                         id: 'CAD',
                         value: 'CAD ($)',
@@ -717,7 +810,7 @@ describe('EditPartnershipInfoModal', () => {
               mocks={{
                 LoadConstants: {
                   constant: {
-                    pledgeCurrencies: [
+                    pledgeCurrency: [
                       {
                         id: 'CAD',
                         value: 'CAD ($)',

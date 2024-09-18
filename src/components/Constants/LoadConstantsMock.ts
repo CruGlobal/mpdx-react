@@ -18,7 +18,7 @@ const LoadConstantsMock = (): MockedResponse => {
 export const loadConstantsMockData = {
   constant: {
     __typename: 'Constant',
-    statuses: [
+    status: [
       {
         id: 'NEVER_CONTACTED',
         value: 'New Connection',

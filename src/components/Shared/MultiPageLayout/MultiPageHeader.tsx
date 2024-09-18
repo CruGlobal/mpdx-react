@@ -4,11 +4,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 
 export enum HeaderTypeEnum {
   Report = 'reports',
   Settings = 'settings',
+  Tools = 'tools',
 }
 
 export const multiPageHeaderHeight = theme.spacing(10);
@@ -64,12 +66,15 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
   headerType,
 }) => {
   const { t } = useTranslation();
+  const { onSetupTour } = useSetupContext();
 
   let titleAccess;
   if (headerType === HeaderTypeEnum.Report) {
     titleAccess = t('Toggle Navigation Panel');
   } else if (headerType === HeaderTypeEnum.Settings) {
     titleAccess = t('Toggle Preferences Menu');
+  } else if (headerType === HeaderTypeEnum.Tools) {
+    titleAccess = t('Toggle Tools Menu');
   }
 
   return (
@@ -87,10 +92,16 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
               data-testid="ReportsFilterIcon"
             />
           )}
-          {headerType === HeaderTypeEnum.Settings && (
+          {!onSetupTour && headerType === HeaderTypeEnum.Settings && (
             <NavMenuIcon
               titleAccess={titleAccess}
               data-testid="SettingsMenuIcon"
+            />
+          )}
+          {headerType === HeaderTypeEnum.Tools && (
+            <NavMenuIcon
+              titleAccess={titleAccess}
+              data-testid="ToolsMenuIcon"
             />
           )}
         </NavListButton>

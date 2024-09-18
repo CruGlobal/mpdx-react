@@ -18,6 +18,7 @@ type SearchOrganizationsAccountListsResponse {
 type OrganizationsAccountList {
   id: ID!
   name: String!
+  organizationCount: Int
   designationAccounts: [AccountListDesignationAccounts]
   accountListUsers: [AccountListUsers]
   accountListUsersInvites: [AccountListInvites]
@@ -36,7 +37,10 @@ type AccountListUsers {
   userFirstName: String
   userLastName: String
   allowDeletion: Boolean
+  userId: ID
+  lastSyncedAt: String
   userEmailAddresses: [AccountListEmailAddresses]
+  organizationCount: Int
 }
 
 type AccountListInvites {

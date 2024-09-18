@@ -13,3 +13,19 @@ export const snakeToCamel = (inputKey: string): string => {
 export const camelToSnake = (inputKey: string): string => {
   return inputKey.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 };
+
+export const camelToSnakeObject = (object: object): object => {
+  const conversionMap = Object.entries(object).reduce((acc, current) => {
+    acc[current[0] as string] = current[0].replace(
+      /[A-Z]/g,
+      (letter) => `_${letter.toLowerCase()}`,
+    );
+    return acc;
+  }, {});
+
+  const convertedObject = {};
+  for (const [key, value] of Object.entries(conversionMap)) {
+    convertedObject[value as string] = object[key];
+  }
+  return convertedObject;
+};

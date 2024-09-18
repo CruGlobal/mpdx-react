@@ -2,51 +2,60 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import Contact from './Contact';
 
 const testData = {
   name: 'Test Contact',
+  firstName: 'Test',
+  lastName: 'Contact',
+  avatar: 'https://www.example.com',
   id: 'testid',
-  numbers: [
-    {
-      id: '123',
-      updatedAt: '2019-12-03',
-      number: '3533895895',
-      primary: true,
-      source: 'MPDX',
-    },
-    {
-      id: '1234',
-      updatedAt: '2019-12-04',
-      number: '623533895895',
-      primary: false,
-      source: 'MPDX',
-    },
-  ],
+  contactId: 'testid',
+  isNewPhoneNumber: false,
+  newPhoneNumber: '',
+  phoneNumbers: {
+    nodes: [
+      {
+        id: '123',
+        updatedAt: '2019-12-03',
+        number: '3533895895',
+        primary: true,
+        source: 'MPDX',
+      },
+      {
+        id: '1234',
+        updatedAt: '2019-12-04',
+        number: '623533895895',
+        primary: false,
+        source: 'MPDX',
+      },
+    ],
+  },
 };
+
+const setContactFocus = jest.fn();
+const handleDeleteModalOpenMock = jest.fn();
+const updatePhoneNumber = jest.fn();
+const setValuesMock = jest.fn();
+
+const errors = {};
 
 describe('FixPhoneNumbers-Contact', () => {
   it('default', () => {
-    const handleChangeMock = jest.fn();
-    const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
-
     const { getByText, getByTestId, getByDisplayValue } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            name={testData.name}
-            key={testData.name}
-            personId={testData.id}
-            numbers={testData.numbers}
-            toDelete={[]}
-            handleChange={handleChangeMock}
+            person={testData}
+            personIndex={0}
             handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
+            setContactFocus={setContactFocus}
+            handleUpdate={updatePhoneNumber}
+            errors={errors}
+            values={{ people: [testData] }}
+            setValues={setValuesMock}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -59,25 +68,19 @@ describe('FixPhoneNumbers-Contact', () => {
     expect(getByDisplayValue('623533895895')).toBeInTheDocument();
   });
 
-  it('input reset after adding an email address', () => {
-    const handleChangeMock = jest.fn();
-    const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
-
+  it('input reset after adding an phone number', async () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            name={testData.name}
-            key={testData.name}
-            personId={testData.id}
-            numbers={testData.numbers}
-            toDelete={[]}
-            handleChange={handleChangeMock}
+            person={testData}
+            personIndex={0}
             handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
+            setContactFocus={setContactFocus}
+            handleUpdate={updatePhoneNumber}
+            errors={errors}
+            values={{ people: [testData] }}
+            setValues={setValuesMock}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -88,31 +91,37 @@ describe('FixPhoneNumbers-Contact', () => {
     ) as HTMLInputElement;
     const addButton = getByTestId('addButton-testid');
 
-    userEvent.type(addInput, '123');
-    expect(addInput.value).toBe('123');
+    userEvent.type(addInput, '1');
+
+    await waitFor(() => {
+      expect(setValuesMock).toHaveBeenCalledWith({
+        people: [
+          {
+            ...testData,
+            isNewPhoneNumber: true,
+            newPhoneNumber: '1',
+          },
+        ],
+      });
+    });
+
     userEvent.click(addButton);
     expect(addInput.value).toBe('');
   });
 
-  it('should call mock functions', () => {
-    const handleChangeMock = jest.fn();
-    const handleDeleteModalOpenMock = jest.fn();
-    const handleAddMock = jest.fn();
-    const handleChangePrimaryMock = jest.fn();
-
+  it('should call mock functions', async () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestWrapper>
           <Contact
-            name={testData.name}
-            key={testData.name}
-            personId={testData.id}
-            numbers={testData.numbers}
-            toDelete={[]}
-            handleChange={handleChangeMock}
+            person={testData}
+            personIndex={0}
             handleDelete={handleDeleteModalOpenMock}
-            handleAdd={handleAddMock}
-            handleChangePrimary={handleChangePrimaryMock}
+            setContactFocus={setContactFocus}
+            handleUpdate={updatePhoneNumber}
+            errors={errors}
+            values={{ people: [testData] }}
+            setValues={setValuesMock}
           />
         </TestWrapper>
       </ThemeProvider>,
@@ -120,11 +129,26 @@ describe('FixPhoneNumbers-Contact', () => {
 
     const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
     expect(firstInput.value).toBe('3533895895');
-    userEvent.type(firstInput, '123');
-    expect(handleChangeMock).toHaveBeenCalled();
-    userEvent.click(getByTestId('starOutlineIcon-testid-1'));
-    expect(handleChangePrimaryMock).toHaveBeenCalled();
+    userEvent.type(firstInput, '1');
+
+    await waitFor(() => {
+      expect(setValuesMock).toHaveBeenCalledWith({
+        people: [
+          {
+            ...testData,
+            phoneNumbers: {
+              nodes: [
+                { ...testData.phoneNumbers.nodes[0], number: '35338958951' },
+                testData.phoneNumbers.nodes[1],
+              ],
+            },
+          },
+        ],
+      });
+    });
     userEvent.click(getByTestId('delete-testid-1'));
     expect(handleDeleteModalOpenMock).toHaveBeenCalled();
+    userEvent.click(getByTestId(`confirmButton-${testData.id}`));
+    expect(updatePhoneNumber).toHaveBeenCalled();
   });
 });

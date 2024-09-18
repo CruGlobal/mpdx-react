@@ -85,7 +85,7 @@ export type ContactsType = {
 
 export const ContactsContext = React.createContext<ContactsType | null>(null);
 
-interface Props {
+export interface ContactsContextProps {
   children?: React.ReactNode;
   urlFilters?: any;
   activeFilters: ContactFilterSetInput;
@@ -122,7 +122,7 @@ export const ContactsContextSavedFilters = (
   );
 };
 
-export const ContactsProvider: React.FC<Props> = ({
+export const ContactsProvider: React.FC<ContactsContextProps> = ({
   children,
   urlFilters,
   activeFilters,

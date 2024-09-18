@@ -10,6 +10,10 @@ describe('AccountLists', () => {
       <ThemeProvider theme={theme}>
         <AccountLists
           data={{
+            user: {
+              id: 'user-1',
+              setup: null,
+            },
             accountLists: {
               nodes: [
                 {

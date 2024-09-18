@@ -7,9 +7,9 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
+import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.SchemaOf<
@@ -23,6 +23,7 @@ interface EarlyAdopterAccordionProps {
   expandedPanel: string;
   tester: boolean;
   accountListId: string;
+  disabled?: boolean;
 }
 
 export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
@@ -30,9 +31,10 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   expandedPanel,
   tester,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
-  const { userID } = useRequiredSession();
+  const { userId } = useUserPreferenceContext();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
@@ -69,7 +71,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
             `${process.env.SITE_URL || window.location.origin}/api/handoff`,
           );
           url.searchParams.append('accountListId', accountListId ?? '');
-          url.searchParams.append('userId', userID);
+          url.searchParams.append('userId', userId ?? '');
           url.searchParams.append('path', '/preferences/personal');
 
           window.location.href = url.toString();
@@ -90,6 +92,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
       label={label}
       value={tester ? t('Yes') : t('No')}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

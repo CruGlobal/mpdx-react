@@ -28,6 +28,7 @@ jest.mock('notistack', () => ({
 }));
 
 const handleAccordionChange = jest.fn();
+const handleSetupChange = jest.fn();
 const mutationSpy = jest.fn();
 
 interface ComponentsProps {
@@ -72,6 +73,7 @@ const Components: React.FC<ComponentsProps> = ({
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
             localeDisplay={localeDisplay}
+            handleSetupChange={handleSetupChange}
           />
         </GqlMockedProvider>
       </ThemeProvider>

@@ -36,6 +36,24 @@ const mocks = {
       },
     },
   },
+  GetDesignationAccounts: {
+    designationAccounts: [
+      {
+        designationAccounts: [
+          {
+            id: '12345',
+            name: '',
+            designationNumber: '808080',
+          },
+          {
+            id: '123',
+            name: 'Tony Starks Account',
+            designationNumber: '11111',
+          },
+        ],
+      },
+    ],
+  },
 };
 
 const donation = gqlMock<EditDonationModalDonationFragment>(
@@ -61,6 +79,10 @@ const donationWithAppeal = gqlMock<EditDonationModalDonationFragment>(
       },
       appealAmount: {
         amount: 50,
+      },
+      designationAccount: {
+        id: '12345',
+        name: '',
       },
     },
   },
@@ -102,6 +124,36 @@ describe('EditDonationModal', () => {
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('100');
+  });
+
+  it('renders designation accounts', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, getByText, findByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<{ UpdateDonation: UpdateDonationMutation }>
+                mocks={mocks}
+                onCall={mutationSpy}
+              >
+                <EditDonationModal
+                  donation={donationWithAppeal}
+                  open={true}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Donation')).toBeInTheDocument();
+
+    expect(await findByText('808080')).toBeInTheDocument();
+    userEvent.click(getByRole('combobox', { name: 'Designation Account' }));
+    expect(await findByText('Tony Starks Account')).toBeInTheDocument();
   });
 
   it('renders with appeal', async () => {

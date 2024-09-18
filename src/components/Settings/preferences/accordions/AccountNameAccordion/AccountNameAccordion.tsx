@@ -21,6 +21,7 @@ interface AccountNameAccordionProps {
   expandedPanel: string;
   accountListId: string;
   name: string;
+  disabled?: boolean;
 }
 
 export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
@@ -28,6 +29,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   expandedPanel,
   name,
   accountListId,
+  disabled,
 }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
@@ -67,6 +69,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
       label={label}
       value={name}
       fullWidth
+      disabled={disabled}
     >
       <Formik
         initialValues={{

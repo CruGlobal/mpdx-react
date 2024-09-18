@@ -1,0 +1,13 @@
+query AppealContacts($accountListId: ID!, $appealId: ID!) {
+  appeal(accountListId: $accountListId, id: $appealId) {
+    id
+    contactIds
+    excludedAppealContacts {
+      id
+      contact {
+        id
+        name
+      }
+    }
+  }
+}

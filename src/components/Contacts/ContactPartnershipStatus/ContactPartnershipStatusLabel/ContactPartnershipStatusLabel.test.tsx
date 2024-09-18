@@ -29,7 +29,7 @@ describe('ContactPartnershipStatusLabel', () => {
     );
     expect(
       await findByText(
-        loadConstantsMockData.constant.statuses?.find((s) => s.id === status)
+        loadConstantsMockData.constant.status?.find((s) => s.id === status)
           ?.value || '',
       ),
     ).toBeInTheDocument();

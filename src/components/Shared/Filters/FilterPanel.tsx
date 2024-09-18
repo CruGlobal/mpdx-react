@@ -22,6 +22,10 @@ import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
+  AppealsContext,
+  AppealsType,
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
   ContactFilterNotesInput,
@@ -102,6 +106,10 @@ type FilterInput = ContactFilterSetInput &
   TaskFilterSetInput &
   ReportContactFilterSetInput;
 
+export enum ContextTypesEnum {
+  Contacts = 'contacts',
+  Appeals = 'appeals',
+}
 export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
@@ -110,6 +118,7 @@ export interface FilterPanelProps {
   onClose: () => void;
   onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
   onHandleClearSearch?: () => void;
+  contextType?: ContextTypesEnum;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -120,18 +129,24 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   selectedFilters,
   onSelectedFiltersChanged,
   onHandleClearSearch,
+  contextType = ContextTypesEnum.Contacts,
   ...boxProps
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
   const { statusMapForFilters } = useContactPartnershipStatuses();
   const activities = useApiConstants()?.activities;
-  const { handleClearAll } = React.useContext(ContactsContext) as ContactsType;
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [filterToBeDeleted, setFilterToBeDeleted] =
     useState<UserOptionFragment | null>(null);
+
+  const handleClearAll =
+    contextType === ContextTypesEnum.Contacts
+      ? (React.useContext(ContactsContext) as ContactsType).handleClearAll
+      : (React.useContext(AppealsContext) as AppealsType).handleClearAll;
+
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
       let filterValue = value;

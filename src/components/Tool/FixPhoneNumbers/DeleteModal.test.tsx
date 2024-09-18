@@ -7,7 +7,7 @@ import DeleteModal from './DeleteModal';
 
 const testState = {
   open: true,
-  personId: '0',
+  personIndex: 0,
   numberIndex: 0,
   phoneNumber: '623533895895',
 };
@@ -31,7 +31,7 @@ describe('FixPhoneNumbers-DeleteModal', () => {
 
     expect(getByText('Confirm')).toBeInTheDocument();
     expect(
-      getByText('Are you sure you wish to delete this phone number:'),
+      getByText('Are you sure you wish to delete this phone number?'),
     ).toBeInTheDocument();
     expect(getByText('"623533895895"')).toBeInTheDocument();
     expect(getByText('Cancel')).toBeInTheDocument();

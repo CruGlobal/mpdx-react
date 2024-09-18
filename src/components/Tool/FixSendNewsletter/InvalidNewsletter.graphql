@@ -1,0 +1,67 @@
+query InvalidNewsletter($accountListId: ID!) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: {
+      newsletter: NO_VALUE
+      status: [PARTNER_FINANCIAL, PARTNER_SPECIAL, PARTNER_PRAY]
+    }
+    first: 100
+  ) {
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      ...InvalidNewsletterContact
+    }
+  }
+  constant {
+    ...Status
+  }
+}
+
+fragment InvalidNewsletterContact on Contact {
+  id
+  name
+  status
+  avatar
+  source
+  primaryAddress {
+    ...ContactPrimaryAddress
+  }
+  primaryPerson {
+    ...ContactPrimaryPerson
+  }
+  sendNewsletter
+}
+
+fragment ContactPrimaryAddress on Address {
+  id
+  street
+  city
+  state
+  country
+  postalCode
+  source
+  createdAt
+}
+
+fragment ContactPrimaryPerson on Person {
+  id
+  firstName
+  lastName
+  primaryEmailAddress {
+    id
+    email
+  }
+  optoutEnewsletter
+  deceased
+}
+
+fragment Status on Constant {
+  status {
+    id
+    value
+  }
+}

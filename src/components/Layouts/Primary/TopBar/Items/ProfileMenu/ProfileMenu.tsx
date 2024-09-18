@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useState } from 'react';
 import { useApolloClient } from '@apollo/client';
@@ -15,13 +15,18 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Link as MuiLink,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import {
+  PrivacyPolicyLink,
+  TermsOfUseLink,
+} from 'src/components/Shared/Links/Links';
+import { AccountList } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -120,6 +125,7 @@ const ProfileMenu = (): ReactElement => {
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
   const { data } = useGetTopBarQuery();
+  const { onSetupTour } = useSetupContext();
   const [profileMenuAnchorEl, setProfileMenuAnchorEl] =
     useState<HTMLButtonElement>();
   const profileMenuOpen = Boolean(profileMenuAnchorEl);
@@ -161,6 +167,32 @@ const ProfileMenu = (): ReactElement => {
     url.searchParams.append('userId', session.userID);
     url.searchParams.append('path', '/logout');
     window.location.href = url.href;
+  };
+
+  const handleAccountListClick = (
+    accountList: Pick<AccountList, 'id' | 'name' | 'salaryOrganizationId'>,
+  ) => {
+    if (
+      router.pathname ===
+      '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]'
+    ) {
+      router.push({
+        pathname: '/accountLists/[accountListId]/tools/appeals',
+        query: {
+          accountListId: accountList.id,
+        },
+      });
+    } else {
+      router.push({
+        pathname: accountListId
+          ? router.pathname
+          : '/accountLists/[accountListId]/',
+        query: {
+          ...queryWithoutContactId,
+          accountListId: accountList.id,
+        },
+      });
+    }
   };
 
   return (
@@ -238,82 +270,87 @@ const ProfileMenu = (): ReactElement => {
                       ? theme.palette.cruGrayMedium.main
                       : 'inherit',
                 }}
-                onClick={() =>
-                  router.push({
-                    pathname: accountListId
-                      ? router.pathname
-                      : '/accountLists/[accountListId]/',
-                    query: {
-                      ...queryWithoutContactId,
-                      accountListId: accountList.id,
-                    },
-                  })
-                }
+                onClick={() => handleAccountListClick(accountList)}
               >
                 <ListItemText primary={accountList.name} />
               </StyledMenuItem>
             ))}
           </AccountListSelectorDetails>
         </Accordion>
-        {accountListId && (
+        {!onSetupTour && accountListId && (
           <div>
             <Divider />
-            <Link
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/preferences`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Preferences')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/notifications`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Notifications')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/integrations`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Connect Services')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/manageAccounts`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Manage Accounts')} />
               </MenuItem>
-            </Link>
-            <Link
+            </NextLink>
+
+            <NextLink
               href={`/accountLists/${accountListId}/settings/manageCoaches`}
               shallow
+              passHref
             >
               <MenuItem onClick={handleProfileMenuClose} component="a">
                 <ListItemText primary={t('Manage Coaches')} />
               </MenuItem>
-            </Link>
+            </NextLink>
+
             {(data?.user?.admin ||
               !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-              <Link
+              <NextLink
                 href={`/accountLists/${accountListId}/settings/organizations`}
+                passHref
               >
                 <MenuItem onClick={handleProfileMenuClose} component="a">
                   <ListItemText primary={t('Manage Organizations')} />
                 </MenuItem>
-              </Link>
+              </NextLink>
             )}
             {(data?.user?.admin || data?.user?.developer) && (
-              <Link href={`/accountLists/${accountListId}/settings/admin`}>
+              <NextLink
+                href={`/accountLists/${accountListId}/settings/admin`}
+                passHref
+              >
                 <MenuItem onClick={handleProfileMenuClose} component="a">
                   <ListItemText primary={t('Admin Console')} />
                 </MenuItem>
-              </Link>
+              </NextLink>
             )}
             {data?.user?.developer && (
               <HandoffLink path="/auth/user/admin" auth>
@@ -357,21 +394,9 @@ const ProfileMenu = (): ReactElement => {
           )}
         </MenuItem>
         <MenuItemFooter>
-          <MuiLink
-            href="https://get.mpdx.org/privacy-policy/"
-            target="_blank"
-            onClick={handleProfileMenuClose}
-          >
-            {t('Privacy Policy')}
-          </MuiLink>
+          <PrivacyPolicyLink />
           &nbsp; • &nbsp;
-          <MuiLink
-            href="https://get.mpdx.org/terms-of-use/"
-            target="_blank"
-            onClick={handleProfileMenuClose}
-          >
-            {t('Terms of Use')}
-          </MuiLink>
+          <TermsOfUseLink />
         </MenuItemFooter>
       </MenuWrapper>
     </>

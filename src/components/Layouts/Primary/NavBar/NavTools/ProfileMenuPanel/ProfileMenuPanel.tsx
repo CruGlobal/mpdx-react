@@ -3,10 +3,15 @@ import React, { useState } from 'react';
 import { useApolloClient } from '@apollo/client';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRight from '@mui/icons-material/ChevronRight';
-import { Box, Button, Drawer, List, Link as MuiLink } from '@mui/material';
+import { Box, Button, Drawer, List } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import {
+  PrivacyPolicyLink,
+  TermsOfUseLink,
+} from 'src/components/Shared/Links/Links';
 import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -79,6 +84,7 @@ export const ProfileMenuPanel: React.FC = () => {
   const accountListId = useAccountListId();
   const { push, pathname } = useRouter();
   const client = useApolloClient();
+  const { onSetupTour } = useSetupContext();
   const [accountsDrawerOpen, setAccountsDrawerOpen] = useState<boolean>(false);
 
   const toggleAccountsDrawer = (): void => {
@@ -158,54 +164,58 @@ export const ProfileMenuPanel: React.FC = () => {
           </MobileDrawer>
         </>
       )}
-      {addProfileContent.map(({ text, path, onClick }, index) => (
-        <LeafListItem key={index} disableGutters onClick={onClick}>
-          <StyledButton
-            component={NextLinkComposed}
-            to={`/accountLists/${accountListId}${path}`}
-          >
-            <Title>{t(text)}</Title>
-          </StyledButton>
-        </LeafListItem>
-      ))}
-      {(data?.user?.admin ||
-        !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-        <LeafListItem disableGutters>
-          <StyledButton
-            component={NextLinkComposed}
-            to={`/accountLists/${accountListId}/settings/organizations`}
-          >
-            <Title>{t('Manage Organizations')}</Title>
-          </StyledButton>
-        </LeafListItem>
-      )}
-      {(data?.user?.admin || data?.user?.developer) && (
-        <LeafListItem disableGutters>
-          <StyledButton
-            component={NextLinkComposed}
-            to={`/accountLists/${accountListId}/settings/admin`}
-          >
-            <Title>{t('Admin Console')}</Title>
-          </StyledButton>
-        </LeafListItem>
-      )}
-      {data?.user?.developer && (
-        <LeafListItem disableGutters>
-          <HandoffLink path="/auth/user/admin" auth>
-            <StyledButton>
-              <Title>{t('Backend Admin')}</Title>
-            </StyledButton>
-          </HandoffLink>
-        </LeafListItem>
-      )}
-      {data?.user?.developer && (
-        <LeafListItem disableGutters>
-          <HandoffLink path="/auth/user/sidekiq" auth>
-            <StyledButton>
-              <Title>{t('Sidekiq')}</Title>
-            </StyledButton>
-          </HandoffLink>
-        </LeafListItem>
+      {!onSetupTour && (
+        <>
+          {addProfileContent.map(({ text, path, onClick }, index) => (
+            <LeafListItem key={index} disableGutters onClick={onClick}>
+              <StyledButton
+                component={NextLinkComposed}
+                to={`/accountLists/${accountListId}${path}`}
+              >
+                <Title>{t(text)}</Title>
+              </StyledButton>
+            </LeafListItem>
+          ))}
+          {(data?.user?.admin ||
+            !!data?.user?.administrativeOrganizations?.nodes?.length) && (
+            <LeafListItem disableGutters>
+              <StyledButton
+                component={NextLinkComposed}
+                to={`/accountLists/${accountListId}/settings/organizations`}
+              >
+                <Title>{t('Manage Organizations')}</Title>
+              </StyledButton>
+            </LeafListItem>
+          )}
+          {(data?.user?.admin || data?.user?.developer) && (
+            <LeafListItem disableGutters>
+              <StyledButton
+                component={NextLinkComposed}
+                to={`/accountLists/${accountListId}/settings/admin`}
+              >
+                <Title>{t('Admin Console')}</Title>
+              </StyledButton>
+            </LeafListItem>
+          )}
+          {data?.user?.developer && (
+            <LeafListItem disableGutters>
+              <HandoffLink path="/auth/user/admin" auth>
+                <StyledButton>
+                  <Title>{t('Backend Admin')}</Title>
+                </StyledButton>
+              </HandoffLink>
+            </LeafListItem>
+          )}
+          {data?.user?.developer && (
+            <LeafListItem disableGutters>
+              <HandoffLink path="/auth/user/sidekiq" auth>
+                <StyledButton>
+                  <Title>{t('Sidekiq')}</Title>
+                </StyledButton>
+              </HandoffLink>
+            </LeafListItem>
+          )}
+        </>
       )}
       <LeafListItem disableGutters>
         <Box display="flex" flexDirection="column" px={4} py={2}>
@@ -222,23 +232,9 @@ export const ProfileMenuPanel: React.FC = () => {
             {t('Sign Out')}
           </Button>
           <Box display="flex" justifyContent="center" py={1}>
-            <MuiLink
-              href="https://get.mpdx.org/privacy-policy/"
-              target="_blank"
-              color="secondary"
-              variant="caption"
-            >
-              {t('Privacy Policy')}
-            </MuiLink>
+            <PrivacyPolicyLink color="secondary" variant="caption" />
             &nbsp; • &nbsp;
-            <MuiLink
-              href="https://get.mpdx.org/terms-of-use/"
-              target="_blank"
-              color="secondary"
-              variant="caption"
-            >
-              {t('Terms of Use')}
-            </MuiLink>
+            <TermsOfUseLink color="secondary" variant="caption" />
           </Box>
         </Box>
       </LeafListItem>

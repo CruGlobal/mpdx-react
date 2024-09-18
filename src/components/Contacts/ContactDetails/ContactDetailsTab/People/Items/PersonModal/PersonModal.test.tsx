@@ -295,6 +295,47 @@ describe('PersonModal', () => {
       expect(queryByText('Show Less')).not.toBeInTheDocument(),
     );
   });
+
+  it('should show invalid dates and highlight them as errors', async () => {
+    const { getByText, getByRole, queryAllByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <ContactDetailProvider>
+                <PersonModal
+                  contactId={contactId}
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  person={{
+                    ...mockPerson,
+                    anniversaryDay: 0,
+                    anniversaryMonth: 0,
+                    anniversaryYear: 2000,
+                    birthdayDay: 0,
+                    birthdayMonth: 0,
+                    birthdayYear: 2000,
+                  }}
+                />
+              </ContactDetailProvider>
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    const birthdayInput = getByRole('textbox', { name: 'Birthday' });
+    expect(birthdayInput).toHaveValue('0/0/2000');
+    expect(birthdayInput.parentElement).toHaveClass('Mui-error');
+
+    userEvent.click(queryAllByText('Show More')[0]);
+    await waitFor(() => expect(getByText('Show Less')).toBeInTheDocument());
+
+    const anniversaryInput = getByRole('textbox', { name: 'Anniversary' });
+    expect(anniversaryInput).toHaveValue('0/0/2000');
+    expect(anniversaryInput.parentElement).toHaveClass('Mui-error');
+  });
+
   describe('Updating', () => {
     const createObjectURL = jest
       .fn()

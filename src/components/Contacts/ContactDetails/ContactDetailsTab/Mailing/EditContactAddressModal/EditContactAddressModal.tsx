@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import { ApolloCache } from '@apollo/client';
 import {
   Alert,
   AlertTitle,
@@ -26,6 +27,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressUpdateInput } from 'src/graphql/types.generated';
+import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
@@ -38,7 +40,6 @@ import {
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
-import { useUpdateCache } from '../useUpdateCache';
 import {
   useDeleteContactAddressMutation,
   useDonationServicesEmailQuery,
@@ -64,11 +65,14 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+export const editableSources = ['MPDX', 'manual', 'TntImport'];
+
 interface EditContactAddressModalProps {
   accountListId: string;
   address: ContactMailingFragment['addresses']['nodes'][0];
   contactId: string;
   handleClose: () => void;
+  handleUpdateCacheOnDelete?: (cache: ApolloCache<unknown>, object) => void;
 }
 
 export const EditContactAddressModal: React.FC<
@@ -78,6 +82,7 @@ export const EditContactAddressModal: React.FC<
   address,
   contactId,
   handleClose,
+  handleUpdateCacheOnDelete,
 }): ReactElement<EditContactAddressModalProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -125,32 +130,37 @@ export const EditContactAddressModal: React.FC<
           id: address.id,
           accountListId,
         },
-        update: (cache, { data: deletedContactAddress }) => {
-          const deletedAddressId = deletedContactAddress?.deleteAddress?.id;
-          const query = {
-            query: ContactDetailsTabDocument,
-            variables: {
-              accountListId,
-              contactId,
-            },
-          };
-
-          const dataFromCache = cache.readQuery<ContactDetailsTabQuery>(query);
-
-          if (dataFromCache) {
-            const data = {
-              ...dataFromCache,
-              contact: {
-                ...dataFromCache.contact,
-                addresses: {
-                  ...dataFromCache.contact.addresses,
-                  nodes: dataFromCache.contact.addresses.nodes.filter(
-                    (address) => address.id !== deletedAddressId,
-                  ),
-                },
+        update: (cache) => {
+          const deletedAddressId = address.id;
+          if (handleUpdateCacheOnDelete) {
+            handleUpdateCacheOnDelete(cache, { deletedAddressId });
+          } else {
+            const query = {
+              query: ContactDetailsTabDocument,
+              variables: {
+                accountListId,
+                contactId,
               },
             };
-            cache.writeQuery({ ...query, data });
+
+            const dataFromCache =
+              cache.readQuery<ContactDetailsTabQuery>(query);
+
+            if (dataFromCache) {
+              const data = {
+                ...dataFromCache,
+                contact: {
+                  ...dataFromCache.contact,
+                  addresses: {
+                    ...dataFromCache.contact.addresses,
+                    nodes: dataFromCache.contact.addresses.nodes.filter(
+                      (address) => address.id !== deletedAddressId,
+                    ),
+                  },
+                },
+              };
+              cache.writeQuery({ ...query, data });
+            }
           }
           enqueueSnackbar(t('Address deleted successfully'), {
             variant: 'success',
@@ -161,7 +171,7 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
-  const editingDisabled = address.source === 'Siebel';
+  const editingDisabled = editableSources.indexOf(address.source) === -1;
   const { data: emailData } = useDonationServicesEmailQuery({
     variables: {
       accountListId,
@@ -213,29 +223,43 @@ export const EditContactAddressModal: React.FC<
               <ContactEditContainer>
                 {editingDisabled && (
                   <ContactInputWrapper>
-                    <Alert severity="info">
-                      <AlertTitle sx={{ fontWeight: 'bold' }}>
-                        {t('This address is provided by Donation Services')}
-                      </AlertTitle>
-                      <p>
-                        {t(
-                          'The address that syncs with Donation Services cannot be edited here. Please email Donation Services with the updated address, or you can create a new address and select it as your primary mailing address.',
-                        )}
-                      </p>
-                      {emailData && (
+                    {address.source === 'Siebel' && (
+                      <Alert severity="info">
+                        <AlertTitle sx={{ fontWeight: 'bold' }}>
+                          {t('This address is provided by Donation Services')}
+                        </AlertTitle>
                         <p>
-                          <Link
-                            href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
-                              generateEmailBody(emailData, address),
-                            )}`}
-                            underline="hover"
-                            sx={{ fontWeight: 'bold' }}
-                          >
-                            {t('Email Donation Services here')}
-                          </Link>
+                          {t(
+                            'The address that syncs with Donation Services cannot be edited here. Please email Donation Services with the updated address, or you can create a new address and select it as your primary mailing address.',
+                          )}
                         </p>
-                      )}
-                    </Alert>
+                        {emailData && (
+                          <p>
+                            <Link
+                              href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
+                                generateEmailBody(emailData, address),
+                              )}`}
+                              underline="hover"
+                              sx={{ fontWeight: 'bold' }}
+                            >
+                              {t('Email Donation Services here')}
+                            </Link>
+                          </p>
+                        )}
+                      </Alert>
+                    )}
+                    {address.source === 'DataServer' && (
+                      <Alert severity="info">
+                        <AlertTitle sx={{ fontWeight: 'bold' }}>
+                          {t('This address is provided by your organization.')}
+                        </AlertTitle>
+                        <p>
+                          {t(
+                            'The address that syncs with your organization’s donations cannot be edited here. Please email your donation department with the updated address, or you can create a new address and select it as your primary mailing address.',
+                          )}
+                        </p>
+                      </Alert>
+                    )}
                   </ContactInputWrapper>
                 )}
                 <ContactInputWrapper>
@@ -391,7 +415,9 @@ export const EditContactAddressModal: React.FC<
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>
-              {address && <DeleteButton onClick={deleteContactAddress} />}
+              {address && !editingDisabled && (
+                <DeleteButton onClick={deleteContactAddress} />
+              )}
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
               <SubmitButton disabled={!isValid || isSubmitting}>
                 {(updating || deleting || settingPrimaryAddress) && (

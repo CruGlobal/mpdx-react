@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -44,28 +44,31 @@ describe('ContactRow', () => {
     const { getByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ContactRow contact={contact} useTopMargin={true} />
+          <ContactRow contact={contact} selectedOrganizationName="Cru" />
         </GqlMockedProvider>
       </Components>,
     );
+    //Check Contact person info
     expect(getByText('Lastname, Firstnames')).toBeInTheDocument();
     expect(getByText('firstName lastName')).toBeInTheDocument();
     expect(getByText('test@cru.org')).toBeInTheDocument();
     expect(getByText('(111) 222-3333')).toBeInTheDocument();
 
+    //Check account user person info
     expect(
       getByText('accountListFirstName accountListLastName'),
     ).toBeInTheDocument();
     expect(
       getByText('accountListFirstName2 accountListLastName2'),
     ).toBeInTheDocument();
+    expect(getByText('accountList.contactOwner@cru.org')).toBeInTheDocument();
   });
 
   it('should only show primary address', () => {
     const { getByText, queryByText } = render(
       <Components>
         <GqlMockedProvider>
-          <ContactRow contact={contact} useTopMargin={true} />
+          <ContactRow contact={contact} selectedOrganizationName="Cru" />
         </GqlMockedProvider>
       </Components>,
     );
@@ -73,106 +76,37 @@ describe('ContactRow', () => {
     expect(queryByText('222 test, city, FL, 22222')).not.toBeInTheDocument();
   });
 
-  it('should only show Delete button', () => {
-    const { getByText, queryByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <ContactRow contact={contact} useTopMargin={true} />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    expect(getByText('Delete')).toBeInTheDocument();
-    expect(queryByText('Anonymize')).not.toBeInTheDocument();
-  });
-
-  it('should only show Anonymize button', () => {
-    const { getByText, queryByText } = render(
-      <Components>
-        <GqlMockedProvider>
-          <ContactRow
-            contact={{
-              ...contact,
-              allowDeletion: false,
-            }}
-            useTopMargin={true}
-          />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    expect(getByText('Anonymize')).toBeInTheDocument();
-    expect(queryByText('Delete')).not.toBeInTheDocument();
-  });
-
-  it('should handle Delete', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText } = render(
-      <Components>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <ContactRow contact={contact} useTopMargin={true} />
-        </GqlMockedProvider>
-      </Components>,
-    );
-    userEvent.click(getByText('Delete'));
-
-    await waitFor(() => {
-      expect(getByText('Confirm')).toBeInTheDocument();
-      expect(
-        getByText(
-          'Are you sure you want to delete {{name}} from {{accountList}}?',
-        ),
-      ).toBeInTheDocument();
-    });
-
-    userEvent.click(getByText('Yes'));
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith('Contact successfully deleted', {
-        variant: 'success',
-      });
-    });
-    expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-      'DeleteOrganizationContact',
-    );
-    expect(mutationSpy.mock.calls[0][0].operation.variables.input).toEqual({
-      contactId: '2f5d998f',
-    });
-  });
-
   it('should handle Anonymize', async () => {
     const mutationSpy = jest.fn();
-    const { getByText } = render(
+    const { getByText, findByRole } = render(
       <Components>
         <GqlMockedProvider onCall={mutationSpy}>
           <ContactRow
             contact={{
               ...contact,
-              allowDeletion: false,
             }}
-            useTopMargin={true}
+            selectedOrganizationName="Cru"
           />
         </GqlMockedProvider>
       </Components>,
     );
     userEvent.click(getByText('Anonymize'));
 
-    await waitFor(() => {
-      expect(getByText('Confirm')).toBeInTheDocument();
-      expect(
-        getByText(
-          'Are you sure you want to anonymize {{name}} from {{accountList}}?',
-        ),
-      ).toBeInTheDocument();
-    });
+    const modal = await findByRole('dialog');
+    expect(within(modal).getByText('Confirm')).toBeInTheDocument();
 
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith('Contact successfully deleted', {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Contact successfully anonymized',
+        {
+          variant: 'success',
+        },
+      );
     });
     expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-      'DeleteOrganizationContact',
+      'AnonymizeContact',
     );
     expect(mutationSpy.mock.calls[0][0].operation.variables.input).toEqual({
       contactId: '2f5d998f',

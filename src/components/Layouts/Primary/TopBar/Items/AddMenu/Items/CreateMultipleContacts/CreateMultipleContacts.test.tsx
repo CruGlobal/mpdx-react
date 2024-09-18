@@ -89,7 +89,7 @@ describe('CreateMultipleContacts', () => {
     const email = 'christian.huffman@cru.org';
     const status = StatusEnum.PartnerFinancial;
     const statusTextName =
-      loadConstantsMockData.constant.statuses?.find((s) => s.id === status)
+      loadConstantsMockData.constant.status?.find((s) => s.id === status)
         ?.value || '';
 
     const first2 = 'Robert';

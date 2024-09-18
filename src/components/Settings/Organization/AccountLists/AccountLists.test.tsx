@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
@@ -22,6 +22,7 @@ const router = {
 };
 
 const mockEnqueue = jest.fn();
+const mutationSpy = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -45,6 +46,7 @@ const ComponentsWithNoData = ({ children }: PropsWithChildren) => (
       <ThemeProvider theme={theme}>
         <OrganizationsContextProvider
           selectedOrganizationId={'Org123'}
+          selectedOrganizationName={'Org123'}
           search={''}
           setSearch={setSearch}
           clearFilters={clearFilters}
@@ -62,6 +64,7 @@ const Components = ({ children }: PropsWithChildren) => (
       <ThemeProvider theme={theme}>
         <OrganizationsContextProvider
           selectedOrganizationId={selectedOrganizationId}
+          selectedOrganizationName={selectedOrganizationId}
           search={search}
           setSearch={setSearch}
           clearFilters={clearFilters}
@@ -98,7 +101,7 @@ describe('AccountLists', () => {
   });
 
   it('should show default screen', async () => {
-    const { getByText, queryByText } = render(
+    const { queryByText } = render(
       <Components>
         <GqlMockedProvider<{
           SearchOrganizationsAccountLists: SearchOrganizationsAccountListsQuery;
@@ -124,18 +127,8 @@ describe('AccountLists', () => {
 
     await waitFor(() => {
       expect(
-        queryByText('Looks like you have no account lists to manage yet'),
+        queryByText('Start by adding search filters'),
       ).not.toBeInTheDocument();
-
-      expect(
-        getByText('No account lists match your filters.'),
-      ).toBeInTheDocument();
-    });
-
-    userEvent.click(getByText('Reset All Search Filters'));
-
-    await waitFor(() => {
-      expect(clearFilters).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -170,8 +163,12 @@ describe('AccountLists', () => {
       ).toBeInTheDocument();
 
       expect(
-        getByText('No account lists match your filters.'),
+        getByText('No account lists match your search filters.'),
       ).toBeInTheDocument();
+
+      userEvent.click(getByText('Reset Search'));
+
+      expect(clearFilters).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -202,7 +199,91 @@ describe('AccountLists', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Name1')).toBeInTheDocument();
+      expect(getByText('Test Account List Name')).toBeInTheDocument();
+    });
+  });
+
+  it('takes users off the screen after they are deleted', async () => {
+    const { getByText, queryByText, getAllByRole, getByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          SearchOrganizationsAccountLists: SearchOrganizationsAccountListsQuery;
+        }>
+          mocks={{
+            ...SearchOrganizationsAccountListsMock,
+          }}
+          onCall={mutationSpy}
+        >
+          <AccountLists />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Test Account List Name')).toBeInTheDocument();
+    });
+
+    const view = getByText(/userfirstname userlastname/i);
+    const firstDeleteButton = await within(view).findByRole('button', {
+      name: /delete/i,
+    });
+
+    userEvent.click(firstDeleteButton);
+    userEvent.type(
+      getAllByRole('textbox', { name: 'Reason' })[0],
+      'this is a test',
+    );
+    userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    await waitFor(() => {
+      expect(mutationSpy.mock.calls[1][0]).toMatchObject({
+        operation: {
+          operationName: 'DeleteUser',
+          variables: {
+            input: {
+              reason: 'this is a test',
+              resettedUserId: 'e8a19920',
+            },
+          },
+        },
+      });
+
+      expect(
+        queryByText(/userfirstname userlastname/i),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('takes coaches off the screen after they are removed', async () => {
+    const { getByText, queryByText, getAllByRole, getByRole } = render(
+      <Components>
+        <GqlMockedProvider<{
+          SearchOrganizationsAccountLists: SearchOrganizationsAccountListsQuery;
+        }>
+          mocks={{
+            ...SearchOrganizationsAccountListsMock,
+          }}
+          onCall={mutationSpy}
+        >
+          <AccountLists />
+        </GqlMockedProvider>
+      </Components>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Test Account List Name')).toBeInTheDocument();
+    });
+
+    expect(getByText(/coachFirstName coachLastName/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      userEvent.click(getAllByRole('button', { name: /remove coach/i })[0]);
+      userEvent.click(getByRole('button', { name: 'Yes' }));
+    });
+    await waitFor(() => {
+      expect(
+        queryByText(/coachFirstName coachLastName/i),
+      ).not.toBeInTheDocument();
     });
   });
 });

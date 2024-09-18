@@ -1,14 +1,16 @@
-import { snakeToCamel } from 'src/lib/snakeToCamel';
+import { fetchAllData } from 'src/lib/deserializeJsonApi';
 
 export interface GoogleAccountsResponse {
-  attributes: Omit<GoogleAccountAttributes, 'id'>;
-  id: string;
-  relationships: {
-    contact_groups: {
-      data: unknown[];
+  data: {
+    attributes: Omit<GoogleAccountAttributes, 'id'>;
+    id: string;
+    relationships: {
+      contact_groups: {
+        data: unknown[];
+      };
     };
+    type: string;
   };
-  type: string;
 }
 
 export interface GoogleAccountAttributes {
@@ -37,17 +39,24 @@ interface GoogleAccountAttributesCamel {
   tokenExpired: boolean;
   updatedAt: string;
   updatedInDbAt: string;
+  contactGroups: ContactGroupCamel[];
 }
 
-export const GoogleAccounts = (
-  data: GoogleAccountsResponse[],
-): GoogleAccountAttributesCamel[] => {
-  return data.map((accounts) => {
-    const attributes = {} as Omit<GoogleAccountAttributesCamel, 'id'>;
-    Object.keys(accounts.attributes).map((key) => {
-      attributes[snakeToCamel(key)] = accounts.attributes[key];
-    });
+type ContactGroupCamel = {
+  id: string;
+  createdAt: string;
+  tag: string;
+  title: string;
+  updatedAt: string;
+  updatedInDbAt: string;
+};
 
-    return { id: accounts.id, ...attributes };
+export const GoogleAccounts = (response): GoogleAccountAttributesCamel[] => {
+  return response.data.map((account) => {
+    const attributes = fetchAllData(account, response.included) as Omit<
+      GoogleAccountAttributesCamel,
+      'id'
+    >;
+    return { id: account.id, ...attributes };
   });
 };

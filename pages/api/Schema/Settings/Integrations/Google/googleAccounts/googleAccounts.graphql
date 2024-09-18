@@ -14,4 +14,14 @@ type GoogleAccountAttributes {
   tokenExpired: Boolean!
   updatedAt: String!
   updatedInDbAt: String!
+  contactGroups: [ContactGroup]!
+}
+
+type ContactGroup {
+  id: String!
+  createdAt: String
+  tag: String
+  title: String
+  updatedAt: String
+  updatedInDbAt: String
 }

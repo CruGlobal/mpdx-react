@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import clsx from 'clsx';
 import {
   ContactsContext,
   ContactsType,
@@ -21,6 +22,32 @@ import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/Co
 import { preloadContactsRightPanel } from '../ContactsRightPanel/DynamicContactsRightPanel';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
+
+// When making changes in this file, also check to see if you don't need to make changes to the below file
+// src/components/Tool/Appeal/List/ContactRow/ContactRow.tsx
+
+export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
+  flex: '1 1 auto',
+  textAlign: 'left',
+  padding: theme.spacing(0, 0.5, 0, 2),
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(0, 0.5),
+  },
+  '&.top-margin': {
+    marginTop: 16,
+  },
+  '&.checked': {
+    backgroundColor: theme.palette.cruGrayLight.main,
+  },
+}));
+
+export const StyledCheckbox = styled(Checkbox, {
+  shouldForwardProp: (prop) => prop !== 'value',
+})(() => ({
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  },
+}));
 
 interface Props {
   contact: ContactRowFragment;
@@ -35,27 +62,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     setContactFocus: onContactSelected,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
-
-  const ListItemButton = styled(ButtonBase)(({ theme }) => ({
-    flex: '1 1 auto',
-    textAlign: 'left',
-    marginTop: useTopMargin ? '16px' : '0',
-    padding: theme.spacing(0, 0.5, 0, 2),
-    [theme.breakpoints.up('sm')]: {
-      padding: theme.spacing(0, 0.5),
-    },
-    ...(isChecked(contactId)
-      ? { backgroundColor: theme.palette.cruGrayLight.main }
-      : {}),
-  }));
-
-  const StyledCheckbox = styled(Checkbox, {
-    shouldForwardProp: (prop) => prop !== 'value',
-  })(() => ({
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    },
-  }));
 
   const onClick = () => {
     onContactSelected(contact.id);
@@ -80,6 +86,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       focusRipple
       onClick={onClick}
       onMouseEnter={preloadContactsRightPanel}
+      className={clsx({
+        'top-margin': useTopMargin,
+        checked: isChecked(contactId),
+      })}
       data-testid="rowButton"
     >
       <Hidden xsDown>

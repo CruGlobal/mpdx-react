@@ -1,4 +1,5 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
+import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
@@ -7,42 +8,51 @@ import {
   Avatar,
   Box,
   Button,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
+  FormHelperText,
   Grid,
   Hidden,
+  Link,
   TextField,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
+import { FormikErrors } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { PhoneNumberData } from './FixPhoneNumbers';
+import { FormValues, FormValuesPerson } from './FixPhoneNumbers';
+import {
+  PersonInvalidNumberFragment,
+  PersonPhoneNumberFragment,
+} from './GetInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
-  left: {
-    [theme.breakpoints.up('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
-  },
+  left: {},
   container: {
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
-    },
   },
   boxBottom: {
-    backgroundColor: theme.palette.cruGrayLight.main,
     width: '100%',
     [theme.breakpoints.down('xs')]: {
       paddingTop: theme.spacing(2),
     },
+  },
+  contactCard: {
+    marginBottom: theme.spacing(2),
   },
   buttonTop: {
     marginLeft: theme.spacing(2),
@@ -80,11 +90,11 @@ const useStyles = makeStyles()((theme: Theme) => ({
     paddingRight: theme.spacing(2),
   },
   paddingY: {
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
   paddingB2: {
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(1),
   },
   hoverHighlight: {
     '&:hover': {
@@ -92,90 +102,127 @@ const useStyles = makeStyles()((theme: Theme) => ({
       cursor: 'pointer',
     },
   },
-  avatar: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
+}));
+
+const ContactHeader = styled(CardHeader)(() => ({
+  '.MuiCardHeader-action': {
+    alignSelf: 'center',
   },
 }));
 
+const ContactAvatar = styled(Avatar)(() => ({
+  width: theme.spacing(4),
+  height: theme.spacing(4),
+}));
+
 interface Props {
-  name: string;
-  numbers: PhoneNumberData[];
-  toDelete: PersonPhoneNumberInput[];
-  personId: string;
-  handleChange: (
-    personId: string,
+  handleDelete: (
+    personIndex: number,
     numberIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    phoneNumber: string,
   ) => void;
-  handleDelete: (personId: string, phoneNumber: number) => void;
-  handleAdd: (personId: string, number: string) => void;
-  handleChangePrimary: (personId: string, numberIndex: number) => void;
+  setContactFocus: SetContactFocus;
+  handleUpdate: (
+    values: FormValues,
+    personId: string,
+    personIndex: number,
+  ) => void;
+  errors: FormikErrors<any>;
+  setValues: (values: FormValues) => void;
+  values: FormValues;
+  person: PersonInvalidNumberFragment;
+  personIndex: number;
 }
 
 const Contact: React.FC<Props> = ({
-  name,
-  numbers,
-  personId,
-  handleChange,
   handleDelete,
-  handleAdd,
-  handleChangePrimary,
+  setContactFocus,
+  handleUpdate,
+  errors,
+  setValues,
+  values,
+  person,
+  personIndex,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const [newPhoneNumber, setNewPhoneNumber] = useState<string>('');
-  //TODO: Add button functionality
-  //TODO: Make name pop up a modal to edit the person info
+  const { appName } = useGetAppSettings();
 
-  const updateNewPhoneNumber = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setNewPhoneNumber(event.target.value);
-  };
+  const numbers: PersonPhoneNumberFragment[] = person.phoneNumbers.nodes || [];
+  const name: string = `${person.firstName} ${person.lastName}`;
 
-  const addNewPhoneNumber = (): void => {
-    if (newPhoneNumber) {
-      handleAdd(personId, newPhoneNumber);
-      setNewPhoneNumber('');
-    }
+  const handleContactNameClick = () => {
+    setContactFocus(person.contactId, TabKey.ContactDetails);
   };
 
   return (
     <Grid container className={classes.container}>
       <Grid container>
-        <Grid item md={10} xs={12}>
+        <Card className={classes.contactCard}>
           <Box display="flex" alignItems="center" className={classes.left}>
             <Grid container>
               <Grid item xs={12}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  style={{ height: '100%' }}
-                  p={2}
-                >
-                  <Avatar src="" className={classes.avatar} />
-                  <Box display="flex" flexDirection="column" ml={2}>
-                    <Typography variant="h6">{name}</Typography>
-                  </Box>
-                </Box>
+                <ContactHeader
+                  avatar={
+                    <ContactAvatar
+                      src={person?.avatar || ''}
+                      aria-label="Contact Avatar"
+                      onClick={handleContactNameClick}
+                    />
+                  }
+                  title={
+                    <Link underline="hover" onClick={handleContactNameClick}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ display: 'inline' }}
+                      >
+                        {name}
+                      </Typography>
+                    </Link>
+                  }
+                  action={
+                    <Button
+                      data-testid={`confirmButton-${person.id}`}
+                      onClick={() =>
+                        handleUpdate(values, person.id, personIndex)
+                      }
+                      variant="contained"
+                      style={{ width: '100%' }}
+                    >
+                      <Icon
+                        path={mdiCheckboxMarkedCircle}
+                        size={0.8}
+                        className={classes.buttonIcon}
+                      />
+                      {t('Confirm')}
+                    </Button>
+                  }
+                ></ContactHeader>
               </Grid>
 
-              <Grid item xs={12} className={classes.boxBottom}>
-                <Grid container>
-                  <Hidden xsDown>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
+              <CardContent className={(classes.paddingX, classes.paddingY)}>
+                <Grid container display="flex" alignItems="center">
+                  <Hidden smDown>
+                    <Grid item xs={6} sm={4} className={classes.paddingY}>
                       <Box
                         display="flex"
                         justifyContent="space-between"
                         className={classes.paddingX}
                       >
-                        <Typography>
-                          <strong>{t('Source')}</strong>
+                        <Typography variant="body2" fontWeight="bold">
+                          {t('Source')}
                         </Typography>
-                        <Typography>
-                          <strong>{t('Primary')}</strong>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={6} sm={2} className={classes.paddingY}>
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        className={classes.paddingX}
+                      >
+                        <Typography variant="body2" fontWeight="bold">
+                          {t('Primary')}
                         </Typography>
                       </Box>
                     </Grid>
@@ -185,15 +232,15 @@ const Contact: React.FC<Props> = ({
                         justifyContent="flex-start"
                         className={classes.paddingX}
                       >
-                        <Typography>
-                          <strong>{t('Phone Number')}</strong>
+                        <Typography variant="body2" fontWeight="bold">
+                          {t('Phone Number')}
                         </Typography>
                       </Box>
                     </Grid>
                   </Hidden>
                   {numbers.map((phoneNumber, index) => (
                     <Fragment key={index}>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Grid item xs={6} sm={4} className={classes.paddingB2}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
@@ -201,31 +248,92 @@ const Contact: React.FC<Props> = ({
                         >
                           <Box>
                             <Hidden smUp>
-                              <Typography display="inline">
-                                <strong>{t('Source')}: </strong>
+                              <Typography
+                                display="inline"
+                                variant="body2"
+                                fontWeight="bold"
+                              >
+                                {t('Source')}:
                               </Typography>
                             </Hidden>
-                            <Typography display="inline">
+                            <Typography display="inline" variant="body2">
                               {`${phoneNumber.source} (${dateFormatShort(
                                 DateTime.fromISO(phoneNumber.updatedAt),
                                 locale,
                               )})`}
                             </Typography>
                           </Box>
-                          <Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={2} className={classes.paddingB2}>
+                        <Box
+                          display="flex"
+                          justifyContent="center"
+                          className={classes.paddingX}
+                        >
+                          <Typography display="flex" alignItems="center">
                             {phoneNumber.primary ? (
-                              <StarIcon
-                                data-testid={`starIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                              />
+                              <>
+                                <Hidden smUp>
+                                  <Typography
+                                    display="inline"
+                                    variant="body2"
+                                    fontWeight="bold"
+                                  >
+                                    {t('Source')}:
+                                  </Typography>
+                                </Hidden>
+                                <StarIcon
+                                  data-testid={`starIcon-${person.id}-${index}`}
+                                  className={classes.hoverHighlight}
+                                />
+                              </>
                             ) : (
-                              <StarOutlineIcon
-                                data-testid={`starOutlineIcon-${personId}-${index}`}
-                                className={classes.hoverHighlight}
-                                onClick={() =>
-                                  handleChangePrimary(personId, index)
-                                }
-                              />
+                              <>
+                                <Hidden smUp>
+                                  <Typography
+                                    display="inline"
+                                    variant="body2"
+                                    fontWeight="bold"
+                                  >
+                                    {t('Source')}:
+                                  </Typography>
+                                </Hidden>
+                                <Tooltip
+                                  title={t('Set as Primary')}
+                                  placement="left"
+                                >
+                                  <StarOutlineIcon
+                                    data-testid={`starOutlineIcon-${person.id}-${index}`}
+                                    className={classes.hoverHighlight}
+                                    onClick={() => {
+                                      const updatedValues = {
+                                        people: values.people.map(
+                                          (personValue: FormValuesPerson) =>
+                                            personValue === person
+                                              ? {
+                                                  ...personValue,
+                                                  phoneNumbers: {
+                                                    nodes: numbers.map(
+                                                      (
+                                                        number: PersonPhoneNumberFragment,
+                                                      ) => ({
+                                                        ...number,
+                                                        primary:
+                                                          number ===
+                                                          phoneNumber,
+                                                      }),
+                                                    ),
+                                                  },
+                                                }
+                                              : personValue,
+                                        ),
+                                      };
+                                      setValues(updatedValues);
+                                    }}
+                                  />
+                                </Tooltip>
+                              </>
                             )}
                           </Typography>
                         </Box>
@@ -239,40 +347,107 @@ const Contact: React.FC<Props> = ({
                             classes.paddingX,
                           )}
                         >
-                          <TextField
-                            style={{ width: '100%' }}
-                            inputProps={{
-                              'data-testid': `textfield-${personId}-${index}`,
-                            }}
-                            onChange={(
-                              event: React.ChangeEvent<HTMLInputElement>,
-                            ) => handleChange(personId, index, event)}
-                            value={phoneNumber.number}
-                            disabled={phoneNumber.source !== 'MPDX'}
-                          />
+                          <FormControl fullWidth>
+                            <TextField
+                              style={{ width: '100%' }}
+                              size="small"
+                              inputProps={{
+                                'data-testid': `textfield-${person.id}-${index}`,
+                              }}
+                              onChange={(
+                                event: React.ChangeEvent<HTMLInputElement>,
+                              ) => {
+                                const updatedValues = {
+                                  people: values.people.map(
+                                    (personValue: FormValuesPerson) =>
+                                      personValue === person
+                                        ? {
+                                            ...personValue,
+                                            phoneNumbers: {
+                                              nodes: numbers.map(
+                                                (
+                                                  number: PersonPhoneNumberFragment,
+                                                ) => ({
+                                                  ...number,
+                                                  number:
+                                                    number === phoneNumber
+                                                      ? event.target.value
+                                                      : number.number,
+                                                }),
+                                              ),
+                                            },
+                                          }
+                                        : personValue,
+                                  ),
+                                };
+                                setValues(updatedValues);
+                              }}
+                              value={phoneNumber.number}
+                              disabled={phoneNumber.source !== 'MPDX'}
+                            />
+                          </FormControl>
 
                           {phoneNumber.source === 'MPDX' ? (
                             <Box
-                              data-testid={`delete-${personId}-${index}`}
-                              onClick={() => handleDelete(personId, index)}
+                              display="flex"
+                              alignItems="center"
+                              data-testid={`delete-${person.id}-${index}`}
+                              onClick={() =>
+                                handleDelete(
+                                  personIndex,
+                                  index,
+                                  phoneNumber.number || '',
+                                )
+                              }
+                              className={classes.paddingX}
                             >
-                              <Icon
-                                path={mdiDelete}
-                                size={1}
-                                className={classes.hoverHighlight}
-                              />
+                              <Tooltip
+                                title={t('Delete Number')}
+                                placement="left"
+                              >
+                                <Icon
+                                  path={mdiDelete}
+                                  size={1}
+                                  className={classes.hoverHighlight}
+                                />
+                              </Tooltip>
                             </Box>
                           ) : (
-                            <Icon
-                              path={mdiLock}
-                              size={1}
-                              style={{
-                                color: theme.palette.cruGrayMedium.main,
-                              }}
-                            />
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              data-testid={`lock-${person.id}-${index}`}
+                              className={classes.paddingX}
+                            >
+                              <Icon
+                                path={mdiLock}
+                                size={1}
+                                style={{
+                                  color: theme.palette.cruGrayMedium.main,
+                                }}
+                              />
+                            </Box>
                           )}
                         </Box>
                       </Grid>
+                      {errors?.people?.[personIndex]?.phoneNumbers?.nodes?.[
+                        index
+                      ]?.number && (
+                        <>
+                          <Grid item xs={12} sm={6}></Grid>
+                          <Grid item xs={12} sm={6} pb={'10px'}>
+                            <FormHelperText
+                              error={true}
+                              className={classes.paddingX}
+                            >
+                              {
+                                errors?.people?.[personIndex]?.phoneNumbers
+                                  ?.nodes?.[index]?.number
+                              }
+                            </FormHelperText>
+                          </Grid>
+                        </>
+                      )}
                     </Fragment>
                   ))}
                   <Grid item xs={12} sm={6} className={classes.paddingB2}>
@@ -283,11 +458,17 @@ const Contact: React.FC<Props> = ({
                     >
                       <Box>
                         <Hidden smUp>
-                          <Typography display="inline">
-                            <strong>{t('Source')}: </strong>
+                          <Typography
+                            display="inline"
+                            variant="body2"
+                            fontWeight="bold"
+                          >
+                            {t('Source')}:
                           </Typography>
                         </Hidden>
-                        <Typography display="inline">MPDX</Typography>
+                        <Typography display="inline" variant="body2">
+                          {appName}
+                        </Typography>
                       </Box>
                     </Box>
                   </Grid>
@@ -300,51 +481,97 @@ const Contact: React.FC<Props> = ({
                         classes.paddingX,
                       )}
                     >
-                      <TextField
-                        style={{ width: '100%' }}
-                        onChange={(
-                          event: React.ChangeEvent<HTMLInputElement>,
-                        ) => updateNewPhoneNumber(event)}
-                        inputProps={{
-                          'data-testid': `addNewNumberInput-${personId}`,
-                        }}
-                        value={newPhoneNumber}
-                      />
-                      <Box
-                        onClick={() => addNewPhoneNumber()}
-                        data-testid={`addButton-${personId}`}
-                      >
-                        <Icon
-                          path={mdiPlus}
-                          size={1}
-                          className={classes.hoverHighlight}
+                      <FormControl fullWidth>
+                        <TextField
+                          style={{ width: '100%' }}
+                          size="small"
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>,
+                          ) => {
+                            const updatedValues = {
+                              people: values.people.map(
+                                (personValue: FormValuesPerson) =>
+                                  personValue === person
+                                    ? {
+                                        ...personValue,
+                                        isNewPhoneNumber: true,
+                                        newPhoneNumber: event.target.value,
+                                      }
+                                    : personValue,
+                              ),
+                            };
+                            setValues(updatedValues);
+                          }}
+                          inputProps={{
+                            'data-testid': `addNewNumberInput-${person.id}`,
+                          }}
+                          value={values.people[personIndex].newPhoneNumber}
                         />
+                      </FormControl>
+                      <Box
+                        className={classes.paddingX}
+                        display="flex"
+                        alignItems="center"
+                        onClick={() => {
+                          const updatedValues = {
+                            people: values.people.map(
+                              (personValue: PersonInvalidNumberFragment) =>
+                                personValue === person
+                                  ? {
+                                      ...person,
+                                      phoneNumbers: {
+                                        nodes: [
+                                          ...person.phoneNumbers.nodes,
+                                          {
+                                            updatedAt: DateTime.local().toISO(),
+                                            primary: false,
+                                            source: appName,
+                                            number:
+                                              values.people[personIndex]
+                                                .newPhoneNumber,
+                                          },
+                                        ],
+                                      },
+                                      isNewPhoneNumber: false,
+                                      newPhoneNumber: '',
+                                    }
+                                  : personValue,
+                            ),
+                          };
+                          if (values.people[personIndex].newPhoneNumber) {
+                            setValues(updatedValues as FormValues);
+                          }
+                        }}
+                        data-testid={`addButton-${person.id}`}
+                      >
+                        <Tooltip title="Add Number">
+                          <Icon
+                            path={mdiPlus}
+                            size={1}
+                            className={classes.hoverHighlight}
+                          />
+                        </Tooltip>
                       </Box>
                     </Box>
                   </Grid>
+                  {errors?.people?.[personIndex]?.newPhoneNumber && (
+                    <>
+                      <Grid item xs={12} sm={6}></Grid>
+                      <Grid item xs={12} sm={6}>
+                        <FormHelperText
+                          error={true}
+                          className={classes.paddingX}
+                        >
+                          {errors?.people?.[personIndex]?.newPhoneNumber}
+                        </FormHelperText>
+                      </Grid>
+                    </>
+                  )}
                 </Grid>
-              </Grid>
+              </CardContent>
             </Grid>
           </Box>
-        </Grid>
-        <Grid item xs={12} md={2}>
-          <Box
-            display="flex"
-            flexDirection="column"
-            style={{ paddingLeft: theme.spacing(1) }}
-          >
-            <Box className={classes.buttonTop}>
-              <Button variant="contained" style={{ width: '100%' }}>
-                <Icon
-                  path={mdiCheckboxMarkedCircle}
-                  size={0.8}
-                  className={classes.buttonIcon}
-                />
-                {t('Confirm')}
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
+        </Card>
       </Grid>
     </Grid>
   );

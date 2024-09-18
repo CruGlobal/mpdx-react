@@ -1,24 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Box,
   Button,
   CircularProgress,
-  Divider,
   Grid,
-  NativeSelect,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Typography,
 } from '@mui/material';
+import { Formik } from 'formik';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
+import * as yup from 'yup';
+import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
-import { StyledInput } from '../StyledInput';
+import { ToolsGridContainer } from '../styledComponents';
 import Contact from './Contact';
 import DeleteModal from './DeleteModal';
-import { useGetInvalidPhoneNumbersQuery } from './GetInvalidPhoneNumbers.generated';
+import {
+  PersonInvalidNumberFragment,
+  PersonPhoneNumberFragment,
+  useGetInvalidPhoneNumbersQuery,
+} from './GetInvalidPhoneNumbers.generated';
+import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
+import { determineBulkDataToSend } from './helper';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -32,8 +43,9 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'end',
-    width: '70%',
-    [theme.breakpoints.down('sm')]: {
+    width: '80%',
+    maxWidth: '1500px',
+    [theme.breakpoints.down('md')]: {
       width: '100%',
     },
   },
@@ -46,15 +58,6 @@ const useStyles = makeStyles()(() => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'center',
-  },
-  buttonBlue: {
-    backgroundColor: theme.palette.mpdxBlue.main,
-    paddingRight: theme.spacing(1.5),
-    color: 'white',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(2),
-    },
   },
   buttonIcon: {
     marginRight: theme.spacing(1),
@@ -70,275 +73,363 @@ const useStyles = makeStyles()(() => ({
       alignItems: 'start',
     },
   },
-  nativeSelect: {
+  select: {
     minWidth: theme.spacing(20),
-    width: '10%',
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(0),
-      marginRight: theme.spacing(0),
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+      maxWidth: '200px',
+      margin: `${theme.spacing(1)} auto 0`,
     },
   },
 }));
 
 export interface ModalState {
   open: boolean;
-  personId: string;
+  personIndex: number;
   numberIndex: number;
   phoneNumber: string;
 }
 
 const defaultDeleteModalState = {
   open: false,
-  personId: '',
+  personIndex: 0,
   numberIndex: 0,
   phoneNumber: '',
 };
 
+export interface PersonPhoneNumbers {
+  phoneNumbers: PersonPhoneNumberFragment[];
+}
+
 interface Props {
   accountListId: string;
+  setContactFocus: SetContactFocus;
 }
 
-export interface PhoneNumberData {
-  id?: string;
-  primary: boolean;
-  updatedAt: string;
-  source: string;
-  number: string;
-  destroy?: boolean;
+export interface FormValuesPerson extends PersonInvalidNumberFragment {
+  newPhoneNumber: string;
+  isNewPhoneNumber: boolean;
 }
 
-interface PersonPhoneNumbers {
-  phoneNumbers: PhoneNumberData[];
-  toDelete: PersonPhoneNumberInput[];
+export interface FormValues {
+  people: FormValuesPerson[];
 }
 
-const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
+const FixPhoneNumbers: React.FC<Props> = ({
+  accountListId,
+  setContactFocus,
+}: Props) => {
   const { classes } = useStyles();
-
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+  const { enqueueSnackbar } = useSnackbar();
+  const { appName } = useGetAppSettings();
+  const [defaultSource, setDefaultSource] = useState<string | undefined>(
+    appName || 'MPDX',
+  );
   const [deleteModalState, setDeleteModalState] = useState<ModalState>(
     defaultDeleteModalState,
   );
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
   const { data, loading } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
-  const [dataState, setDataState] = useState<{
-    [key: string]: PersonPhoneNumbers;
-  }>({});
   const { t } = useTranslation();
 
-  useEffect(
-    () =>
-      setDataState(
-        data
-          ? data.people.nodes?.reduce<{ [key: string]: PersonPhoneNumbers }>(
-              (map, person) => ({
-                ...map,
-                [person.id]: {
-                  phoneNumbers: person.phoneNumbers.nodes.map(
-                    (phoneNumber) => ({
-                      id: phoneNumber.id,
-                      primary: phoneNumber.primary,
-                      updatedAt: phoneNumber.updatedAt,
-                      source: phoneNumber.source,
-                      number: phoneNumber.number || '',
-                    }),
-                  ),
-                  toDelete: [],
-                },
-              }),
-              {},
-            )
-          : {},
-      ),
-    [loading],
-  );
+  const initialValues: FormValues = {
+    people:
+      data?.people?.nodes.map((person) => ({
+        ...person,
+        isNewPhoneNumber: false,
+        newPhoneNumber: '',
+      })) || [],
+  };
 
-  const handleDeleteModalOpen = (
-    personId: string,
-    numberIndex: number,
-  ): void => {
-    setDeleteModalState({
-      open: true,
-      personId: personId,
-      numberIndex: numberIndex,
-      phoneNumber: dataState[personId].phoneNumbers[numberIndex].number,
-    });
+  const handleSourceChange = (event: SelectChangeEvent<string>): void => {
+    setDefaultSource(event.target.value);
   };
 
   const handleDeleteModalClose = (): void => {
     setDeleteModalState(defaultDeleteModalState);
   };
 
-  const handleChange = (
-    personId: string,
+  const handleDeleteModalOpen = (
+    personIndex: number,
     numberIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>,
+    phoneNumber: string,
   ): void => {
-    const temp = { ...dataState };
-    dataState[personId].phoneNumbers[numberIndex].number = event.target.value;
-    setDataState(temp);
+    setDeleteModalState({
+      open: true,
+      personIndex,
+      numberIndex,
+      phoneNumber,
+    });
   };
 
-  const handleDelete = (): void => {
-    const temp = { ...dataState };
-    const deleting = temp[deleteModalState.personId].phoneNumbers.splice(
-      deleteModalState.numberIndex,
-      1,
-    )[0];
+  const handleBulkConfirm = async (values: FormValues) => {
+    const dataToSend = determineBulkDataToSend(
+      values?.people,
+      defaultSource ?? '',
+    );
+
+    if (!dataToSend.length) {
+      return;
+    }
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes: dataToSend,
+        },
+      },
+      update: (cache) => {
+        data?.people.nodes.forEach((person: PersonInvalidNumberFragment) => {
+          cache.evict({ id: `Person:${person.id}` });
+        });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Error updating phone numbers'), {
+          variant: 'error',
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Phone numbers updated!'), {
+          variant: 'success',
+        });
+      },
+    });
+  };
+
+  const updatePhoneNumber = async (
+    values: FormValues,
+    personId: string,
+    personIndex: number,
+  ): Promise<void> => {
+    const attributes = [
+      {
+        phoneNumbers: values.people[personIndex].phoneNumbers.nodes.map(
+          (phoneNumber: PersonPhoneNumberFragment) => ({
+            id: phoneNumber.id,
+            primary: phoneNumber.primary,
+            number: phoneNumber.number,
+            validValues: true,
+          }),
+        ),
+        id: personId,
+      },
+    ];
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes,
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${personId}` });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Error updating phone numbers'), {
+          variant: 'error',
+        });
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Phone numbers updated!'), {
+          variant: 'success',
+        });
+      },
+    });
+  };
+
+  const handleDelete = (
+    values: FormValues,
+    setValues: (values: FormValues) => void,
+  ): void => {
+    const temp = JSON.parse(JSON.stringify(values));
+
+    const deleting = temp?.people[
+      deleteModalState.personIndex
+    ].phoneNumbers?.nodes.splice(deleteModalState.numberIndex, 1)[0];
+
     deleting.destroy = true;
-    deleting.primary &&
-      (temp[deleteModalState.personId].phoneNumbers[0].primary = true); // If the deleted number was primary, set the new first index to primary
-    deleting.id &&
-      temp[deleteModalState.personId].toDelete.push({
-        destroy: true,
-        id: deleting.id,
-      }); //Only destroy the number if it already exists (has an ID)
-    setDataState(temp);
+
+    if (
+      deleting.primary &&
+      temp?.people[deleteModalState.personIndex]?.phoneNumbers?.nodes.length
+    ) {
+      temp.people[deleteModalState.personIndex].phoneNumbers.nodes[0].primary =
+        true;
+    }
+
+    setValues(temp);
     handleDeleteModalClose();
   };
 
-  const handleAdd = (personId: string, number: string): void => {
-    const temp = { ...dataState };
-    temp[personId].phoneNumbers.push({
-      updatedAt: new Date().toISOString(),
-      number: number,
-      primary: false,
-      source: 'MPDX',
-    });
-    setDataState(temp);
-  };
-
-  const handleChangePrimary = (personId: string, numberIndex: number): void => {
-    const temp = { ...dataState };
-    temp[personId].phoneNumbers = temp[personId].phoneNumbers.map(
-      (number, index) => ({
-        ...number,
-        primary: index === numberIndex ? true : false,
+  const fixPhoneNumberSchema = yup.object({
+    people: yup.array().of(
+      yup.object({
+        phoneNumbers: yup.object({
+          nodes: yup.array().of(
+            yup.object({
+              id: yup.string().nullable(),
+              number: yup.string().when('destroy', {
+                is: true,
+                then: yup.string().nullable(),
+                otherwise: yup
+                  .string()
+                  .required(t('This field is required'))
+                  .nullable()
+                  .test(
+                    'is-phone-number',
+                    t('This field is not a valid phone number'),
+                    (val) => typeof val === 'string' && /\d/.test(val),
+                  ),
+              }),
+              destroy: yup.boolean().default(false),
+              primary: yup.boolean().required('please select a primary number'),
+              historic: yup.boolean().default(false),
+            }),
+          ),
+        }),
+        isNewPhoneNumber: yup.boolean().default(false),
+        newPhoneNumber: yup.string().when('isNewPhoneNumber', {
+          is: false,
+          then: yup.string().nullable(),
+          otherwise: yup
+            .string()
+            .required(t('This field is required'))
+            .nullable()
+            .test(
+              'is-phone-number',
+              t('This field is not a valid phone number'),
+              (val) => typeof val === 'string' && /\d/.test(val),
+            ),
+        }),
       }),
-    );
-    setDataState(temp);
-  };
-
-  const handleSourceChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ): void => {
-    setDefaultSource(event.target.value);
-  };
+    ),
+  });
 
   return (
     <Box className={classes.container}>
       {!loading && data ? (
-        <Grid container className={classes.outter}>
-          <Grid item xs={12}>
-            <Typography variant="h4">{t('Fix Phone Numbers')}</Typography>
-            <Divider className={classes.divider} />
-          </Grid>
-          {data.people.nodes.length > 0 ? (
-            <>
-              <Grid item xs={12}>
-                <Box mb={2}>
-                  <Typography>
-                    <strong>
-                      {t('You have {{amount}} phone numbers to confirm.', {
-                        amount: data.people.nodes.length,
-                      })}
-                    </strong>
-                  </Typography>
-                  <Typography>
-                    {t(
-                      'Choose below which phone number will be set as primary.',
-                    )}
-                  </Typography>
-                  <Box className={classes.defaultBox}>
-                    <Typography>{t('Default Primary Source:')}</Typography>
+        <>
+          {data?.people.nodes.length > 0 ? (
+            <Formik
+              initialValues={initialValues}
+              onSubmit={() => {}}
+              validationSchema={fixPhoneNumberSchema}
+            >
+              {({ errors, setValues, values }): ReactElement => (
+                <>
+                  <ToolsGridContainer container spacing={3}>
+                    <Grid item xs={12}>
+                      <Box mb={2}>
+                        <Typography fontWeight="bold">
+                          {t('You have {{amount}} phone numbers to confirm.', {
+                            amount: data.people.totalCount,
+                          })}
+                        </Typography>
+                        <Typography>
+                          {t(
+                            'Choose below which phone number will be set as primary.',
+                          )}
+                        </Typography>
+                        <Box className={classes.defaultBox}>
+                          <Typography>
+                            {t('Default Primary Source:')}
+                          </Typography>
 
-                    <NativeSelect
-                      input={
-                        <StyledInput
-                          inputProps={{
-                            'data-testid': 'source-select',
-                          }}
-                        />
-                      }
-                      className={classes.nativeSelect}
-                      value={defaultSource}
-                      data-testid="source-select"
-                      onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                        handleSourceChange(event)
-                      }
-                    >
-                      <option value="MPDX" data-testid="source-option-mpdx">
-                        MPDX
-                      </option>
-                      <option
-                        value="DataServer"
-                        data-testid="source-option-dataserver"
-                      >
-                        DataServer
-                      </option>
-                    </NativeSelect>
-                    <Button
-                      className={classes.buttonBlue}
-                      data-testid="source-button"
-                    >
-                      <Icon
-                        path={mdiCheckboxMarkedCircle}
-                        size={0.8}
-                        className={classes.buttonIcon}
-                      />
-                      {t('Confirm {{amount}} as {{source}}', {
-                        amount: data.people.nodes.length,
-                        source: defaultSource,
-                      })}
-                    </Button>
-                  </Box>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                {data.people.nodes.map((person) => (
-                  <Contact
-                    name={`${person.firstName} ${person.lastName}`}
-                    key={person.id}
-                    personId={person.id}
-                    numbers={dataState[person.id]?.phoneNumbers || []}
-                    toDelete={dataState[person.id]?.toDelete}
-                    handleChange={handleChange}
-                    handleDelete={handleDeleteModalOpen}
-                    handleAdd={handleAdd}
-                    handleChangePrimary={handleChangePrimary}
+                          <Select
+                            className={classes.select}
+                            data-testid="source-select"
+                            value={defaultSource}
+                            onChange={(event: SelectChangeEvent<string>) =>
+                              handleSourceChange(event)
+                            }
+                            size="small"
+                          >
+                            <MenuItem
+                              value={appName}
+                              data-testid="source-option-mpdx"
+                            >
+                              {appName}
+                            </MenuItem>
+                            <MenuItem
+                              value="DataServer"
+                              data-testid="source-option-dataserver"
+                            >
+                              {t('DataServer')}
+                            </MenuItem>
+                          </Select>
+                          <Button
+                            variant="contained"
+                            onClick={() => handleBulkConfirm(values)}
+                            data-testid="source-button"
+                          >
+                            <Icon
+                              path={mdiCheckboxMarkedCircle}
+                              size={0.8}
+                              className={classes.buttonIcon}
+                            />
+                            {t('Confirm {{amount}} as {{source}}', {
+                              amount: data.people.totalCount,
+                              source: defaultSource,
+                            })}
+                          </Button>
+                        </Box>
+                      </Box>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      {values.people.map(
+                        (person: PersonInvalidNumberFragment, i: number) => (
+                          <Contact
+                            key={person.id}
+                            person={person}
+                            personIndex={i}
+                            handleDelete={handleDeleteModalOpen}
+                            setContactFocus={setContactFocus}
+                            handleUpdate={updatePhoneNumber}
+                            errors={errors}
+                            values={values}
+                            setValues={setValues}
+                          />
+                        ),
+                      )}
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Box className={classes.footer}>
+                        <Typography>
+                          <Trans
+                            defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
+                            shouldUnescape
+                            values={{ value: data.people.totalCount }}
+                            components={{ bold: <strong /> }}
+                          />
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  </ToolsGridContainer>
+                  <DeleteModal
+                    modalState={deleteModalState}
+                    handleClose={handleDeleteModalClose}
+                    handleDelete={() => handleDelete(values, setValues)}
                   />
-                ))}
-              </Grid>
-              <Grid item xs={12}>
-                <Box className={classes.footer}>
-                  <Typography>
-                    <Trans
-                      defaults="Showing <bold>{{value}}</bold> of <bold>{{value}}</bold>"
-                      shouldUnescape
-                      values={{ value: data.people.nodes.length }}
-                      components={{ bold: <strong /> }}
-                    />
-                  </Typography>
-                </Box>
-              </Grid>
-            </>
+                </>
+              )}
+            </Formik>
           ) : (
             <NoData tool="fixPhoneNumbers" />
           )}
-        </Grid>
+          ;
+        </>
       ) : (
         <CircularProgress style={{ marginTop: theme.spacing(3) }} />
       )}
-      <DeleteModal
-        modalState={deleteModalState}
-        handleClose={handleDeleteModalClose}
-        handleDelete={handleDelete}
-      />
     </Box>
   );
 };
