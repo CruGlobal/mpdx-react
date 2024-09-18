@@ -11,32 +11,32 @@ import { styled } from '@mui/material/styles';
 import { TransitionProps } from '@mui/material/transitions';
 import { useTranslation } from 'react-i18next';
 
-const ModalTitle = styled(DialogTitle)<{ altColors: boolean }>(
-  ({ theme, altColors }) => ({
-    textTransform: 'uppercase',
-    paddingRight: theme.spacing(8),
-    [theme.breakpoints.up('sm')]: {
-      paddingLeft: theme.spacing(8),
-      textAlign: 'center',
-    },
-    backgroundColor: altColors ? theme.palette.cruGrayDark.main : 'white',
-    color: altColors ? 'white' : 'auto',
-  }),
-);
+const ModalTitle = styled(DialogTitle, {
+  shouldForwardProp: (prop) => prop !== 'altColors',
+})<{ altColors: boolean }>(({ theme, altColors }) => ({
+  textTransform: 'uppercase',
+  paddingRight: theme.spacing(8),
+  [theme.breakpoints.up('sm')]: {
+    paddingLeft: theme.spacing(8),
+    textAlign: 'center',
+  },
+  backgroundColor: altColors ? theme.palette.cruGrayDark.main : 'white',
+  color: altColors ? 'white' : 'auto',
+}));
 
-const CloseButton = styled(IconButton)<{ altColors: boolean }>(
-  ({ theme, altColors }) => ({
-    position: 'absolute',
-    top: theme.spacing(1),
-    right: theme.spacing(1),
-    color: altColors ? 'white' : theme.palette.text.primary,
-    '&:hover': {
-      backgroundColor: altColors
-        ? theme.palette.cruGrayMedium.main
-        : theme.palette.cruGrayLight.main,
-    },
-  }),
-);
+const CloseButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'altColors',
+})<{ altColors: boolean }>(({ theme, altColors }) => ({
+  position: 'absolute',
+  top: theme.spacing(1),
+  right: theme.spacing(1),
+  color: altColors ? 'white' : theme.palette.text.primary,
+  '&:hover': {
+    backgroundColor: altColors
+      ? theme.palette.cruGrayMedium.main
+      : theme.palette.cruGrayLight.main,
+  },
+}));
 
 interface Props {
   /** determines whether the modal is currently open or not */
@@ -64,7 +64,6 @@ const Modal = ({
   size = 'sm',
   fullWidth = true,
   children,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transition,
   altColors = false,
 }: Props): ReactElement<Props> => {

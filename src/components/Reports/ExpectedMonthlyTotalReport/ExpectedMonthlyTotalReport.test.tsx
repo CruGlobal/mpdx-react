@@ -2,7 +2,6 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
@@ -99,22 +98,20 @@ describe('ExpectedMonthlyTotalReport', () => {
 
     const { getByText, queryByRole } = render(
       <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <TestRouter router={router}>
-            <GqlMockedProvider<{
-              GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
-            }>
-              mocks={mocks}
-            >
-              <ExpectedMonthlyTotalReport
-                accountListId={'abc'}
-                isNavListOpen={true}
-                onNavListToggle={onNavListToggle}
-                title={title}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </SnackbarProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+          }>
+            mocks={mocks}
+          >
+            <ExpectedMonthlyTotalReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 

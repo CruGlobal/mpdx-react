@@ -1,11 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -18,6 +19,7 @@ jest.mock('@react-google-maps/api');
 interface CreateContactMocks {
   CreateContact: CreateContactMutation;
   CreateContactAddress: CreateContactAddressMutation;
+  LoadConstants: LoadConstantsQuery;
 }
 
 const accountListId = '111';
@@ -146,8 +148,7 @@ describe('CreateMultipleContacts', () => {
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
-      const { operation } = mutationSpy.mock.calls[1][0];
-      expect(operation.variables).toMatchObject({
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
         accountListId,
         attributes: {
           name: `${last}, ${first} and ${spouse}`,
@@ -156,39 +157,27 @@ describe('CreateMultipleContacts', () => {
         },
       });
 
-      const { operation: personOperation } = mutationSpy.mock.calls[3][0];
-      expect(personOperation.variables.accountListId).toEqual(accountListId);
-      expect(personOperation.variables.attributes.firstName).toEqual(first);
-      expect(personOperation.variables.attributes.lastName).toEqual(last);
-      expect(personOperation.variables.attributes.phoneNumbers).toEqual([
-        {
-          number: phone,
-          primary: true,
-        },
-      ]);
-      expect(personOperation.variables.attributes.emailAddresses).toEqual([
-        {
-          email: email,
-          primary: true,
-        },
-      ]);
-
-      expect(mutationSpy.mock.calls[5][0].operation).toMatchObject({
-        operationName: 'CreateContactAddress',
-        variables: {
-          accountListId,
-          attributes: {
-            contactId: 'contact-1',
-            street: address,
-          },
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          contactId: 'contact-1',
+          emailAddresses: [{ email: email, primary: true }],
+          firstName: first,
+          lastName: last,
+          phoneNumbers: [{ number: phone, primary: true }],
         },
       });
-      expect(mutationSpy.mock.calls[6][0].operation).toMatchObject({
-        operationName: 'SetContactPrimaryAddress',
-        variables: {
+
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContactAddress', {
+        accountListId,
+        attributes: {
           contactId: 'contact-1',
-          primaryAddressId: 'address-1',
+          street: address,
         },
+      });
+      expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress', {
+        contactId: 'contact-1',
+        primaryAddressId: 'address-1',
       });
     }, 20000);
 
@@ -226,14 +215,10 @@ describe('CreateMultipleContacts', () => {
 
       await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
 
-      const { operation } = mutationSpy.mock.calls[1][0];
-      expect(operation).toMatchObject({
-        operationName: 'CreateContact',
-        variables: {
-          accountListId,
-          attributes: {
-            contactReferralsToMe: [{ referredById: 'referrer-1' }],
-          },
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
+        accountListId,
+        attributes: {
+          contactReferralsToMe: [{ referredById: 'referrer-1' }],
         },
       });
     });
@@ -272,46 +257,47 @@ describe('CreateMultipleContacts', () => {
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
       // Contact 1
-      const { operation } = mutationSpy.mock.calls[1][0];
-      expect(operation.variables.accountListId).toEqual(accountListId);
-      expect(operation.variables.attributes.name).toEqual(
-        `${last}, ${first} and ${spouse}`,
-      );
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
+        accountListId,
+        attributes: {
+          name: `${last}, ${first} and ${spouse}`,
+        },
+      });
       // Contact 2
-      const { operation: operation1 } = mutationSpy.mock.calls[2][0];
-      expect(operation1.variables.accountListId).toEqual(accountListId);
-      expect(operation1.variables.attributes.name).toEqual(
-        `${last2}, ${first2}`,
-      );
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
+        accountListId,
+        attributes: {
+          name: `${last2}, ${first2}`,
+        },
+      });
 
       // Contact 1 Person 1
-      const { operation: operation2 } = mutationSpy.mock.calls[4][0];
-      expect(operation2.variables.accountListId).toEqual(accountListId);
-      expect(operation2.variables.attributes.firstName).toEqual(first);
-      expect(operation2.variables.attributes.lastName).toEqual(last);
-      expect(operation2.variables.attributes.phoneNumbers).toEqual([
-        {
-          number: phone,
-          primary: true,
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          emailAddresses: [{ email: email, primary: true }],
+          firstName: first,
+          lastName: last,
+          phoneNumbers: [{ number: phone, primary: true }],
         },
-      ]);
-      expect(operation2.variables.attributes.emailAddresses).toEqual([
-        {
-          email: email,
-          primary: true,
-        },
-      ]);
+      });
       // Contact 2  Person 1
-      const { operation: operation4 } = mutationSpy.mock.calls[5][0];
-      expect(operation4.variables.accountListId).toEqual(accountListId);
-      expect(operation4.variables.attributes.firstName).toEqual(first2);
-      expect(operation4.variables.attributes.lastName).toEqual(last2);
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          firstName: first2,
+          lastName: last2,
+        },
+      });
 
       // Contact 1 Person 2 - Awaiting on Contact 1 Person 1 to resolve.
-      const { operation: operation3 } = mutationSpy.mock.calls[6][0];
-      expect(operation3.variables.accountListId).toEqual(accountListId);
-      expect(operation3.variables.attributes.firstName).toEqual(spouse);
-      expect(operation3.variables.attributes.lastName).toEqual(last);
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          firstName: spouse,
+          lastName: last,
+        },
+      });
     });
 
     it('creates multiple contacts - part 2', async () => {
@@ -341,33 +327,47 @@ describe('CreateMultipleContacts', () => {
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
       // Contact 1
-      const { operation } = mutationSpy.mock.calls[1][0];
-      expect(operation.variables.accountListId).toEqual(accountListId);
-      expect(operation.variables.attributes.name).toEqual(
-        `${first2} and ${spouse2}`,
-      );
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
+        accountListId,
+        attributes: {
+          name: `${first2} and ${spouse2}`,
+        },
+      });
+
       // Contact 2
-      const { operation: operation1 } = mutationSpy.mock.calls[2][0];
-      expect(operation1.variables.accountListId).toEqual(accountListId);
-      expect(operation1.variables.attributes.name).toEqual(first3);
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
+        accountListId,
+        attributes: {
+          name: first3,
+        },
+      });
 
       // Contact 2  Person 1
-      const { operation: operation2 } = mutationSpy.mock.calls[4][0];
-      expect(operation2.variables.accountListId).toEqual(accountListId);
-      expect(operation2.variables.attributes.firstName).toEqual(first2);
-      expect(operation2.variables.attributes.lastName).toEqual('');
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          firstName: first2,
+          lastName: '',
+        },
+      });
 
       // Contact 3  Person 1
-      const { operation: operation4 } = mutationSpy.mock.calls[5][0];
-      expect(operation4.variables.accountListId).toEqual(accountListId);
-      expect(operation4.variables.attributes.firstName).toEqual(first3);
-      expect(operation4.variables.attributes.lastName).toEqual('');
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          firstName: first3,
+          lastName: '',
+        },
+      });
 
       // Contact 2  Person 2 - Awaiting on Contact 2 Person 1 to resolve
-      const { operation: operation3 } = mutationSpy.mock.calls[6][0];
-      expect(operation3.variables.accountListId).toEqual(accountListId);
-      expect(operation3.variables.attributes.firstName).toEqual(spouse2);
-      expect(operation3.variables.attributes.lastName).toEqual('');
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          firstName: spouse2,
+          lastName: '',
+        },
+      });
     });
 
     it('handles chosen address predictions', async () => {
@@ -409,27 +409,23 @@ describe('CreateMultipleContacts', () => {
 
       await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
 
-      const { operation } = await waitFor(() => mutationSpy.mock.calls[4][0]);
       await waitFor(() =>
-        expect(operation).toMatchObject({
-          operationName: 'CreateContactAddress',
-          variables: {
-            accountListId,
-            attributes: {
-              street: 'A/100 Lake Hart Drive',
-              city: 'Orlando',
-              region: 'Orange County',
-              metroArea: 'Orlando',
-              state: 'FL',
-              country: 'United States',
-              postalCode: '32832',
-            },
+        expect(mutationSpy).toHaveGraphqlOperation('CreateContactAddress', {
+          accountListId,
+          attributes: {
+            street: 'A/100 Lake Hart Drive',
+            city: 'Orlando',
+            region: 'Orange County',
+            metroArea: 'Orlando',
+            state: 'FL',
+            country: 'United States',
+            postalCode: '32832',
           },
         }),
       );
     }, 20000);
 
-    it('creates one contact2 with default status', async () => {
+    it('creates one contact with default status', async () => {
       const { getByText, getAllByRole } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
@@ -477,8 +473,7 @@ describe('CreateMultipleContacts', () => {
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
-      const { operation } = mutationSpy.mock.calls[1][0];
-      expect(operation.variables).toMatchObject({
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
         accountListId,
         attributes: {
           name: `${last}, ${first} and ${spouse}`,
@@ -487,39 +482,27 @@ describe('CreateMultipleContacts', () => {
         },
       });
 
-      const { operation: personOperation } = mutationSpy.mock.calls[3][0];
-      expect(personOperation.variables.accountListId).toEqual(accountListId);
-      expect(personOperation.variables.attributes.firstName).toEqual(first);
-      expect(personOperation.variables.attributes.lastName).toEqual(last);
-      expect(personOperation.variables.attributes.phoneNumbers).toEqual([
-        {
-          number: phone,
-          primary: true,
-        },
-      ]);
-      expect(personOperation.variables.attributes.emailAddresses).toEqual([
-        {
-          email: email,
-          primary: true,
-        },
-      ]);
-
-      expect(mutationSpy.mock.calls[5][0].operation).toMatchObject({
-        operationName: 'CreateContactAddress',
-        variables: {
-          accountListId,
-          attributes: {
-            contactId: 'contact-1',
-            street: address,
-          },
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePerson', {
+        accountListId,
+        attributes: {
+          contactId: 'contact-1',
+          emailAddresses: [{ email: email, primary: true }],
+          firstName: first,
+          lastName: last,
+          phoneNumbers: [{ number: phone, primary: true }],
         },
       });
-      expect(mutationSpy.mock.calls[6][0].operation).toMatchObject({
-        operationName: 'SetContactPrimaryAddress',
-        variables: {
+
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContactAddress', {
+        accountListId,
+        attributes: {
           contactId: 'contact-1',
-          primaryAddressId: 'address-1',
+          street: address,
         },
+      });
+      expect(mutationSpy).toHaveGraphqlOperation('SetContactPrimaryAddress', {
+        contactId: 'contact-1',
+        primaryAddressId: 'address-1',
       });
     }, 20000);
 
@@ -571,8 +554,6 @@ describe('CreateMultipleContacts', () => {
       userEvent.keyboard('{arrowdown}');
       userEvent.keyboard('{arrowdown}');
 
-      screen.logTestingPlaygroundURL();
-
       userEvent.click(
         await findByRole('option', { name: 'Partner - Financial' }),
       );
@@ -580,8 +561,7 @@ describe('CreateMultipleContacts', () => {
       userEvent.click(getByText('Save'));
       await waitFor(() => expect(handleClose).toHaveBeenCalled());
 
-      const { operation } = mutationSpy.mock.calls[1][0];
-      expect(operation.variables).toMatchObject({
+      expect(mutationSpy).toHaveGraphqlOperation('CreateContact', {
         accountListId,
         attributes: {
           name: `${last}, ${first} and ${spouse}`,

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Box,
   Checkbox,
@@ -103,10 +103,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const activityData = activityType ? activityTypes.get(activityType) : null;
 
   const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down('md'));
-  const condensed = useMemo(() => {
-    return isMatch || contactDetailsOpen;
-  }, [isMatch, contactDetailsOpen]);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const condensed = isSmallScreen || contactDetailsOpen;
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
     ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
@@ -226,7 +224,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                     {activityData?.phase && condensed
                       ? activityData.phase
                       : activityData?.phase
-                      ? activityData.phase + (' - ' + '\u00A0')
+                      ? activityData.phase + ' - ' + '\u00A0'
                       : ''}
                   </TaskPhase>
                   <TaskType condensed={condensed}>

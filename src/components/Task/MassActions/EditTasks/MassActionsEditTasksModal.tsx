@@ -129,8 +129,8 @@ export const MassActionsEditTasksModal: React.FC<
         {({
           values: {
             subject,
-            activityType,
             taskPhase,
+            activityType,
             userId,
             startAt,
             noDueDate,

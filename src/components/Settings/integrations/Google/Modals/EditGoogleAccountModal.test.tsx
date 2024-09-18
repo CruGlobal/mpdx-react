@@ -337,33 +337,31 @@ describe('EditGoogleAccountModal', () => {
       ).toBeInTheDocument(),
     );
 
-    await act(async () => {
-      userEvent.click(getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'));
-      userEvent.click(getByRole('button', { name: /update/i }));
+    userEvent.click(getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'));
+    userEvent.click(getByRole('button', { name: /update/i }));
 
-      await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          'Updated Google Calendar Integration!',
-          {
-            variant: 'success',
-          },
-        );
-        expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-          'UpdateGoogleIntegration',
-        );
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Updated Google Calendar Integration!',
+        {
+          variant: 'success',
+        },
+      );
+      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
+        'UpdateGoogleIntegration',
+      );
 
-        expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-          googleAccountId: googleAccount.id,
-          googleIntegration: {
-            calendarId: 'calendarsID',
-            calendarIntegrations: ['Appointment', 'APPOINTMENT_VIDEO_CALL'],
-            overwrite: true,
-          },
-          googleIntegrationId: googleIntegration.id,
-        });
-
-        expect(handleClose).toHaveBeenCalled();
+      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
+        googleAccountId: googleAccount.id,
+        googleIntegration: {
+          calendarId: 'calendarsID',
+          calendarIntegrations: ['Appointment', 'APPOINTMENT_VIDEO_CALL'],
+          overwrite: true,
+        },
+        googleIntegrationId: googleIntegration.id,
       });
+
+      expect(handleClose).toHaveBeenCalled();
     });
   });
 

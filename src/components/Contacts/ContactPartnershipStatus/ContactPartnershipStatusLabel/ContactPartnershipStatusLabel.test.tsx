@@ -5,12 +5,12 @@ import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
-import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel';
 
-const status = ContactPartnershipStatusEnum.PartnerPray;
+const status = StatusEnum.PartnerPray;
 
 describe('ContactPartnershipStatusLabel', () => {
   it('default', async () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -65,7 +65,6 @@ describe('ResetToDefaultModal', () => {
         name: 'Reset columns to Global (D MPD) defaults',
       }),
     );
-    screen.logTestingPlaygroundURL();
 
     expect(
       getByText(
@@ -110,7 +109,6 @@ describe('ResetToDefaultModal', () => {
     );
 
     userEvent.click(getByRole('button', { name: 'Confirm' }));
-    screen.logTestingPlaygroundURL();
 
     await waitFor(() => {
       expect(updateOptions).toHaveBeenCalled();

@@ -460,13 +460,11 @@ export const CreateMultipleContacts = ({
                                   <ListSubheader key={phase?.id}>
                                     {getLocalizedPhase(t, phase?.id)}
                                   </ListSubheader>,
-                                  phase?.contactStatuses.map(
-                                    (s: StatusEnum) => (
-                                      <MenuItem key={s} value={s}>
-                                        {contactStatuses[s]?.translated}
-                                      </MenuItem>
-                                    ),
-                                  ),
+                                  phase?.contactStatuses.map((status) => (
+                                    <MenuItem key={status} value={status}>
+                                      {contactStatuses[status]?.translated}
+                                    </MenuItem>
+                                  )),
                                 ])}
                               </Select>
                             </FormControl>

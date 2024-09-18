@@ -171,7 +171,7 @@ describe('TaskRow', () => {
   });
 
   describe('task interactions', () => {
-    it('handles task checkbox click', async () => {
+    it('handles task checkbox click', () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           startAt,

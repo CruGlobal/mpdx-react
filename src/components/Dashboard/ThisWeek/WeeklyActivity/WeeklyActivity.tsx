@@ -96,7 +96,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     throw new Error(`Invalid interval: ${interval.invalidReason}`);
   }
 
-  const { data, loading } = useGetWeeklyActivityQuery({
+  const { data } = useGetWeeklyActivityQuery({
     variables: {
       accountListId,
       startOfWeek: interval.start.toISO(),
@@ -184,7 +184,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     align="right"
                     data-testid="WeeklyActivityTableCellCompletedInitiations"
                   >
-                    {loading || !data ? (
+                    {!data ? (
                       <Skeleton
                         sx={{ width: 20, float: 'right' }}
                         variant="text"
@@ -201,7 +201,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     align="right"
                     data-testid="WeeklyActivityTableCellCompletedAppointments"
                   >
-                    {loading || !data ? (
+                    {!data ? (
                       <Skeleton
                         sx={{ width: 20, float: 'right' }}
                         variant="text"
@@ -220,7 +220,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     align="right"
                     data-testid="WeeklyActivityTableCellCompletedFollowUps"
                   >
-                    {loading || !data ? (
+                    {!data ? (
                       <Skeleton
                         sx={{ width: 20, float: 'right' }}
                         variant="text"
@@ -237,7 +237,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
                     align="right"
                     data-testid="WeeklyActivityTableCellCompletedPartnerCare"
                   >
-                    {loading || !data ? (
+                    {!data ? (
                       <Skeleton
                         sx={{ width: 20, float: 'right' }}
                         variant="text"
