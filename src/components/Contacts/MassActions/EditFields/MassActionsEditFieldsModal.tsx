@@ -26,7 +26,6 @@ import {
 import {
   LikelyToGiveEnum,
   SendNewsletterEnum,
-  StatusEnum,
 } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
@@ -180,9 +179,9 @@ export const MassActionsEditFieldsModal: React.FC<
                         <ListSubheader key={phase?.id}>
                           {getLocalizedPhase(t, phase?.id)}
                         </ListSubheader>,
-                        phase?.contactStatuses.map((s: StatusEnum) => (
-                          <MenuItem key={s} value={s}>
-                            {contactStatuses[s]?.translated}
+                        phase?.contactStatuses.map((status) => (
+                          <MenuItem key={status} value={status}>
+                            {contactStatuses[status]?.translated}
                           </MenuItem>
                         )),
                       ])}

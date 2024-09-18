@@ -6,6 +6,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import theme from 'src/theme';
 import { MassActionsEditTasksModal } from './MassActionsEditTasksModal';
 
@@ -65,4 +67,51 @@ describe('MassActionsEditTasksModal', () => {
     });
     expect(handleClose).toHaveBeenCalled();
   });
+});
+
+it('shows correct Action field options based on the Task Type', async () => {
+  const handleClose = jest.fn();
+  const { queryByText, findByRole } = render(
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            LoadConstants: LoadConstantsQuery;
+          }>
+            mocks={{ LoadConstants: loadConstantsMockData }}
+          >
+            <MassActionsEditTasksModal
+              accountListId={accountListId}
+              ids={['task-1', 'task-2']}
+              selectedIdCount={2}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </LocalizationProvider>,
+  );
+  const taskTypeField = await findByRole('combobox', { name: 'Task Type' });
+  const actionField = await findByRole('combobox', { name: 'Action' });
+
+  expect(actionField).toBeDisabled();
+
+  userEvent.click(taskTypeField);
+  userEvent.click(await findByRole('option', { name: 'Appointment' }));
+  userEvent.click(actionField);
+  userEvent.click(await findByRole('option', { name: 'In Person' }));
+
+  userEvent.click(taskTypeField);
+  userEvent.click(await findByRole('option', { name: 'Partner Care' }));
+  await waitFor(() => {
+    expect(queryByText('In Person')).not.toBeInTheDocument();
+  });
+  userEvent.click(actionField);
+  userEvent.click(await findByRole('option', { name: 'Digital Newsletter' }));
+
+  userEvent.clear(taskTypeField);
+  await waitFor(() => {
+    expect(queryByText('In Person')).not.toBeInTheDocument();
+  });
+  expect(actionField).toBeDisabled();
 });
