@@ -418,70 +418,47 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   [key]: value.split(',').map((enumValue) => {
                     // Status
                     // Check if saved filter (enumValue) is either the status  (partner_financial) or (Partner - Financial)
-                    const s = Object.entries(statusMapForFilters)?.find(
-                      ([statusKey, status]) => {
-                        return (
-                          statusKey === enumValue ||
-                          status === enumValue ||
-                          status.toLowerCase() === enumValue
-                        );
-                      },
-                    );
+                    const matchedStatus = Object.entries(
+                      statusMapForFilters,
+                    )?.find(([statusKey, status]) => {
+                      return (
+                        statusKey === enumValue ||
+                        status === enumValue ||
+                        status.toLowerCase() === enumValue
+                      );
+                    });
                     return (
-                      (s && (s[1] as ContactFilterStatusEnum)) ||
+                      (matchedStatus &&
+                        (matchedStatus[1] as ContactFilterStatusEnum)) ||
                       ContactFilterStatusEnum.Null
                     );
                   }),
                 };
               // Activity Type
               case 'activityType':
-                if (value.includes('--any--')) {
-                  return { ...acc, [key]: Object.values(ActivityTypeEnum) };
-                }
-                return {
-                  ...acc,
-                  [key]: value
-                    .split(',')
-                    .map((enumValue) => {
-                      // --any--,none
-                      return (
-                        (activities?.find((activity) => {
-                          return (
-                            activity.id === enumValue ||
-                            activity.value === enumValue ||
-                            activity?.id?.toLowerCase() === enumValue
-                          );
-                        })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
-                      );
-                    })
-                    .flat(),
-                };
-
+              case 'relatedTaskAction':
               // Next Action
               case 'nextAction':
                 if (value.includes('--any--')) {
                   return {
                     ...acc,
-                    [key]: [...Object.values(ActivityTypeEnum)],
+                    [key]: Object.values(ActivityTypeEnum),
                   };
                 }
                 return {
                   ...acc,
-                  [key]: value
-                    .split(',')
-                    .map((enumValue) => {
-                      // --any--,none
-                      return (
-                        (activities?.find((activity) => {
-                          return (
-                            activity.id === enumValue ||
-                            activity.value === enumValue ||
-                            activity?.id?.toLowerCase() === enumValue
-                          );
-                        })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
-                      );
-                    })
-                    .flat(),
+                  [key]: value.split(',').map((enumValue) => {
+                    // --any--,none
+                    return (
+                      (activities?.find((activity) => {
+                        return (
+                          activity.id === enumValue ||
+                          activity.value === enumValue ||
+                          activity?.id?.toLowerCase() === enumValue
+                        );
+                      })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
+                    );
+                  }),
                 };
               // Result
               case 'result':

@@ -3,14 +3,14 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
-export type ContactStatuses = Record<
-  string,
-  {
-    name: string;
-    translated: string;
-    phase: PhaseEnum | null;
-  }
->;
+interface ContactStatus {
+  name: string;
+  translated: string;
+  phase: PhaseEnum | null;
+}
+export interface ContactStatuses {
+  [key: string]: ContactStatus;
+}
 
 export type StatusArray = {
   name: string;
@@ -69,13 +69,11 @@ export const useContactPartnershipStatuses = () => {
   //     "Research Abandoned": "RESEARCH_ABANDONED",
   //     "Expired Connection": "EXPIRED_REFERRAL"
   // }
-  const statusMap: { [statusKey: string]: string } =
-    contactStatuses &&
-    Object.fromEntries(
-      Object.entries(contactStatuses)
-        .filter(([_, status]) => status?.phase)
-        .map(([statusKey, status]) => [status?.name, statusKey]),
-    );
+  const statusMap: { [statusKey: string]: string } = Object.fromEntries(
+    Object.entries(contactStatuses)
+      .filter(([_, status]) => status.phase)
+      .map(([statusKey, status]) => [status.name, statusKey]),
+  );
 
   //same as statusMap but also includes HIDDEN, ACTIVE & NULL
   const statusMapForFilters: { [statusKey: string]: string } =
