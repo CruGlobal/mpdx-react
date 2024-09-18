@@ -124,6 +124,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
               />
             }
             visibleColumnsStorageKey="contact-donations"
+            hideDisplayName={true}
           />
         </StyledTabPanel>
         <StyledTabPanel value={DonationTabKey.PartnershipInfo}>

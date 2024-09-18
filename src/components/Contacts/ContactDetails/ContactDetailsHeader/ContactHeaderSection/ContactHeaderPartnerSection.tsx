@@ -32,11 +32,13 @@ export const ContactHeaderPartnerSection: React.FC<Props> = ({
     return (
       <ContactHeaderSection>
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-          {t('Partner Account')}
+          {contact?.contactDonorAccounts.nodes.length === 1
+            ? t('Partner Number')
+            : t('Partner Numbers')}
         </Typography>
         {contact?.contactDonorAccounts.nodes.map((donorAccount) => (
           <Typography key={donorAccount.id} variant="subtitle1">
-            {donorAccount.donorAccount.displayName}
+            {donorAccount.donorAccount.accountNumber}
           </Typography>
         ))}
       </ContactHeaderSection>
