@@ -51,7 +51,7 @@ describe('ActivityTypeAutocomplete', () => {
     expect(getAllByRole('option')[0]).toHaveTextContent('None');
   });
 
-  it('converts none values to null', async () => {
+  it('converts none values to undefined', async () => {
     const onChange = jest.fn();
 
     const { getByRole } = render(

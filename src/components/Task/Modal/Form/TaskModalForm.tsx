@@ -68,22 +68,22 @@ import {
 } from './Inputs/TagsAutocomplete/TagsAutocomplete';
 import { TaskPhaseAutocomplete } from './Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';
 import { possibleNextActions } from './PossibleNextActions';
-import { possiblePartnerStatus } from './PossiblePartnerStatus';
-import { possibleResults } from './PossibleResults';
 import {
   useCreateTasksMutation,
   useUpdateContactStatusMutation,
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 import {
-  filterTags,
+  extractSuggestedTags,
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from './TaskModalHelper';
+import { possiblePartnerStatus } from './possiblePartnerStatus';
+import { possibleResults } from './possibleResults';
 
 const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().nullable(),
+  taskPhase: yup.mixed<PhaseEnum>().required().default(undefined),
   activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
   subject: yup.string().required(),
   startAt: nullableDateTime(),
@@ -126,7 +126,6 @@ const TaskModalForm = ({
 }: Props): ReactElement => {
   const session = useSession();
 
-  // const formikRef = useRef<any>(null);
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
@@ -177,7 +176,7 @@ const TaskModalForm = ({
       }
 
       //go through tags and move some to selectedSuggestedTags and others to additionalTags
-      const filteredTags = filterTags(task.tagList, phaseTags);
+      const filteredTags = extractSuggestedTags(task.tagList, phaseTags);
       const additionalTags = filteredTags?.additionalTags;
       setSelectedSuggestedTags((prevValues) => [
         ...prevValues,
@@ -206,7 +205,8 @@ const TaskModalForm = ({
         comment: '',
       };
     } else {
-      let taskPhase: PhaseEnum | null = defaultValues?.taskPhase || null;
+      let taskPhase: PhaseEnum | undefined =
+        defaultValues?.taskPhase || undefined;
       let taskSubject = defaultValues?.subject;
 
       if (defaultValues?.activityType && activityTypes) {
@@ -254,22 +254,23 @@ const TaskModalForm = ({
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (!task && firstFocusRef.current && !defaultValues?.activityType) {
-      setTimeout(
-        () => firstFocusRef?.current && firstFocusRef?.current.focus(),
-        500,
-      );
+      const timerId = setTimeout(() => firstFocusRef.current?.focus(), 500);
+      return () => clearTimeout(timerId);
     }
   }, []);
 
   const onSubmit = async (
-    { comment, completedAt, startAt, ...attributes }: Attributes,
+    {
+      comment,
+      completedAt,
+      startAt,
+      changeContactStatus,
+      ...attributes
+    }: Attributes,
     suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
     const updatingContactStatus =
-      attributes.changeContactStatus && !!suggestedPartnerStatus;
-    // TODO - remove this when Caleb and the API has been
-    delete attributes.taskPhase;
-    delete attributes.changeContactStatus;
+      changeContactStatus && !!suggestedPartnerStatus;
 
     if (selectedSuggestedTags.length) {
       attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
@@ -282,6 +283,8 @@ const TaskModalForm = ({
         attributes.activityType,
       );
     }
+
+    delete attributes.taskPhase;
 
     const sharedAttributes = {
       ...attributes,
@@ -340,7 +343,8 @@ const TaskModalForm = ({
           activityType: attributes.nextAction,
           contactIds: attributes.contactIds,
           userId: task?.user?.id,
-          tagList: filterTags(task?.tagList, phaseTags)?.additionalTags,
+          tagList: extractSuggestedTags(task?.tagList || [], phaseTags)
+            ?.additionalTags,
         },
       });
     }
@@ -363,7 +367,6 @@ const TaskModalForm = ({
 
   return (
     <Formik
-      // innerRef={formikRef}
       initialValues={initialTask}
       validationSchema={taskSchema}
       onSubmit={async (values) => {
@@ -418,7 +421,6 @@ const TaskModalForm = ({
                       options={taskPhases}
                       value={taskPhase}
                       contactPhase={phaseData?.id}
-                      inputRef={firstFocusRef}
                       onChange={(phase) => {
                         handleTaskPhaseChange({
                           phase,
@@ -427,9 +429,14 @@ const TaskModalForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
-                        }),
-                          setTimeout(() => activityRef?.current?.focus(), 50);
+                        });
+                        setTimeout(() => activityRef?.current?.focus(), 50);
                       }}
+                      inputRef={firstFocusRef}
+                      required
+                      onBlur={handleBlur('taskPhase')}
+                      touched={touched}
+                      errors={errors}
                     />
                   </Grid>
 

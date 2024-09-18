@@ -41,14 +41,13 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
       accountListId,
       contactId,
     },
-    skip: !!contactStatus || contactIds.length !== 1,
+    skip: !!contactStatus,
   });
 
   const { contactStatuses } = useContactPartnershipStatuses();
 
-  const currentContactStatus: StatusEnum | null | undefined = useMemo(() => {
-    return contactStatus || data?.contact.status;
-  }, [data, contactStatus]);
+  const currentContactStatus: StatusEnum | null | undefined =
+    contactStatus || data?.contact.status;
 
   const shouldRenderContactSuggestion: boolean = useMemo(() => {
     if (!currentContactStatus) {

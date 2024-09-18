@@ -6,7 +6,7 @@ import {
   PhaseEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { possiblePartnerStatus } from './PossiblePartnerStatus';
+import { possiblePartnerStatus } from './possiblePartnerStatus';
 
 const followUpPhase: Phase | null =
   loadConstantsMockData?.constant?.phases?.find(

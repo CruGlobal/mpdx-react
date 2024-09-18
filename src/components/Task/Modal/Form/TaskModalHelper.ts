@@ -155,7 +155,11 @@ export const getDatabaseValueFromResult = (
   return dbResult?.result || ResultEnum.None;
 };
 
-export const filterTags = (tagList, phaseTags) => {
+// splits a list of tags into regular tags and suggested tags.
+export const extractSuggestedTags = (
+  tagList: string[],
+  phaseTags: string[],
+) => {
   const additionalTags: string[] = [];
   const suggestedTags: string[] = [];
   tagList.forEach((tag) => {

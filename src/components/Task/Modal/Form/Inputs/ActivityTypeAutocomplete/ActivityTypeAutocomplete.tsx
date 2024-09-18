@@ -38,9 +38,7 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
 
   const sortedOptions = useMemo(() => {
     // Sort none to the top
-    return options
-      ? options.slice().sort((a) => (a === ActivityTypeEnum.None ? -1 : 0))
-      : [];
+    return options.slice().sort((a) => (a === ActivityTypeEnum.None ? -1 : 0));
   }, [options]);
 
   return (

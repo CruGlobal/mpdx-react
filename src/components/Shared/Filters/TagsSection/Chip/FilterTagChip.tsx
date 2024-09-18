@@ -1,6 +1,7 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Tooltip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { TagChip } from 'src/components/Shared/TagChip/TagChip';
 import {
   ContactFilterSetInput,
@@ -28,6 +29,7 @@ export const FilterTagChip: React.FC<FilterTagChipProps> = ({
 }) => {
   const includedTags = selectedFilters.tags ?? [];
   const excludedTags = selectedFilters.excludeTags ?? [];
+  const { t } = useTranslation();
 
   const getChipSelectType = (id: string): 'none' | 'include' | 'exclude' => {
     if (includedTags.includes(id)) {
@@ -83,7 +85,7 @@ export const FilterTagChip: React.FC<FilterTagChipProps> = ({
         openDeleteModal(true);
       }}
       deleteIcon={
-        <Tooltip title="Delete Tag" arrow>
+        <Tooltip title={t('Delete Tag')} arrow>
           <DeleteIcon sx={{ fill: 'white' }} />
         </Tooltip>
       }

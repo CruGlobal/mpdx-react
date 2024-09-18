@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -436,8 +436,6 @@ describe('TaskModalLogForm', () => {
     expect(getByRole('combobox', { name: 'Next Action' })).toBeInTheDocument();
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Phone Call' }));
-
-    screen.logTestingPlaygroundURL();
 
     await waitFor(() => {
       expect(getByText('Save')).not.toBeDisabled();

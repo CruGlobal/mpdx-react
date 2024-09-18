@@ -126,8 +126,8 @@ describe('TaskModalCompleteForm', () => {
       });
     });
 
-    it("doesn't not render suggested contact status when multiple contact", async () => {
-      const { getByRole, queryByText, findByRole } = render(
+    it("doesn't render suggested contact status when multiple contacts", async () => {
+      const { queryByText, findByRole } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
@@ -135,11 +135,10 @@ describe('TaskModalCompleteForm', () => {
 
       const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
-      await waitFor(() => {
-        userEvent.click(
-          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-        );
-      });
+
+      userEvent.click(
+        await findByRole('option', { name: 'Cancelled-Need to reschedule' }),
+      );
 
       await waitFor(() => {
         expect(

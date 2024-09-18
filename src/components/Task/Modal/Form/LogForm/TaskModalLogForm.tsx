@@ -57,21 +57,21 @@ import {
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { TaskPhaseAutocomplete } from '../Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
-import { possiblePartnerStatus } from '../PossiblePartnerStatus';
-import { possibleResults } from '../PossibleResults';
 import {
   useCreateTasksMutation,
   useUpdateContactStatusMutation,
 } from '../TaskModal.generated';
 import {
-  filterTags,
+  extractSuggestedTags,
   getDatabaseValueFromResult,
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from '../TaskModalHelper';
+import { possiblePartnerStatus } from '../possiblePartnerStatus';
+import { possibleResults } from '../possibleResults';
 
 const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().nullable(),
+  taskPhase: yup.mixed<PhaseEnum>().required().default(undefined),
   activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
@@ -138,16 +138,13 @@ const TaskModalLogForm = ({
   const activityRef = useRef<HTMLInputElement | null>(null);
   const firstFocusRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
-    if (firstFocusRef.current) {
-      setTimeout(
-        () => firstFocusRef?.current && firstFocusRef?.current.focus(),
-        500,
-      );
-    }
+    const timerId = setTimeout(() => firstFocusRef.current?.focus(), 500);
+    return () => clearTimeout(timerId);
   }, []);
 
   const initialTask: Attributes = useMemo(() => {
-    let taskPhase: PhaseEnum | null = defaultValues?.taskPhase ?? null;
+    let taskPhase: PhaseEnum | undefined =
+      defaultValues?.taskPhase ?? undefined;
     let taskSubject = defaultValues?.subject;
 
     if (defaultValues?.activityType && activityTypes) {
@@ -182,7 +179,7 @@ const TaskModalLogForm = ({
   }, []);
 
   const onSubmit = async (
-    { completedAt, comment, ...attributes }: Attributes,
+    { completedAt, comment, changeContactStatus, ...attributes }: Attributes,
     suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
     if (selectedSuggestedTags.length) {
@@ -196,16 +193,12 @@ const TaskModalLogForm = ({
         attributes.activityType || undefined,
       );
     }
-
-    // TODO - remove this when Caleb and the API has been
     delete attributes.taskPhase;
     // TODO - remove this when NewResultEnum are added
     attributes.result = ResultEnum.Completed;
 
     const updatingContactStatus =
-      attributes.changeContactStatus && !!suggestedPartnerStatus;
-
-    delete attributes.changeContactStatus;
+      changeContactStatus && !!suggestedPartnerStatus;
 
     await createTasks({
       variables: {
@@ -222,12 +215,12 @@ const TaskModalLogForm = ({
     if (updatingContactStatus) {
       try {
         await Promise.all(
-          attributes.contactIds.map((contactID) =>
+          attributes.contactIds.map((contactId) =>
             updateContactStatus({
               variables: {
                 accountListId,
                 attributes: {
-                  id: contactID,
+                  id: contactId,
                   status: suggestedPartnerStatus,
                 },
               },
@@ -261,7 +254,8 @@ const TaskModalLogForm = ({
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: attributes.contactIds,
           userId: attributes.userId ?? undefined,
-          tagList: filterTags(attributes?.tagList, phaseTags)?.additionalTags,
+          tagList: extractSuggestedTags(attributes?.tagList, phaseTags)
+            ?.additionalTags,
         },
       });
     }
@@ -363,8 +357,12 @@ const TaskModalLogForm = ({
                           setPhaseId,
                           setSelectedSuggestedTags,
                         });
-                        setTimeout(() => activityRef?.current?.focus(), 50);
+                        setTimeout(() => activityRef.current?.focus(), 50);
                       }}
+                      required
+                      onBlur={handleBlur('taskPhase')}
+                      touched={touched}
+                      errors={errors}
                     />
                   </Grid>
                   <Grid xs={12} sm={6} item>

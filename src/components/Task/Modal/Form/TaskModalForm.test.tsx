@@ -3,7 +3,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime, Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
@@ -260,7 +260,7 @@ describe('TaskModalForm', () => {
       </LocalizationProvider>,
     );
 
-    userEvent.click(getByLabelText('Task Type'));
+    userEvent.click(await findByRole('combobox', { name: 'Task Type' }));
     userEvent.click(await findByRole('option', { name: 'Partner Care' }));
 
     userEvent.click(await findByRole('combobox', { name: 'Action' }));
@@ -441,7 +441,6 @@ describe('TaskModalForm', () => {
     );
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
-    screen.logTestingPlaygroundURL();
     userEvent.click(getByRole('option', { name: 'Email' }));
   });
 

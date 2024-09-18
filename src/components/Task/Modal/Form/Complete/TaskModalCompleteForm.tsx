@@ -52,10 +52,13 @@ import {
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
 import { possibleNextActions } from '../PossibleNextActions';
-import { possiblePartnerStatus } from '../PossiblePartnerStatus';
-import { possibleResults } from '../PossibleResults';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
-import { filterTags, getDatabaseValueFromResult } from '../TaskModalHelper';
+import {
+  extractSuggestedTags,
+  getDatabaseValueFromResult,
+} from '../TaskModalHelper';
+import { possiblePartnerStatus } from '../possiblePartnerStatus';
+import { possibleResults } from '../possibleResults';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
 
 const StyledGrid = styled(Grid)(() => ({
@@ -137,9 +140,7 @@ const TaskModalCompleteForm = ({
 
   useEffect(() => {
     if (activityType && activityTypes) {
-      const activityData = activityType
-        ? activityTypes.get(activityType)
-        : undefined;
+      const activityData = activityTypes.get(activityType);
       if (activityData) {
         setPhaseId(activityData.phaseId);
       }
@@ -147,13 +148,11 @@ const TaskModalCompleteForm = ({
   }, [activityTypes]);
 
   const onSubmit = async (
-    { completedAt, comment, ...attributes }: Attributes,
+    { completedAt, comment, changeContactStatus, ...attributes }: Attributes,
     suggestedPartnerStatus?: StatusEnum | null,
   ): Promise<void> => {
     const updatingContactStatus =
-      attributes.changeContactStatus && !!suggestedPartnerStatus;
-
-    delete attributes.changeContactStatus;
+      changeContactStatus && !!suggestedPartnerStatus;
 
     if (attributes.displayResult) {
       attributes.result = getDatabaseValueFromResult(
@@ -164,7 +163,7 @@ const TaskModalCompleteForm = ({
     }
 
     if (selectedSuggestedTags.length) {
-      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+      attributes.tagList.concat(selectedSuggestedTags);
     }
 
     const mutations = [
@@ -202,7 +201,9 @@ const TaskModalCompleteForm = ({
             },
             onError: () => {
               enqueueSnackbar(
-                t(`Error while updating ${contact.name}'s  status`),
+                t("Error while updating {{name}}'s status", {
+                  name: contact.name,
+                }),
                 {
                   variant: 'error',
                 },
@@ -231,7 +232,8 @@ const TaskModalCompleteForm = ({
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),
           userId: task.user?.id,
-          tagList: filterTags(task?.tagList, phaseTags)?.additionalTags,
+          tagList: extractSuggestedTags(task?.tagList, phaseTags)
+            ?.additionalTags,
         },
       });
     }
@@ -269,9 +271,9 @@ const TaskModalCompleteForm = ({
     <Formik<Attributes>
       initialValues={initialTask}
       validationSchema={taskSchema}
-      onSubmit={async (values) => {
-        await onSubmit(values, partnerStatus?.suggestedContactStatus);
-      }}
+      onSubmit={(values) =>
+        onSubmit(values, partnerStatus?.suggestedContactStatus)
+      }
       enableReinitialize
     >
       {({
@@ -303,22 +305,22 @@ const TaskModalCompleteForm = ({
                 <Typography style={{ fontWeight: 600 }} display="inline">
                   {activityData ? activityData.phase + ' - ' : ''}
                   {getLocalizedTaskType(t, activityType)}
-                </Typography>{' '}
+                </Typography>
               </Grid>
               <StyledGrid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {t('Subject:')}
-                </Typography>{' '}
-                <Typography display="inline">{task?.subject}</Typography>{' '}
+                  {t('Subject: ')}
+                </Typography>
+                <Typography display="inline">{task?.subject}</Typography>
               </StyledGrid>
               <StyledGrid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
                   {numberOfContacts > 1
-                    ? t('Contacts:')
+                    ? t('Contacts: ')
                     : numberOfContacts > 0
-                    ? t('Contact:')
+                    ? t('Contact: ')
                     : null}
-                </Typography>{' '}
+                </Typography>
                 {task?.contacts.nodes.map((contact, index) => (
                   <Typography
                     display={numberOfContacts === 1 ? 'inline' : 'block'}
