@@ -90,7 +90,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
             </StyledAvatarIcon>
             <Avatar
               sx={{ width: '34px', height: '34px' }}
-              alt={`${person.firstName} ${person.lastName}`}
+              alt={`${person.firstName || ''} ${person.lastName || ''}`}
               src={pendingAvatar ?? person.avatar}
             />
           </StyledIconButton>
@@ -103,10 +103,9 @@ export const PersonName: React.FC<PersonNameProps> = ({
             onChange={handleFileChange}
           />
           <Typography>
-            <Box
-              component="span"
-              fontWeight="bold"
-            >{`${person.firstName} ${person.lastName}`}</Box>
+            <Box component="span" fontWeight="bold">{`${
+              person.firstName || ''
+            } ${person.lastName || ''}`}</Box>
           </Typography>
         </ModalSectionContainer>
       ) : null}

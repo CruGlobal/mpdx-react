@@ -178,6 +178,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                     {...params}
                     placeholder={t('add tag')}
                     disabled={isSubmitting || updating}
+                    size="small"
                   />
                 )}
                 onChange={(_, tagList): void =>

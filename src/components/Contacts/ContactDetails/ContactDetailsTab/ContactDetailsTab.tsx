@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Skeleton, Typography } from '@mui/material';
+import { Box, Divider, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,7 @@ import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
 import { ContactDetailsPartnerAccounts } from './PartnerAccounts/ContactDetailsPartnerAccounts';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
+import { EditIcon } from './StyledComponents';
 import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
@@ -99,11 +100,11 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           )}
         </ContactDetailSectionContainer>
         <Divider />
-        {/* Mailing Section */}
+        {/* Addresses Section */}
         <ContactDetailSectionContainer>
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
-              {t('Mailing')}
+              {t('Addresses')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
           {!data ? (
@@ -125,6 +126,13 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
           <ContactDetailHeadingContainer>
             <ContactDetailHeadingText variant="h6">
               {t('Other')}
+              <IconButton
+                onClick={() => setEditOtherModalOpen(true)}
+                aria-label={t('Edit')}
+                style={{ marginLeft: 5 }}
+              >
+                <EditIcon titleAccess="Edit" />
+              </IconButton>
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
           {!data ? (
@@ -137,7 +145,6 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
             <ContactDetailsOther
               contact={data.contact}
               onContactSelected={onContactSelected}
-              handleOpen={setEditOtherModalOpen}
             />
           )}
         </ContactDetailSectionContainer>
