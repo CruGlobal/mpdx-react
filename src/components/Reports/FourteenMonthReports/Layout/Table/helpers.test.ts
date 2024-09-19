@@ -1,7 +1,7 @@
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
-import { StatusEnum } from 'pages/api/graphql-rest.page.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import {
   FourteenMonthReportContactFragment,
   FourteenMonthReportContactFragmentDoc,

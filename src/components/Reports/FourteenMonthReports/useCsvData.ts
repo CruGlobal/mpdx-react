@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { StatusEnum } from 'pages/api/graphql-rest.page.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import type { CurrencyTable } from './FourteenMonthReport';
 

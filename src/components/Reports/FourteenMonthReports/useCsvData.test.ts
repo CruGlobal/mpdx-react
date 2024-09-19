@@ -2,12 +2,12 @@ import { renderHook } from '@testing-library/react-hooks';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
-import { StatusEnum } from 'pages/api/graphql-rest.page.generated';
 import {
   LoadConstantsDocument,
   LoadConstantsQuery,
 } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { CurrencyTable } from './FourteenMonthReport';
 import {
   FourteenMonthReportContactFragment,
