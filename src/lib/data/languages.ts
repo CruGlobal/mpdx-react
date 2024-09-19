@@ -43,12 +43,9 @@ export const languages: IdValue[] = [
   },
 ];
 
-// type FormatLanguageProps = { id: string; value: string }[] | undefined;
-type FormatLanguageProps = IdValue[] | undefined;
-
 export const formatLanguage = (
   language: string | undefined | null,
-  languagesList: FormatLanguageProps = languages,
+  languagesList: IdValue[] = languages,
 ): string => {
   const name = languagesList.find(({ id }) => id === language)?.value;
   return name ?? '';

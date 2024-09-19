@@ -83,7 +83,7 @@ describe('ContactFlowRow', () => {
       />,
     );
     expect(getByText(defaultContact.name)).toBeInTheDocument();
-    expect(getByTitle('Star')).toBeInTheDocument();
+    expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
   it('should call contact selected function', () => {

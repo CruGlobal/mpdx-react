@@ -45,7 +45,7 @@ describe('ContactFlowRow', () => {
       </DndProvider>,
     );
     expect(getByText('Test Name')).toBeInTheDocument();
-    expect(getByTitle('Star')).toBeInTheDocument();
+    expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
   it('should call contact selected function', () => {

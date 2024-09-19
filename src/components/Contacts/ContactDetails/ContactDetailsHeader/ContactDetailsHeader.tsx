@@ -84,7 +84,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   }, [loading]);
 
   return (
-    <Box sx={{ paddingY: 2, paddingX: 2, backgroundColor: 'transparent' }}>
+    <Box sx={{ padding: 2, backgroundColor: 'transparent' }}>
       <HeaderBar>
         <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
@@ -109,7 +109,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 onClick={() => setEditPartnershipModalOpen(true)}
                 aria-label={t('Edit Partnership Info')}
               >
-                <EditIcon titleAccess="Edit Partnership Info" />
+                <EditIcon
+                  titleAccess="Edit Partnership Info"
+                  sx={{ width: '24px', height: '24px' }}
+                />
               </IconButton>
             </>
           )}

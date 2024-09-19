@@ -233,7 +233,7 @@ export const EditPartnershipInfoModal: React.FC<
                   <ContactInputWrapper>
                     <TextField
                       name="name"
-                      label={t('Contact')}
+                      label={t('Contact Name')}
                       value={name}
                       onChange={handleChange}
                       onBlur={handleBlur}

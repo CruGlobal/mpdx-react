@@ -433,11 +433,9 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         >
                           {languages.map(
                             (value) =>
-                              value?.value && (
-                                <MenuItem
-                                  key={value.id}
-                                  value={value.id || undefined}
-                                >
+                              value.id &&
+                              value.value && (
+                                <MenuItem key={value.id} value={value.id}>
                                   {t(value.value)}
                                 </MenuItem>
                               ),

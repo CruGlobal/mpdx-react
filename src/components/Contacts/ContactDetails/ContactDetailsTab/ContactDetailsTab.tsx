@@ -131,7 +131,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
                 aria-label={t('Edit')}
                 style={{ marginLeft: 5 }}
               >
-                <EditIcon titleAccess="Edit" />
+                <EditIcon titleAccess="Edit" data-testid="Edit Other" />
               </IconButton>
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>

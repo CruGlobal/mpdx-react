@@ -252,7 +252,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             })
           }
           style={{
-            height: `Max(calc(100vh - ${infiniteListRectTop}px), 500px)`,
+            height: `max(100vh - ${infiniteListRectTop}px, 500px)`,
           }}
           data-testid="virtuoso-item-list"
         />
