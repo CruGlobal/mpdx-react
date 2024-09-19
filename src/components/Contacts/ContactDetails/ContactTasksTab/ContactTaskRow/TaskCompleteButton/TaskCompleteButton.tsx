@@ -33,7 +33,7 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
 }) => {
   return (
     <ButtonWrap isComplete={isComplete} {...props}>
-      <Check titleAccess="Check Icon" />
+      <Check titleAccess="Check" />
     </ButtonWrap>
   );
 };

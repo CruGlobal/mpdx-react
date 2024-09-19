@@ -9,5 +9,5 @@ const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
 }));
 
 export const DeletedItemIcon: React.FC = () => {
-  return <DeleteOutline titleAccess="Outlined Delete Icon" />;
+  return <DeleteOutline titleAccess="Delete" />;
 };

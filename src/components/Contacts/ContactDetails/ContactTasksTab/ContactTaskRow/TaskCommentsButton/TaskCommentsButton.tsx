@@ -54,7 +54,7 @@ export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
       detailsPage={detailsPage || false}
       {...props}
     >
-      <TaskCommentIcon titleAccess="Comment Icon" small={small || false} />
+      <TaskCommentIcon titleAccess="Comment" small={small || false} />
       <TaskCommentNumber isComplete={isComplete}>
         {numberOfComments}
       </TaskCommentNumber>

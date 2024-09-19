@@ -21,8 +21,8 @@ const StarOutline = styled(StarBorderOutlined)(({ theme }) => ({
 
 export const StarredItemIcon: React.FC<Props> = ({ isStarred }) => {
   return isStarred ? (
-    <StarFilled titleAccess="Filled Star Icon" />
+    <StarFilled titleAccess="Star" data-testid="Filled Star Icon" />
   ) : (
-    <StarOutline titleAccess="Outline Star Icon" />
+    <StarOutline titleAccess="Star" data-testid="Outline Star Icon" />
   );
 };

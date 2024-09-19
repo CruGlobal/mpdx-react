@@ -6,40 +6,28 @@ import { StarredItemIcon } from './StarredItemIcon';
 
 describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
-    const { queryByRole } = render(
+    const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <StarredItemIcon isStarred={false} />
       </ThemeProvider>,
     );
 
-    const starFilledIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Filled Star Icon',
-    });
-    const starOutlineIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Outline Star Icon',
-    });
+    const starFilledIcon = queryByTestId('Filled Star Icon');
+    const starOutlineIcon = queryByTestId('Outline Star Icon');
 
     expect(starFilledIcon).not.toBeInTheDocument();
     expect(starOutlineIcon).toBeInTheDocument();
   });
 
   it('renders starred', async () => {
-    const { queryByRole } = render(
+    const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <StarredItemIcon isStarred={true} />
       </ThemeProvider>,
     );
 
-    const starFilledIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Filled Star Icon',
-    });
-    const starOutlineIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Outline Star Icon',
-    });
+    const starFilledIcon = queryByTestId('Filled Star Icon');
+    const starOutlineIcon = queryByTestId('Outline Star Icon');
 
     expect(starFilledIcon).toBeInTheDocument();
     expect(starOutlineIcon).not.toBeInTheDocument();
