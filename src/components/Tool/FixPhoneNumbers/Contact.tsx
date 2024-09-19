@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, ReactElement, useMemo } from 'react';
 import styled from '@emotion/styled';
-import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock, mdiPlus } from '@mdi/js';
+import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
@@ -22,21 +22,21 @@ import {
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
-import { FormikErrors } from 'formik';
+import { Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from '../../../theme';
-import { FormValues, FormValuesPerson } from './FixPhoneNumbers';
-import {
-  PersonInvalidNumberFragment,
-  PersonPhoneNumberFragment,
-} from './GetInvalidPhoneNumbers.generated';
+import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
+import PhoneValidationForm from './PhoneNumberValidationForm';
+import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   left: {},
@@ -115,465 +115,468 @@ const ContactAvatar = styled(Avatar)(() => ({
   height: theme.spacing(4),
 }));
 
+export interface PhoneNumber {
+  id: string;
+  number: string;
+  primary: boolean;
+  source: string;
+  updatedAt: string;
+}
+
+interface PhoneNumberData {
+  phoneNumbers: PhoneNumber[];
+}
+
+interface NumberToDelete {
+  id: string;
+  phoneNumber: PhoneNumber;
+}
+
 interface Props {
-  handleDelete: (
-    personIndex: number,
+  person: PersonInvalidNumberFragment;
+  handleChange: (
+    personId: string,
     numberIndex: number,
-    phoneNumber: string,
+    newNumber: string,
   ) => void;
   setContactFocus: SetContactFocus;
-  handleUpdate: (
-    values: FormValues,
-    personId: string,
-    personIndex: number,
+  handleSingleConfirm: (
+    person: PersonInvalidNumberFragment,
+    numbers: PhoneNumber[],
   ) => void;
-  errors: FormikErrors<any>;
-  setValues: (values: FormValues) => void;
-  values: FormValues;
-  person: PersonInvalidNumberFragment;
-  personIndex: number;
+  dataState: { [key: string]: PhoneNumberData };
+  handleChangePrimary: (personId: string, numberIndex: number) => void;
+  accountListId: string;
 }
 
 const Contact: React.FC<Props> = ({
-  handleDelete,
-  setContactFocus,
-  handleUpdate,
-  errors,
-  setValues,
-  values,
   person,
-  personIndex,
+  handleChange,
+  setContactFocus,
+  handleSingleConfirm,
+  dataState,
+  handleChangePrimary,
+  accountListId,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const { appName } = useGetAppSettings();
+  const [updatePhoneNumber] = useUpdatePhoneNumberMutation();
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [numberToDelete, setNumberToDelete] =
+    React.useState<NumberToDelete | null>(null);
+  const { id, contactId } = person;
 
-  const numbers: PersonPhoneNumberFragment[] = person.phoneNumbers.nodes || [];
+  const numbers: PhoneNumber[] = useMemo(() => {
+    if (!dataState[id]?.phoneNumbers.length) {
+      return [];
+    }
+
+    return (
+      dataState[id]?.phoneNumbers.map((number) => ({
+        ...number,
+        isValid: false,
+        personId: id,
+        isPrimary: number.primary,
+      })) || []
+    );
+  }, [person, dataState]);
+
   const name: string = `${person.firstName} ${person.lastName}`;
 
+  const validationSchema = yup.object({
+    newPhone: yup
+      .string()
+      .test(
+        'is-phone-number',
+        t('This field is not a valid phone number'),
+        (val) => typeof val === 'string' && /\d/.test(val),
+      )
+      .required(t('This field is required')),
+  });
+
   const handleContactNameClick = () => {
-    setContactFocus(person.contactId, TabKey.ContactDetails);
+    setContactFocus(contactId);
+  };
+
+  const handleDeleteNumberOpen = ({ id, phoneNumber }: NumberToDelete) => {
+    setDeleteModalOpen(true);
+    setNumberToDelete({ id, phoneNumber });
+  };
+
+  const hasOnePrimaryNumber = (): boolean => {
+    return numbers.filter((number) => number.primary)?.length === 1;
+  };
+
+  const handleDelete = async (): Promise<void> => {
+    if (!numberToDelete) {
+      return;
+    }
+    const { id: personId, phoneNumber } = numberToDelete;
+    await updatePhoneNumber({
+      variables: {
+        input: {
+          accountListId: accountListId ?? '',
+          attributes: {
+            id: personId,
+            phoneNumbers: [
+              {
+                id: phoneNumber.id,
+                destroy: true,
+              },
+            ],
+          },
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `PhoneNumber:${phoneNumber.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully deleted phone number ${phoneNumber.number}`),
+          {
+            variant: 'success',
+          },
+        );
+        handleDeleteNumberModalClose();
+      },
+      onError: () => {
+        enqueueSnackbar(
+          t(`Error deleting phone number ${phoneNumber.number}`),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  };
+
+  const handleDeleteNumberModalClose = (): void => {
+    setDeleteModalOpen(false);
+    setNumberToDelete(null);
   };
 
   return (
-    <Grid container className={classes.container}>
-      <Grid container>
-        <Card className={classes.contactCard}>
-          <Box display="flex" alignItems="center" className={classes.left}>
-            <Grid container>
-              <Grid item xs={12}>
-                <ContactHeader
-                  avatar={
-                    <ContactAvatar
-                      src={person?.avatar || ''}
-                      aria-label="Contact Avatar"
-                      onClick={handleContactNameClick}
-                    />
-                  }
-                  title={
-                    <Link underline="hover" onClick={handleContactNameClick}>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ display: 'inline' }}
-                      >
-                        {name}
-                      </Typography>
-                    </Link>
-                  }
-                  action={
-                    <Button
-                      data-testid={`confirmButton-${person.id}`}
-                      onClick={() =>
-                        handleUpdate(values, person.id, personIndex)
-                      }
-                      variant="contained"
-                      style={{ width: '100%' }}
-                    >
-                      <Icon
-                        path={mdiCheckboxMarkedCircle}
-                        size={0.8}
-                        className={classes.buttonIcon}
+    <>
+      <Grid container className={classes.container}>
+        <Grid container>
+          <Card className={classes.contactCard}>
+            <Box display="flex" alignItems="center" className={classes.left}>
+              <Grid container>
+                <Grid item xs={12}>
+                  <ContactHeader
+                    avatar={
+                      <ContactAvatar
+                        src={person?.avatar || ''}
+                        aria-label="Contact Avatar"
+                        onClick={handleContactNameClick}
                       />
-                      {t('Confirm')}
-                    </Button>
-                  }
-                ></ContactHeader>
-              </Grid>
+                    }
+                    title={
+                      <Link underline="hover" onClick={handleContactNameClick}>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ display: 'inline' }}
+                        >
+                          {name}
+                        </Typography>
+                      </Link>
+                    }
+                    action={
+                      <Button
+                        data-testid={`confirmButton-${person.id}`}
+                        onClick={() => handleSingleConfirm(person, numbers)}
+                        variant="contained"
+                        style={{ width: '100%' }}
+                        disabled={!hasOnePrimaryNumber()}
+                      >
+                        <Icon
+                          path={mdiCheckboxMarkedCircle}
+                          size={0.8}
+                          className={classes.buttonIcon}
+                        />
+                        {t('Confirm')}
+                      </Button>
+                    }
+                  ></ContactHeader>
+                </Grid>
 
-              <CardContent className={(classes.paddingX, classes.paddingY)}>
-                <Grid container display="flex" alignItems="center">
-                  <Hidden smDown>
-                    <Grid item xs={6} sm={4} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        className={classes.paddingX}
-                      >
-                        <Typography variant="body2" fontWeight="bold">
-                          {t('Source')}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={6} sm={2} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="center"
-                        className={classes.paddingX}
-                      >
-                        <Typography variant="body2" fontWeight="bold">
-                          {t('Primary')}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6} className={classes.paddingY}>
-                      <Box
-                        display="flex"
-                        justifyContent="flex-start"
-                        className={classes.paddingX}
-                      >
-                        <Typography variant="body2" fontWeight="bold">
-                          {t('Phone Number')}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Hidden>
-                  {numbers.map((phoneNumber, index) => (
-                    <Fragment key={index}>
-                      <Grid item xs={6} sm={4} className={classes.paddingB2}>
+                <CardContent className={(classes.paddingX, classes.paddingY)}>
+                  <Grid container display="flex" alignItems="center">
+                    <Hidden smDown>
+                      <Grid item xs={6} sm={4} className={classes.paddingY}>
                         <Box
                           display="flex"
                           justifyContent="space-between"
                           className={classes.paddingX}
                         >
-                          <Box>
-                            <Hidden smUp>
-                              <Typography
-                                display="inline"
-                                variant="body2"
-                                fontWeight="bold"
-                              >
-                                {t('Source')}:
-                              </Typography>
-                            </Hidden>
-                            <Typography display="inline" variant="body2">
-                              {`${phoneNumber.source} (${dateFormatShort(
-                                DateTime.fromISO(phoneNumber.updatedAt),
-                                locale,
-                              )})`}
-                            </Typography>
-                          </Box>
+                          <Typography variant="body2" fontWeight="bold">
+                            {t('Source')}
+                          </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={6} sm={2} className={classes.paddingB2}>
+                      <Grid item xs={6} sm={2} className={classes.paddingY}>
                         <Box
                           display="flex"
                           justifyContent="center"
                           className={classes.paddingX}
                         >
-                          <Typography display="flex" alignItems="center">
-                            {phoneNumber.primary ? (
-                              <>
-                                <Hidden smUp>
-                                  <Typography
-                                    display="inline"
-                                    variant="body2"
-                                    fontWeight="bold"
-                                  >
-                                    {t('Source')}:
-                                  </Typography>
-                                </Hidden>
-                                <StarIcon
-                                  data-testid={`starIcon-${person.id}-${index}`}
-                                  className={classes.hoverHighlight}
-                                />
-                              </>
-                            ) : (
-                              <>
-                                <Hidden smUp>
-                                  <Typography
-                                    display="inline"
-                                    variant="body2"
-                                    fontWeight="bold"
-                                  >
-                                    {t('Source')}:
-                                  </Typography>
-                                </Hidden>
-                                <Tooltip
-                                  title={t('Set as Primary')}
-                                  placement="left"
-                                >
-                                  <StarOutlineIcon
-                                    data-testid={`starOutlineIcon-${person.id}-${index}`}
-                                    className={classes.hoverHighlight}
-                                    onClick={() => {
-                                      const updatedValues = {
-                                        people: values.people.map(
-                                          (personValue: FormValuesPerson) =>
-                                            personValue === person
-                                              ? {
-                                                  ...personValue,
-                                                  phoneNumbers: {
-                                                    nodes: numbers.map(
-                                                      (
-                                                        number: PersonPhoneNumberFragment,
-                                                      ) => ({
-                                                        ...number,
-                                                        primary:
-                                                          number ===
-                                                          phoneNumber,
-                                                      }),
-                                                    ),
-                                                  },
-                                                }
-                                              : personValue,
-                                        ),
-                                      };
-                                      setValues(updatedValues);
-                                    }}
-                                  />
-                                </Tooltip>
-                              </>
-                            )}
+                          <Typography variant="body2" fontWeight="bold">
+                            {t('Primary')}
                           </Typography>
                         </Box>
                       </Grid>
-                      <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Grid item xs={12} sm={6} className={classes.paddingY}>
                         <Box
                           display="flex"
                           justifyContent="flex-start"
-                          className={clsx(
-                            classes.responsiveBorder,
-                            classes.paddingX,
-                          )}
-                        >
-                          <FormControl fullWidth>
-                            <TextField
-                              style={{ width: '100%' }}
-                              size="small"
-                              inputProps={{
-                                'data-testid': `textfield-${person.id}-${index}`,
-                              }}
-                              onChange={(
-                                event: React.ChangeEvent<HTMLInputElement>,
-                              ) => {
-                                const updatedValues = {
-                                  people: values.people.map(
-                                    (personValue: FormValuesPerson) =>
-                                      personValue === person
-                                        ? {
-                                            ...personValue,
-                                            phoneNumbers: {
-                                              nodes: numbers.map(
-                                                (
-                                                  number: PersonPhoneNumberFragment,
-                                                ) => ({
-                                                  ...number,
-                                                  number:
-                                                    number === phoneNumber
-                                                      ? event.target.value
-                                                      : number.number,
-                                                }),
-                                              ),
-                                            },
-                                          }
-                                        : personValue,
-                                  ),
-                                };
-                                setValues(updatedValues);
-                              }}
-                              value={phoneNumber.number}
-                              disabled={phoneNumber.source !== 'MPDX'}
-                            />
-                          </FormControl>
-
-                          {phoneNumber.source === 'MPDX' ? (
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              data-testid={`delete-${person.id}-${index}`}
-                              onClick={() =>
-                                handleDelete(
-                                  personIndex,
-                                  index,
-                                  phoneNumber.number || '',
-                                )
-                              }
-                              className={classes.paddingX}
-                            >
-                              <Tooltip
-                                title={t('Delete Number')}
-                                placement="left"
-                              >
-                                <Icon
-                                  path={mdiDelete}
-                                  size={1}
-                                  className={classes.hoverHighlight}
-                                />
-                              </Tooltip>
-                            </Box>
-                          ) : (
-                            <Box
-                              display="flex"
-                              alignItems="center"
-                              data-testid={`lock-${person.id}-${index}`}
-                              className={classes.paddingX}
-                            >
-                              <Icon
-                                path={mdiLock}
-                                size={1}
-                                style={{
-                                  color: theme.palette.cruGrayMedium.main,
-                                }}
-                              />
-                            </Box>
-                          )}
-                        </Box>
-                      </Grid>
-                      {errors?.people?.[personIndex]?.phoneNumbers?.nodes?.[
-                        index
-                      ]?.number && (
-                        <>
-                          <Grid item xs={12} sm={6}></Grid>
-                          <Grid item xs={12} sm={6} pb={'10px'}>
-                            <FormHelperText
-                              error={true}
-                              className={classes.paddingX}
-                            >
-                              {
-                                errors?.people?.[personIndex]?.phoneNumbers
-                                  ?.nodes?.[index]?.number
-                              }
-                            </FormHelperText>
-                          </Grid>
-                        </>
-                      )}
-                    </Fragment>
-                  ))}
-                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      className={classes.paddingX}
-                    >
-                      <Box>
-                        <Hidden smUp>
-                          <Typography
-                            display="inline"
-                            variant="body2"
-                            fontWeight="bold"
-                          >
-                            {t('Source')}:
-                          </Typography>
-                        </Hidden>
-                        <Typography display="inline" variant="body2">
-                          {appName}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                    <Box
-                      display="flex"
-                      justifyContent="flex-start"
-                      className={clsx(
-                        classes.responsiveBorder,
-                        classes.paddingX,
-                      )}
-                    >
-                      <FormControl fullWidth>
-                        <TextField
-                          style={{ width: '100%' }}
-                          size="small"
-                          onChange={(
-                            event: React.ChangeEvent<HTMLInputElement>,
-                          ) => {
-                            const updatedValues = {
-                              people: values.people.map(
-                                (personValue: FormValuesPerson) =>
-                                  personValue === person
-                                    ? {
-                                        ...personValue,
-                                        isNewPhoneNumber: true,
-                                        newPhoneNumber: event.target.value,
-                                      }
-                                    : personValue,
-                              ),
-                            };
-                            setValues(updatedValues);
-                          }}
-                          inputProps={{
-                            'data-testid': `addNewNumberInput-${person.id}`,
-                          }}
-                          value={values.people[personIndex].newPhoneNumber}
-                        />
-                      </FormControl>
-                      <Box
-                        className={classes.paddingX}
-                        display="flex"
-                        alignItems="center"
-                        onClick={() => {
-                          const updatedValues = {
-                            people: values.people.map(
-                              (personValue: PersonInvalidNumberFragment) =>
-                                personValue === person
-                                  ? {
-                                      ...person,
-                                      phoneNumbers: {
-                                        nodes: [
-                                          ...person.phoneNumbers.nodes,
-                                          {
-                                            updatedAt: DateTime.local().toISO(),
-                                            primary: false,
-                                            source: appName,
-                                            number:
-                                              values.people[personIndex]
-                                                .newPhoneNumber,
-                                          },
-                                        ],
-                                      },
-                                      isNewPhoneNumber: false,
-                                      newPhoneNumber: '',
-                                    }
-                                  : personValue,
-                            ),
-                          };
-                          if (values.people[personIndex].newPhoneNumber) {
-                            setValues(updatedValues as FormValues);
-                          }
-                        }}
-                        data-testid={`addButton-${person.id}`}
-                      >
-                        <Tooltip title="Add Number">
-                          <Icon
-                            path={mdiPlus}
-                            size={1}
-                            className={classes.hoverHighlight}
-                          />
-                        </Tooltip>
-                      </Box>
-                    </Box>
-                  </Grid>
-                  {errors?.people?.[personIndex]?.newPhoneNumber && (
-                    <>
-                      <Grid item xs={12} sm={6}></Grid>
-                      <Grid item xs={12} sm={6}>
-                        <FormHelperText
-                          error={true}
                           className={classes.paddingX}
                         >
-                          {errors?.people?.[personIndex]?.newPhoneNumber}
-                        </FormHelperText>
+                          <Typography variant="body2" fontWeight="bold">
+                            {t('Phone Number')}
+                          </Typography>
+                        </Box>
                       </Grid>
-                    </>
-                  )}
-                </Grid>
-              </CardContent>
-            </Grid>
-          </Box>
-        </Card>
+                    </Hidden>
+                    {numbers.map((phoneNumber, index) => (
+                      <Formik
+                        key={index}
+                        enableReinitialize={true}
+                        initialValues={{
+                          newPhone: phoneNumber.number,
+                        }}
+                        validationSchema={validationSchema}
+                        onSubmit={(values) => {
+                          handleChange(id, index, values.newPhone);
+                        }}
+                      >
+                        {({
+                          values: { newPhone },
+                          setFieldValue,
+                          handleSubmit,
+                          errors,
+                        }): ReactElement => (
+                          <Fragment key={index}>
+                            <Grid
+                              item
+                              xs={6}
+                              sm={4}
+                              className={classes.paddingB2}
+                            >
+                              <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                className={classes.paddingX}
+                              >
+                                <Box>
+                                  <Hidden smUp>
+                                    <Typography
+                                      display="inline"
+                                      variant="body2"
+                                      fontWeight="bold"
+                                    >
+                                      {t('Source')}:
+                                    </Typography>
+                                  </Hidden>
+                                  <Typography display="inline" variant="body2">
+                                    {`${phoneNumber.source} (${dateFormatShort(
+                                      DateTime.fromISO(phoneNumber.updatedAt),
+                                      locale,
+                                    )})`}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            </Grid>
+                            <Grid
+                              item
+                              xs={6}
+                              sm={2}
+                              className={classes.paddingB2}
+                            >
+                              <Box
+                                display="flex"
+                                justifyContent="center"
+                                className={classes.paddingX}
+                              >
+                                <Typography display="flex" alignItems="center">
+                                  {phoneNumber.primary ? (
+                                    <>
+                                      <Hidden smUp>
+                                        <Typography
+                                          display="inline"
+                                          variant="body2"
+                                          fontWeight="bold"
+                                        >
+                                          {t('Source')}:
+                                        </Typography>
+                                      </Hidden>
+                                      <StarIcon
+                                        data-testid={`starIcon-${person.id}-${index}`}
+                                        className={classes.hoverHighlight}
+                                      />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Hidden smUp>
+                                        <Typography
+                                          display="inline"
+                                          variant="body2"
+                                          fontWeight="bold"
+                                        >
+                                          {t('Source')}:
+                                        </Typography>
+                                      </Hidden>
+                                      <Tooltip
+                                        title={t('Set as Primary')}
+                                        placement="left"
+                                      >
+                                        <StarOutlineIcon
+                                          data-testid={`starOutlineIcon-${person.id}-${index}`}
+                                          className={classes.hoverHighlight}
+                                          onClick={() =>
+                                            handleChangePrimary(id, index)
+                                          }
+                                        />
+                                      </Tooltip>
+                                    </>
+                                  )}
+                                </Typography>
+                              </Box>
+                            </Grid>
+                            <Grid
+                              item
+                              xs={12}
+                              sm={6}
+                              className={classes.paddingB2}
+                            >
+                              <Box
+                                display="flex"
+                                justifyContent="flex-start"
+                                className={clsx(
+                                  classes.responsiveBorder,
+                                  classes.paddingX,
+                                )}
+                              >
+                                <FormControl fullWidth>
+                                  <TextField
+                                    style={{ width: '100%' }}
+                                    size="small"
+                                    inputProps={{
+                                      'data-testid': `textfield-${person.id}-${index}`,
+                                    }}
+                                    name="newPhone"
+                                    value={newPhone}
+                                    onChange={(e) => {
+                                      setFieldValue('newPhone', e.target.value);
+                                      handleSubmit();
+                                    }}
+                                    disabled={phoneNumber.source !== appName}
+                                  />
+                                  <FormHelperText
+                                    error={true}
+                                    data-testid="statusSelectError"
+                                  >
+                                    {errors.newPhone}
+                                  </FormHelperText>
+                                </FormControl>
+
+                                {phoneNumber.source === 'MPDX' ? (
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    data-testid={`delete-${person.id}-${index}`}
+                                    onClick={() =>
+                                      handleDeleteNumberOpen({
+                                        id,
+                                        phoneNumber,
+                                      })
+                                    }
+                                    className={classes.paddingX}
+                                  >
+                                    <Tooltip
+                                      title={t('Delete Number')}
+                                      placement="left"
+                                    >
+                                      <Icon
+                                        path={mdiDelete}
+                                        size={1}
+                                        className={classes.hoverHighlight}
+                                      />
+                                    </Tooltip>
+                                  </Box>
+                                ) : (
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    data-testid={`lock-${person.id}-${index}`}
+                                    className={classes.paddingX}
+                                  >
+                                    <Icon
+                                      path={mdiLock}
+                                      size={1}
+                                      style={{
+                                        color: theme.palette.cruGrayMedium.main,
+                                      }}
+                                    />
+                                  </Box>
+                                )}
+                              </Box>
+                            </Grid>
+                          </Fragment>
+                        )}
+                      </Formik>
+                    ))}
+                    <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        className={classes.paddingX}
+                      >
+                        <Box>
+                          <Hidden smUp>
+                            <Typography
+                              display="inline"
+                              variant="body2"
+                              fontWeight="bold"
+                            >
+                              {t('Source')}:
+                            </Typography>
+                          </Hidden>
+                          <Typography display="inline" variant="body2">
+                            {appName}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Grid>
+                    <PhoneValidationForm
+                      personId={id}
+                      accountListId={accountListId}
+                    />
+                  </Grid>
+                </CardContent>
+              </Grid>
+            </Box>
+          </Card>
+        </Grid>
       </Grid>
-    </Grid>
+      {deleteModalOpen && numberToDelete && (
+        <Confirmation
+          title={t('Confirm')}
+          isOpen={true}
+          message={
+            <Typography>
+              {t('Are you sure you wish to delete this number:')}{' '}
+              <strong>{numberToDelete?.phoneNumber.number}</strong>
+            </Typography>
+          }
+          mutation={handleDelete}
+          handleClose={handleDeleteNumberModalClose}
+        />
+      )}
+    </>
   );
 };
 

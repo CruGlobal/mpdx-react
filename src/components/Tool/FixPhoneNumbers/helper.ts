@@ -1,27 +1,32 @@
 import { PersonUpdateInput } from 'src/graphql/types.generated';
-import { FormValuesPerson } from './FixPhoneNumbers';
 
 export const determineBulkDataToSend = (
-  values: FormValuesPerson[],
+  dataState: {
+    [key: string]: any;
+  },
   defaultSource: string,
+  appName: string,
 ): PersonUpdateInput[] => {
   const dataToSend = [] as PersonUpdateInput[];
 
-  values.forEach((value) => {
-    const primaryNumber = value.phoneNumbers.nodes.find(
-      (number) => number.source === defaultSource,
+  Object.entries(dataState).forEach((value) => {
+    const primaryNumber = value[1].phoneNumbers.find(
+      (number) =>
+        number.source === defaultSource ||
+        (defaultSource === appName && number.source === 'MPDX'),
     );
     if (primaryNumber) {
       dataToSend.push({
-        id: value.id,
-        phoneNumbers: value.phoneNumbers.nodes.map((number) => ({
-          id: number.id,
-          primary: number.id === primaryNumber.id,
-          number: number.number,
+        id: value[0],
+        phoneNumbers: value[1].phoneNumbers.map((phoneNumber) => ({
+          number: phoneNumber.email,
+          id: phoneNumber.id,
+          primary: phoneNumber.id === primaryNumber.id,
           validValues: true,
         })),
       });
     }
   });
+
   return dataToSend;
 };
