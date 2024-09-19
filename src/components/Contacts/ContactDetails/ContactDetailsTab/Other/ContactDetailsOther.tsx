@@ -139,6 +139,9 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Time Zone')}
+          </ContactOtherTextLabel>
           <Typography variant="subtitle1">{timezone}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
