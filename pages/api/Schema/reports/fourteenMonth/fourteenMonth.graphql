@@ -41,7 +41,7 @@ type FourteenMonthReportContact {
   total: Float!
   average: Float!
   minimum: Float!
-  months: [FourteenMonthReportContactMonths!]
+  months: [FourteenMonthReportContactMonths!]!
   accountNumbers: [String!]!
   lateBy30Days: Boolean!
   lateBy60Days: Boolean!

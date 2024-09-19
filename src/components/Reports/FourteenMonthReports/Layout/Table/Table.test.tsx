@@ -32,8 +32,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
                 {
                   donations: [
@@ -45,8 +44,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
                 {
                   donations: [
@@ -58,8 +56,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
                 {
                   donations: [
@@ -71,8 +68,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
               ],
               minimum: 255,
@@ -98,8 +94,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-10-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
                 {
                   donations: [
@@ -111,8 +106,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-11-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
                 {
                   donations: [
@@ -124,8 +118,7 @@ const mocks = {
                     },
                   ],
                   month: '2020-12-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
                 {
                   donations: [
@@ -137,8 +130,7 @@ const mocks = {
                     },
                   ],
                   month: '2021-1-01',
-                  salaryCurrencyTotal: 255,
-                  total: 35,
+                  total: 255,
                 },
               ],
               minimum: 255,
@@ -230,10 +222,10 @@ describe('FourteenMonthReportTable', () => {
     });
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('FourteenMonthReportTableRow').length).toBe(2);
+    expect(getAllByTestId('FourteenMonthReportTableRow')).toHaveLength(2);
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
     const contactTotal = getAllByTestId('totalGivenByContact');
-    expect(contactTotal[0].innerHTML).toEqual('1,020');
+    expect(contactTotal[0]).toHaveTextContent('3,366');
   });
 
   it('should order by name', async () => {
@@ -269,7 +261,7 @@ describe('FourteenMonthReportTable', () => {
     const fourteenMonthReportRow = getAllByTestId(
       'FourteenMonthReportTableRow',
     );
-    expect(fourteenMonthReportRow.length).toBe(2);
+    expect(fourteenMonthReportRow).toHaveLength(2);
     expect(fourteenMonthReportRow[0]).toHaveTextContent('test name');
     expect(fourteenMonthReportRow[1]).toHaveTextContent('name again');
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
@@ -308,75 +300,8 @@ describe('FourteenMonthReportTable', () => {
     userEvent.click(getByText('name again'));
     expect(onSelectContact).toHaveBeenCalledWith('contact-2');
     await waitFor(() => {
-      expect(getAllByTestId('pledgeAmount')[1].innerHTML).toEqual('16 USD ');
+      expect(getAllByTestId('pledgeAmount')[1]).toHaveTextContent('16 USD');
     });
-  });
-
-  it('should return 0 if no months', async () => {
-    const newMocks = {
-      FourteenMonthReport: {
-        fourteenMonthReport: {
-          currencyGroups: [
-            {
-              contacts: [
-                {
-                  accountNumbers: ['11609'],
-                  average: 258,
-                  id: 'contact-1',
-                  lateBy30Days: false,
-                  lateBy60Days: false,
-                  months: null,
-                  minimum: 255,
-                  name: 'name again',
-                  pledgeAmount: null,
-                  status: null,
-                  total: 3366,
-                },
-              ],
-              currency: 'cad',
-              totals: {
-                average: 1831,
-                minimum: 1583,
-                months: null,
-                year: 24613,
-              },
-            },
-          ],
-        },
-      },
-    };
-
-    const { queryByTestId, getAllByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <FourteenMonthReportTable
-            isExpanded={true}
-            order="asc"
-            orderBy="name"
-            orderedContacts={
-              newMocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .contacts
-            }
-            salaryCurrency={
-              newMocks.FourteenMonthReport.fourteenMonthReport.currencyGroups[0]
-                .currency
-            }
-            onRequestSort={onRequestSort}
-            onSelectContact={onSelectContact}
-            totals={totals}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    const contactTotal = getAllByTestId('totalGivenByContact');
-    expect(contactTotal[0].innerHTML).toEqual('0');
   });
 
   it('should calculate the correct monthly totals', async () => {
@@ -410,14 +335,13 @@ describe('FourteenMonthReportTable', () => {
     });
 
     const contactTotal = getAllByTestId('monthlyTotals');
-    expect(contactTotal[0].innerHTML).toEqual('1,836');
-    expect(contactTotal[1].innerHTML).toEqual('1,487');
-    expect(contactTotal[2].innerHTML).toEqual('1,836');
-    expect(contactTotal[3].innerHTML).toEqual('1,836');
-
-    expect(getAllByTestId('overallTotal')[0].innerHTML).toEqual('6,996');
+    expect(contactTotal[0]).toHaveTextContent('1,836');
+    expect(contactTotal[1]).toHaveTextContent('1,487');
+    expect(contactTotal[2]).toHaveTextContent('1,836');
+    expect(contactTotal[3]).toHaveTextContent('1,836');
 
     expect(getByTestId('averageTotal')).toHaveTextContent('516');
     expect(getByTestId('minimumTotal')).toHaveTextContent('510');
+    expect(getAllByTestId('overallTotal')[0]).toHaveTextContent('6,996');
   });
 });
