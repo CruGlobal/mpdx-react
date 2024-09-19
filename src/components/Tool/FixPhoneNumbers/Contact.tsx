@@ -123,7 +123,7 @@ export interface PhoneNumber {
   updatedAt: string;
 }
 
-interface PhoneNumberData {
+export interface PhoneNumberData {
   phoneNumbers: PhoneNumber[];
 }
 
@@ -204,10 +204,6 @@ const Contact: React.FC<Props> = ({
   const handleDeleteNumberOpen = ({ id, phoneNumber }: NumberToDelete) => {
     setDeleteModalOpen(true);
     setNumberToDelete({ id, phoneNumber });
-  };
-
-  const hasOnePrimaryNumber = (): boolean => {
-    return numbers.filter((number) => number.primary)?.length === 1;
   };
 
   const handleDelete = async (): Promise<void> => {
@@ -291,7 +287,6 @@ const Contact: React.FC<Props> = ({
                         onClick={() => handleSingleConfirm(person, numbers)}
                         variant="contained"
                         style={{ width: '100%' }}
-                        disabled={!hasOnePrimaryNumber()}
                       >
                         <Icon
                           path={mdiCheckboxMarkedCircle}
@@ -303,7 +298,6 @@ const Contact: React.FC<Props> = ({
                     }
                   ></ContactHeader>
                 </Grid>
-
                 <CardContent className={(classes.paddingX, classes.paddingY)}>
                   <Grid container display="flex" alignItems="center">
                     <Hidden smDown>
@@ -361,6 +355,7 @@ const Contact: React.FC<Props> = ({
                         }): ReactElement => (
                           <Fragment key={index}>
                             <Grid
+                              data-testid="phoneNumbers"
                               item
                               xs={6}
                               sm={4}
@@ -414,7 +409,7 @@ const Contact: React.FC<Props> = ({
                                         </Typography>
                                       </Hidden>
                                       <StarIcon
-                                        data-testid={`starIcon-${person.id}-${index}`}
+                                        data-testid={`starIcon-${person.id}-${phoneNumber.id}`}
                                         className={classes.hoverHighlight}
                                       />
                                     </>
@@ -434,7 +429,7 @@ const Contact: React.FC<Props> = ({
                                         placement="left"
                                       >
                                         <StarOutlineIcon
-                                          data-testid={`starOutlineIcon-${person.id}-${index}`}
+                                          data-testid={`starOutlineIcon-${person.id}-${phoneNumber.id}`}
                                           className={classes.hoverHighlight}
                                           onClick={() =>
                                             handleChangePrimary(id, index)
@@ -465,7 +460,7 @@ const Contact: React.FC<Props> = ({
                                     style={{ width: '100%' }}
                                     size="small"
                                     inputProps={{
-                                      'data-testid': `textfield-${person.id}-${index}`,
+                                      'data-testid': `textfield-${person.id}-${phoneNumber.id}`,
                                     }}
                                     name="newPhone"
                                     value={newPhone}
@@ -482,12 +477,11 @@ const Contact: React.FC<Props> = ({
                                     {errors.newPhone}
                                   </FormHelperText>
                                 </FormControl>
-
                                 {phoneNumber.source === 'MPDX' ? (
                                   <Box
                                     display="flex"
                                     alignItems="center"
-                                    data-testid={`delete-${person.id}-${index}`}
+                                    data-testid={`delete-${person.id}-${phoneNumber.id}`}
                                     onClick={() =>
                                       handleDeleteNumberOpen({
                                         id,

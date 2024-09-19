@@ -1,8 +1,9 @@
 import { PersonUpdateInput } from 'src/graphql/types.generated';
+import { PhoneNumberData } from './Contact';
 
 export const determineBulkDataToSend = (
   dataState: {
-    [key: string]: any;
+    [key: string]: PhoneNumberData;
   },
   defaultSource: string,
   appName: string,
@@ -19,7 +20,7 @@ export const determineBulkDataToSend = (
       dataToSend.push({
         id: value[0],
         phoneNumbers: value[1].phoneNumbers.map((phoneNumber) => ({
-          number: phoneNumber.email,
+          number: phoneNumber.number,
           id: phoneNumber.id,
           primary: phoneNumber.id === primaryNumber.id,
           validValues: true,

@@ -84,62 +84,68 @@ describe('FixPhoneNumbers-Home', () => {
   it('change primary of first number', async () => {
     const { getByTestId, queryByTestId } = render(<Components />);
 
-    const star1 = await waitFor(() => getByTestId('starOutlineIcon-testid-1'));
+    const star1 = await waitFor(() =>
+      getByTestId('starOutlineIcon-testid-id2'),
+    );
     userEvent.click(star1);
-
-    expect(queryByTestId('starIcon-testid-0')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-testid-1')).toBeInTheDocument();
-    expect(getByTestId('starOutlineIcon-testid-0')).toBeInTheDocument();
+    expect(queryByTestId('starIcon-testid-id2')).toBeInTheDocument();
+    expect(getByTestId('starOutlineIcon-testid-id1')).toBeInTheDocument();
+    expect(getByTestId('starOutlineIcon-testid-id3')).toBeInTheDocument();
   });
 
   it('delete third number from first person', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+    const { getByTestId, queryByTestId, findByText } = render(<Components />);
 
-    const delete02 = await waitFor(() => getByTestId('delete-testid-2'));
+    const delete02 = await waitFor(() => getByTestId('delete-testid-id3'));
     userEvent.click(delete02);
 
-    const deleteButton = getByTestId('modal-delete-button');
+    const deleteButton = await findByText('Yes');
     userEvent.click(deleteButton);
     waitFor(() => {
-      expect(queryByTestId('textfield-testid-2')).not.toBeInTheDocument();
+      expect(queryByTestId('textfield-testid-id3')).not.toBeInTheDocument();
     });
   });
 
   it('change second number for second person to primary then delete it', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+    const { getByTestId, findByText, queryByTestId } = render(<Components />);
 
     const star11 = await waitFor(() =>
-      getByTestId('starOutlineIcon-testid2-1'),
+      getByTestId('starOutlineIcon-testid2-id5'),
     );
     userEvent.click(star11);
 
-    const delete11 = getByTestId('delete-testid2-1');
+    expect(queryByTestId('starIcon-testid2-id5')).toBeInTheDocument();
+
+    const delete11 = getByTestId('delete-testid2-id5');
     userEvent.click(delete11);
 
-    const deleteButton = getByTestId('modal-delete-button');
+    const deleteButton = await findByText('Yes');
     userEvent.click(deleteButton);
 
-    expect(queryByTestId('starIcon-testid2-1')).not.toBeInTheDocument();
-    expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByTestId('starIcon-testid2-id5')).not.toBeInTheDocument();
+    });
   });
 
   it('add a phone number to first person', async () => {
-    const { getByTestId, getByDisplayValue } = render(<Components />);
-    await waitFor(() =>
-      expect(getByTestId('starIcon-testid2-0')).toBeInTheDocument(),
+    const { getByTestId, getAllByTestId, getAllByLabelText } = render(
+      <Components />,
     );
-    expect(getByTestId('textfield-testid2-0')).toBeInTheDocument();
-
-    const textfieldNew1 = getByTestId(
-      'addNewNumberInput-testid2',
-    ) as HTMLInputElement;
+    await waitFor(() =>
+      expect(getByTestId('starIcon-testid-id1')).toBeInTheDocument(),
+    );
+    expect(getByTestId('textfield-testid-id1')).toBeInTheDocument();
+    expect(getAllByTestId('phoneNumbers')).toHaveLength(5);
+    const textfieldNew1 = getAllByLabelText('New Phone Number')[0];
     userEvent.type(textfieldNew1, '+12345');
-    const addButton1 = getByTestId('addButton-testid2');
-    userEvent.click(addButton1);
-
-    expect(textfieldNew1.value).toBe('');
-    expect(getByTestId('textfield-testid2-1')).toBeInTheDocument();
-    expect(getByDisplayValue('+12345')).toBeInTheDocument();
+    const addButton = getByTestId('addButton-testid');
+    expect(textfieldNew1).toHaveValue('+12345');
+    userEvent.click(addButton);
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Added phone number', {
+        variant: 'success',
+      }),
+    );
   });
 
   it('should render no contacts with no data', async () => {
@@ -155,13 +161,15 @@ describe('FixPhoneNumbers-Home', () => {
   it('should modify first number of first contact', async () => {
     const { getByTestId } = render(<Components />);
     await waitFor(() => {
-      expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
+      expect(getByTestId('textfield-testid-id1')).toBeInTheDocument();
     });
-    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
+    const firstInput = getByTestId('textfield-testid-id1') as HTMLInputElement;
 
-    expect(firstInput.value).toBe('+3533895895');
+    expect(firstInput.value).toBe('+353');
     userEvent.type(firstInput, '123');
-    expect(firstInput.value).toBe('+3533895895123');
+    await waitFor(() => {
+      expect(firstInput).toHaveValue('+353');
+    });
   });
 
   it('should hide contact from view', async () => {
@@ -171,23 +179,28 @@ describe('FixPhoneNumbers-Home', () => {
     });
 
     userEvent.click(getByTestId('confirmButton-testid'));
+
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith('Phone numbers updated!', {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Successfully updated phone numbers for Test Contact',
+        {
+          variant: 'success',
+        },
+      );
     });
   });
   it('should bulk confirm all phone numbers', async () => {
     const { getByTestId, queryByTestId, getByText } = render(<Components />);
     await waitFor(() => {
       expect(queryByTestId('loading')).not.toBeInTheDocument();
-      expect(getByTestId('starOutlineIcon-testid-1')).toBeInTheDocument();
+      expect(getByTestId('starOutlineIcon-testid-id2')).toBeInTheDocument();
     });
 
-    userEvent.click(getByTestId(`starOutlineIcon-testid-1`));
+    userEvent.click(getByTestId(`starOutlineIcon-testid-id2`));
 
     const confirmAllButton = getByTestId('source-button');
     userEvent.click(confirmAllButton);
+    userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {

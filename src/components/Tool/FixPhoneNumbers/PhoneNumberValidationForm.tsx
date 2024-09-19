@@ -181,6 +181,7 @@ const PhoneValidationForm = ({
             >
               <FormControl fullWidth>
                 <TextField
+                  data-testId={`addNewNumberInput-${initialPhone.personId}`}
                   label={t('New Phone Number')}
                   name="number"
                   value={values.number}
