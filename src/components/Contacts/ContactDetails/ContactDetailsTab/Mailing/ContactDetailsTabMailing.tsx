@@ -174,7 +174,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 >
                   <ContactAddressRowContainer>
                     <Typography variant="subtitle1">
-                      <Box fontWeight="bold">{address.street}</Box>
+                      <Box fontWeight="bold">{address.street ?? ''}</Box>
                     </Typography>
                     <AddressEditIconContainer
                       onClick={() => {
@@ -186,12 +186,12 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                     </AddressEditIconContainer>
                   </ContactAddressRowContainer>
                   <StyledAddressTypography variant="subtitle1">
-                    {`${address.city}${address.city && ','} ${
+                    {`${address.city ?? ''}${address.city && ','} ${
                       address.state ?? ''
-                    } ${address.postalCode}`}
+                    } ${address.postalCode ?? ''}`}
                   </StyledAddressTypography>
                   <StyledAddressTypography variant="subtitle1">
-                    {address.country}
+                    {address.country ?? ''}
                   </StyledAddressTypography>
                   <Typography variant="subtitle1">
                     {t('Source:')} {sourceToStr(t, address.source)} (
@@ -222,21 +222,21 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
       </Box>
-      {selectedAddress ? (
+      {selectedAddress && (
         <EditContactAddressModal
           contactId={id}
           accountListId={accountListId}
           address={selectedAddress}
           handleClose={() => setEditingAddressId(undefined)}
         />
-      ) : null}
-      {addAddressModalOpen ? (
+      )}
+      {addAddressModalOpen && (
         <AddAddressModal
           contactId={id}
           accountListId={accountListId}
           handleClose={() => setAddAddressModalOpen(false)}
         />
-      ) : null}
+      )}
       {editMailingModalOpen && (
         <EditMailingInfoModal
           contact={data}

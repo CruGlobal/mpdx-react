@@ -65,7 +65,7 @@ export const ContactHeaderAddressSection = ({
             <StyledAddressTypography
               style={{ display: 'inline-block' }}
               variant="subtitle1"
-            >{`${city}${city && ','} ${
+            >{`${city}, ${
               state ?? ''
             } ${postalCode}`}</StyledAddressTypography>{' '}
             <Link

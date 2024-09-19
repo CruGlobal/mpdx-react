@@ -106,10 +106,12 @@ describe('ContactsRow', () => {
       getByText(
         [
           contact.primaryAddress?.street,
-          contact.primaryAddress?.city,
+          `${contact.primaryAddress?.city}${
+            contact.primaryAddress?.city && ','
+          }`,
           contact.primaryAddress?.state,
           contact.primaryAddress?.postalCode,
-        ].join(', '),
+        ].join(' '),
       ),
     ).toBeInTheDocument();
   });
