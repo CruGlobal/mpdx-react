@@ -35,6 +35,8 @@ mutation UpdateContactOther(
       preferredContactMethod
       timezone
       website
+      greeting
+      envelopeGreeting
       contactReferralsToMe(first: 10) {
         nodes {
           id
