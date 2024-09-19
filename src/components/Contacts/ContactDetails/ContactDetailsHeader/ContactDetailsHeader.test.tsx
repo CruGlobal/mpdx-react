@@ -1,5 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
@@ -129,111 +131,117 @@ describe('ContactDetails', () => {
     expect(queryByTestId('Skeleton')).toBeNull();
   });
 
-  it('should open edit contact details modal', async () => {
+  it('should open Edit Partnership modal', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
-        <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
-            }>
-              mocks={mocks}
-            >
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <ContactDetailsHeader
-                    accountListId={accountListId}
-                    contactId={contactId}
-                    onClose={() => {}}
-                    setContactDetailsLoaded={() => {}}
-                    contactDetailsLoaded={false}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <TestRouter router={router}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<{
+                GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+              }>
+                mocks={mocks}
+              >
+                <ContactsWrapper>
+                  <ContactDetailProvider>
+                    <ContactDetailsHeader
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onClose={() => {}}
+                      setContactDetailsLoaded={() => {}}
+                      contactDetailsLoaded={false}
+                    />
+                  </ContactDetailProvider>
+                </ContactsWrapper>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </TestRouter>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     await waitFor(() =>
-      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+      expect(getAllByLabelText('Edit Partnership Info')[0]).toBeInTheDocument(),
     );
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    userEvent.click(getAllByLabelText('Edit Partnership Info')[0]);
     await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+      expect(queryByText('Edit Partnership')).toBeInTheDocument(),
     );
   });
 
-  it('should close edit contact address modal', async () => {
+  it('should close Edit Partnership modal', async () => {
     const { queryByText, getAllByLabelText, getByLabelText } = render(
       <SnackbarProvider>
-        <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
-            }>
-              mocks={mocks}
-            >
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <ContactDetailsHeader
-                    accountListId={accountListId}
-                    contactId={contactId}
-                    onClose={() => {}}
-                    setContactDetailsLoaded={() => {}}
-                    contactDetailsLoaded={false}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <TestRouter router={router}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<{
+                GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+              }>
+                mocks={mocks}
+              >
+                <ContactsWrapper>
+                  <ContactDetailProvider>
+                    <ContactDetailsHeader
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onClose={() => {}}
+                      setContactDetailsLoaded={() => {}}
+                      contactDetailsLoaded={false}
+                    />
+                  </ContactDetailProvider>
+                </ContactsWrapper>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </TestRouter>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     await waitFor(() =>
-      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+      expect(getAllByLabelText('Edit Partnership Info')[0]).toBeInTheDocument(),
     );
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    userEvent.click(getAllByLabelText('Edit Partnership Info')[0]);
     await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+      expect(queryByText('Edit Partnership')).toBeInTheDocument(),
     );
     userEvent.click(getByLabelText('Close'));
     await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).not.toBeInTheDocument(),
+      expect(queryByText('Edit Partnership')).not.toBeInTheDocument(),
     );
   });
   it('should render avatar', async () => {
     const { queryByText, getAllByLabelText } = render(
       <SnackbarProvider>
-        <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              GetContactDetailsHeader: GetContactDetailsHeaderQuery;
-            }>
-              mocks={mocks}
-            >
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <ContactDetailsHeader
-                    accountListId={accountListId}
-                    contactId={contactId}
-                    onClose={() => {}}
-                    setContactDetailsLoaded={() => {}}
-                    contactDetailsLoaded={false}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <TestRouter router={router}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider<{
+                GetContactDetailsHeader: GetContactDetailsHeaderQuery;
+              }>
+                mocks={mocks}
+              >
+                <ContactsWrapper>
+                  <ContactDetailProvider>
+                    <ContactDetailsHeader
+                      accountListId={accountListId}
+                      contactId={contactId}
+                      onClose={() => {}}
+                      setContactDetailsLoaded={() => {}}
+                      contactDetailsLoaded={false}
+                    />
+                  </ContactDetailProvider>
+                </ContactsWrapper>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </TestRouter>
+        </LocalizationProvider>
       </SnackbarProvider>,
     );
     await waitFor(() =>
-      expect(getAllByLabelText('Edit Icon')[0]).toBeInTheDocument(),
+      expect(getAllByLabelText('Edit Partnership Info')[0]).toBeInTheDocument(),
     );
-    userEvent.click(getAllByLabelText('Edit Icon')[0]);
+    userEvent.click(getAllByLabelText('Edit Partnership Info')[0]);
     await waitFor(() =>
-      expect(queryByText('Edit Contact Details')).toBeInTheDocument(),
+      expect(queryByText('Edit Partnership Info')).toBeInTheDocument(),
     );
 
     const avatarImage = document.querySelector('img') as HTMLImageElement;

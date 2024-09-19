@@ -52,8 +52,8 @@ type AddMenuItem = {
 };
 
 const MoreButtonIcon = styled(MoreVert)(({ theme }) => ({
-  width: 16,
-  height: 16,
+  width: 24,
+  height: 24,
   color: theme.palette.text.primary,
 }));
 
