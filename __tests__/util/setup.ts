@@ -43,6 +43,8 @@ Object.defineProperty(window, 'location', {
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
+window.URL.revokeObjectURL = jest.fn();
+
 beforeEach(() => {
   Settings.now = () => new Date(2020, 0, 1).valueOf();
   matchMediaMock({ width: window.innerWidth });

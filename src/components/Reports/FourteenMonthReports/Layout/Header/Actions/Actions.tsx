@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import PrintIcon from '@mui/icons-material/Print';
 import { Button, ButtonGroup, SvgIcon } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { CSVLink } from 'react-csv';
+import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 
@@ -19,11 +18,6 @@ interface FourteenMonthReportActionsProps {
   onPrint: (event: React.MouseEvent<unknown>) => void;
 }
 
-const DownloadCsvLink = styled(CSVLink)(({}) => ({
-  color: 'inherit',
-  textDecoration: 'none',
-}));
-
 export const FourteenMonthReportActions: React.FC<
   FourteenMonthReportActionsProps
 > = ({
@@ -35,6 +29,16 @@ export const FourteenMonthReportActions: React.FC<
   onPrint,
 }) => {
   const { t } = useTranslation();
+  const [csvBlob, setCsvBlob] = useState('');
+
+  // This has to be a useEffect instead of a useMemo to prevent hydration errors because the
+  // server isn't able to calculate a blob URL.
+  useEffect(() => {
+    const csvBlob = buildURI(csvData);
+    setCsvBlob(csvBlob);
+
+    return () => URL.revokeObjectURL(csvBlob);
+  }, [csvData]);
 
   return (
     <ButtonGroup aria-label={t('Report header button group')}>
@@ -59,13 +63,10 @@ export const FourteenMonthReportActions: React.FC<
             <GetAppIcon titleAccess={t('Download CSV Icon')} />
           </SvgIcon>
         }
+        href={csvBlob}
+        download={`mpdx-${currencyType}-contributions-export-${DateTime.now().toISODate()}.csv`}
       >
-        <DownloadCsvLink
-          data={csvData}
-          filename={`mpdx-${currencyType}-contributions-export-${DateTime.now().toISODate()}.csv`}
-        >
-          {t('Export')}
-        </DownloadCsvLink>
+        {t('Export')}
       </Button>
       <Button
         startIcon={
