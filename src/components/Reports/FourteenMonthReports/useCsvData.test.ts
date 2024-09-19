@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
+import { StatusEnum } from 'pages/api/graphql-rest.page.generated';
 import {
   LoadConstantsDocument,
   LoadConstantsQuery,
@@ -79,7 +80,7 @@ describe('useCsvData', () => {
           // Partner pledged for $450/quarter but who gave $275/month average over the last quarter
           mockContact({
             name: 'Quarterly Partner',
-            status: 'Partner - Financial',
+            status: StatusEnum.PartnerFinancial,
             pledgeAmount: 450,
             pledgeCurrency: 'USD',
             pledgeFrequency: '3.0',
@@ -102,7 +103,7 @@ describe('useCsvData', () => {
           // Partner pledged for $1200/year but who gave $75/month average over the last quarter
           mockContact({
             name: 'Annual Partner',
-            status: 'Partner - Financial',
+            status: StatusEnum.PartnerFinancial,
             pledgeAmount: 1200,
             pledgeCurrency: 'USD',
             pledgeFrequency: '12.0',
@@ -164,7 +165,7 @@ describe('useCsvData', () => {
       ],
       [
         'Quarterly Partner',
-        'Partner - Financial',
+        'PARTNER_FINANCIAL',
         450,
         'USD',
         'Quarterly',
@@ -189,7 +190,7 @@ describe('useCsvData', () => {
       ],
       [
         'Annual Partner',
-        'Partner - Financial',
+        'PARTNER_FINANCIAL',
         1200,
         'USD',
         'Annual',

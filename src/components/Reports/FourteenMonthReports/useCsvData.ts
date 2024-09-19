@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { StatusEnum } from 'pages/api/graphql-rest.page.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import type { CurrencyTable } from './FourteenMonthReport';
@@ -56,7 +57,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
           );
 
           const pledgedMonthlyEquivalent =
-            contact.status === 'Partner - Financial' &&
+            contact.status === StatusEnum.PartnerFinancial &&
             contact.pledgeAmount &&
             contact.pledgeFrequency
               ? Math.round(
@@ -69,7 +70,8 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
           );
 
           const inHandMonthlyEquivalent =
-            contact.status === 'Partner - Financial' && contact.pledgeFrequency
+            contact.status === StatusEnum.PartnerFinancial &&
+            contact.pledgeFrequency
               ? Math.round(
                   inHandMonths.reduce((sum, month) => sum + month.total, 0) /
                     numMonthsForMonthlyEquivalent,

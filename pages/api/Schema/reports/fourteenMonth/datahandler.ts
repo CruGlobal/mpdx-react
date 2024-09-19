@@ -1,6 +1,7 @@
 import {
   FourteenMonthReport,
   FourteenMonthReportCurrencyType,
+  StatusEnum,
 } from '../../../graphql-rest.page.generated';
 
 export interface FourteenMonthReportResponse {
@@ -139,7 +140,10 @@ export const mapFourteenMonthReport = (
                 : null,
               pledgeCurrency: contact?.pledge_currency,
               pledgeFrequency: contact?.pledge_frequency,
-              status: contact?.status,
+              status: contact?.status?.toUpperCase() as
+                | StatusEnum
+                | null
+                | undefined,
             };
           })
           .sort((a, b) => a.name.localeCompare(b.name)),
