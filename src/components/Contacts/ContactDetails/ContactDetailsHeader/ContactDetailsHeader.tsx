@@ -110,7 +110,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 aria-label={t('Edit Partnership Info')}
               >
                 <EditIcon
-                  titleAccess="Edit Partnership Info"
+                  titleAccess={t('Edit Partnership Info')}
                   sx={{ width: '24px', height: '24px' }}
                 />
               </IconButton>

@@ -2,6 +2,7 @@ import React from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderOutlined from '@mui/icons-material/StarBorderOutlined';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   isStarred: boolean;
@@ -20,9 +21,10 @@ const StarOutline = styled(StarBorderOutlined)(({ theme }) => ({
 }));
 
 export const StarredItemIcon: React.FC<Props> = ({ isStarred }) => {
+  const { t } = useTranslation();
   return isStarred ? (
-    <StarFilled titleAccess="Unstar" data-testid="Filled Star Icon" />
+    <StarFilled titleAccess={t('Unstar')} data-testid="Filled Star Icon" />
   ) : (
-    <StarOutline titleAccess="Star" data-testid="Outline Star Icon" />
+    <StarOutline titleAccess={t('Star')} data-testid="Outline Star Icon" />
   );
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import DeleteOutlined from '@mui/icons-material/DeleteOutlined';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
   width: '24px',
@@ -9,5 +10,6 @@ const DeleteOutline = styled(DeleteOutlined)(({ theme }) => ({
 }));
 
 export const DeletedItemIcon: React.FC = () => {
-  return <DeleteOutline titleAccess="Delete" />;
+  const { t } = useTranslation();
+  return <DeleteOutline titleAccess={t('Delete')} />;
 };
