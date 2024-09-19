@@ -246,7 +246,7 @@ describe('TaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Complete,
@@ -306,7 +306,7 @@ describe('TaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Comments,

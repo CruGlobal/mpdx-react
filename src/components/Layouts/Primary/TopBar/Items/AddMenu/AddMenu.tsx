@@ -189,6 +189,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
   const [selectedMenuItem, changeSelectedMenuItem] =
     useState<AddMenuItemsEnum | null>(null);
   const [dialogOpen, changeDialogOpen] = useState(false);
+  const { t } = useTranslation();
 
   const addMenuContent = [
     {
@@ -254,7 +255,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
         aria-expanded={Boolean(anchorEl)}
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
-        <HoverAddIcon titleAccess="Add Button" />
+        <HoverAddIcon titleAccess={t('Add Button')} />
       </IconButton>
       <MenuContainer
         id="add-menu"

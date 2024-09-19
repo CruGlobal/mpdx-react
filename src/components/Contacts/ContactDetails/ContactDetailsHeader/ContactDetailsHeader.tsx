@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -7,18 +7,13 @@ import { StatusEnum } from 'src/graphql/types.generated';
 import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
-import {
-  ContactDetailContext,
-  ContactDetailsType,
-} from '../ContactDetailContext';
-import { EditContactDetailsModal } from '../ContactDetailsTab/People/Items/EditContactDetailsModal/EditContactDetailsModal';
 import { EditIcon } from '../ContactDetailsTab/StyledComponents';
+import { EditPartnershipInfoModal } from '../ContactDonationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
 import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
 import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
 import { ContactHeaderNewsletterSection } from './ContactHeaderSection/ContactHeaderNewsletterSection';
-import { ContactHeaderPartnerSection } from './ContactHeaderSection/ContactHeaderPartnerSection';
 import { ContactHeaderPhoneSection } from './ContactHeaderSection/ContactHeaderPhoneSection';
 import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeaderStatusSection';
 
@@ -46,9 +41,9 @@ const HeaderBarButtonsWrap = styled(Box)(({}) => ({
 }));
 const ContactAvatar = styled(Avatar)(({}) => ({
   backgroundColor: theme.palette.secondary.dark,
-  height: 64,
-  width: 64,
-  borderRadius: 32,
+  height: 50,
+  width: 50,
+  borderRadius: 25,
 }));
 const PrimaryContactName = styled(Typography)(({}) => ({
   display: 'inline',
@@ -56,8 +51,8 @@ const PrimaryContactName = styled(Typography)(({}) => ({
   fontWeight: 'bold',
 }));
 const CloseButtonIcon = styled(Close)(({}) => ({
-  width: 14,
-  height: 14,
+  width: 24,
+  height: 24,
   color: theme.palette.text.primary,
 }));
 const HeaderSectionWrap = styled(Box)(({}) => ({
@@ -78,9 +73,8 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   const loading = !data;
   const { t } = useTranslation();
 
-  const { editModalOpen, setEditModalOpen } = React.useContext(
-    ContactDetailContext,
-  ) as ContactDetailsType;
+  const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
+    useState(false);
 
   useEffect(() => {
     if (!loading && !contactDetailsLoaded) {
@@ -90,11 +84,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   }, [loading]);
 
   return (
-    <Box style={{ padding: 24, backgroundColor: 'transparent' }}>
+    <Box sx={{ padding: 2, backgroundColor: 'transparent' }}>
       <HeaderBar>
         <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
-          {!data ? (
+          {!data?.contact ? (
             <Box data-testid="Skeleton">
               <Skeleton
                 variant="text"
@@ -106,19 +100,22 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 }}
               />
             </Box>
-          ) : data.contact ? (
+          ) : (
             <>
               <PrimaryContactName data-testid="ContactName" variant="h5">
-                {data.contact.name}
+                {data?.contact.name}
               </PrimaryContactName>
               <IconButton
-                onClick={() => setEditModalOpen(true)}
-                aria-label={t('Edit Icon')}
+                onClick={() => setEditPartnershipModalOpen(true)}
+                aria-label={t('Edit Partnership Info')}
               >
-                <EditIcon />
+                <EditIcon
+                  titleAccess={t('Edit Partnership Info')}
+                  sx={{ width: '24px', height: '24px' }}
+                />
               </IconButton>
             </>
-          ) : null}
+          )}
         </HeaderBarContactWrap>
         <HeaderBarButtonsWrap>
           <StarContactIconButton
@@ -156,10 +153,6 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           />
         </Box>
         <Box flex={1}>
-          <ContactHeaderPartnerSection
-            loading={loading}
-            contact={data?.contact}
-          />
           <ContactHeaderStatusSection
             loading={loading}
             contact={data?.contact}
@@ -170,12 +163,10 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           />
         </Box>
       </HeaderSectionWrap>
-      {data && (
-        <EditContactDetailsModal
-          accountListId={accountListId}
-          contact={data.contact}
-          isOpen={editModalOpen}
-          handleClose={() => setEditModalOpen(false)}
+      {data?.contact && editPartnershipModalOpen && (
+        <EditPartnershipInfoModal
+          contact={data?.contact}
+          handleClose={() => setEditPartnershipModalOpen(false)}
         />
       )}
     </Box>

@@ -40,14 +40,17 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
           currency: 'CAD',
         },
       },
-      contactReferralsToMe: {
+      people: {
         nodes: [
           {
-            id: 'referred-by-id-1',
-            referredBy: {
-              id: 'referred-by-contact-id',
-              name: 'Person, Cool',
-            },
+            firstName: 'Will',
+            lastName: 'Turner',
+            id: '2',
+          },
+          {
+            firstName: 'test',
+            lastName: 'guy',
+            id: '3',
           },
         ],
       },
@@ -74,14 +77,30 @@ const newContactMock = gqlMock<ContactDonorAccountsFragment>(
         nodes: [],
       },
       likelyToGive: null,
+      name: 'Test',
+      primaryPerson: {
+        id: '1',
+        firstName: 'test',
+        lastName: null,
+      },
+      people: {
+        nodes: [
+          {
+            firstName: 'Will',
+            lastName: 'Turner',
+            id: '2',
+          },
+          {
+            firstName: 'test',
+            lastName: 'guy',
+            id: '3',
+          },
+        ],
+      },
     },
   },
 );
 
-const contactMockNoReferrals: ContactDonorAccountsFragment = {
-  ...contactMock,
-  contactReferralsToMe: { nodes: [] },
-};
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
@@ -640,12 +659,15 @@ describe('EditPartnershipInfoModal', () => {
     ]);
   });
 
-  it('should handle editing the referred by | Delete', async () => {
-    const { getByLabelText, getByText, getByRole, queryByText } = render(
+  it('should handle editing contact name and primary contact', async () => {
+    const mutationSpy = jest.fn();
+    const newContactName = 'Guy, Cool and Neat';
+    const newPrimaryContactName = `${newContactMock.people.nodes[1].firstName} ${newContactMock.people.nodes[1].lastName}`;
+    const { getByRole } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider onCall={mutationSpy}>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -655,19 +677,22 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
+    mutationSpy.mockClear();
 
-    const referredByInput = getByLabelText('Referred By');
-    await waitFor(() => expect(referredByInput).toBeInTheDocument());
-    userEvent.click(referredByInput);
-    expect(getByText('Person, Cool')).toBeInTheDocument();
-    const deleteIcon = getByRole('button', {
-      name: 'Person, Cool',
-    }).querySelector('.MuiChip-deleteIcon');
+    const contactTextBox = getByRole('textbox', {
+      hidden: true,
+      name: 'Contact',
+    });
+    userEvent.clear(contactTextBox);
+    userEvent.type(contactTextBox, newContactName);
+    userEvent.click(
+      getByRole('combobox', { hidden: true, name: 'Primary Person' }),
+    );
+    userEvent.click(
+      getByRole('option', { hidden: true, name: newPrimaryContactName }),
+    );
+    userEvent.click(getByRole('button', { name: 'Save' }));
 
-    expect(deleteIcon).toBeInTheDocument();
-    deleteIcon && userEvent.click(deleteIcon);
-    expect(queryByText('Person, Cool')).not.toBeInTheDocument();
-    userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Partnership information updated successfully.',
@@ -676,93 +701,12 @@ describe('EditPartnershipInfoModal', () => {
         },
       ),
     );
-    expect(handleClose).toHaveBeenCalled();
-  });
-
-  it('should handle editing the referred by | Create', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              UpdateContactPartnership: UpdateContactPartnershipMutation;
-            }>
-              mocks={{
-                GetDataForPartnershipInfoModal: {
-                  contacts: {
-                    nodes: [
-                      {
-                        id: 'contact-1',
-                        name: 'Person, Cool',
-                      },
-                      {
-                        id: 'contact-2',
-                        name: 'Guy, Great',
-                      },
-                    ],
-                  },
-                },
-              }}
-            >
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-
-    const referredByInput = getByLabelText('Referred By');
-    await waitFor(() => expect(referredByInput).toBeInTheDocument());
-    userEvent.click(referredByInput);
-    userEvent.type(referredByInput, 'G');
-    await waitFor(() => expect(getByText('Guy, Great')).toBeInTheDocument());
-    userEvent.click(getByText('Guy, Great'));
-    expect(getByText('Guy, Great')).toBeInTheDocument();
-    userEvent.click(getByText('Save'));
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Partnership information updated successfully.',
-        {
-          variant: 'success',
-        },
-      ),
-    );
-    expect(handleClose).toHaveBeenCalled();
-  });
-
-  it('should handle editing the referred by | No Contacts or Referrals', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              UpdateContactPartnership: UpdateContactPartnershipMutation;
-            }>
-              mocks={{
-                GetDataForPartnershipInfoModal: {
-                  contacts: {
-                    nodes: [],
-                  },
-                },
-              }}
-            >
-              <EditPartnershipInfoModal
-                contact={contactMockNoReferrals}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-
-    const referredByInput = getByLabelText('Referred By');
-    await waitFor(() => expect(referredByInput).toBeInTheDocument());
-    userEvent.click(referredByInput);
-    expect(getByText('No options')).toBeInTheDocument();
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+      attributes: {
+        name: newContactName,
+        primaryPersonId: newContactMock.people.nodes[1].id,
+      },
+    });
   });
 
   it('should handle editing next ask date', async () => {

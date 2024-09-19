@@ -12,7 +12,7 @@ const contactId = '1';
 
 describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
-    const { queryByRole } = render(
+    const { queryByTestId } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
@@ -24,21 +24,15 @@ describe('StarTaskIconButton', () => {
       </GqlMockedProvider>,
     );
 
-    const starFilledIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Filled Star Icon',
-    });
-    const starOutlineIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Outline Star Icon',
-    });
+    const starFilledIcon = queryByTestId('Filled Star Icon');
+    const starOutlineIcon = queryByTestId('Outline Star Icon');
 
     expect(starFilledIcon).not.toBeInTheDocument();
     expect(starOutlineIcon).toBeInTheDocument();
   });
 
   it('renders starred', async () => {
-    const { queryByRole } = render(
+    const { queryByTestId } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
@@ -50,14 +44,8 @@ describe('StarTaskIconButton', () => {
       </GqlMockedProvider>,
     );
 
-    const starFilledIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Filled Star Icon',
-    });
-    const starOutlineIcon = queryByRole('img', {
-      hidden: true,
-      name: 'Outline Star Icon',
-    });
+    const starFilledIcon = queryByTestId('Filled Star Icon');
+    const starOutlineIcon = queryByTestId('Outline Star Icon');
 
     expect(starFilledIcon).toBeInTheDocument();
     expect(starOutlineIcon).not.toBeInTheDocument();
@@ -66,7 +54,7 @@ describe('StarTaskIconButton', () => {
   it('should toggle starred state', async () => {
     const mutationSpy = jest.fn();
 
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <GqlMockedProvider onCall={mutationSpy}>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
@@ -77,13 +65,9 @@ describe('StarTaskIconButton', () => {
         </ThemeProvider>
       </GqlMockedProvider>,
     );
+    const starOutlineIcon = getByTestId('Outline Star Icon');
 
-    userEvent.click(
-      getByRole('img', {
-        hidden: true,
-        name: 'Outline Star Icon',
-      }),
-    );
+    userEvent.click(starOutlineIcon);
 
     await waitFor(() =>
       expect(mutationSpy).toHaveBeenCalledWith({

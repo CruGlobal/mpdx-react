@@ -52,8 +52,8 @@ type AddMenuItem = {
 };
 
 const MoreButtonIcon = styled(MoreVert)(({ theme }) => ({
-  width: 16,
-  height: 16,
+  width: 24,
+  height: 24,
   color: theme.palette.text.primary,
 }));
 
@@ -265,7 +265,7 @@ export const ContactDetailsMoreAcitions: React.FC<
         aria-haspopup="true"
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
-        <MoreButtonIcon titleAccess="More Actions" />
+        <MoreButtonIcon titleAccess={t('More Actions')} />
       </IconButton>
       <MenuContainer
         id="add-menu"

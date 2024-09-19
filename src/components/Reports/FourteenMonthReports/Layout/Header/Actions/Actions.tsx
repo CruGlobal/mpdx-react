@@ -46,9 +46,9 @@ export const FourteenMonthReportActions: React.FC<
         startIcon={
           <SvgIcon fontSize="small">
             {isExpanded ? (
-              <FullscreenExitIcon titleAccess={t('Expand User Info Icon')} />
+              <FullscreenExitIcon titleAccess={t('Expand User Info')} />
             ) : (
-              <FullscreenIcon titleAccess={t('Unexpand User Info Icon')} />
+              <FullscreenIcon titleAccess={t('Unexpand User Info')} />
             )}
           </SvgIcon>
         }
@@ -60,7 +60,7 @@ export const FourteenMonthReportActions: React.FC<
       <Button
         startIcon={
           <SvgIcon fontSize="small">
-            <GetAppIcon titleAccess={t('Download CSV Icon')} />
+            <GetAppIcon titleAccess={t('Download CSV')} />
           </SvgIcon>
         }
         href={csvBlob}
@@ -71,7 +71,7 @@ export const FourteenMonthReportActions: React.FC<
       <Button
         startIcon={
           <SvgIcon fontSize="small">
-            <PrintIcon titleAccess={t('Print Icon')} />
+            <PrintIcon titleAccess={t('Print')} />
           </SvgIcon>
         }
         onClick={onPrint}
