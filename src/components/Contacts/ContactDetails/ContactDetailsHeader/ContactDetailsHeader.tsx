@@ -1,6 +1,16 @@
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Close from '@mui/icons-material/Close';
-import { Avatar, Box, IconButton, Skeleton, Typography } from '@mui/material';
+import {
+  Alert,
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -25,6 +35,12 @@ interface Props {
   contactDetailsLoaded: boolean;
   contextType?: ContactContextTypesEnum;
 }
+
+const DuplicateAlert = styled(Alert)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  display: 'flex',
+  alignItems: 'center',
+}));
 
 const HeaderBar = styled(Box)(({}) => ({
   display: 'flex',
@@ -67,14 +83,26 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   contactDetailsLoaded,
   contextType,
 }: Props) => {
+  const { pathname } = useRouter();
   const { data } = useGetContactDetailsHeaderQuery({
-    variables: { accountListId, contactId },
+    variables: {
+      accountListId,
+      contactId,
+      // Don't show the duplicate banner on the merge contacts page
+      loadDuplicate:
+        pathname !==
+        '/accountLists/[accountListId]/tools/merge/contacts/[[...contactId]]',
+    },
   });
   const loading = !data;
   const { t } = useTranslation();
 
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
+
+  const [duplicateContactId, setDuplicateContactId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!loading && !contactDetailsLoaded) {
@@ -83,8 +111,49 @@ export const ContactDetailsHeader: React.FC<Props> = ({
     return () => setContactDetailsLoaded(false);
   }, [loading]);
 
+  // Populate duplicateContactId once the data loads
+  useEffect(() => {
+    const duplicate = data?.contactDuplicates?.nodes[0];
+    if (duplicate) {
+      setDuplicateContactId(
+        duplicate.recordOne.id === contactId
+          ? duplicate.recordTwo.id
+          : duplicate.recordOne.id,
+      );
+    } else {
+      setDuplicateContactId(null);
+    }
+  }, [data]);
+
   return (
     <Box sx={{ padding: 2, backgroundColor: 'transparent' }}>
+      {duplicateContactId && (
+        <DuplicateAlert
+          severity="warning"
+          onClose={() => {}}
+          action={
+            <>
+              <Link
+                href={`/accountLists/${accountListId}/tools/merge/contacts?duplicateId=${duplicateContactId}`}
+                passHref
+              >
+                <Button sx={{ m: 1 }} variant="contained" component="a">
+                  {t('See Match')}
+                </Button>
+              </Link>
+              <IconButton
+                size="large"
+                aria-label={t('Dismiss Duplicate')}
+                onClick={() => setDuplicateContactId(null)}
+              >
+                <Close sx={{ width: '2rem', height: '2rem' }} />
+              </IconButton>
+            </>
+          }
+        >
+          {t('It looks like this contact may have a duplicate.')}
+        </DuplicateAlert>
+      )}
       <HeaderBar>
         <ContactAvatar alt={data?.contact.name} src={data?.contact.avatar} />
         <HeaderBarContactWrap>
