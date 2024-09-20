@@ -589,10 +589,10 @@ const Contact: React.FC<Props> = ({
           title={t('Confirm')}
           isOpen={true}
           message={
-            <Typography>
+            <>
               {t('Are you sure you wish to delete this number:')}{' '}
               <strong>{numberToDelete?.phoneNumber.number}</strong>
-            </Typography>
+            </>
           }
           mutation={handleDelete}
           handleClose={handleDeleteNumberModalClose}

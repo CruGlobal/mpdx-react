@@ -544,10 +544,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
           title={t('Confirm')}
           isOpen={true}
           message={
-            <Typography>
+            <>
               {t('Are you sure you wish to delete this email address:')}{' '}
               <strong>{emailToDelete?.email.email}</strong>
-            </Typography>
+            </>
           }
           mutation={handleDelete}
           handleClose={handleDeleteEmailModalClose}
