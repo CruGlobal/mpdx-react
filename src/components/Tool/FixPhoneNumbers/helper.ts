@@ -10,19 +10,19 @@ export const determineBulkDataToSend = (
 ): PersonUpdateInput[] => {
   const dataToSend = [] as PersonUpdateInput[];
 
-  Object.entries(dataState).forEach((value) => {
-    const primaryNumber = value[1].phoneNumbers.find(
+  Object.entries(dataState).forEach(([id, data]) => {
+    const primaryNumber = data.phoneNumbers.find(
       (number) =>
         number.source === defaultSource ||
-        (defaultSource === appName && number.source === 'MPDX'),
+        (defaultSource === appName && number.source === appName),
     );
     if (primaryNumber) {
       dataToSend.push({
-        id: value[0],
-        phoneNumbers: value[1].phoneNumbers.map((phoneNumber) => ({
-          number: phoneNumber.number,
+        id,
+        phoneNumbers: data.phoneNumbers.map((phoneNumber) => ({
           id: phoneNumber.id,
           primary: phoneNumber.id === primaryNumber.id,
+          number: phoneNumber.number,
           validValues: true,
         })),
       });

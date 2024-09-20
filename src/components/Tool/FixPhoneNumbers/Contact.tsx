@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement, useMemo } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -102,6 +102,11 @@ const useStyles = makeStyles()((theme: Theme) => ({
       cursor: 'pointer',
     },
   },
+  ContactIconContainer: {
+    margin: theme.spacing(0, 1),
+    width: theme.spacing(4),
+    height: theme.spacing(4),
+  },
 }));
 
 const ContactHeader = styled(CardHeader)(() => ({
@@ -128,7 +133,7 @@ export interface PhoneNumberData {
 }
 
 interface NumberToDelete {
-  id: string;
+  personId: string;
   phoneNumber: PhoneNumber;
 }
 
@@ -164,21 +169,17 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { appName } = useGetAppSettings();
   const [updatePhoneNumber] = useUpdatePhoneNumberMutation();
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
-  const [numberToDelete, setNumberToDelete] =
-    React.useState<NumberToDelete | null>(null);
-  const { id, contactId } = person;
+  const [numberToDelete, setNumberToDelete] = useState<NumberToDelete | null>(
+    null,
+  );
+  const { id: personId, contactId } = person;
 
   const numbers: PhoneNumber[] = useMemo(() => {
-    if (!dataState[id]?.phoneNumbers.length) {
-      return [];
-    }
-
     return (
-      dataState[id]?.phoneNumbers.map((number) => ({
+      dataState[personId]?.phoneNumbers.map((number) => ({
         ...number,
         isValid: false,
-        personId: id,
+        personId: personId,
         isPrimary: number.primary,
       })) || []
     );
@@ -201,16 +202,18 @@ const Contact: React.FC<Props> = ({
     setContactFocus(contactId);
   };
 
-  const handleDeleteNumberOpen = ({ id, phoneNumber }: NumberToDelete) => {
-    setDeleteModalOpen(true);
-    setNumberToDelete({ id, phoneNumber });
+  const handleDeleteNumberOpen = ({
+    personId,
+    phoneNumber,
+  }: NumberToDelete) => {
+    setNumberToDelete({ personId, phoneNumber });
   };
 
   const handleDelete = async (): Promise<void> => {
     if (!numberToDelete) {
       return;
     }
-    const { id: personId, phoneNumber } = numberToDelete;
+    const { personId, phoneNumber } = numberToDelete;
     await updatePhoneNumber({
       variables: {
         input: {
@@ -232,7 +235,9 @@ const Contact: React.FC<Props> = ({
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t(`Successfully deleted phone number ${phoneNumber.number}`),
+          t(`Successfully deleted phone number {{phoneNumber}}`, {
+            phoneNumber: phoneNumber.number,
+          }),
           {
             variant: 'success',
           },
@@ -241,7 +246,9 @@ const Contact: React.FC<Props> = ({
       },
       onError: () => {
         enqueueSnackbar(
-          t(`Error deleting phone number ${phoneNumber.number}`),
+          t(`Error deleting phone number {{phoneNumber}}`, {
+            phoneNumber: phoneNumber.number,
+          }),
           {
             variant: 'error',
           },
@@ -251,7 +258,6 @@ const Contact: React.FC<Props> = ({
   };
 
   const handleDeleteNumberModalClose = (): void => {
-    setDeleteModalOpen(false);
     setNumberToDelete(null);
   };
 
@@ -337,14 +343,14 @@ const Contact: React.FC<Props> = ({
                     </Hidden>
                     {numbers.map((phoneNumber, index) => (
                       <Formik
-                        key={index}
+                        key={phoneNumber.id}
                         enableReinitialize={true}
                         initialValues={{
                           newPhone: phoneNumber.number,
                         }}
                         validationSchema={validationSchema}
                         onSubmit={(values) => {
-                          handleChange(id, index, values.newPhone);
+                          handleChange(personId, index, values.newPhone);
                         }}
                       >
                         {({
@@ -353,7 +359,7 @@ const Contact: React.FC<Props> = ({
                           handleSubmit,
                           errors,
                         }): ReactElement => (
-                          <Fragment key={index}>
+                          <>
                             <Grid
                               data-testid="phoneNumbers"
                               item
@@ -432,7 +438,7 @@ const Contact: React.FC<Props> = ({
                                           data-testid={`starOutlineIcon-${person.id}-${phoneNumber.id}`}
                                           className={classes.hoverHighlight}
                                           onClick={() =>
-                                            handleChangePrimary(id, index)
+                                            handleChangePrimary(personId, index)
                                           }
                                         />
                                       </Tooltip>
@@ -480,46 +486,59 @@ const Contact: React.FC<Props> = ({
                                 {phoneNumber.source === 'MPDX' ? (
                                   <Box
                                     display="flex"
+                                    justifyContent="center"
                                     alignItems="center"
-                                    data-testid={`delete-${person.id}-${phoneNumber.id}`}
-                                    onClick={() =>
-                                      handleDeleteNumberOpen({
-                                        id,
-                                        phoneNumber,
-                                      })
-                                    }
-                                    className={classes.paddingX}
                                   >
-                                    <Tooltip
-                                      title={t('Delete Number')}
-                                      placement="left"
+                                    <Box
+                                      display="flex"
+                                      alignItems="center"
+                                      data-testid={`delete-${person.id}-${phoneNumber.id}`}
+                                      onClick={() =>
+                                        handleDeleteNumberOpen({
+                                          personId,
+                                          phoneNumber,
+                                        })
+                                      }
+                                      className={classes.ContactIconContainer}
                                     >
-                                      <Icon
-                                        path={mdiDelete}
-                                        size={1}
-                                        className={classes.hoverHighlight}
-                                      />
-                                    </Tooltip>
+                                      <Tooltip
+                                        title={t('Delete Number')}
+                                        placement="left"
+                                      >
+                                        <Icon
+                                          path={mdiDelete}
+                                          size={1}
+                                          className={classes.hoverHighlight}
+                                        />
+                                      </Tooltip>
+                                    </Box>
                                   </Box>
                                 ) : (
                                   <Box
                                     display="flex"
+                                    justifyContent="center"
                                     alignItems="center"
-                                    data-testid={`lock-${person.id}-${index}`}
-                                    className={classes.paddingX}
                                   >
-                                    <Icon
-                                      path={mdiLock}
-                                      size={1}
-                                      style={{
-                                        color: theme.palette.cruGrayMedium.main,
-                                      }}
-                                    />
+                                    <Box
+                                      display="flex"
+                                      alignItems="center"
+                                      data-testid={`lock-${person.id}-${index}`}
+                                      className={classes.paddingX}
+                                    >
+                                      <Icon
+                                        path={mdiLock}
+                                        size={1}
+                                        style={{
+                                          color:
+                                            theme.palette.cruGrayMedium.main,
+                                        }}
+                                      />
+                                    </Box>
                                   </Box>
                                 )}
                               </Box>
                             </Grid>
-                          </Fragment>
+                          </>
                         )}
                       </Formik>
                     ))}
@@ -546,7 +565,7 @@ const Contact: React.FC<Props> = ({
                       </Box>
                     </Grid>
                     <PhoneValidationForm
-                      personId={id}
+                      personId={personId}
                       accountListId={accountListId}
                     />
                   </Grid>
@@ -556,7 +575,7 @@ const Contact: React.FC<Props> = ({
           </Card>
         </Grid>
       </Grid>
-      {deleteModalOpen && numberToDelete && (
+      {numberToDelete && (
         <Confirmation
           title={t('Confirm')}
           isOpen={true}

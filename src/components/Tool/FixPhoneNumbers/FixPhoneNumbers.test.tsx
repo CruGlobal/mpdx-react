@@ -7,7 +7,11 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import {
+  fireEvent,
+  render,
+  waitFor,
+} from '__tests__/util/testingLibraryReactMock';
 import theme from '../../../theme';
 import FixPhoneNumbers from './FixPhoneNumbers';
 import { GetInvalidPhoneNumbersMocks } from './FixPhoneNumbersMocks';
@@ -197,6 +201,12 @@ describe('FixPhoneNumbers-Home', () => {
     });
 
     userEvent.click(getByTestId(`starOutlineIcon-testid-id2`));
+
+    fireEvent.change(getByTestId('source-select'), {
+      target: { value: 'MPDX' },
+    });
+
+    expect(getByTestId('source-select')).toHaveValue('MPDX');
 
     const confirmAllButton = getByTestId('source-button');
     userEvent.click(confirmAllButton);

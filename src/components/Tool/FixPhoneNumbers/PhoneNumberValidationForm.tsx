@@ -35,11 +35,13 @@ const useStyles = makeStyles()((theme: Theme) => ({
   paddingB2: {
     paddingBottom: theme.spacing(1),
   },
-  iconButton: {
+  ContactIconContainer: {
+    margin: theme.spacing(0, 1),
+    width: theme.spacing(4),
+    height: theme.spacing(4),
     display: 'flex',
     alignItems: 'center',
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+    justifyContent: 'center',
   },
 }));
 
@@ -181,7 +183,7 @@ const PhoneValidationForm = ({
             >
               <FormControl fullWidth>
                 <TextField
-                  data-testId={`addNewNumberInput-${initialPhone.personId}`}
+                  data-testid={`addNewNumberInput-${initialPhone.personId}`}
                   label={t('New Phone Number')}
                   name="number"
                   value={values.number}
@@ -191,16 +193,18 @@ const PhoneValidationForm = ({
                   onBlur={handleBlur}
                 />
               </FormControl>
-              <IconButton
-                onClick={() => handleSubmit()}
-                className={classes.iconButton}
-                disabled={!isValid || values.number === ''}
-                data-testid={`addButton-${initialPhone.personId}`}
-              >
-                <Tooltip title="Add Phone Number">
-                  <AddIcon fontSize="small" />
-                </Tooltip>
-              </IconButton>
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <IconButton
+                  onClick={() => handleSubmit()}
+                  className={classes.ContactIconContainer}
+                  disabled={!isValid || values.number === ''}
+                  data-testid={`addButton-${initialPhone.personId}`}
+                >
+                  <Tooltip title="Add Phone Number">
+                    <AddIcon fontSize="small" />
+                  </Tooltip>
+                </IconButton>
+              </Box>
             </Box>
           </Grid>
           {touched.number && Boolean(errors.number) && (

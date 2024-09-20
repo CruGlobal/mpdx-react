@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import theme from 'src/theme';
 import Contact, { PhoneNumberData } from './Contact';
 import { mockInvalidPhoneNumbersResponse } from './FixPhoneNumbersMocks';
@@ -27,14 +27,14 @@ const person: PersonInvalidNumberFragment = {
   phoneNumbers: {
     nodes: [
       {
-        id: 'email1',
+        id: 'number1',
         source: 'DonorHub',
         updatedAt: DateTime.fromISO('2021-06-21').toString(),
         number: '123456',
         primary: true,
       },
       {
-        id: 'email2',
+        id: 'number2',
         source: 'MPDX',
         updatedAt: DateTime.fromISO('2021-06-22').toString(),
         number: '78910',
@@ -49,7 +49,6 @@ const mutationSpy = jest.fn();
 const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
 
-jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -80,39 +79,35 @@ const TestComponent = ({
   const handleChangePrimaryMock = jest.fn();
 
   return (
-    <SnackbarProvider>
-      <ThemeProvider theme={theme}>
-        <TestWrapper>
-          <GqlMockedProvider<{
-            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            PhoneNumbers: UpdatePhoneNumberMutation;
-          }>
-            mocks={mocks}
-            onCall={mutationSpy}
-          >
-            <Contact
-              person={person}
-              dataState={dataState}
-              accountListId={accountListId}
-              handleChange={handleChangeMock}
-              handleChangePrimary={handleChangePrimaryMock}
-              handleSingleConfirm={handleSingleConfirm}
-              setContactFocus={setContactFocus}
-            />
-          </GqlMockedProvider>
-        </TestWrapper>
-      </ThemeProvider>
-    </SnackbarProvider>
+    <AppSettingsProvider>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestWrapper>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              PhoneNumbers: UpdatePhoneNumberMutation;
+            }>
+              mocks={mocks}
+              onCall={mutationSpy}
+            >
+              <Contact
+                person={person}
+                dataState={dataState}
+                accountListId={accountListId}
+                handleChange={handleChangeMock}
+                handleChangePrimary={handleChangePrimaryMock}
+                handleSingleConfirm={handleSingleConfirm}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </AppSettingsProvider>
   );
 };
 
 describe('Fix PhoneNumber Contact', () => {
-  beforeEach(() => {
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'MPDX',
-    });
-  });
-
   it('default', () => {
     const { getByText, getByTestId, getByDisplayValue } = render(
       <TestComponent
@@ -130,10 +125,10 @@ describe('Fix PhoneNumber Contact', () => {
       getByText(`${person.firstName} ${person.lastName}`),
     ).toBeInTheDocument();
     expect(getByText('DonorHub (6/21/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-contactTestId-0')).toBeInTheDocument();
+    expect(getByTestId('textfield-contactTestId-number1')).toBeInTheDocument();
     expect(getByDisplayValue('123456')).toBeInTheDocument();
     expect(getByText('MPDX (6/22/2021)')).toBeInTheDocument();
-    expect(getByTestId('textfield-contactTestId-1')).toBeInTheDocument();
+    expect(getByTestId('textfield-contactTestId-number2')).toBeInTheDocument();
     expect(getByDisplayValue('78910')).toBeInTheDocument();
   });
 
@@ -251,9 +246,9 @@ describe('Fix PhoneNumber Contact', () => {
           }}
         />,
       );
-      await waitFor(() => getByTestId('delete-contactTestId-1'));
+      await waitFor(() => getByTestId('delete-contactTestId-number2'));
 
-      userEvent.click(getByTestId('delete-contactTestId-1'));
+      userEvent.click(getByTestId('delete-contactTestId-number2'));
       await waitFor(() => {
         expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
       });
@@ -306,6 +301,29 @@ describe('Fix PhoneNumber Contact', () => {
       userEvent.click(getByRole('button', { name: 'Confirm' }));
 
       expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('submit button', () => {
+    it('should submit form without errors', async () => {
+      const { getByTestId } = render(<TestComponent />);
+      const textField = getByTestId('textfield-contactTestId-number2');
+      userEvent.type(textField, '123');
+      expect(textField).toHaveValue('78910123');
+    });
+  });
+
+  it('should submit form with errors', async () => {
+    const { getByTestId, getAllByTestId } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    userEvent.clear(textInput);
+    expect(textInput).toHaveValue('');
+    userEvent.type(textInput, 'p');
+    expect(textInput).toHaveValue('p');
+    userEvent.click(textInput);
+    await waitFor(() => {
+      expect(getAllByTestId('statusSelectError')[1]).toHaveTextContent(
+        'This field is not a valid phone number',
+      );
     });
   });
 });

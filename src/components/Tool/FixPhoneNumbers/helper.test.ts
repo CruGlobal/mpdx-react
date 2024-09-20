@@ -1,7 +1,7 @@
 import { determineBulkDataToSend } from './helper';
 
 const testData1 = {
-  '0': {
+  0: {
     phoneNumbers: [
       {
         id: 'id1',
@@ -29,7 +29,7 @@ const testData1 = {
 };
 
 const testData2 = {
-  '1': {
+  1: {
     phoneNumbers: [
       {
         id: 'id1',

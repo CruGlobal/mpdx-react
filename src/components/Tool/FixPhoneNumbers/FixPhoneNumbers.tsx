@@ -121,7 +121,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
   );
 
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
-  const { data, loading } = useGetInvalidPhoneNumbersQuery({
+  const { data } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
   const { t } = useTranslation();
@@ -154,10 +154,10 @@ const FixPhoneNumbers: React.FC<Props> = ({
       : {};
     setDataState(newDataState);
     setSourceOptions([...existingSources]);
-  }, [loading, data]);
+  }, [data]);
 
-  const handleSourceChange = (event: SelectChangeEvent<unknown>): void => {
-    setDefaultSource(event.target.value as string);
+  const handleSourceChange = (event: SelectChangeEvent): void => {
+    setDefaultSource(event.target.value);
   };
 
   const handleChange = (
@@ -214,9 +214,9 @@ const FixPhoneNumbers: React.FC<Props> = ({
     const phoneNumbers = [] as PersonPhoneNumberInput[];
     numbers.map((phoneNumber) => {
       phoneNumbers.push({
-        number: phoneNumber.number,
         id: phoneNumber.id,
         primary: phoneNumber.primary,
+        number: phoneNumber.number,
         validValues: true,
       });
     });
@@ -239,36 +239,45 @@ const FixPhoneNumbers: React.FC<Props> = ({
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t(`Successfully updated phone numbers for ${personName}`),
+          t(`Successfully updated phone numbers for {{name}}`, {
+            name: personName,
+          }),
           {
             variant: 'success',
           },
         );
       },
       onError: () => {
-        enqueueSnackbar(t(`Error updating phone numbers for ${personName}`), {
-          variant: 'error',
-        });
+        enqueueSnackbar(
+          t(`Error updating phone numbers for {{name}}`, { name: personName }),
+          {
+            variant: 'error',
+          },
+        );
       },
     });
   };
 
   const handleChangePrimary = (personId: string, numberIndex: number): void => {
-    const temp = { ...dataState };
-    if (temp[personId]) {
-      temp[personId].phoneNumbers = temp[personId].phoneNumbers.map(
-        (number, index) => ({
-          ...number,
-          primary: index === numberIndex,
-        }),
-      );
+    if (!dataState[personId]) {
+      return;
     }
+
+    const temp = { ...dataState };
+
+    temp[personId].phoneNumbers = temp[personId].phoneNumbers.map(
+      (number, index) => ({
+        ...number,
+        primary: index === numberIndex,
+      }),
+    );
+
     setDataState(temp);
   };
 
   return (
     <Box className={classes.container}>
-      {data && dataState ? (
+      {data ? (
         <ToolsGridContainer container spacing={3}>
           <Grid item xs={12}>
             <Box mb={2}>
@@ -289,15 +298,19 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
                     <Select
                       className={classes.select}
-                      data-testid="source-select"
+                      inputProps={{ 'data-testid': 'source-select' }}
                       value={defaultSource}
-                      onChange={(event: SelectChangeEvent<string>) =>
+                      onChange={(event: SelectChangeEvent) =>
                         handleSourceChange(event)
                       }
                       size="small"
                     >
                       {sourceOptions.map((source) => (
-                        <MenuItem key={source} value={source}>
+                        <MenuItem
+                          key={source}
+                          value={source}
+                          data-testid="select-option"
+                        >
                           {source}
                         </MenuItem>
                       ))}
@@ -369,9 +382,12 @@ const FixPhoneNumbers: React.FC<Props> = ({
         handleClose={() => setShowBulkConfirmModal(false)}
         mutation={handleBulkConfirm}
         title={t('Confirm')}
-        message={t(`You are updating all contacts visible on this page, setting the first ${defaultSource} phone number as the
+        message={t(
+          `You are updating all contacts visible on this page, setting the first {{defaultSource}} phone number as the
           primary phone number. If no such phone number exists, the contact will not be updated.
-          Are you sure you want to do this?`)}
+          Are you sure you want to do this?`,
+          { defaultSource },
+        )}
       />
     </Box>
   );
