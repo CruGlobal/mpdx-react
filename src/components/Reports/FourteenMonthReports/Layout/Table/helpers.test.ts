@@ -1,7 +1,6 @@
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
-import { StatusEnum } from 'src/graphql/types.generated';
 import {
   FourteenMonthReportContactFragment,
   FourteenMonthReportContactFragmentDoc,
@@ -21,10 +20,10 @@ const mockContact = (
 describe('extractSortKey', () => {
   it('extracts string values from the contact', () => {
     const contact = mockContact({
-      status: StatusEnum.PartnerFinancial,
+      name: 'John Doe',
     });
 
-    expect(extractSortKey(contact, 'status')).toBe('PARTNER_FINANCIAL');
+    expect(extractSortKey(contact, 'name')).toBe('John Doe');
   });
 
   it('converts number values to strings', () => {
