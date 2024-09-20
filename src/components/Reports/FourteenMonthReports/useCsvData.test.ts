@@ -34,10 +34,12 @@ jest.mock('src/components/Constants/UseApiConstants.tsx');
         ],
         pledgeFrequency: [
           {
+            id: 'QUARTERLY',
             key: '3.0',
             value: 'Quarterly',
           },
           {
+            id: 'ANNUAL',
             key: '12.0',
             value: 'Annual',
           },
@@ -165,7 +167,7 @@ describe('useCsvData', () => {
       ],
       [
         'Quarterly Partner',
-        'PARTNER_FINANCIAL',
+        'Partner - Financial',
         450,
         'USD',
         'Quarterly',
@@ -190,7 +192,7 @@ describe('useCsvData', () => {
       ],
       [
         'Annual Partner',
-        'PARTNER_FINANCIAL',
+        'Partner - Financial',
         1200,
         'USD',
         'Annual',

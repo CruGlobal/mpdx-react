@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { StatusEnum } from 'src/graphql/types.generated';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import type { CurrencyTable } from './FourteenMonthReport';
 
 export type CsvData = (string | number)[][];
@@ -85,14 +87,16 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
               )} - ${formatMonth(inHandMonths[0].month, locale)}`
             : '';
 
+          const pledgeFrequency = apiConstants?.pledgeFrequency?.find(
+            ({ key }) => key === contact.pledgeFrequency,
+          )?.id as PledgeFrequencyEnum | null | undefined;
+
           return [
             contact.name,
-            contact.status ?? '',
+            getLocalizedContactStatus(t, contact.status),
             contact.pledgeAmount ? Math.round(contact.pledgeAmount) : 0,
             contact.pledgeCurrency ?? '',
-            apiConstants?.pledgeFrequency?.find(
-              ({ key }) => key === contact.pledgeFrequency,
-            )?.value ?? '',
+            getLocalizedPledgeFrequency(t, pledgeFrequency),
             pledgedMonthlyEquivalent,
             inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
               ? Math.min(pledgedMonthlyEquivalent, inHandMonthlyEquivalent)
