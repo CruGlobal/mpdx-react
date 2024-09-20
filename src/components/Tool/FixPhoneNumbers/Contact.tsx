@@ -96,6 +96,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
   paddingB2: {
     paddingBottom: theme.spacing(1),
   },
+  phoneNumberContainer: {
+    width: '100%',
+  },
   hoverHighlight: {
     '&:hover': {
       color: theme.palette.mpdxBlue.main,
@@ -304,7 +307,13 @@ const Contact: React.FC<Props> = ({
                     }
                   ></ContactHeader>
                 </Grid>
-                <CardContent className={(classes.paddingX, classes.paddingY)}>
+                <CardContent
+                  className={
+                    (classes.paddingX,
+                    classes.paddingY,
+                    classes.phoneNumberContainer)
+                  }
+                >
                   <Grid container display="flex" alignItems="center">
                     <Hidden smDown>
                       <Grid item xs={6} sm={4} className={classes.paddingY}>

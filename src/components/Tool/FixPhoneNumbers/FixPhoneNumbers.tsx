@@ -178,6 +178,9 @@ const FixPhoneNumbers: React.FC<Props> = ({
     );
 
     if (!dataToSend.length) {
+      enqueueSnackbar(t(`No phone numbers were updated`), {
+        variant: 'warning',
+      });
       return;
     }
 
