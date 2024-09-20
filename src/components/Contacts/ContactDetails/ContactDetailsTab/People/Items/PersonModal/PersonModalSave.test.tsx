@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import theme from '../../../../../../../theme';
@@ -109,23 +110,31 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const components = (mutationSpy, contactData) => (
+const mutationSpy = jest.fn();
+
+interface TestComponentProps {
+  contactData: ContactPeopleFragment;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ contactData }) => (
   <SnackbarProvider>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <ContactDetailProvider>
-            <PersonModal
-              contactId={contactId}
-              accountListId={accountListId}
-              handleClose={handleClose}
-              person={mockPerson}
-              contactData={contactData}
-            />
-          </ContactDetailProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>
-    </LocalizationProvider>
+    <TestRouter>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <ContactDetailProvider>
+              <PersonModal
+                contactId={contactId}
+                accountListId={accountListId}
+                handleClose={handleClose}
+                person={mockPerson}
+                contactData={contactData}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </LocalizationProvider>
+    </TestRouter>
   </SnackbarProvider>
 );
 
@@ -139,15 +148,16 @@ describe('PersonModal - Saving Deceased', () => {
   });
 
   it('deceases Jill and updates greetings (Jill listed last)', async () => {
-    const mutationSpy = jest.fn();
     const { getByText, getByLabelText } = render(
-      components(mutationSpy, {
-        id: '123-456',
-        name: 'Hill, Jack and Jill',
-        people: mock.people,
-        greeting: 'Jack and Jill',
-        envelopeGreeting: 'Jack and Jill Hill',
-      }),
+      <TestComponent
+        contactData={{
+          id: '123-456',
+          name: 'Hill, Jack and Jill',
+          people: mock.people,
+          greeting: 'Jack and Jill',
+          envelopeGreeting: 'Jack and Jill Hill',
+        }}
+      />,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
@@ -188,15 +198,16 @@ describe('PersonModal - Saving Deceased', () => {
   });
 
   it('deceases Jill and updates greetings (Jill listed first)', async () => {
-    const mutationSpy = jest.fn();
     const { getByText, getByLabelText } = render(
-      components(mutationSpy, {
-        id: '123-456',
-        name: 'Hill,   Jill and Jack', // Added extra space to ensure algorithm replacing it.
-        people: mock.people,
-        greeting: 'Jill and Jack',
-        envelopeGreeting: 'Jill and Jack Hill',
-      }),
+      <TestComponent
+        contactData={{
+          id: '123-456',
+          name: 'Hill,   Jill and Jack', // Added extra space to ensure algorithm replacing it.
+          people: mock.people,
+          greeting: 'Jill and Jack',
+          envelopeGreeting: 'Jill and Jack Hill',
+        }}
+      />,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
@@ -237,15 +248,16 @@ describe('PersonModal - Saving Deceased', () => {
   });
 
   it('deceases Jill and updates greetings (Jill listed middle)', async () => {
-    const mutationSpy = jest.fn();
     const { getByText, getByLabelText } = render(
-      components(mutationSpy, {
-        id: '123-456',
-        name: 'Hill, Bill and Jill and Jack',
-        people: mock.people,
-        greeting: 'Bill and Jill and Jack',
-        envelopeGreeting: 'Bill and Jill and Jack Hill',
-      }),
+      <TestComponent
+        contactData={{
+          id: '123-456',
+          name: 'Hill, Bill and Jill and Jack',
+          people: mock.people,
+          greeting: 'Bill and Jill and Jack',
+          envelopeGreeting: 'Bill and Jill and Jack Hill',
+        }}
+      />,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
@@ -292,16 +304,17 @@ describe('PersonModal - Saving Deceased', () => {
   });
 
   it('sets the new primary contact as Jill is the primary contact', async () => {
-    const mutationSpy = jest.fn();
     const { getByText, getByLabelText } = render(
-      components(mutationSpy, {
-        id: '123-456',
-        primaryPerson: mockPerson,
-        name: 'Hill, Bill and Jill and Jack',
-        people: mock.people,
-        greeting: 'Bill and Jill and Jack',
-        envelopeGreeting: 'Bill and Jill and Jack Hill',
-      }),
+      <TestComponent
+        contactData={{
+          id: '123-456',
+          primaryPerson: mockPerson,
+          name: 'Hill, Bill and Jill and Jack',
+          people: mock.people,
+          greeting: 'Bill and Jill and Jack',
+          envelopeGreeting: 'Bill and Jill and Jack Hill',
+        }}
+      />,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
     userEvent.click(getByText('Show More'));
