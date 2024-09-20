@@ -1,5 +1,6 @@
 query GetDefaultAccount {
   user {
+    id
     defaultAccountList
   }
   accountLists(first: 1) {
