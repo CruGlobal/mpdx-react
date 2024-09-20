@@ -40,6 +40,10 @@ const DuplicateAlert = styled(Alert)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   display: 'flex',
   alignItems: 'center',
+  '.MuiAlert-action': {
+    // Remove the padding above the button so that it is centered vertically
+    paddingTop: 0,
+  },
 }));
 
 const HeaderBar = styled(Box)(({}) => ({
@@ -146,7 +150,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
                 aria-label={t('Dismiss Duplicate')}
                 onClick={() => setDuplicateContactId(null)}
               >
-                <Close sx={{ width: '2rem', height: '2rem' }} />
+                <Close sx={{ width: 24, height: 24 }} />
               </IconButton>
             </>
           }
