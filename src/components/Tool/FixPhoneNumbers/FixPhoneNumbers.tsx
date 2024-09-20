@@ -5,7 +5,9 @@ import {
   Box,
   Button,
   CircularProgress,
+  FormControl,
   Grid,
+  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -73,7 +75,6 @@ const useStyles = makeStyles()(() => ({
   },
   select: {
     minWidth: theme.spacing(20),
-    marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
 
     [theme.breakpoints.down('md')]: {
@@ -116,9 +117,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
-  const [defaultSource, setDefaultSource] = useState<string | undefined>(
-    appName || 'MPDX',
-  );
+  const [defaultSource, setDefaultSource] = useState<string>(appName || 'MPDX');
 
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
   const { data } = useGetInvalidPhoneNumbersQuery({
@@ -135,8 +134,11 @@ const FixPhoneNumbers: React.FC<Props> = ({
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
-    const existingSources = new Set<string | undefined>();
-    existingSources.add(appName);
+    const existingSources = new Set<string>();
+
+    if (appName) {
+      existingSources.add(appName);
+    }
 
     const newDataState = data
       ? data.people.nodes?.reduce(
@@ -289,28 +291,33 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       'Choose below which phone number will be set as primary.',
                     )}
                   </Typography>
-                  <Box className={classes.defaultBox}>
-                    <Typography>{t('Default Primary Source:')}</Typography>
 
-                    <Select
-                      className={classes.select}
-                      inputProps={{ 'data-testid': 'source-select' }}
-                      value={defaultSource}
-                      onChange={(event: SelectChangeEvent) =>
-                        handleSourceChange(event)
-                      }
-                      size="small"
-                    >
-                      {sourceOptions.map((source) => (
-                        <MenuItem
-                          key={source}
-                          value={source}
-                          data-testid="select-option"
-                        >
-                          {source}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                  <Box className={classes.defaultBox}>
+                    <FormControl size="small">
+                      <InputLabel shrink size="small">
+                        {t('Default Primary Source:')}
+                      </InputLabel>
+                      <Select
+                        labelId="source-select"
+                        className={classes.select}
+                        label={t('Default Primary Source:')}
+                        value={defaultSource}
+                        onChange={(event: SelectChangeEvent) =>
+                          handleSourceChange(event)
+                        }
+                        size="small"
+                      >
+                        {sourceOptions.map((source) => (
+                          <MenuItem
+                            key={source}
+                            value={source}
+                            data-testid="select-option"
+                          >
+                            {source}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                     <Button
                       variant="contained"
                       onClick={() => setShowBulkConfirmModal(true)}

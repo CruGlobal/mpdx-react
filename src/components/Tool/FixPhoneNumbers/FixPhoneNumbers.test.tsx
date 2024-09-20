@@ -7,11 +7,8 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  fireEvent,
-  render,
-  waitFor,
-} from '__tests__/util/testingLibraryReactMock';
+import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import theme from '../../../theme';
 import FixPhoneNumbers from './FixPhoneNumbers';
 import { GetInvalidPhoneNumbersMocks } from './FixPhoneNumbersMocks';
@@ -44,32 +41,34 @@ const Components: React.FC<{
   data?: ErgonoMockShape[];
   cache?: ApolloCache<object>;
 }> = ({ data = testData, cache }) => (
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider>
-      <TestRouter router={router}>
-        <TestWrapper>
-          <GqlMockedProvider<{
-            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-          }>
-            mocks={{
-              GetInvalidPhoneNumbers: {
-                people: {
-                  totalCount: 2,
-                  nodes: data,
+  <AppSettingsProvider>
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            }>
+              mocks={{
+                GetInvalidPhoneNumbers: {
+                  people: {
+                    totalCount: 2,
+                    nodes: data,
+                  },
                 },
-              },
-            }}
-            cache={cache}
-          >
-            <FixPhoneNumbers
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
-          </GqlMockedProvider>
-        </TestWrapper>
-      </TestRouter>
-    </SnackbarProvider>
-  </ThemeProvider>
+              }}
+              cache={cache}
+            >
+              <FixPhoneNumbers
+                accountListId={accountListId}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </TestRouter>
+      </SnackbarProvider>
+    </ThemeProvider>
+  </AppSettingsProvider>
 );
 
 describe('FixPhoneNumbers-Home', () => {
@@ -169,7 +168,7 @@ describe('FixPhoneNumbers-Home', () => {
     expect(firstInput.value).toBe('+353');
     userEvent.type(firstInput, '123');
     await waitFor(() => {
-      expect(firstInput).toHaveValue('+353');
+      expect(firstInput).toHaveValue('+353123');
     });
   });
 
@@ -189,9 +188,8 @@ describe('FixPhoneNumbers-Home', () => {
     });
   });
   it('should bulk confirm all phone numbers', async () => {
-    const { getByTestId, queryByTestId, getByText, findByTestId } = render(
-      <Components />,
-    );
+    const { getByTestId, queryByTestId, getByText, findByTestId, getByRole } =
+      render(<Components />);
     await waitFor(() => {
       expect(queryByTestId('loading')).not.toBeInTheDocument();
     });
@@ -202,11 +200,16 @@ describe('FixPhoneNumbers-Home', () => {
 
     userEvent.click(getByTestId(`starOutlineIcon-testid-id2`));
 
-    fireEvent.change(getByTestId('source-select'), {
-      target: { value: 'MPDX' },
-    });
+    const primarySource = getByRole('combobox');
 
-    expect(getByTestId('source-select')).toHaveValue('MPDX');
+    userEvent.click(primarySource);
+    userEvent.click(getByRole('option', { name: 'DataServer' }));
+
+    expect(primarySource).toHaveTextContent('DataServer');
+
+    expect(getByTestId('source-button')).toHaveTextContent(
+      'Confirm 2 as DataServer',
+    );
 
     const confirmAllButton = getByTestId('source-button');
     userEvent.click(confirmAllButton);
