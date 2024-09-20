@@ -76,7 +76,7 @@ describe('FixPhoneNumbers-Home', () => {
   it('default with test data', async () => {
     const { getByText, queryByTestId, findByText } = render(<Components />);
 
-    await expect(
+    expect(
       await findByText('You have 2 phone numbers to confirm.'),
     ).toBeInTheDocument();
     expect(getByText('Confirm 2 as MPDX')).toBeInTheDocument();
@@ -86,11 +86,9 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change primary of first number', async () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+    const { getByTestId, queryByTestId, findByTestId } = render(<Components />);
 
-    const star1 = await waitFor(() =>
-      getByTestId('starOutlineIcon-testid-id2'),
-    );
+    const star1 = await findByTestId('starOutlineIcon-testid-id2');
     userEvent.click(star1);
     expect(queryByTestId('starIcon-testid-id2')).toBeInTheDocument();
     expect(getByTestId('starOutlineIcon-testid-id1')).toBeInTheDocument();
@@ -98,9 +96,9 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('delete third number from first person', async () => {
-    const { getByTestId, queryByTestId, findByText } = render(<Components />);
+    const { queryByTestId, findByText, findByTestId } = render(<Components />);
 
-    const delete02 = await waitFor(() => getByTestId('delete-testid-id3'));
+    const delete02 = await findByTestId('delete-testid-id3');
     userEvent.click(delete02);
 
     const deleteButton = await findByText('Yes');
@@ -111,11 +109,11 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('change second number for second person to primary then delete it', async () => {
-    const { getByTestId, findByText, queryByTestId } = render(<Components />);
-
-    const star11 = await waitFor(() =>
-      getByTestId('starOutlineIcon-testid2-id5'),
+    const { getByTestId, findByText, queryByTestId, findByTestId } = render(
+      <Components />,
     );
+
+    const star11 = await findByTestId('starOutlineIcon-testid2-id5');
     userEvent.click(star11);
 
     expect(queryByTestId('starIcon-testid2-id5')).toBeInTheDocument();
@@ -132,12 +130,10 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('add a phone number to first person', async () => {
-    const { getByTestId, getAllByTestId, getAllByLabelText } = render(
-      <Components />,
-    );
-    await waitFor(() =>
-      expect(getByTestId('starIcon-testid-id1')).toBeInTheDocument(),
-    );
+    const { getByTestId, getAllByTestId, getAllByLabelText, findByTestId } =
+      render(<Components />);
+
+    expect(await findByTestId('starIcon-testid-id1')).toBeInTheDocument();
     expect(getByTestId('textfield-testid-id1')).toBeInTheDocument();
     expect(getAllByTestId('phoneNumbers')).toHaveLength(5);
     const textfieldNew1 = getAllByLabelText('New Phone Number')[0];
@@ -153,20 +149,21 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should render no contacts with no data', async () => {
-    const { getByText, getByTestId } = render(<Components data={[]} />);
-    await waitFor(() =>
-      expect(getByTestId('fixPhoneNumbers-null-state')).toBeInTheDocument(),
-    );
+    const { getByText, findByTestId } = render(<Components data={[]} />);
+
+    expect(
+      await findByTestId('fixPhoneNumbers-null-state'),
+    ).toBeInTheDocument();
+
     expect(
       getByText('No people with phone numbers need attention'),
     ).toBeInTheDocument();
   });
 
   it('should modify first number of first contact', async () => {
-    const { getByTestId } = render(<Components />);
-    await waitFor(() => {
-      expect(getByTestId('textfield-testid-id1')).toBeInTheDocument();
-    });
+    const { getByTestId, findByTestId } = render(<Components />);
+
+    expect(await findByTestId('textfield-testid-id1')).toBeInTheDocument();
     const firstInput = getByTestId('textfield-testid-id1') as HTMLInputElement;
 
     expect(firstInput.value).toBe('+353');
@@ -177,10 +174,8 @@ describe('FixPhoneNumbers-Home', () => {
   });
 
   it('should hide contact from view', async () => {
-    const { getByTestId, getByText } = render(<Components />);
-    await waitFor(() => {
-      expect(getByText(`Simba Lion`)).toBeInTheDocument();
-    });
+    const { getByTestId, findByText } = render(<Components />);
+    expect(await findByText(`Simba Lion`)).toBeInTheDocument();
 
     userEvent.click(getByTestId('confirmButton-testid'));
 
@@ -194,11 +189,16 @@ describe('FixPhoneNumbers-Home', () => {
     });
   });
   it('should bulk confirm all phone numbers', async () => {
-    const { getByTestId, queryByTestId, getByText } = render(<Components />);
+    const { getByTestId, queryByTestId, getByText, findByTestId } = render(
+      <Components />,
+    );
     await waitFor(() => {
       expect(queryByTestId('loading')).not.toBeInTheDocument();
-      expect(getByTestId('starOutlineIcon-testid-id2')).toBeInTheDocument();
     });
+
+    expect(
+      await findByTestId('starOutlineIcon-testid-id2'),
+    ).toBeInTheDocument();
 
     userEvent.click(getByTestId(`starOutlineIcon-testid-id2`));
 
@@ -216,9 +216,10 @@ describe('FixPhoneNumbers-Home', () => {
       expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
         variant: 'success',
       });
-      expect(
-        getByText('No people with phone numbers need attention'),
-      ).toBeVisible();
     });
+
+    expect(
+      getByText('No people with phone numbers need attention'),
+    ).toBeVisible();
   });
 });

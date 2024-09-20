@@ -6,15 +6,12 @@ export const determineBulkDataToSend = (
     [key: string]: PhoneNumberData;
   },
   defaultSource: string,
-  appName: string,
 ): PersonUpdateInput[] => {
   const dataToSend = [] as PersonUpdateInput[];
 
   Object.entries(dataState).forEach(([id, data]) => {
     const primaryNumber = data.phoneNumbers.find(
-      (number) =>
-        number.source === defaultSource ||
-        (defaultSource === appName && number.source === appName),
+      (number) => number.source === defaultSource,
     );
     if (primaryNumber) {
       dataToSend.push({

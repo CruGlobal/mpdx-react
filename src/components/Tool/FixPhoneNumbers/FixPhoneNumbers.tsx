@@ -16,7 +16,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { PersonPhoneNumberInput } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -115,7 +115,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
 }: Props) => {
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const appName = process.env.APP_NAME ?? 'MPDX';
+  const { appName } = useGetAppSettings();
   const [defaultSource, setDefaultSource] = useState<string | undefined>(
     appName || 'MPDX',
   );
@@ -130,12 +130,12 @@ const FixPhoneNumbers: React.FC<Props> = ({
     [key: string]: PhoneNumberData;
   }>({});
 
-  const [sourceOptions, setSourceOptions] = useState<string[]>([appName]);
+  const [sourceOptions, setSourceOptions] = useState([appName]);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
-    const existingSources = new Set<string>();
+    const existingSources = new Set<string | undefined>();
     existingSources.add(appName);
 
     const newDataState = data
@@ -171,11 +171,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
   };
 
   const handleBulkConfirm = async () => {
-    const dataToSend = determineBulkDataToSend(
-      dataState,
-      defaultSource ?? '',
-      appName,
-    );
+    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
 
     if (!dataToSend.length) {
       enqueueSnackbar(t(`No phone numbers were updated`), {
@@ -214,15 +210,12 @@ const FixPhoneNumbers: React.FC<Props> = ({
     numbers: PhoneNumber[],
   ) => {
     const personName = `${person.firstName} ${person.lastName}`;
-    const phoneNumbers = [] as PersonPhoneNumberInput[];
-    numbers.map((phoneNumber) => {
-      phoneNumbers.push({
-        id: phoneNumber.id,
-        primary: phoneNumber.primary,
-        number: phoneNumber.number,
-        validValues: true,
-      });
-    });
+    const phoneNumbers = numbers.map((phoneNumber) => ({
+      id: phoneNumber.id,
+      primary: phoneNumber.primary,
+      number: phoneNumber.number,
+      validValues: true,
+    }));
 
     await updateInvalidPhoneNumbers({
       variables: {

@@ -149,9 +149,7 @@ describe('Fix PhoneNumber Contact', () => {
     const addButton = getByTestId('addButton-contactTestId');
 
     userEvent.type(addInput, '000');
-    await waitFor(() => {
-      expect(addInput).toHaveValue('000');
-    });
+    expect(addInput).toHaveValue('000');
     userEvent.click(addButton);
     await waitFor(() => {
       expect(addInput).toHaveValue('');
@@ -160,7 +158,7 @@ describe('Fix PhoneNumber Contact', () => {
 
   describe('validation', () => {
     it('should show an error message if there is no number', async () => {
-      const { getByLabelText, getByTestId, getByText } = render(
+      const { getByLabelText, getByTestId, findByText } = render(
         <TestComponent
           mocks={{
             GetInvalidPhoneNumbers: {
@@ -177,12 +175,11 @@ describe('Fix PhoneNumber Contact', () => {
       userEvent.tab();
 
       const addButton = getByTestId('addButton-contactTestId');
-      await waitFor(() => {
-        expect(addButton).toBeDisabled();
-        expect(
-          getByText('This field is not a valid phone number'),
-        ).toBeVisible();
-      });
+      expect(addButton).toBeDisabled();
+
+      expect(
+        await findByText('This field is not a valid phone number'),
+      ).toBeVisible();
     });
 
     it('should show an error message if there is an invalid number', async () => {
@@ -205,10 +202,9 @@ describe('Fix PhoneNumber Contact', () => {
       const addButton = getByTestId('addButton-contactTestId');
       await waitFor(() => {
         expect(addButton).toBeDisabled();
-        expect(
-          getByText('This field is not a valid phone number'),
-        ).toBeVisible();
       });
+
+      expect(getByText('This field is not a valid phone number')).toBeVisible();
     });
 
     it('should not disable the add button', async () => {
@@ -246,12 +242,9 @@ describe('Fix PhoneNumber Contact', () => {
           }}
         />,
       );
-      await waitFor(() => getByTestId('delete-contactTestId-number2'));
-
-      userEvent.click(getByTestId('delete-contactTestId-number2'));
-      await waitFor(() => {
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
-      });
+      const deleteButton = getByTestId('delete-contactTestId-number2');
+      userEvent.click(deleteButton);
+      expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
       const { id, number } = person.phoneNumbers.nodes[1];
@@ -320,6 +313,7 @@ describe('Fix PhoneNumber Contact', () => {
     userEvent.type(textInput, 'p');
     expect(textInput).toHaveValue('p');
     userEvent.click(textInput);
+
     await waitFor(() => {
       expect(getAllByTestId('statusSelectError')[1]).toHaveTextContent(
         'This field is not a valid phone number',
