@@ -68,6 +68,66 @@ describe('AccountListsId page', () => {
       });
     });
 
+    it('replaces and redirects to the default account list id if Not Found', async () => {
+      const restApiNotFoundErrorMessage = "Resource 'AccountList' is not valid";
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+      query.mockRejectedValueOnce(new Error(restApiNotFoundErrorMessage));
+
+      query.mockResolvedValueOnce({
+        data: {
+          user: {
+            defaultAccountList: 'default-id',
+          },
+        },
+      });
+
+      const { redirect } = (await getServerSideProps({
+        req: { url: '/accountLists/[accountListId]/contacts' },
+        query: {
+          accountListId: 'account-list-1',
+        },
+      } as unknown as GetServerSidePropsContext)) as GetServerSidePropsReturn;
+
+      expect(redirect).toEqual({
+        destination: '/accountLists/default-id/contacts',
+        permanent: false,
+      });
+    });
+
+    it('redirects to the account list selector page if theres no defaultAccountList', async () => {
+      const restApiNotFoundErrorMessage = "Resource 'AccountList' is not valid";
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+      query.mockRejectedValueOnce(new Error(restApiNotFoundErrorMessage));
+
+      query.mockResolvedValueOnce({
+        data: {
+          user: {
+            defaultAccountList: null,
+          },
+        },
+      });
+
+      const { redirect } = (await getServerSideProps({
+        req: { url: '/accountLists/[accountListId]/contacts' },
+        query: {
+          accountListId: 'account-list-1',
+        },
+      } as unknown as GetServerSidePropsContext)) as GetServerSidePropsReturn;
+
+      expect(redirect).toEqual({
+        destination: '/accountLists',
+        permanent: false,
+      });
+    });
+
     it('renders the page without redirect', async () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest.fn().mockResolvedValue({

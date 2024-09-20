@@ -1,5 +1,10 @@
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
+import { ApolloError } from '@apollo/client';
+import {
+  GetDefaultAccountDocument,
+  GetDefaultAccountQuery,
+} from 'pages/api/getDefaultAccount.generated';
 import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
 import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import Dashboard from 'src/components/Dashboard';
@@ -10,6 +15,10 @@ import {
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import useTaskModal from 'src/hooks/useTaskModal';
+import {
+  isAccountListNotFoundError,
+  replaceUrlAccountList,
+} from 'src/lib/apollo/accountListRedirect';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import { suggestArticles } from 'src/lib/helpScout';
 import {
@@ -78,14 +87,14 @@ const AccountListIdPage = ({
 };
 
 export const getServerSideProps = makeGetServerSideProps(
-  async (session, context) => {
+  async (session, { query, req }) => {
+    const ssrClient = makeSsrClient(session.user.apiToken);
+
     try {
-      const { query } = context;
       if (typeof query.accountListId !== 'string') {
         throw new Error('Invalid accountListId');
       }
 
-      const ssrClient = makeSsrClient(session.user.apiToken);
       const { data } = await ssrClient.query<
         GetDashboardQuery,
         GetDashboardQueryVariables
@@ -111,12 +120,46 @@ export const getServerSideProps = makeGetServerSideProps(
       };
     } catch (error) {
       logErrorOnRollbar(error, '/accountLists/[accountListId].page');
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false,
-        },
-      };
+
+      // Redirect to the account lists page if the error is anything except an
+      // account list not found error
+      const nonAccountListError =
+        error instanceof ApolloError &&
+        error.graphQLErrors.every(
+          (error) => !isAccountListNotFoundError(error),
+        );
+      if (!req.url || nonAccountListError) {
+        return {
+          redirect: {
+            destination: '/',
+            permanent: false,
+          },
+        };
+      }
+
+      try {
+        // Redirect to the default account list
+        const { data } = await ssrClient.query<GetDefaultAccountQuery>({
+          query: GetDefaultAccountDocument,
+        });
+        return {
+          redirect: {
+            destination: replaceUrlAccountList(
+              req.url,
+              data.user.defaultAccountList,
+            ),
+            permanent: false,
+          },
+        };
+      } catch (error) {
+        logErrorOnRollbar(error, '/accountLists/[accountListId].page');
+        return {
+          redirect: {
+            destination: '/accountLists',
+            permanent: false,
+          },
+        };
+      }
     }
   },
 );
