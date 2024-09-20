@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import { MonthTotal } from '../../FourteenMonthReport';
@@ -145,7 +146,9 @@ export const FourteenMonthReportTable: React.FC<
               </StyledTableCell>
               {isExpanded && (
                 <>
-                  <StyledTableCell>{contact.status}</StyledTableCell>
+                  <StyledTableCell>
+                    {getLocalizedContactStatus(t, contact.status)}
+                  </StyledTableCell>
                   <StyledTableCell data-testid="pledgeAmount">
                     {contact.pledgeAmount &&
                       `${numberFormat(

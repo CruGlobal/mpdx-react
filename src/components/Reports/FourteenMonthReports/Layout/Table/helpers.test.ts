@@ -20,10 +20,10 @@ const mockContact = (
 describe('extractSortKey', () => {
   it('extracts string values from the contact', () => {
     const contact = mockContact({
-      status: 'Partner',
+      name: 'John Doe',
     });
 
-    expect(extractSortKey(contact, 'status')).toBe('Partner');
+    expect(extractSortKey(contact, 'name')).toBe('John Doe');
   });
 
   it('converts number values to strings', () => {

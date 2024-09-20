@@ -7,6 +7,7 @@ import {
   LoadConstantsQuery,
 } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { CurrencyTable } from './FourteenMonthReport';
 import {
   FourteenMonthReportContactFragment,
@@ -33,10 +34,12 @@ jest.mock('src/components/Constants/UseApiConstants.tsx');
         ],
         pledgeFrequency: [
           {
+            id: 'QUARTERLY',
             key: '3.0',
             value: 'Quarterly',
           },
           {
+            id: 'ANNUAL',
             key: '12.0',
             value: 'Annual',
           },
@@ -79,7 +82,7 @@ describe('useCsvData', () => {
           // Partner pledged for $450/quarter but who gave $275/month average over the last quarter
           mockContact({
             name: 'Quarterly Partner',
-            status: 'Partner - Financial',
+            status: StatusEnum.PartnerFinancial,
             pledgeAmount: 450,
             pledgeCurrency: 'USD',
             pledgeFrequency: '3.0',
@@ -102,7 +105,7 @@ describe('useCsvData', () => {
           // Partner pledged for $1200/year but who gave $75/month average over the last quarter
           mockContact({
             name: 'Annual Partner',
-            status: 'Partner - Financial',
+            status: StatusEnum.PartnerFinancial,
             pledgeAmount: 1200,
             pledgeCurrency: 'USD',
             pledgeFrequency: '12.0',
