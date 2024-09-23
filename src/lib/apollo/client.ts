@@ -1,4 +1,4 @@
-import { Router } from 'next/router';
+import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
@@ -25,7 +25,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
   });
 }
 
-const makeClient = (apiToken: string, routerReplace: Router['replace']) => {
+const makeClient = (apiToken: string) => {
   const client = new ApolloClient({
     link: from([
       makeAuthLink(apiToken),
@@ -47,7 +47,7 @@ const makeClient = (apiToken: string, routerReplace: Router['replace']) => {
                 .then((response) => {
                   // eslint-disable-next-line no-console
                   console.log('Incorrect accountListId provided. Redirecting.');
-                  routerReplace(
+                  router.replace(
                     replaceUrlAccountList(
                       window.location.pathname,
                       response.data.user.defaultAccountList,
