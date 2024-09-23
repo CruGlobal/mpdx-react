@@ -170,7 +170,7 @@ interface Props {
   statusValue: string;
   amount: number;
   amountCurrency: string;
-  frequencyValue: PledgeFrequencyEnum | null;
+  frequencyValue: PledgeFrequencyEnum | string;
   showModal: (
     contact: ContactType,
     message: string,
@@ -322,51 +322,56 @@ const Contact: React.FC<Props> = ({
                         container
                         style={{ paddingRight: theme.spacing(1) }}
                       >
-                        <Grid
-                          item
-                          xs={12}
-                          md={6}
-                          lg={12}
-                          className={classes.boxTop}
-                        >
-                          <FormControl fullWidth size="small">
-                            <InputLabel id="status-label">
-                              {t('Status')}
-                            </InputLabel>
-                            <Select
-                              className={classes.select}
-                              size="small"
-                              placeholder="Status"
-                              labelId="status-label"
-                              label={t('Status')}
-                              inputProps={{
-                                'data-testid': 'pledgeStatus-input',
-                              }}
-                              data-testid="statusSelect"
-                              style={{ width: '100%' }}
-                              value={statusValue}
-                              onChange={(event) =>
-                                setFieldValue('statusValue', event.target.value)
-                              }
-                            >
-                              {statuses.map((status) => (
-                                <MenuItem
-                                  value={status}
-                                  key={status}
-                                  data-testid="statusSelectOptions"
-                                >
-                                  {status}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormHelperText
-                            error={true}
-                            data-testid="statusSelectError"
+                        {statuses.length && (
+                          <Grid
+                            item
+                            xs={12}
+                            md={6}
+                            lg={12}
+                            className={classes.boxTop}
                           >
-                            {errors.statusValue && errors.statusValue}
-                          </FormHelperText>
-                        </Grid>
+                            <FormControl fullWidth size="small">
+                              <InputLabel id="status-label">
+                                {t('Status')}
+                              </InputLabel>
+                              <Select
+                                className={classes.select}
+                                size="small"
+                                placeholder="Status"
+                                labelId="status-label"
+                                label={t('Status')}
+                                inputProps={{
+                                  'data-testid': 'pledgeStatus-input',
+                                }}
+                                data-testid="statusSelect"
+                                style={{ width: '100%' }}
+                                value={statusValue}
+                                onChange={(event) =>
+                                  setFieldValue(
+                                    'statusValue',
+                                    event.target.value,
+                                  )
+                                }
+                              >
+                                {statuses.map((status) => (
+                                  <MenuItem
+                                    value={status}
+                                    key={status}
+                                    data-testid="statusSelectOptions"
+                                  >
+                                    {status}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                            <FormHelperText
+                              error={true}
+                              data-testid="statusSelectError"
+                            >
+                              {errors.statusValue && errors.statusValue}
+                            </FormHelperText>
+                          </Grid>
+                        )}
                         {pledgeCurrencies && (
                           <Grid item xs={12} md={6} lg={4}>
                             <Box className={classes.boxBottom}>

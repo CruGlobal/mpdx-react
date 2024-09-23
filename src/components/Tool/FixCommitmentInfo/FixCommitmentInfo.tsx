@@ -265,7 +265,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         }
                         amount={contact.pledgeAmount || 0}
                         amountCurrency={contact.pledgeCurrency || ''}
-                        frequencyValue={contact.pledgeFrequency || null}
+                        frequencyValue={contact.pledgeFrequency || ''}
                         showModal={handleShowModal}
                         statuses={contactStatuses || []}
                         setContactFocus={setContactFocus}
