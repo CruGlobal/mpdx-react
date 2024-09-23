@@ -220,4 +220,58 @@ describe('FixCommitmentContact', () => {
     const donationAmount = getByTestId('donationAmount');
     expect(donationAmount).toHaveTextContent('0 UGX');
   });
+  it('should not render status field when statuses are empty', async () => {
+    const { queryByTestId } = render(
+      <TestRouter router={router}>
+        <TestComponent statuses={[]} />
+      </TestRouter>,
+    );
+    expect(await queryByTestId('pledgeStatus-input')).not.toBeInTheDocument();
+  });
+  it('PledgeFrequency should be blank', async () => {
+    testData = {
+      id: 'test 2',
+      name: 'Tester 2',
+      avatar: '',
+      statusTitle: '',
+      statusValue: '',
+      frequencyTitle: '',
+      frequencyValue: null!,
+      amount: null!,
+      amountCurrency: '',
+      donations: {
+        nodes: [
+          {
+            id: 'donations-test-id-1',
+            amount: {
+              amount: 0,
+              currency: 'UGX',
+              conversionDate: '2021-12-24',
+              convertedCurrency: 'UGX',
+            },
+          },
+        ],
+      },
+    };
+
+    const { findByTestId } = render(
+      <TestRouter router={router}>
+        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
+      </TestRouter>,
+    );
+    expect(await findByTestId('pledgeFrequency-input')).toHaveValue('');
+  });
+  it('Change pledgeCurrencies', async () => {
+    const { findByTestId, getByTestId } = render(
+      <TestRouter router={router}>
+        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
+      </TestRouter>,
+    );
+    expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
+
+    fireEvent.click(getByTestId('pledgeCurrency-input'));
+    fireEvent.change(getByTestId('pledgeCurrency-input'), {
+      target: { value: 'CDF (CDF)' },
+    });
+  });
 });

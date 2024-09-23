@@ -205,11 +205,7 @@ const Contact: React.FC<Props> = ({
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
-  const suggestedFrequency =
-    suggestedChanges?.pledge_frequency &&
-    suggestedChanges.pledge_frequency in PledgeFrequencyEnum
-      ? suggestedChanges.pledge_frequency
-      : '';
+  const suggestedFrequency = suggestedChanges?.pledge_frequency || '';
 
   const suggestedStatus = suggestedChanges?.status || '';
 
