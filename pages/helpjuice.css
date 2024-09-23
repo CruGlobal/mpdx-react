@@ -17,13 +17,20 @@
   height: var(--content-height) !important;
 }
 
+#helpjuice-widget.bottomRight {
+  right: 130px !important;
+}
+
 /* Move the beacon higher from the bottom when it is not expanded */
 #helpjuice-widget.bottomRight:has(#helpjuice-widget-expanded:not(.hj-shown)) {
   bottom: 170px !important;
 }
 
-#helpjuice-widget.bottomRight {
-  right: 130px !important;
+/* If the browser doesn't support :has and :not selectors, always move the beacon higher. */
+@supports not selector(:has(*):not(*)) {
+  #helpjuice-widget.bottomRight {
+    bottom: 170px !important;
+  }
 }
 
 @media (max-width: 900px) {
