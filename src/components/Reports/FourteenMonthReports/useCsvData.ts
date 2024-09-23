@@ -67,8 +67,12 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
                 )
               : '';
 
+          // Consider the numMonthsForMonthlyEquivalent most recent months, skipping the
+          // first month because it is the current month and monthly partners may not
+          // have given yet.
           const inHandMonths = contact.months.slice(
-            -numMonthsForMonthlyEquivalent,
+            1,
+            numMonthsForMonthlyEquivalent + 1,
           );
 
           const inHandMonthlyEquivalent =
