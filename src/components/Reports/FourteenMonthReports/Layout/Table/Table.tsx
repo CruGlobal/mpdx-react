@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -28,7 +29,7 @@ interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[] | undefined;
   totals: Totals[];
-  onSelectContact: (contactId: string) => void;
+  getContactUrl: (contactId: string) => string;
 }
 
 const NameTypography = styled(Typography, {
@@ -84,7 +85,7 @@ export const FourteenMonthReportTable: React.FC<
   orderedContacts,
   onRequestSort,
   salaryCurrency,
-  onSelectContact,
+  getContactUrl,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -137,6 +138,8 @@ export const FourteenMonthReportTable: React.FC<
                 return 0;
               }
             }, [contact]);
+            const contactUrl = getContactUrl(contact.id);
+
             return (
               <TableRow
                 key={contact.id}
@@ -148,13 +151,13 @@ export const FourteenMonthReportTable: React.FC<
                     <Box display="flex" alignItems="center">
                       {!isExpanded && <StyledInfoIcon fontSize="small" />}
                       <NameTypography variant="body1" expanded={isExpanded}>
-                        <Link
-                          onClick={() => onSelectContact(contact.id)}
+                        <NextLink
+                          href={contactUrl}
+                          passHref
                           onMouseEnter={preloadContactsRightPanel}
-                          underline="hover"
                         >
-                          {contact.name}
-                        </Link>
+                          <Link component="a">{contact.name}</Link>
+                        </NextLink>
                       </NameTypography>
                     </Box>
                     {isExpanded && (

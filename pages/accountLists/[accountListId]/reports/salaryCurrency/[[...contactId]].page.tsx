@@ -41,10 +41,11 @@ const SalaryCurrencyReportPage: React.FC = () => {
     setNavListOpen(!isNavListOpen);
   };
 
-  const handleSelectContact = (contactId: string) => {
-    router.push(
-      `/accountLists/${accountListId}/reports/salaryCurrency/${contactId}`,
-    );
+  const getContactUrl = (contactId: string) =>
+    `/accountLists/${accountListId}/reports/salaryCurrency/${contactId}`;
+
+  const handleCloseContact = () => {
+    router.push(`/accountLists/${accountListId}/reports/salaryCurrency/`);
   };
 
   return (
@@ -78,15 +79,13 @@ const SalaryCurrencyReportPage: React.FC = () => {
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Salary Currency')}
                 currencyType={FourteenMonthReportCurrencyType.Salary}
-                onSelectContact={handleSelectContact}
+                getContactUrl={getContactUrl}
               />
             }
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact('')}
-                  />
+                  <DynamicContactsRightPanel onClose={handleCloseContact} />
                 </ContactsWrapper>
               ) : undefined
             }

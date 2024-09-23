@@ -21,7 +21,7 @@ interface Props {
   onNavListToggle: () => void;
   title: string;
   currencyType: FourteenMonthReportCurrencyType;
-  onSelectContact: (contactId: string) => void;
+  getContactUrl: (contactId: string) => string;
 }
 export interface Totals {
   total: number;
@@ -34,7 +34,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   currencyType,
   isNavListOpen,
   title,
-  onSelectContact,
+  getContactUrl,
   onNavListToggle,
 }) => {
   const [isExpanded, setExpanded] = useState<boolean>(false);
@@ -279,7 +279,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
       ) : contacts && contacts.length > 0 ? (
         <Table
           isExpanded={isExpanded}
-          onSelectContact={onSelectContact}
+          getContactUrl={getContactUrl}
           onRequestSort={handleRequestSort}
           order={order}
           orderBy={orderBy}

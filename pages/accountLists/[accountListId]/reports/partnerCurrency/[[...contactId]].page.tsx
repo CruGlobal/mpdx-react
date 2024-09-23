@@ -41,10 +41,11 @@ const PartnerCurrencyReportPage: React.FC = () => {
     setNavListOpen(!isNavListOpen);
   };
 
-  const handleSelectContact = (contactId: string) => {
-    router.push(
-      `/accountLists/${accountListId}/reports/partnerCurrency/${contactId}`,
-    );
+  const getContactUrl = (contactId: string) =>
+    `/accountLists/${accountListId}/reports/partnerCurrency/${contactId}`;
+
+  const handleCloseContact = () => {
+    router.push(`/accountLists/${accountListId}/reports/partnerCurrency/`);
   };
 
   return (
@@ -75,7 +76,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
                 accountListId={accountListId}
                 designationAccounts={designationAccounts}
                 currencyType={FourteenMonthReportCurrencyType.Donor}
-                onSelectContact={handleSelectContact}
+                getContactUrl={getContactUrl}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Partner Currency')}
@@ -84,9 +85,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact('')}
-                  />
+                  <DynamicContactsRightPanel onClose={handleCloseContact} />
                 </ContactsWrapper>
               ) : undefined
             }
