@@ -1,3 +1,4 @@
+import { ParsedUrlQueryInput } from 'querystring';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -43,6 +44,11 @@ import {
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
+
+export type ContactUrl = {
+  contactUrl: string;
+  filteredQuery: string | ParsedUrlQueryInput;
+};
 
 const buttonBarHeight = theme.spacing(6);
 
@@ -246,23 +252,27 @@ const TasksPage: React.FC = () => {
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id?: string) => {
+  const getContactUrl = (id?: string): ContactUrl => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
       ...filteredQuery
     } = query;
-    push(
-      id
-        ? {
-            pathname: `/accountLists/${accountListId}/tasks/${id}`,
-            query: filteredQuery,
-          }
-        : {
-            pathname: `/accountLists/${accountListId}/tasks/`,
-            query: filteredQuery,
-          },
-    );
+
+    return {
+      contactUrl: id
+        ? `/accountLists/${accountListId}/tasks/${id}`
+        : `/accountLists/${accountListId}/tasks/`,
+      filteredQuery,
+    };
+  };
+
+  const setContactFocus = (id?: string) => {
+    const { contactUrl, filteredQuery } = getContactUrl(id);
+    push({
+      pathname: contactUrl,
+      query: filteredQuery,
+    });
     id && setContactDetailsId(id);
     setContactDetailsOpen(!!id);
   };
@@ -415,6 +425,7 @@ const TasksPage: React.FC = () => {
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
+                            getContactUrl={getContactUrl}
                           />
                         </Box>
                       )}
