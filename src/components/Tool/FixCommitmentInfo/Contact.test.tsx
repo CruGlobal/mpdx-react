@@ -27,6 +27,7 @@ let testData = {
   donations: {
     nodes: [
       {
+        id: 'donations-test-id-1',
         amount: {
           amount: 175,
           currency: 'USD',
@@ -145,6 +146,7 @@ describe('FixCommitmentContact', () => {
       donations: {
         nodes: [
           {
+            id: 'donations-test-id-1',
             amount: {
               amount: 0,
               currency: 'UGX',

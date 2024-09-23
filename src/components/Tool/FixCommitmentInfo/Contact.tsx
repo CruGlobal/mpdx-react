@@ -203,7 +203,7 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
 
-  const suggestedAmount = suggestedChanges?.pledge_amount || null;
+  const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
   const suggestedFrequency =
     suggestedChanges?.pledge_frequency &&
@@ -211,7 +211,7 @@ const Contact: React.FC<Props> = ({
       ? suggestedChanges.pledge_frequency
       : '';
 
-  const suggestedStatus = suggestedChanges?.status || null;
+  const suggestedStatus = suggestedChanges?.status || '';
 
   const onSubmit = async ({
     status,
@@ -509,7 +509,7 @@ const Contact: React.FC<Props> = ({
                         {donations
                           .map((donation) => (
                             <Grid
-                              key={donation.amount.conversionDate}
+                              key={donation.id}
                               display="flex"
                               flexDirection="column"
                             >

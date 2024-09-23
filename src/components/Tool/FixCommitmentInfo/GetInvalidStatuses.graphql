@@ -16,6 +16,7 @@ query InvalidStatuses($accountListId: ID!, $after: String) {
       suggestedChanges
       donations(first: 6) {
         nodes {
+          id
           amount {
             amount
             currency

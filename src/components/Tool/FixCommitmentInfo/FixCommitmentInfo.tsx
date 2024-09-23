@@ -49,6 +49,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 }));
 
 export interface DonationsType {
+  id: string;
   amount: {
     amount: number;
     currency: string;
