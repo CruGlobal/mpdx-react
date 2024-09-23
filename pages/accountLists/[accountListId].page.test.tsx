@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
+import { ApolloError } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
@@ -111,13 +112,33 @@ describe('AccountListsId page', () => {
   describe('AccountListId Redirects', () => {
     const restApiNotFoundErrorMessage = "Resource 'AccountList' is not valid";
 
+    const makeContext = async (
+      url: string = '/accountLists/[accountListId]/contacts',
+    ) => {
+      return (await getServerSideProps({
+        req: { url: url },
+        query: {
+          accountListId: 'account-list-1',
+        },
+      } as unknown as GetServerSidePropsContext)) as GetServerSidePropsReturn;
+    };
+
     it('replaces and redirects to the default account list id if Not Found', async () => {
       const query = jest.fn();
 
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: query,
       });
-      query.mockRejectedValueOnce(new Error(restApiNotFoundErrorMessage));
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            {
+              message: restApiNotFoundErrorMessage,
+              extensions: { code: 'NOT_FOUND' },
+            },
+          ],
+        } as unknown as ApolloError),
+      );
 
       query.mockResolvedValueOnce({
         data: {
@@ -127,16 +148,11 @@ describe('AccountListsId page', () => {
         },
       });
 
-      const { redirect } = (await getServerSideProps({
-        req: { url: '/accountLists/[accountListId]/contacts' },
-        query: {
-          accountListId: 'account-list-1',
+      expect(await makeContext()).toEqual({
+        redirect: {
+          destination: '/accountLists/default-id/contacts',
+          permanent: false,
         },
-      } as unknown as GetServerSidePropsContext)) as GetServerSidePropsReturn;
-
-      expect(redirect).toEqual({
-        destination: '/accountLists/default-id/contacts',
-        permanent: false,
       });
     });
 
@@ -146,7 +162,16 @@ describe('AccountListsId page', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: query,
       });
-      query.mockRejectedValueOnce(new Error(restApiNotFoundErrorMessage));
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            {
+              message: restApiNotFoundErrorMessage,
+              extensions: { code: 'NOT_FOUND' },
+            },
+          ],
+        } as unknown as ApolloError),
+      );
 
       query.mockResolvedValueOnce({
         data: {
@@ -156,16 +181,11 @@ describe('AccountListsId page', () => {
         },
       });
 
-      const { redirect } = (await getServerSideProps({
-        req: { url: '/accountLists/[accountListId]/contacts' },
-        query: {
-          accountListId: 'account-list-1',
+      expect(await makeContext()).toEqual({
+        redirect: {
+          destination: '/accountLists',
+          permanent: false,
         },
-      } as unknown as GetServerSidePropsContext)) as GetServerSidePropsReturn;
-
-      expect(redirect).toEqual({
-        destination: '/accountLists',
-        permanent: false,
       });
     });
 
@@ -176,22 +196,54 @@ describe('AccountListsId page', () => {
         query: query,
       });
 
-      query.mockRejectedValueOnce(new Error(restApiNotFoundErrorMessage));
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            {
+              message: restApiNotFoundErrorMessage,
+              extensions: { code: 'NOT_FOUND' },
+            },
+          ],
+        } as unknown as ApolloError),
+      );
 
       query.mockResolvedValueOnce(
         new Error('error getting defaultAccountList'),
       );
 
-      const { redirect } = (await getServerSideProps({
-        req: { url: '/accountLists/[accountListId]/contacts' },
-        query: {
-          accountListId: 'account-list-1',
-        },
-      } as unknown as GetServerSidePropsContext)) as GetServerSidePropsReturn;
+      expect(await makeContext()).toEqual({
+        redirect: { destination: '/accountLists', permanent: false },
+      });
+    });
 
-      expect(redirect).toEqual({
-        destination: '/accountLists',
-        permanent: false,
+    it('redirects to the account list selector page if there url is invalid', async () => {
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            {
+              message: restApiNotFoundErrorMessage,
+              extensions: { code: 'NOT_FOUND' },
+            },
+          ],
+        } as unknown as ApolloError),
+      );
+
+      query.mockResolvedValueOnce({
+        data: {
+          user: {
+            defaultAccountList: 'default-id',
+          },
+        },
+      });
+
+      expect(await makeContext('/invalid_url/')).toEqual({
+        redirect: { destination: '/accountLists', permanent: false },
       });
     });
   });

@@ -42,7 +42,10 @@ describe('isAccountListNotFoundError', () => {
 describe('replaceUrlAccountList', () => {
   it('returns to default url if url is invalid', () => {
     expect(replaceUrlAccountList('/', '12345')).toBe('/accountLists');
-    expect(replaceUrlAccountList('https://google.com', '12345')).toBe(
+    expect(replaceUrlAccountList('/invalid_url/', '12345')).toBe(
+      '/accountLists',
+    );
+    expect(replaceUrlAccountList('https://google.com/', '12345')).toBe(
       '/accountLists',
     );
   });
@@ -51,11 +54,7 @@ describe('replaceUrlAccountList', () => {
     expect(replaceUrlAccountList('/accountLists/', null)).toBe('/accountLists');
   });
 
-  it('replaces the default accountListId in the url', () => {
-    expect(
-      replaceUrlAccountList('/accountList/invalid-account-list/', '12345'),
-    ).toBe('/accountLists');
-
+  it('replaces the accountListId in the url with the default accountListId', () => {
     //redirect keeps current page it is on
     expect(
       replaceUrlAccountList(
