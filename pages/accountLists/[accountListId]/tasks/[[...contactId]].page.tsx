@@ -344,6 +344,7 @@ const TasksPage: React.FC = () => {
                     toggleStarredFilter={setStarredFilter}
                     headerCheckboxState={selectionType}
                     massDeselectAll={deselectAll}
+                    showShowingCount
                     selectedIds={ids}
                     buttonGroup={
                       <Hidden xsDown>

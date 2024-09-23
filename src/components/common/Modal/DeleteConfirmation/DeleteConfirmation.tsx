@@ -56,7 +56,12 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
           cache.evict({ id: `Task:${taskId}` });
           cache.gc();
         },
-        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
+        refetchQueries: [
+          'ContactTasksTab',
+          'GetWeeklyActivity',
+          'GetThisWeek',
+          'Tasks',
+        ],
       });
       enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
       onClickDecline(false);
