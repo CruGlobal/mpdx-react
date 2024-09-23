@@ -69,6 +69,61 @@ export interface FourteenMonthReportResponse {
   };
 }
 
+// Convert a status string into a StatusEnum
+const convertStatus = (
+  status: string | null | undefined,
+): StatusEnum | null => {
+  // Statuses will be lowercase and underscored (i.e. "never_contacted") after task phases lands
+  // Statuses will be sentence case with spaces (i.e. "Never Contacted") before task phases lands
+  switch (status) {
+    case 'never_contacted':
+    case 'Never Contacted':
+      return StatusEnum.NeverContacted;
+    case 'ask_in_future':
+    case 'Ask in Future':
+      return StatusEnum.AskInFuture;
+    case 'cultivate_relationship':
+    case 'Cultivate Relationship':
+      return StatusEnum.CultivateRelationship;
+    case 'contact_for_appointment':
+    case 'Contact for Appointment':
+      return StatusEnum.ContactForAppointment;
+    case 'appointment_scheduled':
+    case 'Appointment Scheduled':
+      return StatusEnum.AppointmentScheduled;
+    case 'call_for_decision':
+    case 'Call for Decision':
+      return StatusEnum.CallForDecision;
+    case 'partner_financial':
+    case 'Partner - Financial':
+      return StatusEnum.PartnerFinancial;
+    case 'partner_special':
+    case 'Partner - Special':
+      return StatusEnum.PartnerSpecial;
+    case 'partner_pray':
+    case 'Partner - Pray':
+      return StatusEnum.PartnerPray;
+    case 'not_interested':
+    case 'Not Interested':
+      return StatusEnum.NotInterested;
+    case 'unresponsive':
+    case 'Unresponsive':
+      return StatusEnum.Unresponsive;
+    case 'never_ask':
+    case 'Never Ask':
+      return StatusEnum.NeverAsk;
+    case 'research_abandoned':
+    case 'Research Abandoned':
+      return StatusEnum.ResearchAbandoned;
+    case 'expired_referral':
+    case 'Expired Referral':
+      return StatusEnum.ExpiredReferral;
+
+    default:
+      return null;
+  }
+};
+
 export const mapFourteenMonthReport = (
   data: FourteenMonthReportResponse,
   currencyType: FourteenMonthReportCurrencyType,
@@ -140,10 +195,7 @@ export const mapFourteenMonthReport = (
                 : null,
               pledgeCurrency: contact?.pledge_currency,
               pledgeFrequency: contact?.pledge_frequency,
-              status: contact?.status?.toUpperCase() as
-                | StatusEnum
-                | null
-                | undefined,
+              status: convertStatus(contact?.status),
             };
           })
           .sort((a, b) => a.name.localeCompare(b.name)),
