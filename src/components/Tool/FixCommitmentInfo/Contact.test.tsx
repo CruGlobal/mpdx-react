@@ -262,16 +262,15 @@ describe('FixCommitmentContact', () => {
     expect(await findByTestId('pledgeFrequency-input')).toHaveValue('');
   });
   it('Change pledgeCurrencies', async () => {
-    const { findByTestId, getByTestId } = render(
+    const { findByTestId, getByRole } = render(
       <TestRouter router={router}>
         <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
       </TestRouter>,
     );
     expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
-
-    fireEvent.click(getByTestId('pledgeCurrency-input'));
-    fireEvent.change(getByTestId('pledgeCurrency-input'), {
-      target: { value: 'CDF (CDF)' },
-    });
+    const CurrencyField = getByRole('combobox', { name: 'Currency' });
+    userEvent.click(CurrencyField);
+    userEvent.click(getByRole('option', { name: 'CDF (CDF)' }));
+    expect(CurrencyField).toHaveTextContent('CDF (CDF)');
   });
 });
