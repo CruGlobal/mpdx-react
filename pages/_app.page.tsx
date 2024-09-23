@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { ReactElement, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
@@ -58,7 +59,11 @@ const GraphQLProviders: React.FC<{
   children: React.ReactNode;
 }> = ({ children = null }) => {
   const { apiToken } = useRequiredSession();
-  const client = useMemo(() => makeClient(apiToken), [apiToken]);
+  const { replace } = useRouter();
+  const client = useMemo(
+    () => makeClient(apiToken, replace),
+    [apiToken, replace],
+  );
 
   return (
     <ApolloProvider client={client}>
