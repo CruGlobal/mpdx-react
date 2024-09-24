@@ -42,7 +42,7 @@ const router = {
 const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
 
-const TestComponent = () => (
+const TestComponent = ({ status = testData.status }: { status?: string }) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
       <GqlMockedProvider<{
@@ -58,7 +58,7 @@ const TestComponent = () => (
           donations={testData.donations.nodes}
           key={testData.name}
           showModal={handleShowModal}
-          status={testData.status}
+          status={status}
           amount={testData.amount}
           amountCurrency={testData.amountCurrency}
           frequencyValue={testData.frequencyValue}
@@ -145,11 +145,12 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should render donation data', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <TestRouter router={router}>
-        <TestComponent />
+        <TestComponent status="" />
       </TestRouter>,
     );
+    expect(getByText('Current: ARM 50 Monthly')).toBeInTheDocument();
     const donationDate = getByTestId('donationDate');
     expect(donationDate).toHaveTextContent('10/15/2019');
     const donationAmount = getByTestId('donationAmount');
