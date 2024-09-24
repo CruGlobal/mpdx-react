@@ -194,7 +194,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
         height={theme.spacing(7)}
       >
         <Box
-          {...{ ref: dragRef }}
+          ref={dragRef}
           data-handler-id={handlerId}
           display="flex"
           alignItems="center"
@@ -230,7 +230,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
         }}
       >
         <Box
-          {...{ ref: CardContentRef }}
+          ref={CardContentRef}
           width="100%"
           height="100%"
           display="flex"

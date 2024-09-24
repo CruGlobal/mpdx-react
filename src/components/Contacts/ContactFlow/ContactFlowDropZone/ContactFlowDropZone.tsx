@@ -63,12 +63,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
   const { t } = useTranslation();
 
   return (
-    <DropZoneBox
-      key={status.id}
-      canDrop={canDrop}
-      isOver={isOver}
-      {...{ ref: drop }}
-    >
+    <DropZoneBox key={status.id} canDrop={canDrop} isOver={isOver} ref={drop}>
       <Typography variant="h5" align="center">
         {t('{{status}}', { status: status.value })}
       </Typography>

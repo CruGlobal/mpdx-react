@@ -106,10 +106,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   }, []);
 
   return (
-    <ContainerBox
-      isDragging={isDragging}
-      {...{ ref: drag }} //TS gives an error if you try to pass a ref normally, seems to be a MUI issue
-    >
+    <ContainerBox isDragging={isDragging} ref={drag}>
       <DraggableBox>
         <Box display="flex" alignItems="center" width="100%">
           <StyledAvatar src={avatar || ''} />

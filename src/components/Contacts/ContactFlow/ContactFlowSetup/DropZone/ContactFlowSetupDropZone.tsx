@@ -41,7 +41,7 @@ export const ContactFlowSetupDropZone: React.FC<Props> = ({
   return (
     <Box
       key={status}
-      {...{ ref: drop }}
+      ref={drop}
       display={canDrop ? 'flex' : 'none'}
       justifyContent="start"
       alignItems="start"

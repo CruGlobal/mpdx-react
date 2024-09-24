@@ -149,7 +149,7 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
         <CardContentInner
           canDrop={canDrop}
           gridTemplateRows={`repeat(${statuses.length},auto)`}
-          {...{ ref: drop }}
+          ref={drop}
         >
           {statusesStructured.map((status) => (
             <ContactFlowDropZone

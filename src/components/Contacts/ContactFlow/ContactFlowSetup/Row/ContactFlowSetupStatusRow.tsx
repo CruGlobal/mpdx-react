@@ -56,7 +56,7 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
   return (
-    <StatusRow {...{ ref: drag }} data-testid={status.id}>
+    <StatusRow ref={drag} data-testid={status.id}>
       <Typography>{t(status.value)}</Typography>
     </StatusRow>
   );

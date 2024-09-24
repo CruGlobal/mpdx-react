@@ -50,7 +50,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
         }}
       >
         <Box
-          {...{ ref: CardContentRef }}
+          ref={CardContentRef}
           width="100%"
           height="100%"
           display="flex"
