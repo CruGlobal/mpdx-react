@@ -111,10 +111,6 @@ const router = {
   push,
 };
 
-// beforeEach(() => {
-//   (useAccountListId as jest.Mock).mockReturnValue(router);
-// });
-
 const ButtonGroup: React.FC = () => {
   return (
     <>
