@@ -25,11 +25,10 @@ export interface ContactFlowRowProps {
   columnWidth?: number;
 }
 
-export const ContactLink = styled(Typography)(() => ({
-  color: theme.palette.mpdxBlue.main,
+export const ContactLink = styled(Link)(() => ({
+  textDecoration: 'none',
   '&:hover': {
     textDecoration: 'underline',
-    cursor: 'pointer',
   },
 }));
 
@@ -113,16 +112,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
           <StyledAvatar src={avatar || ''} />
           <Box display="flex" flexDirection="column" ml={2} draggable>
             <NextLink href={contactUrl} passHref shallow>
-              <Link
-                sx={{
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {name}
-              </Link>
+              <ContactLink>{name}</ContactLink>
             </NextLink>
             <Typography>{status.value}</Typography>
           </Box>

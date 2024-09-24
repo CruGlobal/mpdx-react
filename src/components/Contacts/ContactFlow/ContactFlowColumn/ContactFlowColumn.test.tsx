@@ -24,6 +24,9 @@ const accountListId = 'abc';
 const title = 'Test Column';
 const changeContactStatus = jest.fn();
 const mutationSpy = jest.fn();
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/123`,
+});
 const contact = {
   id: '123',
   name: 'Test Person',
@@ -83,6 +86,7 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     {
                       sanitizedFilters: {},
                       starredFilter,
+                      getContactUrl,
                     } as unknown as ContactsType
                   }
                 >

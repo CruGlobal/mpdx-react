@@ -62,7 +62,9 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
 jest.mock('../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
-const setContactFocus = jest.fn();
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/${contact.id}`,
+});
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
@@ -76,7 +78,7 @@ const Components = () => (
             value={
               {
                 accountListId,
-                setContactFocus,
+                getContactUrl,
                 contactDetailsOpen,
                 toggleSelectionById,
                 isRowChecked,
@@ -141,11 +143,8 @@ describe('ContactsRow', () => {
 
     const { getByTestId } = render(<Components />);
 
-    expect(setContactFocus).not.toHaveBeenCalled();
-
     const rowButton = getByTestId('rowButton');
-    userEvent.click(rowButton);
-
-    expect(setContactFocus).toHaveBeenCalledWith(contact.id);
+    expect(rowButton).toBeInTheDocument();
+    expect(rowButton).toHaveAttribute('href', `/contacts/${contact.id}`);
   });
 });
