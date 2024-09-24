@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Avatar,
@@ -205,14 +205,23 @@ const Contact: React.FC<Props> = ({
 
   const suggestedAmount = suggestedChanges?.pledge_amount || null;
 
-  const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
+  const suggestedFrequency = useMemo(
+    () =>
+      frequencyOptions?.find((frequency) => {
+        return frequency?.key === suggestedChanges?.pledge_frequency;
+      })?.id || '',
+    [statusOptions, suggestedChanges?.pledge_frequency],
+  );
 
-  const suggestedStatus =
-    statusOptions?.find(
-      (status) =>
-        status.id === suggestedChanges?.status?.toUpperCase() ||
-        status.value === suggestedChanges?.status,
-    )?.id || '';
+  const suggestedStatus = useMemo(
+    () =>
+      statusOptions?.find(
+        (status) =>
+          status.id === suggestedChanges?.status?.toUpperCase() ||
+          status.value === suggestedChanges?.status,
+      )?.id || '',
+    [statusOptions, suggestedChanges?.status],
+  );
 
   const onSubmit = async ({
     status,
@@ -222,7 +231,7 @@ const Contact: React.FC<Props> = ({
   }: FormAttributes) => {
     const modalContact = {
       id: id,
-      status: status,
+      status,
       name: name,
       pledgeCurrency,
       pledgeAmount,
@@ -240,7 +249,7 @@ const Contact: React.FC<Props> = ({
   };
 
   const commitmentInfoFormSchema = yup.object({
-    status: yup.string().required('Please select a status'),
+    status: yup.string().nullable(),
     pledgeCurrency: yup.string().nullable(),
     pledgeAmount: yup.number().nullable(),
     pledgeFrequency: yup.string().nullable(),
@@ -253,10 +262,7 @@ const Contact: React.FC<Props> = ({
           status: suggestedStatus || status,
           pledgeCurrency: amountCurrency,
           pledgeAmount: suggestedAmount || amount,
-          pledgeFrequency:
-            frequencyOptions?.find(
-              (frequency) => frequency?.key === suggestedFrequency,
-            )?.id || frequencyValue,
+          pledgeFrequency: suggestedFrequency || frequencyValue,
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
@@ -271,7 +277,7 @@ const Contact: React.FC<Props> = ({
         }): ReactElement => {
           const modalContact = {
             id: id,
-            status: status,
+            status,
             name: name,
             pledgeCurrency,
             pledgeAmount,
@@ -304,12 +310,10 @@ const Contact: React.FC<Props> = ({
                             <Typography variant="subtitle1">{name}</Typography>
                           </Link>
                           <Typography variant="subtitle2">
-                            {`Current: ${
-                              getLocalizedContactStatus(
-                                t,
-                                status as StatusEnum,
-                              ) || ''
-                            } ${
+                            {`Current: ${getLocalizedContactStatus(
+                              t,
+                              status as StatusEnum,
+                            )} ${
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''

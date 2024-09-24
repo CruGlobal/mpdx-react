@@ -138,9 +138,13 @@ describe('FixCommitmentInfo', () => {
   });
 
   it('updates commitment info', async () => {
-    const { getAllByTestId, queryByText, findByText, findAllByTestId } = render(
-      <Components />,
-    );
+    const {
+      getAllByTestId,
+      queryByText,
+      findByText,
+      findAllByTestId,
+      getByText,
+    } = render(<Components />);
 
     userEvent.click((await findAllByTestId('confirmButton'))[0]);
 
@@ -149,7 +153,7 @@ describe('FixCommitmentInfo', () => {
         'Are you sure you wish to update Tester 1 commitment info?',
       ),
     ).toBeInTheDocument(),
-      userEvent.click(await findByText('Yes'));
+      userEvent.click(getByText('Yes'));
 
     await waitFor(() =>
       expect(queryByText('Tester 1')).not.toBeInTheDocument(),
