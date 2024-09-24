@@ -27,9 +27,10 @@ const isChecked = jest.fn().mockImplementation(() => false);
 const selectMultipleIds = jest.fn();
 const deselectMultipleIds = jest.fn();
 const toggleSelectionById = jest.fn();
-const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
-
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/${defaultContact.id}`,
+});
 const router = {
   query: { accountListId },
   isReady: true,
@@ -90,6 +91,7 @@ const Components = ({
                     deselectMultipleIds,
                     toggleSelectionById,
                     isRowChecked: isChecked,
+                    getContactUrl,
                   } as unknown as AppealsType
                 }
               >
@@ -100,7 +102,6 @@ const Components = ({
                     accountListId={accountListId}
                     color={theme.palette.mpdxBlue.main}
                     title={title}
-                    onContactSelected={onContactSelected}
                     changeContactStatus={changeContactStatus}
                     appealStatus={appealStatus}
                   />

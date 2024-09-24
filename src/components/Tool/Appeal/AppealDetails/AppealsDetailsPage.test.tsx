@@ -116,14 +116,8 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
 
 describe('AppealsDetailsPage', () => {
   describe('Contact drawer', () => {
-    it('should open and close on List view', async () => {
-      const {
-        findByTestId,
-        findByText,
-        findByRole,
-        getAllByRole,
-        queryByRole,
-      } = render(
+    it('should be a link with the correct href', async () => {
+      const { findByTestId, findByText, queryByRole } = render(
         <Components
           router={{
             ...defaultRouter,
@@ -142,16 +136,14 @@ describe('AppealsDetailsPage', () => {
       const contactRow = await findByTestId('rowButton');
       userEvent.click(contactRow);
 
-      expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument(),
-        userEvent.click(getAllByRole('img', { name: 'Close' })[0]);
-
-      await waitFor(() =>
-        expect(queryByRole('tab', { name: 'Tasks' })).not.toBeInTheDocument(),
+      expect(contactRow).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/tools/appeals/appeal/1/list/1',
       );
     });
 
-    it('should open and close on Flows view', async () => {
-      const { getAllByText, getByRole, findByRole, queryByRole } = render(
+    it('should be a link on the Flows view', async () => {
+      const { getAllByText, queryByRole } = render(
         <Components
           router={{
             ...defaultRouter,
@@ -167,13 +159,11 @@ describe('AppealsDetailsPage', () => {
 
       expect(queryByRole('tab', { name: 'Tasks' })).not.toBeInTheDocument();
 
-      userEvent.click(getAllByText('Test Person')[0]);
+      const contactName = getAllByText('Test Person')[0];
 
-      expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
-      userEvent.click(getByRole('img', { name: 'Close' }));
-
-      await waitFor(() =>
-        expect(queryByRole('tab', { name: 'Tasks' })).not.toBeInTheDocument(),
+      expect(contactName).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/tools/appeals/appeal/1/flows/1',
       );
     });
   });

@@ -25,6 +25,9 @@ const accountListId = 'account-list-1';
 const appealId = 'appealId';
 const toggleSelectionById = jest.fn();
 const isChecked = jest.fn().mockImplementation(() => false);
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/${defaultContact.id}`,
+});
 
 type ComponentsProps = {
   appealStatus?: AppealStatusEnum;
@@ -47,6 +50,7 @@ const Components = ({
                   appealId,
                   isRowChecked: isChecked,
                   toggleSelectionById,
+                  getContactUrl,
                 } as unknown as AppealsType
               }
             >

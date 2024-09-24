@@ -56,7 +56,6 @@ export interface AppealsType
     | 'contactsQueryResult'
     | 'setContactFocus'
     | 'setViewMode'
-    | 'getContactUrl'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
@@ -328,11 +327,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (
-    id?: string,
-    openDetails = true,
-    endTour = false,
-  ) => {
+
+  const getContactUrl = (id?: string, endTour = false) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -365,6 +361,25 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       pathname += `/${id}`;
     }
 
+    const filterParams =
+      Object.keys(filteredQuery).length > 0
+        ? `?${new URLSearchParams(
+            filteredQuery as Record<string, string>,
+          ).toString()}`
+        : '';
+
+    return {
+      pathname,
+      filteredQuery,
+      contactUrl: pathname + filterParams,
+    };
+  };
+  const setContactFocus = (
+    id?: string,
+    openDetails = true,
+    endTour = false,
+  ) => {
+    const { pathname, filteredQuery } = getContactUrl(id, endTour);
     push({
       pathname,
       query: filteredQuery,
@@ -494,6 +509,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
+        getContactUrl: getContactUrl,
         setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
         activeFilters: activeFilters,

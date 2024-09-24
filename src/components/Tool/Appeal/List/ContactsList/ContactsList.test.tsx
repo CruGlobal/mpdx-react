@@ -22,7 +22,9 @@ const router = {
   isReady: true,
 };
 
-const setContactFocus = jest.fn();
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/123`,
+});
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
@@ -65,7 +67,7 @@ const Components = ({
                   appealStatus,
                 },
                 contactsQueryResult,
-                setContactFocus,
+                getContactUrl,
                 isRowChecked,
                 contactDetailsOpen,
                 toggleSelectionById,

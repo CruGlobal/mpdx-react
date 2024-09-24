@@ -22,7 +22,6 @@ import { ContactFlow, ContactFlowProps } from './ContactFlow';
 
 const accountListId = 'accountListId';
 const appealId = 'appealId';
-const onContactSelected = jest.fn();
 const defaultContact = {
   id: '123',
   name: 'Test Person',
@@ -49,6 +48,9 @@ const router = {
   isReady: true,
 };
 
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/${defaultContact.id}`,
+});
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -70,7 +72,6 @@ interface ComponentsProps {
 const defaultContactFlowProps = {
   accountListId,
   selectedFilters: {},
-  onContactSelected,
   searchTerm: '',
   appealInfo: {
     appeal: appealInfo,
@@ -123,6 +124,7 @@ const Components = ({
                         sanitizedFilters: {},
                         isRowChecked: jest.fn(),
                         toggleSelectionById: jest.fn(),
+                        getContactUrl,
                       } as unknown as AppealsType
                     }
                   >
