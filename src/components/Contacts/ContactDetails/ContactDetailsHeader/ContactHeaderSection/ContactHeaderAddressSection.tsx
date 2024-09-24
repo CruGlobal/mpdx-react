@@ -25,6 +25,10 @@ const TextSkeleton = styled(Skeleton)(({}) => ({
   fontSize: 16,
 }));
 
+const StyledAddressTypography = styled(Typography)(() => ({
+  lineHeight: '1.50',
+}));
+
 export const ContactHeaderAddressSection = ({
   loading,
   contact,
@@ -51,17 +55,24 @@ export const ContactHeaderAddressSection = ({
 
       return (
         <ContactHeaderSection icon={<LocationIcon />}>
-          <Typography variant="subtitle1">{envelope}</Typography>
-          <Typography variant="subtitle1">{street}</Typography>
+          <StyledAddressTypography variant="subtitle1">
+            {envelope}
+          </StyledAddressTypography>
+          <StyledAddressTypography variant="subtitle1">
+            {street}
+          </StyledAddressTypography>
           <Box>
-            <Typography
+            <StyledAddressTypography
               style={{ display: 'inline-block' }}
               variant="subtitle1"
-            >{`${city}, ${state ?? ''} ${postalCode}`}</Typography>{' '}
+            >{`${city}, ${
+              state ?? ''
+            } ${postalCode}`}</StyledAddressTypography>{' '}
             <Link
               href={mapURL.replaceAll(' ', '+')}
               target="_blank"
               rel="noopener"
+              underline="hover"
               style={{ display: 'inline-block' }}
               variant="subtitle1"
             >

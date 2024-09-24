@@ -1,4 +1,6 @@
-export const languages = [
+import { IdValue } from 'src/graphql/types.generated';
+
+export const languages: IdValue[] = [
   {
     id: 'en-us',
     value: 'American English',
@@ -41,7 +43,10 @@ export const languages = [
   },
 ];
 
-export const formatLanguage = (language: string): string => {
-  const name = languages.find(({ id }) => id === language)?.value;
+export const formatLanguage = (
+  language: string | undefined | null,
+  languagesList: IdValue[] = languages,
+): string => {
+  const name = languagesList.find(({ id }) => id === language)?.value;
   return name ?? '';
 };

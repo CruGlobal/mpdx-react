@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box, IconButton, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
+import { formatLanguage } from 'src/lib/data/languages';
 import i18n from 'src/lib/i18n';
-import { EditIcon } from '../StyledComponents';
 import { ContactOtherFragment } from './ContactOther.generated';
 
 const ContactOtherContainer = styled(Box)(({ theme }) => ({
@@ -37,7 +38,6 @@ interface ContactDetailsOtherProp {
     openDetails?: boolean,
     flows?: boolean,
   ) => void;
-  handleOpen: (open: boolean) => void;
 }
 
 export const localizedContactMethod = (method?: string | null): string => {
@@ -64,9 +64,10 @@ export const localizedContactMethod = (method?: string | null): string => {
 export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
   onContactSelected,
-  handleOpen,
 }) => {
   const { t } = useTranslation();
+  const constants = useApiConstants();
+  const languages = constants?.languages || undefined;
   const {
     user,
     preferredContactMethod,
@@ -75,6 +76,8 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
     churchName,
     website,
     contactReferralsToMe,
+    greeting,
+    envelopeGreeting,
   } = contact;
 
   const referredBy = contactReferralsToMe?.nodes[0]?.referredBy;
@@ -82,6 +85,20 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   return (
     <Box>
       <ContactOtherContainer>
+        {/* Greeting Section */}
+        <ContactOtherTextContainer alignItems="center">
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Greeting')}
+          </ContactOtherTextLabel>
+          <Typography variant="subtitle1">{greeting}</Typography>
+        </ContactOtherTextContainer>
+        {/* Envelope Name Section */}
+        <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Envelope Name')}
+          </ContactOtherTextLabel>
+          <Typography variant="subtitle1">{envelopeGreeting}</Typography>
+        </ContactOtherTextContainer>
         <ContactOtherTextContainer height={28}>
           <ContactOtherTextLabel variant="subtitle1">
             {t('Assignee')}
@@ -89,13 +106,6 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <Typography variant="subtitle1">
             {user ? `${user.firstName} ${user.lastName}` : t('None')}
           </Typography>
-          <IconButton
-            onClick={() => handleOpen(true)}
-            aria-label={t('Edit Other Icon')}
-            style={{ marginLeft: 16 }}
-          >
-            <EditIcon />
-          </IconButton>
         </ContactOtherTextContainer>
 
         <ContactOtherTextContainer>
@@ -124,9 +134,14 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           <ContactOtherTextLabel variant="subtitle1">
             {t('Language')}
           </ContactOtherTextLabel>
-          <Typography variant="subtitle1">{locale}</Typography>
+          <Typography variant="subtitle1">
+            {formatLanguage(locale, languages)}
+          </Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>
+          <ContactOtherTextLabel variant="subtitle1">
+            {t('Time Zone')}
+          </ContactOtherTextLabel>
           <Typography variant="subtitle1">{timezone}</Typography>
         </ContactOtherTextContainer>
         <ContactOtherTextContainer>

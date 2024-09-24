@@ -42,7 +42,9 @@ export const ContactHeaderPhoneSection = ({
       <ContactHeaderSection icon={<PhoneIcon />}>
         <Box style={{ display: 'flex' }}>
           <Typography style={{ width: 'fit-content' }} variant="subtitle1">
-            <Link href={`tel:${number}`}>{number}</Link>
+            <Link underline="hover" href={`tel:${number}`}>
+              {number}
+            </Link>
           </Typography>
           <Typography
             style={{

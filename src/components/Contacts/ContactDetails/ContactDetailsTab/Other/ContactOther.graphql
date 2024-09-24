@@ -5,6 +5,8 @@ fragment ContactOther on Contact {
   timezone
   churchName
   website
+  greeting
+  envelopeGreeting
   user {
     id
     firstName

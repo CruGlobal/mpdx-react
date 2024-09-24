@@ -58,7 +58,7 @@ describe('ContactFlowRow', () => {
   it('should display contact name and status', () => {
     const { getByText, getByTitle } = render(<Components />);
     expect(getByText('Test Name')).toBeInTheDocument();
-    expect(getByTitle('Filled Star Icon')).toBeInTheDocument();
+    expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
   it('should call contact selected function', () => {

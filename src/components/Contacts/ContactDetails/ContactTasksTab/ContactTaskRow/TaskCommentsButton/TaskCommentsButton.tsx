@@ -2,6 +2,7 @@ import React from 'react';
 import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import { Button, ButtonProps, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 
 const TaskRowWrap = styled(Button, {
@@ -48,13 +49,14 @@ export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
   detailsPage,
   ...props
 }) => {
+  const { t } = useTranslation();
   return (
     <TaskRowWrap
       small={small || false}
       detailsPage={detailsPage || false}
       {...props}
     >
-      <TaskCommentIcon titleAccess="Comment Icon" small={small || false} />
+      <TaskCommentIcon titleAccess={t('Comment')} small={small || false} />
       <TaskCommentNumber isComplete={isComplete}>
         {numberOfComments}
       </TaskCommentNumber>

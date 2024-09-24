@@ -207,6 +207,27 @@ describe('ContactDetailsTabPeople', () => {
       });
     });
 
+    it('should render Add Person button with no people', async () => {
+      const { getByText } = render(
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <ThemeProvider theme={theme}>
+              <ContactsWrapper>
+                <ContactDetailProvider>
+                  <ContactDetailsTabPeople
+                    accountListId={accountListId}
+                    data={{ ...data, people: { nodes: [] } }}
+                  />
+                </ContactDetailProvider>
+              </ContactsWrapper>
+            </ThemeProvider>
+          </GqlMockedProvider>
+        </TestRouter>,
+      );
+      expect(getByText('People')).toBeInTheDocument();
+      expect(getByText('Add Person')).toBeInTheDocument();
+    });
+
     describe('No primary phone number', () => {
       const personMocks = {
         firstName: 'Test',

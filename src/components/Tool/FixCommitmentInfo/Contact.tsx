@@ -170,7 +170,7 @@ interface Props {
   statusValue: string;
   amount: number;
   amountCurrency: string;
-  frequencyValue: PledgeFrequencyEnum | null;
+  frequencyValue: PledgeFrequencyEnum | string;
   showModal: (
     contact: ContactType,
     message: string,
@@ -203,11 +203,11 @@ const Contact: React.FC<Props> = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
 
-  const suggestedAmount = suggestedChanges?.pledge_amount || null;
+  const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
-  const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
+  const suggestedFrequency = suggestedChanges?.pledge_frequency || '';
 
-  const suggestedStatus = suggestedChanges?.status || null;
+  const suggestedStatus = suggestedChanges?.status || '';
 
   const onSubmit = async ({
     status,
@@ -318,96 +318,103 @@ const Contact: React.FC<Props> = ({
                         container
                         style={{ paddingRight: theme.spacing(1) }}
                       >
-                        <Grid
-                          item
-                          xs={12}
-                          md={6}
-                          lg={12}
-                          className={classes.boxTop}
-                        >
-                          <FormControl fullWidth size="small">
-                            <InputLabel id="status-label">
-                              {t('Status')}
-                            </InputLabel>
-                            <Select
-                              className={classes.select}
-                              size="small"
-                              placeholder="Status"
-                              labelId="status-label"
-                              label={t('Status')}
-                              inputProps={{
-                                'data-testid': 'pledgeStatus-input',
-                              }}
-                              data-testid="statusSelect"
-                              style={{ width: '100%' }}
-                              value={statusValue}
-                              onChange={(event) =>
-                                setFieldValue('statusValue', event.target.value)
-                              }
-                            >
-                              {statuses.map((status) => (
-                                <MenuItem
-                                  value={status}
-                                  key={status}
-                                  data-testid="statusSelectOptions"
-                                >
-                                  {status}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormHelperText
-                            error={true}
-                            data-testid="statusSelectError"
+                        {statuses.length && (
+                          <Grid
+                            item
+                            xs={12}
+                            md={6}
+                            lg={12}
+                            className={classes.boxTop}
                           >
-                            {errors.statusValue && errors.statusValue}
-                          </FormHelperText>
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
-                          <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
-                              <InputLabel id="currency-label">
-                                {t('Currency')}
+                              <InputLabel id="status-label">
+                                {t('Status')}
                               </InputLabel>
                               <Select
                                 className={classes.select}
-                                labelId="currency-label"
                                 size="small"
-                                label={t('Currency')}
-                                placeholder="Currency"
-                                data-testid="pledgeCurrency"
+                                placeholder="Status"
+                                labelId="status-label"
+                                label={t('Status')}
                                 inputProps={{
-                                  'data-testid': 'pledgeCurrency-input',
+                                  'data-testid': 'pledgeStatus-input',
                                 }}
-                                value={pledgeCurrency}
-                                onChange={(e) =>
+                                data-testid="statusSelect"
+                                style={{ width: '100%' }}
+                                value={statusValue}
+                                onChange={(event) =>
                                   setFieldValue(
-                                    'pledgeCurrency',
-                                    e.target.value,
+                                    'statusValue',
+                                    event.target.value,
                                   )
                                 }
                               >
-                                {pledgeCurrencies &&
-                                  getPledgeCurrencyOptions(
-                                    pledgeCurrencies,
-                                    PledgeCurrencyOptionFormatEnum.Short,
-                                  )}
+                                {statuses.map((status) => (
+                                  <MenuItem
+                                    value={status}
+                                    key={status}
+                                    data-testid="statusSelectOptions"
+                                  >
+                                    {status}
+                                  </MenuItem>
+                                ))}
                               </Select>
                             </FormControl>
                             <FormHelperText
                               error={true}
-                              data-testid="pledgeCurrencyError"
+                              data-testid="statusSelectError"
                             >
-                              {errors.pledgeCurrency && errors.pledgeCurrency}
+                              {errors.statusValue && errors.statusValue}
                             </FormHelperText>
-                          </Box>
-                        </Grid>
+                          </Grid>
+                        )}
+                        {pledgeCurrencies && (
+                          <Grid item xs={12} md={6} lg={4}>
+                            <Box className={classes.boxBottom}>
+                              <FormControl fullWidth size="small">
+                                <InputLabel id="currency-label">
+                                  {t('Currency')}
+                                </InputLabel>
+
+                                <Select
+                                  className={classes.select}
+                                  labelId="currency-label"
+                                  size="small"
+                                  label={t('Currency')}
+                                  placeholder="Currency"
+                                  data-testid="pledgeCurrency"
+                                  inputProps={{
+                                    'data-testid': 'pledgeCurrency-input',
+                                  }}
+                                  value={pledgeCurrency}
+                                  onChange={(e) =>
+                                    setFieldValue(
+                                      'pledgeCurrency',
+                                      e.target.value,
+                                    )
+                                  }
+                                >
+                                  {pledgeCurrencies &&
+                                    getPledgeCurrencyOptions(
+                                      pledgeCurrencies,
+                                      PledgeCurrencyOptionFormatEnum.Short,
+                                    )}
+                                </Select>
+                              </FormControl>
+                              <FormHelperText
+                                error={true}
+                                data-testid="pledgeCurrencyError"
+                              >
+                                {errors.pledgeCurrency && errors.pledgeCurrency}
+                              </FormHelperText>
+                            </Box>
+                          </Grid>
+                        )}
                         <Grid item xs={12} lg={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <Field
                                 id="standard-number"
-                                as={TextField}
                                 input={<StyledInput />}
                                 label={t('Amount')}
                                 labelId="amount-label"
@@ -416,7 +423,8 @@ const Contact: React.FC<Props> = ({
                                 variant="standard"
                                 size="small"
                                 fullWidth
-                                render={() => (
+                              >
+                                {() => (
                                   <TextField
                                     label={t('Amount')}
                                     className={classes.select}
@@ -431,12 +439,12 @@ const Contact: React.FC<Props> = ({
                                     onChange={(event) =>
                                       setFieldValue(
                                         'pledgeAmount',
-                                        parseFloat(event.target.value),
+                                        event.target.value,
                                       )
                                     }
                                   />
                                 )}
-                              />
+                              </Field>
                             </FormControl>
                             <FormHelperText
                               error={true}
@@ -498,15 +506,11 @@ const Contact: React.FC<Props> = ({
                       </Grid>
                     </Grid>
                     {!!donations.length && (
-                      <Grid
-                        container
-                        className={classes.donationsTable}
-                        lg={12}
-                      >
+                      <Grid container className={classes.donationsTable}>
                         {donations
                           .map((donation) => (
                             <Grid
-                              key={donation.amount.conversionDate}
+                              key={donation.id}
                               display="flex"
                               flexDirection="column"
                             >

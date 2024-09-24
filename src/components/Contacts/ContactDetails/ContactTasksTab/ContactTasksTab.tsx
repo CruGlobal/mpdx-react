@@ -200,7 +200,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             />
           </HeaderItemsWrap>
         </HeaderRow>
-        <HeaderRow mb={2}>
+        <HeaderRow mb={1}>
           <HeaderItemsWrap>
             <Checkbox
               checked={selectionType === ListHeaderCheckBoxState.Checked}
@@ -252,7 +252,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
             })
           }
           style={{
-            height: `Max(calc(100vh - ${infiniteListRectTop}px), 260px)`,
+            height: `max(100vh - ${infiniteListRectTop}px, 500px)`,
           }}
           data-testid="virtuoso-item-list"
         />

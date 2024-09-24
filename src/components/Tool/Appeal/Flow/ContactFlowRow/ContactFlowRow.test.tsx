@@ -72,7 +72,7 @@ describe('ContactFlowRow', () => {
   it('should display contact name and status', () => {
     const { getByText, getByTitle } = render(<Components />);
     expect(getByText(defaultContact.name)).toBeInTheDocument();
-    expect(getByTitle('Outline Star Icon')).toBeInTheDocument();
+    expect(getByTitle('Star')).toBeInTheDocument();
   });
 
   it('should display contact as starred', () => {
@@ -85,7 +85,7 @@ describe('ContactFlowRow', () => {
       />,
     );
     expect(getByText(defaultContact.name)).toBeInTheDocument();
-    expect(getByTitle('Filled Star Icon')).toBeInTheDocument();
+    expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
   it('should render contact name as link', () => {
