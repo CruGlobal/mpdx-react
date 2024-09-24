@@ -3,7 +3,7 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   GoogleMap,
-  InfoWindow,
+  InfoWindowF,
   Marker,
   MarkerClusterer,
   useJsApiLoader,
@@ -150,9 +150,9 @@ export const ContactsMap: React.FC = ({}) => {
             )}
           </MarkerClusterer>
         )}
-
+        {/* Using InfoWindowF instead of InfoWindow as there is a problem with React Strict rendering the component twice. */}
         {selected ? (
-          <InfoWindow
+          <InfoWindowF
             position={{
               lat: selected.lat ?? 0,
               lng: selected.lng ?? 0,
@@ -189,7 +189,7 @@ export const ContactsMap: React.FC = ({}) => {
                 Show Contact
               </ContactLink>
             </Box>
-          </InfoWindow>
+          </InfoWindowF>
         ) : null}
       </GoogleMap>
     </div>
