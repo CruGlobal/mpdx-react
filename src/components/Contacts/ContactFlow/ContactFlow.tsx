@@ -12,7 +12,6 @@ import {
   ContactFilterStatusEnum,
   IdValue,
   StatusEnum,
-  TaskSortEnum,
 } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -129,8 +128,6 @@ export const ContactFlow: React.FC<Props> = ({
         const { data } = await hasActiveTask({
           variables: {
             accountListId,
-            sortBy: TaskSortEnum.StartAtAsc,
-            first: 1,
             tasksFilter: {
               completed: false,
               contactIds: [id],
