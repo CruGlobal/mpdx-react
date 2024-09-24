@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Avatar,
@@ -26,13 +26,14 @@ import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
-import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   PledgeCurrencyOptionFormatEnum,
   getPledgeCurrencyOptions,
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
@@ -166,8 +167,7 @@ interface Props {
   id: string;
   name: string;
   donations: DonationsType[];
-  statusTitle: string | null | undefined;
-  statusValue: string;
+  status: string | undefined;
   amount: number;
   amountCurrency: string;
   frequencyValue: PledgeFrequencyEnum | null;
@@ -177,7 +177,6 @@ interface Props {
     title: string,
     updateType: UpdateTypeEnum,
   ) => void;
-  statuses: string[];
   setContactFocus: SetContactFocus;
   avatar?: string;
   suggestedChanges?: SuggestedChangesType;
@@ -187,13 +186,11 @@ const Contact: React.FC<Props> = ({
   id,
   name,
   donations,
-  statusTitle,
-  statusValue,
+  status,
   amount,
   amountCurrency,
   frequencyValue,
   showModal,
-  statuses,
   setContactFocus,
   avatar,
   suggestedChanges,
@@ -202,12 +199,29 @@ const Contact: React.FC<Props> = ({
   const locale = useLocale();
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const constants = useApiConstants();
+  const frequencyOptions = constants?.pledgeFrequency;
+  const statusOptions = constants?.status;
 
   const suggestedAmount = suggestedChanges?.pledge_amount || null;
 
-  const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
+  const suggestedFrequency = useMemo(
+    () =>
+      frequencyOptions?.find((frequency) => {
+        return frequency?.key === suggestedChanges?.pledge_frequency;
+      })?.id || '',
+    [frequencyOptions, suggestedChanges?.pledge_frequency],
+  );
 
-  const suggestedStatus = suggestedChanges?.status || null;
+  const suggestedStatus = useMemo(
+    () =>
+      statusOptions?.find(
+        (status) =>
+          status.id === suggestedChanges?.status?.toUpperCase() ||
+          status.value === suggestedChanges?.status,
+      )?.id || '',
+    [statusOptions, suggestedChanges?.status],
+  );
 
   const onSubmit = async ({
     status,
@@ -235,7 +249,7 @@ const Contact: React.FC<Props> = ({
   };
 
   const commitmentInfoFormSchema = yup.object({
-    statusValue: yup.string().required('Please select a status'),
+    status: yup.string().nullable(),
     pledgeCurrency: yup.string().nullable(),
     pledgeAmount: yup.number().nullable(),
     pledgeFrequency: yup.string().nullable(),
@@ -245,7 +259,7 @@ const Contact: React.FC<Props> = ({
     <Grid container className={classes.container}>
       <Formik
         initialValues={{
-          statusValue: suggestedStatus || statusValue,
+          status: suggestedStatus || status,
           pledgeCurrency: amountCurrency,
           pledgeAmount: suggestedAmount || amount,
           pledgeFrequency: suggestedFrequency || frequencyValue,
@@ -256,19 +270,14 @@ const Contact: React.FC<Props> = ({
         }}
       >
         {({
-          values: {
-            statusValue,
-            pledgeCurrency,
-            pledgeAmount,
-            pledgeFrequency,
-          },
+          values: { status, pledgeCurrency, pledgeAmount, pledgeFrequency },
           handleSubmit,
           setFieldValue,
           errors,
         }): ReactElement => {
           const modalContact = {
             id: id,
-            status: statusValue,
+            status,
             name: name,
             pledgeCurrency,
             pledgeAmount,
@@ -279,7 +288,7 @@ const Contact: React.FC<Props> = ({
               <Grid container className={classes.formWrapper}>
                 <Card className={classes.formInner}>
                   <Grid container>
-                    <Grid item md={4} xs={12}>
+                    <Grid item sm={12} md={4}>
                       <Box
                         display="flex"
                         p={2}
@@ -301,7 +310,10 @@ const Contact: React.FC<Props> = ({
                             <Typography variant="subtitle1">{name}</Typography>
                           </Link>
                           <Typography variant="subtitle2">
-                            {`Current: ${statusTitle || ''} ${
+                            {`Current: ${getLocalizedContactStatus(
+                              t,
+                              status as StatusEnum,
+                            )} ${
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''
@@ -313,18 +325,12 @@ const Contact: React.FC<Props> = ({
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={8} className={classes.right}>
+                    <Grid item sm={12} md={8} className={classes.right}>
                       <Grid
                         container
                         style={{ paddingRight: theme.spacing(1) }}
                       >
-                        <Grid
-                          item
-                          xs={12}
-                          md={6}
-                          lg={12}
-                          className={classes.boxTop}
-                        >
+                        <Grid item xs={12} className={classes.boxTop}>
                           <FormControl fullWidth size="small">
                             <InputLabel id="status-label">
                               {t('Status')}
@@ -340,30 +346,24 @@ const Contact: React.FC<Props> = ({
                               }}
                               data-testid="statusSelect"
                               style={{ width: '100%' }}
-                              value={statusValue}
+                              value={status}
                               onChange={(event) =>
-                                setFieldValue('statusValue', event.target.value)
+                                setFieldValue('status', event.target.value)
                               }
                             >
-                              {statuses.map((status) => (
+                              {Object.values(StatusEnum).map((status) => (
                                 <MenuItem
                                   value={status}
                                   key={status}
                                   data-testid="statusSelectOptions"
                                 >
-                                  {status}
+                                  {getLocalizedContactStatus(t, status)}
                                 </MenuItem>
                               ))}
                             </Select>
                           </FormControl>
-                          <FormHelperText
-                            error={true}
-                            data-testid="statusSelectError"
-                          >
-                            {errors.statusValue && errors.statusValue}
-                          </FormHelperText>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
+                        <Grid item xs={12} sm={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <InputLabel id="currency-label">
@@ -402,7 +402,7 @@ const Contact: React.FC<Props> = ({
                             </FormHelperText>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} lg={4}>
+                        <Grid item xs={12} sm={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <Field
@@ -446,7 +446,7 @@ const Contact: React.FC<Props> = ({
                             </FormHelperText>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} lg={4}>
+                        <Grid item xs={12} sm={4}>
                           <Box
                             className={classes.boxBottom}
                             data-testid="BoxBottom"
