@@ -15,7 +15,6 @@ interface DonationReportsProps {
   designationAccounts?: string[];
   isNavListOpen: boolean;
   onNavListToggle: () => void;
-  onSelectContact: (contactId: string) => void;
   title: string;
 }
 
@@ -24,7 +23,6 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
   designationAccounts,
   isNavListOpen,
   onNavListToggle,
-  onSelectContact,
   title,
 }) => {
   const { query, replace } = useRouter();
@@ -79,7 +77,6 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
         <DonationsReportTable
           accountListId={accountListId}
           designationAccounts={designationAccounts}
-          onSelectContact={onSelectContact}
           time={time}
           setTime={setTime}
         />

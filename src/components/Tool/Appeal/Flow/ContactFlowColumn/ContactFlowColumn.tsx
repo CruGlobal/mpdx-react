@@ -66,7 +66,6 @@ export const ContactFlowColumn: React.FC<Props> = ({
   color,
   accountListId,
   searchTerm,
-  onContactSelected,
   changeContactStatus,
 }) => {
   const {
@@ -235,7 +234,6 @@ export const ContactFlowColumn: React.FC<Props> = ({
                 accountListId={accountListId}
                 contact={contact}
                 appealStatus={appealStatus}
-                onContactSelected={onContactSelected}
                 columnWidth={cardContentRef.current?.offsetWidth}
                 excludedContacts={
                   excludedContacts?.appeal?.excludedAppealContacts ?? []

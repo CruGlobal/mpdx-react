@@ -505,9 +505,9 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('checkbox')[0]).not.toBeChecked();
   });
 
-  it('can click on contact names', async () => {
+  it('should show contact name as a link', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, queryByTestId } = render(
+    const { getByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -526,8 +526,11 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    userEvent.click(getByText('Ababa, Aladdin und Jasmine (Princess)'));
-    expect(onSelectContact).toHaveBeenCalledWith('01');
+    expect(
+      getByRole('link', {
+        name: 'Ababa, Aladdin und Jasmine (Princess)',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('formats currencies', async () => {

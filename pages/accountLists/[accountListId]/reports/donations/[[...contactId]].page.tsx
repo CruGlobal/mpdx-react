@@ -14,6 +14,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGetContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -30,7 +31,9 @@ const DonationsReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
-
+  const { handleCloseContact } = useGetContactLinks({
+    url: `/accountLists/${accountListId}/reports/donations/`,
+  });
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
   }, []);
@@ -39,12 +42,6 @@ const DonationsReportPage: React.FC = () => {
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
-  };
-
-  const handleSelectContact = (contactId: string) => {
-    router.push(
-      `/accountLists/${accountListId}/reports/donations/${contactId}`,
-    );
   };
 
   return (
@@ -76,16 +73,13 @@ const DonationsReportPage: React.FC = () => {
                 designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                onSelectContact={handleSelectContact}
                 title={t('Donations')}
               />
             }
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact('')}
-                  />
+                  <DynamicContactsRightPanel onClose={handleCloseContact} />
                 </ContactsWrapper>
               ) : undefined
             }

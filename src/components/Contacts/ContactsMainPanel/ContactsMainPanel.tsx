@@ -15,7 +15,6 @@ export const ContactsMainPanel: React.FC = () => {
     activeFilters,
     starredFilter,
     searchTerm,
-    setContactFocus,
     viewMode,
     userOptionsLoading,
   } = React.useContext(ContactsContext) as ContactsType;
@@ -34,7 +33,6 @@ export const ContactsMainPanel: React.FC = () => {
               ...starredFilter,
             }}
             searchTerm={searchTerm}
-            onContactSelected={setContactFocus}
           />
         ) : (
           <DynamicContactsMap />

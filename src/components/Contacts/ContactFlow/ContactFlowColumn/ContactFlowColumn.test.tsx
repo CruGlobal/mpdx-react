@@ -22,9 +22,11 @@ import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
-const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
 const mutationSpy = jest.fn();
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/123`,
+});
 const contact = {
   id: '123',
   name: 'Test Person',
@@ -84,6 +86,7 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     {
                       sanitizedFilters: {},
                       starredFilter,
+                      getContactUrl,
                     } as unknown as ContactsType
                   }
                 >
@@ -92,7 +95,6 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     selectedFilters={{}}
                     color={theme.palette.mpdxBlue.main}
                     title={title}
-                    onContactSelected={onContactSelected}
                     changeContactStatus={changeContactStatus}
                     statuses={[ContactFilterStatusEnum.PartnerFinancial]}
                   />

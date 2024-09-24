@@ -15,6 +15,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGetContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -32,6 +33,9 @@ const PartnerCurrencyReportPage: React.FC = () => {
   const selectedContactId = getQueryParam(router.query, 'contactId');
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+  const { handleCloseContact, getContactUrl } = useGetContactLinks({
+    url: `/accountLists/${accountListId}/reports/partnerCurrency/`,
+  });
 
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
@@ -39,12 +43,6 @@ const PartnerCurrencyReportPage: React.FC = () => {
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
-  };
-
-  const handleSelectContact = (contactId: string) => {
-    router.push(
-      `/accountLists/${accountListId}/reports/partnerCurrency/${contactId}`,
-    );
   };
 
   return (
@@ -75,7 +73,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
                 accountListId={accountListId}
                 designationAccounts={designationAccounts}
                 currencyType={FourteenMonthReportCurrencyType.Donor}
-                onSelectContact={handleSelectContact}
+                getContactUrl={getContactUrl}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Contributions by Partner Currency')}
@@ -84,9 +82,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact('')}
-                  />
+                  <DynamicContactsRightPanel onClose={handleCloseContact} />
                 </ContactsWrapper>
               ) : undefined
             }
