@@ -56,6 +56,7 @@ export interface AppealsType
     | 'contactsQueryResult'
     | 'setContactFocus'
     | 'setViewMode'
+    | 'getContactUrl'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
