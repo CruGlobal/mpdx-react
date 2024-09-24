@@ -22,7 +22,6 @@ import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
-const onContactSelected = jest.fn();
 const changeContactStatus = jest.fn();
 const mutationSpy = jest.fn();
 const contact = {
@@ -92,7 +91,6 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     selectedFilters={{}}
                     color={theme.palette.mpdxBlue.main}
                     title={title}
-                    onContactSelected={onContactSelected}
                     changeContactStatus={changeContactStatus}
                     statuses={[ContactFilterStatusEnum.PartnerFinancial]}
                   />
