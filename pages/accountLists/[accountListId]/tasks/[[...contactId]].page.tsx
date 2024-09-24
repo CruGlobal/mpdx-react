@@ -103,6 +103,7 @@ const TasksPage: React.FC = () => {
 
   const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
   const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [idsToRemove, setIdsToRemove] = useState<string[]>([]);
 
   const { contactId, searchTerm } = query;
 
@@ -242,6 +243,7 @@ const TasksPage: React.FC = () => {
     activeFilters,
     searchTerm as string,
     starredFilter,
+    idsToRemove,
   );
   //#endregion
 
@@ -416,6 +418,7 @@ const TasksPage: React.FC = () => {
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
+                            removeSelectedIds={(id) => setIdsToRemove([id])}
                           />
                         </Box>
                       )}

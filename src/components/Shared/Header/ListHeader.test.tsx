@@ -474,7 +474,7 @@ describe('ListHeader', () => {
   });
 
   it('Should update count upon deletion', async () => {
-    const { queryByText, getByText, getAllByTestId } = render(
+    const { queryByText, getByText } = render(
       <Components
         selectedIds={['a', 'b', 'c']}
         page={PageEnum.Task}
@@ -494,8 +494,8 @@ describe('ListHeader', () => {
       ).toBeInTheDocument();
     });
 
-    userEvent.click(getAllByTestId('action-button')[0]);
+    userEvent.click(getByText('Yes'));
 
-    expect(queryByText('Showing 50')).toBeInTheDocument();
+    expect(queryByText('Showing 47')).toBeInTheDocument();
   });
 });

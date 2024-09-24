@@ -66,6 +66,7 @@ interface TaskRowProps {
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
+  removeSelectedIds?: (id: string) => void;
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({
@@ -75,6 +76,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onContactSelected,
   onTaskCheckToggle,
   useTopMargin,
+  removeSelectedIds,
 }) => {
   const { t } = useTranslation();
 
@@ -269,6 +271,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               <DeleteTaskIconButton
                 accountListId={accountListId}
                 taskId={taskId}
+                removeSelectedIds={removeSelectedIds}
               />
             </Box>
             <Box onClick={(e) => e.stopPropagation()}>

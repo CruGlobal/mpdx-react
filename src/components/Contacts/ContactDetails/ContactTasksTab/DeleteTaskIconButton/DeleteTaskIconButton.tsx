@@ -13,12 +13,14 @@ interface DeleteTaskIconButtonProps {
   accountListId: string;
   taskId: string;
   onDeleteConfirm?: () => void;
+  removeSelectedIds?: (id: string) => void;
 }
 
 export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
   accountListId,
   taskId,
   onDeleteConfirm,
+  removeSelectedIds,
 }) => {
   const { t } = useTranslation();
 
@@ -36,6 +38,7 @@ export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
         onClickDecline={setRemoveDialogOpen}
         accountListId={accountListId}
         taskId={taskId}
+        removeSelectedIds={removeSelectedIds}
       />
     </>
   );
