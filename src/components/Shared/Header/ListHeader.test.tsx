@@ -249,7 +249,7 @@ describe('ListHeader', () => {
       userEvent.click(getByText('Yes'));
 
       await waitFor(() => {
-        expect(queryByText('Showing 50')).toBeInTheDocument();
+        expect(getByText('Showing 50')).toBeInTheDocument();
       });
     });
   });
