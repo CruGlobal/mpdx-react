@@ -66,7 +66,7 @@ interface TaskRowProps {
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
-  removeSelectedIds?: (id: string) => void;
+  removeSelectedIds?: (id: string[]) => void;
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({

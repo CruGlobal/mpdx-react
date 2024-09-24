@@ -11,7 +11,6 @@ export const useMassSelection = (
   activeFilters?: ContactFilterSetInput | ReportContactFilterSetInput,
   wildcardSearch?: string,
   starredFilter?: ContactFilterSetInput,
-  idsToRemove?: string[],
 ): {
   ids: string[];
   selectionType: ListHeaderCheckBoxState;
@@ -26,12 +25,6 @@ export const useMassSelection = (
     ListHeaderCheckBoxState.Unchecked,
   );
   const [ids, setIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (idsToRemove) {
-      setIds(ids.filter((id) => !idsToRemove.includes(id)));
-    }
-  }, [idsToRemove]);
 
   const toggleSelectionById = (id: string) => {
     switch (selectionType) {

@@ -29,7 +29,7 @@ interface DeleteConfirmationProps {
   accountListId?: string;
   taskId?: string;
   onClose?: () => void;
-  removeSelectedIds?: (id: string) => void;
+  removeSelectedIds?: (id: string[]) => void;
 }
 
 export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
@@ -69,7 +69,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
       onClickDecline(false);
       onClose && onClose();
       onClickConfirm && onClickConfirm();
-      removeSelectedIds && removeSelectedIds(taskId);
+      removeSelectedIds && removeSelectedIds([taskId]);
     }
   };
 

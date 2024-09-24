@@ -13,7 +13,7 @@ interface DeleteTaskIconButtonProps {
   accountListId: string;
   taskId: string;
   onDeleteConfirm?: () => void;
-  removeSelectedIds?: (id: string) => void;
+  removeSelectedIds?: (id: string[]) => void;
 }
 
 export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
