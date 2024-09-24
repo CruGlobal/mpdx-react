@@ -9,6 +9,8 @@ import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AddAppealForm, {
@@ -59,10 +61,12 @@ const Components = ({
             <GqlMockedProvider<{
               ContactTags: ContactTagsQuery;
               ContactFilters: ContactFiltersQuery;
+              LoadConstants: LoadConstantsQuery;
             }>
               mocks={{
                 ContactTags: contactTagsMock,
                 ContactFilters: contactFiltersMock,
+                LoadConstants: loadConstantsMockData,
               }}
               onCall={mutationSpy}
             >
@@ -255,9 +259,8 @@ describe('AddAppealForm', () => {
 
   describe('Select all buttons', () => {
     it('selects all statues', async () => {
-      const { getByText, findByText, queryByText, getByTestId } = render(
-        <Components />,
-      );
+      const { getByText, findByText, queryByText, getByTestId, findByTestId } =
+        render(<Components />);
 
       await waitFor(() =>
         expect(getByTestId('contactStatusSelect')).toBeInTheDocument(),
@@ -266,17 +269,23 @@ describe('AddAppealForm', () => {
       const selectAllStatusesButton = getByTestId(
         'contactStatusSelect-selectAll',
       );
+      await waitFor(() => {
+        expect(queryByText('New Connection')).not.toBeInTheDocument();
+        expect(queryByText('Ask in Future')).not.toBeInTheDocument();
+      });
 
-      expect(queryByText('New Connection')).not.toBeInTheDocument();
-      expect(queryByText('Ask in Future')).not.toBeInTheDocument();
+      const contactStatusSelect = await findByTestId('contactStatusSelect');
+      userEvent.click(contactStatusSelect);
 
       userEvent.click(selectAllStatusesButton);
 
       expect(await findByText('New Connection')).toBeInTheDocument();
       expect(getByText('Ask in Future')).toBeInTheDocument();
       expect(getByText('-- None --')).toBeInTheDocument();
-      // Ensures the '--- All Active ---' option isn't added
-      expect(queryByText('--- All Active ---')).not.toBeInTheDocument();
+      // Ensures the '-- All Active --' option isn't added
+      await waitFor(() =>
+        expect(queryByText('-- All Active --')).not.toBeInTheDocument(),
+      );
     });
 
     it('selects all tags', async () => {
@@ -371,11 +380,11 @@ describe('AddAppealForm', () => {
           value: 'NULL',
         },
         {
-          name: '--- All Active ---',
+          name: '-- All Active --',
           value: 'ACTIVE',
         },
         {
-          name: '--- All Hidden ---',
+          name: '-- All Hidden --',
           value: 'HIDDEN',
         },
         {
