@@ -37,7 +37,7 @@ const Components = ({
           ContactStatus: {
             data: {
               contact: {
-                status: contactStatusQueryMock || StatusEnum.NeverContacted,
+                status: contactStatusQueryMock || null,
               },
             },
           },
@@ -105,7 +105,7 @@ describe('SuggestedContactStatus', () => {
   });
 
   it('renders suggested status when single contact and checks contact status with gql call', async () => {
-    const { getByText, findByText } = render(
+    const { getByText } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -122,10 +122,9 @@ describe('SuggestedContactStatus', () => {
         },
       });
     });
-
-    expect(
-      await findByText("Change the contact's status to:"),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+    });
 
     expect(getByText('Initiate for Appointment')).toBeInTheDocument();
   });
@@ -149,5 +148,23 @@ describe('SuggestedContactStatus', () => {
       expect(getByText("Change the contact's status to:")).toBeInTheDocument();
       expect(getByText('Initiate for Appointment')).toBeInTheDocument();
     });
+  });
+
+  it('renders suggested status when the contact has no status', async () => {
+    const { getByText } = render(
+      <Components
+        suggestedContactStatus={StatusEnum.ContactForAppointment}
+        contactIds={['contact-1']}
+        contactStatus={null}
+        contactStatusQueryMock={null}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+    });
+    await waitFor(() =>
+      expect(getByText('Initiate for Appointment')).toBeInTheDocument(),
+    );
   });
 });
