@@ -112,7 +112,7 @@ describe('ContactDetailsPartnerAccounts', () => {
     expect(await findByText('accountNumber-1')).toBeInTheDocument();
     expect(getByText('accountNumber-2')).toBeInTheDocument();
 
-    expect(getAllByText('Account No:')).toHaveLength(2);
+    expect(getAllByText('Account Number:')).toHaveLength(2);
     expect(getAllByText('Account Name:')).toHaveLength(2);
   });
 

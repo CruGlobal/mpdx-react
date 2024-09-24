@@ -186,7 +186,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
             )}
             <PartnerAccountTextContainer>
               <PartnerAccountTextLabel>
-                {t('Account No:')}
+                {t('Account Number:')}
               </PartnerAccountTextLabel>
               <Typography>{donorAccount.donorAccount.accountNumber}</Typography>
             </PartnerAccountTextContainer>
