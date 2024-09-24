@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, IconButton, Skeleton, Typography } from '@mui/material';
+import { Box, Divider, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,7 +12,7 @@ import { ContactDetailsOther } from './Other/ContactDetailsOther';
 import { EditContactOtherModal } from './Other/EditContactOtherModal/EditContactOtherModal';
 import { ContactDetailsPartnerAccounts } from './PartnerAccounts/ContactDetailsPartnerAccounts';
 import { ContactDetailsTabPeople } from './People/ContactDetailsTabPeople';
-import { EditIcon } from './StyledComponents';
+import { ContactDetailLoadingPlaceHolder, EditIcon } from './StyledComponents';
 import { ContactTags } from './Tags/ContactTags';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
@@ -35,12 +35,6 @@ const ContactDetailHeadingContainer = styled(Box)(() => ({
 const ContactDetailHeadingText = styled(Typography)(() => ({
   flexGrow: 5,
   fontWeight: 'bold',
-}));
-
-const ContactDetailLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
-  width: '100%',
-  height: '24px',
-  margin: theme.spacing(2, 0),
 }));
 
 interface ContactDetailTabProps {
@@ -156,15 +150,10 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               {t('Partner Accounts')}
             </ContactDetailHeadingText>
           </ContactDetailHeadingContainer>
-          {!data ? (
-            <>
-              <ContactDetailLoadingPlaceHolder variant="rectangular" />
-              <ContactDetailLoadingPlaceHolder variant="rectangular" />
-              <ContactDetailLoadingPlaceHolder variant="rectangular" />
-            </>
-          ) : (
-            <ContactDetailsPartnerAccounts contact={data.contact} />
-          )}
+          <ContactDetailsPartnerAccounts
+            contactId={contactId}
+            accountListId={accountListId}
+          />
         </ContactDetailSectionContainer>
         <Divider />
       </ContactDetailsTabContainer>

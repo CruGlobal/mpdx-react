@@ -77,6 +77,5 @@ fragment DonationMoney on Money {
 
 fragment ContactDonorAccount on DonorAccount {
   id
-  displayName
   accountNumber
 }
