@@ -36,7 +36,7 @@ jest.mock('../../../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
 const onClose = jest.fn();
-const onErrorFunction = jest.fn();
+const onErrorMock = jest.fn();
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
@@ -44,7 +44,7 @@ beforeEach(() => {
     preloadTaskModal: jest.fn(),
   });
   onClose.mockClear();
-  onErrorFunction.mockClear();
+  onErrorMock.mockClear();
 });
 
 jest.mock('src/lib/analytics');
@@ -83,7 +83,7 @@ const Components = ({ mocks = [], taskOverrides, props }: ComponentsProps) => (
   <ThemeProvider theme={theme}>
     <TestWrapper
       mocks={[LoadConstantsMock(), ...mocks]}
-      onErrorFunction={onErrorFunction}
+      onErrorMock={onErrorMock}
     >
       <TaskModalCompleteForm
         accountListId={accountListId}
@@ -487,7 +487,7 @@ describe('TaskModalCompleteForm', () => {
         },
       }),
     );
-    onErrorFunction.mock.calls.forEach((call) => {
+    onErrorMock.mock.calls.forEach((call) => {
       expect(
         JSON.stringify(call[0]).includes('UpdateContactStatus'),
       ).toBeFalsy();
@@ -510,7 +510,7 @@ describe('TaskModalCompleteForm', () => {
     );
     userEvent.click(getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-    onErrorFunction.mock.calls.forEach((call) => {
+    onErrorMock.mock.calls.forEach((call) => {
       expect(JSON.stringify(call[0]).includes('CompleteTask')).toBeFalsy();
     });
   });
@@ -535,7 +535,7 @@ describe('TaskModalCompleteForm', () => {
     );
     userEvent.click(getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
-    onErrorFunction.mock.calls.forEach((call) => {
+    onErrorMock.mock.calls.forEach((call) => {
       expect(JSON.stringify(call[0]).includes('CreateTaskComment')).toBeFalsy();
     });
   });
