@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, CircularProgress, Grid, Theme, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
@@ -12,9 +12,7 @@ import {
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -118,15 +116,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
     variables: { accountListId },
   });
 
-  const { contactStatuses } = useContactPartnershipStatuses();
-
   const [updateInvalidStatus] = useUpdateStatusMutation();
-
-  const statusList = useMemo(() => {
-    return Object.values(StatusEnum).map((value) =>
-      getLocalizedContactStatus(t, value),
-    );
-  }, [t]);
 
   const formatSuggestedChanges = (
     suggestedChanges: SuggestedChangesType | string | undefined | null,
@@ -257,18 +247,11 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         name={contact.name}
                         key={contact.id}
                         donations={contact.donations?.nodes}
-                        statusTitle={
-                          contact.status &&
-                          contactStatuses[contact.status]?.translated
-                        }
-                        statusValue={
-                          getLocalizedContactStatus(t, contact.status) || ''
-                        }
+                        status={contact.status || ''}
                         amount={contact.pledgeAmount || 0}
                         amountCurrency={contact.pledgeCurrency || ''}
                         frequencyValue={contact.pledgeFrequency || null}
                         showModal={handleShowModal}
-                        statuses={statusList || [{ name: '', value: '' }]}
                         setContactFocus={setContactFocus}
                         avatar={contact?.avatar}
                         suggestedChanges={formatSuggestedChanges(

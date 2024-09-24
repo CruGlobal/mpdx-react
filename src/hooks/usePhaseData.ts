@@ -57,6 +57,48 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     [constants],
   );
 
+  // phaseData = {
+  //   contactStatuses: ['CALL_FOR_DECISION'],
+  //   id: 'FOLLOW_UP',
+  //   name: 'Follow Up',
+  //   tasks: [
+  //     'FOLLOW_UP_PHONE_CALL',
+  //     'FOLLOW_UP_EMAIL',
+  //     'FOLLOW_UP_TEXT_MESSAGE',
+  //     'FOLLOW_UP_SOCIAL_MEDIA',
+  //     'FOLLOW_UP_IN_PERSON',
+  //   ],
+  //   results: {
+  //     resultOptions: [
+  //       {
+  //         name: 'INITIATION_RESULT_NO_RESPONSE',
+  //         suggestedContactStatus: null,
+  //         suggestedNextActions: [
+  //           'FOLLOW_UP_PHONE_CALL',
+  //           'FOLLOW_UP_EMAIL',
+  //           'FOLLOW_UP_TEXT_MESSAGE',
+  //           'FOLLOW_UP_SOCIAL_MEDIA',
+  //           'FOLLOW_UP_IN_PERSON',
+  //         ],
+  //         dbResult: [
+  //           { result: 'ATTEMPTED', task: 'FOLLOW_UP_PHONE_CALL' },
+  //           { result: 'COMPLETED', task: 'FOLLOW_UP_EMAIL' },
+  //           { result: 'COMPLETED', task: 'FOLLOW_UP_TEXT_MESSAGE' },
+  //           { result: 'COMPLETED', task: 'FOLLOW_UP_SOCIAL_MEDIA' },
+  //           { result: 'COMPLETED', task: 'FOLLOW_UP_IN_PERSON' },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // };
+
+  // taskPhases
+  //   [
+  //     'INITIATION',
+  //     'APPOINTMENT',
+  //     'FOLLOW_UP',
+  //     'PARTNER_CARE',
+  //   ]
   const taskPhases = useMemo(() => {
     return (
       constants?.phases
@@ -64,6 +106,20 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
         .map((phase) => phase?.id) || []
     );
   }, [constants]);
+
+  // activityTypes
+  // {INITIATION_SPECIAL_GIFT_APPEAL: {
+  //   name: 'Special Gift Appeal',
+  //   phase: 'Initiation',
+  //   phaseId: 'INITIATION',
+  //   title: 'Initiation - Special Gift Appeal',
+  // },
+  // FOLLOW_UP_TEXT_MESSAGE: {
+  //   name: 'Text Message',
+  //   phase: 'Follow-Up',
+  //   phaseId: 'FOLLOW_UP',
+  //   title: 'Follow Up - Text Message',
+  // },}
 
   const activityTypes: Map<ActivityTypeEnum, ActivityData> = useMemo(() => {
     const activitiesMap = new Map();
@@ -83,6 +139,15 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     return activitiesMap;
   }, [constants]);
 
+  // activitiesByPhase
+  // {
+  //   APPOINTMENT: [
+  //     'APPOINTMENT_IN_PERSON',
+  //     'APPOINTMENT_PHONE_CALL',
+  //     'APPOINTMENT_VIDEO_CALL',
+  //   ],
+  //   ARCHIVE: [],
+  // }
   const activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]> = useMemo(() => {
     const phasesMap = new Map();
 
