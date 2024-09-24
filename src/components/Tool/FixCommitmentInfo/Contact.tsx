@@ -210,7 +210,7 @@ const Contact: React.FC<Props> = ({
       frequencyOptions?.find((frequency) => {
         return frequency?.key === suggestedChanges?.pledge_frequency;
       })?.id || '',
-    [statusOptions, suggestedChanges?.pledge_frequency],
+    [frequencyOptions, suggestedChanges?.pledge_frequency],
   );
 
   const suggestedStatus = useMemo(
