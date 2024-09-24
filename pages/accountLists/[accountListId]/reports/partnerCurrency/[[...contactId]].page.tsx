@@ -15,6 +15,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGetContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -32,6 +33,9 @@ const PartnerCurrencyReportPage: React.FC = () => {
   const selectedContactId = getQueryParam(router.query, 'contactId');
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+  const { handleCloseContact, getContactUrl } = useGetContactLinks({
+    url: `/accountLists/${accountListId}/reports/partnerCurrency/`,
+  });
 
   useEffect(() => {
     suggestArticles('HS_REPORTS_SUGGESTIONS');
@@ -39,13 +43,6 @@ const PartnerCurrencyReportPage: React.FC = () => {
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
-  };
-
-  const getContactUrl = (contactId: string) =>
-    `/accountLists/${accountListId}/reports/partnerCurrency/${contactId}`;
-
-  const handleCloseContact = () => {
-    router.push(`/accountLists/${accountListId}/reports/partnerCurrency/`);
   };
 
   return (

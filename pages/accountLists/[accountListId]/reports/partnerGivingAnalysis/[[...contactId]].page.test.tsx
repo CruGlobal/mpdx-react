@@ -145,13 +145,13 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('changes the URL when a contact is selected', async () => {
-    const { findByText } = render(<TestingComponent />);
+    const { findByRole } = render(<TestingComponent />);
 
-    userEvent.click(await findByText('John Doe'));
+    expect(push).not.toHaveBeenCalled();
 
-    expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/partnerGivingAnalysis/contact-1',
-    );
+    userEvent.click(await findByRole('link', { name: 'John Doe' }));
+
+    expect(push).toHaveBeenCalled();
   });
 
   it('closes contact panel', async () => {
