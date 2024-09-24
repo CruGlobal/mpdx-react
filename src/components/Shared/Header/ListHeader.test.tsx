@@ -472,4 +472,30 @@ describe('ListHeader', () => {
     expect(queryByText('Selected')).not.toBeInTheDocument();
     expect(queryByText('Actions')).not.toBeInTheDocument();
   });
+
+  it('Should update count upon deletion', async () => {
+    const { queryByText, getByText, getAllByTestId } = render(
+      <Components
+        selectedIds={['a', 'b', 'c']}
+        page={PageEnum.Task}
+        totalItems={50}
+        showShowingCount={true}
+      />,
+    );
+    expect(queryByText('Showing 50')).toBeInTheDocument();
+    expect(queryByText('3 Selected')).toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Delete Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Delete Tasks'));
+    await waitFor(() => {
+      expect(
+        queryByText('Are you sure you wish to delete the 3 selected tasks?'),
+      ).toBeInTheDocument();
+    });
+
+    userEvent.click(getAllByTestId('action-button')[0]);
+
+    expect(queryByText('Showing 50')).toBeInTheDocument();
+  });
 });
