@@ -244,37 +244,33 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
             style={{ backgroundColor: theme.palette.common.white }}
           >
-            {Object.entries(colorMap).map(([colorKey, colorValue]) => {
-              return (
-                <Box
-                  key={colorKey}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  m={0.5}
-                  height={theme.spacing(4)}
-                  width={theme.spacing(4)}
+            {Object.entries(colorMap).map(([colorKey, colorValue]) => (
+              <Box
+                key={colorKey}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                m={0.5}
+                height={theme.spacing(4)}
+                width={theme.spacing(4)}
+              >
+                <IconButton
+                  data-testid={`colorButton-${colorKey}`}
+                  onClick={() => changeColor(index, colorKey)}
+                  style={{
+                    padding: 0,
+                  }}
                 >
-                  <IconButton
-                    data-testid={`colorButton-${colorKey}`}
-                    onClick={() => changeColor(index, colorKey)}
-                    style={{
-                      padding: 0,
-                    }}
-                  >
-                    <ColoredCircle
-                      circlecolor={colorValue}
-                      selected={color === colorValue}
-                      size={
-                        color === colorValue
-                          ? theme.spacing(4)
-                          : theme.spacing(3)
-                      }
-                    />
-                  </IconButton>
-                </Box>
-              );
-            })}
+                  <ColoredCircle
+                    circlecolor={colorValue}
+                    selected={color === colorValue}
+                    size={
+                      color === colorValue ? theme.spacing(4) : theme.spacing(3)
+                    }
+                  />
+                </IconButton>
+              </Box>
+            ))}
           </Box>
           {columnWidth > 0 && (
             <Box style={{ backgroundColor: theme.palette.common.white }}>
