@@ -31,9 +31,7 @@ const router = {
   query: { accountListId: accountListId },
   push: jest.fn(),
 };
-
-const setContactFocus = jest.fn();
-
+const pageUrl = 'tools/fix/commitmentInfo';
 const Components = ({
   mockNodes = mockInvalidStatusesResponse,
 }: {
@@ -60,7 +58,7 @@ const Components = ({
             >
               <FixCommitmentInfo
                 accountListId={accountListId}
-                setContactFocus={setContactFocus}
+                pageUrl={pageUrl}
               />
             </GqlMockedProvider>
           </VirtuosoMockContext.Provider>
@@ -71,10 +69,6 @@ const Components = ({
 );
 
 describe('FixCommitmentContact', () => {
-  beforeEach(() => {
-    setContactFocus.mockClear();
-  });
-
   it('default with test data', async () => {
     const { findByText, getAllByText } = render(<Components />);
     // await findByText('You have 2 partner statuses to confirm.');
@@ -165,16 +159,6 @@ describe('FixCommitmentContact', () => {
     await waitFor(() =>
       expect(queryByText('Tester 2')).not.toBeInTheDocument(),
     );
-  });
-
-  it('opens contact drawer to donations tab', async () => {
-    const { findAllByTestId } = render(<Components />);
-
-    userEvent.click((await findAllByTestId('hideButton'))[0]);
-
-    userEvent.click((await findAllByTestId('contactSelect'))[0]);
-
-    expect(setContactFocus).toHaveBeenCalled();
   });
 
   it('updates contact info with dontChange enum', async () => {

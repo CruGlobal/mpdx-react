@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
@@ -23,7 +24,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useToolsHelper } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
@@ -178,7 +179,7 @@ interface Props {
     updateType: UpdateTypeEnum,
   ) => void;
   statuses: string[];
-  setContactFocus: SetContactFocus;
+  pageUrl: string;
   avatar?: string;
   suggestedChanges?: SuggestedChangesType;
 }
@@ -194,15 +195,17 @@ const Contact: React.FC<Props> = ({
   frequencyValue,
   showModal,
   statuses,
-  setContactFocus,
+  pageUrl,
   avatar,
   suggestedChanges,
 }) => {
   const { pledgeCurrency: pledgeCurrencies } = useApiConstants() || {};
+  const { getContactUrl } = useToolsHelper();
   const locale = useLocale();
   const { classes } = useStyles();
   const { t } = useTranslation();
 
+  const contactUrl = getContactUrl(pageUrl, id, TabKey.Donations);
   const suggestedAmount = suggestedChanges?.pledge_amount || null;
 
   const suggestedFrequency = suggestedChanges?.pledge_frequency || null;
@@ -291,15 +294,13 @@ const Contact: React.FC<Props> = ({
                           aria-label="Contact Avatar"
                         />
                         <Box display="flex" flexDirection="column" ml={2}>
-                          <Link
-                            data-testid="contactSelect"
-                            underline="hover"
-                            onClick={() =>
-                              setContactFocus(id, TabKey.Donations)
-                            }
-                          >
-                            <Typography variant="subtitle1">{name}</Typography>
-                          </Link>
+                          <NextLink href={contactUrl} passHref shallow>
+                            <Link data-testid="contactSelect" underline="hover">
+                              <Typography variant="subtitle1">
+                                {name}
+                              </Typography>
+                            </Link>
+                          </NextLink>
                           <Typography variant="subtitle2">
                             {`Current: ${statusTitle || ''} ${
                               amount && amountCurrency

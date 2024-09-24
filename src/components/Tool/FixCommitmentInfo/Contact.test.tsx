@@ -1,20 +1,20 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
-import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import {
   fireEvent,
   render,
   waitFor,
+  within,
 } from '__tests__/util/testingLibraryReactMock';
-import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import Contact from './Contact';
 
 let testData = {
-  id: 'test 1',
+  id: 'contact-1',
   name: 'Tester 1',
   avatar: '',
   statusTitle: 'Partner - Financial',
@@ -36,13 +36,14 @@ let testData = {
     ],
   },
 };
-
-const router = {
-  push: jest.fn(),
-};
+const accountListId = 'account-list-1';
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
+}));
 
 const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
+const pageUrl = 'tools/fix/commitmentInfo';
 
 const TestComponent = ({
   statuses = ['Partner - Financial', 'test_option_1'],
@@ -63,7 +64,7 @@ const TestComponent = ({
         amountCurrency={testData.amountCurrency}
         frequencyValue={testData.frequencyValue}
         statuses={statuses}
-        setContactFocus={setContactFocus}
+        pageUrl={pageUrl}
         avatar={testData.avatar}
       />
     </TestWrapper>
@@ -74,6 +75,13 @@ describe('FixCommitmentContact', () => {
   beforeEach(() => {
     handleShowModal.mockClear();
     setContactFocus.mockClear();
+    (useRouter as jest.Mock).mockReturnValue({
+      query: {
+        accountListId,
+      },
+      isReady: true,
+      push: jest.fn(),
+    });
   });
 
   it('default', () => {
@@ -93,15 +101,17 @@ describe('FixCommitmentContact', () => {
     expect(handleShowModal).toHaveBeenCalledTimes(2);
   });
 
-  it('should redirect the page', () => {
-    const { getByTestId } = render(
-      <TestRouter router={router}>
-        <TestComponent />
-      </TestRouter>,
-    );
+  it('should render contact with the donation tab', () => {
+    const { getByTestId } = render(<TestComponent />);
 
-    userEvent.click(getByTestId('contactSelect'));
-    expect(setContactFocus).toHaveBeenCalledWith(testData.id, TabKey.Donations);
+    const contactName = getByTestId('contactSelect');
+    within(contactName).getByText('Tester 1');
+
+    expect(contactName).toBeInTheDocument();
+    expect(contactName).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/tools/fix/commitmentInfo/contact-1?tab=Donations',
+    );
   });
 
   it('should fail validation', async () => {
@@ -170,9 +180,7 @@ describe('FixCommitmentContact', () => {
 
   it('should render with correct styles', async () => {
     const { getByTestId } = render(
-      <TestRouter router={router}>
-        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
-      </TestRouter>,
+      <TestComponent statuses={['Partner - Financial', 'test_option_1']} />,
     );
 
     const boxBottom = getByTestId('BoxBottom');
@@ -182,9 +190,7 @@ describe('FixCommitmentContact', () => {
 
   it('should render donation data', async () => {
     const { getByTestId } = render(
-      <TestRouter router={router}>
-        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
-      </TestRouter>,
+      <TestComponent statuses={['Partner - Financial', 'test_option_1']} />,
     );
     const donationDate = getByTestId('donationDate');
     expect(donationDate).toHaveTextContent('12/24/2021');

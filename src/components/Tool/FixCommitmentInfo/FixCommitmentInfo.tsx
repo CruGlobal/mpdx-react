@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import {
   InfiniteList,
   ItemWithBorders,
@@ -91,7 +90,7 @@ const defaultModalState = {
 
 interface Props {
   accountListId: string;
-  setContactFocus: SetContactFocus;
+  pageUrl: string;
 }
 
 export enum UpdateTypeEnum {
@@ -106,7 +105,7 @@ const ItemOverride: React.ComponentType<ItemProps> = (props) => (
 
 const FixCommitmentInfo: React.FC<Props> = ({
   accountListId,
-  setContactFocus,
+  pageUrl,
 }: Props) => {
   const { classes } = useStyles();
   const [modalState, setModalState] =
@@ -267,7 +266,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         frequencyValue={contact.pledgeFrequency || null}
                         showModal={handleShowModal}
                         statuses={contactStatuses || []}
-                        setContactFocus={setContactFocus}
+                        pageUrl={pageUrl}
                         avatar={contact?.avatar}
                         suggestedChanges={formatSuggestedChanges(
                           contact?.suggestedChanges,
