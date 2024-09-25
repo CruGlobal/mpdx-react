@@ -4,6 +4,9 @@ mutation oktaSignIn($accessToken: String!) {
     user {
       id
       name: firstName
+      preferences {
+        locale
+      }
     }
   }
 }

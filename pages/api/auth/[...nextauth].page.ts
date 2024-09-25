@@ -32,6 +32,7 @@ declare module 'next-auth' {
       userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
+      language?: string | null;
     };
   }
 
@@ -40,6 +41,7 @@ declare module 'next-auth' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
+    language?: string | null;
   }
 }
 
@@ -165,6 +167,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
         const handleSettingUserInfo = async (
           access_token: string,
           userId: string,
+          language?: string | null,
         ) => {
           const { user: userInfo, cookies } = setUserInfo(
             access_token,
@@ -175,6 +178,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           user.userID = userInfo.userID;
           user.impersonating = userInfo.impersonating;
           user.impersonatorApiToken = userInfo.impersonatorApiToken;
+          user.language = language;
           if (cookies) {
             res.setHeader('Set-Cookie', cookies);
           }
@@ -198,6 +202,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             await handleSettingUserInfo(
               data.apiOauthSignIn.token,
               data.apiOauthSignIn.user.id,
+              data.apiOauthSignIn.user.preferences?.locale,
             );
             return true;
           }
@@ -217,6 +222,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           await handleSettingUserInfo(
             data.oktaSignIn.token,
             data.oktaSignIn.user.id,
+            data.oktaSignIn.user.preferences?.locale,
           );
           return true;
         }
@@ -241,13 +247,15 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             userID: user.userID,
             impersonating: user.impersonating,
             impersonatorApiToken: user.impersonatorApiToken,
+            language: user.language,
           };
         } else {
           return token;
         }
       },
       session: ({ session, token }) => {
-        const { admin, developer, apiToken, userID, impersonating } = token;
+        const { admin, developer, apiToken, userID, impersonating, language } =
+          token;
 
         // Check the expiration of the API token JWT without verifying its signature
         // Throwing an exception here will cause a redirect to the login page
@@ -264,6 +272,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             apiToken,
             userID,
             impersonating,
+            language,
           },
         };
       },

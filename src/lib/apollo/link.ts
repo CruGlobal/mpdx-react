@@ -51,11 +51,13 @@ export const batchLink = split(
   restProxyHttpLink,
 );
 
-export const makeAuthLink = (apiToken: string) =>
+export const makeAuthLink = (apiToken: string, language?: string | null) =>
   new ApolloLink((operation, forward) => {
+    const languageHeader = language ? { 'Accept-Language': language } : {};
     operation.setContext(({ headers }) => ({
       headers: {
         ...headers,
+        ...languageHeader,
         Authorization: `Bearer ${apiToken}`,
       },
     }));
