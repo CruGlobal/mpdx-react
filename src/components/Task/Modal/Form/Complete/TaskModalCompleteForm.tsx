@@ -185,7 +185,6 @@ const TaskModalCompleteForm = ({
       );
     }
     if (updatingContactStatus) {
-      // TODO - Should only be one contact, but just in case
       task.contacts.nodes.forEach((contact) => {
         mutations.push(
           updateContactStatus({
