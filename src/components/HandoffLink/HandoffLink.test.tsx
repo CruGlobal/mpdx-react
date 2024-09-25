@@ -53,26 +53,6 @@ describe('HandoffLink', () => {
     );
   });
 
-  it('default auth', async () => {
-    const { getByRole } = render(
-      <GqlMockedProvider>
-        <HandoffLink path="/contacts" auth>
-          <a>Link</a>
-        </HandoffLink>
-      </GqlMockedProvider>,
-    );
-    const linkElement = getByRole('link', { hidden: true, name: 'Link' });
-    expect(linkElement).toHaveAttribute(
-      'href',
-      `https://auth.${rewriteDomain}/contacts`,
-    );
-    userEvent.click(linkElement);
-    expect(open).toHaveBeenCalledWith(
-      `${process.env.SITE_URL}/api/handoff?auth=true&path=%2Fcontacts`,
-      '_blank',
-    );
-  });
-
   it('onClick defaultPrevented', async () => {
     const handleClick = jest.fn((e) => e.preventDefault());
     const { getByRole } = render(
@@ -132,20 +112,6 @@ describe('HandoffLink', () => {
       expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
         'target',
         `_blank`,
-      );
-    });
-
-    it('default auth', async () => {
-      const { getByRole } = render(
-        <GqlMockedProvider>
-          <HandoffLink path="/contacts" auth>
-            <a>Link</a>
-          </HandoffLink>
-        </GqlMockedProvider>,
-      );
-      expect(getByRole('link', { hidden: true, name: 'Link' })).toHaveAttribute(
-        'href',
-        `https://auth.${rewriteDomain}/contacts`,
       );
     });
   });

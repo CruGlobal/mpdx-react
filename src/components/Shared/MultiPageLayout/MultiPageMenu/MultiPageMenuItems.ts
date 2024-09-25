@@ -4,8 +4,7 @@ export type NavItems = {
   subTitle?: string;
   grantedAccess?: string[];
   subItems?: NavItems[];
-  handoff?: boolean;
-  handoffAuth?: boolean;
+  oauth?: boolean;
 };
 
 export const reportNavItems: NavItems[] = [
@@ -96,15 +95,13 @@ export const settingsNavItems: NavItems[] = [
   {
     id: '/auth/user/admin',
     title: 'Backend Admin',
-    handoff: true,
-    handoffAuth: true,
+    oauth: true,
     grantedAccess: ['developer'],
   },
   {
     id: '/auth/user/sidekiq',
     title: 'Sidekiq',
-    handoff: true,
-    handoffAuth: true,
+    oauth: true,
     grantedAccess: ['developer'],
   },
 ];

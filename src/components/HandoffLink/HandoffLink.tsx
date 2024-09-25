@@ -1,33 +1,19 @@
 import { Children, ReactElement, ReactNode, cloneElement } from 'react';
-import { useAccountListId } from '../../hooks/useAccountListId';
-import { useUserPreferenceContext } from '../User/Preferences/UserPreferenceProvider';
 
 interface Props {
   path: string;
-  auth?: boolean;
   children: ReactNode;
 }
 
-const HandoffLink = ({ path, auth, children }: Props): ReactElement => {
-  const accountListId = useAccountListId();
-  const { userId } = useUserPreferenceContext();
-
-  const url = new URL(
-    `${process.env.SITE_URL || window.location.origin}/api/handoff`,
-  );
-
-  if (auth) {
-    url.searchParams.append('auth', 'true');
-  } else {
-    url.searchParams.append('accountListId', accountListId ?? '');
-    url.searchParams.append('userId', userId ?? '');
-  }
+const HandoffLink = ({ path, children }: Props): ReactElement => {
+  const url = new URL(`${process.env.OAUTH_URL}/api/handoff`);
+  url.searchParams.append('auth', 'true');
   url.searchParams.append('path', path);
 
   const child = Children.only(children) as ReactElement;
 
   const childProps = {
-    href: `https://${auth ? 'auth.' : ''}${process.env.REWRITE_DOMAIN + path}`,
+    href: `https://${process.env.REWRITE_DOMAIN + path}`,
     target: '_blank',
     onClick: (e: React.MouseEvent) => {
       if (child.props && typeof child.props.onClick === 'function') {
