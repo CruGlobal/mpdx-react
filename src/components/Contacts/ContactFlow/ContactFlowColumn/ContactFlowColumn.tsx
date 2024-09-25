@@ -170,6 +170,7 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
                     (constant) => constant.id === contact.status,
                   ) || nullStatus
                 }
+                contactPhase={contact.contactPhase}
                 onContactSelected={onContactSelected}
                 columnWidth={cardContentRef.current?.offsetWidth}
               />

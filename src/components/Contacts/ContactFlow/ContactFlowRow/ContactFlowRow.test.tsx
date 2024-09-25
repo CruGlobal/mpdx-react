@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { StatusEnum } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { ContactFlowRow } from './ContactFlowRow';
@@ -38,6 +38,7 @@ describe('ContactFlowRow', () => {
               accountListId={accountListId}
               contact={contact}
               status={status}
+              contactPhase={PhaseEnum.PartnerCare}
               onContactSelected={onContactSelected}
             />
           </TestWrapper>
@@ -57,6 +58,7 @@ describe('ContactFlowRow', () => {
               accountListId={accountListId}
               contact={contact}
               status={status}
+              contactPhase={PhaseEnum.PartnerCare}
               onContactSelected={onContactSelected}
             />
           </TestWrapper>
