@@ -19,7 +19,6 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
-import HandoffLink from 'src/components/HandoffLink';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
@@ -101,20 +100,6 @@ export enum ToolName {
   MergeContacts = 'mergeContacts',
   MergePeople = 'mergePeople',
 }
-
-export const toolsRedirectLinks: { [key: string]: string } = {
-  appeals: 'appeals',
-  fixCommitmentInfo: 'fix/commitment-info',
-  fixEmailAddresses: 'fix/email-addresses',
-  fixPhoneNumbers: 'fix/phone-numbers',
-  fixSendNewsletter: 'fix/send-newsletter',
-  fixMailingAddresses: 'fix/addresses',
-  mergePeople: 'merge/people',
-  mergeContacts: 'merge/contacts',
-  google: 'import/google',
-  tntConnect: 'import/tnt',
-  csv: 'import/csv/upload',
-};
 
 const NavMenu: React.FC = () => {
   const { t } = useTranslation();
@@ -345,17 +330,13 @@ const NavMenu: React.FC = () => {
                             ? toolData[tool.id]?.totalCount > 0
                             : false;
                           return (
-                            <HandoffLink
+                            <NextLink
                               key={tool.id}
-                              path={`https://${
-                                process.env.REWRITE_DOMAIN
-                              }/tools/${toolsRedirectLinks[tool.id]}`}
+                              href={`/accountLists/${accountListId}/tools/${tool.url}`}
+                              passHref
                             >
-                              {/* When switching to pointing tools at this app we need to add these attributes
-                                href={`/accountLists/${accountListId}/tools/${tool.id}`}
-                                component="a"
-                              */}
                               <MenuItem
+                                component="a"
                                 tabIndex={0}
                                 onClick={handleToolsMenuClose}
                                 data-testid={`${tool.id}-${
@@ -400,7 +381,7 @@ const NavMenu: React.FC = () => {
                                   </Box>
                                 )}
                               </MenuItem>
-                            </HandoffLink>
+                            </NextLink>
                           );
                         })}
                       </Box>
