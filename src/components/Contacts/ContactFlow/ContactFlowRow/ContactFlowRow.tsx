@@ -14,9 +14,7 @@ import { StarContactIconButton } from '../../StarContactIconButton/StarContactIc
 export interface ContactFlowRowProps {
   accountListId: string;
   contact: ContactRowFragment;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: IdValue;
   contactPhase?: PhaseEnum | null;
   onContactSelected: (
     contactId: string,
@@ -64,13 +62,11 @@ export const StyledAvatar = styled(Avatar)(() => ({
 
 export interface DraggedContact {
   id: string;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: IdValue;
   name: string;
   starred: boolean;
-  width: number;
-  contactPhase?: PhaseEnum | null;
+  width: number | undefined;
+  contactPhase: PhaseEnum | null | undefined;
 }
 
 export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({

@@ -86,10 +86,8 @@ export const ContactFlow: React.FC<Props> = ({
 
   const changeContactStatus = async (
     id: string,
-    status: {
-      __typename?: 'IdValue' | undefined;
-    } & Pick<IdValue, 'id' | 'value'>,
-    contactPhase?: PhaseEnum | null,
+    status: IdValue,
+    contactPhase: PhaseEnum | null | undefined,
   ): Promise<void> => {
     const attributes = {
       id,
@@ -218,7 +216,7 @@ export const ContactFlow: React.FC<Props> = ({
                 color={colorMap[column.color]}
                 onContactSelected={onContactSelected}
                 statuses={column.statuses.map(
-                  (status) => statusMap[status] as ContactFilterStatusEnum,
+                  (status) => status as ContactFilterStatusEnum,
                 )}
                 changeContactStatus={changeContactStatus}
                 searchTerm={searchTerm}

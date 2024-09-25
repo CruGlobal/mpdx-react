@@ -28,9 +28,7 @@ export const DetailsBox = styled(Box)(() => ({
 
 export interface ContactFlowRowPreviewProps {
   name: string;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: IdValue;
   starred: boolean;
   width: number;
 }

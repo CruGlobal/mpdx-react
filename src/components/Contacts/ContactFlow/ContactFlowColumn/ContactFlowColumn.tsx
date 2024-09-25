@@ -77,10 +77,8 @@ export interface ContactFlowColumnProps {
   ) => void;
   changeContactStatus: (
     id: string,
-    status: {
-      __typename?: 'IdValue' | undefined;
-    } & Pick<IdValue, 'id' | 'value'>,
-    contactPhase?: PhaseEnum | null,
+    status: IdValue,
+    contactPhase: PhaseEnum | null | undefined,
   ) => Promise<void>;
 }
 export interface StatusStructure {

@@ -31,14 +31,10 @@ export const DropZoneBox = styled(Box, {
 }));
 
 interface Props {
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: IdValue;
   changeContactStatus: (
     id: string,
-    status: {
-      __typename?: 'IdValue' | undefined;
-    } & Pick<IdValue, 'id' | 'value'>,
+    status: IdValue,
     contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
