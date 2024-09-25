@@ -44,11 +44,9 @@ export const ContactFlowDropZone: React.FC<Props> = ({
 }: Props) => {
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
-    canDrop: (contact) => String(contact.status.id) !== String(status.id),
+    canDrop: (contact) => contact.status.id !== status.id,
     drop: (contact: DraggedContact) => {
-      String(contact.status.id) !== String(status.id)
-        ? changeContactStatus(contact.id, status, contact.contactPhase)
-        : null;
+      changeContactStatus(contact.id, status, contact.contactPhase);
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
