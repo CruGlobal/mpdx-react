@@ -13,7 +13,7 @@ import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { debounce } from 'lodash';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { colorMap } from '../../ContactFlow';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
@@ -58,7 +58,7 @@ const DraggableMenuIcon = styled(Menu)(() => ({
 }));
 
 interface Props {
-  statuses: { id: ContactFilterStatusEnum; value: string }[];
+  statuses: { id: StatusEnum; value: string }[];
   title: string;
   color: string;
   accountListId: string;

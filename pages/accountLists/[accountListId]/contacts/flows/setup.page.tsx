@@ -25,7 +25,7 @@ import {
 } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { getDefaultFlowOptions } from 'src/components/Contacts/ContactFlow/contactFlowDefaultOptions';
 import Loading from 'src/components/Loading';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -75,7 +75,7 @@ const ContactFlowSetupPage: React.FC = () => {
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)
     : [];
-  const unusedStatuses = Object.keys(statusMap).filter(
+  const unusedStatuses = Object.values(statusMap).filter(
     (status) => !allUsedStatuses.includes(status),
   );
 
@@ -254,7 +254,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       columnWidth={columnWidth}
                       setColumnWidth={setColumnWidth}
                       statuses={column.statuses.map((status) => ({
-                        id: statusMap[status] as ContactFilterStatusEnum,
+                        id: status as StatusEnum,
                         value: status,
                       }))}
                       flowOptions={flowOptions}
@@ -268,7 +268,7 @@ const ContactFlowSetupPage: React.FC = () => {
                     loading={loading}
                     moveStatus={moveStatus}
                     statuses={unusedStatuses.map((status) => ({
-                      id: statusMap[status] as ContactFilterStatusEnum,
+                      id: status as StatusEnum,
                       value: status,
                     }))}
                   />

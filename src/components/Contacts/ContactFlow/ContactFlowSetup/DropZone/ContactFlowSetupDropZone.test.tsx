@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactFlowSetupColumn } from '../Column/ContactFlowSetupColumn';
 
@@ -13,18 +13,18 @@ const accountListId = 'abc';
 const title = 'Test Column';
 const status = [
   {
-    id: 'APPOINTMENT_SCHEDULED' as ContactFilterStatusEnum,
+    id: StatusEnum.AppointmentScheduled,
     value: 'Appointment Scheduled',
   },
   {
-    id: 'PARTNER_FINANCIAL' as ContactFilterStatusEnum,
+    id: StatusEnum.PartnerFinancial,
     value: 'Partner - Financial',
   },
 ];
 
 const statusTwo = [
   {
-    id: 'NOT_INTERESTED' as ContactFilterStatusEnum,
+    id: StatusEnum.NotInterested,
     value: 'Not Interested',
   },
 ];
