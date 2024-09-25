@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
-import { useTranslation } from 'react-i18next';
 import { IdValue, PhaseEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
@@ -56,12 +55,11 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       canDrop: !!monitor.canDrop(),
     }),
   }));
-  const { t } = useTranslation();
 
   return (
-    <DropZoneBox key={status.id} canDrop={canDrop} isOver={isOver} ref={drop}>
+    <DropZoneBox canDrop={canDrop} isOver={isOver} ref={drop}>
       <Typography variant="h5" align="center">
-        {t('{{status}}', { status: status.value })}
+        {status.value}
       </Typography>
     </DropZoneBox>
   );
