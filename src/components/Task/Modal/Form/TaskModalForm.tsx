@@ -129,14 +129,9 @@ const TaskModalForm = ({
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const [removeDialogOpen, handleRemoveDialog] = useState(false);
-  // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] =
-    useState<DisplayResultEnum | null>(
-      (task?.result as unknown as DisplayResultEnum) ||
-        defaultValues?.result ||
-        null,
-    );
-  // TODO - Need to fix the above ^
+  const [resultSelected, setResultSelected] = useState<
+    DisplayResultEnum | ResultEnum | null
+  >(task?.result || defaultValues?.result || null);
 
   const [actionSelected, setActionSelected] = useState<
     ActivityTypeEnum | undefined

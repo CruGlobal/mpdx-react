@@ -2,6 +2,7 @@ import {
   ActivityTypeEnum,
   DisplayResultEnum,
   Phase,
+  ResultEnum,
   StatusEnum,
   TaskResultPair,
 } from 'src/graphql/types.generated';
@@ -13,7 +14,7 @@ export type PossiblePartnerStatus = {
 
 export const possiblePartnerStatus = (
   phaseData: Phase | null,
-  resultName: DisplayResultEnum | null,
+  resultName: DisplayResultEnum | ResultEnum | null,
   activityType?: ActivityTypeEnum | undefined,
 ): PossiblePartnerStatus | null => {
   if (!phaseData || !resultName || !activityType) {

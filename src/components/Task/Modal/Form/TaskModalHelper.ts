@@ -21,7 +21,7 @@ export type SetFieldTouched = (
 ) => void;
 
 export type SetResultSelected = React.Dispatch<
-  React.SetStateAction<DisplayResultEnum | null>
+  React.SetStateAction<DisplayResultEnum | ResultEnum | null>
 >;
 
 type SetActionSelected = React.Dispatch<

@@ -119,12 +119,9 @@ const TaskModalCompleteForm = ({
     [task],
   );
 
-  // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] =
-    useState<DisplayResultEnum | null>(
-      (task?.result as unknown as DisplayResultEnum) || null,
-    );
-  // TODO - Need to fix the above ^
+  const [resultSelected, setResultSelected] = useState<
+    ResultEnum | DisplayResultEnum | null
+  >(task?.result || null);
 
   const activityData = activityType
     ? activityTypes.get(activityType)

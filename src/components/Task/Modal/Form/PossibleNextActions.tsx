@@ -2,11 +2,12 @@ import {
   ActivityTypeEnum,
   DisplayResultEnum,
   Phase,
+  ResultEnum,
 } from 'src/graphql/types.generated';
 
 export const possibleNextActions = (
   phaseData: Phase | null,
-  resultName: DisplayResultEnum | null,
+  resultName: DisplayResultEnum | ResultEnum | null,
   activity?: ActivityTypeEnum | undefined,
 ): ActivityTypeEnum[] => {
   if (!phaseData || !resultName || !activity) {
