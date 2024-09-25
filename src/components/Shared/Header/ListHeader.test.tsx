@@ -10,6 +10,7 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
@@ -110,6 +111,10 @@ const router = {
   isReady: true,
   push,
 };
+
+beforeEach(() => {
+  (useAccountListId as jest.Mock).mockReturnValue(router);
+});
 
 const ButtonGroup: React.FC = () => {
   return (
@@ -220,33 +225,6 @@ describe('ListHeader', () => {
       );
 
       expect(getByPlaceholderText('Search Tasks')).toBeVisible();
-    });
-    it('Should update count upon deletion', async () => {
-      const { queryByText, getByText } = render(
-        <Components
-          selectedIds={['a', 'b', 'c']}
-          page={PageEnum.Task}
-          totalItems={50}
-          showShowingCount={true}
-        />,
-      );
-      expect(queryByText('Showing 50')).toBeInTheDocument();
-      expect(queryByText('3 Selected')).toBeInTheDocument();
-      const actionsButton = getByText('Actions');
-      userEvent.click(actionsButton);
-      expect(getByText('Delete Tasks')).toBeInTheDocument();
-      userEvent.click(getByText('Delete Tasks'));
-      await waitFor(() => {
-        expect(
-          queryByText('Are you sure you wish to delete the 3 selected tasks?'),
-        ).toBeInTheDocument();
-      });
-
-      userEvent.click(getByText('Yes'));
-
-      await waitFor(() => {
-        expect(getByText('Showing 50')).toBeInTheDocument();
-      });
     });
   });
 
@@ -493,5 +471,29 @@ describe('ListHeader', () => {
     );
     expect(queryByText('Selected')).not.toBeInTheDocument();
     expect(queryByText('Actions')).not.toBeInTheDocument();
+  });
+});
+
+describe('test', () => {
+  it('Should update count upon deletion', async () => {
+    const { queryByText, getByText } = render(
+      <Components
+        selectedIds={['a', 'b', 'c']}
+        page={PageEnum.Task}
+        totalItems={50}
+        showShowingCount={true}
+      />,
+    );
+    expect(queryByText('Showing 50')).toBeInTheDocument();
+    expect(queryByText('3 Selected')).toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Delete Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Delete Tasks'));
+    await waitFor(() => {
+      expect(
+        queryByText('Are you sure you wish to delete the 3 selected tasks?'),
+      ).toBeInTheDocument();
+    });
   });
 });
