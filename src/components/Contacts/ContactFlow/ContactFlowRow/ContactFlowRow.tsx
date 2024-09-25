@@ -79,17 +79,18 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
 }) => {
   const { id, name, starred, avatar } = contact;
 
+  const item: DraggedContact = {
+    id,
+    status,
+    contactPhase,
+    name,
+    starred,
+    width: columnWidth,
+  };
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: 'contact',
-      item: {
-        id,
-        status,
-        contactPhase,
-        name,
-        starred,
-        width: columnWidth,
-      },
+      item,
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
