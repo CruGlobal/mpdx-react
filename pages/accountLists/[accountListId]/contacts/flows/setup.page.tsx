@@ -47,7 +47,7 @@ const ContactFlowSetupPage: React.FC = () => {
   const [flowOptions, setFlowOptions] = useState<
     {
       name: string;
-      statuses: string[];
+      statuses: StatusEnum[];
       color: string;
       id: string;
     }[]
@@ -153,7 +153,7 @@ const ContactFlowSetupPage: React.FC = () => {
   const moveStatus = (
     originIndex: number,
     destinationIndex: number,
-    draggedStatus: string,
+    draggedStatus: StatusEnum,
   ): void => {
     const temp = [...flowOptions];
     if (originIndex > -1) {
@@ -253,10 +253,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       updateColumns={updateColumns}
                       columnWidth={columnWidth}
                       setColumnWidth={setColumnWidth}
-                      statuses={column.statuses.map((status) => ({
-                        id: status as StatusEnum,
-                        value: status,
-                      }))}
+                      statuses={column.statuses}
                       flowOptions={flowOptions}
                     />
                   </Box>
@@ -267,10 +264,7 @@ const ContactFlowSetupPage: React.FC = () => {
                     columnWidth={columnWidth}
                     loading={loading}
                     moveStatus={moveStatus}
-                    statuses={unusedStatuses.map((status) => ({
-                      id: status as StatusEnum,
-                      value: status,
-                    }))}
+                    statuses={unusedStatuses}
                   />
                 </StickyBox>
               </Box>

@@ -17,10 +17,7 @@ describe('ContactFlowSetupStatusRow', () => {
             <ContactFlowSetupStatusRow
               columnWidth={100}
               columnIndex={0}
-              status={{
-                id: StatusEnum.PartnerFinancial,
-                value: 'Partner - Financial',
-              }}
+              status={StatusEnum.PartnerFinancial}
             />
           </TestWrapper>
         </ThemeProvider>

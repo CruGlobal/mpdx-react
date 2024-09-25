@@ -57,8 +57,15 @@ const DraggableMenuIcon = styled(Menu)(() => ({
   cursor: 'move',
 }));
 
+export interface FlowOption {
+  name: string;
+  statuses: StatusEnum[];
+  color: string;
+  id: string;
+}
+
 interface Props {
-  statuses: { id: StatusEnum; value: string }[];
+  statuses: StatusEnum[];
   title: string;
   color: string;
   accountListId: string;
@@ -70,21 +77,16 @@ interface Props {
   ) => void;
   deleteColumn: (index: number) => void;
   moveStatus: (
-    originindex: number,
+    originIndex: number,
     destinationIndex: number,
-    status: string,
+    status: StatusEnum,
   ) => void;
   loading: boolean;
   columnWidth: number;
   setColumnWidth: Dispatch<SetStateAction<number>>;
   moveColumns: (dragIndex: number, hoverIndex: number) => void;
   updateColumns: () => void;
-  flowOptions: {
-    name: string;
-    statuses: string[];
-    color: string;
-    id: string;
-  }[];
+  flowOptions: FlowOption[];
 }
 
 interface DragItem {
@@ -276,7 +278,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             <Box style={{ backgroundColor: theme.palette.common.white }}>
               {statuses.map((status) => (
                 <ContactFlowSetupStatusRow
-                  key={status.id}
+                  key={status}
                   status={status}
                   columnWidth={columnWidth}
                   columnIndex={index}

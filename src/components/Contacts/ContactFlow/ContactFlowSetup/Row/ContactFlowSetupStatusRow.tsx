@@ -18,13 +18,8 @@ const StatusRow = styled(Box)(() => ({
   },
 }));
 
-interface Status {
-  id: StatusEnum;
-  value: string;
-}
-
 interface Props {
-  status: Status;
+  status: StatusEnum;
   columnWidth: number;
   columnIndex: number;
 }
@@ -42,7 +37,7 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
 }: Props) => {
   const { t } = useTranslation();
   const item: ContactFlowSetupItemDrag = {
-    status: status.id,
+    status,
     columnWidth,
     originIndex: columnIndex,
   };
@@ -59,8 +54,8 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
   }, []);
 
   return (
-    <StatusRow ref={drag} data-testid={status.id}>
-      <Typography>{getLocalizedContactStatus(t, status.id)}</Typography>
+    <StatusRow ref={drag} data-testid={status}>
+      <Typography>{getLocalizedContactStatus(t, status)}</Typography>
     </StatusRow>
   );
 };

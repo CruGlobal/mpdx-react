@@ -12,12 +12,7 @@ import { ContactFlowSetupColumn } from './ContactFlowSetupColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
-const status = [
-  {
-    id: StatusEnum.PartnerFinancial,
-    value: 'Partner - Financial',
-  },
-];
+const status = [StatusEnum.PartnerFinancial];
 const router = {
   query: { accountListId },
   isReady: true,

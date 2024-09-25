@@ -10,12 +10,7 @@ import theme from '../../../../../theme';
 import { UnusedStatusesColumn } from './UnusedStatusesColumn';
 
 const accountListId = 'abc';
-const status = [
-  {
-    id: StatusEnum.PartnerFinancial,
-    value: 'Partner - Financial',
-  },
-];
+const status = [StatusEnum.PartnerFinancial];
 const router = {
   query: { accountListId },
   isReady: true,

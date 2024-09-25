@@ -2,7 +2,9 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
-import { IdValue, PhaseEnum } from 'src/graphql/types.generated';
+import { useTranslation } from 'react-i18next';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../../theme';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
@@ -30,10 +32,10 @@ export const DropZoneBox = styled(Box, {
 }));
 
 interface Props {
-  status: IdValue;
+  status: StatusEnum;
   changeContactStatus: (
     id: string,
-    status: IdValue,
+    status: StatusEnum,
     contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
@@ -42,9 +44,10 @@ export const ContactFlowDropZone: React.FC<Props> = ({
   status,
   changeContactStatus,
 }: Props) => {
+  const { t } = useTranslation();
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
-    canDrop: (contact) => contact.status.id !== status.id,
+    canDrop: (contact) => contact.status !== status,
     drop: (contact: DraggedContact) => {
       changeContactStatus(contact.id, status, contact.contactPhase);
     },
@@ -57,7 +60,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
   return (
     <DropZoneBox canDrop={canDrop} isOver={isOver} ref={drop}>
       <Typography variant="h5" align="center">
-        {status.value}
+        {getLocalizedContactStatus(t, status)}
       </Typography>
     </DropZoneBox>
   );

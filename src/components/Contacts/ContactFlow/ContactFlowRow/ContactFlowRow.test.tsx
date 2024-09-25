@@ -11,10 +11,7 @@ import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
-const status = {
-  id: StatusEnum.PartnerFinancial,
-  value: 'Partner - Financial',
-};
+const status = StatusEnum.PartnerFinancial;
 const contact = {
   id: '123',
   name: 'Test Name',

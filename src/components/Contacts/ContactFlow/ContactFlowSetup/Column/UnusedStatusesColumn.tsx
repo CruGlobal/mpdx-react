@@ -8,12 +8,12 @@ import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
-  statuses: { id: StatusEnum; value: string }[];
+  statuses: StatusEnum[];
   accountListId: string;
   moveStatus: (
-    originindex: number,
+    originIndex: number,
     destinationIndex: number,
-    status: string,
+    status: StatusEnum,
   ) => void;
   loading: boolean;
   columnWidth: number;
@@ -86,7 +86,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
             <Box style={{ backgroundColor: theme.palette.common.white }}>
               {statuses.map((status) => (
                 <ContactFlowSetupStatusRow
-                  key={status.id}
+                  key={status}
                   status={status}
                   columnWidth={columnWidth}
                   columnIndex={-1}

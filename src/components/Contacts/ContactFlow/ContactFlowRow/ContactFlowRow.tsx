@@ -3,7 +3,9 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { IdValue, PhaseEnum } from 'src/graphql/types.generated';
+import { useTranslation } from 'react-i18next';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -14,7 +16,7 @@ import { StarContactIconButton } from '../../StarContactIconButton/StarContactIc
 export interface ContactFlowRowProps {
   accountListId: string;
   contact: ContactRowFragment;
-  status: IdValue;
+  status: StatusEnum;
   contactPhase?: PhaseEnum | null;
   onContactSelected: (
     contactId: string,
@@ -62,7 +64,7 @@ export const StyledAvatar = styled(Avatar)(() => ({
 
 export interface DraggedContact {
   id: string;
-  status: IdValue;
+  status: StatusEnum;
   name: string;
   starred: boolean;
   width: number | undefined;
@@ -78,6 +80,8 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   columnWidth,
 }) => {
   const { id, name, starred, avatar } = contact;
+
+  const { t } = useTranslation();
 
   const item: DraggedContact = {
     id,
@@ -111,7 +115,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
             <ContactLink onClick={() => onContactSelected(id, true, true)}>
               {name}
             </ContactLink>
-            <Typography>{status.value}</Typography>
+            <Typography>{getLocalizedContactStatus(t, status)}</Typography>
           </Box>
         </Box>
         <Box display="flex">

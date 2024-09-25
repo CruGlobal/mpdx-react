@@ -7,12 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PhaseEnum } from 'pages/api/graphql-rest.page.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import {
-  ContactFilterSetInput,
-  ContactFilterStatusEnum,
-  IdValue,
-  StatusEnum,
-} from 'src/graphql/types.generated';
+import { ContactFilterSetInput, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
@@ -39,7 +34,7 @@ interface Props {
 export interface ContactFlowOption {
   id: string;
   name: string;
-  statuses: string[];
+  statuses: StatusEnum[];
   color: string;
 }
 
@@ -63,7 +58,7 @@ export const ContactFlow: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { statusMap, contactStatuses } = useContactPartnershipStatuses();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const userFlowOptions: ContactFlowOption[] = JSON.parse(
     userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
@@ -86,12 +81,12 @@ export const ContactFlow: React.FC<Props> = ({
 
   const changeContactStatus = async (
     id: string,
-    status: IdValue,
+    status: StatusEnum,
     contactPhase: PhaseEnum | null | undefined,
   ): Promise<void> => {
     const attributes = {
       id,
-      status: status.id as StatusEnum,
+      status,
     };
     const { data } = await updateContactOther({
       variables: {
@@ -104,9 +99,7 @@ export const ContactFlow: React.FC<Props> = ({
           variables: {
             accountListId,
             contactsFilters: {
-              status: flowOption.statuses.map(
-                (status) => statusMap[status] as ContactFilterStatusEnum,
-              ),
+              status: flowOption.statuses,
               ...selectedFilters,
             },
           },
@@ -215,9 +208,7 @@ export const ContactFlow: React.FC<Props> = ({
                 selectedFilters={selectedFilters}
                 color={colorMap[column.color]}
                 onContactSelected={onContactSelected}
-                statuses={column.statuses.map(
-                  (status) => status as ContactFilterStatusEnum,
-                )}
+                statuses={column.statuses}
                 changeContactStatus={changeContactStatus}
                 searchTerm={searchTerm}
               />
