@@ -127,7 +127,7 @@ describe('EarlyAdopterAccordion', () => {
 
   describe('onSubmit()', () => {
     beforeEach(() => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
+      process.env.SITE_URL = 'https://mpdx.org';
       window.location.href = process.env.SITE_URL;
     });
 

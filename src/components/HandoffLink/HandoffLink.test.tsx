@@ -110,7 +110,7 @@ describe('HandoffLink', () => {
 
     beforeEach(() => {
       jest.resetModules();
-      process.env = { ...OLD_ENV, SITE_URL: 'https://next.mpdx.org' };
+      process.env = { ...OLD_ENV, SITE_URL: 'https://mpdx.org' };
     });
 
     afterAll(() => {
