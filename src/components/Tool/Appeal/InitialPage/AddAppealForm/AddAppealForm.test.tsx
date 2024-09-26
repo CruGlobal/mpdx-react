@@ -20,11 +20,8 @@ import AddAppealForm, {
   calculateGoal,
   contactExclusions,
 } from './AddAppealForm';
-import {
-  ContactFiltersQuery,
-  ContactTagsQuery,
-} from './AddAppealForm.generated';
-import { contactFiltersMock, contactTagsMock } from './AddAppealFormMocks';
+import { ContactTagsQuery } from './AddAppealForm.generated';
+import { contactTagsMock } from './AddAppealFormMocks';
 
 const accountListId = 'accountListId';
 const router = {
@@ -60,12 +57,10 @@ const Components = ({
           <TestRouter router={router}>
             <GqlMockedProvider<{
               ContactTags: ContactTagsQuery;
-              ContactFilters: ContactFiltersQuery;
               LoadConstants: LoadConstantsQuery;
             }>
               mocks={{
                 ContactTags: contactTagsMock,
-                ContactFilters: contactFiltersMock,
                 LoadConstants: loadConstantsMockData,
               }}
               onCall={mutationSpy}
