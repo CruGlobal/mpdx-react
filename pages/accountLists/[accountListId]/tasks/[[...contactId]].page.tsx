@@ -231,6 +231,7 @@ const TasksPage: React.FC = () => {
     deselectAll,
     toggleSelectAll,
     toggleSelectionById,
+    deselectIds,
   } = useMassSelection(
     data?.tasks?.totalCount ?? 0,
     allTaskIds,
@@ -339,6 +340,7 @@ const TasksPage: React.FC = () => {
                     toggleStarredFilter={setStarredFilter}
                     headerCheckboxState={selectionType}
                     massDeselectAll={deselectAll}
+                    showShowingCount
                     selectedIds={ids}
                     buttonGroup={
                       <Hidden xsDown>
@@ -410,6 +412,7 @@ const TasksPage: React.FC = () => {
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
+                            removeSelectedIds={deselectIds}
                           />
                         </Box>
                       )}
