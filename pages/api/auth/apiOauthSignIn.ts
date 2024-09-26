@@ -27,10 +27,6 @@ export type ApiOauthSignInMutation = { __typename?: 'Mutation' } & {
         user?: Types.Maybe<
           { __typename?: 'User' } & Pick<Types.User, 'id'> & {
               name: Types.User['firstName'];
-            } & {
-              preferences?: Types.Maybe<
-                { __typename?: 'Preference' } & Pick<Types.Preference, 'locale'>
-              >;
             }
         >;
       }
@@ -44,9 +40,6 @@ export const ApiOauthSignInDocument = gql`
       user {
         id
         name: firstName
-        preferences {
-          locale
-        }
       }
     }
   }

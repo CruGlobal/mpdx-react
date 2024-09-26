@@ -25,10 +25,10 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
   });
 }
 
-const makeClient = (apiToken: string, language?: string | null) => {
+const makeClient = (apiToken: string) => {
   const client = new ApolloClient({
     link: from([
-      makeAuthLink(apiToken, language),
+      makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError }) => {
         // Don't show sign out and display errors on the login page because the user won't be logged in
         if (graphQLErrors && window.location.pathname !== '/login') {

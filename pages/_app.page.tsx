@@ -57,8 +57,8 @@ const LocalizationProvider = (
 const GraphQLProviders: React.FC<{
   children: React.ReactNode;
 }> = ({ children = null }) => {
-  const { apiToken, language } = useRequiredSession();
-  const client = useMemo(() => makeClient(apiToken, language), [apiToken]);
+  const { apiToken } = useRequiredSession();
+  const client = useMemo(() => makeClient(apiToken), [apiToken]);
 
   return (
     <ApolloProvider client={client}>
