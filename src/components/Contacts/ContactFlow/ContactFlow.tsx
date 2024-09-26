@@ -17,8 +17,8 @@ import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsT
 import { useHasActiveTaskLazyQuery } from './ContactFlow.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
-import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 import { getDefaultFlowOptions } from './contactFlowDefaultOptions';
+import { useFlowOptions } from './useFlowOptions';
 
 interface Props {
   accountListId: string;
@@ -52,18 +52,13 @@ export const ContactFlow: React.FC<Props> = ({
   onContactSelected,
   searchTerm,
 }: Props) => {
-  const { data: userOptions, loading: loadingUserOptions } =
-    useGetUserOptionsQuery({});
+  const { options: userFlowOptions, loading: loadingUserOptions } =
+    useFlowOptions();
 
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
   const { contactStatuses } = useContactPartnershipStatuses();
-
-  const userFlowOptions: ContactFlowOption[] = JSON.parse(
-    userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
-      '[]',
-  );
 
   const flowOptions = useMemo(() => {
     if (loadingUserOptions) {

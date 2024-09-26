@@ -21,9 +21,12 @@ import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlo
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
-  useGetUserOptionsQuery,
 } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { getDefaultFlowOptions } from 'src/components/Contacts/ContactFlow/contactFlowDefaultOptions';
+import {
+  FlowOption,
+  useFlowOptions,
+} from 'src/components/Contacts/ContactFlow/useFlowOptions';
 import Loading from 'src/components/Loading';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -44,28 +47,17 @@ const ContactFlowSetupPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { statusMap, contactStatuses } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
-  const [flowOptions, setFlowOptions] = useState<
-    {
-      name: string;
-      statuses: StatusEnum[];
-      color: string;
-      id: string;
-    }[]
-  >([]);
+  const [flowOptions, setFlowOptions] = useState<FlowOption[]>([]);
   const resetColumnsMessage = t(
     'Since all columns have been removed, resetting columns to their default values',
   );
-  const { data: userOptions, loading } = useGetUserOptionsQuery();
+  const { options: userOptions, loading } = useFlowOptions();
 
   useEffect(() => {
-    const newOptions = JSON.parse(
-      userOptions?.userOptions.find((option) => option.key === 'flows')
-        ?.value || '[]',
-    );
-    if (!newOptions.length) {
+    if (!userOptions.length) {
       setFlowOptions(getDefaultFlowOptions(t, contactStatuses));
     } else {
-      setFlowOptions(newOptions);
+      setFlowOptions(userOptions);
     }
   }, [userOptions]);
 
@@ -195,10 +187,7 @@ const ContactFlowSetupPage: React.FC = () => {
   );
 
   const updateColumns = () => {
-    const originalOptions = userOptions?.userOptions.find(
-      (option) => option.key === 'flows',
-    )?.value;
-    if (!isEqual(originalOptions, flowOptions)) {
+    if (!isEqual(userOptions, flowOptions)) {
       updateOptions(flowOptions);
     }
   };

@@ -16,6 +16,7 @@ import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { colorMap } from '../../ContactFlow';
+import { FlowOption } from '../../useFlowOptions';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 import type { Identifier, XYCoord } from 'dnd-core';
@@ -56,13 +57,6 @@ const ColoredCircle = styled(FiberManualRecord)(
 const DraggableMenuIcon = styled(Menu)(() => ({
   cursor: 'move',
 }));
-
-export interface FlowOption {
-  name: string;
-  statuses: StatusEnum[];
-  color: string;
-  id: string;
-}
 
 interface Props {
   statuses: StatusEnum[];

@@ -7,10 +7,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
-import {
-  ContactFlowSetupColumn,
-  FlowOption,
-} from '../Column/ContactFlowSetupColumn';
+import { FlowOption } from '../../useFlowOptions';
+import { ContactFlowSetupColumn } from '../Column/ContactFlowSetupColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
