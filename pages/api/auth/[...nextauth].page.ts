@@ -272,9 +272,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           return url;
         }
         if (url === 'signOut' && AUTH_PROVIDER === 'OKTA') {
-          return `https://signon.okta.com/login/signout?fromURI=${encodeURIComponent(
-            process.env.OKTA_SIGNOUT_REDIRECT_URL ?? '',
-          )}`;
+          return `https://signon.okta.com/login/signout?fromURI=${process.env.SITE_URL}/login`;
         }
         if (url.startsWith('/')) {
           return new URL(url, baseUrl).toString();
