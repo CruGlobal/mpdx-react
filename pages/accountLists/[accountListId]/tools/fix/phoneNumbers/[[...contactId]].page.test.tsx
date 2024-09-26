@@ -87,11 +87,4 @@ describe('FixPhoneNumbersPage', () => {
       );
     });
   });
-
-  it('should show errors', async () => {
-    const { findAllByRole, findByText } = render(<Components />);
-
-    userEvent.clear((await findAllByRole('textbox'))[0]);
-    expect(await findByText('This field is required')).toBeInTheDocument();
-  });
 });

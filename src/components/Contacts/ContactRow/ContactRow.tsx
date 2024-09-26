@@ -120,10 +120,12 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
                   <Typography component="span" variant="body2">
                     {[
                       primaryAddress.street,
-                      primaryAddress.city,
+                      `${primaryAddress.city}${primaryAddress.city && ','}`,
                       primaryAddress.state,
                       primaryAddress.postalCode,
-                    ].join(', ')}
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                   </Typography>
                 </Hidden>
               )

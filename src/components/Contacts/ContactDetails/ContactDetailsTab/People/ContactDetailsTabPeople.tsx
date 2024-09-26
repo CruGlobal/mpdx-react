@@ -58,14 +58,14 @@ const ContactPersonNameText = styled(Typography)(() => ({
 }));
 
 const ContactPersonPrimaryText = styled(Typography)(({ theme }) => ({
-  margin: theme.spacing(0, 1),
+  marginLeft: theme.spacing(1),
   color: theme.palette.text.secondary,
 }));
 
 const ContactPersonIconContainer = styled(Box)(() => ({
   width: '18px',
   height: '18px',
-  marginRight: '35px',
+  marginRight: '25px',
 }));
 
 const MergePeopleIcon = styled(MergeIcon)(({ theme }) => ({
@@ -152,7 +152,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
         onClick={() => toggleSelectPerson(person.id)}
       >
         <ContactPersonAvatar
-          alt={`${person.firstName} ${person.lastName}`}
+          alt={`${person.firstName || ''} ${person.lastName || ''}`}
           src={person.avatar}
           data-testid="ContactPersonAvatar"
         />
@@ -165,7 +165,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 textDecoration: person.deceased ? 'line-through' : '',
               }}
             >
-              {`${person.firstName} ${person.lastName}`}
+              {`${person.firstName || ''} ${person.lastName || ''}`}
             </ContactPersonNameText>
             {primaryPerson?.id === person.id ? (
               <ContactPersonPrimaryText variant="subtitle1">
@@ -187,7 +187,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">
                 {person.primaryPhoneNumber?.number !== null ? (
-                  <Link href={`tel:${person.primaryPhoneNumber?.number}`}>
+                  <Link
+                    underline="hover"
+                    href={`tel:${person.primaryPhoneNumber?.number}`}
+                  >
                     {person.primaryPhoneNumber?.number}
                   </Link>
                 ) : (
@@ -213,7 +216,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 <Email color="disabled" />
               </ContactPersonIconContainer>
               <Typography variant="subtitle1">
-                <Link href={`mailto:${person.primaryEmailAddress?.email}`}>
+                <Link
+                  underline="hover"
+                  href={`mailto:${person.primaryEmailAddress?.email}`}
+                >
                   {person.primaryEmailAddress?.email}
                 </Link>
               </Typography>
@@ -260,17 +266,24 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 
   return (
     <>
+      {!selecting && (
+        <Box sx={{ position: 'relative' }}>
+          {!people.nodes.length && (
+            <ContactPersonNameText variant="h6" sx={{ marginBottom: 4 }}>
+              {t('People')}
+            </ContactPersonNameText>
+          )}
+          <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
+            <AddButton onClick={() => setCreatePersonModalOpen(true)}>
+              <AddIcon />
+              <AddText variant="subtitle1">{t('Add Person')}</AddText>
+            </AddButton>
+          </Box>
+        </Box>
+      )}
       {primaryPerson ? personView(primaryPerson) : null}
       {people.nodes.map((person) =>
         person.id !== primaryPerson?.id ? personView(person) : null,
-      )}
-      {!selecting && (
-        <AddButton onClick={() => setCreatePersonModalOpen(true)}>
-          <Grid container alignItems="center">
-            <AddIcon />
-            <AddText variant="subtitle1">{t('Add Person')}</AddText>
-          </Grid>
-        </AddButton>
       )}
       {people.nodes.length > 1 &&
         (selecting ? (
@@ -302,7 +315,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             </Grid>
           </AddButton>
         ))}
-      {createPersonModalOpen ? (
+      {createPersonModalOpen && (
         <PersonModal
           person={undefined}
           contactId={id}
@@ -310,8 +323,8 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
           handleClose={() => setCreatePersonModalOpen(false)}
           contactData={data}
         />
-      ) : null}
-      {mergePeopleModalOpen ? (
+      )}
+      {mergePeopleModalOpen && (
         <MergePeopleModal
           accountListId={accountListId}
           people={people.nodes.filter((person) =>
@@ -322,7 +335,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             setMergePeopleModalOpen(false);
           }}
         />
-      ) : null}
+      )}
     </>
   );
 };

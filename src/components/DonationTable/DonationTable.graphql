@@ -48,6 +48,7 @@ fragment DonationTableRow on Donation {
       }
     }
     displayName
+    accountNumber
   }
   designationAccount {
     id

@@ -106,10 +106,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
                   <MenuItem key={DefaultTypeEnum.Us} value={DefaultTypeEnum.Us}>
                     {t('Reset columns to US (MPD) defaults')}
                   </MenuItem>
-                  <MenuItem
-                    key={DefaultTypeEnum.Global}
-                    value={DefaultTypeEnum.Global}
-                  >
+                  <MenuItem value={DefaultTypeEnum.Global}>
                     {t('Reset columns to Global (D MPD) defaults')}
                   </MenuItem>
                 </Select>

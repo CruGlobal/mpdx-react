@@ -1,3 +1,9 @@
+query ContactDonorAccounts($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    ...ContactPartnerAccounts
+  }
+}
+
 fragment ContactPartnerAccounts on Contact {
   id
   contactDonorAccounts(first: 25) {

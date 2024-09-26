@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import theme from '../../../../../../../theme';
@@ -146,20 +147,22 @@ describe('PersonModal', () => {
   it('should render edit person modal', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
 
@@ -169,20 +172,22 @@ describe('PersonModal', () => {
   it('should close edit contact modal', () => {
     const { getByLabelText, getByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -193,20 +198,22 @@ describe('PersonModal', () => {
   it('should handle cancel click', () => {
     const { getByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -218,20 +225,22 @@ describe('PersonModal', () => {
     const mutationSpy = jest.fn();
     const { getByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -247,20 +256,22 @@ describe('PersonModal', () => {
   it('should handle Show More click', async () => {
     const { queryAllByText, getByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -271,20 +282,22 @@ describe('PersonModal', () => {
   it('should handle Show Less click', async () => {
     const { queryAllByText, getByText, queryByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={mockPerson}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={mockPerson}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Person')).toBeInTheDocument();
@@ -299,28 +312,30 @@ describe('PersonModal', () => {
   it('should show invalid dates and highlight them as errors', async () => {
     const { getByText, getByRole, queryAllByText } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={{
-                    ...mockPerson,
-                    anniversaryDay: 0,
-                    anniversaryMonth: 0,
-                    anniversaryYear: 2000,
-                    birthdayDay: 0,
-                    birthdayMonth: 0,
-                    birthdayYear: 2000,
-                  }}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={{
+                      ...mockPerson,
+                      anniversaryDay: 0,
+                      anniversaryMonth: 0,
+                      anniversaryYear: 2000,
+                      birthdayDay: 0,
+                      birthdayMonth: 0,
+                      birthdayYear: 2000,
+                    }}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
 
@@ -350,20 +365,22 @@ describe('PersonModal', () => {
     it('should handle uploading an avatar', async () => {
       const { getByRole, getByTestId } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -401,20 +418,22 @@ describe('PersonModal', () => {
       mockPerson.avatar = 'https://cru.org/assets/image.jpg';
       render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -431,20 +450,22 @@ describe('PersonModal', () => {
 
       const { getByTestId } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -465,20 +486,22 @@ describe('PersonModal', () => {
 
       const { getByRole, getByTestId } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -507,20 +530,22 @@ describe('PersonModal', () => {
 
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -562,20 +587,22 @@ describe('PersonModal', () => {
       const newPersonPhoneNumber = '888-888-8888';
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -639,20 +666,22 @@ describe('PersonModal', () => {
 
       const { queryByText, queryByRole } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -701,20 +730,22 @@ describe('PersonModal', () => {
 
       const { getByText, getAllByRole } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -731,20 +762,22 @@ describe('PersonModal', () => {
     it('should handle invalid phone numbers', async () => {
       const { findByText, getByRole, getAllByRole } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -762,20 +795,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByRole, getAllByRole } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -823,20 +858,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByRole, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -874,20 +911,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -913,20 +952,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -942,20 +983,22 @@ describe('PersonModal', () => {
       const newPersonEmailAddress = 'testguy@fake.com';
       const { getByText, getByLabelText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       userEvent.clear(getAllByLabelText('Email Address')[0]);
@@ -1002,20 +1045,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByRole, getAllByRole } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -1033,20 +1078,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1072,20 +1119,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1104,20 +1153,22 @@ describe('PersonModal', () => {
       const newPersonLegalFirstName = 'Jim';
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1174,20 +1225,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1213,20 +1266,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1256,20 +1311,22 @@ describe('PersonModal', () => {
       const newPersonWebsite = 'testguy.com';
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1323,20 +1380,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1373,20 +1432,22 @@ describe('PersonModal', () => {
       const mutationSpy = jest.fn();
       const { getByText, getAllByLabelText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider onCall={mutationSpy}>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       expect(getByText('Edit Person')).toBeInTheDocument();
@@ -1401,20 +1462,22 @@ describe('PersonModal', () => {
     it('should handle deleting a person', async () => {
       const { getByRole, getByText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={mockPerson}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider>
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={mockPerson}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
       userEvent.click(getByRole('button', { hidden: true, name: 'Delete' }));
@@ -1511,9 +1574,6 @@ describe('PersonModal', () => {
           id: contactId,
           name: 'Person, Test',
           tagList: ['tag1', 'tag2', 'tag3'],
-          contactDonorAccounts: {
-            nodes: [],
-          },
           contactReferralsToMe: {
             nodes: [
               {
@@ -1563,24 +1623,28 @@ describe('PersonModal', () => {
 
       const { getByText, getByLabelText } = render(
         <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider<{ ContactDetailsTab: ContactDetailsTabQuery }>
-                mocks={mocks}
-                cache={cache}
-                onCall={mutationSpy}
-              >
-                <ContactDetailProvider>
-                  <PersonModal
-                    contactId={contactId}
-                    accountListId={accountListId}
-                    handleClose={handleClose}
-                    person={undefined}
-                  />
-                </ContactDetailProvider>
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
+          <TestRouter>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <ThemeProvider theme={theme}>
+                <GqlMockedProvider<{
+                  ContactDetailsTab: ContactDetailsTabQuery;
+                }>
+                  mocks={mocks}
+                  cache={cache}
+                  onCall={mutationSpy}
+                >
+                  <ContactDetailProvider>
+                    <PersonModal
+                      contactId={contactId}
+                      accountListId={accountListId}
+                      handleClose={handleClose}
+                      person={undefined}
+                    />
+                  </ContactDetailProvider>
+                </GqlMockedProvider>
+              </ThemeProvider>
+            </LocalizationProvider>
+          </TestRouter>
         </SnackbarProvider>,
       );
 
@@ -1619,23 +1683,25 @@ describe('PersonModal', () => {
     const mutationSpy = jest.fn();
     const { getByText, getByRole } = render(
       <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <ContactDetailProvider>
-                <PersonModal
-                  contactId={contactId}
-                  accountListId={accountListId}
-                  handleClose={handleClose}
-                  person={{
-                    ...mockPerson,
-                    __typename: 'User',
-                  }}
-                />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
+        <TestRouter>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <ContactDetailProvider>
+                  <PersonModal
+                    contactId={contactId}
+                    accountListId={accountListId}
+                    handleClose={handleClose}
+                    person={{
+                      ...mockPerson,
+                      __typename: 'User',
+                    }}
+                  />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TestRouter>
       </SnackbarProvider>,
     );
     expect(getByText('Edit Details')).toBeInTheDocument();

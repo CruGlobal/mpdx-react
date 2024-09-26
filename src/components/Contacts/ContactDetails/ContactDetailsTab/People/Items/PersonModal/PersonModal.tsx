@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useApolloClient } from '@apollo/client';
 import {
@@ -28,6 +29,7 @@ import Modal from '../../../../../../common/Modal/Modal';
 import {
   GetContactDetailsHeaderDocument,
   GetContactDetailsHeaderQuery,
+  GetContactDetailsHeaderQueryVariables,
 } from '../../../../ContactDetailsHeader/ContactDetailsHeader.generated';
 import {
   ContactDetailsTabDocument,
@@ -116,6 +118,7 @@ export const PersonModal: React.FC<PersonModalProps> = ({
   const userProfile = person?.__typename === 'User';
 
   const { t } = useTranslation();
+  const { pathname } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [personEditShowMore, setPersonEditShowMore] = useState(false);
   const [removeDialogOpen, handleRemoveDialogOpen] = useState(false);
@@ -299,10 +302,18 @@ export const PersonModal: React.FC<PersonModalProps> = ({
               update: (cache) => {
                 const query = {
                   query: GetContactDetailsHeaderDocument,
-                  variables: { accountListId, contactId },
+                  variables: {
+                    accountListId,
+                    contactId,
+                    loadDuplicate:
+                      pathname !==
+                      '/accountLists/[accountListId]/tools/merge/contacts/[[...contactId]]',
+                  },
                 };
-                const dataFromCache =
-                  cache.readQuery<GetContactDetailsHeaderQuery>(query);
+                const dataFromCache = cache.readQuery<
+                  GetContactDetailsHeaderQuery,
+                  GetContactDetailsHeaderQueryVariables
+                >(query);
                 if (dataFromCache) {
                   const data = {
                     ...dataFromCache,

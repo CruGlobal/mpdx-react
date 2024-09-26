@@ -50,17 +50,21 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     contactStatus || data?.contact.status;
 
   const shouldRenderContactSuggestion: boolean = useMemo(() => {
-    if (!currentContactStatus) {
-      return false;
-    }
+    // Hide suggestedStatus if the suggested status is the current status
     if (suggestedContactStatus === currentContactStatus) {
       return false;
     }
-    const disabledStatuses: StatusEnum[] = getContactStatusesByPhase(
-      PhaseEnum.PartnerCare,
-      contactStatuses,
-    ).map((s) => s.id);
-    return !disabledStatuses.includes(currentContactStatus);
+
+    if (currentContactStatus) {
+      const disabledStatuses: StatusEnum[] = getContactStatusesByPhase(
+        PhaseEnum.PartnerCare,
+        contactStatuses,
+      ).map((s) => s.id);
+      // Hide suggestedStatus if the suggested status is a partner care status, otherwise, show it
+      return !disabledStatuses.includes(currentContactStatus);
+    }
+    // Show suggestedStatus if the contact has no status
+    return true;
   }, [contactStatuses, currentContactStatus]);
 
   return suggestedContactStatus && shouldRenderContactSuggestion ? (

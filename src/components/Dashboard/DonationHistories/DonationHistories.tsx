@@ -320,11 +320,9 @@ const DonationHistories = ({
                             offset={0}
                             angle={-90}
                           >
-                            {
-                              t('Amount ({{ currencyCode }})', {
-                                currencyCode,
-                              }) as string
-                            }
+                            {t('Amount ({{ currencyCode }})', {
+                              currencyCode,
+                            })}
                           </Text>
                         }
                       />

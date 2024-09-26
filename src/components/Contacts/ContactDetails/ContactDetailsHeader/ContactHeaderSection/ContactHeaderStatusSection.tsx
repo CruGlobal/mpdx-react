@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import CreateIcon from '@mui/icons-material/Create';
-import { Box, IconButton, Skeleton, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -69,15 +68,8 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
     const statusText = status && contactStatuses[status]?.translated;
     return (
       <>
-        {status ? (
-          <ContactHeaderSection
-            icon={<HandshakeIcon />}
-            rightIcon={
-              <IconButton onClick={() => setEditPartnershipModalOpen(true)}>
-                <CreateIcon />
-              </IconButton>
-            }
-          >
+        {status && (
+          <ContactHeaderSection icon={<HandshakeIcon />}>
             <Box
               width="100%"
               display="flex"
@@ -86,9 +78,9 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
             >
               <Typography variant="subtitle1">
                 {statusText}
-                {status === StatusEnum.PartnerFinancial ? (
+                {status === StatusEnum.PartnerFinancial && (
                   <>
-                    {contact?.pledgeAmount && contact?.pledgeFrequency ? (
+                    {contact?.pledgeAmount && contact?.pledgeFrequency && (
                       <Typography variant="subtitle1">
                         {`${
                           contact.pledgeAmount && contact?.pledgeCurrency
@@ -103,7 +95,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                           contact.pledgeFrequency,
                         )}`}`}
                       </Typography>
-                    ) : null}
+                    )}
 
                     <Typography variant="subtitle1">
                       {lateStatusEnum !== undefined && (
@@ -114,26 +106,17 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                       )}
                     </Typography>
                   </>
-                ) : null}
+                )}
               </Typography>
             </Box>
           </ContactHeaderSection>
-        ) : (
-          <Box display="flex" justifyContent="flex-end">
-            <IconButton
-              sx={{ margin: 1, padding: '12px' }}
-              onClick={() => setEditPartnershipModalOpen(true)}
-            >
-              <CreateIcon />
-            </IconButton>
-          </Box>
         )}
-        {contact && editPartnershipModalOpen ? (
+        {contact && editPartnershipModalOpen && (
           <EditPartnershipInfoModal
             contact={contact}
             handleClose={() => setEditPartnershipModalOpen(false)}
           />
-        ) : null}
+        )}
       </>
     );
   }

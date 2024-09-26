@@ -1,13 +1,6 @@
 import React, { useRef } from 'react';
 import UploadIcon from '@mui/icons-material/Upload';
-import {
-  Avatar,
-  Box,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Avatar, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -82,7 +75,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
 
   return (
     <>
-      {person ? (
+      {person && (
         <ModalSectionContainer>
           <StyledIconButton onClick={handleFileClick}>
             <StyledAvatarIcon>
@@ -90,7 +83,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
             </StyledAvatarIcon>
             <Avatar
               sx={{ width: '34px', height: '34px' }}
-              alt={`${person.firstName} ${person.lastName}`}
+              alt={`${person.firstName || ''} ${person.lastName || ''}`}
               src={pendingAvatar ?? person.avatar}
             />
           </StyledIconButton>
@@ -102,14 +95,11 @@ export const PersonName: React.FC<PersonNameProps> = ({
             ref={fileRef}
             onChange={handleFileChange}
           />
-          <Typography>
-            <Box
-              component="span"
-              fontWeight="bold"
-            >{`${person.firstName} ${person.lastName}`}</Box>
+          <Typography component="span" fontWeight="bold">
+            {`${person.firstName || ''} ${person.lastName || ''}`}
           </Typography>
         </ModalSectionContainer>
-      ) : null}
+      )}
       <ModalSectionContainer>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>

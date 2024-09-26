@@ -108,11 +108,9 @@ const TaskModalLogForm = ({
   const session = useSession();
   const { t } = useTranslation();
   const [showMore, setShowMore] = useState(false);
-  // TODO replace with ResultEnum when available
-  const [resultSelected, setResultSelected] =
-    useState<DisplayResultEnum | null>(
-      (defaultValues?.result as unknown as DisplayResultEnum) || null,
-    );
+  const [resultSelected, setResultSelected] = useState<
+    DisplayResultEnum | ResultEnum | null
+  >(defaultValues?.result || null);
 
   const [actionSelected, setActionSelected] = useState<
     ActivityTypeEnum | undefined

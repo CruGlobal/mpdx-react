@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
@@ -231,7 +231,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { getByText, getByRole } = render(
+      const { findByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -245,8 +245,8 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
+      expect(await findByText(task.subject)).toBeVisible();
+      userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Complete,
@@ -291,7 +291,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { getByText, getByRole } = render(
+      const { findByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -305,12 +305,16 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
-      expect(openTaskModal).toHaveBeenCalledWith({
-        taskId: task.id,
-        view: TaskModalEnum.Comments,
-      });
+      expect(await findByText(task.subject)).toBeVisible();
+      await waitFor(() =>
+        userEvent.click(getByRole('img', { hidden: true, name: 'Comment' })),
+      );
+      await waitFor(() =>
+        expect(openTaskModal).toHaveBeenCalledWith({
+          taskId: task.id,
+          view: TaskModalEnum.Comments,
+        }),
+      );
     });
 
     it('handle subject click', async () => {

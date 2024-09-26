@@ -1,6 +1,8 @@
 import { GetServerSidePropsContext } from 'next';
+import { ApolloError } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
 import { session } from '__tests__/fixtures/session';
@@ -106,6 +108,140 @@ describe('AccountListsId page', () => {
       );
 
       expect(getByText('Good Morning, firstName.')).toBeInTheDocument();
+    });
+  });
+  describe('AccountListId Redirects', () => {
+    const restApiNotFoundErrorMessage = "Resource 'AccountList' is not valid";
+
+    const makeContext = (
+      url: string = '/accountLists/[accountListId]/contacts',
+    ) => {
+      return {
+        req: { url: url },
+        query: {
+          accountListId: 'account-list-1',
+        },
+      } as unknown as GetServerSidePropsContext;
+    };
+
+    it('replaces and redirects to the default account list id if Not Found', async () => {
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            new GraphQLError(restApiNotFoundErrorMessage, {
+              extensions: { code: 'NOT_FOUND' },
+            }),
+          ],
+        }),
+      );
+
+      query.mockResolvedValueOnce({
+        data: {
+          user: {
+            defaultAccountList: 'default-id',
+          },
+        },
+      });
+
+      expect(await getServerSideProps(makeContext())).toEqual({
+        redirect: {
+          destination: '/accountLists/default-id/contacts',
+          permanent: false,
+        },
+      });
+    });
+
+    it('redirects to the account list selector page if theres no defaultAccountList', async () => {
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            new GraphQLError(restApiNotFoundErrorMessage, {
+              extensions: { code: 'NOT_FOUND' },
+            }),
+          ],
+        }),
+      );
+
+      query.mockResolvedValueOnce({
+        data: {
+          user: {
+            defaultAccountList: null,
+          },
+        },
+      });
+
+      expect(await getServerSideProps(makeContext())).toEqual({
+        redirect: {
+          destination: '/accountLists',
+          permanent: false,
+        },
+      });
+    });
+
+    it('redirects to the account list selector page if theres an error trying to find defaultAccountList', async () => {
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            new GraphQLError(restApiNotFoundErrorMessage, {
+              extensions: { code: 'NOT_FOUND' },
+            }),
+          ],
+        }),
+      );
+
+      query.mockResolvedValueOnce(
+        new Error('error getting defaultAccountList'),
+      );
+
+      expect(await getServerSideProps(makeContext())).toEqual({
+        redirect: { destination: '/accountLists', permanent: false },
+      });
+    });
+
+    it('redirects to the account list selector page if there url is invalid', async () => {
+      const query = jest.fn();
+
+      (makeSsrClient as jest.Mock).mockReturnValue({
+        query: query,
+      });
+
+      query.mockRejectedValueOnce(
+        new ApolloError({
+          graphQLErrors: [
+            new GraphQLError(restApiNotFoundErrorMessage, {
+              extensions: { code: 'NOT_FOUND' },
+            }),
+          ],
+        }),
+      );
+
+      query.mockResolvedValueOnce({
+        data: {
+          user: {
+            defaultAccountList: 'default-id',
+          },
+        },
+      });
+
+      expect(await getServerSideProps(makeContext('/invalid_url/'))).toEqual({
+        redirect: { destination: '/accountLists', permanent: false },
+      });
     });
   });
 });

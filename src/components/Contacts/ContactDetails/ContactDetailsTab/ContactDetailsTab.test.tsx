@@ -307,14 +307,16 @@ describe('ContactDetailTab', () => {
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
   });
 
-  it('should open edit contact other details modal', async () => {
-    const { queryByText } = render(<TestComponent />);
+  it('should open and close Edit Contact Other Details modal', async () => {
+    const { queryByText, getByTestId, getByText, getByLabelText } = render(
+      <TestComponent />,
+    );
     await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
-  });
+    userEvent.click(getByTestId('Edit Other'));
+    expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
 
-  it('should close edit contact other details modal', async () => {
-    const { queryByText } = render(<TestComponent />);
-    await waitFor(() => expect(queryByText('Loading')).not.toBeInTheDocument());
+    userEvent.click(getByLabelText('Close'));
+
     await waitFor(() =>
       expect(queryByText('Edit Contact Other Details')).not.toBeInTheDocument(),
     );

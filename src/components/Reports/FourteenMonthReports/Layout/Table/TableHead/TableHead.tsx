@@ -4,31 +4,27 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { Totals } from '../../../FourteenMonthReport';
-import { FourteenMonthReportQuery } from '../../../GetFourteenMonthReport.generated';
+import { MonthTotal } from '../../../FourteenMonthReport';
+import {
+  FourteenMonthReportContactFragment,
+  FourteenMonthReportQuery,
+} from '../../../GetFourteenMonthReport.generated';
 import { StyledTableCell } from '../StyledComponents';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
-import type { Order, Unarray } from '../../../../Reports.type';
+import type { Order } from '../../../../Reports.type';
 
-export type Contacts =
-  FourteenMonthReportQuery['fourteenMonthReport']['currencyGroups'][0]['contacts'];
-export type Contact = Contacts[0];
-export type Months = Contact['months'];
-export type Month = Unarray<Months>;
-export type OrderBy = keyof Contact | keyof Unarray<Months>;
+export type Contact = FourteenMonthReportContactFragment;
+export type OrderBy = keyof FourteenMonthReportContactFragment | number; // numbers mean sorting by a specific month index
 
 export interface FourteenMonthReportTableHeadProps {
   isExpanded: boolean;
-  totals: Totals[] | undefined;
+  totals: MonthTotal[] | undefined;
   salaryCurrency:
     | FourteenMonthReportQuery['fourteenMonthReport']['salaryCurrency']
     | undefined;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: OrderBy | number,
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: OrderBy) => void;
   order: Order;
-  orderBy: string | number | null;
+  orderBy: OrderBy | null;
 }
 
 const YearTableCell = styled(TableCell)(({}) => ({
@@ -46,7 +42,7 @@ export const FourteenMonthReportTableHead: FC<
   const locale = useLocale();
 
   const createSortHandler =
-    (property: OrderBy | number) => (event: React.MouseEvent<unknown>) => {
+    (property: OrderBy) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 

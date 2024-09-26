@@ -32,11 +32,13 @@ jest.mock('notistack', () => ({
 interface MergeContactsWrapperProps {
   mutationSpy?: () => void;
   mocks?: ApolloErgonoMockMap;
+  contactId?: string;
 }
 
 const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
   mutationSpy,
   mocks = getContactDuplicatesMocks,
+  contactId,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -60,6 +62,7 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
             <MergeContacts
               accountListId={accountListId}
               setContactFocus={setContactFocus}
+              contactId={contactId}
             />
           </ContactsProvider>
         </GqlMockedProvider>
@@ -198,6 +201,22 @@ describe('Tools - MergeContacts', () => {
     expect(
       getByText('No duplicate contacts need attention'),
     ).toBeInTheDocument();
+  });
+
+  it('should only load duplicates of a specific contact', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <SnackbarProvider>
+        <MergeContactsWrapper mutationSpy={mutationSpy} contactId="contact-1" />
+      </SnackbarProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GetContactDuplicates', {
+        accountListId: '123',
+        contactIds: ['contact-1'],
+      }),
+    );
   });
 
   it('should show error', async () => {

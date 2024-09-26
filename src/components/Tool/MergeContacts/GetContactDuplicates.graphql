@@ -1,6 +1,11 @@
-query GetContactDuplicates($accountListId: ID!) {
+query GetContactDuplicates($accountListId: ID!, $contactIds: [ID!]) {
   # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
-  contactDuplicates(accountListId: $accountListId, ignore: false, first: 10) {
+  contactDuplicates(
+    accountListId: $accountListId
+    contactIds: $contactIds
+    ignore: false
+    first: 10
+  ) {
     totalCount
     nodes {
       id

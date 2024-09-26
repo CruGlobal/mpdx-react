@@ -116,7 +116,7 @@ const CompleteButton = ({
       onClick={handleClick}
       onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
     >
-      <Check titleAccess={title ?? 'Check Icon'} />
+      <Check titleAccess={title ?? 'Check'} />
     </TaskCompleteButton>
   );
 };

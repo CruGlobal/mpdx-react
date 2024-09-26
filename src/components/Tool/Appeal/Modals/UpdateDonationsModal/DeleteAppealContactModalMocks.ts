@@ -26,6 +26,9 @@ export const contactNoDonationsMock = {
     contactReferralsToMe: {
       nodes: [],
     },
+    people: {
+      nodes: [],
+    },
     contactDonorAccounts: {
       nodes: [],
     },
@@ -64,6 +67,9 @@ export const contactWithDonationsMock = {
     source: ContactSourceEnum.Mpdx,
     likelyToGive: null,
     contactReferralsToMe: {
+      nodes: [],
+    },
+    people: {
       nodes: [],
     },
     contactDonorAccounts: {

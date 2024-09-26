@@ -4,7 +4,7 @@ import {
   RequestOptions,
   Response,
 } from 'apollo-datasource-rest';
-import { ApolloServer } from 'apollo-server-micro';
+import { ApolloError, ApolloServer } from 'apollo-server-micro';
 import { DateTime } from 'luxon';
 import Cors from 'micro-cors';
 import {
@@ -174,6 +174,23 @@ class MpdxRestApi extends RESTDataSource {
     } else {
       return response.text();
     }
+  }
+
+  protected async errorFromResponse(response: Response): Promise<ApolloError> {
+    const error = await super.errorFromResponse(response);
+    const restError = error.extensions.response.body.errors[0];
+    if (restError?.detail) {
+      // Populate the error message with the message detail from the API
+      error.message = restError.detail;
+    }
+
+    if (restError?.status === '404') {
+      // Override the code when the error is a not found error from the REST API
+      // so that client.ts can detect account list not found errors
+      error.extensions.code = 'NOT_FOUND';
+    }
+
+    return error;
   }
 
   async createExportedContacts(

@@ -46,6 +46,7 @@ export interface DonationTableProps {
   onSelectContact?: (contactId: string) => void;
   visibleColumnsStorageKey: string;
   emptyPlaceholder: React.ReactElement;
+  hideDisplayName?: boolean;
 }
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
@@ -109,11 +110,14 @@ export interface DonationRow {
 
 export const createDonationRow = (
   data: DonationTableRowFragment,
+  hideDisplayName: boolean,
 ): DonationRow => ({
   id: data.id,
   date: DateTime.fromISO(data.donationDate),
   contactId: data.donorAccount.contacts.nodes[0]?.id ?? null,
-  donorAccountName: data.donorAccount.displayName,
+  donorAccountName: hideDisplayName
+    ? data.donorAccount.accountNumber
+    : data.donorAccount.displayName,
   convertedAmount: data.amount.convertedAmount,
   currency: data.amount.convertedCurrency,
   foreignAmount: data.amount.amount,
@@ -132,6 +136,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   onSelectContact,
   visibleColumnsStorageKey,
   emptyPlaceholder,
+  hideDisplayName = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -176,7 +181,10 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const accountCurrency = accountListData?.accountList.currency || 'USD';
 
-  const donations = useMemo(() => nodes.map(createDonationRow), [nodes]);
+  const donations = useMemo(
+    () => nodes.map((node) => createDonationRow(node, hideDisplayName)),
+    [nodes, hideDisplayName],
+  );
 
   const date: RenderCell = ({ row }) => dateFormatShort(row.date, locale);
 
@@ -231,7 +239,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     },
     {
       field: 'donorAccountName',
-      headerName: t('Partner'),
+      headerName: hideDisplayName ? t('Partner No.') : t('Partner'),
       flex: 3,
       minWidth: 200,
       renderCell: donor,

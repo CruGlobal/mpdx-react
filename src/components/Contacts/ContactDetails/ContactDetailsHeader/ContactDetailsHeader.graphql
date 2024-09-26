@@ -15,8 +15,29 @@ fragment ContactDetailsHeader on Contact {
   ...ContactHeaderNewsletter
 }
 
-query GetContactDetailsHeader($accountListId: ID!, $contactId: ID!) {
+query GetContactDetailsHeader(
+  $accountListId: ID!
+  $contactId: ID!
+  $loadDuplicate: Boolean!
+) {
   contact(accountListId: $accountListId, id: $contactId) {
     ...ContactDetailsHeader
+  }
+  contactDuplicates(
+    accountListId: $accountListId
+    contactIds: [$contactId]
+    ignore: false
+    first: 1
+  ) @include(if: $loadDuplicate) {
+    nodes {
+      id
+      reason
+      recordOne {
+        id
+      }
+      recordTwo {
+        id
+      }
+    }
   }
 }

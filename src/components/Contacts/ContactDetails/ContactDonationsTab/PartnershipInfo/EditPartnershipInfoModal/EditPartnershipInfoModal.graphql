@@ -7,6 +7,17 @@ mutation UpdateContactPartnership(
   ) {
     contact {
       id
+      name
+      primaryPerson {
+        id
+        firstName
+        lastName
+      }
+      people(first: 25) {
+        nodes {
+          ...ContactPerson
+        }
+      }
       status
       pledgeAmount
       pledgeFrequency

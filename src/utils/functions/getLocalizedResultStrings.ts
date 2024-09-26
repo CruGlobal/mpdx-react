@@ -31,7 +31,7 @@ export const getLocalizedResultString = (
 
     case ResultEnum.Received:
       return t('Received');
-    // TODO remove when new ResultEnum is added
+
     case DisplayResultEnum.FollowUpResultNoResponse:
     case DisplayResultEnum.InitiationResultNoResponse:
       return t('No Response Yet');

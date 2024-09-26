@@ -1,10 +1,19 @@
+import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { signOut } from 'next-auth/react';
+import {
+  GetDefaultAccountDocument,
+  GetDefaultAccountQuery,
+} from 'pages/api/getDefaultAccount.generated';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import snackNotifications from '../../components/Snackbar/Snackbar';
 import { dispatch } from '../analytics';
+import {
+  isAccountListNotFoundError,
+  replaceUrlAccountList,
+} from './accountListRedirect';
 import { createCache } from './cache';
 import { batchLink, makeAuthLink } from './link';
 
@@ -23,14 +32,31 @@ const makeClient = (apiToken: string) => {
       onError(({ graphQLErrors, networkError }) => {
         // Don't show sign out and display errors on the login page because the user won't be logged in
         if (graphQLErrors && window.location.pathname !== '/login') {
-          graphQLErrors.forEach(({ message, extensions }) => {
-            if (extensions?.code === 'AUTHENTICATION_ERROR') {
+          graphQLErrors.forEach((graphQLError) => {
+            if (graphQLError.extensions.code === 'AUTHENTICATION_ERROR') {
               signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
                 clearDataDogUser();
                 client.clearStore();
               });
             }
-            snackNotifications.error(message);
+            if (isAccountListNotFoundError(graphQLError)) {
+              client
+                .query<GetDefaultAccountQuery>({
+                  query: GetDefaultAccountDocument,
+                })
+                .then((response) => {
+                  // eslint-disable-next-line no-console
+                  console.log('Incorrect accountListId provided. Redirecting.');
+                  router.replace(
+                    replaceUrlAccountList(
+                      window.location.pathname,
+                      response.data.user.defaultAccountList,
+                    ),
+                  );
+                });
+            } else {
+              snackNotifications.error(graphQLError.message);
+            }
           });
         }
 

@@ -12,7 +12,6 @@ import {
   ContactFilterStatusEnum,
   IdValue,
   StatusEnum,
-  TaskSortEnum,
 } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -96,14 +95,10 @@ export const ContactFlow: React.FC<Props> = ({
       id,
       status: status.id as StatusEnum,
     };
-    let newContactPhase;
-    await updateContactOther({
+    const { data } = await updateContactOther({
       variables: {
         accountListId,
         attributes,
-      },
-      update: (_, { data }) => {
-        newContactPhase = data?.updateContact?.contact.contactPhase;
       },
       refetchQueries: () =>
         flowOptions.map((flowOption) => ({
@@ -123,16 +118,16 @@ export const ContactFlow: React.FC<Props> = ({
       variant: 'success',
     });
 
+    const newContactPhase = data?.updateContact?.contact.contactPhase;
+
     switch (contactPhase) {
       case PhaseEnum.Initiation:
       case PhaseEnum.Appointment:
       case PhaseEnum.FollowUp:
       case PhaseEnum.PartnerCare:
-        await hasActiveTask({
+        const { data } = await hasActiveTask({
           variables: {
             accountListId,
-            sortBy: TaskSortEnum.StartAtAsc,
-            first: 1,
             tasksFilter: {
               completed: false,
               contactIds: [id],
@@ -141,32 +136,29 @@ export const ContactFlow: React.FC<Props> = ({
                 : [],
             },
           },
-          onCompleted(data) {
-            const taskId = data.tasks.nodes[0]?.id || undefined;
-            if (taskId) {
-              openTaskModal({
-                view: TaskModalEnum.Complete,
-                taskId,
-                showFlowsMessage: true,
-              });
-            } else {
-              if (
-                newContactPhase &&
-                newContactPhase !== PhaseEnum.Connection &&
-                newContactPhase !== PhaseEnum.Archive
-              ) {
-                openTaskModal({
-                  view: TaskModalEnum.Log,
-                  showFlowsMessage: true,
-                  defaultValues: {
-                    taskPhase: newContactPhase,
-                    contactIds: [id],
-                  },
-                });
-              }
-            }
-          },
         });
+
+        const taskId = data?.tasks.nodes[0]?.id || undefined;
+        if (taskId) {
+          openTaskModal({
+            view: TaskModalEnum.Complete,
+            taskId,
+            showFlowsMessage: true,
+          });
+        } else if (
+          newContactPhase &&
+          newContactPhase !== PhaseEnum.Connection &&
+          newContactPhase !== PhaseEnum.Archive
+        ) {
+          openTaskModal({
+            view: TaskModalEnum.Log,
+            showFlowsMessage: true,
+            defaultValues: {
+              taskPhase: newContactPhase,
+              contactIds: [id],
+            },
+          });
+        }
         break;
 
       case PhaseEnum.Connection:

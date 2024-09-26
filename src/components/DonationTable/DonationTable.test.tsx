@@ -27,6 +27,7 @@ interface TestComponentProps {
   hasForeignCurrency?: boolean;
   hasMultiplePages?: boolean;
   tableProps?: Partial<DonationTableProps>;
+  hideDisplayName?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -34,6 +35,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   hasForeignCurrency = false,
   hasMultiplePages = false,
   tableProps,
+  hideDisplayName = false,
 }) => (
   <SnackbarProvider>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -72,6 +74,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                               nodes: [{ id: 'contact-1' }],
                             },
                             displayName: 'Donor 1',
+                            accountNumber: 'accountNumber-1',
                           },
                           paymentMethod: 'Check',
                           designationAccount: {
@@ -94,6 +97,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                               nodes: [],
                             },
                             displayName: 'Donor 2',
+                            accountNumber: 'accountNumber-2',
                           },
                           paymentMethod: 'Credit Card',
                           designationAccount: {
@@ -119,6 +123,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               }}
               visibleColumnsStorageKey=""
               emptyPlaceholder={<span>Empty Table</span>}
+              hideDisplayName={hideDisplayName}
               {...tableProps}
             />
           </GqlMockedProvider>
@@ -141,6 +146,26 @@ describe('DonationTable', () => {
     expect(getByRole('cell', { name: 'Check' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Credit Card' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Appeal 1' })).toBeInTheDocument();
+  });
+
+  it('renders the partner display name when not on contact page.', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('columnheader', { name: 'Partner' }),
+    ).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Donor 2' })).toBeInTheDocument();
+  });
+
+  it('renders the partner account number when on contact page', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent hideDisplayName={true} />,
+    );
+
+    expect(
+      await findByRole('columnheader', { name: 'Partner No.' }),
+    ).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'accountNumber-2' })).toBeInTheDocument();
   });
 
   it('opens and closes the edit donation modal', async () => {

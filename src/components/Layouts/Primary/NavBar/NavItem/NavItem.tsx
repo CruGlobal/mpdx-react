@@ -5,6 +5,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Button, Collapse, ListItemButton, MenuItem } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import HandoffLink from 'src/components/HandoffLink';
 import { LeafListItem, Title } from '../StyledComponents';
 
@@ -54,6 +55,7 @@ export const NavItem: FC<NavItemProps> = ({
 }) => {
   const [open, setOpen] = useState<boolean>(openProp ?? false);
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const handleToggle = (): void => {
     setOpen((prevOpen) => !prevOpen);
@@ -80,13 +82,13 @@ export const NavItem: FC<NavItemProps> = ({
             <ExpandItemIcon
               fontSize="small"
               color="disabled"
-              titleAccess="Expand"
+              titleAccess={t('Expand')}
             />
           ) : (
             <CollapseItemIcon
               fontSize="small"
               color="disabled"
-              titleAccess="Collapse"
+              titleAccess={t('Collapse')}
             />
           )}
         </StyledButton>

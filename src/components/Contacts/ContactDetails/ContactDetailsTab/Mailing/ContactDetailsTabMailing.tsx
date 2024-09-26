@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
 import LocationOn from '@mui/icons-material/LocationOn';
-import { Box, Grid, IconButton, Link, Typography } from '@mui/material';
+import { Box, IconButton, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from '../../ContactDetailContext';
-import { AddButton, AddIcon, AddText, EditIcon } from '../StyledComponents';
+import { AddButton, AddIcon, AddText } from '../StyledComponents';
 import { AddAddressModal } from './AddAddressModal/AddAddressModal';
 import { ContactMailingFragment } from './ContactMailing.generated';
 import { EditContactAddressModal } from './EditContactAddressModal/EditContactAddressModal';
@@ -22,6 +21,7 @@ import { EditMailingInfoModal } from './EditMailingInfoModal/EditMailingInfoModa
 const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(2),
 }));
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
@@ -38,9 +38,8 @@ const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
   marginTop: '10px',
 }));
 
-const ContactDetailsMailingLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  marginRight: '5px',
+const StyledAddressTypography = styled(Typography)(() => ({
+  lineHeight: '1.25',
 }));
 
 const ContactMailingShowMoreLabel = styled(Typography)(({ theme }) => ({
@@ -55,6 +54,7 @@ const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
 const ContactAddressRowContainer = styled(Box)(() => ({
   display: 'flex',
   alignItems: 'center',
+  marginTop: 10,
 }));
 
 const AddressEditIcon = styled(CreateIcon)(({ theme }) => ({
@@ -79,7 +79,7 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { addresses, greeting, envelopeGreeting, sendNewsletter, id } = data;
+  const { addresses, id } = data;
   const {
     editingAddressId,
     setEditingAddressId,
@@ -103,6 +103,14 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
     useState(false);
   return (
     <>
+      <Box sx={{ position: 'relative' }}>
+        <Box sx={{ position: 'absolute', right: 2, top: 2 }}>
+          <AddButton onClick={() => setAddAddressModalOpen(true)}>
+            <AddIcon />
+            <AddText variant="subtitle1">{t('Add Address')}</AddText>
+          </AddButton>
+        </Box>
+      </Box>
       <Box>
         <ContactDetailsMailingMainContainer>
           <ContactDetailsMailingIcon />
@@ -127,40 +135,73 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   </AddressEditIconContainer>
                 </ContactAddressRowContainer>
 
-                <ContactAddressRowContainer
+                <Box
                   style={{
                     textDecoration: primaryAddress.historic
                       ? 'line-through'
                       : 'none',
                   }}
                 >
-                  <Typography variant="subtitle1">
-                    {`${primaryAddress.city}, ${primaryAddress.state ?? ''} ${
-                      primaryAddress.postalCode
-                    }`}
-                  </Typography>
-                </ContactAddressRowContainer>
-                <ContactAddressRowContainer>
-                  <Typography variant="subtitle1">
+                  <StyledAddressTypography variant="subtitle1">
+                    {`${primaryAddress.city}${primaryAddress.city && ','} ${
+                      primaryAddress.state ?? ''
+                    } ${primaryAddress.postalCode}`}
+                  </StyledAddressTypography>
+
+                  <StyledAddressTypography variant="subtitle1">
                     {primaryAddress.country}
-                  </Typography>
-                </ContactAddressRowContainer>
-                <ContactAddressRowContainer>
-                  <Typography variant="subtitle1">
-                    {t('Source:')} {sourceToStr(t, primaryAddress.source)} (
-                    {dateFormat(
-                      DateTime.fromISO(primaryAddress.createdAt),
-                      locale,
-                    )}
-                    )
-                  </Typography>
-                </ContactAddressRowContainer>
+                  </StyledAddressTypography>
+                </Box>
+                <Typography variant="subtitle1">
+                  {t('Source:')} {sourceToStr(t, primaryAddress.source)} (
+                  {dateFormat(
+                    DateTime.fromISO(primaryAddress.createdAt),
+                    locale,
+                  )}
+                  )
+                </Typography>
               </>
             )}
             {/* Show More Section */}
-            {nonPrimaryAddresses.length > 0 ? (
+            {showContactDetailTabMoreOpen &&
+              nonPrimaryAddresses.map((address) => (
+                <ContactDetailsMailingTextContainer
+                  key={address.id}
+                  style={{
+                    textDecoration: address.historic ? 'line-through' : 'none',
+                  }}
+                  data-testid="NonPrimaryAddresses"
+                >
+                  <ContactAddressRowContainer>
+                    <Typography variant="subtitle1">
+                      <Box fontWeight="bold">{address.street ?? ''}</Box>
+                    </Typography>
+                    <AddressEditIconContainer
+                      onClick={() => {
+                        setEditingAddressId(address.id);
+                      }}
+                      aria-label={t('Edit Icon')}
+                    >
+                      <AddressEditIcon />
+                    </AddressEditIconContainer>
+                  </ContactAddressRowContainer>
+                  <StyledAddressTypography variant="subtitle1">
+                    {`${address.city ?? ''}${address.city && ','} ${
+                      address.state ?? ''
+                    } ${address.postalCode ?? ''}`}
+                  </StyledAddressTypography>
+                  <StyledAddressTypography variant="subtitle1">
+                    {address.country ?? ''}
+                  </StyledAddressTypography>
+                  <Typography variant="subtitle1">
+                    {t('Source:')} {sourceToStr(t, address.source)} (
+                    {dateFormat(DateTime.fromISO(address.createdAt), locale)})
+                  </Typography>
+                </ContactDetailsMailingTextContainer>
+              ))}
+            {nonPrimaryAddresses.length > 0 && (
               <ContactDetailsMailingLabelTextContainer>
-                <Link href="#">
+                <Link href="#" underline="hover">
                   <ContactMailingShowMoreLabel
                     variant="subtitle1"
                     onClick={() =>
@@ -171,103 +212,31 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   >
                     {showContactDetailTabMoreOpen
                       ? t('Show Less')
-                      : t('Show More')}
+                      : t('Show {{amount}} More', {
+                          amount: nonPrimaryAddresses.length,
+                        })}
                   </ContactMailingShowMoreLabel>
                 </Link>
               </ContactDetailsMailingLabelTextContainer>
-            ) : null}
-            {showContactDetailTabMoreOpen
-              ? nonPrimaryAddresses.map((address) => (
-                  <ContactDetailsMailingTextContainer
-                    key={address.id}
-                    style={{
-                      textDecoration: address.historic
-                        ? 'line-through'
-                        : 'none',
-                    }}
-                    data-testid="NonPrimaryAddresses"
-                  >
-                    <ContactAddressRowContainer>
-                      <Typography variant="subtitle1">
-                        <Box fontWeight="bold">{address.street}</Box>
-                      </Typography>
-                      <AddressEditIconContainer
-                        onClick={() => {
-                          setEditingAddressId(address.id);
-                        }}
-                        aria-label={t('Edit Icon')}
-                      >
-                        <AddressEditIcon />
-                      </AddressEditIconContainer>
-                    </ContactAddressRowContainer>
-                    <Typography variant="subtitle1">
-                      {`${address.city}, ${address.state ?? ''} ${
-                        address.postalCode
-                      }`}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      {address.country}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      {t('Source:')} {sourceToStr(t, address.source)} (
-                      {dateFormat(DateTime.fromISO(address.createdAt), locale)})
-                    </Typography>
-                  </ContactDetailsMailingTextContainer>
-                ))
-              : null}
-            {/* Greeting Section */}
-            <ContactDetailsMailingLabelTextContainer alignItems="center">
-              <ContactDetailsMailingLabel variant="subtitle1">
-                {t('Greeting')}
-              </ContactDetailsMailingLabel>
-              <Typography variant="subtitle1">{greeting}</Typography>
-              <AddressEditIconContainer
-                onClick={() => setEditMailingModalOpen(true)}
-                aria-label={t('Edit Mailing')}
-              >
-                <EditIcon />
-              </AddressEditIconContainer>
-            </ContactDetailsMailingLabelTextContainer>
-            {/* Envelope Name Section */}
-            <ContactDetailsMailingLabelTextContainer>
-              <ContactDetailsMailingLabel variant="subtitle1">
-                {t('Envelope Name')}
-              </ContactDetailsMailingLabel>
-              <Typography variant="subtitle1">{envelopeGreeting}</Typography>
-            </ContactDetailsMailingLabelTextContainer>
-            {/* Newsletter Section */}
-            <ContactDetailsMailingLabelTextContainer>
-              <ContactDetailsMailingLabel variant="subtitle1">
-                {t('Newsletter')}
-              </ContactDetailsMailingLabel>
-              <Typography variant="subtitle1">
-                {getLocalizedSendNewsletter(t, sendNewsletter)}
-              </Typography>
-            </ContactDetailsMailingLabelTextContainer>
+            )}
           </ContactDetailsMailingTextContainer>
         </ContactDetailsMailingMainContainer>
-        <Grid container alignItems="center">
-          <AddButton onClick={() => setAddAddressModalOpen(true)}>
-            <AddIcon />
-            <AddText variant="subtitle1">{t('Add Address')}</AddText>
-          </AddButton>
-        </Grid>
       </Box>
-      {selectedAddress ? (
+      {selectedAddress && (
         <EditContactAddressModal
           contactId={id}
           accountListId={accountListId}
           address={selectedAddress}
           handleClose={() => setEditingAddressId(undefined)}
         />
-      ) : null}
-      {addAddressModalOpen ? (
+      )}
+      {addAddressModalOpen && (
         <AddAddressModal
           contactId={id}
           accountListId={accountListId}
           handleClose={() => setAddAddressModalOpen(false)}
         />
-      ) : null}
+      )}
       {editMailingModalOpen && (
         <EditMailingInfoModal
           contact={data}

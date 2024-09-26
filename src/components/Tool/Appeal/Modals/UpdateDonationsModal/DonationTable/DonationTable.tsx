@@ -89,7 +89,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     () =>
       data?.donations.nodes
         .filter((donation) => donation.appeal?.id === appealId)
-        .map(createDonationRow) ?? [],
+        .map((donation) => createDonationRow(donation, false)) ?? [],
     [data],
   );
 
@@ -108,7 +108,10 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const nodes = data?.donations.nodes || [];
 
-  const donations = useMemo(() => nodes.map(createDonationRow), [nodes]);
+  const donations = useMemo(
+    () => nodes.map((node) => createDonationRow(node, false)),
+    [nodes],
+  );
 
   const isPreselectedDonation = (donation: DonationRow) =>
     preselectedDonations.some((donationRow) => donationRow.id === donation.id);

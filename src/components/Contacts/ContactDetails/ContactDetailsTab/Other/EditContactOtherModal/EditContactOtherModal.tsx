@@ -30,6 +30,7 @@ import {
   PreferredContactMethodEnum,
   UserScopedToAccountList,
 } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';
@@ -49,12 +50,12 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   width: '100%',
   flexDirection: 'column',
-  margin: theme.spacing(4, 0),
+  margin: theme.spacing(1, 0),
 }));
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
-  padding: theme.spacing(0, 6),
+  padding: theme.spacing(0, 1),
   margin: theme.spacing(2, 0),
 }));
 
@@ -96,10 +97,13 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [updateContactOther, { loading: updating }] =
     useUpdateContactOtherMutation();
+  const userLocale = useLocale();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+  // Add additional language locales here, for multiline TextField support
+  const multilineLocales = ['en', 'de'];
 
   const constants = useApiConstants();
   const languages = constants?.languages ?? [];
@@ -179,6 +183,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
       | 'timezone'
       | 'userId'
       | 'website'
+      | 'greeting'
+      | 'envelopeGreeting'
     > & { referredById: string | null | undefined }
   > = yup.object({
     id: yup.string().required(),
@@ -191,6 +197,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     locale: yup.string().nullable(),
     timezone: yup.string().nullable(),
     website: yup.string().nullable(),
+    greeting: yup.string().nullable(),
+    envelopeGreeting: yup.string().nullable(),
     referredById: yup.string().nullable(),
   });
 
@@ -226,6 +234,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           locale: attributes.locale,
           timezone: attributes.timezone,
           website: attributes.website,
+          greeting: attributes.greeting,
+          envelopeGreeting: attributes.envelopeGreeting,
           contactReferralsToMe: referralsInput,
         },
       },
@@ -275,6 +285,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           locale: contact.locale,
           timezone: contact.timezone,
           website: contact.website,
+          greeting: contact.greeting,
+          envelopeGreeting: contact.envelopeGreeting,
           referredById:
             contact.contactReferralsToMe?.nodes[0]?.referredBy.id || '',
         }}
@@ -289,6 +301,8 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
             locale,
             timezone,
             website,
+            greeting,
+            envelopeGreeting,
             referredById,
           },
           setFieldValue,
@@ -300,111 +314,95 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
           <form onSubmit={handleSubmit}>
             <DialogContent dividers>
               <ContactEditContainer>
-                <ContactInputWrapper>
-                  <Autocomplete
-                    loading={loadingAssigneeOptions}
-                    autoSelect
-                    autoHighlight
-                    options={users.map(({ id }) => id)}
-                    getOptionLabel={(userId) => {
-                      const user = users.find(({ id }) => id === userId);
-                      return user ? userName(user) : '';
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label={t('Assignee')} />
-                    )}
-                    value={userId ?? null}
-                    onChange={(_, userId) => {
-                      setFieldValue('userId', userId);
-                    }}
-                  />
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <Grid item>
-                    <Autocomplete
-                      loading={loadingFilteredById || loadingFilteredByName}
-                      autoSelect
-                      autoHighlight
-                      options={
-                        (
-                          mergedContacts &&
-                          [...mergedContacts].sort((a, b) =>
-                            a.name.localeCompare(b.name),
-                          )
-                        )?.map(({ id }) => id) || []
-                      }
-                      getOptionLabel={(contactId) =>
-                        mergedContacts.find(({ id }) => id === contactId)
-                          ?.name ?? ''
-                      }
-                      renderInput={(params): ReactElement => (
-                        <TextField
-                          {...params}
-                          onChange={handleSearchTermChange}
-                          label={t('Connecting Partner')}
-                          InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                              <>
-                                {(loadingFilteredById ||
-                                  loadingFilteredByName) && (
-                                  <CircularProgress color="primary" size={20} />
-                                )}
-                                {params.InputProps.endAdornment}
-                              </>
-                            ),
-                          }}
-                        />
-                      )}
-                      value={referredById || null}
-                      onChange={(_, referredBy): void => {
-                        setFieldValue('referredById', referredBy);
-                        setSelectedId(referredBy || '');
-                      }}
-                      isOptionEqualToValue={(option, value): boolean =>
-                        option === value
-                      }
-                    />
+                <Grid container>
+                  <Grid item xs={12}>
+                    <ContactInputWrapper>
+                      <TextField
+                        label={t('Greeting')}
+                        value={greeting}
+                        onChange={handleChange('greeting')}
+                        inputProps={{ 'aria-label': t('Greeting') }}
+                        fullWidth
+                      />
+                    </ContactInputWrapper>
                   </Grid>
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <FormControl fullWidth={true}>
-                    <InputLabel
-                      id="preferred-contact-method-select-label"
-                      style={{ fontSize: isMobile ? '0.8rem' : '1rem' }}
-                    >
-                      {t('Preferred Contact Method')}
-                    </InputLabel>
-                    <NullableSelect
-                      label={t('Preferred Contact Method')}
-                      labelId="preferred-contact-method-select-label"
-                      value={preferredContactMethod}
-                      onChange={(e) =>
-                        setFieldValue('preferredContactMethod', e.target.value)
-                      }
-                      fullWidth={true}
-                    >
-                      {Object.values(PreferredContactMethodEnum).map(
-                        (value) => {
-                          const contactMethod = localizedContactMethod(value);
-                          return (
-                            <MenuItem
-                              key={value}
-                              value={value}
-                              aria-label={contactMethod}
-                            >
-                              {contactMethod}
-                            </MenuItem>
-                          );
-                        },
-                      )}
-                    </NullableSelect>
-                  </FormControl>
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <FormControl fullWidth size="small">
+                  <Grid item xs={12}>
+                    <ContactInputWrapper>
+                      <TextField
+                        label={t('Envelope Name Line')}
+                        multiline={multilineLocales.includes(userLocale)}
+                        value={envelopeGreeting}
+                        onChange={handleChange('envelopeGreeting')}
+                        inputProps={{ 'aria-label': t('Envelope Name Line') }}
+                        fullWidth
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <Autocomplete
+                        loading={loadingAssigneeOptions}
+                        autoSelect
+                        autoHighlight
+                        options={users.map(({ id }) => id)}
+                        getOptionLabel={(userId) => {
+                          const user = users.find(({ id }) => id === userId);
+                          return user ? userName(user) : '';
+                        }}
+                        renderInput={(params) => (
+                          <TextField {...params} label={t('Assignee')} />
+                        )}
+                        value={userId ?? null}
+                        onChange={(_, userId) => {
+                          setFieldValue('userId', userId);
+                        }}
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth={true}>
+                        <InputLabel
+                          id="preferred-contact-method-select-label"
+                          style={{ fontSize: isMobile ? '0.8rem' : '1rem' }}
+                        >
+                          {t('Preferred Contact Method')}
+                        </InputLabel>
+                        <NullableSelect
+                          label={t('Preferred Contact Method')}
+                          labelId="preferred-contact-method-select-label"
+                          value={preferredContactMethod}
+                          onChange={(e) =>
+                            setFieldValue(
+                              'preferredContactMethod',
+                              e.target.value,
+                            )
+                          }
+                          fullWidth={true}
+                        >
+                          {Object.values(PreferredContactMethodEnum).map(
+                            (value) => {
+                              const contactMethod =
+                                localizedContactMethod(value);
+                              return (
+                                <MenuItem
+                                  key={value}
+                                  value={value}
+                                  aria-label={contactMethod}
+                                >
+                                  {contactMethod}
+                                </MenuItem>
+                              );
+                            },
+                          )}
+                        </NullableSelect>
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth>
                         <InputLabel id="language-select-label">
                           {t('Language')}
                         </InputLabel>
@@ -435,17 +433,20 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         >
                           {languages.map(
                             (value) =>
-                              value?.value && (
-                                <MenuItem key={value.id} value={value.value}>
+                              value.id &&
+                              value.value && (
+                                <MenuItem key={value.id} value={value.id}>
                                   {t(value.value)}
                                 </MenuItem>
                               ),
                           )}
                         </NullableSelect>
                       </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <FormControl fullWidth size="small">
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth>
                         <InputLabel id="timezone-select-label">
                           {t('Timezone')}
                         </InputLabel>
@@ -481,48 +482,107 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           ))}
                         </NullableSelect>
                       </FormControl>
-                    </Grid>
+                    </ContactInputWrapper>
                   </Grid>
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <Autocomplete
-                    loading={loadingChurchOptions}
-                    autoSelect
-                    autoHighlight
-                    freeSolo
-                    options={churches}
-                    renderInput={(params): ReactElement => (
-                      <TextField
-                        {...params}
-                        label={t('Church')}
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {loadingChurchOptions && (
-                                <CircularProgress color="primary" size={20} />
-                              )}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
+
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <Autocomplete
+                        loading={loadingChurchOptions}
+                        autoSelect
+                        autoHighlight
+                        freeSolo
+                        options={churches}
+                        renderInput={(params): ReactElement => (
+                          <TextField
+                            {...params}
+                            label={t('Church')}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingChurchOptions && (
+                                    <CircularProgress
+                                      color="primary"
+                                      size={20}
+                                    />
+                                  )}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                        value={churchName || ''}
+                        onChange={(_, churchName): void => {
+                          setFieldValue('churchName', churchName);
                         }}
                       />
-                    )}
-                    value={churchName || ''}
-                    onChange={(_, churchName): void => {
-                      setFieldValue('churchName', churchName);
-                    }}
-                  />
-                </ContactInputWrapper>
-                <ContactInputWrapper>
-                  <TextField
-                    label={t('Website')}
-                    value={website}
-                    onChange={handleChange('website')}
-                    inputProps={{ 'aria-label': t('Website') }}
-                    fullWidth
-                  />
-                </ContactInputWrapper>
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <TextField
+                        label={t('Website')}
+                        value={website}
+                        onChange={handleChange('website')}
+                        inputProps={{ 'aria-label': t('Website') }}
+                        fullWidth
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <ContactInputWrapper>
+                      <Autocomplete
+                        loading={loadingFilteredById || loadingFilteredByName}
+                        autoSelect
+                        autoHighlight
+                        options={
+                          (
+                            mergedContacts &&
+                            [...mergedContacts].sort((a, b) =>
+                              a.name.localeCompare(b.name),
+                            )
+                          )?.map(({ id }) => id) || []
+                        }
+                        getOptionLabel={(contactId) =>
+                          mergedContacts.find(({ id }) => id === contactId)
+                            ?.name ?? ''
+                        }
+                        renderInput={(params): ReactElement => (
+                          <TextField
+                            {...params}
+                            onChange={handleSearchTermChange}
+                            label={t('Connecting Partner')}
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {(loadingFilteredById ||
+                                    loadingFilteredByName) && (
+                                    <CircularProgress
+                                      color="primary"
+                                      size={20}
+                                    />
+                                  )}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                        value={referredById || null}
+                        onChange={(_, referredBy): void => {
+                          setFieldValue('referredById', referredBy);
+                          setSelectedId(referredBy || '');
+                        }}
+                        isOptionEqualToValue={(option, value): boolean =>
+                          option === value
+                        }
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                </Grid>
               </ContactEditContainer>
             </DialogContent>
             <DialogActions>

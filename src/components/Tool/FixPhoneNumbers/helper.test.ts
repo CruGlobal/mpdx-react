@@ -1,86 +1,67 @@
 import { determineBulkDataToSend } from './helper';
 
-const testData = [
-  [
-    {
-      id: 'testid1',
-      contactId: 'testid1',
-      firstName: 'Test',
-      lastName: 'Contact',
-      avatar: 'https://www.example.com',
-      isNewPhoneNumber: false,
-      newPhoneNumber: '',
-      phoneNumbers: {
-        nodes: [
-          {
-            id: 'id1',
-            updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-            number: '+3533895891',
-            primary: true,
-            source: 'MPDX',
-          },
-          {
-            id: 'id2',
-            updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-            number: '3533895892',
-            primary: false,
-            source: 'MPDX',
-          },
-          {
-            id: 'id3',
-            updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-            number: '+623533895893',
-            primary: false,
-            source: 'MPDX',
-          },
-        ],
+const testData1 = {
+  0: {
+    phoneNumbers: [
+      {
+        id: 'id1',
+        updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
+        number: '+3533895891',
+        primary: true,
+        source: 'MPDX',
       },
-    },
-  ],
-  [
-    {
-      id: 'testid2',
-      contactId: 'testid2',
-      firstName: 'Test',
-      lastName: 'Contact',
-      avatar: 'https://www.example.com',
-      isNewPhoneNumber: false,
-      newPhoneNumber: '',
-      phoneNumbers: {
-        nodes: [
-          {
-            id: 'id1',
-            updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-            number: '+3533895894',
-            primary: true,
-            source: 'DataServer',
-          },
-          {
-            id: 'id2',
-            updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-            number: '3533895895',
-            primary: false,
-            source: 'DataServer',
-          },
-          {
-            id: 'id3',
-            updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
-            number: '+623533895896',
-            primary: false,
-            source: 'MPDX',
-          },
-        ],
+      {
+        id: 'id2',
+        updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
+        number: '3533895892',
+        primary: false,
+        source: 'MPDX',
       },
-    },
-  ],
-];
+      {
+        id: 'id3',
+        updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
+        number: '+623533895893',
+        primary: false,
+        source: 'MPDX',
+      },
+    ],
+  },
+};
+
+const testData2 = {
+  1: {
+    phoneNumbers: [
+      {
+        id: 'id1',
+        updatedAt: '123',
+        number: '+3533895894',
+        primary: true,
+        source: 'DataServer',
+      },
+      {
+        id: 'id2',
+        updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
+        number: '3533895895',
+        primary: false,
+        source: 'DataServer',
+      },
+      {
+        id: 'id3',
+        updatedAt: new Date('2021-06-21T03:40:05-06:00').toISOString(),
+        number: '+623533895896',
+        primary: false,
+        source: 'MPDX',
+      },
+    ],
+  },
+};
 
 describe('FixPhoneNumbers-helper', () => {
   it('Should return a Contact with all phoneNumbers', () => {
-    const result = determineBulkDataToSend(testData[0], 'MPDX');
+    const result = determineBulkDataToSend(testData1, 'MPDX');
     expect(result).toEqual([
       {
-        id: 'testid1',
+        id: '0',
         phoneNumbers: [
           {
             id: 'id1',
@@ -105,10 +86,10 @@ describe('FixPhoneNumbers-helper', () => {
     ]);
   });
   it('Should still return a Contact with all phoneNumbers', () => {
-    const result = determineBulkDataToSend(testData[1], 'MPDX');
+    const result = determineBulkDataToSend(testData2, 'MPDX');
     expect(result).toEqual([
       {
-        id: 'testid2',
+        id: '1',
         phoneNumbers: [
           {
             id: 'id1',
@@ -133,7 +114,7 @@ describe('FixPhoneNumbers-helper', () => {
     ]);
   });
   it('Should return an empty array', () => {
-    const result = determineBulkDataToSend(testData[0], 'DataServer');
+    const result = determineBulkDataToSend(testData1, 'DataServer');
     expect(result).toEqual([]);
   });
 });

@@ -36,11 +36,13 @@ export interface ActionType {
 
 interface Props {
   accountListId: string;
+  contactId?: string;
   setContactFocus: SetContactFocus;
 }
 
 const MergeContacts: React.FC<Props> = ({
   accountListId,
+  contactId,
   setContactFocus,
 }: Props) => {
   const { classes } = useStyles();
@@ -48,7 +50,10 @@ const MergeContacts: React.FC<Props> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { data, loading } = useGetContactDuplicatesQuery({
-    variables: { accountListId },
+    variables: {
+      accountListId,
+      contactIds: contactId ? [contactId] : undefined,
+    },
   });
   const { appName } = useGetAppSettings();
   const [contactsMerge, { loading: updating }] = useMassActionsMergeMutation();

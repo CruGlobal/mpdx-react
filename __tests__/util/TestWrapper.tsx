@@ -11,28 +11,28 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from './TestRouter';
 
-export type OnErrorFunction = (error: string) => void;
+export type OnErrorMock = (error: string) => void;
 
 interface Props {
   mocks?: MockedResponse[];
   children: ReactNode;
   cache?: InMemoryCache;
-  onErrorFunction?: OnErrorFunction;
+  onErrorMock?: OnErrorMock;
 }
 
 const TestWrapper = ({
   mocks = [],
   children,
   cache = new InMemoryCache({ addTypename: false }),
-  onErrorFunction,
+  onErrorMock,
 }: Props): ReactElement => {
   const mockLink = new MockLink(mocks);
   const errorLoggingLink = onError(({ networkError }) => {
     if (networkError) {
       // eslint-disable-next-line no-console
       console.warn(`[Network error]: ${networkError}`);
-      if (onErrorFunction) {
-        onErrorFunction(JSON.stringify(networkError.message));
+      if (onErrorMock) {
+        onErrorMock(JSON.stringify(networkError.message));
       }
     }
   });

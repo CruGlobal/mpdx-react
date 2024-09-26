@@ -99,7 +99,7 @@ describe('ContactDetailsTabMailing', () => {
 
     expect(getByText('Orlando, 32832')).toBeInTheDocument();
 
-    userEvent.click(getByText('Show More'));
+    userEvent.click(getByText('Show 1 More'));
     const { getByText: getByTextInTestId } = within(
       getByTestId('NonPrimaryAddresses'),
     );
@@ -129,7 +129,7 @@ describe('ContactDetailsTabMailing', () => {
 
     expect(getByText('Orlando, FL 32832')).toBeInTheDocument();
 
-    userEvent.click(getByText('Show More'));
+    userEvent.click(getByText('Show 1 More'));
     const { getByText: getByTextInTestId } = within(
       getByTestId('NonPrimaryAddresses'),
     );
