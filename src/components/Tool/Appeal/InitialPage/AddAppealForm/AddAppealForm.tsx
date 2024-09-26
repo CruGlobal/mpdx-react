@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement } from 'react';
 import { mdiClose, mdiEqual, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -24,15 +24,13 @@ import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import {
   AppealCreateInput,
+  ContactFilterStatusEnum,
   FilterOption,
-  MultiselectFilter,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import i18n from 'src/lib/i18n';
 import removeObjectNulls from 'src/lib/removeObjectNulls';
-import {
-  useContactFiltersQuery,
-  useContactTagsQuery,
-} from './AddAppealForm.generated';
+import { useContactTagsQuery } from './AddAppealForm.generated';
 import { useCreateAppealMutation } from './CreateAppeal.generated';
 
 export enum ExclusionEnum {
@@ -83,27 +81,6 @@ export const calculateGoal = (
   return Math.round(totalGoal * 100) / 100;
 };
 
-const gqlStatusesToDBStatusMap: { [key: string]: string } = {
-  NULL: 'null',
-  ACTIVE: 'active',
-  HIDDEN: 'hidden',
-  NEVER_CONTACTED: 'never_contacted',
-  ASK_IN_FUTURE: 'ask_in_future',
-  CULTIVATE_RELATIONSHIP: 'cultivate_relationship',
-  CONTACT_FOR_APPOINTMENT: 'contact_for_appointment',
-  APPOINTMENT_SCHEDULED: 'appointment_scheduled',
-  CALL_FOR_DECISION: 'call_for_decision',
-  PARTNER_FINANCIAL: 'partner_financial',
-  PARTNER_SPECIAL: 'partner_special',
-  PARTNER_PRAY: 'partner_pray',
-  NOT_INTERESTED: 'not_interested',
-  UNRESPONSIVE: 'unresponsive',
-  NEVER_ASK: 'never_ask',
-  RESEARCH_ABANDONED: 'research_abandoned',
-  EXPIRED_REFERRAL: 'expired_referral',
-  RESEARCH_CONTACT_INFO: 'research_contact_info',
-};
-
 type BuildInclusionFilterProps = {
   appealIncludes: object;
   tags: Attributes['tags'];
@@ -118,18 +95,16 @@ export const buildInclusionFilter = ({
     any_tags: true,
   };
 
-  const dbStatues =
+  const dbStatuses =
     statuses && statuses.length
       ? statuses
-          .map((status) =>
-            status.value ? gqlStatusesToDBStatusMap[status.value] : '',
-          )
+          .map((status) => (status.value ? status.value.toLowerCase() : ''))
           .join(',')
       : null;
   const inclusionFilter = removeObjectNulls({
     ...defaultInclusionFilter,
     tags: tags && tags.length ? tags.join(',') : null,
-    status: dbStatues,
+    status: dbStatuses,
     ...appealIncludes,
   });
 
@@ -289,35 +264,22 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   const { t } = useTranslation();
   const { push } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const { contactStatuses } = useContactPartnershipStatuses();
+  const statusOptions = Object.entries(contactStatuses).map(
+    ([statusId, status]) => {
+      return {
+        name: status.translated,
+        value: statusId,
+      };
+    },
+  );
   const { data: contactFilterTags, loading: loadingTags } = useContactTagsQuery(
     {
       variables: { accountListId },
     },
   );
-  const { data: contactFilterGroups, loading: loadingStatuses } =
-    useContactFiltersQuery({
-      variables: {
-        accountListId,
-      },
-      context: {
-        doNotBatch: true,
-      },
-    });
-  const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
 
-  const contactStatuses = useMemo(() => {
-    if (contactFilterGroups?.accountList?.contactFilterGroups) {
-      return (
-        contactFilterGroups.accountList.contactFilterGroups
-          .find((group) => group?.filters[0]?.filterKey === 'status')
-          ?.filters.find(
-            (filter: { filterKey: string }) => filter.filterKey === 'status',
-          ) as MultiselectFilter
-      ).options;
-    } else {
-      return [{ name: '', value: '' }];
-    }
-  }, [contactFilterGroups]);
+  const [createNewAppeal, { loading: updating }] = useCreateAppealMutation();
 
   const onSubmit = async (props: Attributes) => {
     const attributes: AppealCreateInput = {
@@ -359,9 +321,10 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
   const handleSelectAllStatuses = (setFieldValue) => {
     setFieldValue(
       'statuses',
-      contactStatuses?.filter(
+      statusOptions?.filter(
         (status: { value: string }) =>
-          status.value !== 'ACTIVE' && status.value !== 'HIDDEN',
+          status.value !== ContactFilterStatusEnum.Active &&
+          status.value !== ContactFilterStatusEnum.Hidden,
       ),
     );
   };
@@ -380,8 +343,8 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
         goal: 0,
         statuses: appealStatuses ?? [
           {
-            name: '-- All Active --',
-            value: 'ACTIVE',
+            name: contactStatuses[ContactFilterStatusEnum.Active].translated,
+            value: ContactFilterStatusEnum.Active,
           },
         ],
         tags: [],
@@ -591,7 +554,7 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
             <Typography display="inline">
               {t('Add contacts with the following status(es):')}
             </Typography>
-            {!!contactStatuses && (
+            {!!statusOptions && (
               <Typography
                 display="inline"
                 className={classes.selectAll}
@@ -602,16 +565,16 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
               </Typography>
             )}
 
-            {loadingStatuses && <Skeleton height={40} />}
+            {!statusOptions && <Skeleton height={40} />}
 
-            {!!contactStatuses && !loadingStatuses && (
+            {!!statusOptions && (
               <Autocomplete
                 multiple
                 autoHighlight
                 data-testid="contactStatusSelect"
                 id="tags-standard"
                 filterSelectedOptions
-                options={contactStatuses}
+                options={statusOptions}
                 getOptionLabel={(option) => option.name}
                 value={statuses}
                 isOptionEqualToValue={(option1, option2) =>
