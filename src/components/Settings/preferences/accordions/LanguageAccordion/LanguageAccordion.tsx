@@ -55,16 +55,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-
-        enqueueSnackbar(
-          t(
-            'Please log out and log back in again to ensure all language changes are fully applied.',
-          ),
-          {
-            variant: 'warning',
-            persist: true,
-          },
-        );
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
