@@ -10,7 +10,6 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
@@ -111,10 +110,6 @@ const router = {
   isReady: true,
   push,
 };
-
-beforeEach(() => {
-  (useAccountListId as jest.Mock).mockReturnValue(router);
-});
 
 const ButtonGroup: React.FC = () => {
   return (
@@ -495,5 +490,6 @@ describe('test', () => {
         queryByText('Are you sure you wish to delete the 3 selected tasks?'),
       ).toBeInTheDocument();
     });
+    userEvent.click(getByText('Yes'));
   });
 });
