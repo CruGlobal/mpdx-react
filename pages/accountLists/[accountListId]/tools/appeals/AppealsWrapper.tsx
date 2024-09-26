@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { AppealsProvider } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
-import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 interface Props {
@@ -39,12 +38,6 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const { appealId: appealIdParams, searchTerm, accountListId } = query;
 
   useEffect(() => {
-    // TODO: Fix these suggested Articles
-    suggestArticles(
-      appealIdParams
-        ? 'HS_CONTACTS_CONTACT_SUGGESTIONS'
-        : 'HS_CONTACTS_SUGGESTIONS',
-    );
     if (appealIdParams === undefined) {
       push({
         pathname: '/accountLists/[accountListId]/tools/appeals',

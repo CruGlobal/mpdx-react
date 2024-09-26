@@ -83,7 +83,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
         title={
           <Box display="flex" alignItems="center">
             <Box flex={1}>{t('Appointments and Results')}</Box>
-            <HelpButton articleVar="HS_COACHING_APPOINTMENTS_AND_RESULTS" />
+            <HelpButton articleVar="HELP_URL_COACHING_APPOINTMENTS_AND_RESULTS" />
           </Box>
         }
       />

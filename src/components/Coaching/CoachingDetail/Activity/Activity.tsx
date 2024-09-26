@@ -263,7 +263,7 @@ export const Activity: React.FC<ActivityProps> = ({
                 <ChevronRight />
               </StyledButton>
             </ButtonGroup>
-            <HelpButton articleVar="HS_COACHING_ACTIVITY" />
+            <HelpButton articleVar="HELP_URL_COACHING_ACTIVITY" />
           </Header>
         }
       />

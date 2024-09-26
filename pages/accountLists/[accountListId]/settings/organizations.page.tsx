@@ -7,7 +7,6 @@ import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
-import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 import {
   SettingsOrganizationFragment,
@@ -60,10 +59,6 @@ const Organizations = (): ReactElement => {
   useEffect(() => {
     setSelectedOrganization(organizations?.[0]);
   }, [organizations]);
-
-  useEffect(() => {
-    suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
-  }, []);
 
   const handleAccordionChange = (panel: string) => {
     const panelLowercase = panel.toLowerCase();
