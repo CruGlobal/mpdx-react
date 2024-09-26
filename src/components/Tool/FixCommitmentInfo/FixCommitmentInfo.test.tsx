@@ -7,7 +7,14 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import {
+  fireEvent,
+  render,
+  waitFor,
+} from '__tests__/util/testingLibraryReactMock';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
@@ -33,6 +40,7 @@ const router = {
 };
 
 const setContactFocus = jest.fn();
+const mutationSpy = jest.fn();
 
 const Components = ({
   mockNodes = mockInvalidStatusesResponse,
@@ -47,9 +55,11 @@ const Components = ({
             value={{ viewportHeight: 1000, itemHeight: 100 }}
           >
             <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
               InvalidStatuses: InvalidStatusesQuery;
             }>
               mocks={{
+                LoadConstants: loadConstantsMockData,
                 InvalidStatuses: {
                   contacts: {
                     nodes: mockNodes,
@@ -57,6 +67,7 @@ const Components = ({
                   },
                 },
               }}
+              onCall={mutationSpy}
             >
               <FixCommitmentInfo
                 accountListId={accountListId}
@@ -70,7 +81,7 @@ const Components = ({
   </SnackbarProvider>
 );
 
-describe('FixCommitmentContact', () => {
+describe('FixCommitmentInfo', () => {
   beforeEach(() => {
     setContactFocus.mockClear();
   });
@@ -127,9 +138,13 @@ describe('FixCommitmentContact', () => {
   });
 
   it('updates commitment info', async () => {
-    const { getAllByTestId, queryByText, findByText, findAllByTestId } = render(
-      <Components />,
-    );
+    const {
+      getAllByTestId,
+      queryByText,
+      findByText,
+      findAllByTestId,
+      getByText,
+    } = render(<Components />);
 
     userEvent.click((await findAllByTestId('confirmButton'))[0]);
 
@@ -138,11 +153,17 @@ describe('FixCommitmentContact', () => {
         'Are you sure you wish to update Tester 1 commitment info?',
       ),
     ).toBeInTheDocument(),
-      userEvent.click(getAllByTestId('action-button')[1]);
+      userEvent.click(getByText('Yes'));
 
     await waitFor(() =>
       expect(queryByText('Tester 1')).not.toBeInTheDocument(),
     );
+
+    const status = getAllByTestId('pledgeStatus-input')[0];
+    fireEvent.change(status, {
+      target: { value: StatusEnum.PartnerSpecial },
+    });
+    expect(status).toHaveValue(StatusEnum.PartnerSpecial);
 
     userEvent.click((await findAllByTestId('confirmButton'))[0]);
 
@@ -151,8 +172,20 @@ describe('FixCommitmentContact', () => {
         'Are you sure you wish to update Tester 2 commitment info?',
       ),
     ).toBeInTheDocument();
+    userEvent.click(await findByText('Yes'));
 
-    userEvent.click((await findAllByTestId('hideButton'))[0]);
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateStatus', {
+        attributes: { status: StatusEnum.PartnerSpecial },
+      }),
+    );
+  });
+
+  it('hides contact', async () => {
+    const { getAllByTestId, queryByText, findByText, findAllByTestId } = render(
+      <Components />,
+    );
+    userEvent.click((await findAllByTestId('hideButton'))[1]);
 
     expect(
       await findByText(

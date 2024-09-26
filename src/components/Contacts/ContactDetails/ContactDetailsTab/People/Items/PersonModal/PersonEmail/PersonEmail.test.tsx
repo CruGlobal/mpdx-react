@@ -88,13 +88,13 @@ describe('PersonEmail', () => {
     mutationSpy.mockClear();
   });
 
-  it('Hides the Opt-out of Email Newsletter checkbox', async () => {
+  it('Hides the Opt-out of Digital Newsletter checkbox', async () => {
     const { queryByRole } = render(
       <Components showOptOutENewsletter={false} />,
     );
 
     expect(
-      queryByRole('checkbox', { name: 'Opt-out of Email Newsletter' }),
+      queryByRole('checkbox', { name: 'Opt-out of Digital Newsletter' }),
     ).not.toBeInTheDocument();
   });
 });

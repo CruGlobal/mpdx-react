@@ -6,14 +6,16 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import {
+  ActivityTypeEnum,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   ReportContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactsProvider } from '../../Contacts/ContactsContext/ContactsContext';
 import { FilterPanel, FilterPanelProps } from './FilterPanel';
 import {
   FilterPanelGroupFragment,
@@ -23,6 +25,7 @@ import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
   filterPanelNoteSearchMock,
+  filterPanelRenameMock,
   filterPanelSlidersMock,
   filterPanelTagsMock,
   noteSearchSavedFilterMock,
@@ -309,7 +312,11 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
+              <GqlMockedProvider
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                }}
+              >
                 <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
@@ -332,143 +339,109 @@ describe('FilterPanel', () => {
       expect(getByText('My Cool Filter')).toBeVisible();
       expect(getByText('GraphQL Contact Filter')).toBeVisible();
       userEvent.click(getByText('My Cool Filter'));
-      expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
-        anyTags: false,
-        appeal: [
-          '851769ba-b55d-45f3-b784-c4eca7ae99fd',
-          '77491693-df83-46ec-b40b-39d07333f47e',
-        ],
-        church: ['Cool Church II'],
-        city: ['Evansville', 'Woodstock'],
-        contactInfoAddr: 'Yes',
-        contactInfoEmail: 'Yes',
-        contactInfoFacebook: 'No',
-        contactInfoMobile: 'No',
-        contactInfoPhone: 'No',
-        contactInfoWorkPhone: 'No',
-        contactChurch: ['test1', ' test2'],
-        contactCity: ['test1'],
-        contactCountry: ['test1', ' test2'],
-        contactDesignationAccountId: ['test1', ' test2'],
-        contactLikely: ['test1', ' test2'],
-        contactMetroArea: ['test1', ' test2'],
-        contactPledgeFrequency: ['test1', ' test2'],
-        contactReferrer: ['test1', ' test2'],
-        contactRegion: ['test1', ' test2'],
-        contactState: ['test1'],
-        contactTimezone: ['test1', ' test2'],
-        completed: true,
-        country: ['United States'],
-        donation: ['first'],
-        donationDate: {
-          max: '2021-12-23',
-          min: '2021-12-23',
-        },
-        excludeTags: null,
-        locale: ['English'],
-        metroArea: ['Cool'],
-        newsletter: 'NO_VALUE',
-        contactNewsletter: 'ALL',
-        nextAsk: {
-          max: '2021-12-22',
-          min: '2021-11-30',
-        },
-        notes: { wildcardNoteSearch: 'note1' },
-        optOut: 'No',
-        overdue: true,
-        pledgeAmount: ['35.0', '40.0'],
-        pledgeCurrency: ['USD'],
-        pledgeFrequency: ['0.46153846153846', '1.0'],
-        pledgeLateBy: '30_60',
-        pledgeReceived: 'RECEIVED',
-        // old MPDX saved filters sometimes have primaryAddress field as this. If not accounted for will cause error.
-        primaryAddress: 'primary, null',
-        referrer: ['d5b1dab5-e3ae-417d-8f49-2abdd915515b'],
-        region: ['Orange County'],
-        reverseActivityType: true,
-        reverseContactAppeal: true,
-        reverseContactChurch: true,
-        reverseContactCity: true,
-        reverseContactCountry: true,
-        reverseContactDesignationAccountId: true,
-        reverseContactIds: true,
-        reverseContactLikely: true,
-        reverseContactMetroArea: true,
-        reverseContactPledgeFrequency: true,
-        reverseContactReferrer: true,
-        reverseContactRegion: true,
-        reverseContactState: true,
-        reverseContactStatus: true,
-        reverseContactTimezone: true,
-        reverseContactType: true,
-        reverseNextAction: true,
-        reverseResult: true,
-        reverseTags: true,
-        reverseUserIds: true,
-        reverseAlmaMater: false,
-        reverseAppeal: true,
-        state: ['FL'],
-        status: [
-          'ACTIVE',
-          'HIDDEN',
-          'NULL',
-          'NEVER_CONTACTED',
-          'ASK_IN_FUTURE',
-          'CULTIVATE_RELATIONSHIP',
-          'CONTACT_FOR_APPOINTMENT',
-          'APPOINTMENT_SCHEDULED',
-          'CALL_FOR_DECISION',
-          'PARTNER_FINANCIAL',
-          'PARTNER_SPECIAL',
-          'PARTNER_PRAY',
-          'NOT_INTERESTED',
-          'UNRESPONSIVE',
-          'NEVER_ASK',
-          'RESEARCH_ABANDONED',
-          'EXPIRED_REFERRAL',
-        ],
-        activityType: [
-          'APPOINTMENT',
-          'CALL',
-          'EMAIL',
-          'FACEBOOK_MESSAGE',
-          'PRAYER_REQUEST',
-          'TALK_TO_IN_PERSON',
-          'TEXT_MESSAGE',
-          'THANK',
-          'NONE',
-          'LETTER',
-          'NEWSLETTER_PHYSICAL',
-          'NEWSLETTER_EMAIL',
-          'PRE_CALL_LETTER',
-          'REMINDER_LETTER',
-          'SUPPORT_LETTER',
-          'TO_DO',
-        ],
-        nextAction: [
-          'APPOINTMENT',
-          'CALL',
-          'EMAIL',
-          'FACEBOOK_MESSAGE',
-          'PRAYER_REQUEST',
-          'TALK_TO_IN_PERSON',
-          'TEXT_MESSAGE',
-          'THANK',
-          'NONE',
-        ],
-        result: [
-          'ATTEMPTED',
-          'ATTEMPTED_LEFT_MESSAGE',
-          'COMPLETED',
-          'DONE',
-          'NONE',
-          'RECEIVED',
-        ],
-        tags: null,
-        timezone: ['America/Vancouver'],
-        userIds: ['787f286e-fe38-4055-b9fc-0177a0f55947'],
-        wildcardSearch: '',
-      });
+      await waitFor(() =>
+        expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+          anyTags: false,
+          appeal: [
+            '851769ba-b55d-45f3-b784-c4eca7ae99fd',
+            '77491693-df83-46ec-b40b-39d07333f47e',
+          ],
+          church: ['Cool Church II'],
+          city: ['Evansville', 'Woodstock'],
+          contactInfoAddr: 'Yes',
+          contactInfoEmail: 'Yes',
+          contactInfoFacebook: 'No',
+          contactInfoMobile: 'No',
+          contactInfoPhone: 'No',
+          contactInfoWorkPhone: 'No',
+          contactChurch: ['test1', ' test2'],
+          contactCity: ['test1'],
+          contactCountry: ['test1', ' test2'],
+          contactDesignationAccountId: ['test1', ' test2'],
+          contactLikely: ['test1', ' test2'],
+          contactMetroArea: ['test1', ' test2'],
+          contactPledgeFrequency: ['test1', ' test2'],
+          contactReferrer: ['test1', ' test2'],
+          contactRegion: ['test1', ' test2'],
+          contactState: ['test1'],
+          contactTimezone: ['test1', ' test2'],
+          completed: true,
+          country: ['United States'],
+          donation: ['first'],
+          donationDate: {
+            max: '2021-12-23',
+            min: '2021-12-23',
+          },
+          excludeTags: null,
+          locale: ['English'],
+          metroArea: ['Cool'],
+          newsletter: 'NO_VALUE',
+          contactNewsletter: 'ALL',
+          nextAsk: {
+            max: '2021-12-22',
+            min: '2021-11-30',
+          },
+          notes: { wildcardNoteSearch: 'note1' },
+          optOut: 'No',
+          overdue: true,
+          pledgeAmount: ['35.0', '40.0'],
+          pledgeCurrency: ['USD'],
+          pledgeFrequency: ['0.46153846153846', '1.0'],
+          pledgeLateBy: '30_60',
+          pledgeReceived: 'RECEIVED',
+          // old MPDX saved filters sometimes have primaryAddress field as this. If not accounted for will cause error.
+          primaryAddress: 'primary, null',
+          referrer: ['d5b1dab5-e3ae-417d-8f49-2abdd915515b'],
+          region: ['Orange County'],
+          reverseActivityType: true,
+          reverseContactAppeal: true,
+          reverseContactChurch: true,
+          reverseContactCity: true,
+          reverseContactCountry: true,
+          reverseContactDesignationAccountId: true,
+          reverseContactIds: true,
+          reverseContactLikely: true,
+          reverseContactMetroArea: true,
+          reverseContactPledgeFrequency: true,
+          reverseContactReferrer: true,
+          reverseContactRegion: true,
+          reverseContactState: true,
+          reverseContactStatus: true,
+          reverseContactTimezone: true,
+          reverseContactType: true,
+          reverseNextAction: true,
+          reverseResult: true,
+          reverseTags: true,
+          reverseUserIds: true,
+          reverseAlmaMater: false,
+          reverseAppeal: true,
+          state: ['FL'],
+          status: [
+            ContactFilterStatusEnum.NeverContacted,
+            ContactFilterStatusEnum.Active,
+            ContactFilterStatusEnum.Hidden,
+            ContactFilterStatusEnum.Null,
+            ContactFilterStatusEnum.PartnerFinancial,
+            ContactFilterStatusEnum.AppointmentScheduled,
+          ],
+          activityType: [
+            ActivityTypeEnum.AppointmentInPerson,
+            ActivityTypeEnum.PartnerCareSocialMedia,
+          ],
+          result: [
+            'ATTEMPTED',
+            'ATTEMPTED_LEFT_MESSAGE',
+            'COMPLETED',
+            'DONE',
+            'NONE',
+            'RECEIVED',
+          ],
+          tags: null,
+          timezone: ['America/Vancouver'],
+          userIds: ['787f286e-fe38-4055-b9fc-0177a0f55947'],
+          wildcardSearch: '',
+        }),
+      );
       expect(getByText('Filter')).toBeVisible();
     });
 
@@ -477,7 +450,11 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
+              <GqlMockedProvider
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                }}
+              >
                 <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMockTwo, savedGraphQLContactMock]}
@@ -508,54 +485,9 @@ describe('FilterPanel', () => {
         almaMater: ['test1', 'test2'],
         newsletter: 'EMAIL',
         contactNewsletter: 'EMAIL_ONLY',
-        status: [
-          'ACTIVE',
-          'APPOINTMENT_SCHEDULED',
-          'ASK_IN_FUTURE',
-          'CALL_FOR_DECISION',
-          'CONTACT_FOR_APPOINTMENT',
-          'CULTIVATE_RELATIONSHIP',
-          'EXPIRED_REFERRAL',
-          'HIDDEN',
-          'NEVER_ASK',
-          'NEVER_CONTACTED',
-          'NOT_INTERESTED',
-          'NULL',
-          'PARTNER_FINANCIAL',
-          'PARTNER_PRAY',
-          'PARTNER_SPECIAL',
-          'RESEARCH_ABANDONED',
-          'UNRESPONSIVE',
-        ],
-        activityType: [
-          'APPOINTMENT',
-          'CALL',
-          'EMAIL',
-          'FACEBOOK_MESSAGE',
-          'LETTER',
-          'NEWSLETTER_EMAIL',
-          'NEWSLETTER_PHYSICAL',
-          'NONE',
-          'PRAYER_REQUEST',
-          'PRE_CALL_LETTER',
-          'REMINDER_LETTER',
-          'SUPPORT_LETTER',
-          'TALK_TO_IN_PERSON',
-          'TEXT_MESSAGE',
-          'THANK',
-          'TO_DO',
-        ],
-        nextAction: [
-          'APPOINTMENT',
-          'CALL',
-          'EMAIL',
-          'FACEBOOK_MESSAGE',
-          'PRAYER_REQUEST',
-          'TALK_TO_IN_PERSON',
-          'TEXT_MESSAGE',
-          'THANK',
-          'NONE',
-        ],
+        status: Object.values(ContactFilterStatusEnum),
+        activityType: Object.values(ActivityTypeEnum),
+        nextAction: Object.values(ActivityTypeEnum),
         result: [
           'ATTEMPTED',
           'ATTEMPTED_LEFT_MESSAGE',
@@ -729,6 +661,35 @@ describe('FilterPanel', () => {
       expect(queryByTestId('ErrorState')).toBeNull();
       expect(queryAllByTestId('FilterGroup').length).toEqual(0);
       expect(queryByTestId('FilterListItemShowAll')).toBeNull();
+    });
+
+    it('displays renamed filter names', async () => {
+      const { getByText, queryByTestId, getAllByText } = render(
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider>
+              <ContactsProviderFilterWrapper
+                filters={[filterPanelRenameMock, filterPanelFeaturedMock]}
+                savedFilters={[savedFiltersMock]}
+                selectedFilters={{}}
+                onClose={onClose}
+                onSelectedFiltersChanged={onSelectedFiltersChanged}
+                onHandleClearSearch={onHandleClearSearch}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>,
+      );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      userEvent.click(getByText('See More Filters'));
+      userEvent.click(getByText('Connecting Partner'));
+      await waitFor(() =>
+        expect(getAllByText('Connecting Partner')).toHaveLength(4),
+      );
     });
   });
 

@@ -16,7 +16,7 @@ export const FormFieldsGridContainer: React.FC<FormFieldsGridContainerPros> = ({
       direction="column"
       spacing={2}
       style={{
-        width: useMediaQuery(theme.breakpoints.down('sm')) ? '100%' : '75%',
+        width: useMediaQuery(theme.breakpoints.down('sm')) ? '100%' : '90%',
         marginLeft: 'auto',
         marginRight: 'auto',
       }}

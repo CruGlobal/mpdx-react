@@ -33,13 +33,13 @@ const router = {
 const completedTask = {
   task: {
     id: 'id',
-    activityType: ActivityTypeEnum.PrayerRequest,
+    activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
     subject: 'New Task',
     location: null,
     startAt: '2023-08-18T17:26:52Z',
     completedAt: '2024-01-18T19:36:55Z',
     result: ResultEnum.Done,
-    nextAction: ActivityTypeEnum.TextMessage,
+    nextAction: ActivityTypeEnum.FollowUpTextMessage,
     tagList: [],
     user: null,
     notificationTimeBefore: null,
@@ -60,12 +60,14 @@ type TaskModalComponentProps = {
   view: TaskModalEnum;
   GetTaskForTaskModalMock: GetTaskForTaskModalQuery;
   taskId?: string;
+  showFlowsMessage?: boolean;
 };
 
 const TaskModalComponent = ({
   GetTaskForTaskModalMock,
   taskId,
   view,
+  showFlowsMessage,
 }: TaskModalComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -82,6 +84,7 @@ const TaskModalComponent = ({
               taskId={taskId}
               defaultValues={defaultValues}
               view={view}
+              showFlowsMessage={showFlowsMessage}
             />
           </GqlMockedProvider>
         </SnackbarProvider>
@@ -162,7 +165,7 @@ describe('TaskModal', () => {
         GetTaskForTaskModalMock={{
           task: {
             id: 'id',
-            activityType: ActivityTypeEnum.PrayerRequest,
+            activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
             subject: 'New Task',
             location: null,
             startAt: null,
@@ -190,7 +193,27 @@ describe('TaskModal', () => {
       const dialog = getByRole('dialog', {
         name: 'Add Task',
       });
-      expect(within(dialog).getByText('Notifications')).toBeInTheDocument();
+      expect(within(dialog).getByText('Reminders')).toBeInTheDocument();
     });
+  });
+
+  describe('flows status change message', () => {
+    it.each([TaskModalEnum.Add, TaskModalEnum.Complete, TaskModalEnum.Log])(
+      'shows in %s modal when showFlowsMessage is set',
+      async (view) => {
+        const { findByText } = render(
+          <TaskModalComponent
+            GetTaskForTaskModalMock={completedTask}
+            view={view}
+            taskId={taskId}
+            showFlowsMessage
+          />,
+        );
+
+        expect(
+          await findByText(/The contact's status has been updated/),
+        ).toBeInTheDocument();
+      },
+    );
   });
 });

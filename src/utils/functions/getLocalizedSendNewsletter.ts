@@ -10,7 +10,7 @@ export const getLocalizedSendNewsletter = (
       return t('Both');
 
     case SendNewsletterEnum.Email:
-      return t('Email');
+      return t('Digital');
 
     case SendNewsletterEnum.None:
       return t('None');

@@ -1,0 +1,36 @@
+query LevelOfEffort($accountListId: ID!, $range: String!) {
+  reportsActivityResults(accountListId: $accountListId, range: $range) {
+    periods {
+      appointmentInPerson
+      appointmentPhoneCall
+      appointmentVideoCall
+      contactsAdded
+      contactsReferred
+      contactsTotal
+      followUpPhoneCall
+      followUpEmail
+      followUpTextMessage
+      followUpSocialMedia
+      followUpInPerson
+      partnerCareUpdateInformation
+      partnerCareToDo
+      partnerCareThank
+      partnerCarePrayerRequest
+      partnerCarePhysicalNewsletter
+      partnerCareDigitalNewsletter
+      initiationTextMessage
+      initiationEmail
+      initiationSpecialGiftAppeal
+      initiationSocialMedia
+      initiationPhoneCall
+      initiationLetter
+      initiationInPerson
+      appointmentTotal
+      followUpTotal
+      partnerCareTotal
+      initiationTotal
+      startDate
+      endDate
+    }
+  }
+}
