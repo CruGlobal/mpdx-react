@@ -28,7 +28,10 @@ export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
 
   return (
     <>
-      <DeleteButton onClick={() => setRemoveDialogOpen(true)}>
+      <DeleteButton
+        onClick={() => setRemoveDialogOpen(true)}
+        data-testid={`DeleteIconButton-${taskId}`}
+      >
         <DeletedItemIcon />
       </DeleteButton>
       <DeleteConfirmation

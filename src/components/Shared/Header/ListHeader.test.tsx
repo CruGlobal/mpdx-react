@@ -469,7 +469,7 @@ describe('ListHeader', () => {
   });
 });
 
-describe('test', () => {
+describe('Counts', () => {
   it('Should update count upon deletion', async () => {
     const { queryByText, getByText } = render(
       <Components
@@ -491,5 +491,6 @@ describe('test', () => {
       ).toBeInTheDocument();
     });
     userEvent.click(getByText('Yes'));
+    expect(queryByText('Showing 50')).toBeInTheDocument();
   });
 });
