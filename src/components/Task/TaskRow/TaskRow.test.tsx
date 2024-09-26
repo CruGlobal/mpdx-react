@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
@@ -247,6 +247,7 @@ describe('TaskRow', () => {
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Complete,
@@ -306,15 +307,14 @@ describe('TaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      await waitFor(() =>
-        userEvent.click(getByRole('img', { hidden: true, name: 'Comment' })),
-      );
-      await waitFor(() =>
-        expect(openTaskModal).toHaveBeenCalledWith({
-          taskId: task.id,
-          view: TaskModalEnum.Comments,
-        }),
-      );
+
+      userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
+
+      expect(openTaskModal).toHaveBeenCalledWith({
+        taskId: task.id,
+        view: TaskModalEnum.Comments,
+      });
     });
 
     it('handle subject click', async () => {
