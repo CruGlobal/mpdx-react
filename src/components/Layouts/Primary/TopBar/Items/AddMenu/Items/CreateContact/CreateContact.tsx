@@ -22,6 +22,7 @@ import {
 import {
   ContactCreateInput,
   PersonCreateInput,
+  StatusEnum,
 } from 'src/graphql/types.generated';
 import { useCreateContactMutation } from './CreateContact.generated';
 
@@ -82,7 +83,7 @@ const CreateContact = ({
     const { data } = await createContact({
       variables: {
         accountListId,
-        attributes,
+        attributes: { status: StatusEnum.NeverContacted, ...attributes },
       },
     });
     const contactId = data?.createContact?.contact.id;

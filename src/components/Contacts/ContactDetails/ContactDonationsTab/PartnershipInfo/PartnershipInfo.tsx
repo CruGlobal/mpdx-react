@@ -206,7 +206,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
-          {t('Referred by ')}
+          {t('Connecting Partner ')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.contactReferralsToMe.nodes

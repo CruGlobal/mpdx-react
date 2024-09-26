@@ -6,6 +6,11 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import {
+  loadConstantsMockData as LoadConstants,
+  loadConstantsMockData,
+} from 'src/components/Constants/LoadConstantsMock';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -187,11 +192,15 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should save when only status is inputted', async () => {
-    const { getByLabelText, getByText } = render(
+    const { getByText, getByRole, findByRole } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={newContactMock}
                 handleClose={handleClose}
@@ -201,10 +210,12 @@ describe('EditPartnershipInfoModal', () => {
         </LocalizationProvider>
       </SnackbarProvider>,
     );
-    const statusInput = getByLabelText('Status');
+    const statusInput = getByRole('combobox', { name: 'Status' });
 
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(
+      await findByRole('option', { name: 'Appointment Scheduled' }),
+    );
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -224,7 +235,11 @@ describe('EditPartnershipInfoModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
+              <GqlMockedProvider<{
+                LoadConstants: LoadConstantsQuery;
+              }>
+                mocks={{ LoadConstants }}
+              >
                 <EditPartnershipInfoModal
                   contact={contactMock}
                   handleClose={handleClose}
@@ -238,13 +253,15 @@ describe('EditPartnershipInfoModal', () => {
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByRole('combobox', { name: 'Frequency' });
 
-    expect(statusInput.textContent).toEqual('Partner - Financial');
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
 
     expect(amountInput).toHaveValue(50);
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
 
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
 
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'No' }));
@@ -257,7 +274,7 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(getByText('Partner - Financial'));
 
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
 
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Yes' }));
@@ -265,7 +282,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(amountInput).toHaveValue(0);
     expect(amountInput).toBeDisabled();
     expect(queryByText('Every 2 Months')).not.toBeInTheDocument();
-    expect(statusInput.textContent).toEqual('Ask In Future');
+    expect(statusInput.textContent).toEqual('Ask in Future');
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
@@ -280,35 +297,45 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle when remove commitment warning shows', async () => {
-    const { getByLabelText, getByText, getByRole, getByTestId, queryByTestId } =
-      render(
-        <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <EditPartnershipInfoModal
-                  contact={contactMock}
-                  handleClose={handleClose}
-                />
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
-        </SnackbarProvider>,
-      );
+    const {
+      getByLabelText,
+      getByText,
+      getByRole,
+      findByText,
+      getByTestId,
+      queryByTestId,
+    } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants: loadConstantsMockData }}
+            >
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByRole('combobox', { name: 'Frequency' });
 
     // Clear amount and frequency
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(await findByText('Ask in Future'));
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     // Due to the amount being zero, we don't show the remove commitment message
     userEvent.click(statusInput);
     userEvent.click(getByText('Partner - Financial'));
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
     expect(queryByTestId('removeCommitmentMessage')).not.toBeInTheDocument();
 
     // If frequency and not amount is set we show the remove commitment message
@@ -318,7 +345,7 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(getByText('Every 2 Months'));
     expect(amountInput).toHaveValue(0);
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
 
     // Clear amount and frequency
@@ -329,7 +356,7 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(getByText('Partner - Financial'));
     userEvent.type(amountInput, '50');
     userEvent.click(statusInput);
-    userEvent.click(getByText('Ask In Future'));
+    userEvent.click(getByText('Ask in Future'));
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
 
     userEvent.click(getByText('Save'));
@@ -349,7 +376,11 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{ LoadConstants }}
+            >
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -362,7 +393,10 @@ describe('EditPartnershipInfoModal', () => {
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
-    expect(statusInput.textContent).toEqual('Partner - Financial');
+
+    await waitFor(() =>
+      expect(statusInput.textContent).toEqual('Partner - Financial'),
+    );
 
     expect(amountInput).toHaveValue(50);
 

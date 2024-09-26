@@ -9,6 +9,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   ContactsContext,
   ContactsType,
@@ -17,9 +18,10 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   IdValue,
+  PhaseEnum,
+  StatusEnum,
 } from 'src/graphql/types.generated';
-import theme from 'src/theme';
-import { useLoadConstantsQuery } from '../../../Constants/LoadConstants.generated';
+import theme from '../../../../theme';
 import { InfiniteList } from '../../../InfiniteList/InfiniteList';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
@@ -78,6 +80,7 @@ export interface ContactFlowColumnProps {
     status: {
       __typename?: 'IdValue' | undefined;
     } & Pick<IdValue, 'id' | 'value'>,
+    contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
 export interface StatusStructure {
@@ -112,10 +115,13 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
     },
     skip: !accountListId || statuses.length === 0,
   });
-  const { data: constants } = useLoadConstantsQuery({});
+
+  const constants = useApiConstants();
   const statusesStructured =
     statuses.map((status) =>
-      constants?.constant.status?.find((constant) => constant.id === status),
+      constants?.status?.find(
+        (constant) => constant.id === (status as unknown as StatusEnum),
+      ),
     ) || [];
 
   const cardContentRef = useRef<HTMLDivElement>();
@@ -162,7 +168,7 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
                 accountListId={accountListId}
                 contact={contact}
                 status={
-                  constants?.constant.status?.find(
+                  constants?.status?.find(
                     (constant) => constant.id === contact.status,
                   ) || nullStatus
                 }

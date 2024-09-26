@@ -117,7 +117,7 @@ const ReferralsTab = ({
             data-testid={`ReferralsTab${tab}CardContentEmpty`}
           >
             <img src={illustration4} className={classes.img} alt="empty" />
-            {t('No referrals to show.')}
+            {t('No connections to show.')}
           </CardContent>
         ) : (
           <>
@@ -211,7 +211,7 @@ const Referrals = ({
 
   return (
     <AnimatedCard className={classes.card}>
-      <CardHeader title={t('Referrals')} />
+      <CardHeader title={t('Connections')} />
       <Tabs
         value={value}
         indicatorColor="primary"

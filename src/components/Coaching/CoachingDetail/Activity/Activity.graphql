@@ -39,5 +39,18 @@ query CoachingDetailActivity($accountListId: ID!, $dateRange: String!) {
       received
       sent
     }
+    contactsByStatus {
+      neverContacted
+      future
+      cultivate
+      contactForAppointment
+      appointmentScheduled
+      callForDecision
+      financial
+      special
+      prayer
+      connectionsRemaining
+      initiations
+    }
   }
 }

@@ -19,3 +19,9 @@ query ContactTasksTab(
     totalCount
   }
 }
+
+query ContactPhase($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    contactPhase
+  }
+}

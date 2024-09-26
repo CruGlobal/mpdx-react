@@ -16,6 +16,21 @@ type AccountListAnalytics {
   textMessage: TextMessageAccountListAnalytics!
   startDate: ISO8601DateTime!
   endDate: ISO8601DateTime!
+  contactsByStatus: ContactsByStatus!
+}
+
+type ContactsByStatus {
+  neverContacted: Int!
+  future: Int!
+  cultivate: Int!
+  contactForAppointment: Int!
+  appointmentScheduled: Int!
+  callForDecision: Int!
+  financial: Int!
+  special: Int!
+  prayer: Int!
+  connectionsRemaining: Int!
+  initiations: Int!
 }
 
 type AppointmentsAccountListAnalytics {

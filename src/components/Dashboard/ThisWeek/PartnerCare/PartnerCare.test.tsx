@@ -24,7 +24,7 @@ const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
     {
       id: 'task_1',
       subject: 'the quick brown fox jumps over the lazy dog',
-      activityType: ActivityTypeEnum.PrayerRequest,
+      activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
       contacts: {
         nodes: [
           { hidden: true, name: 'Roger Smith' },
@@ -37,7 +37,7 @@ const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
     {
       id: 'task_2',
       subject: 'on the boat to see uncle johnny',
-      activityType: ActivityTypeEnum.PrayerRequest,
+      activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
       contacts: {
         nodes: [
           { hidden: true, name: 'Roger Parker' },

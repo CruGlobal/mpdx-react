@@ -11,6 +11,9 @@ query Contacts(
     first: $first
   ) {
     nodes {
+      id
+      avatar
+      contactPhase
       ...ContactRow
     }
     totalCount

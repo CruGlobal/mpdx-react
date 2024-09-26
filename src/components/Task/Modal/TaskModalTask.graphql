@@ -5,11 +5,13 @@ query GetTaskForTaskModal(
 ) {
   task(accountListId: $accountListId, id: $taskId) {
     id
+    taskPhase
     activityType
     subject
     location
     startAt
     completedAt
+    displayResult
     result
     nextAction
     tagList
@@ -17,6 +19,7 @@ query GetTaskForTaskModal(
       nodes {
         id
         name
+        status
       }
     }
     comments @include(if: $includeComments) {

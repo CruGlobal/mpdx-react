@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 
 interface ContactPartnershipStatusLabelProps {
   status: ContactPartnershipStatusEnum;
@@ -10,5 +10,6 @@ interface ContactPartnershipStatusLabelProps {
 export const ContactPartnershipStatusLabel: React.FC<
   ContactPartnershipStatusLabelProps
 > = ({ status }) => {
-  return <Typography>{contactPartnershipStatus[status]}</Typography>;
+  const { contactStatuses } = useContactPartnershipStatuses();
+  return <Typography>{contactStatuses[status]?.translated}</Typography>;
 };
