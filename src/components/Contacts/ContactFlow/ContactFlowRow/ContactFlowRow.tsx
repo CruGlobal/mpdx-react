@@ -3,7 +3,7 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { IdValue } from 'src/graphql/types.generated';
+import { IdValue, PhaseEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -17,6 +17,7 @@ export interface ContactFlowRowProps {
   status: {
     __typename?: 'IdValue' | undefined;
   } & Pick<IdValue, 'id' | 'value'>;
+  contactPhase?: PhaseEnum | null;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -69,12 +70,14 @@ export interface DraggedContact {
   name: string;
   starred: boolean;
   width: number;
+  contactPhase?: PhaseEnum | null;
 }
 
 export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   accountListId,
   contact,
   status,
+  contactPhase,
   onContactSelected,
   columnWidth,
 }) => {
@@ -86,6 +89,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
       item: {
         id,
         status,
+        contactPhase,
         name,
         starred,
         width: columnWidth,

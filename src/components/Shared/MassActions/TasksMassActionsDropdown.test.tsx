@@ -7,6 +7,8 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
@@ -51,9 +53,13 @@ jest.mock('notistack', () => ({
 }));
 
 const TaskComponents = () => (
-  <ThemeProvider theme={theme}>
-    <I18nextProvider i18n={i18n}>
-      <GqlMockedProvider>
+  <I18nextProvider i18n={i18n}>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<{
+        LoadConstants: LoadConstantsQuery;
+      }>
+        mocks={{ LoadConstants }}
+      >
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <TasksMassActionsDropdown
@@ -64,8 +70,8 @@ const TaskComponents = () => (
           </SnackbarProvider>
         </LocalizationProvider>
       </GqlMockedProvider>
-    </I18nextProvider>
-  </ThemeProvider>
+    </ThemeProvider>
+  </I18nextProvider>
 );
 
 beforeEach(() => {
@@ -99,11 +105,11 @@ describe('TasksMassActionsDropdown', () => {
   it('opens the more actions menu and clicks the edit tasks action', async () => {
     const {
       queryByTestId,
-      findByTestId,
       getByText,
       queryByText,
       getByLabelText,
       getByRole,
+      findByLabelText,
     } = render(<TaskComponents />);
 
     expect(queryByText('Edit Tasks')).not.toBeInTheDocument();
@@ -111,11 +117,19 @@ describe('TasksMassActionsDropdown', () => {
     userEvent.click(actionsButton);
     expect(getByText('Edit Tasks')).toBeInTheDocument();
     userEvent.click(getByText('Edit Tasks'));
-    expect(await findByTestId('EditTasksModal')).toBeInTheDocument();
-    userEvent.click(getByLabelText('Action'));
+    await waitFor(() =>
+      expect(queryByTestId('EditTasksModal')).toBeInTheDocument(),
+    );
+    userEvent.click(getByLabelText('Task Type'));
+    userEvent.click(
+      within(getByRole('listbox', { name: 'Task Type' })).getByText(
+        'Appointment',
+      ),
+    );
+    userEvent.click(await findByLabelText('Action'));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
-        'Appointment',
+        'In Person',
       ),
     );
     userEvent.click(getByText('Save'));

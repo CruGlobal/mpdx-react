@@ -133,7 +133,7 @@ describe('ContactFlowColumn', () => {
     );
 
     expect(await findByText(title)).toBeInTheDocument();
-    expect(getAllByText('Ask In Future')[0]).toBeInTheDocument();
+    expect(getAllByText('Ask in Future')[0]).toBeInTheDocument();
     userEvent.click(getByTestId('MoreVertIcon'));
 
     expect(

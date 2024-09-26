@@ -50,6 +50,19 @@ const mocks = {
         received: 80,
         sent: 81,
       },
+      contactsByStatus: {
+        appointmentScheduled: 7,
+        callForDecision: 6,
+        connectionsRemaining: 25,
+        contactForAppointment: 6,
+        cultivate: 7,
+        financial: 9,
+        future: 7,
+        initiations: 19,
+        neverContacted: 11,
+        prayer: 7,
+        special: 7,
+      },
     },
   },
 };
@@ -236,21 +249,35 @@ describe('Activity', () => {
     const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() =>
-      expect(getByTestId('ActivitySectionContacts')).toHaveTextContent(
-        'Contacts20Active22Referrals On-hand21Referrals Gained',
+      expect(getByTestId('CurrentRealityPartnerFinancial')).toHaveTextContent(
+        'Financial Partners',
       ),
     );
-    expect(getByTestId('ActivitySectionAppointments')).toHaveTextContent(
-      'Appointments10Completed',
+    await waitFor(() =>
+      expect(getByTestId('CurrentRealityPartnerFinancial')).toHaveTextContent(
+        '9',
+      ),
     );
-    expect(getByTestId('ActivitySectionCorrespondence')).toHaveTextContent(
-      'Correspondence30Pre-call32Support33Thank You31Reminder',
+    expect(getByTestId('CurrentRealityPartnerSpecial')).toHaveTextContent(
+      'Special Gift Partners',
     );
-    expect(getByTestId('ActivitySectionPhone')).toHaveTextContent(
-      'Phone Calls142Outgoing145Talked To71Appts Produced72Completed70Attempted73Received',
+    expect(getByTestId('CurrentRealityPartnerSpecial')).toHaveTextContent('7');
+
+    expect(getByTestId('CurrentRealityPartnerPrayer')).toHaveTextContent(
+      'Prayer Partners',
     );
-    expect(getByTestId('ActivitySectionElectronic')).toHaveTextContent(
-      'Electronic Messages42Sent41Received40Appts Produced51 Sent / 50 ReceivedEmail61 Sent / 60 ReceivedFacebook81 Sent / 80 ReceivedText Message',
+    expect(getByTestId('CurrentRealityPartnerPrayer')).toHaveTextContent('7');
+
+    expect(getByTestId('CurrentRealityConnections')).toHaveTextContent(
+      'Connections Remaining',
+    );
+    expect(getByTestId('CurrentRealityConnections')).toHaveTextContent('25');
+
+    expect(getByTestId('CurrentRealityPartnerInitiations')).toHaveTextContent(
+      'Partners Currently Initiating With',
+    );
+    expect(getByTestId('CurrentRealityPartnerInitiations')).toHaveTextContent(
+      '19',
     );
   });
 
@@ -280,7 +307,9 @@ describe('Activity', () => {
     it('are hidden when viewing coaching account list', async () => {
       const { findByTestId, queryByRole } = render(<TestComponent />);
 
-      expect(await findByTestId('ActivitySectionContacts')).toBeInTheDocument();
+      expect(
+        await findByTestId('CurrentRealityConnections'),
+      ).toBeInTheDocument();
       expect(queryByRole('link')).not.toBeInTheDocument();
     });
 

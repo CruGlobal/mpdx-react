@@ -553,7 +553,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                           <TextField
                             {...params}
                             onChange={handleSearchTermChange}
-                            label={t('Referred By')}
+                            label={t('Connecting Partner')}
                             InputProps={{
                               ...params.InputProps,
                               endAdornment: (

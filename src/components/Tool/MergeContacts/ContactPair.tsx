@@ -25,14 +25,57 @@ import { DateTime } from 'luxon';
 import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import { PersonInfoFragment } from '../MergePeople/GetPersonDuplicates.generated';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
 
 const useStyles = makeStyles()(() => ({
+  contactBasic: {
+    height: '100%',
+    width: '45%',
+    position: 'relative',
+    '&:hover': {
+      cursor: 'pointer',
+    },
+    [theme.breakpoints.down('sm')]: {
+      backgroundColor: 'white',
+      width: '100%',
+      overflow: 'initial',
+    },
+  },
+  selectedBox: {
+    border: '2px solid',
+    borderColor: theme.palette.mpdxGreen.main,
+  },
+  unselectedBox: {
+    border: '2px solid rgba(0,0,0,0)',
+  },
+  loserBox: {
+    border: '2px solid rgba(0,0,0,0)',
+    opacity: '50%',
+  },
+  selected: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    color: 'white',
+    backgroundColor: theme.palette.mpdxGreen.main,
+    paddingRight: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    borderTopRightRadius: '5px',
+  },
+  minimalPadding: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: '8px!important',
+    [theme.breakpoints.down('sm')]: {
+      padding: '5px 15px!important',
+    },
+  },
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -42,10 +85,6 @@ const useStyles = makeStyles()(() => ({
       padding: theme.spacing(2),
       backgroundColor: theme.palette.cruGrayLight.main,
     },
-  },
-  avatar: {
-    width: theme.spacing(7),
-    height: theme.spacing(7),
   },
   outer: {
     [theme.breakpoints.down('sm')]: {
@@ -61,6 +100,10 @@ const useStyles = makeStyles()(() => ({
   red: {
     color: 'red',
   },
+}));
+
+const InlineTypography = styled(Typography)(() => ({
+  display: 'inline',
 }));
 
 const IconWrapper = styled(Box)(({ theme }) => ({
@@ -101,54 +144,8 @@ const ContactItem: React.FC<ContactItemProps> = ({
   side,
   setContactFocus,
 }) => {
-  const useStyles = makeStyles()(() => ({
-    contactBasic: {
-      height: '100%',
-      width: '45%',
-      position: 'relative',
-      '&:hover': {
-        cursor: 'pointer',
-      },
-      [theme.breakpoints.down('sm')]: {
-        backgroundColor: 'white',
-        width: '100%',
-        overflow: 'initial',
-      },
-    },
-    selectedBox: {
-      border: '2px solid',
-      borderColor: theme.palette.mpdxGreen.main,
-    },
-    unselectedBox: {
-      border: '2px solid rgba(0,0,0,0)',
-    },
-    loserBox: {
-      border: '2px solid rgba(0,0,0,0)',
-      opacity: '50%',
-    },
-    selected: {
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      color: 'white',
-      backgroundColor: theme.palette.mpdxGreen.main,
-      paddingRight: theme.spacing(1),
-      paddingLeft: theme.spacing(1),
-      borderTopRightRadius: '5px',
-    },
-    minimalPadding: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      paddingTop: theme.spacing(1),
-      paddingBottom: '8px!important',
-      [theme.breakpoints.down('sm')]: {
-        padding: '5px 15px!important',
-      },
-    },
-  }));
-  const InlineTypography = styled(Typography)(() => ({
-    display: 'inline',
-  }));
+  const { contactStatuses } = useContactPartnershipStatuses();
+
   const { classes } = useStyles();
   const locale = useLocale();
   const handleContactNameClick = (contactId) => {
@@ -209,7 +206,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
         subheader={
           isContactType && (
             <Typography variant="subtitle2">
-              {contact?.status && contactPartnershipStatus[contact?.status]}
+              {contact?.status && contactStatuses[contact?.status]?.translated}
             </Typography>
           )
         }
