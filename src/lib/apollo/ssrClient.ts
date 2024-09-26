@@ -24,11 +24,10 @@ const serverErrorLink = onError(({ graphQLErrors, networkError }) => {
 
 const makeSsrClient = (
   apiToken: string | null,
-  language?: string | null,
 ): ApolloClient<NormalizedCacheObject> => {
   const links: ApolloLink[] = [];
   if (apiToken !== null) {
-    links.push(makeAuthLink(apiToken, language));
+    links.push(makeAuthLink(apiToken));
   }
   if (isRollBarEnabled) {
     links.push(serverErrorLink);

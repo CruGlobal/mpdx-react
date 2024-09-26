@@ -51,7 +51,6 @@ declare module 'next-auth/jwt' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
-    language?: string | null;
   }
 }
 

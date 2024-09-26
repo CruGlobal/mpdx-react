@@ -30,7 +30,7 @@ export const returnRedirectUrl = async (
     : jwtToken?.apiToken;
 
   if (apiToken && jwtToken?.userID && req.query.auth !== 'true') {
-    const ssrClient = makeSsrClient(apiToken, jwtToken.language);
+    const ssrClient = makeSsrClient(apiToken);
     const response = await ssrClient.query<
       GetDefaultAccountQuery,
       GetDefaultAccountQueryVariables
