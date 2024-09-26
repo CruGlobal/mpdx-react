@@ -16,7 +16,7 @@ describe('TaskCompleteButton', () => {
     );
 
     const completeButton = getByRole('button');
-    const checkIcon = getByRole('img', { hidden: true, name: 'Check Icon' });
+    const checkIcon = getByRole('img', { hidden: true, name: 'Check' });
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe('TaskCompleteButton', () => {
     );
 
     const completeButton = getByRole('button');
-    const checkIcon = getByRole('img', { hidden: true, name: 'Check Icon' });
+    const checkIcon = getByRole('img', { hidden: true, name: 'Check' });
 
     expect(completeButton).toBeInTheDocument();
     expect(checkIcon).toBeInTheDocument();

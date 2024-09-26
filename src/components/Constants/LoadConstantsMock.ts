@@ -854,6 +854,56 @@ export const loadConstantsMockData = {
         tasks: [],
       },
     ],
+    pledgeCurrency: [
+      {
+        code: 'CAD',
+        codeSymbolString: 'CAD ($)',
+        id: 'CAD',
+        key: 'CAD',
+        name: 'Canadian Dollar',
+        symbol: '$',
+        value: 'CAD ($)',
+      },
+      {
+        code: 'CDF',
+        codeSymbolString: 'CDF (CDF)',
+        id: 'CDF',
+        key: 'CDF',
+        name: 'Congolese Franc',
+        symbol: 'CDF',
+        value: 'CDF (CDF)',
+      },
+      {
+        code: 'CHE',
+        codeSymbolString: 'CHE (CHE)',
+        id: 'CHE',
+        key: 'CHE',
+        name: 'WIR Euro',
+        symbol: 'CHE',
+        value: 'CHE (CHE)',
+      },
+      {
+        code: 'USD',
+        codeSymbolString: 'USD ($)',
+        id: 'USD',
+        key: 'USD',
+        name: 'US Dollar',
+        symbol: '$',
+        value: 'USD ($)',
+      },
+    ],
+    pledgeFrequency: [
+      {
+        id: 'QUARTERLY',
+        key: '3.0',
+        value: 'Quarterly',
+      },
+      {
+        id: 'ANNUAL',
+        key: '12.0',
+        value: 'Annual',
+      },
+    ],
   },
 } as LoadConstantsQuery;
 

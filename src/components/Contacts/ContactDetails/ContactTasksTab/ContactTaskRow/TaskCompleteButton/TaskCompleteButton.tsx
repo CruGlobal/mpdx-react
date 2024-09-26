@@ -2,6 +2,7 @@ import React from 'react';
 import Check from '@mui/icons-material/Check';
 import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 
 const ButtonWrap = styled(Button, {
@@ -31,9 +32,14 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
   isComplete,
   ...props
 }) => {
+  const { t } = useTranslation();
   return (
-    <ButtonWrap isComplete={isComplete} {...props}>
-      <Check titleAccess="Check Icon" />
+    <ButtonWrap
+      data-testId="checkCompleteButton"
+      isComplete={isComplete}
+      {...props}
+    >
+      <Check titleAccess={t('Check')} />
     </ButtonWrap>
   );
 };

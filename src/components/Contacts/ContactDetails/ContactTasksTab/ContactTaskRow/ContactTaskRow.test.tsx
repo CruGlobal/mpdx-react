@@ -106,7 +106,7 @@ describe('ContactTaskRow', () => {
       const { findByText, getByRole } = render(<Components task={task} />);
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { hidden: true, name: 'Check Icon' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         view: TaskModalEnum.Complete,
         taskId: task.id,
@@ -129,7 +129,7 @@ describe('ContactTaskRow', () => {
       const { findByText, getByRole } = render(<Components task={task} />);
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { hidden: true, name: 'Comment Icon' }));
+      userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Comments,
@@ -142,7 +142,7 @@ describe('ContactTaskRow', () => {
       );
 
       expect(await findByText(task.subject)).toBeVisible();
-      userEvent.click(getByRole('img', { name: 'Outlined Delete Icon' }));
+      userEvent.click(getByRole('img', { name: 'Delete' }));
       expect(
         await findByText('Are you sure you wish to delete the selected task?'),
       ).toBeVisible();

@@ -25,11 +25,14 @@ describe('FourteenMonthReportActions', () => {
     );
 
     expect(
-      getByRole('group', { hidden: true, name: 'Report header button group' }),
+      getByRole('group', { name: 'Report header button group' }),
     ).toBeInTheDocument();
-    userEvent.click(getByRole('button', { hidden: true, name: 'Expand' }));
-    userEvent.click(getByRole('button', { hidden: true, name: 'Print' }));
-    userEvent.click(getByRole('button', { hidden: true, name: 'Export' }));
+    userEvent.click(getByRole('button', { name: 'Expand' }));
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    expect(getByRole('link', { name: 'Export' })).toHaveAttribute(
+      'href',
+      'data:text/csv;charset=utf-8,',
+    );
   });
 
   it('expand toggle event', async () => {
@@ -46,7 +49,7 @@ describe('FourteenMonthReportActions', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { hidden: true, name: 'Hide' }));
+    userEvent.click(getByRole('button', { name: 'Hide' }));
     expect(onExpandToggle).toHaveBeenCalled();
   });
 
@@ -64,7 +67,7 @@ describe('FourteenMonthReportActions', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByRole('button', { hidden: true, name: 'Print' }));
+    userEvent.click(getByRole('button', { name: 'Print' }));
     expect(onPrint).toHaveBeenCalled();
   });
 });

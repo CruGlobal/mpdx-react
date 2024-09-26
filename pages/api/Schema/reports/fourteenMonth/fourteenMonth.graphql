@@ -35,20 +35,37 @@ type FourteenMonthReportCurrencyGroupTotalsMonth {
   total: Float!
 }
 
+enum StatusEnum {
+  APPOINTMENT_SCHEDULED
+  ASK_IN_FUTURE
+  CALL_FOR_DECISION
+  CONTACT_FOR_APPOINTMENT
+  CULTIVATE_RELATIONSHIP
+  EXPIRED_REFERRAL
+  NEVER_ASK
+  NEVER_CONTACTED
+  NOT_INTERESTED
+  PARTNER_FINANCIAL
+  PARTNER_PRAY
+  PARTNER_SPECIAL
+  RESEARCH_ABANDONED
+  UNRESPONSIVE
+}
+
 type FourteenMonthReportContact {
   id: ID!
   name: String!
   total: Float!
   average: Float!
   minimum: Float!
-  months: [FourteenMonthReportContactMonths!]
+  months: [FourteenMonthReportContactMonths!]!
   accountNumbers: [String!]!
   lateBy30Days: Boolean!
   lateBy60Days: Boolean!
   pledgeAmount: Float
   pledgeCurrency: String
   pledgeFrequency: String
-  status: String
+  status: StatusEnum
 }
 
 type FourteenMonthReportContactMonths {

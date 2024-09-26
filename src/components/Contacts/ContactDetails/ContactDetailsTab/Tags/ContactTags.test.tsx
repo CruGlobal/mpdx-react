@@ -156,7 +156,7 @@ describe('ContactTags', () => {
         </GqlMockedProvider>
       </SnackbarProvider>,
     );
-    const tag1DeleteIcon = getAllByTitle('Delete Icon')[0].querySelector(
+    const tag1DeleteIcon = getAllByTitle('Remove')[0].querySelector(
       '.MuiChip-deleteIcon',
     );
 

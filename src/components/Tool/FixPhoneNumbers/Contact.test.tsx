@@ -1,154 +1,323 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { DateTime } from 'luxon';
+import { SnackbarProvider } from 'notistack';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import theme from '../../../theme';
-import Contact from './Contact';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import theme from 'src/theme';
+import Contact, { PhoneNumberData } from './Contact';
+import { mockInvalidPhoneNumbersResponse } from './FixPhoneNumbersMocks';
+import {
+  GetInvalidPhoneNumbersQuery,
+  PersonInvalidNumberFragment,
+} from './GetInvalidPhoneNumbers.generated';
+import { UpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
 
-const testData = {
-  name: 'Test Contact',
+const accountListId = 'accountListId';
+const person: PersonInvalidNumberFragment = {
+  id: 'contactTestId',
   firstName: 'Test',
   lastName: 'Contact',
-  avatar: 'https://www.example.com',
-  id: 'testid',
-  contactId: 'testid',
-  isNewPhoneNumber: false,
-  newPhoneNumber: '',
+  contactId: 'contactTestId',
+  avatar: '',
   phoneNumbers: {
     nodes: [
       {
-        id: '123',
-        updatedAt: '2019-12-03',
-        number: '3533895895',
+        id: 'number1',
+        source: 'DonorHub',
+        updatedAt: DateTime.fromISO('2021-06-21').toString(),
+        number: '123456',
         primary: true,
-        source: 'MPDX',
       },
       {
-        id: '1234',
-        updatedAt: '2019-12-04',
-        number: '623533895895',
-        primary: false,
+        id: 'number2',
         source: 'MPDX',
+        updatedAt: DateTime.fromISO('2021-06-22').toString(),
+        number: '78910',
+        primary: false,
       },
     ],
   },
 };
 
 const setContactFocus = jest.fn();
-const handleDeleteModalOpenMock = jest.fn();
-const updatePhoneNumber = jest.fn();
-const setValuesMock = jest.fn();
+const mutationSpy = jest.fn();
+const handleSingleConfirm = jest.fn();
+const mockEnqueue = jest.fn();
 
-const errors = {};
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
-describe('FixPhoneNumbers-Contact', () => {
+const defaultDataState = {
+  contactTestId: {
+    phoneNumbers: person.phoneNumbers.nodes,
+  },
+} as { [key: string]: PhoneNumberData };
+
+type TestComponentProps = {
+  mocks?: ApolloErgonoMockMap;
+  dataState?: { [key: string]: PhoneNumberData };
+};
+
+const TestComponent = ({
+  mocks,
+  dataState = defaultDataState,
+}: TestComponentProps) => {
+  const handleChangeMock = jest.fn();
+  const handleChangePrimaryMock = jest.fn();
+
+  return (
+    <AppSettingsProvider>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestWrapper>
+            <GqlMockedProvider<{
+              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+              PhoneNumbers: UpdatePhoneNumberMutation;
+            }>
+              mocks={mocks}
+              onCall={mutationSpy}
+            >
+              <Contact
+                person={person}
+                dataState={dataState}
+                accountListId={accountListId}
+                handleChange={handleChangeMock}
+                handleChangePrimary={handleChangePrimaryMock}
+                handleSingleConfirm={handleSingleConfirm}
+                setContactFocus={setContactFocus}
+              />
+            </GqlMockedProvider>
+          </TestWrapper>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </AppSettingsProvider>
+  );
+};
+
+describe('Fix PhoneNumber Contact', () => {
   it('default', () => {
     const { getByText, getByTestId, getByDisplayValue } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper>
-          <Contact
-            person={testData}
-            personIndex={0}
-            handleDelete={handleDeleteModalOpenMock}
-            setContactFocus={setContactFocus}
-            handleUpdate={updatePhoneNumber}
-            errors={errors}
-            values={{ people: [testData] }}
-            setValues={setValuesMock}
-          />
-        </TestWrapper>
-      </ThemeProvider>,
+      <TestComponent
+        mocks={{
+          GetInvalidPhoneNumbers: {
+            people: {
+              nodes: mockInvalidPhoneNumbersResponse,
+            },
+          },
+        }}
+      />,
     );
 
-    expect(getByText(testData.name)).toBeInTheDocument();
-    expect(getByTestId('textfield-testid-0')).toBeInTheDocument();
-    expect(getByDisplayValue('3533895895')).toBeInTheDocument();
-    expect(getByTestId('textfield-testid-1')).toBeInTheDocument();
-    expect(getByDisplayValue('623533895895')).toBeInTheDocument();
+    expect(
+      getByText(`${person.firstName} ${person.lastName}`),
+    ).toBeInTheDocument();
+    expect(getByText('DonorHub (6/21/2021)')).toBeInTheDocument();
+    expect(getByTestId('textfield-contactTestId-number1')).toBeInTheDocument();
+    expect(getByDisplayValue('123456')).toBeInTheDocument();
+    expect(getByText('MPDX (6/22/2021)')).toBeInTheDocument();
+    expect(getByTestId('textfield-contactTestId-number2')).toBeInTheDocument();
+    expect(getByDisplayValue('78910')).toBeInTheDocument();
   });
 
-  it('input reset after adding an phone number', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper>
-          <Contact
-            person={testData}
-            personIndex={0}
-            handleDelete={handleDeleteModalOpenMock}
-            setContactFocus={setContactFocus}
-            handleUpdate={updatePhoneNumber}
-            errors={errors}
-            values={{ people: [testData] }}
-            setValues={setValuesMock}
-          />
-        </TestWrapper>
-      </ThemeProvider>,
+  it('input reset after adding a phone number', async () => {
+    const { getByTestId, getByLabelText } = render(
+      <TestComponent
+        mocks={{
+          GetInvalidPhoneNumbers: {
+            people: {
+              nodes: mockInvalidPhoneNumbersResponse,
+            },
+          },
+        }}
+      />,
     );
 
-    const addInput = getByTestId(
-      'addNewNumberInput-testid',
-    ) as HTMLInputElement;
-    const addButton = getByTestId('addButton-testid');
+    const addInput = getByLabelText('New Phone Number');
+    const addButton = getByTestId('addButton-contactTestId');
 
-    userEvent.type(addInput, '1');
-
+    userEvent.type(addInput, '000');
+    expect(addInput).toHaveValue('000');
+    userEvent.click(addButton);
     await waitFor(() => {
-      expect(setValuesMock).toHaveBeenCalledWith({
-        people: [
-          {
-            ...testData,
-            isNewPhoneNumber: true,
-            newPhoneNumber: '1',
-          },
-        ],
+      expect(addInput).toHaveValue('');
+    });
+  });
+
+  describe('validation', () => {
+    it('should show an error message if there is no number', async () => {
+      const { getByLabelText, getByTestId, findByText } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidPhoneNumbers: {
+              people: {
+                nodes: mockInvalidPhoneNumbersResponse,
+              },
+            },
+          }}
+        />,
+      );
+
+      const addInput = getByLabelText('New Phone Number');
+      userEvent.click(addInput);
+      userEvent.tab();
+
+      const addButton = getByTestId('addButton-contactTestId');
+      expect(addButton).toBeDisabled();
+
+      expect(
+        await findByText('This field is not a valid phone number'),
+      ).toBeVisible();
+    });
+
+    it('should show an error message if there is an invalid number', async () => {
+      const { getByLabelText, getByTestId, getByText } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidPhoneNumbers: {
+              people: {
+                nodes: mockInvalidPhoneNumbersResponse,
+              },
+            },
+          }}
+        />,
+      );
+
+      const addInput = getByLabelText('New Phone Number');
+      userEvent.type(addInput, 'ab');
+      userEvent.tab();
+
+      const addButton = getByTestId('addButton-contactTestId');
+      await waitFor(() => {
+        expect(addButton).toBeDisabled();
+      });
+
+      expect(getByText('This field is not a valid phone number')).toBeVisible();
+    });
+
+    it('should not disable the add button', async () => {
+      const { getByLabelText, getByTestId } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidPhoneNumbers: {
+              people: {
+                nodes: mockInvalidPhoneNumbersResponse,
+              },
+            },
+          }}
+        />,
+      );
+
+      const addInput = getByLabelText('New Phone Number');
+      userEvent.type(addInput, '123');
+      userEvent.tab();
+
+      const addButton = getByTestId('addButton-contactTestId');
+      await waitFor(() => {
+        expect(addButton).not.toBeDisabled();
       });
     });
 
-    userEvent.click(addButton);
-    expect(addInput.value).toBe('');
-  });
+    it('should show delete confirmation', async () => {
+      const { getByTestId, getByRole } = render(
+        <TestComponent
+          mocks={{
+            GetInvalidPhoneNumbers: {
+              people: {
+                nodes: mockInvalidPhoneNumbersResponse,
+              },
+            },
+          }}
+        />,
+      );
+      const deleteButton = getByTestId('delete-contactTestId-number2');
+      userEvent.click(deleteButton);
+      expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument();
+      userEvent.click(getByRole('button', { name: 'Yes' }));
 
-  it('should call mock functions', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestWrapper>
-          <Contact
-            person={testData}
-            personIndex={0}
-            handleDelete={handleDeleteModalOpenMock}
-            setContactFocus={setContactFocus}
-            handleUpdate={updatePhoneNumber}
-            errors={errors}
-            values={{ people: [testData] }}
-            setValues={setValuesMock}
-          />
-        </TestWrapper>
-      </ThemeProvider>,
-    );
+      const { id, number } = person.phoneNumbers.nodes[1];
 
-    const firstInput = getByTestId('textfield-testid-0') as HTMLInputElement;
-    expect(firstInput.value).toBe('3533895895');
-    userEvent.type(firstInput, '1');
-
-    await waitFor(() => {
-      expect(setValuesMock).toHaveBeenCalledWith({
-        people: [
-          {
-            ...testData,
-            phoneNumbers: {
-              nodes: [
-                { ...testData.phoneNumbers.nodes[0], number: '35338958951' },
-                testData.phoneNumbers.nodes[1],
+      await waitFor(() => {
+        expect(mutationSpy.mock.lastCall[0].operation.operationName).toEqual(
+          'UpdatePhoneNumber',
+        );
+        expect(mutationSpy.mock.lastCall[0].operation.variables).toEqual({
+          input: {
+            accountListId,
+            attributes: {
+              id: person.id,
+              phoneNumbers: [
+                {
+                  id,
+                  destroy: true,
+                },
               ],
             },
           },
-        ],
+        });
       });
+
+      await waitFor(() =>
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          `Successfully deleted phone number ${number}`,
+          {
+            variant: 'success',
+          },
+        ),
+      );
     });
-    userEvent.click(getByTestId('delete-testid-1'));
-    expect(handleDeleteModalOpenMock).toHaveBeenCalled();
-    userEvent.click(getByTestId(`confirmButton-${testData.id}`));
-    expect(updatePhoneNumber).toHaveBeenCalled();
+  });
+
+  describe('confirm button', () => {
+    it('should not disable confirm button if there is exactly one primary number', async () => {
+      const { getByRole, queryByRole } = render(<TestComponent />);
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(0);
+
+      await waitFor(() => {
+        expect(queryByRole('loading')).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm' })).not.toBeDisabled();
+      });
+
+      userEvent.click(getByRole('button', { name: 'Confirm' }));
+
+      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('submit button', () => {
+    it('should submit form without errors', async () => {
+      const { getByTestId } = render(<TestComponent />);
+      const textField = getByTestId('textfield-contactTestId-number2');
+      userEvent.type(textField, '123');
+      expect(textField).toHaveValue('78910123');
+    });
+  });
+
+  it('should submit form with errors', async () => {
+    const { getByTestId, getAllByTestId } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    userEvent.clear(textInput);
+    expect(textInput).toHaveValue('');
+    userEvent.type(textInput, 'p');
+    expect(textInput).toHaveValue('p');
+    userEvent.click(textInput);
+
+    await waitFor(() => {
+      expect(getAllByTestId('statusSelectError')[1]).toHaveTextContent(
+        'This field is not a valid phone number',
+      );
+    });
   });
 });

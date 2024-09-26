@@ -47,6 +47,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 }));
 
 export interface DonationsType {
+  id: string;
   amount: {
     amount: number;
     currency: string;
@@ -250,7 +251,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         status={contact.status || ''}
                         amount={contact.pledgeAmount || 0}
                         amountCurrency={contact.pledgeCurrency || ''}
-                        frequencyValue={contact.pledgeFrequency || null}
+                        frequencyValue={contact.pledgeFrequency || ''}
                         showModal={handleShowModal}
                         setContactFocus={setContactFocus}
                         avatar={contact?.avatar}

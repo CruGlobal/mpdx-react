@@ -146,7 +146,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
           label={tag}
           disabled={updating}
           onDelete={() => handleTagDelete(tag)}
-          title={t('Delete Icon')}
+          title={t('Remove')}
         />
       ))}
       <Formik
@@ -178,6 +178,7 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
                     {...params}
                     placeholder={t('add tag')}
                     disabled={isSubmitting || updating}
+                    size="small"
                   />
                 )}
                 onChange={(_, tagList): void =>

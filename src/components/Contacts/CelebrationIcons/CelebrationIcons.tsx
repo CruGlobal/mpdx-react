@@ -51,12 +51,12 @@ export const CelebrationIcons: React.FC<Props> = ({ contact }) => {
     <>
       {contactHasAnniversary() ? (
         <IconContainer>
-          <RingIcon color="disabled" titleAccess={t('Ring')} />
+          <RingIcon color="disabled" titleAccess={t('Anniversary')} />
         </IconContainer>
       ) : null}
       {contactHasBirthday() ? (
         <IconContainer>
-          <Cake color="disabled" titleAccess={t('Cake')} />
+          <Cake color="disabled" titleAccess={t('Birthday')} />
         </IconContainer>
       ) : null}
     </>

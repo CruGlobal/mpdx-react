@@ -24,6 +24,15 @@ fragment ContactDonorAccounts on Contact {
   status
   source
   likelyToGive
+  name
+  primaryPerson {
+    id
+  }
+  people(first: 25) {
+    nodes {
+      ...ContactPerson
+    }
+  }
   lastDonation {
     ...ContactDonation
   }
@@ -68,6 +77,5 @@ fragment DonationMoney on Money {
 
 fragment ContactDonorAccount on DonorAccount {
   id
-  displayName
   accountNumber
 }

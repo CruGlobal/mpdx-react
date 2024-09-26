@@ -12,7 +12,7 @@ import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import Contact from './Contact';
 
-const testData = {
+let testData = {
   id: 'test 1',
   name: 'Tester 1',
   avatar: '',
@@ -24,6 +24,7 @@ const testData = {
   donations: {
     nodes: [
       {
+        id: 'donations-test-id-1',
         amount: {
           amount: 175,
           currency: 'USD',
@@ -76,13 +77,13 @@ describe('FixCommitmentContact', () => {
     setContactFocus.mockClear();
   });
 
-  it('default', () => {
-    const { getByText, getByTestId } = render(<TestComponent />);
+  it('default', async () => {
+    const { getByText, findByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(
       getByText('Current: Partner - Financial ARM 50 Monthly'),
     ).toBeInTheDocument();
-    expect(getByTestId('pledgeCurrency-input')).toBeInTheDocument();
+    expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
   });
 
   it('should call hide and update functions', async () => {
@@ -105,7 +106,7 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should should render select field options and inputs', async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { getByTestId, findByTestId } = render(<TestComponent />);
 
     const frequency = getByTestId('pledgeFrequency-input');
     fireEvent.change(frequency, {
@@ -113,7 +114,7 @@ describe('FixCommitmentContact', () => {
     });
     expect(frequency).toHaveValue('WEEKLY');
 
-    const currency = getByTestId('pledgeCurrency-input');
+    const currency = await findByTestId('pledgeCurrency-input');
     fireEvent.select(currency, {
       target: { value: 'USD ($)' },
     });
@@ -155,5 +156,51 @@ describe('FixCommitmentContact', () => {
     expect(donationDate).toHaveTextContent('10/15/2019');
     const donationAmount = getByTestId('donationAmount');
     expect(donationAmount).toHaveTextContent('175 USD');
+  });
+
+  it('PledgeFrequency should be blank', async () => {
+    testData = {
+      id: 'test 2',
+      name: 'Tester 2',
+      avatar: '',
+      status: '',
+      frequencyTitle: '',
+      frequencyValue: null!,
+      amount: null!,
+      amountCurrency: '',
+      donations: {
+        nodes: [
+          {
+            id: 'donations-test-id-1',
+            amount: {
+              amount: 0,
+              currency: 'UGX',
+              conversionDate: '2021-12-24',
+              convertedCurrency: 'UGX',
+            },
+          },
+        ],
+      },
+    };
+
+    const { findByTestId } = render(
+      <TestRouter router={router}>
+        <TestComponent />
+      </TestRouter>,
+    );
+    expect(await findByTestId('pledgeFrequency-input')).toHaveValue('');
+  });
+
+  it('changes pledgeCurrencies', async () => {
+    const { findByTestId, getByRole, findByRole } = render(
+      <TestRouter router={router}>
+        <TestComponent />
+      </TestRouter>,
+    );
+    expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
+    const CurrencyField = getByRole('combobox', { name: 'Currency' });
+    userEvent.click(CurrencyField);
+    userEvent.click(await findByRole('option', { name: 'CDF (CDF)' })),
+      expect(CurrencyField).toHaveTextContent('CDF (CDF)');
   });
 });

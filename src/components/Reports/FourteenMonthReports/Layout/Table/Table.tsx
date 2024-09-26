@@ -17,18 +17,18 @@ import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
-import { Totals } from '../../FourteenMonthReport';
+import { MonthTotal } from '../../FourteenMonthReport';
 import { StyledTableCell } from './StyledComponents';
 import {
   FourteenMonthReportTableHead as TableHead,
   FourteenMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
-import type { Contact, Month } from './TableHead/TableHead';
+import type { Contact } from './TableHead/TableHead';
 
-interface FourteenMonthReportTableProps extends TableHeadProps {
+export interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
-  orderedContacts: Contact[] | undefined;
-  totals: Totals[];
+  orderedContacts: Contact[];
+  totals: MonthTotal[];
   onSelectContact: (contactId: string) => void;
 }
 
@@ -45,29 +45,18 @@ const NameTypography = styled(Typography, {
   },
 }));
 
-const PrintableContainer = styled(TableContainer)(() => ({
-  // First style set size as landscape
-  height: 'calc(100vh - 160px)',
+const PrintableContainer = styled(TableContainer)({
+  // First style sets size as landscape
   '@media print': {
-    ['@page']: { size: 'landscape' },
-    overflow: 'auto',
-    height: '100%',
+    '@page': { size: 'landscape' },
   },
-}));
+});
 
-const StickyTable = styled(Table)(({}) => ({
-  height: 'calc(100vh - 96px)',
-  '@media print': {
-    overflow: 'auto',
-    height: '100%',
-  },
-}));
-
-const StyledInfoIcon = styled(InfoIcon)(({}) => ({
+const StyledInfoIcon = styled(InfoIcon)({
   '@media print': {
     display: 'none',
   },
-}));
+});
 
 const StyledTotalsRow = styled(TableRow)({
   '.MuiTableCell-root': {
@@ -115,7 +104,7 @@ export const FourteenMonthReportTable: React.FC<
 
   return (
     <PrintableContainer className="fourteen-month-report">
-      <StickyTable
+      <Table
         stickyHeader={true}
         aria-label={t('Fourteen month report table')}
         data-testid="FourteenMonthReport"
@@ -129,86 +118,70 @@ export const FourteenMonthReportTable: React.FC<
           onRequestSort={onRequestSort}
         />
         <TableBody>
-          {orderedContacts?.map((contact) => {
-            const totalDonated = useMemo(() => {
-              if (contact?.months) {
-                return contact.months.reduce((partialSum, month) => {
-                  return partialSum + month.salaryCurrencyTotal;
-                }, 0);
-              } else {
-                return 0;
-              }
-            }, [contact]);
-            return (
-              <TableRow
-                key={contact.id}
-                hover
-                data-testid="FourteenMonthReportTableRow"
-              >
-                <StyledTableCell>
-                  <Box display="flex" flexDirection="column">
-                    <Box display="flex" alignItems="center">
-                      {!isExpanded && <StyledInfoIcon fontSize="small" />}
-                      <NameTypography variant="body1" expanded={isExpanded}>
-                        <Link
-                          onClick={() => onSelectContact(contact.id)}
-                          onMouseEnter={preloadContactsRightPanel}
-                          underline="hover"
-                        >
-                          {contact.name}
-                        </Link>
-                      </NameTypography>
-                    </Box>
-                    {isExpanded && (
-                      <Typography variant="body2" color="textSecondary">
-                        {contact.accountNumbers.join(', ')}
-                      </Typography>
-                    )}
+          {orderedContacts?.map((contact) => (
+            <TableRow
+              key={contact.id}
+              hover
+              data-testid="FourteenMonthReportTableRow"
+            >
+              <StyledTableCell>
+                <Box display="flex" flexDirection="column">
+                  <Box display="flex" alignItems="center">
+                    {!isExpanded && <StyledInfoIcon fontSize="small" />}
+                    <NameTypography variant="body1" expanded={isExpanded}>
+                      <Link
+                        onClick={() => onSelectContact(contact.id)}
+                        onMouseEnter={preloadContactsRightPanel}
+                        underline="hover"
+                      >
+                        {contact.name}
+                      </Link>
+                    </NameTypography>
                   </Box>
-                </StyledTableCell>
-                {isExpanded && (
-                  <>
-                    <StyledTableCell>
-                      {contact.status &&
-                        contactStatuses[contact.status.toUpperCase()]
-                          ?.translated}
-                    </StyledTableCell>
-                    <StyledTableCell data-testid="pledgeAmount">
-                      {contact.pledgeAmount &&
-                        `${numberFormat(
-                          Math.round(contact.pledgeAmount),
-                          locale,
-                        )} ${contact.pledgeCurrency} ${
-                          apiConstants?.pledgeFrequency?.find(
-                            ({ key }) => key === contact.pledgeFrequency,
-                          )?.value ?? ''
-                        }`}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {numberFormat(Math.round(contact.average), locale)}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {numberFormat(Math.round(contact.minimum), locale)}
-                    </StyledTableCell>
-                  </>
-                )}
-                {contact.months?.map((month: Month) => (
-                  <StyledTableCell key={month?.month} align="center">
-                    {month?.salaryCurrencyTotal &&
-                      numberFormat(
-                        Math.round(month?.salaryCurrencyTotal),
-                        locale,
-                      )}
+                  {isExpanded && (
+                    <Typography variant="body2" color="textSecondary">
+                      {contact.accountNumbers.join(', ')}
+                    </Typography>
+                  )}
+                </Box>
+              </StyledTableCell>
+              {isExpanded && (
+                <>
+                  <StyledTableCell>
+                    {contact.status &&
+                      contactStatuses[contact.status.toUpperCase()]?.translated}
                   </StyledTableCell>
-                ))}
-                <StyledTableCell align="right">
-                  <strong data-testid="totalGivenByContact">
-                    {numberFormat(Math.round(totalDonated), locale)}
-                  </strong>
+                  <StyledTableCell data-testid="pledgeAmount">
+                    {contact.pledgeAmount &&
+                      `${numberFormat(
+                        Math.round(contact.pledgeAmount),
+                        locale,
+                      )} ${contact.pledgeCurrency} ${
+                        apiConstants?.pledgeFrequency?.find(
+                          ({ key }) => key === contact.pledgeFrequency,
+                        )?.value ?? ''
+                      }`}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {numberFormat(Math.round(contact.average), locale)}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {numberFormat(Math.round(contact.minimum), locale)}
+                  </StyledTableCell>
+                </>
+              )}
+              {contact.months.map((month) => (
+                <StyledTableCell key={month.month} align="center">
+                  {numberFormat(Math.round(month.total), locale)}
                 </StyledTableCell>
-              </TableRow>
-            );
-          })}
+              ))}
+              <StyledTableCell align="right">
+                <strong data-testid="totalGivenByContact">
+                  {numberFormat(Math.round(contact.total), locale)}
+                </strong>
+              </StyledTableCell>
+            </TableRow>
+          ))}
           <StyledTotalsRow>
             <StyledTableCell>{t('Totals')}</StyledTableCell>
             {isExpanded && (
@@ -242,7 +215,7 @@ export const FourteenMonthReportTable: React.FC<
             </StyledTableCell>
           </StyledTotalsRow>
         </TableBody>
-      </StickyTable>
+      </Table>
     </PrintableContainer>
   );
 };

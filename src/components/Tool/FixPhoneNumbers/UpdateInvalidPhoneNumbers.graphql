@@ -13,3 +13,15 @@ mutation UpdateInvalidPhoneNumbers($input: PeopleUpdateMutationInput!) {
     }
   }
 }
+
+mutation UpdatePhoneNumber($input: PersonUpdateMutationInput!) {
+  updatePerson(input: $input) {
+    person {
+      phoneNumbers {
+        nodes {
+          ...PersonPhoneNumber
+        }
+      }
+    }
+  }
+}

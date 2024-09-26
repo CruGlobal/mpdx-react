@@ -1,5 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
@@ -54,6 +56,8 @@ const mockContact: ContactOtherFragment = {
   churchName: mock.churchName,
   website: mock.website,
   user: { id: 'user-1' },
+  greeting: mock.greeting,
+  envelopeGreeting: mock.envelopeGreeting,
   contactReferralsToMe: mock.contactReferralsToMe,
 };
 
@@ -276,6 +280,94 @@ describe('EditContactOtherModal', () => {
     });
   });
 
+  it('should handle editing the referred by | Create', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
+              mocks={{
+                ContactOptions: {
+                  contacts: {
+                    nodes: [
+                      {
+                        id: 'contact-1',
+                        name: 'Person, Cool',
+                      },
+                      {
+                        id: 'contact-2',
+                        name: 'Guy, Great',
+                      },
+                    ],
+                  },
+                },
+              }}
+            >
+              <EditContactOtherModal
+                accountListId={accountListId}
+                isOpen={true}
+                handleClose={handleClose}
+                contact={{ ...mockContact, preferredContactMethod: null }}
+                referral={undefined}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Connecting Partner');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
+    userEvent.type(referredByInput, 'G');
+    await waitFor(() => expect(getByText('Guy, Great')).toBeInTheDocument());
+    userEvent.click(getByText('Guy, Great'));
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
+        variant: 'success',
+      }),
+    );
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should handle editing the referred by | No Contacts or Referrals', async () => {
+    const { getByLabelText, getByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              UpdateContactOther: UpdateContactOtherMutation;
+            }>
+              mocks={{
+                ContactOptions: {
+                  contacts: {
+                    nodes: [],
+                  },
+                },
+              }}
+            >
+              <EditContactOtherModal
+                accountListId={accountListId}
+                isOpen={true}
+                handleClose={handleClose}
+                contact={{ ...mockContact, preferredContactMethod: null }}
+                referral={undefined}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    const referredByInput = getByLabelText('Connecting Partner');
+    await waitFor(() => expect(referredByInput).toBeInTheDocument());
+    userEvent.click(referredByInput);
+    expect(getByText('No options')).toBeInTheDocument();
+  });
+
   it('should handle empty contact method', async () => {
     const mutationSpy = jest.fn();
     const { getByText, getByLabelText } = render(
@@ -323,6 +415,8 @@ describe('EditContactOtherModal', () => {
     const mutationSpy = jest.fn();
     const newChurchName = 'Great Cool Church II';
     const newWebsite = 'coolwebsite2.com';
+    const newGreeting = 'New Name';
+    const newEnvelopeGreeting = 'New Full Name';
     const { getByText, getByLabelText, getByRole, findByRole } = render(
       <SnackbarProvider>
         <TestRouter router={router}>
@@ -408,6 +502,17 @@ describe('EditContactOtherModal', () => {
     userEvent.clear(church);
     userEvent.type(church, newChurchName);
     userEvent.type(getByLabelText('Website'), newWebsite);
+
+    const greetingInput = getByLabelText('Greeting');
+    expect(greetingInput).toHaveValue(mockContact.greeting);
+    userEvent.clear(greetingInput);
+    userEvent.type(greetingInput, newGreeting);
+
+    const envelopeGreetingInput = getByLabelText('Envelope Name Line');
+    expect(envelopeGreetingInput).toHaveValue(mockContact.envelopeGreeting);
+    userEvent.clear(envelopeGreetingInput);
+    userEvent.type(envelopeGreetingInput, newEnvelopeGreeting);
+
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Contact updated successfully', {
@@ -415,20 +520,18 @@ describe('EditContactOtherModal', () => {
       }),
     );
 
-    const { operation } = mutationSpy.mock.calls[6][0];
-    expect(operation).toMatchObject({
-      operationName: 'UpdateContactOther',
-      variables: {
-        accountListId,
-        attributes: {
-          preferredContactMethod: PreferredContactMethodEnum.WhatsApp,
-          locale: 'Australian English',
-          timezone: '(GMT-09:00) Alaska',
-          churchName: newChurchName,
-          website: newWebsite,
-          userId: 'user-2',
-          contactReferralsToMe: [{}],
-        },
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateContactOther', {
+      accountListId,
+      attributes: {
+        preferredContactMethod: PreferredContactMethodEnum.WhatsApp,
+        locale: 'en-AU',
+        timezone: '(GMT-09:00) Alaska',
+        churchName: newChurchName,
+        website: newWebsite,
+        userId: 'user-2',
+        greeting: newGreeting,
+        envelopeGreeting: newEnvelopeGreeting,
+        contactReferralsToMe: [{}],
       },
     });
   });

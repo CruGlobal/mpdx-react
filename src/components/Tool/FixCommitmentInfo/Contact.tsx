@@ -170,7 +170,7 @@ interface Props {
   status: string | undefined;
   amount: number;
   amountCurrency: string;
-  frequencyValue: PledgeFrequencyEnum | null;
+  frequencyValue: PledgeFrequencyEnum | string;
   showModal: (
     contact: ContactType,
     message: string,
@@ -203,7 +203,7 @@ const Contact: React.FC<Props> = ({
   const frequencyOptions = constants?.pledgeFrequency;
   const statusOptions = constants?.status;
 
-  const suggestedAmount = suggestedChanges?.pledge_amount || null;
+  const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
   const suggestedFrequency = useMemo(
     () =>
@@ -330,7 +330,13 @@ const Contact: React.FC<Props> = ({
                         container
                         style={{ paddingRight: theme.spacing(1) }}
                       >
-                        <Grid item xs={12} className={classes.boxTop}>
+                        <Grid
+                          item
+                          xs={12}
+                          md={6}
+                          lg={12}
+                          className={classes.boxTop}
+                        >
                           <FormControl fullWidth size="small">
                             <InputLabel id="status-label">
                               {t('Status')}
@@ -363,7 +369,7 @@ const Contact: React.FC<Props> = ({
                             </Select>
                           </FormControl>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} md={6} lg={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <InputLabel id="currency-label">
@@ -387,11 +393,16 @@ const Contact: React.FC<Props> = ({
                                   )
                                 }
                               >
-                                {pledgeCurrencies &&
+                                {pledgeCurrencies ? (
                                   getPledgeCurrencyOptions(
                                     pledgeCurrencies,
                                     PledgeCurrencyOptionFormatEnum.Short,
-                                  )}
+                                  )
+                                ) : (
+                                  <MenuItem key={''} value={''}>
+                                    {t('Loading')}
+                                  </MenuItem>
+                                )}
                               </Select>
                             </FormControl>
                             <FormHelperText
@@ -402,12 +413,11 @@ const Contact: React.FC<Props> = ({
                             </FormHelperText>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} lg={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <Field
                                 id="standard-number"
-                                as={TextField}
                                 input={<StyledInput />}
                                 label={t('Amount')}
                                 labelId="amount-label"
@@ -416,7 +426,8 @@ const Contact: React.FC<Props> = ({
                                 variant="standard"
                                 size="small"
                                 fullWidth
-                                render={() => (
+                              >
+                                {() => (
                                   <TextField
                                     label={t('Amount')}
                                     className={classes.select}
@@ -431,19 +442,13 @@ const Contact: React.FC<Props> = ({
                                     onChange={(event) =>
                                       setFieldValue(
                                         'pledgeAmount',
-                                        parseFloat(event.target.value),
+                                        event.target.value,
                                       )
                                     }
                                   />
                                 )}
-                              />
+                              </Field>
                             </FormControl>
-                            <FormHelperText
-                              error={true}
-                              data-testid="pledgeAmountError"
-                            >
-                              {errors.pledgeAmount && errors.pledgeAmount}
-                            </FormHelperText>
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={4}>
@@ -487,26 +492,16 @@ const Contact: React.FC<Props> = ({
                                 )}
                               </Select>
                             </FormControl>
-                            <FormHelperText
-                              error={true}
-                              data-testid="pledgeFrequencyError"
-                            >
-                              {errors.pledgeFrequency && errors.pledgeFrequency}
-                            </FormHelperText>
                           </Box>
                         </Grid>
                       </Grid>
                     </Grid>
                     {!!donations.length && (
-                      <Grid
-                        container
-                        className={classes.donationsTable}
-                        lg={12}
-                      >
+                      <Grid container className={classes.donationsTable}>
                         {donations
                           .map((donation) => (
                             <Grid
-                              key={donation.amount.conversionDate}
+                              key={donation.id}
                               display="flex"
                               flexDirection="column"
                             >
