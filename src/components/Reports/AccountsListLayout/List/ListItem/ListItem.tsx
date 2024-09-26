@@ -3,7 +3,6 @@ import {
   Box,
   Checkbox,
   Divider,
-  Link,
   ListItem,
   ListItemText,
   Typography,
@@ -12,7 +11,6 @@ import { styled } from '@mui/material/styles';
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
 import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
@@ -111,21 +109,16 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                           : ''
                       }`}
                     </Typography>
-                    {hasFinancial && (
+
+                    {/* {hasFinancial && (
                       <Box display="flex">
-                        <HandoffLink
-                          path={`/reports/financial_accounts/${account.id}`}
-                        >
-                          <Link>Summary</Link>
-                        </HandoffLink>
+                        // Used to link to be a handoff link to /reports/financial_accounts/${account.id}
+                        <Link>Summary</Link>
                         {' · '}
-                        <HandoffLink
-                          path={`/reports/financial_accounts/${account.id}/entries`}
-                        >
-                          <Link>Transactions</Link>
-                        </HandoffLink>
+                        // Used to link to be a handoff link to /reports/financial_accounts/${account.id}/entries
+                        <Link>Transactions</Link>
                       </Box>
-                    )}
+                    )} */}
                   </Box>
                   <Typography>
                     {currencyFormat(
