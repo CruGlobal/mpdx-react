@@ -84,8 +84,8 @@ import { possiblePartnerStatus } from './possiblePartnerStatus';
 import { possibleResults } from './possibleResults';
 
 const getTaskDetails = (
-  task: Props['task'],
-  defaultValues: Props['defaultValues'],
+  task: TaskModalFormProps['task'],
+  defaultValues: TaskModalFormProps['defaultValues'],
   activityTypes: Map<ActivityTypeEnum, ActivityData>,
   phaseTags: string[],
 ) => {
@@ -147,7 +147,7 @@ const taskSchema = yup.object({
 });
 type Attributes = yup.InferType<typeof taskSchema>;
 
-interface Props {
+export interface TaskModalFormProps {
   accountListId: string;
   task?: GetTaskForTaskModalQuery['task'] | null;
   onClose: () => void;
@@ -165,7 +165,7 @@ const TaskModalForm = ({
   defaultValues,
   showFlowsMessage = false,
   view,
-}: Props): ReactElement => {
+}: TaskModalFormProps): ReactElement => {
   const session = useSession();
 
   const { t } = useTranslation();
