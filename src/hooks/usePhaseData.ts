@@ -51,7 +51,7 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
   );
 
   const setPhaseId = useCallback(
-    (activity) => {
+    (activity: PhaseEnum | null) => {
       setPhaseData(phaseFromActivity(activity, constants));
     },
     [constants],

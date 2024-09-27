@@ -1,6 +1,7 @@
 import React, { CSSProperties, RefObject } from 'react';
 import { XYCoord, useDragLayer } from 'react-dnd';
 import theme from 'src/theme';
+import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 import { ContactFlowRowPreview } from './ContactFlowRowPreview';
 import { useAutoScroll } from './useAutoScroll';
 
@@ -71,13 +72,14 @@ export const ContactFlowDragLayer: React.FC<ContactFlowDragLayerProps> = ({
   function renderItem() {
     switch (itemType) {
       case 'contact':
+        const contact: DraggedContact = item;
         return (
           <div style={dragPreviewStyle}>
             <ContactFlowRowPreview
-              name={item.name}
-              status={item.status}
-              starred={item.starred}
-              width={item.width}
+              name={contact.name}
+              status={contact.status}
+              starred={contact.starred}
+              width={contact.width}
             />
           </div>
         );

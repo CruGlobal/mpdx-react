@@ -82,7 +82,7 @@ export const ContactFlowSetupHeader: React.FC<Props> = ({
 
   return (
     <HeaderWrap>
-      <NextLink href={`/accountLists/${accountListId}/contacts`}>
+      <NextLink href={`/accountLists/${accountListId}/contacts/flows`}>
         <BackButton variant="outlined">
           <ChevronLeft />
           {t('Contacts')}

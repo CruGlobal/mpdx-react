@@ -4,7 +4,8 @@ import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../../../theme';
 
 const StatusRow = styled(Box)(() => ({
@@ -17,19 +18,14 @@ const StatusRow = styled(Box)(() => ({
   },
 }));
 
-interface Status {
-  id: ContactFilterStatusEnum;
-  value: string;
-}
-
 interface Props {
-  status: Status;
-  columnWidth?: number;
-  columnIndex?: number;
+  status: StatusEnum;
+  columnWidth: number;
+  columnIndex: number;
 }
 
 export interface ContactFlowSetupItemDrag {
-  status: string;
+  status: StatusEnum;
   columnWidth: number;
   originIndex: number;
 }
@@ -40,13 +36,14 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
   columnIndex,
 }: Props) => {
   const { t } = useTranslation();
+  const item: ContactFlowSetupItemDrag = {
+    status,
+    columnWidth,
+    originIndex: columnIndex,
+  };
   const [, drag, preview] = useDrag(() => ({
     type: 'status',
-    item: {
-      status: status.value,
-      columnWidth,
-      originIndex: columnIndex,
-    },
+    item,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -55,9 +52,10 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
+
   return (
-    <StatusRow {...{ ref: drag }} data-testid={status.id}>
-      <Typography>{t(status.value)}</Typography>
+    <StatusRow ref={drag} data-testid={status}>
+      <Typography>{getLocalizedContactStatus(t, status)}</Typography>
     </StatusRow>
   );
 };
