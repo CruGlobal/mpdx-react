@@ -58,6 +58,10 @@ const convertFlowOptionStatus = (status: string): StatusEnum | null => {
     case 'Research Abandoned':
       return StatusEnum.ResearchAbandoned;
 
+    case 'RESEARCH_CONTACT_INFO':
+    case 'Research Contact Info':
+      return StatusEnum.ResearchContactInfo;
+
     case 'EXPIRED_REFERRAL':
     case 'Expired Referral':
       return StatusEnum.ExpiredReferral;
