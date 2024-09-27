@@ -18,6 +18,7 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import HandoffLink from 'src/components/HandoffLink';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -117,6 +118,9 @@ const NavMenu: React.FC = () => {
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
+  const { data: coachingData } = useLoadCoachingListQuery();
+
+  const coachingAccounts = coachingData?.coachingAccountLists;
 
   const toolData: { [key: string]: { totalCount: number } } = {
     [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
@@ -401,18 +405,21 @@ const NavMenu: React.FC = () => {
           )}
         </Popper>
       </Grid>
-      <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/coaching`} passHref>
-          <MenuItem
-            component="a"
-            tabIndex={0}
-            className={classes.menuItem}
-            aria-current={router.asPath?.includes(`/coaching`) && 'page'}
-          >
-            <ListItemText primary={t('Coaches')} />
-          </MenuItem>
-        </NextLink>
-      </Grid>
+
+      {!!coachingAccounts?.totalCount && (
+        <Grid item className={classes.navListItem}>
+          <NextLink href={`/accountLists/${accountListId}/coaching`} passHref>
+            <MenuItem
+              component="a"
+              tabIndex={0}
+              className={classes.menuItem}
+              aria-current={router.asPath?.includes(`/coaching`) && 'page'}
+            >
+              <ListItemText primary={t('Coaches')} />
+            </MenuItem>
+          </NextLink>
+        </Grid>
+      )}
     </Grid>
   ) : null;
 };
