@@ -65,7 +65,6 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `GOOGLE_TAG_MANAGER_CONTAINER_ID` - Optional Google Tag Manager container ID
 - `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
 - `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
-- `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & `stage.mpdx.org` for staging.
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `DD_ENV` - Datadog environment.
