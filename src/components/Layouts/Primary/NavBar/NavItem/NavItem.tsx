@@ -17,6 +17,7 @@ interface NavItemProps {
   icon?: any;
   open?: boolean;
   title: string;
+  imageUrl?: string;
 }
 
 const StyledListItem = styled(ListItemButton)(() => ({
@@ -50,6 +51,7 @@ export const NavItem: FC<NavItemProps> = ({
   icon: Icon,
   open: openProp,
   title,
+  imageUrl,
   ...rest
 }) => {
   const [open, setOpen] = useState<boolean>(openProp ?? false);
@@ -101,6 +103,14 @@ export const NavItem: FC<NavItemProps> = ({
       <NextLink href={href} passHref>
         <MenuItem component="a" style={style}>
           {Icon && <Icon style={iconStyle} size="20" />}
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt={t('Help logo')}
+              height={36}
+              style={{ marginRight: theme.spacing(1) }}
+            />
+          )}
           <Title>{title}</Title>
         </MenuItem>
       </NextLink>
