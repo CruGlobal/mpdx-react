@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useGetUserOptionsQuery } from './GetUserOptions.generated';
 
@@ -92,16 +93,18 @@ interface UseFlowOptionReturn {
 export const useFlowOptions = (): UseFlowOptionReturn => {
   const { data, loading } = useGetUserOptionsQuery();
 
-  const rawOptions: RawFlowOption[] = JSON.parse(
-    data?.userOptions.find((option) => option.key === 'flows')?.value || '[]',
-  );
-  const options = rawOptions.map((option) => ({
-    ...option,
-    statuses: option.statuses
-      .map((status) => convertFlowOptionStatus(status))
-      // Ignore null values that didn't match a valid status
-      .filter(isTruthy),
-  }));
+  const options = useMemo(() => {
+    const rawOptions: RawFlowOption[] = JSON.parse(
+      data?.userOptions.find((option) => option.key === 'flows')?.value || '[]',
+    );
+    return rawOptions.map((option) => ({
+      ...option,
+      statuses: option.statuses
+        .map((status) => convertFlowOptionStatus(status))
+        // Ignore null values that didn't match a valid status
+        .filter(isTruthy),
+    }));
+  }, [data]);
 
   return { options, loading };
 };
