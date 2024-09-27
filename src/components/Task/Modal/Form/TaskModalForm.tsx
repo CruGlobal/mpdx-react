@@ -216,7 +216,7 @@ const TaskModalForm = ({
         ...filteredTags?.suggestedTags,
       ]);
     }
-  }, [task, defaultValues, activityTypes, phaseTags]);
+  }, [activityTypes]);
 
   const initialTask: Attributes = useMemo(() => {
     const { taskPhase, taskSubject, additionalTags } = getTaskDetails(
@@ -268,7 +268,7 @@ const TaskModalForm = ({
         comment: '',
       };
     }
-  }, [task, defaultValues, activityTypes, phaseTags]);
+  }, [activityTypes]);
 
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
   const [updateTask, { loading: saving }] = useUpdateTaskMutation();
