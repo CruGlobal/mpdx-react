@@ -420,9 +420,13 @@ const NavMenu: React.FC = () => {
               component="a"
               tabIndex={0}
               className={classes.menuItem}
-              aria-current={router.asPath?.includes(`/coaching`) && 'page'}
+              aria-current={
+                router.asPath?.includes(`/coaching`) &&
+                !router.asPath?.includes(`/reports/coaching`) &&
+                'page'
+              }
             >
-              <ListItemText primary={t('Coaches')} />
+              <ListItemText primary={t('Coaching')} />
             </MenuItem>
           </NextLink>
         </Grid>

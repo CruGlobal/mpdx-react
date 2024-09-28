@@ -165,11 +165,11 @@ describe('NavMenu', () => {
     ).not.toBeVisible();
     expect(getByTestId('appeals-false')).toBeInTheDocument();
     expect(
-      await findByRole('menuitem', { hidden: true, name: 'Coaches' }),
+      await findByRole('menuitem', { hidden: true, name: 'Coaching' }),
     ).toBeInTheDocument();
   });
 
-  it('does not show coaches link if there are no coaching accounts', async () => {
+  it('does not show coaching link if there are no coaching accounts', async () => {
     const { queryByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
@@ -190,7 +190,7 @@ describe('NavMenu', () => {
     );
     await waitFor(() =>
       expect(
-        queryByRole('menuitem', { hidden: true, name: 'Coaches' }),
+        queryByRole('menuitem', { hidden: true, name: 'Coaching' }),
       ).not.toBeInTheDocument(),
     );
   });

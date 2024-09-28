@@ -157,7 +157,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   ];
   if (coachingAccounts?.totalCount) {
     sections.push({
-      title: t('Coaches'),
+      title: t('Coaching'),
       href: `/accountLists/${accountListId}/coaching`,
     });
   }
