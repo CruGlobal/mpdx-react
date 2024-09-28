@@ -9,11 +9,11 @@ import {
   ListItem,
   ListSubheader,
   Menu,
-  Theme,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import theme from 'src/theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
@@ -28,7 +28,7 @@ interface NotificationMenuProps {
   isInDrawer?: boolean;
 }
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   link: {
     textTransform: 'none',
     color: 'rgba(255,255,255,0.75)',
@@ -62,6 +62,11 @@ const useStyles = makeStyles()((theme: Theme) => ({
   img: {
     height: '150px',
     marginBottom: theme.spacing(2),
+  },
+  customBadge: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    color: 'white',
+    fontWeight: '700',
   },
 }));
 
@@ -235,7 +240,8 @@ const NotificationMenu = ({
       >
         <Badge
           badgeContent={data?.userNotifications?.unreadCount}
-          color="secondary"
+          classes={{ badge: classes.customBadge }}
+          max={99}
         >
           {data?.userNotifications?.unreadCount !== 0 ? (
             <NotificationsIcon />

@@ -63,13 +63,19 @@ const useStyles = makeStyles()(() => ({
   },
   notificationBox: {
     backgroundColor: theme.palette.progressBarYellow.main,
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    borderRadius: '25%',
+    borderRadius: '10px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(1),
+    '&>.MuiTypography-root': {
+      fontSize: '12px',
+      whiteSpace: 'nowrap',
+      fontWeight: '700',
+      lineHeight: 1,
+      minWidth: '10px',
+      padding: '3px 7px',
+    },
   },
   darkText: {
     color: theme.palette.cruGrayDark.main,
@@ -78,6 +84,7 @@ const useStyles = makeStyles()(() => ({
     color: 'white',
   },
   menuItem: {
+    paddingInline: '10px',
     '&:focus-visible, &:hover, &[aria-current=page]': {
       backgroundColor: theme.palette.cruGrayMedium.main,
       backgroundBlendMode: 'multiply',
@@ -303,7 +310,7 @@ const NavMenu: React.FC = () => {
               data-testid="notificationTotal"
             >
               <Typography data-testid="notificationTotalText">
-                {sum < 10 ? sum : '9+'}
+                {sum < 100 ? sum : '99+'}
               </Typography>
             </Box>
           )}
@@ -386,9 +393,9 @@ const NavMenu: React.FC = () => {
                                     data-testid={`${tool.id}-notifications`}
                                   >
                                     <Typography>
-                                      {toolData[tool.id].totalCount < 10
+                                      {toolData[tool.id].totalCount < 100
                                         ? toolData[tool.id].totalCount
-                                        : '9+'}
+                                        : '99+'}
                                     </Typography>
                                   </Box>
                                 )}

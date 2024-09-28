@@ -309,7 +309,7 @@ describe('NavMenu', () => {
     expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
 
-  it('test notifications > 10', async () => {
+  it('test notifications > 99', async () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
@@ -319,16 +319,16 @@ describe('NavMenu', () => {
             mocks={{
               GetToolNotifications: {
                 contacts: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
                 people: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
                 contactDuplicates: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
                 personDuplicates: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
               },
             }}
@@ -342,6 +342,6 @@ describe('NavMenu', () => {
     await waitFor(() =>
       expect(getByTestId('notificationTotal')).toBeInTheDocument(),
     );
-    expect(getByTestId('notificationTotalText')).toHaveTextContent('9+');
+    expect(getByTestId('notificationTotalText')).toHaveTextContent('99+');
   });
 });
