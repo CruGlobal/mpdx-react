@@ -65,6 +65,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
+global.innerWidth = 1200;
+
 describe('ProfileMenu', () => {
   it('default', async () => {
     const { getByTestId, getByRole, getByText, findByText } = render(
@@ -156,6 +158,35 @@ describe('ProfileMenu', () => {
     expect(await findByText('John Smith')).toBeInTheDocument();
     expect(getByTestId('accountListName')).toBeInTheDocument();
     expect(getByText('Staff Account')).toBeInTheDocument();
+  });
+
+  it('should display avatar', async () => {
+    const { findByText, getByTestId, queryByTestId } = render(
+      <TestComponent mocks={[getTopBarMockWithMultipleAccountLists()]} />,
+    );
+    expect(await findByText('John Smith')).toBeInTheDocument();
+    expect(getByTestId('AvatarInTopBar')).toBeInTheDocument();
+    userEvent.click(getByTestId('profileMenuButton'));
+    await waitFor(() =>
+      expect(queryByTestId('profileMenu')).toBeInTheDocument(),
+    );
+    expect(getByTestId('AvatarProfileImage')).toBeInTheDocument();
+  });
+
+  it('should display placeholder if there is no avatar', async () => {
+    const { findByText, getByTestId, queryByTestId } = render(
+      <TestComponent />,
+    );
+    expect(await findByText('John Smith')).toBeInTheDocument();
+    expect(getByTestId('AccountIconInTopBar')).toBeInTheDocument();
+    userEvent.click(getByTestId('profileMenuButton'));
+    await waitFor(() =>
+      expect(queryByTestId('profileMenu')).toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(queryByTestId('AvatarProfileImage')).not.toBeInTheDocument(),
+    );
+    expect(getByTestId('AvatarProfileLetter')).toBeInTheDocument();
   });
 
   it('Ensure Sign Out is called with callback', async () => {
