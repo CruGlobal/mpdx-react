@@ -325,7 +325,7 @@ describe('NavMenu', () => {
                   totalCount: 30,
                 },
                 contactDuplicates: {
-                  totalCount: 30,
+                  totalCount: 130,
                 },
                 personDuplicates: {
                   totalCount: 30,
@@ -343,5 +343,7 @@ describe('NavMenu', () => {
       expect(getByTestId('notificationTotal')).toBeInTheDocument(),
     );
     expect(getByTestId('notificationTotalText')).toHaveTextContent('99+');
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByTestId('mergeContacts-notifications')).toHaveTextContent('99+');
   });
 });
