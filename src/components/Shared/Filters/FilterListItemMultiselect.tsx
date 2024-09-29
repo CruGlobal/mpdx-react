@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import {
   Autocomplete,
@@ -11,12 +11,63 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { MultiselectFilter } from 'src/graphql/types.generated';
+import { MultiselectFilter, PhaseEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { renameFilterNames, reverseFiltersMap } from './helpers';
 
-interface Props {
+interface MultiselectAutocompleteProps {
+  filter: MultiselectFilter;
+  selected?: Array<string>;
+  toggleValue: (value?: Array<string>) => void;
+  filterTitle: string | undefined;
+  reverseSelected?: boolean;
+  groupBy?: ((option: any) => string) | undefined;
+  options: string[];
+}
+const MultiselectFilterAutocomplete: React.FC<MultiselectAutocompleteProps> = ({
+  filter,
+  selected,
+  toggleValue,
+  filterTitle,
+  reverseSelected,
+  groupBy,
+  options,
+}: MultiselectAutocompleteProps) => {
+  return (
+    <Autocomplete
+      multiple
+      autoHighlight
+      autoSelect
+      value={selected || []}
+      onChange={(_, value) => toggleValue(value)}
+      options={options}
+      getOptionLabel={(option) =>
+        filter.options?.find(({ value }) => String(value) === String(option))
+          ?.name ?? ''
+      }
+      groupBy={groupBy}
+      ChipProps={{
+        color: reverseSelected ? 'error' : 'default',
+        style: {
+          background: reverseSelected ? '#d32f2f' : '#ffffff',
+        },
+      }}
+      filterSelectedOptions
+      fullWidth
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={filterTitle}
+          label={filterTitle}
+          data-testid="multiSelectFilter"
+        />
+      )}
+    />
+  );
+};
+
+interface FilterListItemMultiselectProps {
   filter: MultiselectFilter;
   selected?: Array<string>;
   onUpdate: (value?: Array<string>) => void;
@@ -24,13 +75,15 @@ interface Props {
   reverseSelected?: boolean;
 }
 
-export const FilterListItemMultiselect: React.FC<Props> = ({
+export const FilterListItemMultiselect: React.FC<
+  FilterListItemMultiselectProps
+> = ({
   filter,
   selected,
   onUpdate,
   onReverseFilter,
   reverseSelected,
-}: Props) => {
+}: FilterListItemMultiselectProps) => {
   const { t } = useTranslation();
   const toggleValue = (value?: string[]) => {
     onUpdate(value);
@@ -49,6 +102,38 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
   };
 
   const filterTitle = renameFilterNames(filter.title);
+
+  // If it is a status filter, group the status options by phase
+  const isStatusFilter = useMemo(
+    () =>
+      filter.filterKey === 'status' || filter.filterKey === 'contact_status',
+    [filter.filterKey],
+  );
+
+  const groupByPhase = (option) =>
+    getLocalizedPhase(
+      t,
+      statusArray.find((status) => status.id === option)?.phase,
+    );
+
+  const filterOptions = useMemo(() => {
+    const findStatusPhase = (
+      selectedStatus: string,
+    ): PhaseEnum | null | undefined =>
+      statusArray?.find((status) => status.id === selectedStatus)?.phase;
+
+    return isStatusFilter
+      ? filter.options
+          ?.slice()
+          .sort(
+            (a, b) =>
+              findStatusPhase(a.value)?.localeCompare(
+                findStatusPhase(b.value) || '',
+              ) || -1,
+          )
+          ?.map(({ value }) => value) || []
+      : filter.options?.map(({ value }) => value) || [];
+  }, [filter.options, statusArray, isStatusFilter]);
 
   return (
     <div className="FilterListItemMultiselect-root">
@@ -75,41 +160,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           primaryTypographyProps={{ variant: 'subtitle1' }}
         />
       </ListItem>
-      {filter.filterKey !== 'pledge_amount' &&
-      filter.filterKey !== 'status' &&
-      filter.filterKey !== 'contact_status' ? (
-        <ListItem>
-          <Autocomplete
-            multiple
-            autoHighlight
-            autoSelect
-            value={selected || []}
-            onChange={(_, value) => toggleValue(value)}
-            options={filter.options?.map(({ value }) => value) || []}
-            getOptionLabel={(option) =>
-              filter.options?.find(
-                ({ value }) => String(value) === String(option),
-              )?.name ?? ''
-            }
-            ChipProps={{
-              color: reverseSelected ? 'error' : 'default',
-              style: {
-                background: reverseSelected ? '#d32f2f' : '#ffffff',
-              },
-            }}
-            filterSelectedOptions
-            fullWidth
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder={filterTitle}
-                label={filterTitle}
-                data-testid="multiSelectFilter"
-              />
-            )}
-          />
-        </ListItem>
-      ) : filter.filterKey === 'pledge_amount' ? (
+      {filter.filterKey === 'pledge_amount' ? (
         filter.options?.map(({ value, name }) => (
           <ListItem key={value} button onClick={() => toggleCheckValue(value)}>
             <ListItemIcon data-testid="MultiSelectOption">
@@ -127,59 +178,19 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
             />
           </ListItem>
         ))
-      ) : filter.filterKey === 'status' ||
-        filter.filterKey === 'contact_status' ? (
+      ) : (
         <ListItem>
-          <Autocomplete
-            multiple
-            autoHighlight
-            autoSelect
-            value={selected || []}
-            onChange={(_, value) => toggleValue(value)}
-            options={
-              filter.options
-                ?.slice()
-                .sort(
-                  (a, b) =>
-                    statusArray
-                      ?.find((status) => status.id === a.value)
-                      ?.phase?.localeCompare(
-                        statusArray?.find((status) => status.id === b.value)
-                          ?.phase || '',
-                      ) || -1,
-                )
-                ?.map(({ value }) => value) || []
-            }
-            groupBy={(option) =>
-              getLocalizedPhase(
-                t,
-                statusArray.find((status) => status.id === option)?.phase,
-              ) || ''
-            }
-            getOptionLabel={(option) =>
-              filter.options?.find(
-                ({ value }) => String(value) === String(option),
-              )?.name ?? ''
-            }
-            ChipProps={{
-              color: reverseSelected ? 'error' : 'default',
-              style: {
-                background: reverseSelected ? '#d32f2f' : '#ffffff',
-              },
-            }}
-            filterSelectedOptions
-            fullWidth
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder={filterTitle}
-                label={filterTitle}
-                data-testid="multiSelectFilter"
-              />
-            )}
+          <MultiselectFilterAutocomplete
+            filter={filter}
+            selected={selected}
+            toggleValue={toggleValue}
+            filterTitle={filterTitle}
+            reverseSelected={reverseSelected}
+            groupBy={isStatusFilter ? groupByPhase : undefined}
+            options={filterOptions}
           />
         </ListItem>
-      ) : null}
+      )}
     </div>
   );
 };
