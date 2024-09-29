@@ -76,12 +76,14 @@ export const NotificationContent = ({
   onAcknowledgeAllClick,
   onClose,
   onFetchMore,
+  isInDrawer,
 }: {
   data: GetNotificationsQuery | undefined;
   loading: boolean;
   onAcknowledgeAllClick: () => void;
   onClose: () => void;
   onFetchMore: () => void;
+  isInDrawer?: boolean;
 }): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
@@ -115,6 +117,7 @@ export const NotificationContent = ({
           previousItem={nodes[index - 1]}
           last={index + 1 === nodes.length && !loading}
           onClick={onClose}
+          isInDrawer={isInDrawer}
         />
       ))}
       {!loading && data?.userNotifications?.pageInfo?.hasNextPage && (
@@ -226,6 +229,7 @@ const NotificationMenu = ({
         onAcknowledgeAllClick={handleAcknowledgeAllClick}
         onClose={handleClose}
         onFetchMore={handleFetchMore}
+        isInDrawer={true}
       />
     );
   }
