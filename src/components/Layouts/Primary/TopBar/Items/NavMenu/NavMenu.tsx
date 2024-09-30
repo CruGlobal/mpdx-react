@@ -167,7 +167,8 @@ const NavMenu: React.FC = () => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-  const router = useRouter();
+  const { pathname } = useRouter();
+
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
       <Grid item className={classes.navListItem}>
@@ -177,7 +178,7 @@ const NavMenu: React.FC = () => {
             tabIndex={0}
             className={classes.menuItem}
             aria-current={
-              router.asPath === `/accountLists/${accountListId}` && 'page'
+              pathname === '/accountLists/[accountListId]' ? 'page' : undefined
             }
           >
             <ListItemText primary={t('Dashboard')} />
@@ -190,7 +191,12 @@ const NavMenu: React.FC = () => {
             component="a"
             tabIndex={0}
             className={classes.menuItem}
-            aria-current={router.asPath?.includes('contacts') && 'page'}
+            aria-current={
+              pathname ===
+              '/accountLists/[accountListId]/contacts/[[...contactId]]'
+                ? 'page'
+                : undefined
+            }
           >
             <ListItemText primary={t('Contacts')} />
           </MenuItem>
@@ -202,7 +208,12 @@ const NavMenu: React.FC = () => {
             component="a"
             tabIndex={0}
             className={classes.menuItem}
-            aria-current={router.asPath?.includes('tasks') && 'page'}
+            aria-current={
+              pathname ===
+              '/accountLists/[accountListId]/tasks/[[...contactId]]'
+                ? 'page'
+                : undefined
+            }
           >
             <ListItemText primary={t('Tasks')} />
           </MenuItem>
@@ -220,7 +231,8 @@ const NavMenu: React.FC = () => {
           className={clsx(
             classes.menuItem,
             reportsMenuOpen && classes.menuItemSelected,
-            router.asPath?.includes('reports') && classes.menuItemSelected,
+            pathname.startsWith('/accountLists/[accountListId]/reports') &&
+              classes.menuItemSelected,
           )}
         >
           <ListItemText primary={t('Reports')} />
@@ -259,7 +271,11 @@ const NavMenu: React.FC = () => {
                           onClick={handleReportsMenuClose}
                           tabIndex={0}
                           aria-current={
-                            router.asPath.includes(`${id}`) && 'page'
+                            pathname.startsWith(
+                              `/accountLists/[accountListId]/reports/${id}`,
+                            )
+                              ? 'page'
+                              : undefined
                           }
                         >
                           <ListItemText primary={t(title)} />
@@ -284,7 +300,8 @@ const NavMenu: React.FC = () => {
           className={clsx(
             classes.menuItem,
             toolsMenuOpen && classes.menuItemSelected,
-            router.asPath?.includes('tools') && classes.menuItemSelected,
+            pathname.startsWith('/accountLists/[accountListId]/tools') &&
+              classes.menuItemSelected,
           )}
           aria-expanded={toolsMenuOpen}
         >
@@ -343,7 +360,11 @@ const NavMenu: React.FC = () => {
                                   currentToolId === tool.id
                                 }`}
                                 aria-current={
-                                  router.asPath.includes(tool.url) && 'page'
+                                  pathname.startsWith(
+                                    `/accountLists/[accountListId]/tools/${tool.url}`,
+                                  )
+                                    ? 'page'
+                                    : undefined
                                 }
                                 className={clsx(
                                   classes.menuItem,
@@ -402,9 +423,9 @@ const NavMenu: React.FC = () => {
               tabIndex={0}
               className={classes.menuItem}
               aria-current={
-                router.asPath?.includes(`/coaching`) &&
-                !router.asPath?.includes(`/reports/coaching`) &&
-                'page'
+                pathname === '/accountLists/[accountListId]/coaching'
+                  ? 'page'
+                  : undefined
               }
             >
               <ListItemText primary={t('Coaching')} />
