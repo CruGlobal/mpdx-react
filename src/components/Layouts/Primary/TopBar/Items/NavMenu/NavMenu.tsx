@@ -19,7 +19,6 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
-import HandoffLink from 'src/components/HandoffLink';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
@@ -102,20 +101,6 @@ export enum ToolName {
   MergePeople = 'mergePeople',
 }
 
-export const toolsRedirectLinks: { [key: string]: string } = {
-  appeals: 'appeals',
-  fixCommitmentInfo: 'fix/commitment-info',
-  fixEmailAddresses: 'fix/email-addresses',
-  fixPhoneNumbers: 'fix/phone-numbers',
-  fixSendNewsletter: 'fix/send-newsletter',
-  fixMailingAddresses: 'fix/addresses',
-  mergePeople: 'merge/people',
-  mergeContacts: 'merge/contacts',
-  google: 'import/google',
-  tntConnect: 'import/tnt',
-  csv: 'import/csv/upload',
-};
-
 const NavMenu: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -182,7 +167,8 @@ const NavMenu: React.FC = () => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-  const router = useRouter();
+  const { pathname } = useRouter();
+
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
       <Grid item className={classes.navListItem}>
@@ -192,7 +178,7 @@ const NavMenu: React.FC = () => {
             tabIndex={0}
             className={classes.menuItem}
             aria-current={
-              router.asPath === `/accountLists/${accountListId}` && 'page'
+              pathname === '/accountLists/[accountListId]' ? 'page' : undefined
             }
           >
             <ListItemText primary={t('Dashboard')} />
@@ -205,7 +191,12 @@ const NavMenu: React.FC = () => {
             component="a"
             tabIndex={0}
             className={classes.menuItem}
-            aria-current={router.asPath?.includes('contacts') && 'page'}
+            aria-current={
+              pathname ===
+              '/accountLists/[accountListId]/contacts/[[...contactId]]'
+                ? 'page'
+                : undefined
+            }
           >
             <ListItemText primary={t('Contacts')} />
           </MenuItem>
@@ -217,7 +208,12 @@ const NavMenu: React.FC = () => {
             component="a"
             tabIndex={0}
             className={classes.menuItem}
-            aria-current={router.asPath?.includes('tasks') && 'page'}
+            aria-current={
+              pathname ===
+              '/accountLists/[accountListId]/tasks/[[...contactId]]'
+                ? 'page'
+                : undefined
+            }
           >
             <ListItemText primary={t('Tasks')} />
           </MenuItem>
@@ -235,7 +231,8 @@ const NavMenu: React.FC = () => {
           className={clsx(
             classes.menuItem,
             reportsMenuOpen && classes.menuItemSelected,
-            router.asPath?.includes('reports') && classes.menuItemSelected,
+            pathname.startsWith('/accountLists/[accountListId]/reports') &&
+              classes.menuItemSelected,
           )}
         >
           <ListItemText primary={t('Reports')} />
@@ -274,7 +271,11 @@ const NavMenu: React.FC = () => {
                           onClick={handleReportsMenuClose}
                           tabIndex={0}
                           aria-current={
-                            router.asPath.includes(`${id}`) && 'page'
+                            pathname.startsWith(
+                              `/accountLists/[accountListId]/reports/${id}`,
+                            )
+                              ? 'page'
+                              : undefined
                           }
                         >
                           <ListItemText primary={t(title)} />
@@ -299,7 +300,8 @@ const NavMenu: React.FC = () => {
           className={clsx(
             classes.menuItem,
             toolsMenuOpen && classes.menuItemSelected,
-            router.asPath?.includes('tools') && classes.menuItemSelected,
+            pathname.startsWith('/accountLists/[accountListId]/tools') &&
+              classes.menuItemSelected,
           )}
           aria-expanded={toolsMenuOpen}
         >
@@ -345,24 +347,24 @@ const NavMenu: React.FC = () => {
                             ? toolData[tool.id]?.totalCount > 0
                             : false;
                           return (
-                            <HandoffLink
+                            <NextLink
                               key={tool.id}
-                              path={`https://${
-                                process.env.REWRITE_DOMAIN
-                              }/tools/${toolsRedirectLinks[tool.id]}`}
+                              href={`/accountLists/${accountListId}/tools/${tool.url}`}
+                              passHref
                             >
-                              {/* When switching to pointing tools at this app we need to add these attributes
-                                href={`/accountLists/${accountListId}/tools/${tool.id}`}
-                                component="a"
-                              */}
                               <MenuItem
+                                component="a"
                                 tabIndex={0}
                                 onClick={handleToolsMenuClose}
                                 data-testid={`${tool.id}-${
                                   currentToolId === tool.id
                                 }`}
                                 aria-current={
-                                  router.asPath.includes(tool.url) && 'page'
+                                  pathname.startsWith(
+                                    `/accountLists/[accountListId]/tools/${tool.url}`,
+                                  )
+                                    ? 'page'
+                                    : undefined
                                 }
                                 className={clsx(
                                   classes.menuItem,
@@ -400,7 +402,7 @@ const NavMenu: React.FC = () => {
                                   </Box>
                                 )}
                               </MenuItem>
-                            </HandoffLink>
+                            </NextLink>
                           );
                         })}
                       </Box>
@@ -421,9 +423,9 @@ const NavMenu: React.FC = () => {
               tabIndex={0}
               className={classes.menuItem}
               aria-current={
-                router.asPath?.includes(`/coaching`) &&
-                !router.asPath?.includes(`/reports/coaching`) &&
-                'page'
+                pathname === '/accountLists/[accountListId]/coaching'
+                  ? 'page'
+                  : undefined
               }
             >
               <ListItemText primary={t('Coaching')} />

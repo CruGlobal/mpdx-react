@@ -11,7 +11,6 @@ import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageM
 import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { LogoLink } from '../LogoLink/LogoLink';
-import { toolsRedirectLinks } from '../TopBar/Items/NavMenu/NavMenu';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
 
@@ -148,9 +147,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       items: ToolsListNav.flatMap((toolsGroup) =>
         toolsGroup.items.map((tool) => ({
           title: tool.tool,
-          href: `https://${process.env.REWRITE_DOMAIN}/tools/${
-            toolsRedirectLinks[tool.id]
-          }`,
+          href: `/accountLists/${accountListId}/tools/${tool.url}`,
         })),
       ),
     },

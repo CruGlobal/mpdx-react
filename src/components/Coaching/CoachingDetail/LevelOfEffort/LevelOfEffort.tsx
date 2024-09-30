@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import {
-  Box,
   CardContent,
   CardHeader,
   Divider,
@@ -21,7 +20,6 @@ import { snakeToCamel } from 'src/lib/snakeToCamel';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { HelpButton } from '../HelpButton';
 import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
 import { getMonthOrWeekDateRange } from '../helpers';
 import { useLevelOfEffortQuery } from './LevelOfEffort.generated';
@@ -98,14 +96,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
 
   return (
     <AnimatedCard>
-      <CardHeader
-        title={
-          <Box display="flex" alignItems="center">
-            <Box flex={1}>{t('Level of Effort - My Part')}</Box>
-            <HelpButton articleVar="HS_COACHING_ACTIVITY_SUMMARY" />
-          </Box>
-        }
-      />
+      <CardHeader title={t('Level of Effort - My Part')} />
       <ContentContainer>
         {loading ? (
           <MultilineSkeleton lines={24} />

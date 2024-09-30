@@ -135,7 +135,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
       ) : (
         <EmptyReport
           title={t(
-            'You have received no donations in the last thirteen months',
+            'You have received no donations in the last fourteen months',
           )}
           subTitle={t(
             'You can setup an organization account to import them or add a new donation.',

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,11 +16,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import Modal from 'src/components/common/Modal/Modal';
 import { GoogleAccountAttributes } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
@@ -75,6 +76,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
   expandedPanel,
   disabled,
 }) => {
+  const accountListId = useAccountListId();
   const { t } = useTranslation();
   const [openEditGoogleAccount, setOpenEditGoogleAccount] = useState(false);
   const [openDeleteGoogleAccount, setOpenDeleteGoogleAccount] = useState(false);
@@ -210,14 +212,18 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
           </StyledServicesButton>
 
           {!!googleAccounts?.length && (
-            <HandoffLink path="/tools/import/google">
+            <NextLink
+              href={`/accountLists/${accountListId}/tools/import/google`}
+              passHref
+            >
               <StyledServicesButton
                 variant="outlined"
                 style={{ marginLeft: '15px' }}
+                component="a"
               >
                 {t('Import contacts')}
               </StyledServicesButton>
-            </HandoffLink>
+            </NextLink>
           )}
         </Box>
       </AccordionItem>
