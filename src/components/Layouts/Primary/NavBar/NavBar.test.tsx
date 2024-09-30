@@ -45,21 +45,17 @@ describe('NavBar', () => {
   });
 
   it('opened', () => {
-    const { getAllByRole, queryByTestId } = render(
-      <TestComponent openMobile />,
-    );
+    const { getByRole, queryByTestId } = render(<TestComponent openMobile />);
 
     expect(queryByTestId('NavBarDrawer')).toBeInTheDocument();
-    expect(
-      getAllByRole('button', { name: 'Dashboard' })[0],
-    ).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
   });
 
   it('hides links during the setup tour', () => {
     const { queryByRole } = render(<TestComponent openMobile onSetupTour />);
 
     expect(
-      queryByRole('button', { name: 'Dashboard' }),
+      queryByRole('menuitem', { name: 'Dashboard' }),
     ).not.toBeInTheDocument();
   });
 });
