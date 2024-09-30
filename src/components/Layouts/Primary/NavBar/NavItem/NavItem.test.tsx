@@ -22,4 +22,14 @@ describe('NavItem', () => {
 
     expect(getByText(title)).toBeInTheDocument();
   });
+
+  it('renders image', () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <NavItem imageUrl="/img.png" title={title} />
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('img')).toHaveAttribute('src', '/img.png');
+  });
 });

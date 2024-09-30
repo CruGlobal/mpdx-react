@@ -152,6 +152,28 @@ describe('NavMenu', () => {
     expect(queryByRole('menuitem')).toBeNull();
   });
 
+  describe("What's New link", () => {
+    it('is visible when HELP_WHATS_NEW_URL is set', () => {
+      process.env.HELP_WHATS_NEW_URL = '/new';
+
+      const { getByRole } = render(<TestComponent />);
+
+      expect(
+        getByRole('menuitem', { name: "Help logo What's New" }),
+      ).toHaveAttribute('href', '/new');
+    });
+
+    it('is hidden when HELP_WHATS_NEW_URL is not set', () => {
+      process.env.HELP_WHATS_NEW_URL = '';
+
+      const { queryByRole } = render(<TestComponent />);
+
+      expect(
+        queryByRole('menuitem', { name: "Help logo What's New" }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('test current tool id hook', () => {
     const { getByTestId } = render(
       <TestComponent

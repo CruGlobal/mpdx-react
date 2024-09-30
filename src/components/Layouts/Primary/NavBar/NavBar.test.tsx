@@ -58,4 +58,26 @@ describe('NavBar', () => {
       queryByRole('menuitem', { name: 'Dashboard' }),
     ).not.toBeInTheDocument();
   });
+
+  describe("What's New link", () => {
+    it('is visible when HELP_WHATS_NEW_URL is set', () => {
+      process.env.HELP_WHATS_NEW_URL = '/new';
+
+      const { getByRole } = render(<TestComponent openMobile />);
+
+      expect(
+        getByRole('menuitem', { name: "Help logo What's New" }),
+      ).toHaveAttribute('href', '/new');
+    });
+
+    it('is hidden when HELP_WHATS_NEW_URL is not set', () => {
+      process.env.HELP_WHATS_NEW_URL = '';
+
+      const { queryByRole } = render(<TestComponent openMobile />);
+
+      expect(
+        queryByRole('menuitem', { name: "Help logo What's New" }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
