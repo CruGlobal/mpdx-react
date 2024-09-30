@@ -155,6 +155,7 @@ describe('NavMenu', () => {
   describe("What's New link", () => {
     it('is visible when HELP_WHATS_NEW_URL is set', () => {
       process.env.HELP_WHATS_NEW_URL = '/new';
+      process.env.HELP_WHATS_NEW_IMAGE_URL = '/img.png';
 
       const { getByRole } = render(<TestComponent />);
 

@@ -23,10 +23,12 @@ describe('NavItem', () => {
     expect(getByText(title)).toBeInTheDocument();
   });
 
-  it('renders image', () => {
+  it("renders What's New link", () => {
+    process.env.HELP_WHATS_NEW_IMAGE_URL = '/img.png';
+
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <NavItem imageUrl="/img.png" title={title} />
+        <NavItem whatsNewLink title={title} />
       </ThemeProvider>,
     );
 

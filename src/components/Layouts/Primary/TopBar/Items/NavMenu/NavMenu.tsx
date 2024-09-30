@@ -437,7 +437,12 @@ const NavMenu: React.FC = () => {
       {process.env.HELP_WHATS_NEW_URL && (
         <Grid item className={classes.navListItem}>
           <NextLink href={process.env.HELP_WHATS_NEW_URL} passHref>
-            <MenuItem component="a" tabIndex={0} className={classes.menuItem}>
+            <MenuItem
+              component="a"
+              tabIndex={0}
+              className={classes.menuItem}
+              target="_blank"
+            >
               {process.env.HELP_WHATS_NEW_IMAGE_URL && (
                 <img
                   src={process.env.HELP_WHATS_NEW_IMAGE_URL}

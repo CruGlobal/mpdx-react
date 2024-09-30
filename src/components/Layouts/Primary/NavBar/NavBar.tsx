@@ -33,7 +33,7 @@ interface Section {
   icon?: any;
   items?: Item[];
   title: string;
-  imageUrl?: string;
+  whatsNewLink?: boolean;
 }
 
 function renderNavItems({
@@ -82,7 +82,7 @@ function reduceChildRoutes({
     icon: item.icon,
     key: item.title + depth,
     title: item.title,
-    imageUrl: item.imageUrl,
+    whatsNewLink: item.whatsNewLink,
   };
 
   if (item.items) {
@@ -161,7 +161,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     sections.push({
       title: t("What's New"),
       href: process.env.HELP_WHATS_NEW_URL,
-      imageUrl: process.env.HELP_WHATS_NEW_IMAGE_URL,
+      whatsNewLink: true,
     });
   }
 
