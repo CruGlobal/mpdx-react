@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { MultiselectFilter, PhaseEnum } from 'src/graphql/types.generated';
+import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { MultiselectFilterAutocomplete } from './MultiselectFilterAutocomplete';
@@ -65,17 +65,13 @@ export const FilterListItemMultiselect: React.FC<
     getLocalizedPhase(t, getStatusPhaseId(option));
 
   const filterOptions = useMemo(() => {
-    const findStatusPhase = (
-      selectedStatus: string,
-    ): PhaseEnum | null | undefined => getStatusPhaseId(selectedStatus);
-
     return isStatusFilter
       ? filter.options
           ?.slice()
           .sort(
             (a, b) =>
-              findStatusPhase(a.value)?.localeCompare(
-                findStatusPhase(b.value) || '',
+              getStatusPhaseId(a.value)?.localeCompare(
+                getStatusPhaseId(b.value) || '',
               ) || -1,
           )
           ?.map(({ value }) => value) || []
