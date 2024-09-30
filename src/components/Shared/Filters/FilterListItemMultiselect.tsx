@@ -1,20 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import {
-  Autocomplete,
   Checkbox,
   IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  TextField,
   Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
+import { MultiselectFilterAutocomplete } from './MultiselectFilterAutocomplete';
 import { renameFilterNames, reverseFiltersMap } from './helpers';
 
-interface Props {
+interface FilterListItemMultiselectProps {
   filter: MultiselectFilter;
   selected?: Array<string>;
   onUpdate: (value?: Array<string>) => void;
@@ -22,17 +23,20 @@ interface Props {
   reverseSelected?: boolean;
 }
 
-export const FilterListItemMultiselect: React.FC<Props> = ({
+export const FilterListItemMultiselect: React.FC<
+  FilterListItemMultiselectProps
+> = ({
   filter,
   selected,
   onUpdate,
   onReverseFilter,
   reverseSelected,
-}: Props) => {
+}: FilterListItemMultiselectProps) => {
   const { t } = useTranslation();
   const toggleValue = (value?: string[]) => {
     onUpdate(value);
   };
+  const { statusArray } = useContactPartnershipStatuses();
 
   const isChecked = (value?: string | null) =>
     selected && selected.some((it) => it === value);
@@ -46,6 +50,19 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
   };
 
   const filterTitle = renameFilterNames(filter.title);
+
+  // If it is a status filter, group the status options by phase
+  const isStatusFilter = useMemo(
+    () =>
+      filter.filterKey === 'status' || filter.filterKey === 'contact_status',
+    [filter.filterKey],
+  );
+
+  const getStatusPhaseId = (selectedStatus: string) =>
+    statusArray.find((status) => status.id === selectedStatus)?.phase;
+
+  const groupByPhase = (option: string) =>
+    getLocalizedPhase(t, getStatusPhaseId(option));
 
   return (
     <div className="FilterListItemMultiselect-root">
@@ -72,39 +89,7 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
           primaryTypographyProps={{ variant: 'subtitle1' }}
         />
       </ListItem>
-      {filter.filterKey !== 'pledge_amount' ? (
-        <ListItem>
-          <Autocomplete
-            multiple
-            autoHighlight
-            autoSelect
-            value={selected || []}
-            onChange={(_, value) => toggleValue(value)}
-            options={filter.options?.map(({ value }) => value) || []}
-            getOptionLabel={(option) =>
-              filter.options?.find(
-                ({ value }) => String(value) === String(option),
-              )?.name ?? ''
-            }
-            ChipProps={{
-              color: reverseSelected ? 'error' : 'default',
-              style: {
-                background: reverseSelected ? '#d32f2f' : '#ffffff',
-              },
-            }}
-            filterSelectedOptions
-            fullWidth
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder={filterTitle}
-                label={filterTitle}
-                data-testid="multiSelectFilter"
-              />
-            )}
-          />
-        </ListItem>
-      ) : (
+      {filter.filterKey === 'pledge_amount' ? (
         filter.options?.map(({ value, name }) => (
           <ListItem key={value} button onClick={() => toggleCheckValue(value)}>
             <ListItemIcon data-testid="MultiSelectOption">
@@ -122,6 +107,18 @@ export const FilterListItemMultiselect: React.FC<Props> = ({
             />
           </ListItem>
         ))
+      ) : (
+        <ListItem>
+          <MultiselectFilterAutocomplete
+            filter={filter}
+            selected={selected}
+            toggleValue={toggleValue}
+            filterTitle={filterTitle}
+            reverseSelected={reverseSelected}
+            groupBy={isStatusFilter ? groupByPhase : undefined}
+            options={filter.options?.map(({ value }) => value) || []}
+          />
+        </ListItem>
       )}
     </div>
   );
