@@ -94,7 +94,7 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     title={title}
                     onContactSelected={onContactSelected}
                     changeContactStatus={changeContactStatus}
-                    statuses={[ContactFilterStatusEnum.PartnerFinancial]}
+                    statuses={[StatusEnum.PartnerFinancial]}
                   />
                 </ContactsContext.Provider>
               </VirtuosoMockContext.Provider>

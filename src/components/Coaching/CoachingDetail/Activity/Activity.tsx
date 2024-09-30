@@ -1,18 +1,16 @@
 import NextLink from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
-import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
 import ChevronLeft from '@mui/icons-material/ChevronLeft';
 import ChevronRight from '@mui/icons-material/ChevronRight';
-import MailOutline from '@mui/icons-material/MailOutline';
 import MoneyOutlined from '@mui/icons-material/MoneyOutlined';
 import PeopleOutline from '@mui/icons-material/PeopleOutline';
-import SmartphoneOutlined from '@mui/icons-material/SmartphoneOutlined';
 import {
   Button,
   ButtonGroup,
   CardHeader,
   Link as MuiLink,
+  Skeleton,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -20,12 +18,10 @@ import { DateTime, DateTimeUnit } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import {
-  ActivityTypeEnum,
   Appeal,
   ContactFilterSetInput,
   ContactFilterStatusEnum,
-  ResultEnum,
-  TaskFilterSetInput,
+  StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
@@ -33,6 +29,7 @@ import {
   dateFormat,
   dateFormatWithoutYear,
 } from 'src/lib/intlFormat';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
@@ -109,10 +106,23 @@ const SectionTitle = styled(Typography)({
   flex: 1,
 });
 
+const SectionTitleNumber = styled(Typography)({
+  fontWeight: 'bold',
+  flex: 1,
+  fontSize: '2rem',
+});
+
+const StatsLargeNumber = styled(Typography)({
+  fontWeight: 'bold',
+  fontSize: '6rem',
+  lineHeight: '1.167',
+  marginTop: '35px',
+});
+
 const StatsRow = styled('div')(({ theme }) => ({
   display: 'flex',
   width: '100%',
-  height: '68px',
+  maxHeight: '88px',
   ':nth-of-type(2)': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },
@@ -213,37 +223,12 @@ export const Activity: React.FC<ActivityProps> = ({
       JSON.stringify(filter),
     )}`;
 
-  const tasksLink = (filter: TaskFilterSetInput) =>
-    `/accountLists/${accountListId}/tasks?filters=${encodeURIComponent(
-      JSON.stringify(filter),
-    )}`;
-
-  const taskBaseFilter: TaskFilterSetInput = {
-    completedAt: {
-      min: start.toISODate(),
-      max: end.toISODate(),
-    },
-    completed: true,
-  };
-  const taskCallFilter: TaskFilterSetInput = {
-    ...taskBaseFilter,
-    activityType: [ActivityTypeEnum.Call],
-  };
-  const taskElectronicFilter: TaskFilterSetInput = {
-    ...taskBaseFilter,
-    activityType: [
-      ActivityTypeEnum.Email,
-      ActivityTypeEnum.FacebookMessage,
-      ActivityTypeEnum.TextMessage,
-    ],
-  };
-
   return (
     <AnimatedCard>
       <CardHeader
         title={
           <Header variant="h6">
-            <span>{t('Activity')}</span>
+            <span>{t('Current Reality')}</span>
             <PeriodText data-testid="ActivityPeriod">
               {formattedDate}
             </PeriodText>
@@ -267,9 +252,29 @@ export const Activity: React.FC<ActivityProps> = ({
         }
       />
       <SectionsContainer>
-        <ActivitySection data-testid="ActivitySectionContacts">
+        <ActivitySection data-testid="CurrentRealityConnections">
           <PeopleOutline sx={{ fontSize: '6rem' }} />
-          <SectionTitle>{t('Contacts')}</SectionTitle>
+          <SectionTitle>{t('Connections Remaining')}</SectionTitle>
+          <SectionTitleNumber>
+            <Link
+              href={contactsLink({
+                status: [
+                  ContactFilterStatusEnum.Null,
+                  ContactFilterStatusEnum.NeverContacted,
+                  ContactFilterStatusEnum.AskInFuture,
+                  ContactFilterStatusEnum.CultivateRelationship,
+                ],
+              })}
+              accountListType={accountListType}
+            >
+              <StatsText sx={{ fontWeight: 'bold' }}>
+                {
+                  data?.accountListAnalytics.contactsByStatus
+                    .connectionsRemaining
+                }
+              </StatsText>
+            </Link>
+          </SectionTitleNumber>
           {loading ? (
             <MultilineSkeleton lines={2} width="90%" />
           ) : (
@@ -278,393 +283,140 @@ export const Activity: React.FC<ActivityProps> = ({
                 <Link
                   href={contactsLink({
                     status: [
-                      ContactFilterStatusEnum.ContactForAppointment,
-                      ContactFilterStatusEnum.NeverContacted,
-                    ],
-                  })}
-                  accountListType={accountListType}
-                >
-                  <StatsText>
-                    {data?.accountListAnalytics.contacts.active}
-                  </StatsText>
-                  <StatsColumnTitle>{t('Active')}</StatsColumnTitle>
-                </Link>
-              </StatsColumn>
-              <StatsColumn>
-                <Link
-                  href={contactsLink({
-                    status: [
-                      ContactFilterStatusEnum.AskInFuture,
-                      ContactFilterStatusEnum.ContactForAppointment,
-                      ContactFilterStatusEnum.CultivateRelationship,
-                      ContactFilterStatusEnum.NeverContacted,
                       ContactFilterStatusEnum.Null,
+                      ContactFilterStatusEnum.NeverContacted,
                     ],
                   })}
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.contacts.referralsOnHand}
+                    {data?.accountListAnalytics.contactsByStatus.neverContacted}
                   </StatsText>
-                  <StatsColumnTitle>{t('Referrals On-hand')}</StatsColumnTitle>
+                  <StatsColumnTitle>
+                    {getLocalizedContactStatus(t, StatusEnum.NeverContacted)}
+                  </StatsColumnTitle>
                 </Link>
               </StatsColumn>
               <StatsColumn>
-                <StatsText>
-                  {data?.accountListAnalytics.contacts.referrals}
-                </StatsText>
-                <StatsColumnTitle>{t('Referrals Gained')}</StatsColumnTitle>
+                <Link
+                  href={contactsLink({
+                    status: [ContactFilterStatusEnum.AskInFuture],
+                  })}
+                  accountListType={accountListType}
+                >
+                  <StatsText>
+                    {data?.accountListAnalytics.contactsByStatus.future}
+                  </StatsText>
+                  <StatsColumnTitle>
+                    {getLocalizedContactStatus(t, StatusEnum.AskInFuture)}
+                  </StatsColumnTitle>
+                </Link>
+              </StatsColumn>
+              <StatsColumn>
+                <Link
+                  href={contactsLink({
+                    status: [ContactFilterStatusEnum.CultivateRelationship],
+                  })}
+                  accountListType={accountListType}
+                >
+                  <StatsText>
+                    {data?.accountListAnalytics.contactsByStatus.cultivate}
+                  </StatsText>
+                  <StatsColumnTitle>
+                    {getLocalizedContactStatus(
+                      t,
+                      StatusEnum.CultivateRelationship,
+                    )}
+                  </StatsColumnTitle>
+                </Link>
               </StatsColumn>
             </StatsRow>
           )}
         </ActivitySection>
-        <ActivitySection data-testid="ActivitySectionAppointments">
+        <ActivitySection data-testid="CurrentRealityPartnerInitiations">
           <CalendarMonthOutlined sx={{ fontSize: '6rem' }} />
-          <SectionTitle>{t('Appointments')}</SectionTitle>
+          <SectionTitle>{t('Partners Currently Initiating With')}</SectionTitle>
+          <SectionTitleNumber>
+            <Link
+              href={contactsLink({
+                status: [
+                  ContactFilterStatusEnum.ContactForAppointment,
+                  ContactFilterStatusEnum.AppointmentScheduled,
+                  ContactFilterStatusEnum.CallForDecision,
+                ],
+              })}
+              accountListType={accountListType}
+            >
+              <StatsText sx={{ fontWeight: 'bold' }}>
+                {data?.accountListAnalytics.contactsByStatus.initiations}
+              </StatsText>
+            </Link>
+          </SectionTitleNumber>
           {loading ? (
             <MultilineSkeleton lines={2} width="90%" />
           ) : (
             <StatsRow>
               <StatsColumn>
                 <Link
-                  href={tasksLink({
-                    ...taskBaseFilter,
-                    activityType: [ActivityTypeEnum.Appointment],
+                  href={contactsLink({
+                    status: [ContactFilterStatusEnum.ContactForAppointment],
                   })}
                   accountListType={accountListType}
                 >
                   <StatsText>
-                    {data?.accountListAnalytics.appointments.completed}
+                    {
+                      data?.accountListAnalytics.contactsByStatus
+                        .contactForAppointment
+                    }
                   </StatsText>
-                  <StatsColumnTitle>{t('Completed')}</StatsColumnTitle>
+                  <StatsColumnTitle>
+                    {getLocalizedContactStatus(
+                      t,
+                      StatusEnum.ContactForAppointment,
+                    )}
+                  </StatsColumnTitle>
+                </Link>
+              </StatsColumn>
+              <StatsColumn>
+                <Link
+                  href={contactsLink({
+                    status: [ContactFilterStatusEnum.AppointmentScheduled],
+                  })}
+                  accountListType={accountListType}
+                >
+                  <StatsText>
+                    {
+                      data?.accountListAnalytics.contactsByStatus
+                        .appointmentScheduled
+                    }
+                  </StatsText>
+                  <StatsColumnTitle>
+                    {getLocalizedContactStatus(
+                      t,
+                      StatusEnum.AppointmentScheduled,
+                    )}
+                  </StatsColumnTitle>
+                </Link>
+              </StatsColumn>
+              <StatsColumn>
+                <Link
+                  href={contactsLink({
+                    status: [ContactFilterStatusEnum.CallForDecision],
+                  })}
+                  accountListType={accountListType}
+                >
+                  <StatsText>
+                    {
+                      data?.accountListAnalytics.contactsByStatus
+                        .callForDecision
+                    }
+                  </StatsText>
+                  <StatsColumnTitle>
+                    {getLocalizedContactStatus(t, StatusEnum.CallForDecision)}
+                  </StatsColumnTitle>
                 </Link>
               </StatsColumn>
             </StatsRow>
-          )}
-        </ActivitySection>
-        <ActivitySection data-testid="ActivitySectionCorrespondence">
-          <MailOutline sx={{ fontSize: '6rem' }} />
-          <SectionTitle>{t('Correspondence')}</SectionTitle>
-          {loading ? (
-            <MultilineSkeleton lines={2} width="90%" />
-          ) : (
-            <>
-              <StatsRow>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.PreCallLetter],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.correspondence.precall}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Pre-call')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.SupportLetter],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.correspondence.supportLetters}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Support')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-              </StatsRow>
-              <StatsRow>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.Thank],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.correspondence.thankYous}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Thank You')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [ActivityTypeEnum.ReminderLetter],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.correspondence.reminders}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Reminder')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-              </StatsRow>
-            </>
-          )}
-        </ActivitySection>
-        <ActivitySection data-testid="ActivitySectionPhone">
-          <SmartphoneOutlined sx={{ fontSize: '6rem' }} />
-          <SectionTitle>{t('Phone Calls')}</SectionTitle>
-          {loading ? (
-            <MultilineSkeleton lines={2} width="90%" />
-          ) : (
-            <>
-              <StatsRow>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskCallFilter,
-                      result: [
-                        ResultEnum.Attempted,
-                        ResultEnum.AttemptedLeftMessage,
-                        ResultEnum.Completed,
-                        ResultEnum.Done,
-                      ],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data &&
-                        data.accountListAnalytics.phone.attempted +
-                          data.accountListAnalytics.phone.completed}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Outgoing')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskCallFilter,
-                      result: [
-                        ResultEnum.Received,
-                        ResultEnum.Completed,
-                        ResultEnum.Done,
-                      ],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data &&
-                        data.accountListAnalytics.phone.completed +
-                          data.accountListAnalytics.phone.received}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Talked To')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskBaseFilter,
-                      activityType: [
-                        ActivityTypeEnum.Call,
-                        ActivityTypeEnum.TalkToInPerson,
-                      ],
-                      nextAction: [ActivityTypeEnum.Appointment],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.phone.appointments}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Appts Produced')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-              </StatsRow>
-              <StatsRow>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskCallFilter,
-                      result: [ResultEnum.Completed, ResultEnum.Done],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.phone.completed}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Completed')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskCallFilter,
-                      result: [
-                        ResultEnum.Attempted,
-                        ResultEnum.AttemptedLeftMessage,
-                      ],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.phone.attempted}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Attempted')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskCallFilter,
-                      result: [ResultEnum.Received],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.phone.received}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Received')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-              </StatsRow>
-            </>
-          )}
-        </ActivitySection>
-        <ActivitySection data-testid="ActivitySectionElectronic">
-          <ChatBubbleOutline sx={{ fontSize: '6rem' }} />
-          <SectionTitle>{t('Electronic Messages')}</SectionTitle>
-          {loading ? (
-            <MultilineSkeleton lines={2} width="90%" />
-          ) : (
-            <>
-              <StatsRow>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskElectronicFilter,
-                      result: [ResultEnum.Completed, ResultEnum.Done],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.electronic.sent}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Sent')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskElectronicFilter,
-                      result: [ResultEnum.Received],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.electronic.received}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Received')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-                <StatsColumn>
-                  <Link
-                    href={tasksLink({
-                      ...taskElectronicFilter,
-                      nextAction: [ActivityTypeEnum.Appointment],
-                    })}
-                    accountListType={accountListType}
-                  >
-                    <StatsText>
-                      {data?.accountListAnalytics.electronic.appointments}
-                    </StatsText>
-                    <StatsColumnTitle>{t('Appts Produced')}</StatsColumnTitle>
-                  </Link>
-                </StatsColumn>
-              </StatsRow>
-              <StatsRow>
-                <StatsColumn>
-                  <StatsText>
-                    <Link
-                      href={tasksLink({
-                        ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.Email],
-                        result: [ResultEnum.Completed, ResultEnum.Done],
-                      })}
-                      accountListType={accountListType}
-                    >
-                      {data?.accountListAnalytics.email.sent} {t('Sent')}
-                    </Link>
-                    {' / '}
-                    <Link
-                      href={tasksLink({
-                        ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.Email],
-                        result: [ResultEnum.Received],
-                      })}
-                      accountListType={accountListType}
-                    >
-                      {data?.accountListAnalytics.email.received}{' '}
-                      {t('Received')}
-                    </Link>
-                  </StatsText>
-                  <StatsColumnTitle>{t('Email')}</StatsColumnTitle>
-                </StatsColumn>
-                <StatsColumn>
-                  <StatsText>
-                    <Link
-                      href={tasksLink({
-                        ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.FacebookMessage],
-                        result: [ResultEnum.Completed, ResultEnum.Done],
-                      })}
-                      accountListType={accountListType}
-                    >
-                      {data?.accountListAnalytics.facebook.sent} {t('Sent')}
-                    </Link>
-                    {' / '}
-                    <Link
-                      href={tasksLink({
-                        ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.FacebookMessage],
-                        result: [ResultEnum.Received],
-                      })}
-                      accountListType={accountListType}
-                    >
-                      {data?.accountListAnalytics.facebook.received}{' '}
-                      {t('Received')}
-                    </Link>
-                  </StatsText>
-                  <StatsColumnTitle>{t('Facebook')}</StatsColumnTitle>
-                </StatsColumn>
-                <StatsColumn>
-                  <StatsText>
-                    <Link
-                      href={tasksLink({
-                        ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.TextMessage],
-                        result: [ResultEnum.Completed, ResultEnum.Done],
-                      })}
-                      accountListType={accountListType}
-                    >
-                      {data?.accountListAnalytics.textMessage.sent} {t('Sent')}
-                    </Link>
-                    {' / '}
-                    <Link
-                      href={tasksLink({
-                        ...taskBaseFilter,
-                        activityType: [ActivityTypeEnum.TextMessage],
-                        result: [ResultEnum.Received],
-                      })}
-                      accountListType={accountListType}
-                    >
-                      {data?.accountListAnalytics.textMessage.received}{' '}
-                      {t('Received')}
-                    </Link>
-                  </StatsText>
-                  <StatsColumnTitle>{t('Text Message')}</StatsColumnTitle>
-                </StatsColumn>
-              </StatsRow>
-            </>
           )}
         </ActivitySection>
         <ActivitySection data-testid="ActivitySectionAppeal">
@@ -729,6 +481,57 @@ export const Activity: React.FC<ActivityProps> = ({
               </StatsRow>
             </>
           )}
+        </ActivitySection>
+        <ActivitySection data-testid="CurrentRealityPartnerFinancial">
+          {loading ? (
+            <Skeleton width="147px" height="147px" />
+          ) : (
+            <StatsLargeNumber>
+              {data?.accountListAnalytics.contactsByStatus.financial}
+            </StatsLargeNumber>
+          )}
+          <Link
+            href={contactsLink({
+              status: [ContactFilterStatusEnum.PartnerFinancial],
+            })}
+            accountListType={accountListType}
+          >
+            <SectionTitle>{t('Financial Partners')}</SectionTitle>
+          </Link>
+        </ActivitySection>
+        <ActivitySection data-testid="CurrentRealityPartnerSpecial">
+          {loading ? (
+            <Skeleton width="147px" height="147px" />
+          ) : (
+            <StatsLargeNumber>
+              {data?.accountListAnalytics.contactsByStatus.special}
+            </StatsLargeNumber>
+          )}
+          <Link
+            href={contactsLink({
+              status: [ContactFilterStatusEnum.PartnerSpecial],
+            })}
+            accountListType={accountListType}
+          >
+            <SectionTitle>{t('Special Gift Partners')}</SectionTitle>
+          </Link>
+        </ActivitySection>
+        <ActivitySection data-testid="CurrentRealityPartnerPrayer">
+          {loading ? (
+            <Skeleton width="147px" height="147px" />
+          ) : (
+            <StatsLargeNumber>
+              {data?.accountListAnalytics.contactsByStatus.prayer}
+            </StatsLargeNumber>
+          )}
+          <Link
+            href={contactsLink({
+              status: [ContactFilterStatusEnum.PartnerPray],
+            })}
+            accountListType={accountListType}
+          >
+            <SectionTitle>{t('Prayer Partners')}</SectionTitle>
+          </Link>
         </ActivitySection>
       </SectionsContainer>
     </AnimatedCard>

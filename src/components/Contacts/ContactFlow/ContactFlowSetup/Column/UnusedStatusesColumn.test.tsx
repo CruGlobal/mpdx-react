@@ -5,17 +5,12 @@ import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { UnusedStatusesColumn } from './UnusedStatusesColumn';
 
 const accountListId = 'abc';
-const status = [
-  {
-    id: 'PARTNER_FINANCIAL' as ContactFilterStatusEnum,
-    value: 'Partner - Financial',
-  },
-];
+const status = [StatusEnum.PartnerFinancial];
 const router = {
   query: { accountListId },
   isReady: true,

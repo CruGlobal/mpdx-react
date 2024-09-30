@@ -56,7 +56,7 @@ export const createTasksMutationMock = (): MockedResponse => {
 export const updateTaskMutationMock = (): MockedResponse => {
   const task: TaskUpdateInput = {
     id: 'task-1',
-    activityType: ActivityTypeEnum.NewsletterEmail,
+    activityType: ActivityTypeEnum.AppointmentInPerson,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
@@ -84,7 +84,7 @@ export const updateTaskMutationMock = (): MockedResponse => {
 export const deleteTaskMutationMock = (): MockedResponse => {
   const task: GetTaskForTaskModalQuery['task'] = {
     id: 'task-1',
-    activityType: ActivityTypeEnum.NewsletterEmail,
+    activityType: ActivityTypeEnum.PartnerCareEmail,
     subject: 'On the Journey with the Johnson Family',
     startAt: DateTime.local(2013, 1, 5, 1, 2).toISO(),
     completedAt: DateTime.local(2016, 1, 5, 1, 2).toISO(),
