@@ -215,7 +215,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
         <ScrollBox data-testid="ResponsibilityCentersScrollBox">
           <Alert severity="warning">
             {t(
-              'Responsibility Centers is still in development. Some features are not working. Please check back later.',
+              'Responsibility Centers is still in development and may not be complete until October 11th. Please check back later.',
             )}
           </Alert>
           <Divider />
