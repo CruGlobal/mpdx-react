@@ -17,7 +17,6 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from '../Wrapper';
 
 const Integrations: React.FC = () => {
@@ -65,9 +64,6 @@ const Integrations: React.FC = () => {
     const panelLowercase = panel.toLowerCase();
     setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
   };
-  useEffect(() => {
-    suggestArticles('HS_SETTINGS_SERVICES_SUGGESTIONS');
-  }, []);
 
   useEffect(() => {
     if (onSetupTour) {

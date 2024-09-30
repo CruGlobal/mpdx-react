@@ -155,11 +155,16 @@ export const getDatabaseValueFromResult = (
   return dbResult?.result || ResultEnum.None;
 };
 
+export interface ExtractSuggestedTags {
+  additionalTags: string[];
+  suggestedTags: string[];
+}
+
 // splits a list of tags into regular tags and suggested tags.
 export const extractSuggestedTags = (
   tagList: string[],
   phaseTags: string[],
-) => {
+): ExtractSuggestedTags => {
   const additionalTags: string[] = [];
   const suggestedTags: string[] = [];
   tagList.forEach((tag) => {

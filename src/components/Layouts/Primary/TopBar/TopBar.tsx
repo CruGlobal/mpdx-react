@@ -61,7 +61,7 @@ const TopBar = ({
             {onSetupTour && <Box flexGrow={1} />}
             {!onSetupTour && accountListId && (
               <>
-                <Box ml={10} flexGrow={1}>
+                <Box ml={2} flexGrow={1}>
                   <NavMenu />
                 </Box>
                 <SearchMenu />
@@ -69,7 +69,7 @@ const TopBar = ({
                 <NotificationMenu />
               </>
             )}
-            <Box ml={2}>
+            <Box ml={{ lg: 1, xl: 2 }}>
               <ProfileMenu />
             </Box>
           </Hidden>

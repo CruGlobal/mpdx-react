@@ -7,7 +7,7 @@ export default {
 
 export const Default = (): ReactElement => (
   <EmptyReport
-    title="You have received no donations in the last thirteen months"
+    title="You have received no donations in the last fourteen months"
     subTitle="You can setup an organization account to import them or add a new donation."
   />
 );

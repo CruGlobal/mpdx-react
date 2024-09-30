@@ -33,6 +33,7 @@ interface Props {
   last?: boolean;
   previousItem?: GetNotificationsQuery['userNotifications']['nodes'][0];
   onClick?: () => void;
+  isInDrawer?: boolean;
 }
 
 const NotificationMenuItem = ({
@@ -40,6 +41,7 @@ const NotificationMenuItem = ({
   previousItem,
   last,
   onClick,
+  isInDrawer,
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -247,13 +249,10 @@ const NotificationMenuItem = ({
           </ListItemAvatar>
           <ListItemText
             primary={item.notification.contact.name}
+            primaryTypographyProps={{ color: isInDrawer ? 'white' : 'initial' }}
             secondary={
               <>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  color="textPrimary"
-                >
+                <Typography component="span" variant="body2">
                   {dateFormat(
                     DateTime.fromISO(item.notification.occurredAt),
                     locale,

@@ -25,8 +25,6 @@ expect.extend({
   toHaveGraphqlOperation,
 });
 
-window.Beacon = jest.fn();
-
 window.document.createRange = (): Range =>
   ({
     setStart: jest.fn(),

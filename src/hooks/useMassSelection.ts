@@ -20,6 +20,7 @@ export const useMassSelection = (
   toggleSelectionById: (id: string) => void;
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
+  deselectIds: (idsToRemove: string[]) => void;
 } => {
   const [selectionType, setSelectionType] = useState(
     ListHeaderCheckBoxState.Unchecked,
@@ -93,6 +94,10 @@ export const useMassSelection = (
     }
   };
 
+  const deselectIds = (idsToRemove: string[]) => {
+    setIds(ids.filter((id) => !idsToRemove.includes(id)));
+  };
+
   useEffect(() => {
     switch (selectionType) {
       case ListHeaderCheckBoxState.Checked:
@@ -121,5 +126,6 @@ export const useMassSelection = (
     toggleSelectionById,
     selectMultipleIds,
     deselectMultipleIds,
+    deselectIds,
   };
 };

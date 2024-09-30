@@ -2,7 +2,6 @@ import { TFunction } from 'i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { ContactStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import {
   getContactStatusesByPhase,
   getLocalizedPhase,
@@ -25,47 +24,40 @@ export const getDefaultFlowOptions = (
         {
           id: uuidv4(),
           name: t('Contacts'),
-          statuses: [
-            getLocalizedContactStatus(t, StatusEnum.NeverContacted),
-            getLocalizedContactStatus(t, StatusEnum.ResearchContactInfo),
-          ],
+          statuses: [StatusEnum.NeverContacted, StatusEnum.ResearchContactInfo],
           color: 'color-error',
         },
         {
           id: uuidv4(),
           name: t('Call Backs'),
           statuses: [
-            getLocalizedContactStatus(t, StatusEnum.CallForDecision),
-            getLocalizedContactStatus(t, StatusEnum.ContactForAppointment),
+            StatusEnum.CallForDecision,
+            StatusEnum.ContactForAppointment,
           ],
           color: 'color-info',
         },
         {
           id: uuidv4(),
           name: t('Appointments'),
-          statuses: [
-            getLocalizedContactStatus(t, StatusEnum.AppointmentScheduled),
-          ],
+          statuses: [StatusEnum.AppointmentScheduled],
           color: 'color-warning',
         },
         {
           id: uuidv4(),
           name: t('Future Contacts'),
           statuses: [
-            getLocalizedContactStatus(t, StatusEnum.PartnerPray),
-            getLocalizedContactStatus(t, StatusEnum.PartnerSpecial),
-            getLocalizedContactStatus(t, StatusEnum.PartnerPray),
-            getLocalizedContactStatus(t, StatusEnum.AskInFuture),
-            getLocalizedContactStatus(t, StatusEnum.NotInterested),
+            StatusEnum.PartnerPray,
+            StatusEnum.PartnerSpecial,
+            StatusEnum.PartnerPray,
+            StatusEnum.AskInFuture,
+            StatusEnum.NotInterested,
           ],
           color: 'color-success',
         },
         {
           id: uuidv4(),
           name: t('Maintaining'),
-          statuses: [
-            getLocalizedContactStatus(t, StatusEnum.CultivateRelationship),
-          ],
+          statuses: [StatusEnum.CultivateRelationship],
           color: 'color-text',
         },
       ];
@@ -77,7 +69,7 @@ export const getDefaultFlowOptions = (
           statuses: getContactStatusesByPhase(
             PhaseEnum.Connection,
             contactStatuses,
-          ).map((status) => status.translated),
+          ).map((status) => status.id),
           color: 'color-warning',
         },
         {
@@ -86,7 +78,7 @@ export const getDefaultFlowOptions = (
           statuses: getContactStatusesByPhase(
             PhaseEnum.Initiation,
             contactStatuses,
-          ).map((status) => status.translated),
+          ).map((status) => status.id),
           color: 'color-info',
         },
         {
@@ -95,7 +87,7 @@ export const getDefaultFlowOptions = (
           statuses: getContactStatusesByPhase(
             PhaseEnum.Appointment,
             contactStatuses,
-          ).map((status) => status.translated),
+          ).map((status) => status.id),
           color: 'color-success',
         },
         {
@@ -104,7 +96,7 @@ export const getDefaultFlowOptions = (
           statuses: getContactStatusesByPhase(
             PhaseEnum.FollowUp,
             contactStatuses,
-          ).map((status) => status.translated),
+          ).map((status) => status.id),
           color: 'color-warning',
         },
         {
@@ -113,7 +105,7 @@ export const getDefaultFlowOptions = (
           statuses: getContactStatusesByPhase(
             PhaseEnum.PartnerCare,
             contactStatuses,
-          ).map((status) => status.translated),
+          ).map((status) => status.id),
           color: 'color-success',
         },
         {
@@ -122,7 +114,7 @@ export const getDefaultFlowOptions = (
           statuses: getContactStatusesByPhase(
             PhaseEnum.Archive,
             contactStatuses,
-          ).map((status) => status.translated),
+          ).map((status) => status.id),
           color: 'color-text',
         },
       ];

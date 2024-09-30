@@ -2,10 +2,12 @@ import React, { memo } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
 interface Props {
-  status: string;
+  status: StatusEnum;
   width: number;
 }
 
@@ -22,9 +24,10 @@ const DragLayerStatusBox = styled(Box, {
 export const ContactFlowSetupDragPreviewStatus: React.FC<Props> = memo(
   function ContactFlowSetupDragPreviewStatus({ status, width }) {
     const { t } = useTranslation();
+
     return (
       <DragLayerStatusBox width={width}>
-        <Typography>{t(status)}</Typography>
+        <Typography>{getLocalizedContactStatus(t, status)}</Typography>
       </DragLayerStatusBox>
     );
   },

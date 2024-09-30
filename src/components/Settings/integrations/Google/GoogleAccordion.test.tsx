@@ -131,7 +131,6 @@ describe('GoogleAccordion', () => {
 
   describe('Connected', () => {
     let googleAccount = { ...standardGoogleAccount };
-    process.env.REWRITE_DOMAIN = 'stage.mpdx.org';
 
     beforeEach(() => {
       googleAccount = { ...standardGoogleAccount };
@@ -165,7 +164,7 @@ describe('GoogleAccordion', () => {
       userEvent.click(getByText(/import contacts/i));
       expect(getByText(/import contacts/i)).toHaveAttribute(
         'href',
-        `https://stage.mpdx.org/tools/import/google`,
+        '/accountLists/account-list-1/tools/import/google',
       );
 
       userEvent.click(getByTestId('EditIcon'));

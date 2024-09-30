@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -14,11 +15,11 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration13 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { currencyFormat, percentageFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
-import HandoffLink from '../../../HandoffLink';
 import StyledProgress from '../../../StyledProgress';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
@@ -99,6 +100,7 @@ interface Props {
 }
 
 const Appeals = ({ loading, appeal }: Props): ReactElement => {
+  const accountListId = useAccountListId();
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
@@ -138,7 +140,14 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
               ' ',
             )}
           >
-            <HandoffLink path={`/tools/appeals/${appeal?.id}`}>
+            <NextLink
+              href={
+                appeal
+                  ? `/accountLists/${accountListId}/tools/appeals/appeal/${appeal.id}`
+                  : `/accountLists/${accountListId}/tools/appeals`
+              }
+              passHref
+            >
               <Link underline="hover" className={classes.appealsHeader}>
                 <Typography variant="h6" className={classes.titleContainer}>
                   <Box className={classes.title}>
@@ -165,7 +174,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   </Box>
                 </Typography>
               </Link>
-            </HandoffLink>
+            </NextLink>
             <StyledProgress
               loading={loading}
               primary={pledgesAmountProcessedPercentage}
@@ -245,11 +254,11 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
             </Grid>
           </CardContent>
           <CardActions>
-            <HandoffLink path="/tools/appeals">
+            <NextLink href={`/accountLists/${accountListId}/tools`} passHref>
               <Button size="small" color="primary">
                 {t('View All')}
               </Button>
-            </HandoffLink>
+            </NextLink>
           </CardActions>
         </motion.div>
       )}

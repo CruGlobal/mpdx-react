@@ -1,5 +1,11 @@
 import React, { useMemo } from 'react';
-import { Box, CircularProgress, Divider, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Divider,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
@@ -207,6 +213,11 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
         />
       ) : (
         <ScrollBox data-testid="ResponsibilityCentersScrollBox">
+          <Alert severity="warning">
+            {t(
+              'The Responsibility Centers page has some features that are not working. Developers are prioritizing this issue and it should be ready in the next few days. Please check back later.',
+            )}
+          </Alert>
           <Divider />
           {financialAccountsGroups?.map((financialAccountGroup) => {
             const accounts: Account[] =

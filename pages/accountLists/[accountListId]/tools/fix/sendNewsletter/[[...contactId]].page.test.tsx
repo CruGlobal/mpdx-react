@@ -18,9 +18,6 @@ jest.mock('next-auth/react');
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));
-jest.mock('src/lib/helpScout', () => ({
-  suggestArticles: jest.fn(),
-}));
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

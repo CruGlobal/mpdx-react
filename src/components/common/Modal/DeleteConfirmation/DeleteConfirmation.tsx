@@ -29,6 +29,7 @@ interface DeleteConfirmationProps {
   accountListId?: string;
   taskId?: string;
   onClose?: () => void;
+  removeSelectedIds?: (id: string[]) => void;
 }
 
 export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
@@ -40,6 +41,7 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
   accountListId,
   taskId,
   onClose,
+  removeSelectedIds,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -56,12 +58,18 @@ export const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({
           cache.evict({ id: `Task:${taskId}` });
           cache.gc();
         },
-        refetchQueries: ['ContactTasksTab', 'GetWeeklyActivity', 'GetThisWeek'],
+        refetchQueries: [
+          'ContactTasksTab',
+          'GetWeeklyActivity',
+          'GetThisWeek',
+          'Tasks',
+        ],
       });
       enqueueSnackbar(t('Task deleted successfully'), { variant: 'success' });
       onClickDecline(false);
       onClose && onClose();
       onClickConfirm && onClickConfirm();
+      removeSelectedIds && removeSelectedIds([taskId]);
     }
   };
 

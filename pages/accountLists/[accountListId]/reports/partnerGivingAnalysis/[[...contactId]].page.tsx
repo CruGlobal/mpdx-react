@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
@@ -22,7 +22,6 @@ import {
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
@@ -86,10 +85,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     };
     return [reportFilterGroup, ...groups];
   }, [filterData]);
-
-  useEffect(() => {
-    suggestArticles('HS_REPORTS_SUGGESTIONS');
-  }, []);
 
   const handleSelectContact = (contactId: string) => {
     router.push(

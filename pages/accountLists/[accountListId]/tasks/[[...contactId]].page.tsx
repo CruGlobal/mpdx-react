@@ -31,7 +31,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import theme from 'src/theme';
 import {
@@ -116,10 +115,6 @@ const TasksPage: React.FC = () => {
       setContactDetailsOpen(true);
     }
   }, [isReady, contactId]);
-
-  useEffect(() => {
-    suggestArticles('HS_TASKS_SUGGESTIONS');
-  }, []);
 
   //#region Filters
   const urlFilters =
@@ -236,6 +231,7 @@ const TasksPage: React.FC = () => {
     deselectAll,
     toggleSelectAll,
     toggleSelectionById,
+    deselectIds,
   } = useMassSelection(
     data?.tasks?.totalCount ?? 0,
     allTaskIds,
@@ -344,6 +340,7 @@ const TasksPage: React.FC = () => {
                     toggleStarredFilter={setStarredFilter}
                     headerCheckboxState={selectionType}
                     massDeselectAll={deselectAll}
+                    showShowingCount
                     selectedIds={ids}
                     buttonGroup={
                       <Hidden xsDown>
@@ -416,6 +413,7 @@ const TasksPage: React.FC = () => {
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
                             contactDetailsOpen={contactDetailsOpen}
+                            removeSelectedIds={deselectIds}
                           />
                         </Box>
                       )}

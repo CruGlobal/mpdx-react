@@ -69,12 +69,11 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `DD_ENV` - Datadog environment.
-- `BEACON_TOKEN` - HelpScout beacon token
-- `HS_CONTACTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contacts page
-- `HS_CONTACTS_CONTACT_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contact page
-- `HS_HOME_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the dashboard page
-- `HS_REPORTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the reports pages
-- `HS_TASKS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the tasks page
+- `HELPJUICE_ORIGIN` - Helpjuice origin for documentation and user support (example: `https://www.helpducks.org`)
+- `HELPJUICE_KNOWLEDGE_BASE_URL` - Knowledge base page to make the Helpjuice "Visit Knowledge Base" page link to (example: `https://www.helpducks.org/mpdx`)
+- `HELP_URL_COACHING_ACTIVITY` - Link to an article explaining the coaching activity table
+- `HELP_URL_COACHING_APPOINTMENTS_AND_RESULTS` - Link to an article explaining the coaching appointments and results table
+- `HELP_URL_SETUP_FIND_ORGANIZATION` - Link to an article explaining how to find an organization
 - `PRIVACY_POLICY_URL` - URL of the privacy policy
 - `TERMS_OF_USE_URL` - URL of the terms of use
 - `DISABLE_SETUP_TOUR` - Set to `true` to disable starting users on the welcome tour. This should be removed from the codebase once tools are live.

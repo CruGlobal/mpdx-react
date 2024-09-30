@@ -99,13 +99,8 @@ const Tool = ({
               <Badge
                 classes={{ badge: classes.customBadge }}
                 overlap="circular"
-                badgeContent={
-                  !loading && needsAttention
-                    ? totalCount < 10
-                      ? totalCount
-                      : '9+'
-                    : 0
-                }
+                badgeContent={!loading && needsAttention ? totalCount : 0}
+                max={99}
                 data-testid={`${toolId}-notifications`}
                 color="secondary"
               >

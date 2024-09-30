@@ -5,7 +5,12 @@ export const PrivacyPolicyLink: React.FC<LinkProps> = (props) => {
   const { t } = useTranslation();
 
   return (
-    <Link href={process.env.PRIVACY_POLICY_URL} target="_blank" {...props}>
+    <Link
+      href={process.env.PRIVACY_POLICY_URL}
+      target="_blank"
+      underline="hover"
+      {...props}
+    >
       {t('Privacy Policy')}
     </Link>
   );
@@ -15,7 +20,12 @@ export const TermsOfUseLink: React.FC<LinkProps> = (props) => {
   const { t } = useTranslation();
 
   return (
-    <Link href={process.env.TERMS_OF_USE_URL} target="_blank" {...props}>
+    <Link
+      href={process.env.TERMS_OF_USE_URL}
+      target="_blank"
+      underline="hover"
+      {...props}
+    >
       {t('Terms of Use')}
     </Link>
   );

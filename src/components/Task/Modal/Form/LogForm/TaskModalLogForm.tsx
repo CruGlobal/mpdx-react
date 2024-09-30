@@ -190,10 +190,11 @@ const TaskModalLogForm = ({
         attributes.displayResult,
         attributes.activityType || undefined,
       );
+    } else if (!attributes.result) {
+      attributes.result = ResultEnum.Completed;
     }
+    // Remove taskPhase from attributes as we don't save it on the DB
     delete attributes.taskPhase;
-    // TODO - remove this when NewResultEnum are added
-    attributes.result = ResultEnum.Completed;
 
     const updatingContactStatus =
       changeContactStatus && !!suggestedPartnerStatus;

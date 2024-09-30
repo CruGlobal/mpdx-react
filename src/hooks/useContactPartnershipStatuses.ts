@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { PhaseEnum } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
 interface ContactStatus {
@@ -69,10 +69,10 @@ export const useContactPartnershipStatuses = () => {
   //     "Research Abandoned": "RESEARCH_ABANDONED",
   //     "Expired Connection": "EXPIRED_REFERRAL"
   // }
-  const statusMap: { [statusKey: string]: string } = Object.fromEntries(
+  const statusMap: { [statusKey: string]: StatusEnum } = Object.fromEntries(
     Object.entries(contactStatuses)
       .filter(([_, status]) => status.phase)
-      .map(([statusKey, status]) => [status.name, statusKey]),
+      .map(([statusKey, status]) => [status.name, statusKey as StatusEnum]),
   );
 
   //same as statusMap but also includes HIDDEN, ACTIVE & NULL

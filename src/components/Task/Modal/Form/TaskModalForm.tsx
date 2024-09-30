@@ -41,7 +41,7 @@ import {
   TaskCreateInput,
   TaskUpdateInput,
 } from 'src/graphql/types.generated';
-import { usePhaseData } from 'src/hooks/usePhaseData';
+import { ActivityData, usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { nullableDateTime } from 'src/lib/formikHelpers';
@@ -74,6 +74,7 @@ import {
   useUpdateTaskMutation,
 } from './TaskModal.generated';
 import {
+  ExtractSuggestedTags,
   extractSuggestedTags,
   getDatabaseValueFromResult,
   handleTaskActionChange,
@@ -81,6 +82,47 @@ import {
 } from './TaskModalHelper';
 import { possiblePartnerStatus } from './possiblePartnerStatus';
 import { possibleResults } from './possibleResults';
+
+const getTaskDetails = (
+  task: TaskModalFormProps['task'],
+  defaultValues: TaskModalFormProps['defaultValues'],
+  activityTypes: Map<ActivityTypeEnum, ActivityData>,
+  phaseTags: string[],
+) => {
+  let taskPhase: PhaseEnum | undefined;
+  let taskSubject: string | undefined;
+  let filteredTags: ExtractSuggestedTags | undefined;
+  let additionalTags: ExtractSuggestedTags['additionalTags'] | undefined;
+  if (task) {
+    taskPhase = task?.taskPhase ?? undefined;
+    if (!taskPhase) {
+      taskPhase = task?.activityType
+        ? activityTypes.get(task.activityType)?.phaseId || undefined
+        : undefined;
+    }
+    //go through tags and move some to selectedSuggestedTags and others to additionalTags
+    filteredTags = extractSuggestedTags(task.tagList, phaseTags);
+    additionalTags = filteredTags?.additionalTags;
+  } else {
+    taskPhase = defaultValues?.taskPhase || undefined;
+    taskSubject = defaultValues?.subject;
+    if (defaultValues?.activityType && activityTypes) {
+      const activityData = defaultValues.activityType
+        ? activityTypes.get(defaultValues.activityType)
+        : undefined;
+      if (activityData) {
+        taskPhase = activityData.phaseId;
+        taskSubject = activityData.title;
+      }
+    }
+  }
+  return {
+    taskPhase,
+    taskSubject,
+    filteredTags,
+    additionalTags,
+  };
+};
 
 const taskSchema = yup.object({
   taskPhase: yup.mixed<PhaseEnum>().required().default(undefined),
@@ -105,7 +147,7 @@ const taskSchema = yup.object({
 });
 type Attributes = yup.InferType<typeof taskSchema>;
 
-interface Props {
+export interface TaskModalFormProps {
   accountListId: string;
   task?: GetTaskForTaskModalQuery['task'] | null;
   onClose: () => void;
@@ -123,7 +165,7 @@ const TaskModalForm = ({
   defaultValues,
   showFlowsMessage = false,
   view,
-}: Props): ReactElement => {
+}: TaskModalFormProps): ReactElement => {
   const session = useSession();
 
   const { t } = useTranslation();
@@ -158,26 +200,32 @@ const TaskModalForm = ({
     [],
   );
 
-  const initialTask: Attributes = useMemo(() => {
-    if (task) {
-      let taskPhase = task?.taskPhase;
-      if (!taskPhase) {
-        taskPhase = task?.activityType
-          ? activityTypes.get(task.activityType)?.phaseId || undefined
-          : undefined;
-      }
-      if (taskPhase) {
-        setPhaseId(taskPhase);
-      }
-
-      //go through tags and move some to selectedSuggestedTags and others to additionalTags
-      const filteredTags = extractSuggestedTags(task.tagList, phaseTags);
-      const additionalTags = filteredTags?.additionalTags;
+  useEffect(() => {
+    const { taskPhase, filteredTags } = getTaskDetails(
+      task,
+      defaultValues,
+      activityTypes,
+      phaseTags,
+    );
+    if (taskPhase) {
+      setPhaseId(taskPhase);
+    }
+    if (filteredTags) {
       setSelectedSuggestedTags((prevValues) => [
         ...prevValues,
         ...filteredTags?.suggestedTags,
       ]);
+    }
+  }, [activityTypes]);
 
+  const initialTask: Attributes = useMemo(() => {
+    const { taskPhase, taskSubject, additionalTags } = getTaskDetails(
+      task,
+      defaultValues,
+      activityTypes,
+      phaseTags,
+    );
+    if (task) {
       return {
         taskPhase,
         activityType: task.activityType ?? undefined,
@@ -200,24 +248,6 @@ const TaskModalForm = ({
         comment: '',
       };
     } else {
-      let taskPhase: PhaseEnum | undefined =
-        defaultValues?.taskPhase || undefined;
-      let taskSubject = defaultValues?.subject;
-
-      if (defaultValues?.activityType && activityTypes) {
-        const activityData = defaultValues.activityType
-          ? activityTypes.get(defaultValues.activityType)
-          : undefined;
-        if (activityData) {
-          taskPhase = activityData.phaseId;
-          taskSubject = activityData.title;
-        }
-      }
-
-      if (taskPhase) {
-        setPhaseId(taskPhase);
-      }
-
       return {
         taskPhase: taskPhase,
         activityType: defaultValues?.activityType ?? undefined,

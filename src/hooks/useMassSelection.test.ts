@@ -159,4 +159,26 @@ describe('useMassSelection', () => {
       expect(result.current.ids).toEqual(['1', '2', '3', '7', '8', '9', '10']);
     });
   });
+
+  describe('deselectIds()', () => {
+    it('should deselect ids', () => {
+      const { result, rerender } = renderHook(() =>
+        useMassSelection(
+          defaultTotalCount,
+          defaultIdsList,
+          defaultActiveFilters,
+          defaultWildcardSearch,
+          defaultStarredFilter,
+        ),
+      );
+
+      result.current.toggleSelectAll();
+      rerender();
+      expect(result.current.ids).toEqual(defaultIdsList);
+
+      result.current.deselectIds(['7', '8', '9']);
+      rerender();
+      expect(result.current.ids).toEqual(['1', '2', '3', '4', '5', '6', '10']);
+    });
+  });
 });

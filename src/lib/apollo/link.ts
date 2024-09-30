@@ -57,6 +57,10 @@ export const makeAuthLink = (apiToken: string) =>
       headers: {
         ...headers,
         Authorization: `Bearer ${apiToken}`,
+        // We pass through a empty Accept-Language header to the API to avoid it defaulting to 'en-US'
+        // The API uses this header to determine the language of the response
+        // if there is no header it goes off the user's account settings, which is what we want.
+        'Accept-Language': '',
       },
     }));
     return forward(operation);

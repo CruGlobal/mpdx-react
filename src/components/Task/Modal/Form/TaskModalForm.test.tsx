@@ -1,5 +1,5 @@
 import React from 'react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -20,7 +20,7 @@ import theme from 'src/theme';
 import { TaskModalEnum } from '../TaskModal';
 import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
-import TaskModalForm from './TaskModalForm';
+import TaskModalForm, { TaskModalFormProps } from './TaskModalForm';
 import {
   createTasksMutationMock,
   deleteTaskMutationMock,
@@ -38,6 +38,26 @@ beforeEach(() => {
 });
 
 const accountListId = 'abc';
+const onClose = jest.fn();
+const mutationSpy = jest.fn();
+
+interface ComponentsProps {
+  mocks?: MockedResponse<Record<string, unknown>>[];
+  mockTask?: TaskModalFormProps['task'];
+}
+const Components = ({ mocks = [], mockTask = undefined }: ComponentsProps) => (
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <SnackbarProvider>
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <TaskModalForm
+          accountListId={accountListId}
+          onClose={onClose}
+          task={mockTask}
+        />
+      </MockedProvider>
+    </SnackbarProvider>
+  </LocalizationProvider>
+);
 
 describe('TaskModalForm', () => {
   const mockTask = {
@@ -80,36 +100,27 @@ describe('TaskModalForm', () => {
     Settings.now = () => now;
   });
 
-  it('Modal will not save if invalid data', async () => {
-    const onClose = jest.fn();
-    const { getByText, findByText, getByRole, findByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[createTasksMutationMock(), LoadConstantsMock()]}
-            addTypename={false}
-          >
-            <TaskModalForm accountListId={accountListId} onClose={onClose} />
-          </MockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
-    );
+  it('Modal should close', async () => {
+    const { getByText } = render(<Components />);
     userEvent.click(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('Modal will not save if invalid data', async () => {
+    const { findByText, getByRole, findByRole } = render(
+      <Components mocks={[createTasksMutationMock(), LoadConstantsMock()]} />,
+    );
     userEvent.click(getByRole('combobox', { name: 'Task Type' }));
     userEvent.click(await findByRole('option', { name: 'Appointment' }));
 
     userEvent.click(getByRole('combobox', { name: 'Action' }));
     userEvent.click(await findByRole('option', { name: 'In Person' }));
-    onClose.mockClear();
+    expect(onClose).not.toHaveBeenCalled();
     expect(await findByText('Field is required')).toBeInTheDocument();
     await waitFor(() => expect(onClose).not.toHaveBeenCalled());
   });
 
   it('modal save data', async () => {
-    const onClose = jest.fn();
-    const mutationSpy = jest.fn();
-
     const { findByRole, getByRole, queryByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
@@ -201,8 +212,6 @@ describe('TaskModalForm', () => {
   }, 10000);
 
   it('persisted', async () => {
-    const onClose = jest.fn();
-    const mutationSpy = jest.fn();
     const {
       getByRole,
       findByRole,
@@ -311,22 +320,11 @@ describe('TaskModalForm', () => {
   }, 25000);
 
   it('show the location field appropriately', async () => {
-    const onClose = jest.fn();
     const { getByRole, findByRole, queryByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[updateTaskMutationMock(), LoadConstantsMock()]}
-            addTypename={false}
-          >
-            <TaskModalForm
-              accountListId={accountListId}
-              onClose={onClose}
-              task={mockTask}
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
+      <Components
+        mocks={[updateTaskMutationMock(), LoadConstantsMock()]}
+        mockTask={mockTask}
+      />,
     );
 
     expect(
@@ -349,9 +347,6 @@ describe('TaskModalForm', () => {
   }, 25000);
 
   it('defaults the assignee to the logged in user', async () => {
-    const onClose = jest.fn();
-    const mutationSpy = jest.fn();
-
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
@@ -393,9 +388,6 @@ describe('TaskModalForm', () => {
   });
 
   it('renders fields for completed task', async () => {
-    const onClose = jest.fn();
-    const mutationSpy = jest.fn();
-
     const { getByRole, findByRole, queryByText } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -435,7 +427,7 @@ describe('TaskModalForm', () => {
 
     expect(getByRole('combobox', { name: 'Action' })).toHaveValue('In Person');
 
-    userEvent.click(getByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('combobox', { name: 'Result' }));
     userEvent.click(
       getByRole('option', { name: 'Cancelled-Need to reschedule' }),
     );
@@ -445,22 +437,8 @@ describe('TaskModalForm', () => {
   });
 
   it('deletes a task', async () => {
-    const onClose = jest.fn();
     const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <MockedProvider
-            mocks={[deleteTaskMutationMock()]}
-            addTypename={false}
-          >
-            <TaskModalForm
-              accountListId={accountListId}
-              onClose={onClose}
-              task={mockTask}
-            />
-          </MockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
+      <Components mocks={[deleteTaskMutationMock()]} mockTask={mockTask} />,
     );
 
     userEvent.click(getByRole('button', { name: 'Delete' }));
@@ -469,7 +447,6 @@ describe('TaskModalForm', () => {
   });
 
   it('opens new task modal when activity type changes', async () => {
-    const onClose = jest.fn();
     const { getByRole, findByRole } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -513,8 +490,6 @@ describe('TaskModalForm', () => {
   });
 
   describe('flows status change message', () => {
-    const onClose = jest.fn();
-
     it('does not show by default', () => {
       const { queryByText } = render(
         <LocalizationProvider dateAdapter={AdapterLuxon}>

@@ -6,7 +6,6 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Button, Collapse, ListItemButton, MenuItem } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
 import { LeafListItem, Title } from '../StyledComponents';
 
 interface NavItemProps {
@@ -99,21 +98,12 @@ export const NavItem: FC<NavItemProps> = ({
 
   return (
     <LeafListItem disableGutters key={title} {...rest}>
-      {(href as string).includes('tools') ? (
-        <HandoffLink key={title} path={href as string}>
-          <MenuItem style={style}>
-            {Icon && <Icon style={iconStyle} size="20" />}
-            <Title>{title}</Title>
-          </MenuItem>
-        </HandoffLink>
-      ) : (
-        <NextLink href={href} passHref>
-          <MenuItem component="a" style={style}>
-            {Icon && <Icon style={iconStyle} size="20" />}
-            <Title>{title}</Title>
-          </MenuItem>
-        </NextLink>
-      )}
+      <NextLink href={href} passHref>
+        <MenuItem component="a" style={style}>
+          {Icon && <Icon style={iconStyle} size="20" />}
+          <Title>{title}</Title>
+        </MenuItem>
+      </NextLink>
     </LeafListItem>
   );
 };

@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
-import { articles, showArticle } from 'src/lib/helpScout';
+import { articles } from 'src/lib/helpjuice';
 import theme from 'src/theme';
 import { useOauthUrl } from '../useOauthUrl';
 import {
@@ -127,10 +127,6 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
     onDone();
   };
 
-  const showOrganizationHelp = () => {
-    showArticle('HS_SETUP_FIND_ORGANIZATION');
-  };
-
   return (
     <Formik
       initialValues={{
@@ -178,11 +174,15 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                 <TextField {...params} label={t('Organization')} />
               )}
             />
-            {!selectedOrganization && !!articles.HS_SETUP_FIND_ORGANIZATION && (
-              <Button onClick={showOrganizationHelp}>
-                {t("Can't find your organization?")}
-              </Button>
-            )}
+            {!selectedOrganization &&
+              articles.HELP_URL_SETUP_FIND_ORGANIZATION && (
+                <Button
+                  href={articles.HELP_URL_SETUP_FIND_ORGANIZATION}
+                  target="_blank"
+                >
+                  {t("Can't find your organization?")}
+                </Button>
+              )}
             {organizationType === OrganizationTypesEnum.MINISTRY && (
               <WarningBox>
                 <Typography

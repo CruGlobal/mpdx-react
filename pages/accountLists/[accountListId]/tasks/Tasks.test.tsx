@@ -195,4 +195,24 @@ describe('tasks page', () => {
       expect(getByText('All Tasks')).toHaveClass('MuiButton-contained'),
     );
   });
+
+  it('should remove task', async () => {
+    const { getByText, getByTestId } = render(
+      <MocksProviders>
+        <Tasks />
+      </MocksProviders>,
+    );
+    await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
+    userEvent.click(getByTestId('task-checkbox-1'));
+    expect(getByText('Showing 17')).toBeInTheDocument();
+    userEvent.click(getByTestId('DeleteIconButton-1'));
+    // This is needed for some reason
+    userEvent.click(getByTestId('DeleteIconButton-1'));
+    userEvent.click(getByText('Yes'));
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(`Task deleted successfully`, {
+        variant: 'success',
+      });
+    });
+  });
 });

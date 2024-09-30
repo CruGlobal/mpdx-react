@@ -5,16 +5,12 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { suggestArticles } from 'src/lib/helpScout';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import ManageAccounts, { suggestedArticles } from './manageAccounts.page';
+import ManageAccounts from './manageAccounts.page';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
-}));
-jest.mock('src/lib/helpScout', () => ({
-  suggestArticles: jest.fn(),
 }));
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -47,13 +43,6 @@ describe('ManageAccounts', () => {
       query: {},
       isReady: true,
     });
-  });
-
-  it('should fire suggestArticles on initial render', async () => {
-    render(<Components />);
-    await waitFor(() =>
-      expect(suggestArticles).toHaveBeenCalledWith(suggestedArticles),
-    );
   });
 
   it('should open `Manage Account Access` accordion', async () => {

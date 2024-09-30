@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import {
@@ -9,16 +9,11 @@ import {
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
 
 const CoachingReportPage = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-
-  useEffect(() => {
-    suggestArticles('HS_REPORTS_SUGGESTIONS');
-  }, []);
 
   return (
     <>

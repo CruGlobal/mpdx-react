@@ -58,7 +58,7 @@ const CoachingDetailContainer = styled(Box)({
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   flex: 1,
   padding: theme.spacing(1),
-  paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
+  paddingBottom: theme.spacing(6), // prevent the Helpjuice beacon from obscuring content at the bottom
   overflowY: 'scroll',
 }));
 
