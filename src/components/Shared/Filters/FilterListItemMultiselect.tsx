@@ -64,20 +64,6 @@ export const FilterListItemMultiselect: React.FC<
   const groupByPhase = (option: string) =>
     getLocalizedPhase(t, getStatusPhaseId(option));
 
-  const filterOptions = useMemo(() => {
-    return isStatusFilter
-      ? filter.options
-          ?.slice()
-          .sort(
-            (a, b) =>
-              getStatusPhaseId(a.value)?.localeCompare(
-                getStatusPhaseId(b.value) || '',
-              ) || -1,
-          )
-          ?.map(({ value }) => value) || []
-      : filter.options?.map(({ value }) => value) || [];
-  }, [filter.options, statusArray, isStatusFilter]);
-
   return (
     <div className="FilterListItemMultiselect-root">
       <ListItem
@@ -130,7 +116,7 @@ export const FilterListItemMultiselect: React.FC<
             filterTitle={filterTitle}
             reverseSelected={reverseSelected}
             groupBy={isStatusFilter ? groupByPhase : undefined}
-            options={filterOptions}
+            options={filter.options?.map(({ value }) => value) || []}
           />
         </ListItem>
       )}
