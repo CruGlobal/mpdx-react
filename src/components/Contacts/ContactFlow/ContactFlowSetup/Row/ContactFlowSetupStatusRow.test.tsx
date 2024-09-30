@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactFlowSetupStatusRow } from './ContactFlowSetupStatusRow';
 
@@ -17,10 +17,7 @@ describe('ContactFlowSetupStatusRow', () => {
             <ContactFlowSetupStatusRow
               columnWidth={100}
               columnIndex={0}
-              status={{
-                id: 'PARTNER_FINANCIAL' as ContactFilterStatusEnum,
-                value: 'Partner - Financial',
-              }}
+              status={StatusEnum.PartnerFinancial}
             />
           </TestWrapper>
         </ThemeProvider>

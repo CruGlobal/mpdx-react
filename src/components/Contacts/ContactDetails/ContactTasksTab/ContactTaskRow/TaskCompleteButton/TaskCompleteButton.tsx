@@ -34,7 +34,11 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <ButtonWrap isComplete={isComplete} {...props}>
+    <ButtonWrap
+      data-testId="checkCompleteButton"
+      isComplete={isComplete}
+      {...props}
+    >
       <Check titleAccess={t('Check')} />
     </ButtonWrap>
   );

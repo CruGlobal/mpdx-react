@@ -1,35 +1,50 @@
 import React from 'react';
-import { render, waitFor, within } from '@testing-library/react';
+import { MockedResponse } from '@apollo/client/testing';
+import { ThemeProvider } from '@emotion/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestWrapper from '__tests__/util/TestWrapper';
+import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   ResultEnum,
+  StatusEnum,
 } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
+import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { TaskModalEnum } from '../../TaskModal';
+import {
+  ContactStatusQueryMock,
+  updateContactStatusMutationMock,
+} from '../TaskModalMocks';
+import { taskModalTests } from '../TaskModalTests';
 import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 import {
-  addTaskMutationMock,
   completeSimpleTaskMutationMock,
   completeTaskMutationMock,
+  createTaskCommentMutation,
 } from './TaskModalCompleteForm.mock';
 
 jest.mock('../../../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
+const onClose = jest.fn();
+const onErrorMock = jest.fn();
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
     openTaskModal,
     preloadTaskModal: jest.fn(),
   });
+  onClose.mockClear();
+  onErrorMock.mockClear();
 });
 
 jest.mock('src/lib/analytics');
@@ -40,73 +55,283 @@ jest.mock('uuid', () => ({
 
 const accountListId = 'abc';
 const taskId = 'task-1';
+const task = {
+  id: taskId,
+  activityType: ActivityTypeEnum.AppointmentInPerson,
+  subject: 'On the Journey with the Johnson Family',
+  startAt: DateTime.local(2020, 1, 1, 1, 2).toISO(),
+  completedAt: null,
+  tagList: ['tag-1', 'tag-2'],
+  contacts: {
+    nodes: [
+      { id: 'contact-1', name: 'Anderson, Robert' },
+      { id: 'contact-2', name: 'Smith, John' },
+    ],
+  },
+  user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
+  notificationTimeBefore: 20,
+  notificationType: NotificationTypeEnum.Both,
+  notificationTimeUnit: NotificationTimeUnitEnum.Hours,
+};
+
+type ComponentsProps = {
+  mocks?: MockedResponse[];
+  taskOverrides?: object;
+  props?: object;
+};
+const Components = ({ mocks = [], taskOverrides, props }: ComponentsProps) => (
+  <ThemeProvider theme={theme}>
+    <TestWrapper
+      mocks={[LoadConstantsMock(), ...mocks]}
+      onErrorMock={onErrorMock}
+    >
+      <TaskModalCompleteForm
+        accountListId={accountListId}
+        onClose={onClose}
+        task={{
+          ...task,
+          ...taskOverrides,
+        }}
+        {...props}
+      />
+    </TestWrapper>
+  </ThemeProvider>
+);
 
 describe('TaskModalCompleteForm', () => {
-  const task = {
-    id: taskId,
-    activityType: ActivityTypeEnum.NewsletterEmail,
-    subject: 'On the Journey with the Johnson Family',
-    startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
-    completedAt: null,
-    tagList: ['tag-1', 'tag-2'],
-    contacts: {
-      nodes: [
-        { id: 'contact-1', name: 'Anderson, Robert' },
-        { id: 'contact-2', name: 'Smith, John' },
-      ],
-    },
-    user: { id: 'user-1', firstName: 'Anderson', lastName: 'Robert' },
-    notificationTimeBefore: 20,
-    notificationType: NotificationTypeEnum.Both,
-    notificationTimeUnit: NotificationTimeUnitEnum.Hours,
-  };
-
-  describe('next action', () => {
-    it('defaults to the current activity type', () => {
+  describe('Result', () => {
+    it('defaults to only showing results from phase', async () => {
       const { getByRole } = render(
-        <TestWrapper>
-          <TaskModalCompleteForm
-            accountListId={accountListId}
-            onClose={jest.fn()}
-            task={{ ...task, activityType: ActivityTypeEnum.Email }}
-          />
-        </TestWrapper>,
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
       );
 
-      expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue(
-        'Email',
+      const resultDropdown = await waitFor(() =>
+        getByRole('combobox', { name: 'Result' }),
       );
+
+      userEvent.click(resultDropdown);
+
+      await waitFor(() => {
+        expect(
+          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
+        ).toBeInTheDocument();
+        expect(
+          getByRole('option', { name: 'Not Interested' }),
+        ).toBeInTheDocument();
+        expect(
+          getByRole('option', { name: 'Partner-Financial' }),
+        ).toBeInTheDocument();
+      });
     });
 
-    it('is blank for activity types without a matching next action', () => {
-      const { getByRole } = render(
-        <TestWrapper>
-          <TaskModalCompleteForm
-            accountListId={accountListId}
-            onClose={jest.fn()}
-            task={{ ...task, activityType: ActivityTypeEnum.Appointment }}
-          />
-        </TestWrapper>,
+    it("doesn't render suggested contact status when multiple contacts", async () => {
+      const { queryByText, findByRole } = render(
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
       );
+
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+
+      userEvent.click(
+        await findByRole('option', { name: 'Cancelled-Need to reschedule' }),
+      );
+
+      await waitFor(() => {
+        expect(
+          queryByText(
+            "Change the contact's status to: CONTACT_FOR_APPOINTMENT",
+          ),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('renders suggested status when single contact', async () => {
+      const { getByRole, getByText, findByRole } = render(
+        <Components
+          taskOverrides={{
+            activityType: ActivityTypeEnum.AppointmentInPerson,
+            contacts: {
+              nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
+            },
+          }}
+          mocks={[
+            ContactStatusQueryMock(
+              accountListId,
+              'contact-1',
+              StatusEnum.NeverContacted,
+            ),
+          ]}
+        />,
+      );
+
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(
+          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
+        );
+      });
+
+      await waitFor(() => {
+        expect(
+          getByText("Change the contact's status to:"),
+        ).toBeInTheDocument();
+        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
+      });
+    });
+
+    it('does not render suggested status when the Phase Constant does not provide a suggested status', async () => {
+      const { getByRole, queryByText, findByRole } = render(
+        <Components
+          taskOverrides={{
+            activityType: ActivityTypeEnum.InitiationEmail,
+            contacts: {
+              nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
+            },
+          }}
+          mocks={[
+            ContactStatusQueryMock(
+              accountListId,
+              'contact-1',
+              StatusEnum.NeverContacted,
+            ),
+          ]}
+        />,
+      );
+
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(
+          getByRole('option', { name: "Can't meet right now - circle back" }),
+        );
+      });
+
+      await waitFor(() => {
+        expect(
+          queryByText("Change the contact's status to:"),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('should not render <Result> if no result to select', async () => {
+      const { queryByRole } = render(
+        <Components
+          taskOverrides={{
+            activityType: '',
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          queryByRole('combobox', { name: 'Result' }),
+        ).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('next action', () => {
+    it('narrows down next actions on result', async () => {
+      const { getByRole, getAllByRole, queryByRole, findByRole } = render(
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
+      );
+
+      const resultDropdown = await findByRole('combobox', { name: 'Result' });
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(getByRole('option', { name: 'Partner-Financial' }));
+      });
+
+      const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
+      userEvent.click(nextActionDropdown);
+
+      await waitFor(() => {
+        expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
+        expect(
+          getByRole('option', { name: 'Thank You Note' }),
+        ).toBeInTheDocument();
+
+        expect(
+          queryByRole('option', { name: 'In Person' }),
+        ).not.toBeInTheDocument();
+        expect(
+          queryByRole('option', { name: 'Phone Call' }),
+        ).not.toBeInTheDocument();
+      });
+
+      userEvent.click(resultDropdown);
+      await waitFor(() => {
+        userEvent.click(getByRole('option', { name: 'Follow up' }));
+      });
+
+      userEvent.click(nextActionDropdown);
+
+      await waitFor(() => {
+        expect(
+          queryByRole('option', { name: 'Thank You Note' }),
+        ).not.toBeInTheDocument();
+
+        expect(
+          getAllByRole('option', { name: 'Social Media' })[0],
+        ).toBeInTheDocument();
+
+        expect(getByRole('option', { name: 'Phone Call' })).toBeInTheDocument();
+      });
+    });
+
+    it('does not render the Next Actions when Result "Not Interested" is selected and next actions is null', async () => {
+      const { getByRole, queryByRole, findByRole } = render(
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
+      );
+      userEvent.click(await findByRole('combobox', { name: 'Result' }));
+      await waitFor(() => {
+        userEvent.click(getByRole('option', { name: 'Not Interested' }));
+      });
+
+      expect(
+        queryByRole('combobox', { name: 'Next Action' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('next action does not show until result is selected', async () => {
+      const { getByRole, findByRole, queryByRole } = render(
+        <Components
+          taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
+        />,
+      );
+
+      expect(
+        queryByRole('combobox', { name: 'Next Action' }),
+      ).not.toBeInTheDocument();
+
+      userEvent.click(await findByRole('combobox', { name: 'Result' }));
+      userEvent.click(await findByRole('option', { name: 'Follow up' }));
+
+      expect(
+        getByRole('combobox', { name: 'Next Action' }),
+      ).toBeInTheDocument();
 
       expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue('');
     });
   });
 
-  it('default', async () => {
+  it('saves the default values correctly', async () => {
     const { getByRole } = render(
-      <TestWrapper
+      <Components
         mocks={[
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-      >
-        <TaskModalCompleteForm
-          accountListId={accountListId}
-          onClose={jest.fn()}
-          task={task}
-        />
-      </TestWrapper>,
+      />,
     );
     expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
       '01/01/2020',
@@ -114,24 +339,17 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('saves simple', async () => {
-    const onClose = jest.fn();
     const { getByText } = render(
-      <TestWrapper
+      <Components
         mocks={[
-          completeSimpleTaskMutationMock(accountListId, taskId),
+          completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-      >
-        <TaskModalCompleteForm
-          accountListId={accountListId}
-          onClose={onClose}
-          task={{
-            ...task,
-            activityType: null,
-            completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
-          }}
-        />
-      </TestWrapper>,
+        taskOverrides={{
+          activityType: null,
+          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        }}
+      />,
     );
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
@@ -140,17 +358,17 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('saves complex', async () => {
-    const onClose = jest.fn();
     const completedAt = DateTime.local(2015, 1, 5, 1, 2).toISO();
     const taskAttributes = {
       id: task.id,
       completedAt,
+      displayResult: DisplayResultEnum.FollowUpResultPartnerSpecial,
       result: ResultEnum.Completed,
-      nextAction: ActivityTypeEnum.Appointment,
+      nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
-    const { getByRole, getByText } = render(
-      <TestWrapper
+    const { findByRole, getByText } = render(
+      <Components
         mocks={[
           completeTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
@@ -171,31 +389,24 @@ describe('TaskModalCompleteForm', () => {
             },
           },
         ]}
-      >
-        <TaskModalCompleteForm
-          accountListId={accountListId}
-          onClose={onClose}
-          task={{
-            ...task,
-            activityType: ActivityTypeEnum.Call,
-            completedAt,
-            tagList: ['tag-1', 'tag-2'],
-          }}
-        />
-      </TestWrapper>,
+        taskOverrides={{
+          activityType: ActivityTypeEnum.FollowUpPhoneCall,
+          completedAt,
+          tagList: ['tag-1', 'tag-2'],
+        }}
+      />,
     );
-    userEvent.click(getByRole('combobox', { name: 'Result' }));
-    userEvent.click(getByRole('option', { name: 'Received' }));
-    userEvent.click(getByRole('combobox', { name: 'Next Action' }));
-    userEvent.click(getByRole('option', { name: 'Appointment' }));
+    userEvent.click(await findByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
+    userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
+    userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
         view: TaskModalEnum.Add,
         defaultValues: {
-          subject: task.subject,
-          activityType: ActivityTypeEnum.Appointment,
+          activityType: ActivityTypeEnum.PartnerCareThank,
           contactIds: ['contact-1', 'contact-2'],
           userId: 'user-1',
           tagList: ['tag-1', 'tag-2'],
@@ -204,26 +415,119 @@ describe('TaskModalCompleteForm', () => {
     );
   });
 
-  it('saves comment', async () => {
-    const onClose = jest.fn();
+  it('saves contacts new status', async () => {
+    const completedAt = DateTime.local(2015, 1, 5, 1, 2).toISO();
+    const taskAttributes = {
+      id: task.id,
+      completedAt,
+      displayResult: DisplayResultEnum.FollowUpResultPartnerSpecial,
+      result: ResultEnum.Completed,
+      nextAction: ActivityTypeEnum.PartnerCareThank,
+      tagList: ['tag-1', 'tag-2'],
+    };
+    const { findByRole, getByText, findByText } = render(
+      <Components
+        mocks={[
+          ContactStatusQueryMock(
+            accountListId,
+            'contact-1',
+            StatusEnum.ContactForAppointment,
+          ),
+          completeTaskMutationMock(accountListId, taskId),
+          GetThisWeekDefaultMocks()[0],
+          {
+            request: {
+              query: CompleteTaskDocument,
+              variables: {
+                accountListId,
+                attributes: taskAttributes,
+              },
+            },
+            result: {
+              data: {
+                updateTask: {
+                  task: taskAttributes,
+                },
+              },
+            },
+          },
+          updateContactStatusMutationMock(
+            accountListId,
+            'contact-1',
+            StatusEnum.PartnerSpecial,
+          ),
+        ]}
+        taskOverrides={{
+          activityType: ActivityTypeEnum.AppointmentInPerson,
+          completedAt,
+          tagList: ['tag-1', 'tag-2'],
+          contacts: {
+            nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
+          },
+        }}
+      />,
+    );
+    userEvent.click(await findByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
+    userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
+    userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
+
+    userEvent.click(await findByText("Change the contact's status to:"));
+    expect(getByText('Partner - Special')).toBeInTheDocument();
+
+    userEvent.click(getByText('Save'));
+    await waitFor(() =>
+      expect(openTaskModal).toHaveBeenCalledWith({
+        view: 'add',
+        defaultValues: {
+          activityType: ActivityTypeEnum.PartnerCareThank,
+          contactIds: ['contact-1'],
+          userId: 'user-1',
+          tagList: ['tag-1', 'tag-2'],
+        },
+      }),
+    );
+    onErrorMock.mock.calls.forEach((call) => {
+      expect(
+        JSON.stringify(call[0]).includes('UpdateContactStatus'),
+      ).toBeFalsy();
+    });
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+  });
+
+  it('saves result as Completed when no activityType', async () => {
     const { getByRole } = render(
-      <TestWrapper
+      <Components
         mocks={[
           completeSimpleTaskMutationMock(accountListId, taskId),
-          addTaskMutationMock(accountListId, taskId),
           GetThisWeekDefaultMocks()[0],
         ]}
-      >
-        <TaskModalCompleteForm
-          accountListId={accountListId}
-          onClose={onClose}
-          task={{
-            ...task,
-            activityType: null,
-            completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
-          }}
-        />
-      </TestWrapper>,
+        taskOverrides={{
+          activityType: null,
+          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        }}
+      />,
+    );
+    userEvent.click(getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onClose).toHaveBeenCalled());
+    onErrorMock.mock.calls.forEach((call) => {
+      expect(JSON.stringify(call[0]).includes('CompleteTask')).toBeFalsy();
+    });
+  });
+
+  it('saves comment', async () => {
+    const { getByRole } = render(
+      <Components
+        mocks={[
+          completeSimpleTaskMutationMock(accountListId, taskId),
+          createTaskCommentMutation(accountListId, taskId),
+          GetThisWeekDefaultMocks()[0],
+        ]}
+        taskOverrides={{
+          activityType: null,
+          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+        }}
+      />,
     );
     userEvent.type(
       getByRole('textbox', { name: 'Add New Comment' }),
@@ -231,23 +535,20 @@ describe('TaskModalCompleteForm', () => {
     );
     userEvent.click(getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
+    onErrorMock.mock.calls.forEach((call) => {
+      expect(JSON.stringify(call[0]).includes('CreateTaskComment')).toBeFalsy();
+    });
   });
 
   describe('completed date', () => {
     it('is the start date for appointments', () => {
-      const onClose = jest.fn();
       const { getByRole } = render(
-        <TestWrapper>
-          <TaskModalCompleteForm
-            accountListId={accountListId}
-            onClose={onClose}
-            task={{
-              ...task,
-              activityType: ActivityTypeEnum.Appointment,
-              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
-            }}
-          />
-        </TestWrapper>,
+        <Components
+          taskOverrides={{
+            activityType: ActivityTypeEnum.AppointmentVideoCall,
+            startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+          }}
+        />,
       );
 
       expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
@@ -258,20 +559,14 @@ describe('TaskModalCompleteForm', () => {
       );
     });
 
-    it('is now for other tasks', () => {
-      const onClose = jest.fn();
+    it('defaults date to now for other tasks', () => {
       const { getByRole } = render(
-        <TestWrapper>
-          <TaskModalCompleteForm
-            accountListId={accountListId}
-            onClose={onClose}
-            task={{
-              ...task,
-              activityType: ActivityTypeEnum.Call,
-              startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
-            }}
-          />
-        </TestWrapper>,
+        <Components
+          taskOverrides={{
+            activityType: ActivityTypeEnum.InitiationPhoneCall,
+            startAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
+          }}
+        />,
       );
 
       expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
@@ -283,261 +578,25 @@ describe('TaskModalCompleteForm', () => {
     });
   });
 
-  const getOptions = (
-    activityType?: ActivityTypeEnum,
-  ): { results: ResultEnum[]; nextActions: ActivityTypeEnum[] } => {
-    const { getByRole, queryByRole } = render(
-      <TestWrapper>
-        <TaskModalCompleteForm
-          accountListId={accountListId}
-          onClose={jest.fn()}
-          task={{
-            ...task,
-            activityType,
-          }}
-        />
-      </TestWrapper>,
-    );
-    let results: ResultEnum[] = [];
-    const resultButton = queryByRole('combobox', { name: 'Result' });
-    if (resultButton) {
-      userEvent.click(resultButton);
-      results = within(getByRole('listbox', { name: 'Result' }))
-        .getAllByRole('option')
-        .map((option) => option.textContent)
-        .filter(Boolean) as ResultEnum[];
-      userEvent.click(getByRole('option', { name: 'Completed' }));
-    }
-    let nextActions: ActivityTypeEnum[] = [];
-    const nextActionCombobox = queryByRole('combobox', { name: 'Next Action' });
-    if (nextActionCombobox) {
-      userEvent.click(nextActionCombobox);
-      nextActions = within(getByRole('listbox'))
-        .getAllByRole('option')
-        .map((option) => option[Object.keys(option)[0]]?.key)
-        .filter(Boolean) as ActivityTypeEnum[];
-    }
-    return { results, nextActions };
-  };
+  taskModalTests(Components);
 
-  it('has correct options for APPOINTMENT', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Appointment);
-    expect(results).toEqual(['Completed', 'Attempted']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
+  describe('flows status change message', () => {
+    it('does not show by default', () => {
+      const { queryByText } = render(<Components />);
 
-  it('has correct options for CALL', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Call);
-    expect(results).toEqual([
-      'Completed',
-      'Attempted',
-      'Attempted - Left Message',
-      'Received',
-    ]);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Appointment',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
+      expect(
+        queryByText(/The contact's status has been updated/),
+      ).not.toBeInTheDocument();
+    });
 
-  it('has correct options for EMAIL', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Email);
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Appointment',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
+    it('shows when showFlowsMessage is set', () => {
+      const { getByText } = render(
+        <Components props={{ showFlowsMessage: true }} />,
+      );
 
-  it('has correct options for FACEBOOK_MESSAGE', () => {
-    const { results, nextActions } = getOptions(
-      ActivityTypeEnum.FacebookMessage,
-    );
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Appointment',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
-
-  it('has correct options for LETTER', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Letter);
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-    ]);
-  });
-
-  it('has correct options for NEWSLETTER_EMAIL', () => {
-    const { results, nextActions } = getOptions(
-      ActivityTypeEnum.NewsletterEmail,
-    );
-    expect(results).toEqual([]);
-    expect(nextActions).toEqual([]);
-  });
-
-  it('has correct options for NEWSLETTER_PHYSICAL', () => {
-    const { results, nextActions } = getOptions(
-      ActivityTypeEnum.NewsletterPhysical,
-    );
-    expect(results).toEqual([]);
-    expect(nextActions).toEqual([]);
-  });
-
-  it('has correct options for NONE', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.None);
-    expect(results).toEqual([]);
-    expect(nextActions).toEqual([]);
-  });
-
-  it('has correct options for PRAYER_REQUEST', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.PrayerRequest);
-    expect(results).toEqual(['Completed']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Appointment',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
-
-  it('has correct options for PRE_CALL_LETTER', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.PreCallLetter);
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-    ]);
-  });
-
-  it('has correct options for REMINDER_LETTER', () => {
-    const { results, nextActions } = getOptions(
-      ActivityTypeEnum.ReminderLetter,
-    );
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-    ]);
-  });
-
-  it('has correct options for SUPPORT_LETTER', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.SupportLetter);
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-    ]);
-  });
-
-  it('has correct options for TALK_TO_IN_PERSON', () => {
-    const { results, nextActions } = getOptions(
-      ActivityTypeEnum.TalkToInPerson,
-    );
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Appointment',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
-
-  it('has correct options for TEXT_MESSAGE', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.TextMessage);
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-      'Appointment',
-      'Prayer Request',
-      'Thank',
-    ]);
-  });
-
-  it('has correct options for THANK', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.Thank);
-    expect(results).toEqual(['Completed', 'Received']);
-    expect(nextActions).toEqual([
-      'None',
-      'Call',
-      'Email',
-      'Text Message',
-      'Facebook Message',
-      'Talk To In Person',
-    ]);
-  });
-
-  it('has correct options for TO_DO', () => {
-    const { results, nextActions } = getOptions(ActivityTypeEnum.ToDo);
-    expect(results).toEqual([]);
-    expect(nextActions).toEqual([]);
-  });
-
-  it('has correct options for null', () => {
-    const { results, nextActions } = getOptions(undefined);
-    expect(results).toEqual([]);
-    expect(nextActions).toEqual([]);
+      expect(
+        getByText(/The contact's status has been updated/),
+      ).toBeInTheDocument();
+    });
   });
 });

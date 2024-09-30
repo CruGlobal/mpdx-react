@@ -1,4 +1,7 @@
+import { DateTime } from 'luxon';
+import { dateFormatMonthOnly } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { CoachingPeriodEnum } from './CoachingDetail';
 
 export const getLastNewsletter = (
   electronicDate: string | null | undefined,
@@ -24,4 +27,24 @@ export const getResultColor = (amount: number, goal: number): string => {
   } else {
     return theme.palette.statusDanger.main;
   }
+};
+
+export const getMonthOrWeekDateRange = (
+  locale: string,
+  period: CoachingPeriodEnum,
+  startDate: string,
+  endDate: string,
+): string | null => {
+  return (
+    startDate &&
+    endDate &&
+    (period === CoachingPeriodEnum.Weekly
+      ? new Intl.DateTimeFormat(locale, {
+          month: 'short',
+          day: 'numeric',
+        }).formatRange(Date.parse(startDate), Date.parse(endDate))
+      : startDate
+      ? dateFormatMonthOnly(DateTime.fromISO(startDate), locale)
+      : null)
+  );
 };

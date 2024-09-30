@@ -15,7 +15,7 @@ import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
 import { TagChip } from 'src/components/Shared/TagChip/TagChip';
 import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatWithoutYear } from 'src/lib/intlFormat';
+import { dateFormatMonthOnly, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { useTagsSummaryQuery } from './TagsSummary.generated';
 
@@ -92,10 +92,15 @@ export const TagsSummary: React.FC<TagsSummaryProps> = ({
                   <TableCell>{t('Tag Name')}</TableCell>
                   {periods.slice(0, -1).map(({ startDate }) => (
                     <TableCell key={startDate}>
-                      {dateFormatWithoutYear(
-                        DateTime.fromISO(startDate),
-                        locale,
-                      )}
+                      {period === CoachingPeriodEnum.Weekly
+                        ? dateFormatWithoutYear(
+                            DateTime.fromISO(startDate),
+                            locale,
+                          )
+                        : dateFormatMonthOnly(
+                            DateTime.fromISO(startDate),
+                            locale,
+                          )}
                     </TableCell>
                   ))}
                   <TableCell>{t('Total')}</TableCell>

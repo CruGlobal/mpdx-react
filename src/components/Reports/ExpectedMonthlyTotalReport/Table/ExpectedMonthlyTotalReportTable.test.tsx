@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { gqlMock } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import {
   ExpectedDonationRowFragment,
   GetExpectedMonthlyTotalsDocument,
@@ -16,14 +16,16 @@ it('renders empty', async () => {
   const empty: ExpectedDonationRowFragment[] = [];
   const { queryByRole } = render(
     <ThemeProvider theme={theme}>
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Donations So Far This Month'}
-        data={empty}
-        donations={true}
-        total={0}
-        currency={'USD'}
-      />
+      <GqlMockedProvider>
+        <ExpectedMonthlyTotalReportTable
+          accountListId={'abc'}
+          title={'Donations So Far This Month'}
+          data={empty}
+          donations={true}
+          total={0}
+          currency={'USD'}
+        />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 
@@ -63,14 +65,16 @@ it('renders donation table', async () => {
   });
   const { queryAllByRole, getAllByTestId, getByText, getByTestId } = render(
     <ThemeProvider theme={theme}>
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Donations So Far This Month'}
-        data={data.expectedMonthlyTotalReport.received.donations}
-        donations={true}
-        total={0}
-        currency={'USD'}
-      />
+      <GqlMockedProvider>
+        <ExpectedMonthlyTotalReportTable
+          accountListId={'abc'}
+          title={'Donations So Far This Month'}
+          data={data.expectedMonthlyTotalReport.received.donations}
+          donations={true}
+          total={0}
+          currency={'USD'}
+        />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 
@@ -109,14 +113,16 @@ it('renders non-donation table', async () => {
   });
   const { queryAllByRole, queryByTestId } = render(
     <ThemeProvider theme={theme}>
-      <ExpectedMonthlyTotalReportTable
-        accountListId={'abc'}
-        title={'Likely Partners This Month'}
-        data={data.expectedMonthlyTotalReport.likely.donations}
-        donations={false}
-        total={0}
-        currency={'USD'}
-      />
+      <GqlMockedProvider>
+        <ExpectedMonthlyTotalReportTable
+          accountListId={'abc'}
+          title={'Likely Partners This Month'}
+          data={data.expectedMonthlyTotalReport.likely.donations}
+          donations={false}
+          total={0}
+          currency={'USD'}
+        />
+      </GqlMockedProvider>
     </ThemeProvider>,
   );
 

@@ -3,8 +3,8 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import type { CurrencyTable } from './FourteenMonthReport';
 
@@ -23,6 +23,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const csvData = useMemo(
     () =>
@@ -59,7 +60,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
           );
 
           const pledgedMonthlyEquivalent =
-            contact.status === StatusEnum.PartnerFinancial &&
+            contact.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
             contact.pledgeAmount &&
             contact.pledgeFrequency
               ? Math.round(
@@ -76,7 +77,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
           );
 
           const inHandMonthlyEquivalent =
-            contact.status === StatusEnum.PartnerFinancial &&
+            contact.status?.toUpperCase() === StatusEnum.PartnerFinancial &&
             contact.pledgeFrequency
               ? Math.round(
                   inHandMonths.reduce((sum, month) => sum + month.total, 0) /
@@ -97,7 +98,9 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
 
           return [
             contact.name,
-            getLocalizedContactStatus(t, contact.status),
+            contact.status
+              ? contactStatuses[contact.status.toUpperCase()]?.translated
+              : '',
             contact.pledgeAmount ? Math.round(contact.pledgeAmount) : 0,
             contact.pledgeCurrency ?? '',
             getLocalizedPledgeFrequency(t, pledgeFrequency),

@@ -1,19 +1,20 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { useDrop } from 'react-dnd';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactFlowSetupItemDrag } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
   columnIndex: number;
   moveStatus: (
-    originindex: number,
+    originIndex: number,
     destinationIndex: number,
-    status: string,
+    status: StatusEnum,
   ) => void;
   flowOptions?: {
     name: string;
-    statuses: string[];
+    statuses: StatusEnum[];
     color: string;
     id: string;
   }[];
@@ -40,8 +41,7 @@ export const ContactFlowSetupDropZone: React.FC<Props> = ({
 
   return (
     <Box
-      key={status}
-      {...{ ref: drop }}
+      ref={drop}
       display={canDrop ? 'flex' : 'none'}
       justifyContent="start"
       alignItems="start"

@@ -3,7 +3,9 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { IdValue } from 'src/graphql/types.generated';
+import { useTranslation } from 'react-i18next';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -14,9 +16,8 @@ import { StarContactIconButton } from '../../StarContactIconButton/StarContactIc
 export interface ContactFlowRowProps {
   accountListId: string;
   contact: ContactRowFragment;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: StatusEnum;
+  contactPhase?: PhaseEnum | null;
   onContactSelected: (
     contactId: string,
     openDetails: boolean,
@@ -63,33 +64,37 @@ export const StyledAvatar = styled(Avatar)(() => ({
 
 export interface DraggedContact {
   id: string;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: StatusEnum;
   name: string;
   starred: boolean;
-  width: number;
+  width: number | undefined;
+  contactPhase: PhaseEnum | null | undefined;
 }
 
 export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   accountListId,
   contact,
   status,
+  contactPhase,
   onContactSelected,
   columnWidth,
 }) => {
   const { id, name, starred, avatar } = contact;
 
+  const { t } = useTranslation();
+
+  const item: DraggedContact = {
+    id,
+    status,
+    contactPhase,
+    name,
+    starred,
+    width: columnWidth,
+  };
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: 'contact',
-      item: {
-        id,
-        status,
-        name,
-        starred,
-        width: columnWidth,
-      },
+      item,
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
@@ -102,10 +107,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   }, []);
 
   return (
-    <ContainerBox
-      isDragging={isDragging}
-      {...{ ref: drag }} //TS gives an error if you try to pass a ref normally, seems to be a MUI issue
-    >
+    <ContainerBox isDragging={isDragging} ref={drag}>
       <DraggableBox>
         <Box display="flex" alignItems="center" width="100%">
           <StyledAvatar src={avatar || ''} />
@@ -113,7 +115,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
             <ContactLink onClick={() => onContactSelected(id, true, true)}>
               {name}
             </ContactLink>
-            <Typography>{status.value}</Typography>
+            <Typography>{getLocalizedContactStatus(t, status)}</Typography>
           </Box>
         </Box>
         <Box display="flex">

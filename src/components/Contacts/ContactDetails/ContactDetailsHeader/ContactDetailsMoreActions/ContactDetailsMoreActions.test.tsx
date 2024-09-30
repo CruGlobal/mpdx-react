@@ -71,10 +71,12 @@ describe('ContactDetailsMoreActions', () => {
     userEvent.click(
       getByRole('button', { hidden: true, name: 'More Actions' }),
     );
-    await waitFor(() => expect(getByText('Add Referrals')).toBeInTheDocument());
-    userEvent.click(getByText('Add Referrals'));
     await waitFor(() =>
-      expect(queryAllByText('Add Referrals')).toHaveLength(2),
+      expect(getByText('Add Connections')).toBeInTheDocument(),
+    );
+    userEvent.click(getByText('Add Connections'));
+    await waitFor(() =>
+      expect(queryAllByText('Add Connections')).toHaveLength(2),
     );
   });
 
@@ -221,9 +223,9 @@ describe('ContactDetailsMoreActions', () => {
     userEvent.click(
       getByRole('button', { hidden: true, name: 'More Actions' }),
     );
-    expect(getByText('Add Referrals')).toBeInTheDocument();
+    expect(getByText('Add Connections')).toBeInTheDocument();
     expect(queryByText('Cancel')).not.toBeInTheDocument();
-    userEvent.click(queryAllByText('Add Referrals')[0]);
+    userEvent.click(queryAllByText('Add Connections')[0]);
     expect(getByText('Cancel')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
     await waitFor(() => expect(queryByText('Cancel')).not.toBeInTheDocument());

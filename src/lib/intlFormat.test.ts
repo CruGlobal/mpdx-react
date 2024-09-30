@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import {
   currencyFormat,
   dateFormat,
+  dateFormatMonthOnly,
   dateFormatWithoutYear,
   dateFromParts,
   dateTimeFormat,
@@ -171,6 +172,17 @@ describe('intlFormat', () => {
           dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'es-419'),
         ).toEqual('5 ene');
       });
+    });
+  });
+
+  describe('dateFormatMonthOnly', () => {
+    it('format month', () => {
+      expect(dateFormatMonthOnly(DateTime.local(2020, 1, 5), 'en-US')).toEqual(
+        'Jan',
+      );
+    });
+    it('handles null date', () => {
+      expect(dateFormatMonthOnly(null, 'en-US')).toEqual('');
     });
   });
 
