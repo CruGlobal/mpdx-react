@@ -1,71 +1,19 @@
 import React, { useMemo } from 'react';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import {
-  Autocomplete,
   Checkbox,
   IconButton,
   ListItem,
   ListItemIcon,
   ListItemText,
-  TextField,
   Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter, PhaseEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
+import { MultiselectFilterAutocomplete } from './MultiselectFilterAutocomplete';
 import { renameFilterNames, reverseFiltersMap } from './helpers';
-
-interface MultiselectAutocompleteProps {
-  filter: MultiselectFilter;
-  selected?: Array<string>;
-  toggleValue: (value?: Array<string>) => void;
-  filterTitle: string | undefined;
-  reverseSelected?: boolean;
-  groupBy?: ((option: any) => string) | undefined;
-  options: string[];
-}
-const MultiselectFilterAutocomplete: React.FC<MultiselectAutocompleteProps> = ({
-  filter,
-  selected,
-  toggleValue,
-  filterTitle,
-  reverseSelected,
-  groupBy,
-  options,
-}: MultiselectAutocompleteProps) => {
-  return (
-    <Autocomplete
-      multiple
-      autoHighlight
-      autoSelect
-      value={selected || []}
-      onChange={(_, value) => toggleValue(value)}
-      options={options}
-      getOptionLabel={(option) =>
-        filter.options?.find(({ value }) => String(value) === String(option))
-          ?.name ?? ''
-      }
-      groupBy={groupBy}
-      ChipProps={{
-        color: reverseSelected ? 'error' : 'default',
-        style: {
-          background: reverseSelected ? '#d32f2f' : '#ffffff',
-        },
-      }}
-      filterSelectedOptions
-      fullWidth
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          placeholder={filterTitle}
-          label={filterTitle}
-          data-testid="multiSelectFilter"
-        />
-      )}
-    />
-  );
-};
 
 interface FilterListItemMultiselectProps {
   filter: MultiselectFilter;
@@ -110,17 +58,16 @@ export const FilterListItemMultiselect: React.FC<
     [filter.filterKey],
   );
 
-  const groupByPhase = (option) =>
-    getLocalizedPhase(
-      t,
-      statusArray.find((status) => status.id === option)?.phase,
-    );
+  const getStatusPhaseId = (selectedStatus: string) =>
+    statusArray.find((status) => status.id === selectedStatus)?.phase;
+
+  const groupByPhase = (option: string) =>
+    getLocalizedPhase(t, getStatusPhaseId(option));
 
   const filterOptions = useMemo(() => {
     const findStatusPhase = (
       selectedStatus: string,
-    ): PhaseEnum | null | undefined =>
-      statusArray?.find((status) => status.id === selectedStatus)?.phase;
+    ): PhaseEnum | null | undefined => getStatusPhaseId(selectedStatus);
 
     return isStatusFilter
       ? filter.options
