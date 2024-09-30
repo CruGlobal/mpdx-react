@@ -120,7 +120,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const { onSetupTour } = useSetupContext();
   const { data } = useLoadCoachingListQuery();
 
-  const coachingAccounts = data?.coachingAccountLists;
+  const coachingAccountCount = data?.coachingAccountLists.totalCount;
 
   const sections: Section[] = [
     {
@@ -155,7 +155,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
       ),
     },
   ];
-  if (coachingAccounts?.totalCount) {
+  if (coachingAccountCount) {
     sections.push({
       title: t('Coaching'),
       href: `/accountLists/${accountListId}/coaching`,

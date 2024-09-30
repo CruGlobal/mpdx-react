@@ -37,12 +37,6 @@ describe('NavMenu', () => {
               LoadCoachingList: {
                 coachingAccountLists: {
                   totalCount: 1,
-                  nodes: [
-                    {
-                      currency: 'USD',
-                      primaryAppeal: { amountCurrency: 'EUR' },
-                    },
-                  ],
                 },
               },
             }}

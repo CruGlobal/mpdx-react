@@ -65,7 +65,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-global.innerWidth = 1200;
+beforeAll(() => {
+  // Make the screen wide enough to show all data
+  global.innerWidth = 1200;
+});
 
 describe('ProfileMenu', () => {
   it('default', async () => {
@@ -161,15 +164,13 @@ describe('ProfileMenu', () => {
   });
 
   it('should display avatar', async () => {
-    const { findByText, getByTestId, queryByTestId } = render(
+    const { findByText, getByTestId } = render(
       <TestComponent mocks={[getTopBarMockWithMultipleAccountLists()]} />,
     );
     expect(await findByText('John Smith')).toBeInTheDocument();
     expect(getByTestId('AvatarInTopBar')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
-    await waitFor(() =>
-      expect(queryByTestId('profileMenu')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(getByTestId('profileMenu')).toBeInTheDocument());
     expect(getByTestId('AvatarProfileImage')).toBeInTheDocument();
   });
 
@@ -180,9 +181,7 @@ describe('ProfileMenu', () => {
     expect(await findByText('John Smith')).toBeInTheDocument();
     expect(getByTestId('AccountIconInTopBar')).toBeInTheDocument();
     userEvent.click(getByTestId('profileMenuButton'));
-    await waitFor(() =>
-      expect(queryByTestId('profileMenu')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(getByTestId('profileMenu')).toBeInTheDocument());
     await waitFor(() =>
       expect(queryByTestId('AvatarProfileImage')).not.toBeInTheDocument(),
     );
