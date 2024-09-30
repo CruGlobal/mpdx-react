@@ -7,7 +7,7 @@ interface MultiselectAutocompleteProps {
   toggleValue: (value?: Array<string>) => void;
   filterTitle: string | undefined;
   reverseSelected?: boolean;
-  groupBy?: (option: any) => string;
+  groupBy?: (option: string) => string;
   options: string[];
 }
 export const MultiselectFilterAutocomplete: React.FC<
