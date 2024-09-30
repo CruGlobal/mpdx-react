@@ -89,6 +89,7 @@ describe('Login - OKTA', () => {
         signInButtonText: 'Sign In',
         signInAuthProviderId: 'okta',
         immediateSignIn: false,
+        isOkta: true,
       });
       expect(redirect).toBeUndefined();
     });
@@ -108,6 +109,7 @@ describe('Login - OKTA', () => {
         signInButtonText: 'Sign In',
         signInAuthProviderId: 'okta',
         immediateSignIn: false,
+        isOkta: true,
       });
       expect(redirect).toBeUndefined();
     });
@@ -123,6 +125,7 @@ describe('Login - OKTA', () => {
         signInButtonText: 'Sign In',
         signInAuthProviderId: 'okta',
         immediateSignIn: true,
+        isOkta: true,
       });
       expect(redirect).toBeUndefined();
       expect(setHeaderMock).toHaveBeenCalledWith(
@@ -176,5 +179,20 @@ describe('Login - OKTA', () => {
         expect(findHelpLink).toHaveAttribute('href', 'https://help.mpdx.org');
       });
     });
+  });
+
+  it('renders create account help text', () => {
+    const { getByText } = render(
+      <Components
+        props={{
+          signInButtonText: 'Sign In',
+          signInAuthProviderId: 'okta',
+          immediateSignIn: false,
+          isOkta: true,
+        }}
+      />,
+    );
+
+    expect(getByText(/Don't have an Okta account\?/)).toBeInTheDocument();
   });
 });

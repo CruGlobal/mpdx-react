@@ -2,7 +2,8 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
 import SubjectIcon from '@mui/icons-material/Subject';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { getSession, signIn } from 'next-auth/react';
 import BaseLayout from 'src/components/Layouts/Basic';
 import Loading from 'src/components/Loading';
@@ -11,16 +12,22 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { extractCookie } from 'src/lib/extractCookie';
 import i18n from 'src/lib/i18n';
 
+const SignUpBox = styled('div')(({ theme }) => ({
+  marginBlock: theme.spacing(2),
+}));
+
 export interface LoginProps {
   signInButtonText: string;
   signInAuthProviderId: string;
   immediateSignIn: boolean;
+  isOkta: boolean;
 }
 
 const Login = ({
   signInButtonText,
   signInAuthProviderId,
   immediateSignIn,
+  isOkta,
 }: LoginProps): ReactElement => {
   const { appName } = useGetAppSettings();
 
@@ -67,6 +74,16 @@ const Login = ({
         >
           Find help
         </Button>
+        {isOkta && (
+          <SignUpBox>
+            <Typography>
+              Don&apos;t have an Okta account?
+              <br />
+              Click the <strong>Sign in</strong> button above, then{' '}
+              <strong>Sign up</strong>.
+            </Typography>
+          </SignUpBox>
+        )}
       </Welcome>
     </>
   );
@@ -116,6 +133,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       signInButtonText,
       signInAuthProviderId,
       immediateSignIn,
+      isOkta: authProvider === 'OKTA',
     },
   };
 };

@@ -70,6 +70,7 @@ describe('Login - API_OAUTH', () => {
       signInButtonText: 'Sign In with Third-party oAuth',
       signInAuthProviderId: 'apioauth',
       immediateSignIn: false,
+      isOkta: false,
     });
     expect(redirect).toBeUndefined();
   });
@@ -85,6 +86,7 @@ describe('Login - API_OAUTH', () => {
       signInButtonText: 'Sign In with Third-party oAuth',
       signInAuthProviderId: 'apioauth',
       immediateSignIn: true,
+      isOkta: false,
     });
     expect(redirect).toBeUndefined();
     expect(setHeaderMock).toHaveBeenCalledWith(
@@ -120,5 +122,20 @@ describe('Login - API_OAUTH', () => {
       expect(signIn).toHaveBeenCalledTimes(1);
       expect(signIn).toHaveBeenCalledWith('apioauth');
     });
+  });
+
+  it('does not render create account help text', () => {
+    const { queryByText } = render(
+      <Components
+        props={{
+          signInButtonText: 'Sign In with SSO',
+          signInAuthProviderId: 'apioauth',
+          immediateSignIn: false,
+          isOkta: false,
+        }}
+      />,
+    );
+
+    expect(queryByText(/Don't have an Okta account\?/)).not.toBeInTheDocument();
   });
 });
