@@ -72,7 +72,9 @@ export const CoachingRow: React.FC<Props> = ({
             }}
             passHref
           >
-            <Link flex={1}>{name}</Link>
+            <Link flex={1} underline="hover">
+              {name}
+            </Link>
           </NextLink>
           <Button
             onClick={(event) => {

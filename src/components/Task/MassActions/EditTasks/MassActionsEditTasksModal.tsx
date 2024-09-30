@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
+  Alert,
   Checkbox,
   DialogActions,
   DialogContent,
@@ -113,6 +114,9 @@ export const MassActionsEditTasksModal: React.FC<
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
+      <Alert severity="warning" style={{ justifyContent: 'center' }}>
+        Blank fields will not be affected!
+      </Alert>
       <Formik<Attributes>
         initialValues={{
           subject: '',

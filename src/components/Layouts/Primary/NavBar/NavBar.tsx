@@ -5,6 +5,7 @@ import type { FC } from 'react';
 import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
@@ -117,6 +118,9 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const { pathname } = useRouter();
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
+  const { data } = useLoadCoachingListQuery();
+
+  const coachingAccountCount = data?.coachingAccountLists.totalCount;
 
   const sections: Section[] = [
     {
@@ -150,11 +154,13 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
         })),
       ),
     },
-    {
-      title: t('Coaches'),
-      href: `/accountLists/${accountListId}/coaching`,
-    },
   ];
+  if (coachingAccountCount) {
+    sections.push({
+      title: t('Coaching'),
+      href: `/accountLists/${accountListId}/coaching`,
+    });
+  }
 
   const drawerHidden = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.up('md'),

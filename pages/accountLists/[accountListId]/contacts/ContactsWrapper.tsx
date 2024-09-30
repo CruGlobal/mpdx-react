@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
-import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 interface Props {
@@ -44,12 +43,6 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
       },
     });
   }, [sanitizedFilters, isReady]);
-
-  useEffect(() => {
-    suggestArticles(
-      contactId ? 'HS_CONTACTS_CONTACT_SUGGESTIONS' : 'HS_CONTACTS_SUGGESTIONS',
-    );
-  }, [contactId]);
 
   return (
     <ContactsProvider

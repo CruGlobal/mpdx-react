@@ -77,6 +77,7 @@ interface TaskRowProps {
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
   contactDetailsOpen?: boolean;
+  removeSelectedIds?: (id: string[]) => void;
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({
@@ -87,6 +88,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onTaskCheckToggle,
   useTopMargin,
   contactDetailsOpen,
+  removeSelectedIds,
 }) => {
   const {
     activityType,
@@ -182,6 +184,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <Box padding="checkbox">
               <Checkbox
                 checked={isChecked}
+                data-testid={`task-checkbox-${taskId}`}
                 color="secondary"
                 onClick={(event) => event.stopPropagation()}
                 onChange={() => onTaskCheckToggle(taskId)}
@@ -313,6 +316,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               <DeleteTaskIconButton
                 accountListId={accountListId}
                 taskId={taskId}
+                removeSelectedIds={removeSelectedIds}
               />
             </Box>
             <Box onClick={(e) => e.stopPropagation()}>
