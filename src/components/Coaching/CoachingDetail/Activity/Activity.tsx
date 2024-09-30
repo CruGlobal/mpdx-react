@@ -19,7 +19,6 @@ import { styled } from '@mui/material/styles';
 import { DateTime, DateTimeUnit } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
-import HandoffLink from 'src/components/HandoffLink';
 import {
   ActivityTypeEnum,
   Appeal,
@@ -672,9 +671,16 @@ export const Activity: React.FC<ActivityProps> = ({
           <MoneyOutlined sx={{ fontSize: '6rem' }} />
           <SectionTitle>
             {accountListType === AccountListTypeEnum.Own ? (
-              <HandoffLink path="/tools/appeals">
+              <NextLink
+                href={
+                  primaryAppeal
+                    ? `/accountLists/${accountListId}/tools/appeals/appeal/${primaryAppeal.id}`
+                    : `/accountLists/${accountListId}/tools/appeals`
+                }
+                passHref
+              >
                 <MuiLink underline="none">{t('Primary Appeal')}</MuiLink>
-              </HandoffLink>
+              </NextLink>
             ) : (
               t('Primary Appeal')
             )}
@@ -701,13 +707,14 @@ export const Activity: React.FC<ActivityProps> = ({
                     </StatsText>
                     <StatsColumnTitle>
                       {accountListType === AccountListTypeEnum.Own ? (
-                        <HandoffLink
-                          path={`/tools/appeals/${primaryAppeal.id}`}
+                        <NextLink
+                          href={`/accountLists/${accountListId}/tools/appeals/appeal/${primaryAppeal.id}`}
+                          passHref
                         >
                           <MuiLink underline="none">
                             {primaryAppeal.name}
                           </MuiLink>
-                        </HandoffLink>
+                        </NextLink>
                       ) : (
                         primaryAppeal.name
                       )}
