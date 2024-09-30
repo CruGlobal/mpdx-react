@@ -11,6 +11,7 @@ import {
   Box,
   Button,
   Divider,
+  Hidden,
   ListItemAvatar,
   ListItemText,
   Menu,
@@ -39,6 +40,9 @@ const AccountName = styled(Typography)(({ theme }) => ({
   color: theme.palette.common.white,
   margin: 0,
   padding: '0px 8px',
+  overflow: 'clip',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 }));
 
 const MenuItemAccount = styled(MenuItem)(() => ({
@@ -58,6 +62,13 @@ const MenuButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1),
   borderColor: theme.palette.cruGrayLight.main,
   color: theme.palette.cruGrayLight.main,
+}));
+
+const NameBox = styled(Box)(() => ({
+  display: 'block',
+  textAlign: 'left',
+  maxWidth: '250px',
+  maxHeight: '45px',
 }));
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
@@ -81,7 +92,7 @@ const AccountListSelectorDetails = styled(AccordionDetails)(({ theme }) => ({
   flexDirection: 'column',
   padding: 0,
   borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
-  maxHeight: theme.spacing(24),
+  maxHeight: theme.spacing(44),
   overflow: 'auto',
   '& .MuiMenuItem-root': {
     minHeight: theme.spacing(6),
@@ -124,7 +135,7 @@ const ProfileMenu = (): ReactElement => {
   const { enqueueSnackbar } = useSnackbar();
   const { contactId: _, ...queryWithoutContactId } = router.query;
   const accountListId = useAccountListId();
-  const { data } = useGetTopBarQuery();
+  const { data, loading } = useGetTopBarQuery();
   const { onSetupTour } = useSetupContext();
   const [profileMenuAnchorEl, setProfileMenuAnchorEl] =
     useState<HTMLButtonElement>();
@@ -201,29 +212,33 @@ const ProfileMenu = (): ReactElement => {
         impersonating={!!session.impersonating}
         onProfileMenuOpen={handleProfileMenuOpen}
         showSubAccount={hasSelectedAccount}
+        avatar={data?.user.avatar || undefined}
+        loading={loading}
       >
         {data && (
-          <Box display="block" textAlign="left">
-            <AccountName>
-              {session.impersonating ? `Impersonating ` : ``}
-              {[data.user.firstName, data.user.lastName]
-                .filter(Boolean)
-                .join(' ')}
-            </AccountName>
-            {hasSelectedAccount && (
-              <AccountName
-                display="block"
-                variant="body2"
-                data-testid="accountListName"
-              >
-                {
-                  data.accountLists.nodes.find(
-                    (accountList) => accountList.id === accountListId,
-                  )?.name
-                }
+          <Hidden lgDown>
+            <NameBox>
+              <AccountName>
+                {session.impersonating ? `Impersonating ` : ``}
+                {[data.user.firstName, data.user.lastName]
+                  .filter(Boolean)
+                  .join(' ')}
               </AccountName>
-            )}
-          </Box>
+              {hasSelectedAccount && (
+                <AccountName
+                  display="block"
+                  variant="body2"
+                  data-testid="accountListName"
+                >
+                  {
+                    data.accountLists.nodes.find(
+                      (accountList) => accountList.id === accountListId,
+                    )?.name
+                  }
+                </AccountName>
+              )}
+            </NameBox>
+          </Hidden>
         )}
       </ProfileName>
       <MenuWrapper
@@ -236,7 +251,16 @@ const ProfileMenu = (): ReactElement => {
         {data && (
           <MenuItemAccount>
             <ListItemAvatar>
-              <Avatar>{data.user.firstName?.[0]}</Avatar>
+              {data.user.avatar ? (
+                <Avatar
+                  src={data.user.avatar}
+                  data-testid="AvatarProfileImage"
+                />
+              ) : (
+                <Avatar data-testid="AvatarProfileLetter">
+                  {data.user.firstName?.[0]}
+                </Avatar>
+              )}
             </ListItemAvatar>
             <ListItemText
               primary={[data.user.firstName, data.user.lastName]

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
@@ -27,11 +28,19 @@ const routerAppeals = {
 };
 
 describe('NavMenu', () => {
-  it('default', () => {
-    const { getByRole, getByTestId } = render(
+  it('default', async () => {
+    const { getByRole, getByTestId, findByRole } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
+          <GqlMockedProvider<{ LoadCoachingList: LoadCoachingListQuery }>
+            mocks={{
+              LoadCoachingList: {
+                coachingAccountLists: {
+                  totalCount: 1,
+                },
+              },
+            }}
+          >
             <NavMenu />
           </GqlMockedProvider>
         </TestRouter>
@@ -49,9 +58,7 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { hidden: true, name: 'Tools' }),
     ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Coaches' }),
-    ).toBeInTheDocument();
+
     userEvent.click(getByTestId('ReportMenuToggle'));
     expect(
       getByRole('menuitem', { hidden: true, name: 'Donations' }),
@@ -151,6 +158,35 @@ describe('NavMenu', () => {
       getByRole('menuitem', { hidden: true, name: 'Coaching' }),
     ).not.toBeVisible();
     expect(getByTestId('appeals-false')).toBeInTheDocument();
+    expect(
+      await findByRole('menuitem', { hidden: true, name: 'Coaching' }),
+    ).toBeInTheDocument();
+  });
+
+  it('does not show coaching link if there are no coaching accounts', async () => {
+    const { queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ LoadCoachingList: LoadCoachingListQuery }>
+            mocks={{
+              LoadCoachingList: {
+                coachingAccountLists: {
+                  totalCount: 0,
+                  nodes: [],
+                },
+              },
+            }}
+          >
+            <NavMenu />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+    await waitFor(() =>
+      expect(
+        queryByRole('menuitem', { hidden: true, name: 'Coaching' }),
+      ).not.toBeInTheDocument(),
+    );
   });
 
   it('hidden', () => {
@@ -267,7 +303,7 @@ describe('NavMenu', () => {
     expect(getByTestId('fixCommitmentInfo-notifications')).toBeInTheDocument();
   });
 
-  it('test notifications > 10', async () => {
+  it('test notifications > 99', async () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
@@ -277,16 +313,16 @@ describe('NavMenu', () => {
             mocks={{
               GetToolNotifications: {
                 contacts: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
                 people: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
                 contactDuplicates: {
-                  totalCount: 3,
+                  totalCount: 130,
                 },
                 personDuplicates: {
-                  totalCount: 3,
+                  totalCount: 30,
                 },
               },
             }}
@@ -300,6 +336,8 @@ describe('NavMenu', () => {
     await waitFor(() =>
       expect(getByTestId('notificationTotal')).toBeInTheDocument(),
     );
-    expect(getByTestId('notificationTotalText')).toHaveTextContent('9+');
+    expect(getByTestId('notificationTotalText')).toHaveTextContent('99+');
+    userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByTestId('mergeContacts-notifications')).toHaveTextContent('99+');
   });
 });

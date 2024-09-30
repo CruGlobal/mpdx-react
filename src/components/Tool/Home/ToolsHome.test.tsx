@@ -17,7 +17,7 @@ const mocks = {
     contacts: { totalCount: 2 },
     people: { totalCount: 4 },
     contactDuplicates: { totalCount: 6 },
-    personDuplicates: { totalCount: 10 },
+    personDuplicates: { totalCount: 100 },
   },
 };
 
@@ -67,7 +67,7 @@ describe('ToolHome', () => {
     const contactDuplicates = await findAllByText('6');
     expect(contactDuplicates).toHaveLength(1);
 
-    const personDuplicates = await findAllByText('9+');
+    const personDuplicates = await findAllByText('99+');
     expect(personDuplicates).toHaveLength(1);
   });
 
