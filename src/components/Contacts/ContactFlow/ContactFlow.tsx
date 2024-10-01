@@ -140,7 +140,7 @@ export const ContactFlow: React.FC<Props> = ({
             view: TaskModalEnum.Log,
             showFlowsMessage: true,
             defaultValues: {
-              taskPhase: newContactPhase,
+              taskPhase: contactPhase,
               contactIds: [id],
             },
           });
