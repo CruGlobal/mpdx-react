@@ -5,29 +5,15 @@ import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
+import { FlowOption } from '../../useFlowOptions';
 import { ContactFlowSetupColumn } from '../Column/ContactFlowSetupColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
-const status = [
-  {
-    id: 'APPOINTMENT_SCHEDULED' as ContactFilterStatusEnum,
-    value: 'Appointment Scheduled',
-  },
-  {
-    id: 'PARTNER_FINANCIAL' as ContactFilterStatusEnum,
-    value: 'Partner - Financial',
-  },
-];
-
-const statusTwo = [
-  {
-    id: 'NOT_INTERESTED' as ContactFilterStatusEnum,
-    value: 'Not Interested',
-  },
-];
+const status = [StatusEnum.AppointmentScheduled, StatusEnum.PartnerFinancial];
+const statusTwo = [StatusEnum.NotInterested];
 const router = {
   query: { accountListId },
   isReady: true,
@@ -41,28 +27,21 @@ const setColumnWidth = jest.fn();
 const moveColumns = jest.fn();
 const updateColumns = jest.fn();
 
-interface FlowOption {
-  name: string;
-  statuses: string[];
-  color: string;
-  id: string;
-}
-
 const flowOptions: FlowOption[] = [
   {
     name: 'Untitled Two',
     id: '6ced166a-d570-4086-af56-e3eeed8a1f98',
     statuses: [
-      'Appointment Scheduled',
-      'Not Interested',
-      'Partner - Financial',
+      StatusEnum.AppointmentScheduled,
+      StatusEnum.NotInterested,
+      StatusEnum.PartnerFinancial,
     ],
     color: 'color-text',
   },
   {
     name: 'Untitled',
     id: '8a6bc2ed-820e-437b-81b8-36fbbe91f5e3',
-    statuses: ['Partner - Pray', 'Never Ask'],
+    statuses: [StatusEnum.PartnerPray, StatusEnum.NeverAsk],
     color: 'color-info',
   },
 ];

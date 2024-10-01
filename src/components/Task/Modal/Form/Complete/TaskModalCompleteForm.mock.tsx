@@ -27,7 +27,7 @@ export const getCompleteTaskForTaskModalMock = (
   const data: GetTaskForTaskModalQuery = {
     task: {
       id: taskId,
-      activityType: ActivityTypeEnum.NewsletterEmail,
+      activityType: ActivityTypeEnum.PartnerCareDigitalNewsletter,
       subject: 'On the Journey with the Johnson Family',
       startAt: DateTime.local(2012, 1, 5, 1, 2).toISO(),
       completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
@@ -72,6 +72,7 @@ export const completeSimpleTaskMutationMock = (
     id: 'task-1',
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
+    displayResult: null,
     result: ResultEnum.Completed,
     nextAction: null,
   };
@@ -91,6 +92,7 @@ export const completeSimpleTaskMutationMock = (
     result: { data },
   };
 };
+
 export const completeTaskMutationMock = (
   accountListId: string,
   taskId: string,
@@ -99,15 +101,16 @@ export const completeTaskMutationMock = (
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.Received,
-    nextAction: ActivityTypeEnum.Appointment,
+    result: ResultEnum.Completed,
+    nextAction: null,
   };
   const attributes: TaskUpdateInput = {
     id: taskId,
     completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
     tagList: ['tag-1', 'tag-2'],
-    result: ResultEnum.Received,
-    nextAction: ActivityTypeEnum.Appointment,
+    displayResult: null,
+    result: ResultEnum.Completed,
+    nextAction: null,
   };
   const data: CompleteTaskMutation = {
     updateTask: {
@@ -125,7 +128,7 @@ export const completeTaskMutationMock = (
     result: { data },
   };
 };
-export const addTaskMutationMock = (
+export const createTaskCommentMutation = (
   accountListId: string,
   taskId: string,
 ): MockedResponse => {

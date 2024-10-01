@@ -150,7 +150,7 @@ const NotificationMenuItem = ({
       break;
     case NotificationTypeTypeEnum.MissingEmailInNewsletter:
       message = t(
-        'On your email newsletter list but has no people with a valid email address',
+        'On your digital newsletter list but has no people with a valid email address',
       );
       break;
     case NotificationTypeTypeEnum.NewDesignationAccountSubscription:

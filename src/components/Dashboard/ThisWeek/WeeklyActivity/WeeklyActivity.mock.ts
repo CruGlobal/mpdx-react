@@ -6,20 +6,20 @@ import {
 } from './GetWeeklyActivity.generated';
 
 const data: GetWeeklyActivityQuery = {
-  completedCalls: { totalCount: 1234 },
+  completedInitiations: { totalCount: 1234 },
   callsThatProducedAppointments: { totalCount: 5678 },
-  completedMessages: { totalCount: 9012 },
+  completedFollowUps: { totalCount: 9012 },
   messagesThatProducedAppointments: { totalCount: 3456 },
   completedAppointments: { totalCount: 7890 },
-  completedCorrespondence: { totalCount: 1234 },
+  completedPartnerCare: { totalCount: 1234 },
 };
 const dataPreviousWeek: GetWeeklyActivityQuery = {
-  completedCalls: { totalCount: 5678 },
+  completedInitiations: { totalCount: 5678 },
   callsThatProducedAppointments: { totalCount: 9012 },
-  completedMessages: { totalCount: 3456 },
+  completedFollowUps: { totalCount: 3456 },
   messagesThatProducedAppointments: { totalCount: 7890 },
   completedAppointments: { totalCount: 1234 },
-  completedCorrespondence: { totalCount: 5678 },
+  completedPartnerCare: { totalCount: 5678 },
 };
 
 export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
@@ -75,12 +75,12 @@ export const GetWeeklyActivityQueryDefaultMocks = (): MockedResponse[] => {
 };
 
 const emptyData: GetWeeklyActivityQuery = {
-  completedCalls: { totalCount: 0 },
+  completedInitiations: { totalCount: 0 },
   callsThatProducedAppointments: { totalCount: 0 },
-  completedMessages: { totalCount: 0 },
+  completedFollowUps: { totalCount: 0 },
   messagesThatProducedAppointments: { totalCount: 0 },
   completedAppointments: { totalCount: 0 },
-  completedCorrespondence: { totalCount: 0 },
+  completedPartnerCare: { totalCount: 0 },
 };
 
 export const GetWeeklyActivityQueryEmptyMocks = (): MockedResponse[] => {

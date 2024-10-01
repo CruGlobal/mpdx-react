@@ -27,7 +27,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import useTaskModal from 'src/hooks/useTaskModal';
 import illustration8 from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { numberFormat } from 'src/lib/intlFormat';
-import { constantIdFromActivityType } from 'src/utils/tasks/taskActivity';
+import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -89,7 +89,7 @@ const TasksDueThisWeek = ({
 
   const translatedActivityType = (type: ActivityTypeEnum): string => {
     return (
-      activityTypes?.find(({ id }) => id === constantIdFromActivityType(type))
+      activityTypes?.find(({ id }) => id === getLocalizedTaskType(t, type))
         ?.value ?? ''
     );
   };

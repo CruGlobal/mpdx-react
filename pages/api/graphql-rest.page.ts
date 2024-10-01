@@ -14,6 +14,8 @@ import {
   MergeContactsInput,
   MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
+import { getLocalizedContactStatus } from '../../src/utils/functions/getLocalizedContactStatus';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
@@ -612,37 +614,9 @@ class MpdxRestApi extends RESTDataSource {
 
         // Status
         case 'status':
-          const statusMap = new Map<ContactFilterStatusEnum, string>([
-            [ContactFilterStatusEnum.Active, 'active'],
-            [ContactFilterStatusEnum.Hidden, 'hidden'],
-            [ContactFilterStatusEnum.Null, 'null'],
-            [
-              ContactFilterStatusEnum.AppointmentScheduled,
-              'Appointment Scheduled',
-            ],
-            [ContactFilterStatusEnum.AskInFuture, 'Ask in Future'],
-            [ContactFilterStatusEnum.CallForDecision, 'Call for Decision'],
-            [
-              ContactFilterStatusEnum.ContactForAppointment,
-              'Contact for Appointment',
-            ],
-            [
-              ContactFilterStatusEnum.CultivateRelationship,
-              'Cultivate Relationship',
-            ],
-            [ContactFilterStatusEnum.ExpiredReferral, 'Expired Referral'],
-            [ContactFilterStatusEnum.NeverAsk, 'Never Ask'],
-            [ContactFilterStatusEnum.NeverContacted, 'Never Contacted'],
-            [ContactFilterStatusEnum.NotInterested, 'Not Interested'],
-            [ContactFilterStatusEnum.PartnerFinancial, 'Partner - Financial'],
-            [ContactFilterStatusEnum.PartnerPray, 'Partner - Pray'],
-            [ContactFilterStatusEnum.PartnerSpecial, 'Partner - Special'],
-            [ContactFilterStatusEnum.ResearchAbandoned, 'Research Abandoned'],
-            [ContactFilterStatusEnum.Unresponsive, 'Unresponsive'],
-          ]);
           filters[snakedKey] = (value as ContactFilterStatusEnum[])
             .map((status) => {
-              const translated = statusMap.get(status);
+              const translated = getLocalizedContactStatus(i18n.t, status);
               if (!translated) {
                 throw new Error(
                   `Unrecognized ContactFilterStatusEnum value ${value}`,
