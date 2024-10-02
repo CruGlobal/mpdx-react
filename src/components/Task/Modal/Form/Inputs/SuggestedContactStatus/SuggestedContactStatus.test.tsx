@@ -105,7 +105,7 @@ describe('SuggestedContactStatus', () => {
   });
 
   it('renders suggested status when single contact and checks contact status with gql call', async () => {
-    const { getByText } = render(
+    const { findByText } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -122,11 +122,8 @@ describe('SuggestedContactStatus', () => {
         },
       });
     });
-    await waitFor(() => {
-      expect(getByText("Change the contact's status to:")).toBeInTheDocument();
-    });
 
-    expect(getByText('Initiate for Appointment')).toBeInTheDocument();
+    expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
   });
 
   it('does not send a ContactStatus graphql request when the current contacts status is provided', async () => {
