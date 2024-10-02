@@ -15,8 +15,6 @@ const cookieCreator = (name: string, value: string) => {
   switch (name) {
     case '__Secure-next-auth.session-token':
       return `__Secure-next-auth.session-token=${value}; Secure; ${expireCookieDefaultInfo}`;
-    case 'mpdx-handoff.logged-in':
-      return `mpdx-handoff.logged-in=${value}; path=/; domain=${process.env.REWRITE_DOMAIN}`;
     default:
       return `${name}=${value}; ${expireCookieDefaultInfo}`;
   }

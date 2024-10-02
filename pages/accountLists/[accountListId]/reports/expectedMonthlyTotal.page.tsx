@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,6 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
 
 const ExpectedMonthlyTotalReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -26,10 +25,6 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-
-  useEffect(() => {
-    suggestArticles('HS_REPORTS_SUGGESTIONS');
-  }, []);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

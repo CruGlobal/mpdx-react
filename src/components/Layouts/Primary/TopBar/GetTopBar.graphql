@@ -10,6 +10,7 @@ query GetTopBar {
     id
     firstName
     lastName
+    avatar
     admin
     developer
     defaultAccountList

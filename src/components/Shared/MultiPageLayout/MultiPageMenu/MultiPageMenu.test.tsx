@@ -36,6 +36,10 @@ const hasOrganizationsAccessMock = {
 };
 
 describe('MultiPageMenu', () => {
+  beforeAll(() => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  });
+
   it('default', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>

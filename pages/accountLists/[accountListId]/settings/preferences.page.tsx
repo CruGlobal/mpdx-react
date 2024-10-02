@@ -33,7 +33,6 @@ import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
 import { getCountries } from 'src/lib/data/countries';
-import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
@@ -79,10 +78,6 @@ const Preferences: React.FC = () => {
 
   const { data: userOrganizationAccountsData } =
     useGetUsersOrganizationsAccountsQuery();
-
-  useEffect(() => {
-    suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
-  }, []);
 
   useEffect(() => {
     if (onSetupTour) {

@@ -14,16 +14,16 @@ jest.mock('next/router', () => ({
 
 describe('Balance', () => {
   it('default', () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByRole } = render(
       <GqlMockedProvider>
         <Balance balance={1000.99} />
       </GqlMockedProvider>,
     );
     expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000.99');
-    // TODO: needs fix, switching from the HandOffLink to NextLink breaks this
-    // expect(
-    //   getByRole('link', { hidden: true, name: 'View Gifts' }),
-    // ).toHaveAttribute('href', 'https://stage.mpdx.org/reports/donations');
+    expect(getByRole('link', { name: 'View Gifts' })).toHaveAttribute(
+      'href',
+      '/accountLists/abc/reports/donations',
+    );
   });
 
   it('custom props', () => {

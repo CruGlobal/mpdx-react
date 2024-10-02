@@ -66,11 +66,11 @@ describe('Tool', () => {
     );
   });
 
-  it('renders count with over 9', () => {
+  it('renders count with over 99', () => {
     const { queryByText, getByTestId } = render(
-      <TestComponent totalCount={10} />,
+      <TestComponent totalCount={100} />,
     );
-    expect(queryByText('9+')).toBeInTheDocument();
+    expect(queryByText('99+')).toBeInTheDocument();
     expect(getByTestId('fixCommitmentInfo-icon')).toBeInTheDocument();
     expect(getByTestId('fixCommitmentInfo-icon')).toHaveStyle(
       'background-color: rgb(249, 182, 37)',

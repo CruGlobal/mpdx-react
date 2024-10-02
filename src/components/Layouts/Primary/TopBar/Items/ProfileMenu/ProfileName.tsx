@@ -1,10 +1,16 @@
 import React, { ReactElement } from 'react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Box, IconButton } from '@mui/material';
+import { Avatar, Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const StyledAvatar = styled(AccountCircleIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
+const StyledAccountIcon = styled(AccountCircleIcon)(({ theme }) => ({
+  textTransform: 'none',
+  color: theme.palette.common.white,
+  opacity: '0.75',
+  transition: 'color 0.2s ease-in-out',
+  '&:hover': {
+    opacity: '1',
+  },
 }));
 
 const ImpersonatingBox = styled(Box)(() => ({
@@ -34,12 +40,16 @@ interface ProfileNameProps {
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
   children: React.ReactNode;
+  avatar?: string;
+  loading?: boolean;
 }
 
 const ProfileName = ({
   impersonating,
   showSubAccount,
   onProfileMenuOpen,
+  avatar,
+  loading,
   children,
 }: ProfileNameProps): ReactElement => {
   return (
@@ -59,7 +69,20 @@ const ProfileName = ({
       {!impersonating && (
         <IconButton onClick={onProfileMenuOpen} data-testid="profileMenuButton">
           <Box display="flex" alignItems="center" m={-1}>
-            <StyledAvatar />
+            <IconButton>
+              {loading || !avatar ? (
+                <StyledAccountIcon data-testid="AccountIconInTopBar" />
+              ) : (
+                <Avatar
+                  data-testid="AvatarInTopBar"
+                  src={avatar}
+                  sx={{
+                    width: 30,
+                    height: 30,
+                  }}
+                />
+              )}
+            </IconButton>
             {children}
           </Box>
         </IconButton>

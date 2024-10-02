@@ -65,4 +65,25 @@ describe('MassActionsEditTasksModal', () => {
     });
     expect(handleClose).toHaveBeenCalled();
   });
+  it('displays warning message', async () => {
+    const handleClose = jest.fn();
+    const mutationSpy = jest.fn();
+    const { getByText } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <MassActionsEditTasksModal
+                accountListId={accountListId}
+                ids={['task-1', 'task-2']}
+                selectedIdCount={2}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+    expect(getByText('Blank fields will not be affected!')).toBeInTheDocument();
+  });
 });
