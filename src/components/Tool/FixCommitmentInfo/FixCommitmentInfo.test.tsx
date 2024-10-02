@@ -15,12 +15,14 @@ import {
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { StatusEnum } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
 import { InvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
 const mockEnqueue = jest.fn();
+jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -84,6 +86,9 @@ const Components = ({
 describe('FixCommitmentInfo', () => {
   beforeEach(() => {
     setContactFocus.mockClear();
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
   });
 
   it('default with test data', async () => {
@@ -149,7 +154,7 @@ describe('FixCommitmentInfo', () => {
 
     expect(
       await findByText(
-        'Are you sure you wish to update Tester 1 commitment info?',
+        'Are you sure you wish to update the commitment info for Tester 1?',
       ),
     ).toBeInTheDocument(),
       userEvent.click(getByText('Yes'));
@@ -168,7 +173,7 @@ describe('FixCommitmentInfo', () => {
 
     expect(
       await findByText(
-        'Are you sure you wish to update Tester 2 commitment info?',
+        'Are you sure you wish to update the commitment info for Tester 2?',
       ),
     ).toBeInTheDocument();
     userEvent.click(await findByText('Yes'));
@@ -218,7 +223,7 @@ describe('FixCommitmentInfo', () => {
 
     expect(
       await findByText(
-        "Are you sure you wish to leave Tester 1's commitment information unchanged?",
+        'Are you sure you wish to leave the commitment information unchanged for Tester 1?',
       ),
     ).toBeInTheDocument();
 

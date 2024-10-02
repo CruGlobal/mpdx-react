@@ -29,6 +29,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   PledgeCurrencyOptionFormatEnum,
@@ -207,6 +208,7 @@ const Contact: React.FC<Props> = ({
   const statusOptions = constants?.status;
   const { contactStatuses } = useContactPartnershipStatuses();
   const phases = constants?.phases;
+  const { appName } = useGetAppSettings();
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
@@ -245,7 +247,7 @@ const Contact: React.FC<Props> = ({
 
     showModal(
       modalContact,
-      t(`Are you sure you wish to update {{source}} commitment info?`, {
+      t(`Are you sure you wish to update the commitment info for {{source}}?`, {
         source: name,
       }),
       t('Update'),
@@ -564,7 +566,7 @@ const Contact: React.FC<Props> = ({
                           showModal(
                             modalContact,
                             t(
-                              `Are you sure you wish to leave {{source}}'s commitment information unchanged?`,
+                              `Are you sure you wish to leave the commitment information unchanged for {{source}}?`,
                               { source: name },
                             ),
                             t("Don't Change"),
@@ -583,8 +585,8 @@ const Contact: React.FC<Props> = ({
                             showModal(
                               modalContact,
                               t(
-                                `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
-                                { source: name },
+                                `Are you sure you wish to hide {{source}}? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".`,
+                                { source: name, appName: appName },
                               ),
                               t('Hide'),
                               UpdateTypeEnum.Hide,
