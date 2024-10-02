@@ -38,8 +38,8 @@ interface EditGoogleIntegrationFormProps {
   account: GoogleAccountAttributesSlimmed;
   googleAccountDetails: GoogleAccountIntegrationSlimmed;
   loading: boolean;
-  setIsSubmitting: (boolean) => void;
-  handleToggleCalendarIntegration: (boolean) => void;
+  setIsSubmitting: (isSubmitting: boolean) => void;
+  handleToggleCalendarIntegration: (enableIntegration: boolean) => void;
   handleClose: () => void;
 }
 
