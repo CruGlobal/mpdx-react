@@ -33,6 +33,10 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSetupTour }) => (
 );
 
 describe('ProfileMenuPanelForNavBar', () => {
+  beforeAll(() => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  });
+
   it('default', () => {
     const { getByTestId } = render(<TestComponent />);
 

@@ -1,4 +1,3 @@
-import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import React, { ReactElement, useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
@@ -54,12 +53,6 @@ const LogoutPage = ({}): ReactElement => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  context.res.setHeader(
-    'Set-Cookie',
-    `mpdx-handoff.logged-in=; path=/; Max-Age=0; domain=${process.env.REWRITE_DOMAIN}`,
-  );
-  return loadSession(context);
-};
+export const getServerSideProps = loadSession;
 
 export default LogoutPage;

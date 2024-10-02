@@ -35,13 +35,12 @@ interface ComponentsProps {
   tester: boolean;
   expandedPanel: string;
 }
-const userId = 'userID123';
 const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
-          <UserPreferenceContext.Provider value={{ userId, locale: 'en-US' }}>
+          <UserPreferenceContext.Provider value={{ locale: 'en-US' }}>
             <EarlyAdopterAccordion
               handleAccordionChange={handleAccordionChange}
               expandedPanel={expandedPanel}
@@ -126,12 +125,7 @@ describe('EarlyAdopterAccordion', () => {
   });
 
   describe('onSubmit()', () => {
-    beforeEach(() => {
-      process.env.SITE_URL = 'https://next.mpdx.org';
-      window.location.href = process.env.SITE_URL;
-    });
-
-    it('sets early adopter to true and does not redirect user', async () => {
+    it('sets early adopter to true', async () => {
       const { getByRole } = render(
         <Components tester={false} expandedPanel={label} />,
       );
@@ -144,11 +138,9 @@ describe('EarlyAdopterAccordion', () => {
           variant: 'success',
         }),
       );
-
-      expect(window.location.href).toEqual(process.env.SITE_URL);
     });
 
-    it('sets early adopter to false and redirects user to old MPDx', async () => {
+    it('sets early adopter to false', async () => {
       const { getByRole } = render(
         <Components tester={true} expandedPanel={label} />,
       );
@@ -160,10 +152,6 @@ describe('EarlyAdopterAccordion', () => {
         expect(mockEnqueue).toHaveBeenCalledWith('Saved successfully.', {
           variant: 'success',
         }),
-      );
-
-      expect(window.location.href).toEqual(
-        `${process.env.SITE_URL}/api/handoff?accountListId=${accountListId}&userId=${userId}&path=%2Fpreferences%2Fpersonal`,
       );
     });
   });

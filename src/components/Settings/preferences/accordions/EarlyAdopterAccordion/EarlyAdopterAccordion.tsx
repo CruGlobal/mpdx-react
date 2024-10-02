@@ -7,7 +7,6 @@ import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
@@ -34,7 +33,6 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
-  const { userId } = useUserPreferenceContext();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
@@ -58,24 +56,6 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
           variant: 'success',
         });
         handleAccordionChange(label);
-
-        if (!attributes.tester) {
-          enqueueSnackbar(
-            t('Redirecting you back to the old MPDx application.'),
-            {
-              variant: 'success',
-            },
-          );
-
-          const url = new URL(
-            `${process.env.SITE_URL || window.location.origin}/api/handoff`,
-          );
-          url.searchParams.append('accountListId', accountListId ?? '');
-          url.searchParams.append('userId', userId ?? '');
-          url.searchParams.append('path', '/preferences/personal');
-
-          window.location.href = url.toString();
-        }
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
