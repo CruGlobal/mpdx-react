@@ -45,21 +45,40 @@ describe('NavBar', () => {
   });
 
   it('opened', () => {
-    const { getAllByRole, queryByTestId } = render(
-      <TestComponent openMobile />,
-    );
+    const { getByRole, queryByTestId } = render(<TestComponent openMobile />);
 
     expect(queryByTestId('NavBarDrawer')).toBeInTheDocument();
-    expect(
-      getAllByRole('button', { name: 'Dashboard' })[0],
-    ).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
   });
 
   it('hides links during the setup tour', () => {
     const { queryByRole } = render(<TestComponent openMobile onSetupTour />);
 
     expect(
-      queryByRole('button', { name: 'Dashboard' }),
+      queryByRole('menuitem', { name: 'Dashboard' }),
     ).not.toBeInTheDocument();
+  });
+
+  describe("What's New link", () => {
+    it('is visible when HELP_WHATS_NEW_URL is set', () => {
+      process.env.HELP_WHATS_NEW_URL = '/new';
+      process.env.HELP_WHATS_NEW_IMAGE_URL = '/img.png';
+
+      const { getByRole } = render(<TestComponent openMobile />);
+
+      expect(
+        getByRole('menuitem', { name: "Help logo What's New" }),
+      ).toHaveAttribute('href', '/new');
+    });
+
+    it('is hidden when HELP_WHATS_NEW_URL is not set', () => {
+      process.env.HELP_WHATS_NEW_URL = '';
+
+      const { queryByRole } = render(<TestComponent openMobile />);
+
+      expect(
+        queryByRole('menuitem', { name: "Help logo What's New" }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

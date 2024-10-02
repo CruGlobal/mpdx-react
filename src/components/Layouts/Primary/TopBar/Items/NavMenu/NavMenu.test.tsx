@@ -1,186 +1,142 @@
+import { NextRouter } from 'next/router';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import theme from 'src/theme';
-import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
 
 const accountListId = 'test121';
 
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
+interface TestComponentProps {
+  router?: Partial<NextRouter>;
+  mocks?: ApolloErgonoMockMap;
+}
 
-const routerHidden = {
-  query: { accountListId: '' },
-  isReady: true,
-};
-
-const routerAppeals = {
-  query: { accountListId },
-  isReady: true,
-  pathname: '/accountLists/test/tools/appeals',
-};
+const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter
+      router={{
+        query: { accountListId },
+        isReady: true,
+        ...router,
+      }}
+    >
+      <GqlMockedProvider mocks={mocks}>
+        <NavMenu />
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
 
 describe('NavMenu', () => {
   it('default', async () => {
-    const { getByRole, getByTestId, findByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ LoadCoachingList: LoadCoachingListQuery }>
-            mocks={{
-              LoadCoachingList: {
-                coachingAccountLists: {
-                  totalCount: 1,
-                },
-              },
-            }}
-          >
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+    const { findByRole, getByRole, getByTestId } = render(
+      <TestComponent
+        mocks={{
+          LoadCoachingList: {
+            coachingAccountLists: {
+              totalCount: 1,
+            },
+          },
+        }}
+      />,
     );
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Dashboard' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Contacts' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Reports' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Tools' }),
-    ).toBeInTheDocument();
-
+    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Tools' })).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
+    expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Donations' })).toBeVisible();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Donations' }),
+      getByRole('menuitem', { name: '14 Month Partner Report' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Donations' }),
-    ).toBeVisible();
-    expect(
-      getByRole('menuitem', {
-        hidden: true,
-        name: '14 Month Partner Report',
-      }),
+      getByRole('menuitem', { name: '14 Month Salary Report' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', {
-        hidden: true,
-        name: '14 Month Salary Report',
-      }),
+      getByRole('menuitem', { name: 'Designation Accounts' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Designation Accounts' }),
+      getByRole('menuitem', { name: 'Responsibility Centers' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Responsibility Centers' }),
+      getByRole('menuitem', { name: 'Expected Monthly Total' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Expected Monthly Total' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Partner Giving Analysis' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Coaching' }),
+      getByRole('menuitem', { name: 'Partner Giving Analysis' }),
     ).toBeInTheDocument();
     userEvent.click(getByTestId('ToolsMenuToggle'));
+    expect(getByRole('menuitem', { name: 'Appeal' })).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Appeal' }),
+      getByRole('menuitem', { name: 'Fix Commitment Info' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Fix Commitment Info' }),
+      getByRole('menuitem', { name: 'Fix Mailing Addresses' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Fix Mailing Addresses' }),
+      getByRole('menuitem', { name: 'Fix Send Newsletter' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Fix Send Newsletter' }),
+      getByRole('menuitem', { name: 'Merge Contacts' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Merge Contacts' }),
+      getByRole('menuitem', { name: 'Fix Email Addresses' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Fix Email Addresses' }),
+      getByRole('menuitem', { name: 'Fix Phone Numbers' }),
+    ).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Merge People' })).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Import from Google' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Fix Phone Numbers' }),
+      getByRole('menuitem', { name: 'Import from TntConnect' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Merge People' }),
+      getByRole('menuitem', { name: 'Import from CSV' }),
     ).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Donations' })).not.toBeVisible();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Import from Google' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Import from TntConnect' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Import from CSV' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Donations' }),
+      getByRole('menuitem', { name: '14 Month Partner Report' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', {
-        hidden: true,
-        name: '14 Month Partner Report',
-      }),
+      getByRole('menuitem', { name: '14 Month Salary Report' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', {
-        hidden: true,
-        name: '14 Month Salary Report',
-      }),
+      getByRole('menuitem', { name: 'Designation Accounts' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Designation Accounts' }),
+      getByRole('menuitem', { name: 'Responsibility Centers' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Responsibility Centers' }),
+      getByRole('menuitem', { name: 'Expected Monthly Total' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', { hidden: true, name: 'Expected Monthly Total' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Partner Giving Analysis' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { hidden: true, name: 'Coaching' }),
+      getByRole('menuitem', { name: 'Partner Giving Analysis' }),
     ).not.toBeVisible();
     expect(getByTestId('appeals-false')).toBeInTheDocument();
     expect(
-      await findByRole('menuitem', { hidden: true, name: 'Coaching' }),
+      await findByRole('menuitem', { name: 'Coaching' }),
     ).toBeInTheDocument();
   });
 
   it('does not show coaching link if there are no coaching accounts', async () => {
     const { queryByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ LoadCoachingList: LoadCoachingListQuery }>
-            mocks={{
-              LoadCoachingList: {
-                coachingAccountLists: {
-                  totalCount: 0,
-                  nodes: [],
-                },
-              },
-            }}
-          >
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent
+        mocks={{
+          LoadCoachingList: {
+            coachingAccountLists: {
+              totalCount: 0,
+              nodes: [],
+            },
+          },
+        }}
+      />,
     );
     await waitFor(() =>
       expect(
@@ -191,26 +147,42 @@ describe('NavMenu', () => {
 
   it('hidden', () => {
     const { queryByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={routerHidden}>
-          <GqlMockedProvider>
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent router={{ query: { accountListId: '' } }} />,
     );
     expect(queryByRole('menuitem')).toBeNull();
   });
 
+  describe("What's New link", () => {
+    it('is visible when HELP_WHATS_NEW_URL is set', () => {
+      process.env.HELP_WHATS_NEW_URL = '/new';
+      process.env.HELP_WHATS_NEW_IMAGE_URL = '/img.png';
+
+      const { getByRole } = render(<TestComponent />);
+
+      expect(
+        getByRole('menuitem', { name: "Help logo What's New" }),
+      ).toHaveAttribute('href', '/new');
+    });
+
+    it('is hidden when HELP_WHATS_NEW_URL is not set', () => {
+      process.env.HELP_WHATS_NEW_URL = '';
+
+      const { queryByRole } = render(<TestComponent />);
+
+      expect(
+        queryByRole('menuitem', { name: "Help logo What's New" }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('test current tool id hook', () => {
     const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={routerAppeals}>
-          <GqlMockedProvider>
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent
+        router={{
+          query: { accountListId },
+          pathname: '/accountLists/test/tools/appeals',
+        }}
+      />,
     );
     userEvent.click(getByTestId('ToolsMenuToggle'));
     expect(getByTestId('appeals-true')).toBeInTheDocument();
@@ -218,32 +190,24 @@ describe('NavMenu', () => {
 
   it('test notifications = 0', async () => {
     const { queryByTestId, getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetToolNotifications: GetToolNotificationsQuery;
-          }>
-            mocks={{
-              GetToolNotifications: {
-                contacts: {
-                  totalCount: 0,
-                },
-                people: {
-                  totalCount: 0,
-                },
-                contactDuplicates: {
-                  totalCount: 0,
-                },
-                personDuplicates: {
-                  totalCount: 0,
-                },
-              },
-            }}
-          >
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent
+        mocks={{
+          GetToolNotifications: {
+            contacts: {
+              totalCount: 0,
+            },
+            people: {
+              totalCount: 0,
+            },
+            contactDuplicates: {
+              totalCount: 0,
+            },
+            personDuplicates: {
+              totalCount: 0,
+            },
+          },
+        }}
+      />,
     );
 
     await waitFor(() =>
@@ -261,32 +225,24 @@ describe('NavMenu', () => {
 
   it('test notifications > 0', async () => {
     const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetToolNotifications: GetToolNotificationsQuery;
-          }>
-            mocks={{
-              GetToolNotifications: {
-                contacts: {
-                  totalCount: 1,
-                },
-                people: {
-                  totalCount: 1,
-                },
-                contactDuplicates: {
-                  totalCount: 1,
-                },
-                personDuplicates: {
-                  totalCount: 1,
-                },
-              },
-            }}
-          >
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent
+        mocks={{
+          GetToolNotifications: {
+            contacts: {
+              totalCount: 1,
+            },
+            people: {
+              totalCount: 1,
+            },
+            contactDuplicates: {
+              totalCount: 1,
+            },
+            personDuplicates: {
+              totalCount: 1,
+            },
+          },
+        }}
+      />,
     );
 
     await waitFor(() =>
@@ -305,32 +261,24 @@ describe('NavMenu', () => {
 
   it('test notifications > 99', async () => {
     const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetToolNotifications: GetToolNotificationsQuery;
-          }>
-            mocks={{
-              GetToolNotifications: {
-                contacts: {
-                  totalCount: 30,
-                },
-                people: {
-                  totalCount: 30,
-                },
-                contactDuplicates: {
-                  totalCount: 130,
-                },
-                personDuplicates: {
-                  totalCount: 30,
-                },
-              },
-            }}
-          >
-            <NavMenu />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent
+        mocks={{
+          GetToolNotifications: {
+            contacts: {
+              totalCount: 30,
+            },
+            people: {
+              totalCount: 30,
+            },
+            contactDuplicates: {
+              totalCount: 130,
+            },
+            personDuplicates: {
+              totalCount: 30,
+            },
+          },
+        }}
+      />,
     );
 
     await waitFor(() =>
