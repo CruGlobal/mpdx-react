@@ -80,7 +80,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                 {statusText}
                 {status === StatusEnum.PartnerFinancial && (
                   <>
-                    {contact?.pledgeAmount && contact?.pledgeFrequency && (
+                    {!!contact?.pledgeAmount && !!contact?.pledgeFrequency && (
                       <Typography variant="subtitle1">
                         {`${
                           contact.pledgeAmount && contact?.pledgeCurrency
