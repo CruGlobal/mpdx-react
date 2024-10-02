@@ -4,12 +4,3 @@ query ContactTags($accountListId: ID!) {
     contactTagList
   }
 }
-
-query ContactFilters($accountListId: ID!) {
-  accountList(id: $accountListId) {
-    id
-    contactFilterGroups {
-      ...FilterPanelGroup
-    }
-  }
-}

@@ -4,7 +4,8 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { IdValue } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../../theme';
 
 export const PreviewBox = styled(Box)(({ theme }) => ({
@@ -28,16 +29,15 @@ export const DetailsBox = styled(Box)(() => ({
 
 export interface ContactFlowRowPreviewProps {
   name: string;
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: StatusEnum;
   starred: boolean;
-  width: number;
+  width: number | undefined;
 }
 
 export const ContactFlowRowPreview: React.FC<ContactFlowRowPreviewProps> = memo(
   function ContactFlowRowPreview({ name, status, starred, width }) {
     const { t } = useTranslation();
+
     return (
       <PreviewBox width={width}>
         <PreviewInnerBox>
@@ -53,9 +53,7 @@ export const ContactFlowRowPreview: React.FC<ContactFlowRowPreviewProps> = memo(
               <Typography style={{ color: theme.palette.mpdxBlue.main }}>
                 {name}
               </Typography>
-              <Typography>
-                {t('{{status}}', { status: status.value })}
-              </Typography>
+              <Typography>{getLocalizedContactStatus(t, status)}</Typography>
             </Box>
           </DetailsBox>
           <Box display="flex" pr={2}>

@@ -20,9 +20,8 @@ import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated'
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
-import { ActivitySummary } from './ActivitySummary/ActivitySummary';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import { CoachingSidebar } from './CoachingSidebar';
+import { LevelOfEffort } from './LevelOfEffort/LevelOfEffort';
 import {
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
@@ -31,6 +30,7 @@ import {
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { OutstandingCommitments } from './OutstandingCommitments/OutstandingCommitments';
 import { OutstandingNeeds } from './OutstandingNeeds/OutstandingNeeds';
+import { PartnersProgress } from './PartnersProgress/PartnersProgress';
 import { TagsSummary } from './TagsSummary/TagsSummary';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 
@@ -176,6 +176,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
                       aria-label={t('Toggle account details')}
+                      name={t('Toggle account details')}
                     >
                       <MenuOpenIcon />
                     </IconButton>
@@ -210,17 +211,12 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 currencyCode={accountListData?.currency}
                 goal={accountListData?.monthlyGoal ?? 0}
               />
-              <AppointmentResults
+              <PartnersProgress
                 accountListId={accountListId}
                 currency={accountListData?.currency}
                 period={period}
               />
-              <ActivitySummary accountListId={accountListId} period={period} />
-              <TagsSummary
-                accountListId={accountListId}
-                period={period}
-                association={ReportsTagHistoriesAssociationEnum.Contacts}
-              />
+              <LevelOfEffort accountListId={accountListId} period={period} />
               <TagsSummary
                 accountListId={accountListId}
                 period={period}

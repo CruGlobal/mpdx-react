@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Grid,
   InputLabel,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -35,11 +36,12 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -121,6 +123,9 @@ export const EditPartnershipInfoModal: React.FC<
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const { contactStatuses } = useContactPartnershipStatuses();
+
+  const phases = constants?.phases;
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
     useState(false);
 
@@ -308,11 +313,16 @@ export const EditPartnershipInfoModal: React.FC<
                           },
                         }}
                       >
-                        {Object.values(StatusEnum).map((value) => (
-                          <MenuItem key={value} value={value}>
-                            {getLocalizedContactStatus(t, value)}
-                          </MenuItem>
-                        ))}
+                        {phases?.map((phase) => [
+                          <ListSubheader key={phase?.id}>
+                            {getLocalizedPhase(t, phase?.id)}
+                          </ListSubheader>,
+                          phase?.contactStatuses.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {contactStatuses[status]?.translated}
+                            </MenuItem>
+                          )),
+                        ])}
                       </Select>
                     </FormControl>
                   </ContactInputWrapper>

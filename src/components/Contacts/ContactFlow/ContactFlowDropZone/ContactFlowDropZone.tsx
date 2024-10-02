@@ -3,7 +3,8 @@ import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
 import { useTranslation } from 'react-i18next';
-import { IdValue } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import theme from '../../../../theme';
 import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 
@@ -31,14 +32,11 @@ export const DropZoneBox = styled(Box, {
 }));
 
 interface Props {
-  status: {
-    __typename?: 'IdValue' | undefined;
-  } & Pick<IdValue, 'id' | 'value'>;
+  status: StatusEnum;
   changeContactStatus: (
     id: string,
-    status: {
-      __typename?: 'IdValue' | undefined;
-    } & Pick<IdValue, 'id' | 'value'>,
+    status: StatusEnum,
+    contactPhase?: PhaseEnum | null,
   ) => Promise<void>;
 }
 
@@ -46,30 +44,23 @@ export const ContactFlowDropZone: React.FC<Props> = ({
   status,
   changeContactStatus,
 }: Props) => {
+  const { t } = useTranslation();
   const [{ isOver, canDrop }, drop] = useDrop(() => ({
     accept: 'contact',
-    canDrop: (contact) => String(contact.status.id) !== String(status.id),
+    canDrop: (contact) => contact.status !== status,
     drop: (contact: DraggedContact) => {
-      String(contact.status.id) !== String(status.id)
-        ? changeContactStatus(contact.id, status)
-        : null;
+      changeContactStatus(contact.id, status, contact.contactPhase);
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),
     }),
   }));
-  const { t } = useTranslation();
 
   return (
-    <DropZoneBox
-      key={status.id}
-      canDrop={canDrop}
-      isOver={isOver}
-      {...{ ref: drop }}
-    >
+    <DropZoneBox canDrop={canDrop} isOver={isOver} ref={drop}>
       <Typography variant="h5" align="center">
-        {t('{{status}}', { status: status.value })}
+        {getLocalizedContactStatus(t, status)}
       </Typography>
     </DropZoneBox>
   );

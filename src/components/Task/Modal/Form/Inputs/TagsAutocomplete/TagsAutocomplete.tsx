@@ -12,6 +12,7 @@ interface TagsAutocompleteProps {
   type: TagTypeEnum;
   value: string[];
   onChange: (tagList: string[]) => void;
+  label?: string;
 }
 
 export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
@@ -19,6 +20,7 @@ export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
   type,
   value,
   onChange,
+  label,
 }) => {
   const { t } = useTranslation();
 
@@ -52,7 +54,7 @@ export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          label={t('Tags')}
+          label={label || t('Tags')}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

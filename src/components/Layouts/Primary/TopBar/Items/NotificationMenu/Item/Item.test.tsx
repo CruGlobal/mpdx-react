@@ -186,7 +186,7 @@ describe('NotificationMenuItem', () => {
       </TestWrapper>,
     );
     expect(getByRole('button').textContent).toEqual(
-      'SSmith, RogerMay 25, 2020 — On your email newsletter list but has no people with a valid email address',
+      'SSmith, RogerMay 25, 2020 — On your digital newsletter list but has no people with a valid email address',
     );
   });
 

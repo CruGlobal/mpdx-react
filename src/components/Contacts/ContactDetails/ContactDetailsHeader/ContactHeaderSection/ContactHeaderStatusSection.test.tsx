@@ -2,20 +2,20 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import { gqlMock } from '__tests__/util/graphqlMocking';
-import {
-  StatusEnum as ContactPartnershipStatusEnum,
-  PledgeFrequencyEnum,
-} from 'src/graphql/types.generated';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import i18n from '../../../../../lib/i18n';
 import theme from '../../../../../theme';
 import {
   ContactDetailsHeaderFragment,
   ContactDetailsHeaderFragmentDoc,
 } from '../ContactDetailsHeader.generated';
+import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { ContactHeaderStatusSection } from './ContactHeaderStatusSection';
 
-const contactMock = (status: ContactPartnershipStatusEnum) => {
+const contactMock = (status: StatusEnum) => {
   return gqlMock<ContactDetailsHeaderFragment>(
     ContactDetailsHeaderFragmentDoc,
     {
@@ -47,10 +47,29 @@ const contactMock = (status: ContactPartnershipStatusEnum) => {
   );
 };
 
+interface ComponentsProps {
+  loading: boolean;
+  contact: ContactHeaderStatusFragment | undefined;
+}
+
+const Components = ({ loading, contact }: ComponentsProps) => (
+  <GqlMockedProvider<{
+    LoadConstants: LoadConstantsQuery;
+  }>
+    mocks={{ LoadConstants: loadConstantsMockData }}
+  >
+    <ThemeProvider theme={theme}>
+      <I18nextProvider i18n={i18n}>
+        <ContactHeaderStatusSection loading={loading} contact={contact} />
+      </I18nextProvider>
+    </ThemeProvider>
+  </GqlMockedProvider>
+);
+
 describe('ContactHeaderStatusSection', () => {
   it('should show loading state', () => {
     const { queryByText } = render(
-      <ContactHeaderStatusSection loading={true} contact={undefined} />,
+      <Components loading={true} contact={undefined} />,
     );
 
     expect(queryByText('Partner - Financial')).toBeNull();
@@ -58,7 +77,7 @@ describe('ContactHeaderStatusSection', () => {
 
   it('should render if status is null', () => {
     const { queryByText } = render(
-      <ContactHeaderStatusSection
+      <Components
         loading={false}
         contact={gqlMock<ContactDetailsHeaderFragment>(
           ContactDetailsHeaderFragmentDoc,
@@ -70,47 +89,35 @@ describe('ContactHeaderStatusSection', () => {
     expect(queryByText('Partner - Financial')).toBeNull();
   });
 
-  it('renders for financial partner', () => {
-    const { queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <ContactHeaderStatusSection
-          loading={false}
-          contact={contactMock(
-            'PARTNER_FINANCIAL' as ContactPartnershipStatusEnum,
-          )}
-        />
-      </ThemeProvider>,
+  it('renders for financial partner', async () => {
+    const { queryByText, findByText } = render(
+      <Components
+        loading={false}
+        contact={contactMock(StatusEnum.PartnerFinancial)}
+      />,
     );
-    expect(queryByText('Partner - Financial')).toBeInTheDocument();
+    expect(await findByText('Partner - Financial')).toBeInTheDocument();
     expect(queryByText('$500 - Monthly')).toBeInTheDocument();
   });
 
-  it.each([
-    ['NEVER_CONTACTED', 'Never Contacted'],
-    ['ASK_IN_FUTURE', 'Ask In Future'],
-    ['CULTIVATE_RELATIONSHIP', 'Cultivate Relationship'],
-    ['CONTACT_FOR_APPOINTMENT', 'Contact for Appointment'],
-    ['APPOINTMENT_SCHEDULED', 'Appointment Scheduled'],
-    ['CALL_FOR_DECISION', 'Call for Decision'],
-    ['PARTNER_FINANCIAL', 'Partner - Financial'],
-    ['PARTNER_SPECIAL', 'Partner - Special'],
-    ['PARTNER_PRAY', 'Partner - Pray'],
-    ['NOT_INTERESTED', 'Not Interested'],
-    ['UNRESPONSIVE', 'Unresponsive'],
-    ['NEVER_ASK', 'Never Ask'],
-    ['RESEARCH_ABANDONED', 'Research Abandoned'],
-    ['EXPIRED_REFERRAL', 'Expired Referral'],
-  ])('should render status | %s', (status, expected) => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <I18nextProvider i18n={i18n}>
-          <ContactHeaderStatusSection
-            loading={false}
-            contact={contactMock(status as ContactPartnershipStatusEnum)}
-          />
-        </I18nextProvider>
-      </ThemeProvider>,
-    );
-    expect(getByText(expected)).toBeInTheDocument();
+  const statuses = Object.values(StatusEnum).map((status) => {
+    return [
+      status,
+      loadConstantsMockData.constant.status?.find((s) => s.id === status)
+        ?.value || '',
+    ];
   });
+
+  it.each([...statuses])(
+    'should render status | %s',
+    async (status, expected) => {
+      const { findByText } = render(
+        <Components
+          loading={false}
+          contact={contactMock(status as StatusEnum)}
+        />,
+      );
+      expect(await findByText(expected)).toBeInTheDocument();
+    },
+  );
 });

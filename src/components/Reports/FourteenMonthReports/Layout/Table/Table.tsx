@@ -12,9 +12,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
 import { MonthTotal } from '../../FourteenMonthReport';
@@ -79,6 +79,7 @@ export const FourteenMonthReportTable: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const totalAverage = useMemo(
     () =>
@@ -147,7 +148,8 @@ export const FourteenMonthReportTable: React.FC<
               {isExpanded && (
                 <>
                   <StyledTableCell>
-                    {getLocalizedContactStatus(t, contact.status)}
+                    {contact.status &&
+                      contactStatuses[contact.status.toUpperCase()]?.translated}
                   </StyledTableCell>
                   <StyledTableCell data-testid="pledgeAmount">
                     {contact.pledgeAmount &&

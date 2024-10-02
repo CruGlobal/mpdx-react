@@ -41,20 +41,22 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const Components = ({ task }: { task?: TaskRowFragment }) => (
+  <GqlMockedProvider>
+    <ThemeProvider theme={theme}>
+      <ContactTaskRow
+        accountListId={accountListId}
+        task={task}
+        isChecked={false}
+        onTaskCheckToggle={onTaskCheckToggle}
+      />
+    </ThemeProvider>
+  </GqlMockedProvider>
+);
+
 describe('ContactTaskRow', () => {
   it('should render loading', () => {
-    const { getByTestId } = render(
-      <GqlMockedProvider>
-        <ThemeProvider theme={theme}>
-          <ContactTaskRow
-            accountListId={accountListId}
-            task={undefined}
-            isChecked={false}
-            onTaskCheckToggle={onTaskCheckToggle}
-          />
-        </ThemeProvider>
-      </GqlMockedProvider>,
-    );
+    const { getByTestId } = render(<Components />);
 
     expect(getByTestId('loadingRow')).toBeVisible();
   });
@@ -67,18 +69,7 @@ describe('ContactTaskRow', () => {
       },
     });
 
-    const { findByText, queryByTestId } = render(
-      <GqlMockedProvider>
-        <ThemeProvider theme={theme}>
-          <ContactTaskRow
-            accountListId={accountListId}
-            task={task}
-            isChecked={false}
-            onTaskCheckToggle={onTaskCheckToggle}
-          />
-        </ThemeProvider>
-      </GqlMockedProvider>,
-    );
+    const { findByText, queryByTestId } = render(<Components task={task} />);
 
     expect(await findByText(task.subject)).toBeVisible();
 
@@ -97,18 +88,7 @@ describe('ContactTaskRow', () => {
       },
     });
 
-    const { findByText, getByRole } = render(
-      <GqlMockedProvider>
-        <ThemeProvider theme={theme}>
-          <ContactTaskRow
-            accountListId={accountListId}
-            task={task}
-            onTaskCheckToggle={onTaskCheckToggle}
-            isChecked={false}
-          />
-        </ThemeProvider>
-      </GqlMockedProvider>,
-    );
+    const { findByText, getByRole } = render(<Components task={task} />);
 
     expect(await findByText(task.subject)).toBeVisible();
     userEvent.click(getByRole('checkbox', { hidden: true }));
@@ -116,26 +96,14 @@ describe('ContactTaskRow', () => {
   });
 
   describe('task interactions', () => {
+    const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        startAt,
+        result: ResultEnum.None,
+      },
+    });
     it('handles complete button click', async () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          startAt,
-          result: ResultEnum.None,
-        },
-      });
-
-      const { findByText, getByRole } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
+      const { findByText, getByRole } = render(<Components task={task} />);
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
@@ -147,25 +115,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('handles subject click', async () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          startAt,
-          result: ResultEnum.None,
-        },
-      });
-
-      const { findByText, getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
+      const { findByText, getByText } = render(<Components task={task} />);
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByText(task.subject));
@@ -176,25 +126,7 @@ describe('ContactTaskRow', () => {
     });
 
     it('handle comment button click', async () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          startAt,
-          result: ResultEnum.None,
-        },
-      });
-
-      const { findByText, getByRole } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
+      const { findByText, getByRole } = render(<Components task={task} />);
 
       expect(await findByText(task.subject)).toBeVisible();
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
@@ -205,24 +137,8 @@ describe('ContactTaskRow', () => {
     });
 
     it('handles delete task', async () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          startAt,
-          result: ResultEnum.None,
-        },
-      });
-
       const { findByText, getByRole, getByText, queryByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
+        <Components task={task} />,
       );
 
       expect(await findByText(task.subject)).toBeVisible();
@@ -238,349 +154,54 @@ describe('ContactTaskRow', () => {
   });
 
   describe('activity type', () => {
-    it('displays Appointment', () => {
+    it.each([
+      { activityType: ActivityTypeEnum.AppointmentInPerson, name: 'In Person' },
+      {
+        activityType: ActivityTypeEnum.InitiationPhoneCall,
+        name: 'Phone Call',
+      },
+      { activityType: ActivityTypeEnum.InitiationEmail, name: 'Email' },
+      {
+        activityType: ActivityTypeEnum.InitiationSocialMedia,
+        name: 'Social Media',
+      },
+      {
+        activityType: ActivityTypeEnum.PartnerCareDigitalNewsletter,
+        name: 'Digital Newsletter',
+      },
+      {
+        activityType: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+        name: 'Physical Newsletter',
+      },
+      {
+        activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
+        name: 'Prayer Request',
+      },
+      { activityType: ActivityTypeEnum.InitiationLetter, name: 'Letter' },
+      {
+        activityType: ActivityTypeEnum.InitiationSpecialGiftAppeal,
+        name: 'Special Gift Appeal',
+      },
+      { activityType: ActivityTypeEnum.PartnerCareInPerson, name: 'In Person' },
+      {
+        activityType: ActivityTypeEnum.FollowUpTextMessage,
+        name: 'Text Message',
+      },
+      {
+        activityType: ActivityTypeEnum.PartnerCareThank,
+        name: 'Thank You Note',
+      },
+      { activityType: ActivityTypeEnum.PartnerCareToDo, name: 'To Do' },
+    ])('displays $name', ({ activityType, name }) => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
-          activityType: ActivityTypeEnum.Appointment,
+          activityType,
         },
       });
 
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
+      const { getByText } = render(<Components task={task} />);
 
-      expect(getByText('Appointment')).toBeVisible();
-    });
-
-    it('displays Call', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.Call,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Call')).toBeVisible();
-    });
-
-    it('displays Email', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.Email,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Email')).toBeVisible();
-    });
-
-    it('displays Facebook Message', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.FacebookMessage,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Facebook Message')).toBeVisible();
-    });
-
-    it('displays Letter', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.Letter,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Letter')).toBeVisible();
-    });
-
-    it('displays Newslatter - Email', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.NewsletterEmail,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Newsletter - Email')).toBeVisible();
-    });
-
-    it('displays Newsletter - Physical', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.NewsletterPhysical,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Newsletter - Physical')).toBeVisible();
-    });
-
-    it('displays Prayer Request', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.PrayerRequest,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Prayer Request')).toBeVisible();
-    });
-
-    it('displays Pre-Call Letter', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.PreCallLetter,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Pre-Call Letter')).toBeVisible();
-    });
-
-    it('displays Reminder Letter', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.ReminderLetter,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Reminder Letter')).toBeVisible();
-    });
-
-    it('displays Support Letter', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.SupportLetter,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Support Letter')).toBeVisible();
-    });
-
-    it('displays Talk To In Person', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.TalkToInPerson,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Talk To In Person')).toBeVisible();
-    });
-
-    it('displays Text Message', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.TextMessage,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Text Message')).toBeVisible();
-    });
-
-    it('displays Thank', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.Thank,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('Thank')).toBeVisible();
-    });
-
-    it('displays To Do', () => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType: ActivityTypeEnum.ToDo,
-        },
-      });
-
-      const { getByText } = render(
-        <GqlMockedProvider>
-          <ThemeProvider theme={theme}>
-            <ContactTaskRow
-              accountListId={accountListId}
-              task={task}
-              isChecked={false}
-              onTaskCheckToggle={onTaskCheckToggle}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>,
-      );
-
-      expect(getByText('To Do')).toBeVisible();
+      expect(getByText(name)).toBeVisible();
     });
   });
 });

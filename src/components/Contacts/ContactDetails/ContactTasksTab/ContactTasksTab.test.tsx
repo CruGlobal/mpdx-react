@@ -5,12 +5,16 @@ import { DateTime } from 'luxon';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { PhaseEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import { TasksMassActionsDropdown } from '../../../Shared/MassActions/TasksMassActionsDropdown';
 import { ContactTasksTab } from './ContactTasksTab';
-import { ContactTasksTabQuery } from './ContactTasksTab.generated';
+import {
+  ContactPhaseQuery,
+  ContactTasksTabQuery,
+} from './ContactTasksTab.generated';
 
 jest.mock('../../../../hooks/useTaskModal');
 jest.mock('../../../../hooks/useAccountListId');
@@ -52,6 +56,10 @@ jest.mock('notistack', () => ({
 
 const accountListId = '123';
 const contactId = 'abc';
+const phase = PhaseEnum.Archive;
+const contactPhaseMock = {
+  ContactPhase: { contact: { contactPhase: phase } },
+};
 
 describe('ContactTasksTab', () => {
   it('default', async () => {
@@ -111,7 +119,12 @@ describe('ContactTasksTab', () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={querySpy}>
+        <GqlMockedProvider<{
+          ContactPhase: ContactPhaseQuery;
+        }>
+          mocks={contactPhaseMock}
+          onCall={querySpy}
+        >
           <VirtuosoMockContext.Provider
             value={{ viewportHeight: 300, itemHeight: 100 }}
           >
@@ -143,6 +156,7 @@ describe('ContactTasksTab', () => {
       view: TaskModalEnum.Add,
       defaultValues: {
         contactIds: [contactId],
+        taskPhase: phase,
       },
     });
   });
@@ -151,7 +165,12 @@ describe('ContactTasksTab', () => {
     const querySpy = jest.fn();
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={querySpy}>
+        <GqlMockedProvider<{
+          ContactPhase: ContactPhaseQuery;
+        }>
+          mocks={contactPhaseMock}
+          onCall={querySpy}
+        >
           <VirtuosoMockContext.Provider
             value={{ viewportHeight: 300, itemHeight: 100 }}
           >
@@ -183,6 +202,7 @@ describe('ContactTasksTab', () => {
       defaultValues: {
         completedAt: DateTime.local().toISO(),
         contactIds: [contactId],
+        taskPhase: phase,
       },
     });
   });
@@ -303,9 +323,11 @@ describe('ContactTasksTab', () => {
 
     // Wait for the fetchMore to be called
     await waitFor(() => {
-      const { operation } = querySpy.mock.calls[2][0];
-      expect(operation.operationName).toBe('ContactTasksTab');
-      expect(operation.variables.after).toBe('MjU');
+      expect(querySpy).toHaveGraphqlOperation('ContactTasksTab', {
+        accountListId: '123',
+        after: 'MjU',
+        tasksFilter: { contactIds: ['abc'], wildcardSearch: undefined },
+      });
     });
   });
 });

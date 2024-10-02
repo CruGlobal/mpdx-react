@@ -1011,7 +1011,7 @@ describe('PersonModal', () => {
       userEvent.click(getAllByLabelText('Email Address Type')[0]);
       userEvent.click(getAllByLabelText('Personal')[0]);
       userEvent.click(getAllByLabelText('Primary')[1]);
-      userEvent.click(getByLabelText('Opt-out of Email Newsletter'));
+      userEvent.click(getByLabelText('Opt-out of Digital Newsletter'));
 
       userEvent.click(getByText('Save'));
 

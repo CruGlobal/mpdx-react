@@ -4,13 +4,11 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  fireEvent,
-  render,
-  waitFor,
-} from '__tests__/util/testingLibraryReactMock';
+import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
-import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import Contact from './Contact';
 
@@ -18,8 +16,7 @@ let testData = {
   id: 'test 1',
   name: 'Tester 1',
   avatar: '',
-  statusTitle: 'Partner - Financial',
-  statusValue: 'NEW_CONNECTION',
+  status: 'PARTNER_FINANCIAL',
   frequencyTitle: 'Monthly',
   frequencyValue: PledgeFrequencyEnum.Monthly,
   amount: 50,
@@ -46,36 +43,14 @@ const router = {
 const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
 
-const TestComponent = ({
-  statuses = ['Partner - Financial', 'test_option_1'],
-}: {
-  statuses?: string[];
-}) => (
+const TestComponent = ({ status = testData.status }: { status?: string }) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
-      <GqlMockedProvider
+      <GqlMockedProvider<{
+        LoadConstants: LoadConstantsQuery;
+      }>
         mocks={{
-          LoadConstants: {
-            constant: {
-              pledgeCurrency: [
-                {
-                  code: 'CAD',
-                  codeSymbolString: 'CAD ($)',
-                  name: 'Canadian Dollar',
-                },
-                {
-                  code: 'CDF',
-                  codeSymbolString: 'CDF (CDF)',
-                  name: 'Congolese Franc',
-                },
-                {
-                  code: 'CHE',
-                  codeSymbolString: 'CHE (CHE)',
-                  name: 'WIR Euro',
-                },
-              ],
-            },
-          },
+          LoadConstants: loadConstantsMockData,
         }}
       >
         <Contact
@@ -84,12 +59,10 @@ const TestComponent = ({
           donations={testData.donations.nodes}
           key={testData.name}
           showModal={handleShowModal}
-          statusTitle={testData.statusTitle}
-          statusValue={testData.statusValue}
+          status={status}
           amount={testData.amount}
           amountCurrency={testData.amountCurrency}
           frequencyValue={testData.frequencyValue}
-          statuses={statuses}
           setContactFocus={setContactFocus}
           avatar={testData.avatar}
         />
@@ -132,45 +105,8 @@ describe('FixCommitmentContact', () => {
     expect(setContactFocus).toHaveBeenCalledWith(testData.id, TabKey.Donations);
   });
 
-  it('should fail validation', async () => {
-    testData = {
-      id: 'test 2',
-      name: 'Tester 2',
-      avatar: '',
-      statusTitle: '',
-      statusValue: '',
-      frequencyTitle: '',
-      frequencyValue: PledgeFrequencyEnum.Annual,
-      amount: null!,
-      amountCurrency: '',
-      donations: {
-        nodes: [
-          {
-            id: 'donations-test-id-1',
-            amount: {
-              amount: 0,
-              currency: 'UGX',
-              conversionDate: '2021-12-24',
-              convertedCurrency: 'UGX',
-            },
-          },
-        ],
-      },
-    };
-
-    const { getByTestId } = render(<TestComponent />);
-    userEvent.click(getByTestId('confirmButton'));
-    await waitFor(() => {
-      expect(getByTestId('statusSelectError')).toHaveTextContent(
-        'Please select a status',
-      );
-    });
-  });
-
   it('should should render select field options and inputs', async () => {
-    const { getByTestId, findByTestId } = render(
-      <TestComponent statuses={['Partner - Financial', 'test_option_1']} />,
-    );
+    const { getByTestId, findByTestId } = render(<TestComponent />);
 
     const frequency = getByTestId('pledgeFrequency-input');
     fireEvent.change(frequency, {
@@ -188,7 +124,7 @@ describe('FixCommitmentContact', () => {
     fireEvent.change(status, {
       target: { value: 'Partner - Financial' },
     });
-    expect(status).toHaveValue('Partner - Financial');
+    expect(status).toHaveValue(StatusEnum.PartnerFinancial);
 
     const amount = getByTestId('pledgeAmount-input');
     fireEvent.change(amount, {
@@ -200,7 +136,7 @@ describe('FixCommitmentContact', () => {
   it('should render with correct styles', async () => {
     const { getByTestId } = render(
       <TestRouter router={router}>
-        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
+        <TestComponent />
       </TestRouter>,
     );
 
@@ -210,31 +146,24 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should render donation data', async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <TestRouter router={router}>
-        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
+        <TestComponent status="" />
       </TestRouter>,
     );
+    expect(getByText('Current: ARM 50 Monthly')).toBeInTheDocument();
     const donationDate = getByTestId('donationDate');
-    expect(donationDate).toHaveTextContent('12/24/2021');
+    expect(donationDate).toHaveTextContent('10/15/2019');
     const donationAmount = getByTestId('donationAmount');
-    expect(donationAmount).toHaveTextContent('0 UGX');
+    expect(donationAmount).toHaveTextContent('175 USD');
   });
-  it('should not render status field when statuses are empty', async () => {
-    const { queryByTestId } = render(
-      <TestRouter router={router}>
-        <TestComponent statuses={[]} />
-      </TestRouter>,
-    );
-    expect(await queryByTestId('pledgeStatus-input')).not.toBeInTheDocument();
-  });
+
   it('PledgeFrequency should be blank', async () => {
     testData = {
       id: 'test 2',
       name: 'Tester 2',
       avatar: '',
-      statusTitle: '',
-      statusValue: '',
+      status: '',
       frequencyTitle: '',
       frequencyValue: null!,
       amount: null!,
@@ -256,21 +185,22 @@ describe('FixCommitmentContact', () => {
 
     const { findByTestId } = render(
       <TestRouter router={router}>
-        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
+        <TestComponent />
       </TestRouter>,
     );
     expect(await findByTestId('pledgeFrequency-input')).toHaveValue('');
   });
-  it('Change pledgeCurrencies', async () => {
-    const { findByTestId, getByRole } = render(
+
+  it('changes pledgeCurrencies', async () => {
+    const { findByTestId, getByRole, findByRole } = render(
       <TestRouter router={router}>
-        <TestComponent statuses={['Partner - Financial', 'test_option_1']} />
+        <TestComponent />
       </TestRouter>,
     );
     expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
     const CurrencyField = getByRole('combobox', { name: 'Currency' });
     userEvent.click(CurrencyField);
-    userEvent.click(getByRole('option', { name: 'CDF (CDF)' }));
-    expect(CurrencyField).toHaveTextContent('CDF (CDF)');
+    userEvent.click(await findByRole('option', { name: 'CDF (CDF)' })),
+      expect(CurrencyField).toHaveTextContent('CDF (CDF)');
   });
 });

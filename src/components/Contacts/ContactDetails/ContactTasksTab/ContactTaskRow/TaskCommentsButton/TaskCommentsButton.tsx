@@ -53,6 +53,7 @@ export const TaskCommentsButton: React.FC<TaskCommentsButtonProps> = ({
   return (
     <TaskRowWrap
       small={small || false}
+      data-testId="commentButton"
       detailsPage={detailsPage || false}
       {...props}
     >

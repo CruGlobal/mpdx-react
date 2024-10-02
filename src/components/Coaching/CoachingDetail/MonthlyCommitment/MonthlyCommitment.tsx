@@ -22,7 +22,6 @@ import {
 } from 'recharts';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
 
@@ -74,16 +73,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
       <CardHeader
         title={
           <Box>
-            <Typography data-testid="MonthlyCommitmentSummary">
-              {t('Monthly Commitment Average') + ' '}
-              <strong style={{ color: theme.palette.progressBarOrange.main }}>
-                {currencyFormat(averageCommitments, currencyCode, locale)}
-              </strong>
-              {' | ' + t('Monthly Commitment Goal') + ': '}
-              <strong style={{ color: theme.palette.mpdxBlue.main }}>
-                {currencyFormat(goal, currencyCode, locale)}
-              </strong>
-            </Typography>
+            <Typography variant="h6">{t('Monthly Commitments')}</Typography>
           </Box>
         }
       />

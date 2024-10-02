@@ -11,6 +11,7 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
 import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
+import { LevelOfEffortQuery } from './LevelOfEffort/LevelOfEffort.generated';
 import {
   LoadAccountListCoachingDetailQuery,
   LoadCoachingDetailQuery,
@@ -23,8 +24,9 @@ import {
   LoadAccountListCoachingNeedsQuery,
   LoadCoachingNeedsQuery,
 } from './OutstandingNeeds/OutstandingNeeds.generated';
+import { levelOfEffortMocks } from './coachingMocks';
 
-jest.mock('./AppointmentResults/AppointmentResults');
+jest.mock('./PartnersProgress/PartnersProgress');
 
 const push = jest.fn();
 
@@ -52,6 +54,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         LoadAccountListCoachingCommitments: LoadAccountListCoachingCommitmentsQuery;
         LoadCoachingNeeds: LoadCoachingNeedsQuery;
         LoadAccountListCoachingNeeds: LoadAccountListCoachingNeedsQuery;
+        LevelOfEffort: LevelOfEffortQuery;
       }>
         mocks={{
           LoadCoachingDetail: {
@@ -100,6 +103,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             },
           },
+          ...levelOfEffortMocks,
         }}
       >
         <CoachingDetail
@@ -131,7 +135,7 @@ describe('LoadCoachingDetail', () => {
       );
       expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
       expect(getByText('Monthly $55')).toBeVisible();
-      expect(getByText('Monthly Activity')).toBeVisible();
+      expect(getByText('Monthly Giving')).toBeVisible();
     });
 
     it('null goal', async () => {
@@ -140,7 +144,7 @@ describe('LoadCoachingDetail', () => {
       );
       expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
       expect(getByText('Monthly $0')).toBeVisible();
-      expect(getByText('Monthly Activity')).toBeVisible();
+      expect(getByText('Monthly Giving')).toBeVisible();
     });
   });
 
@@ -171,7 +175,7 @@ describe('LoadCoachingDetail', () => {
       ).not.toBeInTheDocument();
 
       userEvent.click(
-        getByRole('button', {
+        await findByRole('button', {
           name: 'Toggle account details',
         }),
       );

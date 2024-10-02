@@ -6,6 +6,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import theme from 'src/theme';
 import { MassActionsEditFieldsModal } from './MassActionsEditFieldsModal';
 
@@ -32,8 +34,13 @@ describe('MassActionsEditFieldsModal', () => {
   it('Select status and starred, the save action', async () => {
     const mutationSpy = jest.fn();
     const { getByRole, queryByTestId, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+      <GqlMockedProvider<{
+        LoadConstants: LoadConstantsQuery;
+      }>
+        mocks={{ LoadConstants: loadConstantsMockData }}
+        onCall={mutationSpy}
+      >
+        <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <MassActionsEditFieldsModal
@@ -43,8 +50,8 @@ describe('MassActionsEditFieldsModal', () => {
               />
             </SnackbarProvider>
           </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+        </ThemeProvider>
+      </GqlMockedProvider>,
     );
     await waitFor(() =>
       expect(queryByTestId('EditFieldsModal')).toBeInTheDocument(),

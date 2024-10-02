@@ -48,6 +48,19 @@ const getAccountListAnalytics = (data: {
     };
     updated_at: string;
     updated_in_db_at: string;
+    contacts_by_status: {
+      never_contacted: number;
+      future: number;
+      cultivate: number;
+      contact_for_appointment: number;
+      appointment_scheduled: number;
+      call_for_decision: number;
+      financial: number;
+      special: number;
+      prayer: number;
+      connections_remaining: number;
+      initiations: number;
+    };
   };
 }): AccountListAnalytics => {
   const {
@@ -62,6 +75,7 @@ const getAccountListAnalytics = (data: {
       text_message,
       start_date: startDate,
       end_date: endDate,
+      contacts_by_status,
     },
   } = data;
 
@@ -88,6 +102,19 @@ const getAccountListAnalytics = (data: {
       completed: phone.completed,
       received: phone.received,
       talkToInPerson: phone.talktoinperson,
+    },
+    contactsByStatus: {
+      neverContacted: contacts_by_status.never_contacted,
+      future: contacts_by_status.future,
+      cultivate: contacts_by_status.cultivate,
+      contactForAppointment: contacts_by_status.contact_for_appointment,
+      appointmentScheduled: contacts_by_status.appointment_scheduled,
+      callForDecision: contacts_by_status.call_for_decision,
+      financial: contacts_by_status.financial,
+      special: contacts_by_status.special,
+      prayer: contacts_by_status.prayer,
+      connectionsRemaining: contacts_by_status.connections_remaining,
+      initiations: contacts_by_status.initiations,
     },
     textMessage: text_message,
     startDate,

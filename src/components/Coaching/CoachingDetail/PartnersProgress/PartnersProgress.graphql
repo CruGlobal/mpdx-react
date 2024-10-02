@@ -1,8 +1,4 @@
-query AppointmentResults(
-  $accountListId: ID!
-  $endDate: String
-  $range: String!
-) {
+query PartnersProgress($accountListId: ID!, $endDate: String, $range: String!) {
   appointmentResults(
     accountListId: $accountListId
     endDate: $endDate
@@ -10,6 +6,7 @@ query AppointmentResults(
   ) {
     id
     startDate
+    endDate
     appointmentsScheduled
     individualAppointments
     monthlyDecrease

@@ -2,18 +2,18 @@ import React, { useRef } from 'react';
 import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
 import { Box, Card, CardContent, IconButton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 
 interface Props {
-  statuses: { id: ContactFilterStatusEnum; value: string }[];
+  statuses: StatusEnum[];
   accountListId: string;
   moveStatus: (
-    originindex: number,
+    originIndex: number,
     destinationIndex: number,
-    status: string,
+    status: StatusEnum,
   ) => void;
   loading: boolean;
   columnWidth: number;
@@ -50,7 +50,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
         }}
       >
         <Box
-          {...{ ref: CardContentRef }}
+          ref={CardContentRef}
           width="100%"
           height="100%"
           display="flex"
@@ -86,7 +86,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
             <Box style={{ backgroundColor: theme.palette.common.white }}>
               {statuses.map((status) => (
                 <ContactFlowSetupStatusRow
-                  key={status.id}
+                  key={status}
                   status={status}
                   columnWidth={columnWidth}
                   columnIndex={-1}

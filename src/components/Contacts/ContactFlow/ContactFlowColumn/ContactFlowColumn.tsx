@@ -16,10 +16,10 @@ import {
 import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
-  IdValue,
+  PhaseEnum,
+  StatusEnum,
 } from 'src/graphql/types.generated';
-import theme from 'src/theme';
-import { useLoadConstantsQuery } from '../../../Constants/LoadConstants.generated';
+import theme from '../../../../theme';
 import { InfiniteList } from '../../../InfiniteList/InfiniteList';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { ContactFlowDropZone } from '../ContactFlowDropZone/ContactFlowDropZone';
@@ -62,7 +62,7 @@ export const CardContentInner = styled(Box, {
 
 export interface ContactFlowColumnProps {
   data?: ContactRowFragment[];
-  statuses: ContactFilterStatusEnum[];
+  statuses: StatusEnum[];
   selectedFilters: ContactFilterSetInput;
   title: string;
   color: string;
@@ -75,17 +75,14 @@ export interface ContactFlowColumnProps {
   ) => void;
   changeContactStatus: (
     id: string,
-    status: {
-      __typename?: 'IdValue' | undefined;
-    } & Pick<IdValue, 'id' | 'value'>,
+    status: StatusEnum,
+    contactPhase: PhaseEnum | null | undefined,
   ) => Promise<void>;
 }
 export interface StatusStructure {
   id: string | undefined;
   value: string | undefined;
 }
-
-const nullStatus = { id: 'NULL', value: '' };
 
 export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
   statuses,
@@ -106,17 +103,12 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
       contactsFilters: {
         ...sanitizedFilters,
         ...starredFilter,
-        status: statuses,
+        status: statuses as string[] as ContactFilterStatusEnum[],
         wildcardSearch: searchTerm as string,
       },
     },
     skip: !accountListId || statuses.length === 0,
   });
-  const { data: constants } = useLoadConstantsQuery({});
-  const statusesStructured =
-    statuses.map((status) =>
-      constants?.constant.status?.find((constant) => constant.id === status),
-    ) || [];
 
   const cardContentRef = useRef<HTMLDivElement>();
 
@@ -143,12 +135,12 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
         <CardContentInner
           canDrop={canDrop}
           gridTemplateRows={`repeat(${statuses.length},auto)`}
-          {...{ ref: drop }}
+          ref={drop}
         >
-          {statusesStructured.map((status) => (
+          {statuses.map((status) => (
             <ContactFlowDropZone
-              key={status?.id}
-              status={status || nullStatus}
+              key={status}
+              status={status}
               changeContactStatus={changeContactStatus}
             />
           ))}
@@ -157,19 +149,20 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
           <InfiniteList
             loading={loading}
             data={data?.contacts.nodes}
-            itemContent={(_index, contact) => (
-              <ContactFlowRow
-                accountListId={accountListId}
-                contact={contact}
-                status={
-                  constants?.constant.status?.find(
-                    (constant) => constant.id === contact.status,
-                  ) || nullStatus
-                }
-                onContactSelected={onContactSelected}
-                columnWidth={cardContentRef.current?.offsetWidth}
-              />
-            )}
+            itemContent={(_index, contact) =>
+              // No contacts should actually have a null status because they were all loaded with
+              // an explicit status filter
+              contact.status && (
+                <ContactFlowRow
+                  accountListId={accountListId}
+                  contact={contact}
+                  status={contact.status}
+                  contactPhase={contact.contactPhase}
+                  onContactSelected={onContactSelected}
+                  columnWidth={cardContentRef.current?.offsetWidth}
+                />
+              )
+            }
             endReached={() =>
               data?.contacts.pageInfo.hasNextPage &&
               fetchMore({

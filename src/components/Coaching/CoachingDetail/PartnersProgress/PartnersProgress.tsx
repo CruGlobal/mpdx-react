@@ -3,38 +3,35 @@ import {
   Box,
   CardContent,
   CardHeader,
-  Divider,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableRow,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
-import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
-import { getResultColor } from '../helpers';
-import { useAppointmentResultsQuery } from './AppointmentResults.generated';
+import { AlignedTableCell, HeaderRow } from '../StyledComponents';
+import { getMonthOrWeekDateRange } from '../helpers';
+import { usePartnersProgressQuery } from './PartnersProgress.generated';
 
 const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
   overflowX: 'scroll',
 }));
 
-interface AppointmentResultsProps {
+interface PartnersProgressProps {
   accountListId: string;
   period: CoachingPeriodEnum;
   currency?: string;
 }
 
-export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
+export const PartnersProgress: React.FC<PartnersProgressProps> = ({
   accountListId,
   period,
   currency,
@@ -42,7 +39,7 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data, loading } = useAppointmentResultsQuery({
+  const { data, loading } = usePartnersProgressQuery({
     variables: {
       accountListId,
       range: period === CoachingPeriodEnum.Weekly ? '4w' : '4m',
@@ -75,14 +72,12 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
     [data],
   );
 
-  const appointmentGoal = CoachingPeriodEnum.Weekly ? 10 : 40;
-
   return (
     <AnimatedCard>
       <CardHeader
         title={
           <Box display="flex" alignItems="center">
-            <Box flex={1}>{t('Appointments and Results')}</Box>
+            <Box flex={1}>{t("Partners & Progress - God's Part")}</Box>
             <HelpButton articleVar="HELP_URL_COACHING_APPOINTMENTS_AND_RESULTS" />
           </Box>
         }
@@ -98,81 +93,18 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
             >
               <TableBody>
                 <HeaderRow role="rowheader">
-                  <AlignedTableCell>{t('Appointments')}</AlignedTableCell>
-                  {appointmentResults.map(({ id, startDate }) => (
-                    <AlignedTableCell key={id}>
-                      {startDate &&
-                        dateFormatWithoutYear(
-                          DateTime.fromISO(startDate),
-                          locale,
-                        )}
+                  <AlignedTableCell></AlignedTableCell>
+                  {appointmentResults.map(({ startDate, endDate }) => (
+                    <AlignedTableCell key={startDate}>
+                      {getMonthOrWeekDateRange(
+                        locale,
+                        period,
+                        startDate,
+                        endDate,
+                      )}
                     </AlignedTableCell>
                   ))}
                   <AlignedTableCell>{t('Average')}</AlignedTableCell>
-                </HeaderRow>
-                <TableRow>
-                  <AlignedTableCell>{t('Scheduled')}</AlignedTableCell>
-                  {appointmentResults.map(({ id, appointmentsScheduled }) => (
-                    <AlignedTableCell
-                      key={id}
-                      sx={{
-                        color: getResultColor(
-                          appointmentsScheduled,
-                          appointmentGoal,
-                        ),
-                      }}
-                    >
-                      {appointmentsScheduled}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell
-                    sx={{
-                      color: getResultColor(
-                        averages.appointmentsScheduled,
-                        appointmentGoal,
-                      ),
-                    }}
-                  >
-                    {Math.round(averages.appointmentsScheduled)}
-                  </AlignedTableCell>
-                </TableRow>
-                <TableRow>
-                  <AlignedTableCell>
-                    {t('Individual Completed')}
-                  </AlignedTableCell>
-                  {appointmentResults.map(({ id, individualAppointments }) => (
-                    <AlignedTableCell
-                      key={id}
-                      sx={{
-                        color: getResultColor(
-                          individualAppointments,
-                          appointmentGoal,
-                        ),
-                      }}
-                    >
-                      {individualAppointments}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell
-                    sx={{
-                      color: getResultColor(
-                        averages.individualAppointments,
-                        appointmentGoal,
-                      ),
-                    }}
-                  >
-                    {Math.round(averages.individualAppointments)}
-                  </AlignedTableCell>
-                </TableRow>
-                <DividerRow>
-                  <TableCell colSpan={appointmentResults.length + 2}>
-                    <Divider />
-                  </TableCell>
-                </DividerRow>
-                <HeaderRow role="rowheader">
-                  <AlignedTableCell colSpan={appointmentResults.length + 2}>
-                    {t('Results')}
-                  </AlignedTableCell>
                 </HeaderRow>
                 <TableRow>
                   <AlignedTableCell>
@@ -185,17 +117,6 @@ export const AppointmentResults: React.FC<AppointmentResultsProps> = ({
                   ))}
                   <AlignedTableCell>
                     {Math.round(averages.newMonthlyPartners)}
-                  </AlignedTableCell>
-                </TableRow>
-                <TableRow>
-                  <AlignedTableCell>{t('New Appeal Pledges')}</AlignedTableCell>
-                  {appointmentResults.map(({ id, newSpecialPledges }) => (
-                    <AlignedTableCell key={id}>
-                      {newSpecialPledges}
-                    </AlignedTableCell>
-                  ))}
-                  <AlignedTableCell>
-                    {Math.round(averages.newSpecialPledges)}
                   </AlignedTableCell>
                 </TableRow>
                 <TableRow>

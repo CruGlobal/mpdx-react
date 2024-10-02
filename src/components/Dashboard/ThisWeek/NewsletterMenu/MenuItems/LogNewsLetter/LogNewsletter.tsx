@@ -101,7 +101,7 @@ const LogNewsletter = ({
   const [createTasks, { loading: creating }] = useCreateTasksMutation();
 
   const initialTask = {
-    activityType: ActivityTypeEnum.NewsletterPhysical,
+    activityType: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
     completedAt: null,
     subject: '',
   };
@@ -113,8 +113,8 @@ const LogNewsletter = ({
     const taskTypes =
       attributes.activityType === 'BOTH'
         ? [
-            ActivityTypeEnum.NewsletterPhysical,
-            ActivityTypeEnum.NewsletterEmail,
+            ActivityTypeEnum.PartnerCarePhysicalNewsletter,
+            ActivityTypeEnum.PartnerCareDigitalNewsletter,
           ]
         : [attributes.activityType];
     await Promise.all(
@@ -199,18 +199,18 @@ const LogNewsletter = ({
                     value={activityType}
                   >
                     <LogFormControlLabel
-                      value={ActivityTypeEnum.NewsletterPhysical}
-                      control={<Radio color="secondary" required />}
-                      label={t('Newsletter - Physical')}
+                      value={ActivityTypeEnum.PartnerCarePhysicalNewsletter}
+                      control={<Radio color="secondary" />}
+                      label={t('Physical Newsletter')}
                     />
                     <LogFormControlLabel
-                      value={ActivityTypeEnum.NewsletterEmail}
-                      control={<Radio color="secondary" required />}
-                      label={t('Newsletter - Email')}
+                      value={ActivityTypeEnum.PartnerCareDigitalNewsletter}
+                      control={<Radio color="secondary" />}
+                      label={t('Digital Newsletter')}
                     />
                     <LogFormControlLabel
                       value="BOTH"
-                      control={<Radio color="secondary" required />}
+                      control={<Radio color="secondary" />}
                       label={t('Both')}
                     />
                   </RadioGroup>

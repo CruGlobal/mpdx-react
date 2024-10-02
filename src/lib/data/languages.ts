@@ -10,12 +10,24 @@ export const languages: IdValue[] = [
     value: 'Arabic (العربية)',
   },
   {
+    id: 'hy',
+    value: 'Armenian (հայերեն)',
+  },
+  {
+    id: 'my',
+    value: 'Burmese (မြန်မာ)',
+  },
+  {
     id: 'zh-hans-cn',
     value: 'Chinese (中文)',
   },
   {
     id: 'fr-ca',
     value: 'Canadian French (français canadien)',
+  },
+  {
+    id: 'nl-nl',
+    value: 'Dutch (Nederlands)',
   },
   {
     id: 'fr-fr',
@@ -26,6 +38,34 @@ export const languages: IdValue[] = [
     value: 'German (Deutsch)',
   },
   {
+    id: 'de-ch',
+    value: 'Swiss High German (Schweizer Hochdeutsch)',
+  },
+  {
+    id: 'id',
+    value: 'Indonesian (Indonesia)',
+  },
+  {
+    id: 'it',
+    value: 'Italian (italiano)',
+  },
+  {
+    id: 'ko',
+    value: 'Korean (한국어)',
+  },
+  {
+    id: 'pl',
+    value: 'Polish (polski)',
+  },
+  {
+    id: 'pt-br',
+    value: 'Portuguese (português)',
+  },
+  {
+    id: 'ro',
+    value: 'Romanian (Română)',
+  },
+  {
     id: 'ru',
     value: 'Russian (русский)',
   },
@@ -34,12 +74,20 @@ export const languages: IdValue[] = [
     value: 'Latin American Spanish (español latinoamericano)',
   },
   {
+    id: 'th',
+    value: 'Thai (ไทย)',
+  },
+  {
     id: 'tr',
     value: 'Turkish (Türkçe)',
   },
   {
-    id: 'ro',
-    value: 'Romanian (Română)',
+    id: 'uk',
+    value: 'Ukrainian (українська)',
+  },
+  {
+    id: 'vi',
+    value: 'Vietnamese (Tiếng Việt)',
   },
 ];
 

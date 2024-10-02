@@ -145,8 +145,8 @@ describe('TagsSummary', () => {
         expect(rows).toHaveLength(3);
 
         expect(rows[0].children[0]).toHaveTextContent('Tag Name');
-        expect(rows[0].children[1]).toHaveTextContent('Jan 1');
-        expect(rows[0].children[2]).toHaveTextContent('Feb 1');
+        expect(rows[0].children[1]).toHaveTextContent('Jan');
+        expect(rows[0].children[2]).toHaveTextContent('Feb');
         expect(rows[0].children[3]).toHaveTextContent('Total');
 
         expect(rows[1].children[0]).toHaveTextContent('Tag 1');

@@ -33,10 +33,10 @@ import {
   EditIcon,
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
 import theme from '../../../theme';
 import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
@@ -142,6 +142,7 @@ const Contact: React.FC<Props> = ({
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache(id);
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
     await setContactPrimaryAddress({
@@ -199,7 +200,9 @@ const Contact: React.FC<Props> = ({
             <Typography variant="h6">{name}</Typography>
           </Link>
         }
-        subheader={<Typography>{contactPartnershipStatus[status]}</Typography>}
+        subheader={
+          <Typography>{contactStatuses[status]?.translated}</Typography>
+        }
       />
       <CardContent className={(classes.paddingX, classes.paddingY)}>
         <Grid item xs={12}>

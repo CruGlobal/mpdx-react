@@ -94,7 +94,7 @@ describe('Fix Newsletter - Contact', () => {
       ).toBeInTheDocument();
     });
 
-    it('should be Email', () => {
+    it('should be Digital', () => {
       primaryPerson.primaryEmailAddress = { id: '1', email: 'a@b.com' };
 
       const { getByRole } = render(
@@ -105,7 +105,7 @@ describe('Fix Newsletter - Contact', () => {
       );
 
       expect(
-        within(getByRole('combobox')).getByText('Email'),
+        within(getByRole('combobox')).getByText('Digital'),
       ).toBeInTheDocument();
     });
 
