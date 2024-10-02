@@ -191,7 +191,7 @@ describe('EditGoogleAccountModal', () => {
 
   it('should update Integrations calendar', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole, queryByRole } = render(
+    const { getByText, getByRole, findByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider<{
           LoadConstants: LoadConstantsQuery;
@@ -242,11 +242,11 @@ describe('EditGoogleAccountModal', () => {
       expect(getByText(/this field is required/i)).toBeInTheDocument(),
     );
     userEvent.click(getByRole('combobox'));
-    const calendarOption = getByRole('option', {
-      name: /calendarsName@cru\.org/i,
-    });
-    await waitFor(() => expect(calendarOption).toBeInTheDocument());
-    userEvent.click(calendarOption);
+    userEvent.click(
+      await findByRole('option', {
+        name: /calendarsName@cru\.org/i,
+      }),
+    );
 
     await waitFor(() =>
       expect(queryByRole(/this field is required/i)).not.toBeInTheDocument(),
