@@ -1,0 +1,12 @@
+[
+    {
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "org.mpdx",
+            "sha256_cert_fingerprints": [
+                "1C:10:CC:D9:97:17:F4:D9:B7:16:37:7C:6C:48:ED:0E:CB:29:C1:F9:6B:8A:FF:B1:E5:23:E3:B9:15:2A:C1:8B"
+            ]
+        }
+    }
+]
