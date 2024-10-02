@@ -22,6 +22,7 @@ import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import {
   PrivacyPolicyLink,
@@ -32,7 +33,6 @@ import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
-import HandoffLink from '../../../../../HandoffLink';
 import { useGetTopBarQuery } from '../../GetTopBar.generated';
 import ProfileName from './ProfileName';
 
@@ -377,18 +377,18 @@ const ProfileMenu = (): ReactElement => {
               </NextLink>
             )}
             {data?.user?.developer && (
-              <HandoffLink path="/auth/user/admin" auth>
+              <OauthLink path="/auth/user/admin">
                 <MenuItem onClick={handleProfileMenuClose} component="a">
                   <ListItemText primary={t('Backend Admin')} />
                 </MenuItem>
-              </HandoffLink>
+              </OauthLink>
             )}
             {data?.user?.developer && (
-              <HandoffLink path="/auth/user/sidekiq" auth>
+              <OauthLink path="/auth/user/sidekiq">
                 <MenuItem onClick={handleProfileMenuClose} component="a">
                   <ListItemText primary={t('Sidekiq')} />
                 </MenuItem>
-              </HandoffLink>
+              </OauthLink>
             )}
           </div>
         )}

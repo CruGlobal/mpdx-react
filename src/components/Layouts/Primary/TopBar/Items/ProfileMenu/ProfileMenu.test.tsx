@@ -71,6 +71,10 @@ beforeAll(() => {
 });
 
 describe('ProfileMenu', () => {
+  beforeAll(() => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  });
+
   it('default', async () => {
     const { getByTestId, getByRole, getByText, findByText } = render(
       <TestComponent />,
@@ -227,6 +231,8 @@ describe('ProfileMenu while Impersonating', () => {
   });
 
   beforeEach(() => {
+    process.env.OAUTH_URL = 'https://auth.mpdx.org';
+
     (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
       data: {
         ...session,

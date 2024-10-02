@@ -65,8 +65,11 @@ const Balance = ({
           <Typography>{t('It may take a few days to update.')}</Typography>
         </CardContent>
         <CardActions>
-          <NextLink href={`/accountLists/${accountListId}/reports/donations`}>
-            <Button size="small" color="primary">
+          <NextLink
+            href={`/accountLists/${accountListId}/reports/donations`}
+            passHref
+          >
+            <Button component="a" size="small" color="primary">
               {t('View Gifts')}
             </Button>
           </NextLink>
