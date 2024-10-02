@@ -4,7 +4,7 @@
     "details": [
       {
         "appID": "DQ48D9BF2V.org.cru.mpdx",
-        "paths": ["/accountLists/*/contacts/*", "/auth/mobile"]
+        "paths": ["/accountLists/*/contacts/*", "/contacts/*", "/auth/mobile"]
       }
     ]
   }
