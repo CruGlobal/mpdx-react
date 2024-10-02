@@ -257,7 +257,9 @@ describe('EditGoogleAccountModal', () => {
     await waitFor(() =>
       expect(queryByRole(/this field is required/i)).not.toBeInTheDocument(),
     );
-
+    await waitFor(() =>
+      expect(getByRole('button', { name: /update/i })).not.toBeDisabled(),
+    );
     userEvent.click(getByRole('button', { name: /update/i }));
 
     await waitFor(() =>

@@ -37,6 +37,7 @@ type GoogleAccountIntegrationSlimmed = Pick<
   GoogleAccountIntegration,
   'calendarId' | 'id' | 'calendarIntegrations' | 'calendars'
 >;
+
 interface EditGoogleIntegrationFormProps {
   account: GoogleAccountAttributesSlimmed;
   googleAccountDetails: GoogleAccountIntegrationSlimmed;
@@ -60,32 +61,30 @@ const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   margin: '0 0 0 -11px',
 }));
 
-const integrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
-  yup.object({
-    id: yup.string().required(),
-    calendarId: yup.string().required(),
-    calendarIntegrations: yup
-      .array()
-      .of(
-        yup
-          .mixed<ActivityTypeEnum>()
-          .oneOf(Object.values(ActivityTypeEnum))
-          .required(),
-      )
-      .required(),
-    calendars: yup
-      .array()
-      .of(
-        yup.object({
-          __typename: yup
-            .string()
-            .equals(['GoogleAccountIntegrationCalendars']),
+const integrationSchema = yup.object({
+  id: yup.string().required(),
+  calendarId: yup.string().required(),
+  calendarIntegrations: yup
+    .array()
+    .of(
+      yup
+        .mixed<ActivityTypeEnum>()
+        .oneOf(Object.values(ActivityTypeEnum))
+        .required(),
+    )
+    .required(),
+  calendars: yup
+    .array()
+    .of(
+      yup
+        .object({
           id: yup.string().required(),
           name: yup.string().required(),
-        }),
-      )
-      .required(),
-  });
+        })
+        .nullable(),
+    )
+    .required(),
+});
 
 export const EditGoogleIntegrationForm: React.FC<
   EditGoogleIntegrationFormProps
@@ -105,7 +104,9 @@ export const EditGoogleIntegrationForm: React.FC<
 
   const activities = useApiConstants()?.activities;
 
-  const onSubmit = async (attributes: GoogleAccountIntegrationSlimmed) => {
+  const onSubmit = async (
+    attributes: yup.InferType<typeof integrationSchema>,
+  ) => {
     setIsSubmitting(true);
     const googleIntegration = {
       calendarId: attributes.calendarId,
@@ -169,7 +170,7 @@ export const EditGoogleIntegrationForm: React.FC<
 
           <Formik
             initialValues={{
-              calendarId: googleAccountDetails.calendarId,
+              calendarId: googleAccountDetails.calendarId ?? '',
               id: googleAccountDetails.id,
               calendarIntegrations: googleAccountDetails.calendarIntegrations,
               calendars: googleAccountDetails.calendars,
