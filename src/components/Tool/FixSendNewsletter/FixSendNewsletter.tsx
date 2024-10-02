@@ -156,7 +156,7 @@ const FixSendNewsletter: React.FC<Props> = ({
             </Typography>
             <Typography>
               {t(
-                'Contacts that appear here have an empty Newsletter Status and Partner Status set to Financial, Special, or Pray. Choose a newsletter status for contacts below.',
+                'Financial, Special, and Prayer partners that have an empty Newsletter Status appear here. Choose a newsletter status for the contacts below.',
               )}
             </Typography>
           </Box>
