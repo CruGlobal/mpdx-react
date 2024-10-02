@@ -45,8 +45,7 @@ const config = {
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
     OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
     OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
-    OKTA_SIGNOUT_REDIRECT_URL:
-      process.env.OKTA_SIGNOUT_REDIRECT_URL ?? 'https://mpdx.org/logout',
+    OKTA_SIGNOUT_REDIRECT_URL: process.env.OKTA_SIGNOUT_REDIRECT_URL ?? siteUrl,
     API_OAUTH_CLIENT_ID:
       process.env.API_OAUTH_CLIENT_ID ??
       '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',

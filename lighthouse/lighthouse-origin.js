@@ -16,8 +16,8 @@ module.exports = {
 
 function getPushOrigin() {
   if (process.env.GITHUB_REF_NAME === 'staging') {
-    return 'https://next-stage.mpdx.org';
+    return 'https://stage.mpdx.org';
   } else if (process.env.GITHUB_REF_NAME === 'main') {
-    return 'https://next.mpdx.org';
+    return 'https://mpdx.org';
   }
 }

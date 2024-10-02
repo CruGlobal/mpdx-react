@@ -333,7 +333,7 @@ describe('OrganizationAccordion', () => {
       });
 
       expect(window.location.assign).toHaveBeenCalledWith(
-        'https://auth.mpdx.org/auth/user/donorhub?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dorganization&access_token=apiToken&organization_id=organizationId',
+        'https://auth.mpdx.org/auth/user/donorhub?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dorganization&access_token=apiToken&organization_id=organizationId',
       );
     });
 
