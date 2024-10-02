@@ -57,6 +57,25 @@ const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   margin: '0 0 0 -11px',
 }));
 
+const integrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
+  yup.object({
+    id: yup.string().required(),
+    calendarId: yup.string().required(),
+    calendarIntegrations: yup.array().of(yup.string().required()).required(),
+    calendars: yup
+      .array()
+      .of(
+        yup.object({
+          __typename: yup
+            .string()
+            .equals(['GoogleAccountIntegrationCalendars']),
+          id: yup.string().required(),
+          name: yup.string().required(),
+        }),
+      )
+      .required(),
+  });
+
 export const EditGoogleIntegrationForm: React.FC<
   EditGoogleIntegrationFormProps
 > = ({
@@ -74,25 +93,6 @@ export const EditGoogleIntegrationForm: React.FC<
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
 
   const activities = useApiConstants()?.activities;
-
-  const IntegrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
-    yup.object({
-      id: yup.string().required(),
-      calendarId: yup.string().required(),
-      calendarIntegrations: yup.array().of(yup.string().required()).required(),
-      calendars: yup
-        .array()
-        .of(
-          yup.object({
-            __typename: yup
-              .string()
-              .equals(['GoogleAccountIntegrationCalendars']),
-            id: yup.string().required(),
-            name: yup.string().required(),
-          }),
-        )
-        .required(),
-    });
 
   const onSubmit = async (attributes: GoogleAccountIntegrationSlimmed) => {
     setIsSubmitting(true);
@@ -163,7 +163,7 @@ export const EditGoogleIntegrationForm: React.FC<
               calendarIntegrations: googleAccountDetails.calendarIntegrations,
               calendars: googleAccountDetails.calendars,
             }}
-            validationSchema={IntegrationSchema}
+            validationSchema={integrationSchema}
             onSubmit={onSubmit}
           >
             {({
