@@ -433,6 +433,29 @@ const NavMenu: React.FC = () => {
           </NextLink>
         </Grid>
       )}
+
+      {process.env.HELP_WHATS_NEW_URL && (
+        <Grid item className={classes.navListItem}>
+          <NextLink href={process.env.HELP_WHATS_NEW_URL} passHref>
+            <MenuItem
+              component="a"
+              tabIndex={0}
+              className={classes.menuItem}
+              target="_blank"
+            >
+              {process.env.HELP_WHATS_NEW_IMAGE_URL && (
+                <img
+                  src={process.env.HELP_WHATS_NEW_IMAGE_URL}
+                  alt={t('Help logo')}
+                  height={36}
+                  style={{ marginRight: theme.spacing(1) }}
+                />
+              )}
+              <ListItemText primary={t("What's New")} />
+            </MenuItem>
+          </NextLink>
+        </Grid>
+      )}
     </Grid>
   ) : null;
 };

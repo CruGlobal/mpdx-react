@@ -33,6 +33,7 @@ interface Section {
   icon?: any;
   items?: Item[];
   title: string;
+  whatsNewLink?: boolean;
 }
 
 function renderNavItems({
@@ -42,7 +43,7 @@ function renderNavItems({
   depth = 0,
 }: {
   accountListId: string | undefined;
-  items: Item[];
+  items: Section[];
   pathname: string;
   depth?: number;
 }) {
@@ -73,14 +74,20 @@ function reduceChildRoutes({
   acc: ReactElement[];
   accountListId: string | undefined;
   pathname: string;
-  item: Item;
+  item: Section;
   depth: number;
 }) {
-  const key = item.title + depth;
+  const sharedProps = {
+    depth: depth,
+    icon: item.icon,
+    key: item.title + depth,
+    title: item.title,
+    whatsNewLink: item.whatsNewLink,
+  };
 
   if (item.items) {
     acc.push(
-      <NavItem depth={depth} icon={item.icon} key={key} title={item.title}>
+      <NavItem {...sharedProps}>
         {renderNavItems({
           accountListId,
           depth: depth + 1,
@@ -90,15 +97,7 @@ function reduceChildRoutes({
       </NavItem>,
     );
   } else {
-    acc.push(
-      <NavItem
-        depth={depth}
-        href={item.href}
-        icon={item.icon}
-        key={key}
-        title={item.title}
-      />,
-    );
+    acc.push(<NavItem {...sharedProps} href={item.href} />);
   }
 
   return acc;
@@ -156,6 +155,13 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
     sections.push({
       title: t('Coaching'),
       href: `/accountLists/${accountListId}/coaching`,
+    });
+  }
+  if (process.env.HELP_WHATS_NEW_URL) {
+    sections.push({
+      title: t("What's New"),
+      href: process.env.HELP_WHATS_NEW_URL,
+      whatsNewLink: true,
     });
   }
 
