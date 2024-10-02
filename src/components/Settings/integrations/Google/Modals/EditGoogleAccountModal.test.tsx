@@ -5,13 +5,11 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import * as Types from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
-import {
-  GetIntegrationActivitiesQuery,
-  GoogleAccountIntegrationsQuery,
-} from './googleIntegrations.generated';
+import { GoogleAccountIntegrationsQuery } from './googleIntegrations.generated';
 
 jest.mock('next-auth/react');
 
@@ -191,14 +189,14 @@ describe('EditGoogleAccountModal', () => {
     const { getByText, getByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider<{
-          GetIntegrationActivities: GetIntegrationActivitiesQuery;
+          LoadConstants: LoadConstantsQuery;
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
           mocks={{
             GoogleAccountIntegrations: {
               googleAccountIntegrations: [googleIntegration],
             },
-            GetIntegrationActivities: {
+            LoadConstants: {
               constant: {
                 activities: [
                   {
@@ -289,13 +287,13 @@ describe('EditGoogleAccountModal', () => {
       <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
-          GetIntegrationActivities: GetIntegrationActivitiesQuery;
+          LoadConstants: LoadConstantsQuery;
         }>
           mocks={{
             GoogleAccountIntegrations: {
               googleAccountIntegrations: [googleIntegration],
             },
-            GetIntegrationActivities: {
+            LoadConstants: {
               constant: {
                 activities: [
                   {

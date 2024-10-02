@@ -15,6 +15,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   DeleteButton,
   SubmitButton,
@@ -26,7 +27,6 @@ import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
   GoogleAccountIntegrationsDocument,
   GoogleAccountIntegrationsQuery,
-  useGetIntegrationActivitiesQuery,
 } from './googleIntegrations.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
 
@@ -73,8 +73,7 @@ export const EditGoogleIntegrationForm: React.FC<
   const { appName } = useGetAppSettings();
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
 
-  const { data: actvitiesData } = useGetIntegrationActivitiesQuery();
-  const actvities = actvitiesData?.constant?.activities;
+  const activities = useApiConstants()?.activities;
 
   const IntegrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
     yup.object({
@@ -200,7 +199,7 @@ export const EditGoogleIntegrationForm: React.FC<
                 </Box>
 
                 <StyledBox>
-                  {actvities?.map((activity) => {
+                  {activities?.map((activity) => {
                     if (!activity?.id || !activity?.value) {
                       return null;
                     }
