@@ -111,12 +111,26 @@ describe('SetupProvider', () => {
       expect(getByTestId('setting-up')).toHaveTextContent('undefined');
     });
 
-    it('is true when setup is set on a tour page', async () => {
+    it('is true when setup is set on a dedicated tour page', async () => {
       const { getByTestId } = render(
         <TestComponent
           setup={UserSetupStageEnum.NoDefaultAccountList}
           setupPosition=""
           pathname="/setup/start"
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('true'),
+      );
+    });
+
+    it('is true when setup_position matches the current page', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          setup={null}
+          setupPosition="preferences.personal"
+          pathname="/accountLists/[accountListId]/settings/preferences"
         />,
       );
 
@@ -152,6 +166,20 @@ describe('SetupProvider', () => {
     it('is false when setup_position is not set', async () => {
       const { getByTestId } = render(
         <TestComponent setup={null} setupPosition="" />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('false'),
+      );
+    });
+
+    it('is false when setup_position does not match the current page', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          setup={null}
+          setupPosition="preferences.personal"
+          pathname="/accountLists/[accountListId]/settings/notifications"
+        />,
       );
 
       await waitFor(() =>

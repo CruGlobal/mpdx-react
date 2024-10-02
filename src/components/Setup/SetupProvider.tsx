@@ -24,14 +24,11 @@ const SetupContext = createContext<SetupContext>({ onSetupTour: undefined });
 
 export const useSetupContext = (): SetupContext => useContext(SetupContext);
 
-// The list of page pathnames that are part of the setup tour
+// The list of page pathnames that are dedicated setup pages
 const setupPages = new Set([
   '/setup/start',
   '/setup/connect',
   '/setup/account',
-  '/accountLists/[accountListId]/settings/preferences',
-  '/accountLists/[accountListId]/settings/notifications',
-  '/accountLists/[accountListId]/settings/integrations',
   '/accountLists/[accountListId]/setup/finish',
 ]);
 
@@ -69,6 +66,12 @@ export const SetupProvider: React.FC<SetupProviderProps> = ({ children }) => {
   }, [data]);
 
   const onSetupTour = useMemo(() => {
+    // If the user is on a dedicated setup page (i.e. not a preferences page),
+    // then they are on the setup tour regardless of their setup_position
+    if (setupPages.has(pathname)) {
+      return true;
+    }
+
     if (!data) {
       return undefined;
     }
@@ -77,12 +80,19 @@ export const SetupProvider: React.FC<SetupProviderProps> = ({ children }) => {
       return false;
     }
 
-    const onSetupPage = setupPages.has(pathname);
-    const settingUp =
-      data.userOptions.some(
-        (option) => option.key === 'setup_position' && option.value !== '',
-      ) || data.user.setup !== null;
-    return onSetupPage && settingUp;
+    const setupPosition = data.userOptions.find(
+      (option) => option.key === 'setup_position',
+    )?.value;
+
+    // The user is on the setup tour if the setup position matches their current page
+    return (
+      (setupPosition === 'preferences.personal' &&
+        pathname === '/accountLists/[accountListId]/settings/preferences') ||
+      (setupPosition === 'preferences.notifications' &&
+        pathname === '/accountLists/[accountListId]/settings/notifications') ||
+      (setupPosition === 'preferences.integrations' &&
+        pathname === '/accountLists/[accountListId]/settings/integrations')
+    );
   }, [data, pathname]);
 
   return (
