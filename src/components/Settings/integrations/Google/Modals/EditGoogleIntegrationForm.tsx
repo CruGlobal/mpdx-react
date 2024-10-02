@@ -20,7 +20,10 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountIntegration } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  GoogleAccountIntegration,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
@@ -39,7 +42,7 @@ interface EditGoogleIntegrationFormProps {
   googleAccountDetails: GoogleAccountIntegrationSlimmed;
   loading: boolean;
   setIsSubmitting: (isSubmitting: boolean) => void;
-  handleToggleCalendarIntegration: (enableIntegration: boolean) => void;
+  handleToggleCalendarIntegration: (isSubmitting: boolean) => void;
   handleClose: () => void;
 }
 
@@ -61,7 +64,15 @@ const integrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
   yup.object({
     id: yup.string().required(),
     calendarId: yup.string().required(),
-    calendarIntegrations: yup.array().of(yup.string().required()).required(),
+    calendarIntegrations: yup
+      .array()
+      .of(
+        yup
+          .mixed<ActivityTypeEnum>()
+          .oneOf(Object.values(ActivityTypeEnum))
+          .required(),
+      )
+      .required(),
     calendars: yup
       .array()
       .of(
@@ -216,12 +227,12 @@ export const EditGoogleIntegrationForm: React.FC<
                             name={activityId}
                             checked={isChecked}
                             onChange={(_, value) => {
-                              let newCalendarIntegrations;
+                              let newCalendarIntegrations: ActivityTypeEnum[];
                               if (value) {
                                 // Add to calendarIntegrations
                                 newCalendarIntegrations = [
                                   ...calendarIntegrations,
-                                  activity.value,
+                                  activity.id,
                                 ];
                               } else {
                                 // Remove from calendarIntegrations
@@ -231,7 +242,7 @@ export const EditGoogleIntegrationForm: React.FC<
                                   );
                               }
                               setFieldValue(
-                                `calendarIntegrations`,
+                                'calendarIntegrations',
                                 newCalendarIntegrations,
                               );
                             }}

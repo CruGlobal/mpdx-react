@@ -1,3 +1,4 @@
+import { ActivityTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 
 export interface GoogleAccountIntegrationsResponse {
@@ -24,7 +25,7 @@ export interface GoogleAccountIntegrationAttributes {
 interface GoogleAccountIntegrationAttributesCamel {
   calendarId: string;
   calendarIntegration: boolean;
-  calendarIntegrations: string[];
+  calendarIntegrations: ActivityTypeEnum[];
   calendarName: string;
   calendars: Calendar[];
   createdAt: string;
@@ -48,6 +49,11 @@ export const GoogleAccountIntegrations = (
     Object.keys(integrations.attributes).forEach((key) => {
       attributes[snakeToCamel(key)] = integrations.attributes[key];
     });
+    // Convert REST activity type enums which are lowercase to GraphQL activity type enums, which are uppercase
+    attributes.calendarIntegrations =
+      integrations.attributes.calendar_integrations.map(
+        (integration) => integration.toUpperCase() as ActivityTypeEnum,
+      );
     return { id: integrations.id, ...attributes };
   });
 };
