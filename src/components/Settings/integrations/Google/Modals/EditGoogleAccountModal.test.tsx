@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -237,22 +237,16 @@ describe('EditGoogleAccountModal', () => {
       ).toBeInTheDocument(),
     );
 
-    await act(async () => {
-      userEvent.click(getByRole('button', { name: /update/i }));
-    });
+    userEvent.click(getByRole('button', { name: /update/i }));
     await waitFor(() =>
       expect(getByText(/this field is required/i)).toBeInTheDocument(),
     );
-    await act(async () => {
-      userEvent.click(getByRole('combobox'));
-    });
+    userEvent.click(getByRole('combobox'));
     const calendarOption = getByRole('option', {
       name: /calendarsName@cru\.org/i,
     });
     await waitFor(() => expect(calendarOption).toBeInTheDocument());
-    await act(async () => {
-      userEvent.click(calendarOption);
-    });
+    userEvent.click(calendarOption);
 
     await waitFor(() =>
       expect(queryByRole(/this field is required/i)).not.toBeInTheDocument(),
