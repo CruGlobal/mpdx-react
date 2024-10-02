@@ -11,6 +11,7 @@ import {
   IconButton,
   InputLabel,
   Link,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -27,6 +28,7 @@ import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToo
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   PledgeCurrencyOptionFormatEnum,
@@ -34,6 +36,7 @@ import {
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
@@ -167,7 +170,7 @@ interface Props {
   id: string;
   name: string;
   donations: DonationsType[];
-  status: string | undefined;
+  currentStatus: string | undefined;
   amount: number;
   amountCurrency: string;
   frequencyValue: PledgeFrequencyEnum | string;
@@ -186,7 +189,7 @@ const Contact: React.FC<Props> = ({
   id,
   name,
   donations,
-  status,
+  currentStatus,
   amount,
   amountCurrency,
   frequencyValue,
@@ -202,6 +205,8 @@ const Contact: React.FC<Props> = ({
   const constants = useApiConstants();
   const frequencyOptions = constants?.pledgeFrequency;
   const statusOptions = constants?.status;
+  const { contactStatuses } = useContactPartnershipStatuses();
+  const phases = constants?.phases;
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
@@ -209,7 +214,7 @@ const Contact: React.FC<Props> = ({
     () =>
       frequencyOptions?.find((frequency) => {
         return frequency?.key === suggestedChanges?.pledge_frequency;
-      })?.id || '',
+      })?.id || null,
     [frequencyOptions, suggestedChanges?.pledge_frequency],
   );
 
@@ -259,10 +264,10 @@ const Contact: React.FC<Props> = ({
     <Grid container className={classes.container}>
       <Formik
         initialValues={{
-          status: suggestedStatus || status,
+          status: suggestedStatus || currentStatus,
           pledgeCurrency: amountCurrency,
           pledgeAmount: suggestedAmount || amount,
-          pledgeFrequency: suggestedFrequency || frequencyValue,
+          pledgeFrequency: suggestedFrequency || frequencyValue || undefined,
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
@@ -312,8 +317,11 @@ const Contact: React.FC<Props> = ({
                           <Typography variant="subtitle2">
                             {`Current: ${getLocalizedContactStatus(
                               t,
-                              status as StatusEnum,
-                            )} ${
+                              currentStatus as StatusEnum,
+                            )}`}
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            {`${
                               amount && amountCurrency
                                 ? currencyFormat(amount, amountCurrency, locale)
                                 : ''
@@ -357,15 +365,16 @@ const Contact: React.FC<Props> = ({
                                 setFieldValue('status', event.target.value)
                               }
                             >
-                              {Object.values(StatusEnum).map((status) => (
-                                <MenuItem
-                                  value={status}
-                                  key={status}
-                                  data-testid="statusSelectOptions"
-                                >
-                                  {getLocalizedContactStatus(t, status)}
-                                </MenuItem>
-                              ))}
+                              {phases?.map((phase) => [
+                                <ListSubheader key={phase?.id}>
+                                  {getLocalizedPhase(t, phase?.id)}
+                                </ListSubheader>,
+                                phase?.contactStatuses.map((status) => (
+                                  <MenuItem key={status} value={status}>
+                                    {contactStatuses[status]?.translated}
+                                  </MenuItem>
+                                )),
+                              ])}
                             </Select>
                           </FormControl>
                         </Grid>

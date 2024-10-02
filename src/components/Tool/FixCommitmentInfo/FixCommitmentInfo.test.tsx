@@ -92,9 +92,8 @@ describe('FixCommitmentInfo', () => {
     expect(
       await findByText('You have 2 partner statuses to confirm.'),
     ).toBeInTheDocument();
-    expect(getAllByText('Current: Partner - Financial $1 Weekly')).toHaveLength(
-      2,
-    );
+    expect(getAllByText('Current: Partner - Financial')).toHaveLength(2);
+    expect(getAllByText('$1 Weekly')).toHaveLength(2);
   });
 
   it('has correct styles', async () => {

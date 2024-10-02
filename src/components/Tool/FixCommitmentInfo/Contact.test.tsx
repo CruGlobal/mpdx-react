@@ -59,7 +59,7 @@ const TestComponent = ({ status = testData.status }: { status?: string }) => (
           donations={testData.donations.nodes}
           key={testData.name}
           showModal={handleShowModal}
-          status={status}
+          currentStatus={status}
           amount={testData.amount}
           amountCurrency={testData.amountCurrency}
           frequencyValue={testData.frequencyValue}
@@ -80,9 +80,8 @@ describe('FixCommitmentContact', () => {
   it('default', async () => {
     const { getByText, findByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
-    expect(
-      getByText('Current: Partner - Financial ARM 50 Monthly'),
-    ).toBeInTheDocument();
+    expect(getByText('Current: Partner - Financial')).toBeInTheDocument();
+    expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
     expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
   });
 
@@ -151,7 +150,7 @@ describe('FixCommitmentContact', () => {
         <TestComponent status="" />
       </TestRouter>,
     );
-    expect(getByText('Current: ARM 50 Monthly')).toBeInTheDocument();
+    expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
     const donationDate = getByTestId('donationDate');
     expect(donationDate).toHaveTextContent('10/15/2019');
     const donationAmount = getByTestId('donationAmount');
