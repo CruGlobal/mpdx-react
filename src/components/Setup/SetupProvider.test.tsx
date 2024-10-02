@@ -55,10 +55,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('SetupProvider', () => {
-  beforeEach(() => {
-    process.env.DISABLE_SETUP_TOUR = undefined;
-  });
-
   it('renders child content', () => {
     const { getByText } = render(
       <TestComponent setup={UserSetupStageEnum.NoAccountLists} />,
@@ -111,12 +107,26 @@ describe('SetupProvider', () => {
       expect(getByTestId('setting-up')).toHaveTextContent('undefined');
     });
 
-    it('is true when setup is set on a tour page', async () => {
+    it('is true when setup is set on a dedicated tour page', async () => {
       const { getByTestId } = render(
         <TestComponent
           setup={UserSetupStageEnum.NoDefaultAccountList}
           setupPosition=""
           pathname="/setup/start"
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('setting-up')).toHaveTextContent('true'),
+      );
+    });
+
+    it('is true when setup_position matches the current page', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          setup={null}
+          setupPosition="preferences.personal"
+          pathname="/accountLists/[accountListId]/settings/preferences"
         />,
       );
 
@@ -159,11 +169,13 @@ describe('SetupProvider', () => {
       );
     });
 
-    it('is false when DISABLE_SETUP_TOUR is true', async () => {
-      process.env.DISABLE_SETUP_TOUR = 'true';
-
+    it('is false when setup_position does not match the current page', async () => {
       const { getByTestId } = render(
-        <TestComponent setup={null} setupPosition="start" />,
+        <TestComponent
+          setup={null}
+          setupPosition="preferences.personal"
+          pathname="/accountLists/[accountListId]/settings/notifications"
+        />,
       );
 
       await waitFor(() =>
