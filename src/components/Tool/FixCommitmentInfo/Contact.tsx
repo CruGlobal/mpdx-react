@@ -241,7 +241,10 @@ const Contact: React.FC<Props> = ({
       status,
       name: name,
       pledgeCurrency,
-      pledgeAmount,
+      pledgeAmount:
+        typeof pledgeAmount === 'string'
+          ? parseFloat(pledgeAmount)
+          : pledgeAmount,
       pledgeFrequency,
     };
 
