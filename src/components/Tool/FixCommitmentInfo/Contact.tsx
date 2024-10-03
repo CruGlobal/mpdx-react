@@ -171,7 +171,7 @@ interface Props {
   id: string;
   name: string;
   donations: DonationsType[];
-  currentStatus: string | undefined;
+  currentStatus: StatusEnum | undefined;
   amount: number;
   amountCurrency: string;
   frequencyValue: PledgeFrequencyEnum | string;
@@ -319,7 +319,7 @@ const Contact: React.FC<Props> = ({
                           <Typography variant="subtitle2">
                             {`Current: ${getLocalizedContactStatus(
                               t,
-                              currentStatus as StatusEnum,
+                              currentStatus,
                             )}`}
                           </Typography>
                           <Typography variant="subtitle2">

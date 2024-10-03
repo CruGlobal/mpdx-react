@@ -16,7 +16,7 @@ let testData = {
   id: 'test 1',
   name: 'Tester 1',
   avatar: '',
-  status: 'PARTNER_FINANCIAL',
+  status: StatusEnum.PartnerFinancial,
   frequencyTitle: 'Monthly',
   frequencyValue: PledgeFrequencyEnum.Monthly,
   amount: 50,
@@ -43,7 +43,11 @@ const router = {
 const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
 
-const TestComponent = ({ status = testData.status }: { status?: string }) => (
+const TestComponent = ({
+  status = testData.status,
+}: {
+  status?: StatusEnum | undefined;
+}) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
       <GqlMockedProvider<{
@@ -147,7 +151,7 @@ describe('FixCommitmentContact', () => {
   it('should render donation data', async () => {
     const { getByTestId, getByText } = render(
       <TestRouter router={router}>
-        <TestComponent status="" />
+        <TestComponent status={undefined} />
       </TestRouter>,
     );
     expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
@@ -162,7 +166,7 @@ describe('FixCommitmentContact', () => {
       id: 'test 2',
       name: 'Tester 2',
       avatar: '',
-      status: '',
+      status: StatusEnum.AskInFuture,
       frequencyTitle: '',
       frequencyValue: null!,
       amount: null!,
