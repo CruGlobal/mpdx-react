@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
@@ -78,7 +79,7 @@ describe('TasksDueThisWeek', () => {
         nodes: [
           {
             id: 'task_1',
-            subject: 'the quick brown fox jumps over the lazy dog',
+            subject: '1 the quick brown fox jumps over the lazy dog',
             activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
             contacts: {
               nodes: [{ hidden: true, name: 'Smith, Roger', id: '1' }],
@@ -89,7 +90,7 @@ describe('TasksDueThisWeek', () => {
           },
           {
             id: 'task_2',
-            subject: 'the quick brown fox jumps over the lazy dog',
+            subject: '2 the quick brown fox jumps over the lazy dog',
             activityType: ActivityTypeEnum.AppointmentInPerson,
             contacts: {
               nodes: [{ hidden: true, name: 'Smith, Sarah', id: '2' }],
@@ -101,17 +102,10 @@ describe('TasksDueThisWeek', () => {
         ],
         totalCount: 1234,
       };
-      const { getByTestId, queryByTestId, getByText } = render(
+      const { getByTestId, queryByTestId, getByText, findByText } = render(
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
-            mocks={{
-              constant: {
-                activities: [
-                  { id: 'Prayer Request', value: 'Prayer Request' },
-                  { id: 'Appointment', value: 'Appointment' },
-                ],
-              },
-            }}
+            mocks={{ LoadConstants: loadConstantsMockData }}
           >
             <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
           </GqlMockedProvider>
@@ -132,9 +126,13 @@ describe('TasksDueThisWeek', () => {
       );
       expect(viewAllElement.textContent).toEqual('View All (1,234)');
       const task1Element = getByTestId('TasksDueThisWeekListItem-task_1');
-      expect(task1Element.textContent).toEqual(
-        'Smith, Roger — the quick brown fox jumps over the lazy dog',
-      );
+      expect(getByText('Smith, Roger')).toBeInTheDocument();
+      expect(
+        await findByText('Partner Care - Prayer Request'),
+      ).toBeInTheDocument();
+      expect(
+        getByText('1 the quick brown fox jumps over the lazy dog'),
+      ).toBeInTheDocument();
       userEvent.click(task1Element);
       expect(openTaskModal).toHaveBeenCalledWith({
         view: TaskModalEnum.Edit,
@@ -142,7 +140,9 @@ describe('TasksDueThisWeek', () => {
       });
       expect(
         getByTestId('TasksDueThisWeekListItem-task_2').textContent,
-      ).toEqual('Smith, Sarah — the quick brown fox jumps over the lazy dog');
+      ).toEqual(
+        'Smith, SarahAppointment - In Person2 the quick brown fox jumps over the lazy dog',
+      );
     });
 
     it('multiple contacts', async () => {
