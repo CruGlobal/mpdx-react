@@ -51,12 +51,12 @@ import {
   TagTypeEnum,
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
-import { possibleNextActions } from '../PossibleNextActions';
 import { useUpdateContactStatusMutation } from '../TaskModal.generated';
 import {
   extractSuggestedTags,
   getDatabaseValueFromResult,
 } from '../TaskModalHelper';
+import { possibleNextActions } from '../possibleNextActions';
 import { possiblePartnerStatus } from '../possiblePartnerStatus';
 import { possibleResults } from '../possibleResults';
 import { useCompleteTaskMutation } from './CompleteTask.generated';

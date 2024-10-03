@@ -386,6 +386,42 @@ describe('TaskModalLogForm', () => {
     expect(getByRole('combobox', { name: 'Next Action' })).toBeInTheDocument();
   });
 
+  it('hides next action for results with no suggested next actions', async () => {
+    const { getByRole, findByRole, queryByRole } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <GqlMockedProvider<{
+              LoadConstants: LoadConstantsQuery;
+            }>
+              mocks={{
+                LoadConstants,
+              }}
+            >
+              <TaskModalLogForm
+                accountListId={accountListId}
+                onClose={jest.fn()}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+    userEvent.click(await findByRole('option', { name: 'Initiation' }));
+
+    userEvent.click(getByRole('combobox', { name: 'Action' }));
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
+
+    userEvent.click(getByRole('combobox', { name: 'Result' }));
+    userEvent.click(await findByRole('option', { name: 'Not Interested' }));
+
+    expect(
+      queryByRole('combobox', { name: 'Next Action' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('opens the next action modal', async () => {
     const mutationSpy = jest.fn();
     const onClose = jest.fn();

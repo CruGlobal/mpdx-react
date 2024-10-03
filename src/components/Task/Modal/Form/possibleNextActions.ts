@@ -20,7 +20,7 @@ export const possibleNextActions = (
       )
     : null;
 
-  return result?.suggestedNextActions
+  return result?.suggestedNextActions?.length
     ? [ActivityTypeEnum.None, ...result.suggestedNextActions]
     : [];
 };
