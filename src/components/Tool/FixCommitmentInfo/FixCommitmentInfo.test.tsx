@@ -14,6 +14,7 @@ import {
 } from '__tests__/util/testingLibraryReactMock';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
@@ -47,38 +48,40 @@ const Components = ({
 }: {
   mockNodes?: ErgonoMockShape[];
 }) => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <TestWrapper>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 1000, itemHeight: 100 }}
-          >
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-              InvalidStatuses: InvalidStatusesQuery;
-            }>
-              mocks={{
-                LoadConstants: loadConstantsMockData,
-                InvalidStatuses: {
-                  contacts: {
-                    nodes: mockNodes,
-                    totalCount: 2,
-                  },
-                },
-              }}
-              onCall={mutationSpy}
+  <AppSettingsProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixCommitmentInfo
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </VirtuosoMockContext.Provider>
-        </TestWrapper>
-      </TestRouter>
-    </ThemeProvider>
-  </SnackbarProvider>
+              <GqlMockedProvider<{
+                LoadConstants: LoadConstantsQuery;
+                InvalidStatuses: InvalidStatusesQuery;
+              }>
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                  InvalidStatuses: {
+                    contacts: {
+                      nodes: mockNodes,
+                      totalCount: 2,
+                    },
+                  },
+                }}
+                onCall={mutationSpy}
+              >
+                <FixCommitmentInfo
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </AppSettingsProvider>
 );
 
 describe('FixCommitmentInfo', () => {
@@ -92,9 +95,8 @@ describe('FixCommitmentInfo', () => {
     expect(
       await findByText('You have 2 partner statuses to confirm.'),
     ).toBeInTheDocument();
-    expect(getAllByText('Current: Partner - Financial $1 Weekly')).toHaveLength(
-      2,
-    );
+    expect(getAllByText('Current: Partner - Financial')).toHaveLength(2);
+    expect(getAllByText('$1 Weekly')).toHaveLength(2);
   });
 
   it('has correct styles', async () => {
@@ -150,7 +152,7 @@ describe('FixCommitmentInfo', () => {
 
     expect(
       await findByText(
-        'Are you sure you wish to update Tester 1 commitment info?',
+        'Are you sure you wish to update the commitment info for Tester 1?',
       ),
     ).toBeInTheDocument(),
       userEvent.click(getByText('Yes'));
@@ -169,7 +171,7 @@ describe('FixCommitmentInfo', () => {
 
     expect(
       await findByText(
-        'Are you sure you wish to update Tester 2 commitment info?',
+        'Are you sure you wish to update the commitment info for Tester 2?',
       ),
     ).toBeInTheDocument();
     userEvent.click(await findByText('Yes'));
@@ -219,7 +221,7 @@ describe('FixCommitmentInfo', () => {
 
     expect(
       await findByText(
-        "Are you sure you wish to leave Tester 1's commitment information unchanged?",
+        'Are you sure you wish to leave the commitment information unchanged for Tester 1?',
       ),
     ).toBeInTheDocument();
 

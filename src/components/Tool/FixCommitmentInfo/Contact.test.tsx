@@ -16,7 +16,7 @@ let testData = {
   id: 'test 1',
   name: 'Tester 1',
   avatar: '',
-  status: 'PARTNER_FINANCIAL',
+  status: StatusEnum.PartnerFinancial,
   frequencyTitle: 'Monthly',
   frequencyValue: PledgeFrequencyEnum.Monthly,
   amount: 50,
@@ -43,7 +43,11 @@ const router = {
 const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
 
-const TestComponent = ({ status = testData.status }: { status?: string }) => (
+const TestComponent = ({
+  status = testData.status,
+}: {
+  status?: StatusEnum | undefined;
+}) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
       <GqlMockedProvider<{
@@ -59,7 +63,7 @@ const TestComponent = ({ status = testData.status }: { status?: string }) => (
           donations={testData.donations.nodes}
           key={testData.name}
           showModal={handleShowModal}
-          status={status}
+          currentStatus={status}
           amount={testData.amount}
           amountCurrency={testData.amountCurrency}
           frequencyValue={testData.frequencyValue}
@@ -80,9 +84,8 @@ describe('FixCommitmentContact', () => {
   it('default', async () => {
     const { getByText, findByTestId } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
-    expect(
-      getByText('Current: Partner - Financial ARM 50 Monthly'),
-    ).toBeInTheDocument();
+    expect(getByText('Current: Partner - Financial')).toBeInTheDocument();
+    expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
     expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
   });
 
@@ -148,10 +151,10 @@ describe('FixCommitmentContact', () => {
   it('should render donation data', async () => {
     const { getByTestId, getByText } = render(
       <TestRouter router={router}>
-        <TestComponent status="" />
+        <TestComponent status={undefined} />
       </TestRouter>,
     );
-    expect(getByText('Current: ARM 50 Monthly')).toBeInTheDocument();
+    expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
     const donationDate = getByTestId('donationDate');
     expect(donationDate).toHaveTextContent('10/15/2019');
     const donationAmount = getByTestId('donationAmount');
@@ -163,7 +166,7 @@ describe('FixCommitmentContact', () => {
       id: 'test 2',
       name: 'Tester 2',
       avatar: '',
-      status: '',
+      status: StatusEnum.AskInFuture,
       frequencyTitle: '',
       frequencyValue: null!,
       amount: null!,
