@@ -116,10 +116,10 @@ const Components = ({
 
 describe('ContactFlowColumn', () => {
   it('should render a column with correct details', async () => {
-    const { getByText, getAllByText, findByText, getByTestId } = render(
+    const { getByText, getAllByText, findByRole, getByTestId } = render(
       <Components />,
     );
-    expect(await findByText(title)).toBeInTheDocument();
+    expect(await findByRole('heading', { name: title })).toBeInTheDocument();
     expect(getByText('2')).toBeInTheDocument();
     expect(getAllByText('Test, Name')[0]).toBeInTheDocument();
     expect(getByTestId('column-header')).toHaveStyle({
@@ -128,11 +128,9 @@ describe('ContactFlowColumn', () => {
   });
 
   it('should open menu', async () => {
-    const { getAllByText, findByText, getByTestId, findByRole } = render(
-      <Components />,
-    );
+    const { getAllByText, getByTestId, findByRole } = render(<Components />);
 
-    expect(await findByText(title)).toBeInTheDocument();
+    expect(await findByRole('heading', { name: title })).toBeInTheDocument();
     expect(getAllByText('Ask in Future')[0]).toBeInTheDocument();
     userEvent.click(getByTestId('MoreVertIcon'));
 
@@ -142,9 +140,9 @@ describe('ContactFlowColumn', () => {
   });
 
   it('should select all contacts', async () => {
-    const { getByTestId, findByText, findByRole } = render(<Components />);
+    const { getByTestId, findByRole } = render(<Components />);
 
-    expect(await findByText(title)).toBeInTheDocument();
+    expect(await findByRole('heading', { name: title })).toBeInTheDocument();
     userEvent.click(getByTestId('MoreVertIcon'));
     userEvent.click(
       await findByRole('menuitem', { name: 'Select all 2 contacts' }),
@@ -159,9 +157,9 @@ describe('ContactFlowColumn', () => {
   });
 
   it('should deselect all contacts', async () => {
-    const { getByTestId, findByText, findByRole } = render(<Components />);
+    const { getByTestId, findByRole } = render(<Components />);
 
-    expect(await findByText(title)).toBeInTheDocument();
+    expect(await findByRole('heading', { name: title })).toBeInTheDocument();
 
     userEvent.click(getByTestId('MoreVertIcon'));
     userEvent.click(await findByRole('menuitem', { name: 'Deselect All' }));
@@ -187,9 +185,9 @@ describe('ContactFlowColumn', () => {
   });
 
   it('other columns should not have the "Add Contact to Appeal" button', async () => {
-    const { findByText, queryByText } = render(<Components />);
+    const { findByRole, queryByText } = render(<Components />);
 
-    expect(await findByText(title)).toBeInTheDocument();
+    expect(await findByRole('heading', { name: title })).toBeInTheDocument();
 
     expect(queryByText('Add Contact to Appeal')).not.toBeInTheDocument();
   });
