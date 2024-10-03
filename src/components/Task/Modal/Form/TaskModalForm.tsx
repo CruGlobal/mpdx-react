@@ -67,7 +67,6 @@ import {
   TagsAutocomplete,
 } from './Inputs/TagsAutocomplete/TagsAutocomplete';
 import { TaskPhaseAutocomplete } from './Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';
-import { possibleNextActions } from './PossibleNextActions';
 import {
   useCreateTasksMutation,
   useUpdateContactStatusMutation,
@@ -80,6 +79,7 @@ import {
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from './TaskModalHelper';
+import { possibleNextActions } from './possibleNextActions';
 import { possiblePartnerStatus } from './possiblePartnerStatus';
 import { possibleResults } from './possibleResults';
 

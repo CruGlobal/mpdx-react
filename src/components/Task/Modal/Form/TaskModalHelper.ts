@@ -6,7 +6,7 @@ import {
   ResultEnum,
 } from 'src/graphql/types.generated';
 import { Constants, SetPhaseId } from 'src/hooks/usePhaseData';
-import { possibleNextActions } from './PossibleNextActions';
+import { possibleNextActions } from './possibleNextActions';
 
 export type SetFieldValue = (
   field: string,
