@@ -15,15 +15,6 @@ query GoogleAccountIntegrations($input: GoogleAccountIntegrationsInput!) {
   }
 }
 
-query GetIntegrationActivities {
-  constant {
-    activities {
-      id
-      value
-    }
-  }
-}
-
 mutation CreateGoogleIntegration($input: CreateGoogleIntegrationInput!) {
   createGoogleIntegration(input: $input) {
     calendarId

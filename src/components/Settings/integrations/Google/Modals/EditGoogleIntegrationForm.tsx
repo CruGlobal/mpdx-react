@@ -15,18 +15,21 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { GoogleAccountIntegration } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  GoogleAccountIntegration,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
   GoogleAccountIntegrationsDocument,
   GoogleAccountIntegrationsQuery,
-  useGetIntegrationActivitiesQuery,
 } from './googleIntegrations.generated';
 import { useUpdateGoogleIntegrationMutation } from './updateGoogleIntegration.generated';
 
@@ -34,12 +37,13 @@ type GoogleAccountIntegrationSlimmed = Pick<
   GoogleAccountIntegration,
   'calendarId' | 'id' | 'calendarIntegrations' | 'calendars'
 >;
+
 interface EditGoogleIntegrationFormProps {
   account: GoogleAccountAttributesSlimmed;
   googleAccountDetails: GoogleAccountIntegrationSlimmed;
   loading: boolean;
-  setIsSubmitting: (boolean) => void;
-  handleToggleCalendarIntegration: (boolean) => void;
+  setIsSubmitting: (isSubmitting: boolean) => void;
+  handleToggleCalendarIntegration: (isSubmitting: boolean) => void;
   handleClose: () => void;
 }
 
@@ -57,6 +61,31 @@ const StyledFormControlLabel = styled(FormControlLabel)(() => ({
   margin: '0 0 0 -11px',
 }));
 
+const integrationSchema = yup.object({
+  id: yup.string().required(),
+  calendarId: yup.string().required(),
+  calendarIntegrations: yup
+    .array()
+    .of(
+      yup
+        .mixed<ActivityTypeEnum>()
+        .oneOf(Object.values(ActivityTypeEnum))
+        .required(),
+    )
+    .required(),
+  calendars: yup
+    .array()
+    .of(
+      yup
+        .object({
+          id: yup.string().required(),
+          name: yup.string().required(),
+        })
+        .nullable(),
+    )
+    .required(),
+});
+
 export const EditGoogleIntegrationForm: React.FC<
   EditGoogleIntegrationFormProps
 > = ({
@@ -73,29 +102,11 @@ export const EditGoogleIntegrationForm: React.FC<
   const { appName } = useGetAppSettings();
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
 
-  const { data: actvitiesData } = useGetIntegrationActivitiesQuery();
-  const actvities = actvitiesData?.constant?.activities;
+  const activities = useApiConstants()?.activities;
 
-  const IntegrationSchema: yup.SchemaOf<GoogleAccountIntegrationSlimmed> =
-    yup.object({
-      id: yup.string().required(),
-      calendarId: yup.string().required(),
-      calendarIntegrations: yup.array().of(yup.string().required()).required(),
-      calendars: yup
-        .array()
-        .of(
-          yup.object({
-            __typename: yup
-              .string()
-              .equals(['GoogleAccountIntegrationCalendars']),
-            id: yup.string().required(),
-            name: yup.string().required(),
-          }),
-        )
-        .required(),
-    });
-
-  const onSubmit = async (attributes: GoogleAccountIntegrationSlimmed) => {
+  const onSubmit = async (
+    attributes: yup.InferType<typeof integrationSchema>,
+  ) => {
     setIsSubmitting(true);
     const googleIntegration = {
       calendarId: attributes.calendarId,
@@ -159,12 +170,12 @@ export const EditGoogleIntegrationForm: React.FC<
 
           <Formik
             initialValues={{
-              calendarId: googleAccountDetails.calendarId,
+              calendarId: googleAccountDetails.calendarId ?? '',
               id: googleAccountDetails.id,
               calendarIntegrations: googleAccountDetails.calendarIntegrations,
               calendars: googleAccountDetails.calendars,
             }}
-            validationSchema={IntegrationSchema}
+            validationSchema={integrationSchema}
             onSubmit={onSubmit}
           >
             {({
@@ -200,7 +211,7 @@ export const EditGoogleIntegrationForm: React.FC<
                 </Box>
 
                 <StyledBox>
-                  {actvities?.map((activity) => {
+                  {activities?.map((activity) => {
                     if (!activity?.id || !activity?.value) {
                       return null;
                     }
@@ -217,12 +228,12 @@ export const EditGoogleIntegrationForm: React.FC<
                             name={activityId}
                             checked={isChecked}
                             onChange={(_, value) => {
-                              let newCalendarIntegrations;
+                              let newCalendarIntegrations: ActivityTypeEnum[];
                               if (value) {
                                 // Add to calendarIntegrations
                                 newCalendarIntegrations = [
                                   ...calendarIntegrations,
-                                  activity.value,
+                                  activity.id,
                                 ];
                               } else {
                                 // Remove from calendarIntegrations
@@ -232,7 +243,7 @@ export const EditGoogleIntegrationForm: React.FC<
                                   );
                               }
                               setFieldValue(
-                                `calendarIntegrations`,
+                                'calendarIntegrations',
                                 newCalendarIntegrations,
                               );
                             }}

@@ -31,23 +31,15 @@ import {
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
 import { SendToChalkline } from './Schema/Settings/Integrations/Chalkine/sendToChalkline/datahandler';
-import {
-  CreateGoogleIntegration,
-  CreateGoogleIntegrationResponse,
-} from './Schema/Settings/Integrations/Google/createGoogleIntegration/datahandler';
-import {
-  GoogleAccountIntegrations,
-  GoogleAccountIntegrationsResponse,
-} from './Schema/Settings/Integrations/Google/googleAccountIntegrations/datahandler';
+import { CreateGoogleIntegration } from './Schema/Settings/Integrations/Google/createGoogleIntegration/datahandler';
+import { GoogleAccountIntegrations } from './Schema/Settings/Integrations/Google/googleAccountIntegrations/datahandler';
 import {
   GoogleAccounts,
   GoogleAccountsResponse,
 } from './Schema/Settings/Integrations/Google/googleAccounts/datahandler';
+import { GoogleIntegrationResponse } from './Schema/Settings/Integrations/Google/parse';
 import { SyncGoogleIntegration } from './Schema/Settings/Integrations/Google/syncGoogleIntegration/datahandler';
-import {
-  UpdateGoogleIntegration,
-  UpdateGoogleIntegrationResponse,
-} from './Schema/Settings/Integrations/Google/updateGoogleIntegration/datahandler';
+import { UpdateGoogleIntegration } from './Schema/Settings/Integrations/Google/updateGoogleIntegration/datahandler';
 import {
   MailchimpAccount,
   MailchimpAccountResponse,
@@ -902,12 +894,11 @@ class MpdxRestApi extends RESTDataSource {
     googleAccountId: string,
     accountListId: string,
   ) {
-    const { data }: { data: GoogleAccountIntegrationsResponse[] } =
-      await this.get(
-        `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
-          `filter[account_list_id]=${accountListId}`,
-        )}`,
-      );
+    const { data }: { data: GoogleIntegrationResponse[] } = await this.get(
+      `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
+        `filter[account_list_id]=${accountListId}`,
+      )}`,
+    );
     return GoogleAccountIntegrations(data);
   }
 
@@ -931,13 +922,11 @@ class MpdxRestApi extends RESTDataSource {
     Object.keys(googleIntegration).forEach((key) => {
       attributes[camelToSnake(key)] = googleIntegration[key];
     });
-    const { data }: { data: CreateGoogleIntegrationResponse } = await this.post(
+    const { data }: { data: GoogleIntegrationResponse } = await this.post(
       `user/google_accounts/${googleAccountId}/google_integrations`,
       {
         data: {
-          attributes: {
-            ...attributes,
-          },
+          attributes,
           relationships: {
             account_list: {
               data: {
@@ -963,13 +952,11 @@ class MpdxRestApi extends RESTDataSource {
       attributes[camelToSnake(key)] = googleIntegration[key];
     });
 
-    const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
+    const { data }: { data: GoogleIntegrationResponse } = await this.put(
       `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
       {
         data: {
-          attributes: {
-            ...attributes,
-          },
+          attributes,
           id: googleIntegrationId,
           type: 'google_integrations',
         },
