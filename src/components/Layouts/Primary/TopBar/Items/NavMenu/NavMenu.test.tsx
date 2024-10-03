@@ -71,7 +71,7 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Partner Giving Analysis' }),
     ).toBeInTheDocument();
     userEvent.click(getByTestId('ToolsMenuToggle'));
-    expect(getByRole('menuitem', { name: 'Appeal' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Appeals' })).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Fix Commitment Info' }),
     ).toBeInTheDocument();
@@ -124,7 +124,6 @@ describe('NavMenu', () => {
       await findByRole('menuitem', { name: 'Coaching' }),
     ).toBeInTheDocument();
   });
-
   it('does not show coaching link if there are no coaching accounts', async () => {
     const { queryByRole } = render(
       <TestComponent
