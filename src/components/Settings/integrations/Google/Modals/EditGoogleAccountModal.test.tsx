@@ -1,17 +1,20 @@
 import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { act, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import * as Types from 'src/graphql/types.generated';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import {
+  ActivityTypeEnum,
+  GoogleAccountIntegration,
+  GoogleAccountIntegrationCalendars,
+  Maybe,
+} from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
-import {
-  GetIntegrationActivitiesQuery,
-  GoogleAccountIntegrationsQuery,
-} from './googleIntegrations.generated';
+import { GoogleAccountIntegrationsQuery } from './googleIntegrations.generated';
 
 jest.mock('next-auth/react');
 
@@ -53,7 +56,7 @@ const googleAccount = {
 };
 
 const standardGoogleIntegration: Pick<
-  Types.GoogleAccountIntegration,
+  GoogleAccountIntegration,
   | 'calendarId'
   | 'calendarIntegration'
   | 'calendarIntegrations'
@@ -64,12 +67,12 @@ const standardGoogleIntegration: Pick<
   | 'updatedInDbAt'
 > & {
   calendars: Array<
-    Types.Maybe<Pick<Types.GoogleAccountIntegrationCalendars, 'id' | 'name'>>
+    Maybe<Pick<GoogleAccountIntegrationCalendars, 'id' | 'name'>>
   >;
 } = {
   calendarId: null,
   calendarIntegration: true,
-  calendarIntegrations: ['Appointment'],
+  calendarIntegrations: [ActivityTypeEnum.AppointmentInPerson],
   calendarName: 'calendar',
   calendars: [
     {
@@ -188,30 +191,30 @@ describe('EditGoogleAccountModal', () => {
 
   it('should update Integrations calendar', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole, queryByRole } = render(
+    const { getByText, getByRole, findByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider<{
-          GetIntegrationActivities: GetIntegrationActivitiesQuery;
+          LoadConstants: LoadConstantsQuery;
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
           mocks={{
             GoogleAccountIntegrations: {
               googleAccountIntegrations: [googleIntegration],
             },
-            GetIntegrationActivities: {
+            LoadConstants: {
               constant: {
                 activities: [
                   {
-                    value: Types.ActivityTypeEnum.AppointmentVideoCall,
-                    id: Types.ActivityTypeEnum.AppointmentVideoCall,
+                    value: ActivityTypeEnum.AppointmentVideoCall,
+                    id: ActivityTypeEnum.AppointmentVideoCall,
                   },
                   {
-                    value: Types.ActivityTypeEnum.AppointmentInPerson,
-                    id: Types.ActivityTypeEnum.AppointmentInPerson,
+                    value: ActivityTypeEnum.AppointmentInPerson,
+                    id: ActivityTypeEnum.AppointmentInPerson,
                   },
                   {
-                    value: Types.ActivityTypeEnum.FollowUpEmail,
-                    id: Types.ActivityTypeEnum.FollowUpEmail,
+                    value: ActivityTypeEnum.FollowUpEmail,
+                    id: ActivityTypeEnum.FollowUpEmail,
                   },
                 ],
               },
@@ -234,52 +237,46 @@ describe('EditGoogleAccountModal', () => {
       ).toBeInTheDocument(),
     );
 
-    await act(async () => {
-      userEvent.click(getByRole('button', { name: /update/i }));
-    });
+    userEvent.click(getByRole('button', { name: /update/i }));
     await waitFor(() =>
       expect(getByText(/this field is required/i)).toBeInTheDocument(),
     );
-    await act(async () => {
-      userEvent.click(getByRole('combobox'));
-    });
-    const calendarOption = getByRole('option', {
-      name: /calendarsName@cru\.org/i,
-    });
-    await waitFor(() => expect(calendarOption).toBeInTheDocument());
-    await act(async () => {
-      userEvent.click(calendarOption);
-    });
+    userEvent.click(getByRole('combobox'));
+    userEvent.click(
+      await findByRole('option', {
+        name: /calendarsName@cru\.org/i,
+      }),
+    );
 
     await waitFor(() =>
       expect(queryByRole(/this field is required/i)).not.toBeInTheDocument(),
     );
-
+    await waitFor(() =>
+      expect(getByRole('button', { name: /update/i })).not.toBeDisabled(),
+    );
     userEvent.click(getByRole('button', { name: /update/i }));
 
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Updated Google Calendar Integration!',
-        {
-          variant: 'success',
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateGoogleIntegration', {
+        input: {
+          googleAccountId: googleAccount.id,
+          googleIntegration: {
+            calendarId: 'calendarsID',
+            calendarIntegrations: [ActivityTypeEnum.AppointmentInPerson],
+            overwrite: true,
+          },
+          googleIntegrationId: googleIntegration.id,
         },
-      );
-      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-        'UpdateGoogleIntegration',
-      );
+      }),
+    );
 
-      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-        googleAccountId: googleAccount.id,
-        googleIntegration: {
-          calendarId: 'calendarsID',
-          calendarIntegrations: ['Appointment'],
-          overwrite: true,
-        },
-        googleIntegrationId: googleIntegration.id,
-      });
-
-      expect(handleClose).toHaveBeenCalled();
-    });
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'Updated Google Calendar Integration!',
+      {
+        variant: 'success',
+      },
+    );
+    expect(handleClose).toHaveBeenCalled();
   });
 
   it('should update calendar checkboxes', async () => {
@@ -289,26 +286,26 @@ describe('EditGoogleAccountModal', () => {
       <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
-          GetIntegrationActivities: GetIntegrationActivitiesQuery;
+          LoadConstants: LoadConstantsQuery;
         }>
           mocks={{
             GoogleAccountIntegrations: {
               googleAccountIntegrations: [googleIntegration],
             },
-            GetIntegrationActivities: {
+            LoadConstants: {
               constant: {
                 activities: [
                   {
-                    value: Types.ActivityTypeEnum.AppointmentVideoCall,
-                    id: Types.ActivityTypeEnum.AppointmentVideoCall,
+                    value: ActivityTypeEnum.AppointmentVideoCall,
+                    id: ActivityTypeEnum.AppointmentVideoCall,
                   },
                   {
-                    value: Types.ActivityTypeEnum.AppointmentInPerson,
-                    id: Types.ActivityTypeEnum.AppointmentInPerson,
+                    value: ActivityTypeEnum.AppointmentInPerson,
+                    id: ActivityTypeEnum.AppointmentInPerson,
                   },
                   {
-                    value: Types.ActivityTypeEnum.FollowUpEmail,
-                    id: Types.ActivityTypeEnum.FollowUpEmail,
+                    value: ActivityTypeEnum.FollowUpEmail,
+                    id: ActivityTypeEnum.FollowUpEmail,
                   },
                 ],
               },
@@ -340,29 +337,30 @@ describe('EditGoogleAccountModal', () => {
     userEvent.click(getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'));
     userEvent.click(getByRole('button', { name: /update/i }));
 
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Updated Google Calendar Integration!',
-        {
-          variant: 'success',
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateGoogleIntegration', {
+        input: {
+          googleAccountId: googleAccount.id,
+          googleIntegration: {
+            calendarId: 'calendarsID',
+            calendarIntegrations: [
+              ActivityTypeEnum.AppointmentInPerson,
+              ActivityTypeEnum.AppointmentVideoCall,
+            ],
+            overwrite: true,
+          },
+          googleIntegrationId: googleIntegration.id,
         },
-      );
-      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-        'UpdateGoogleIntegration',
-      );
+      }),
+    );
 
-      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-        googleAccountId: googleAccount.id,
-        googleIntegration: {
-          calendarId: 'calendarsID',
-          calendarIntegrations: ['Appointment', 'APPOINTMENT_VIDEO_CALL'],
-          overwrite: true,
-        },
-        googleIntegrationId: googleIntegration.id,
-      });
-
-      expect(handleClose).toHaveBeenCalled();
-    });
+    expect(handleClose).toHaveBeenCalled();
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'Updated Google Calendar Integration!',
+      {
+        variant: 'success',
+      },
+    );
   });
 
   it('should delete Calendar Integration', async () => {
@@ -398,25 +396,25 @@ describe('EditGoogleAccountModal', () => {
       getByRole('button', { name: /Disable Calendar Integration/i }),
     );
 
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Disabled Google Calendar Integration!',
-        {
-          variant: 'success',
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateGoogleIntegration', {
+        input: {
+          googleAccountId: googleAccount.id,
+          googleIntegration: {
+            calendarIntegration: false,
+            overwrite: true,
+          },
+          googleIntegrationId: googleIntegration.id,
         },
-      );
-      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-        'UpdateGoogleIntegration',
-      );
-      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-        googleAccountId: googleAccount.id,
-        googleIntegration: {
-          calendarIntegration: false,
-          overwrite: true,
-        },
-        googleIntegrationId: googleIntegration.id,
-      });
-    });
+      }),
+    );
+
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      'Disabled Google Calendar Integration!',
+      {
+        variant: 'success',
+      },
+    );
   });
 
   it('should create a  Calendar Integration', async () => {
