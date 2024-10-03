@@ -14,15 +14,13 @@ import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
+  ResultEnum,
 } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { TaskModalEnum } from '../../TaskModal';
-import { ContactStatusQuery } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus.generated';
-import { UpdateTaskMutation } from '../TaskModal.generated';
 import { taskModalTests } from '../TaskModalTests';
-import { CompleteTaskMutation } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 
 jest.mock('../../../../../hooks/useTaskModal');
@@ -78,9 +76,6 @@ const Components = ({ mocks = {}, taskOverrides, props }: ComponentsProps) => (
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           LoadConstant: LoadConstantsQuery;
-          UpdateTask: UpdateTaskMutation;
-          CompleteTask: CompleteTaskMutation;
-          ContactStatus: ContactStatusQuery;
         }>
           mocks={{
             LoadConstants: loadConstantsMockData,
@@ -348,10 +343,6 @@ describe('TaskModalCompleteForm', () => {
     const { getByText, findByText, getByRole } = render(
       <Components taskOverrides={taskOverrides} />,
     );
-
-    await waitFor(() => {
-      new Promise((resolve) => setTimeout(resolve, 1000));
-    });
     await waitFor(() => {
       expect(getByText(/subject/i)).toBeInTheDocument();
       userEvent.click(getByRole('combobox', { name: 'Result' }));
@@ -371,8 +362,8 @@ describe('TaskModalCompleteForm', () => {
       expect(mutationSpy).toHaveGraphqlOperation('CompleteTask', {
         accountListId: 'abc',
         attributes: {
-          nextAction: 'PARTNER_CARE_THANK',
-          result: 'COMPLETED',
+          nextAction: ActivityTypeEnum.PartnerCareThank,
+          result: ResultEnum.Completed,
           tagList: ['tag-1', 'tag-2', 'financial support'],
         },
       }),
