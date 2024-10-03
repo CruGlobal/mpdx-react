@@ -1,11 +1,11 @@
 import React from 'react';
-import { MockedResponse } from '@apollo/client/testing';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 
 type ComponentsProps = {
-  mocks?: MockedResponse[];
+  mocks?: ApolloErgonoMockMap;
   taskOverrides?: object;
   props?: object;
 };
