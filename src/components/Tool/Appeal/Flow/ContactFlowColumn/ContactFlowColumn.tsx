@@ -214,6 +214,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
           ref={drop}
         >
           <ContactFlowDropZone
+            title={title}
             status={appealStatus}
             changeContactStatus={changeContactStatus}
           />
