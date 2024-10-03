@@ -259,7 +259,6 @@ export const Activity: React.FC<ActivityProps> = ({
             <Link
               href={contactsLink({
                 status: [
-                  ContactFilterStatusEnum.Null,
                   ContactFilterStatusEnum.NeverContacted,
                   ContactFilterStatusEnum.AskInFuture,
                   ContactFilterStatusEnum.CultivateRelationship,
