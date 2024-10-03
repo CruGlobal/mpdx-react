@@ -19,15 +19,13 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import AnimatedCard from 'src/components/AnimatedCard';
-import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import TaskStatus from 'src/components/Task/Status';
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import illustration8 from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-8.svg';
 import { numberFormat } from 'src/lib/intlFormat';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { GetThisWeekQuery } from '../GetThisWeek.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -79,20 +77,8 @@ const TasksDueThisWeek = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { openTaskModal, preloadTaskModal } = useTaskModal();
-  const { data } = useLoadConstantsQuery();
-  const [activityTypes, setActivityTypes] = React.useState(
-    data?.constant.activities,
-  );
-  React.useEffect(() => {
-    setActivityTypes(data?.constant.activities);
-  }, [data?.constant.activities]);
 
-  const translatedActivityType = (type: ActivityTypeEnum): string => {
-    return (
-      activityTypes?.find(({ id }) => id === getLocalizedTaskType(t, type))
-        ?.value ?? ''
-    );
-  };
+  const { activityTypes } = usePhaseData();
 
   const handleClick = ({
     id: taskId,
@@ -182,17 +168,18 @@ const TasksDueThisWeek = ({
                               component="span"
                               variant="body2"
                               color="textPrimary"
+                              marginRight="5px"
                             >
-                              {task.activityType
-                                ? translatedActivityType(task.activityType)
-                                : ''}
-                            </Typography>{' '}
+                              {!!task.activityType &&
+                                (activityTypes.get(task.activityType)?.title ||
+                                  '')}
+                            </Typography>
                             <Typography
                               component="span"
                               variant="body2"
                               color="textSecondary"
                             >
-                              {task.activityType && '—'} {task.subject}
+                              {task.subject}
                             </Typography>
                           </Box>
                         </Box>
