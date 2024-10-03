@@ -9,6 +9,8 @@ import { DraggedContact } from '../ContactFlowRow/ContactFlowRow';
 // src/components/Contacts/ContactFlow/ContactFlowDropZone/ContactFlowDropZone.tsx
 
 interface Props {
+  /** Localized column title */
+  title: string;
   status: AppealStatusEnum;
   changeContactStatus: (
     contact: DraggedContact,
@@ -17,6 +19,7 @@ interface Props {
 }
 
 export const ContactFlowDropZone: React.FC<Props> = ({
+  title,
   status,
   changeContactStatus,
 }: Props) => {
@@ -43,7 +46,7 @@ export const ContactFlowDropZone: React.FC<Props> = ({
       ref={drop}
     >
       <Typography variant="h5" align="center">
-        {status}
+        {title}
       </Typography>
     </DropZoneBox>
   );
