@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import React, { useState } from 'react';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Box, Button, Link, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
@@ -22,10 +22,10 @@ const CoachingRowWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-const CoachingNameText = styled(Typography)(({ theme }) => ({
-  margin: theme.spacing(2),
+const CoachingNameText = styled(Typography)(() => ({
+  margin: 0,
   cursor: 'pointer',
-  display: 'flex',
+  display: 'inline',
 }));
 
 export const CoachingRow: React.FC<Props> = ({
@@ -37,6 +37,7 @@ export const CoachingRow: React.FC<Props> = ({
     id,
     monthlyGoal,
     currency,
+    users,
     name,
     totalPledges,
     receivedPledges,
@@ -64,28 +65,36 @@ export const CoachingRow: React.FC<Props> = ({
   return (
     <>
       <CoachingRowWrapper role="listitem">
-        <CoachingNameText variant="h6" color="primary">
-          <NextLink
-            href={{
-              pathname: '/accountLists/[accountListId]/coaching/[coachingId]',
-              query: { accountListId: accountListId, coachingId: id },
-            }}
-            passHref
-          >
-            <Link flex={1} underline="hover">
-              {name}
-            </Link>
-          </NextLink>
-          <Button
-            onClick={(event) => {
-              event.preventDefault();
-              setConfirmingDelete(true);
-            }}
-            aria-label={t('Remove Access')}
-          >
-            <VisibilityOff />
-          </Button>
-        </CoachingNameText>
+        <Box display="flex">
+          <Box flex={1}>
+            <CoachingNameText variant="h6" color="primary">
+              <NextLink
+                href={{
+                  pathname:
+                    '/accountLists/[accountListId]/coaching/[coachingId]',
+                  query: { accountListId: accountListId, coachingId: id },
+                }}
+                passHref
+              >
+                <Link underline="hover">{name}</Link>
+              </NextLink>
+            </CoachingNameText>
+            <Typography variant="subtitle1">{`${users.nodes[0].firstName} ${users.nodes[0].lastName}`}</Typography>
+          </Box>
+          <Box>
+            <Tooltip title={t('Remove Access')}>
+              <Button
+                onClick={(event) => {
+                  event.preventDefault();
+                  setConfirmingDelete(true);
+                }}
+                aria-label={t('Remove Access')}
+              >
+                <VisibilityOff />
+              </Button>
+            </Tooltip>
+          </Box>
+        </Box>
         <AppealProgress
           currency={currency}
           goal={calculatedMonthlyGoal}

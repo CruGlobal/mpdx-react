@@ -171,7 +171,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           <>
             <CoachingMainTitleContainer>
               <Box style={{ flexGrow: 1 }}>
-                <Typography variant="h5" m={1}>
+                <Typography variant="h5" mx={1}>
                   <Hidden mdUp>
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
@@ -183,6 +183,10 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                   </Hidden>
                   {accountListData?.name}
                 </Typography>
+                <Typography
+                  mx={1}
+                  variant="subtitle1"
+                >{`${accountListData?.users.nodes[0]?.firstName} ${accountListData?.users.nodes[0]?.lastName}`}</Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
