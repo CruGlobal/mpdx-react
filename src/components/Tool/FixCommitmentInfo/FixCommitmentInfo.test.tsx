@@ -14,15 +14,14 @@ import {
 } from '__tests__/util/testingLibraryReactMock';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
 import { InvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
 const mockEnqueue = jest.fn();
-jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -49,46 +48,45 @@ const Components = ({
 }: {
   mockNodes?: ErgonoMockShape[];
 }) => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <TestWrapper>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 1000, itemHeight: 100 }}
-          >
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-              InvalidStatuses: InvalidStatusesQuery;
-            }>
-              mocks={{
-                LoadConstants: loadConstantsMockData,
-                InvalidStatuses: {
-                  contacts: {
-                    nodes: mockNodes,
-                    totalCount: 2,
-                  },
-                },
-              }}
-              onCall={mutationSpy}
+  <AppSettingsProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixCommitmentInfo
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </VirtuosoMockContext.Provider>
-        </TestWrapper>
-      </TestRouter>
-    </ThemeProvider>
-  </SnackbarProvider>
+              <GqlMockedProvider<{
+                LoadConstants: LoadConstantsQuery;
+                InvalidStatuses: InvalidStatusesQuery;
+              }>
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                  InvalidStatuses: {
+                    contacts: {
+                      nodes: mockNodes,
+                      totalCount: 2,
+                    },
+                  },
+                }}
+                onCall={mutationSpy}
+              >
+                <FixCommitmentInfo
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </AppSettingsProvider>
 );
 
 describe('FixCommitmentInfo', () => {
   beforeEach(() => {
     setContactFocus.mockClear();
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'MPDX',
-    });
   });
 
   it('default with test data', async () => {

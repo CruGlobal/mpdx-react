@@ -250,7 +250,7 @@ const Contact: React.FC<Props> = ({
       t(`Are you sure you wish to update the commitment info for {{source}}?`, {
         source: name,
       }),
-      t('Update'),
+      t('Update Commitment Info'),
       UpdateTypeEnum.Change,
     );
   };
@@ -317,20 +317,21 @@ const Contact: React.FC<Props> = ({
                             <Typography variant="subtitle1">{name}</Typography>
                           </Link>
                           <Typography variant="subtitle2">
-                            {`Current: ${getLocalizedContactStatus(
-                              t,
-                              currentStatus,
-                            )}`}
+                            {t('Current: {{status}}', {
+                              status: getLocalizedContactStatus(
+                                t,
+                                currentStatus,
+                              ),
+                            })}
                           </Typography>
                           <Typography variant="subtitle2">
-                            {`${
-                              amount && amountCurrency
-                                ? currencyFormat(amount, amountCurrency, locale)
-                                : ''
-                            } ${getLocalizedPledgeFrequency(
+                            {amount && amountCurrency
+                              ? currencyFormat(amount, amountCurrency, locale)
+                              : null}{' '}
+                            {getLocalizedPledgeFrequency(
                               t,
                               frequencyValue as PledgeFrequencyEnum,
-                            )}`}
+                            )}
                           </Typography>
                         </Box>
                       </Box>
