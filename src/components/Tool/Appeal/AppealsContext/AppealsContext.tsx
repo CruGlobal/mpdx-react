@@ -178,9 +178,25 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     },
     skip: contactCount === 0,
   });
+  // In the flows view, we need the total count of all contacts in every column, but the API
+  // filters out contacts excluded from an appeal. We have to load excluded contacts also and
+  // manually merge them with the other contacts.
+  const { data: allExcludedContacts } = useGetIdsForMassSelectionQuery({
+    variables: {
+      accountListId,
+      first: contactCount,
+      contactsFilters: { ...contactsFilters, appealStatus: 'excluded' },
+    },
+    // Skip this query when there is an appealStatus filter from the list view
+    skip: contactCount === 0 || !!contactsFilters.appealStatus,
+  });
   const allContactIds = useMemo(
-    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
-    [allContacts],
+    () =>
+      [
+        ...(allContacts?.contacts.nodes ?? []),
+        ...(allExcludedContacts?.contacts.nodes ?? []),
+      ].map((contact) => contact.id),
+    [allContacts, allExcludedContacts],
   );
 
   const {
