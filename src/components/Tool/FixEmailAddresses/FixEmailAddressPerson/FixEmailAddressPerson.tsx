@@ -35,6 +35,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { sourceToStr } from 'src/utils/sourceToStr';
 import EmailValidationForm from '../EmailValidationForm';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
 import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
@@ -359,7 +360,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                     </Typography>
                                   </Hidden>
                                   <Typography display="inline" variant="body2">
-                                    {`${email.source} (${dateFormatShort(
+                                    {`${sourceToStr(
+                                      t,
+                                      email.source,
+                                    )} (${dateFormatShort(
                                       DateTime.fromISO(email.updatedAt),
                                       locale,
                                     )})`}
@@ -453,7 +457,8 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                       setFieldValue('newEmail', e.target.value);
                                       handleSubmit();
                                     }}
-                                    disabled={email.source !== appName}
+                                    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+                                    disabled={email.source !== 'MPDX'}
                                   />
                                   <FormHelperText
                                     error={true}
@@ -463,7 +468,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                   </FormHelperText>
                                 </FormControl>
 
-                                {email.source === appName ? (
+                                {email.source === 'MPDX' ? (
                                   <Box
                                     display="flex"
                                     alignItems="center"

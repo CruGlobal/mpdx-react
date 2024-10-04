@@ -30,6 +30,7 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
@@ -105,15 +106,12 @@ export const determineBulkDataToSend = (
     [key: string]: PersonEmailAddresses;
   },
   defaultSource: string,
-  appName: string,
 ): PersonUpdateInput[] => {
   const dataToSend = [] as PersonUpdateInput[];
 
   Object.entries(dataState).forEach((value) => {
     const primaryEmailAddress = value[1].emailAddresses.find(
-      (email) =>
-        email.source === defaultSource ||
-        (defaultSource === appName && email.source === 'MPDX'),
+      (email) => email.source === defaultSource,
     );
     if (primaryEmailAddress) {
       dataToSend.push({
@@ -137,8 +135,8 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
   setContactFocus,
 }) => {
-  const appName = process.env.APP_NAME ?? 'MPDX';
-  const [defaultSource, setDefaultSource] = useState(appName);
+  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+  const [defaultSource, setDefaultSource] = useState('MPDX');
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -152,12 +150,14 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
   }>({});
-  const [sourceOptions, setSourceOptions] = useState<string[]>([appName]);
+  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+  const [sourceOptions, setSourceOptions] = useState<string[]>(['MPDX']);
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
     const existingSources = new Set<string>();
-    existingSources.add(appName);
+    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+    existingSources.add('MPDX');
 
     const newDataState = data
       ? data.people.nodes?.reduce<{ [key: string]: PersonEmailAddresses }>(
@@ -255,11 +255,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   };
 
   const handleBulkConfirm = async () => {
-    const dataToSend = determineBulkDataToSend(
-      dataState,
-      defaultSource ?? '',
-      appName,
-    );
+    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
 
     if (dataToSend.length) {
       await updatePeople({
@@ -289,7 +285,12 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       });
     } else {
       enqueueSnackbar(
-        t(`No ${defaultSource} primary email address exists to update`),
+        t(
+          `No ${sourceToStr(
+            t,
+            defaultSource,
+          )} primary email address exists to update`,
+        ),
         {
           variant: 'warning',
           autoHideDuration: 7000,
@@ -328,7 +329,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                     >
                       {sourceOptions.map((source) => (
                         <MenuItem key={source} value={source}>
-                          {source}
+                          {sourceToStr(t, source)}
                         </MenuItem>
                       ))}
                     </SourceSelect>
@@ -339,7 +340,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                       <ConfirmButtonIcon />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.nodes.length,
-                        source: defaultSource,
+                        source: sourceToStr(t, defaultSource),
                       })}
                     </ConfirmButton>
                   </DefaultSourceWrapper>
@@ -416,7 +417,10 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
         handleClose={() => setShowBulkConfirmModal(false)}
         mutation={handleBulkConfirm}
         title={t('Confirm')}
-        message={t(`You are updating all contacts visible on this page, setting the first ${defaultSource} email address as the
+        message={t(`You are updating all contacts visible on this page, setting the first ${sourceToStr(
+          t,
+          defaultSource,
+        )} email address as the
           primary email address. If no such email address exists the contact will not be updated.
           Are you sure you want to do this?`)}
       />
