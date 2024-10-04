@@ -192,13 +192,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     deselectAll,
     selectMultipleIds,
     deselectMultipleIds,
-  } = useMassSelection(
-    contactCount,
-    allContactIds,
-    activeFilters,
-    searchTerm as string,
-    starredFilter,
-  );
+  } = useMassSelection(allContactIds);
   //#endregion
 
   useEffect(() => {
