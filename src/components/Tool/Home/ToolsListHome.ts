@@ -23,7 +23,7 @@ export interface ToolItem {
 
 export const ToolsListHome: ToolItem[] = [
   {
-    tool: i18n.t('Appeal'),
+    tool: i18n.t('Appeals'),
     desc: i18n.t(
       'Set goals, create asks, and track progress for one-time needs',
     ),

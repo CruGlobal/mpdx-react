@@ -160,7 +160,7 @@ const TaskModalCompleteForm = ({
     }
 
     if (selectedSuggestedTags.length) {
-      attributes.tagList.concat(selectedSuggestedTags);
+      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
     }
 
     const mutations = [

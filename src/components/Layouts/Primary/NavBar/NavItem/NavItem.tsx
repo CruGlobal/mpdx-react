@@ -107,7 +107,7 @@ export const NavItem: FC<NavItemProps> = ({
             <img
               src={process.env.HELP_WHATS_NEW_IMAGE_URL}
               alt={t('Help logo')}
-              height={36}
+              height={24}
               style={{ marginRight: theme.spacing(1) }}
             />
           )}

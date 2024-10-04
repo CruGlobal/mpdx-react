@@ -1,42 +1,34 @@
 import React from 'react';
-import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@emotion/react';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
-import TestWrapper from '__tests__/util/TestWrapper';
-import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
+import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import {
   ActivityTypeEnum,
-  DisplayResultEnum,
   NotificationTimeUnitEnum,
   NotificationTypeEnum,
   ResultEnum,
-  StatusEnum,
 } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
-import { GetThisWeekDefaultMocks } from '../../../../Dashboard/ThisWeek/ThisWeek.mock';
 import { TaskModalEnum } from '../../TaskModal';
-import {
-  ContactStatusQueryMock,
-  updateContactStatusMutationMock,
-} from '../TaskModalMocks';
 import { taskModalTests } from '../TaskModalTests';
-import { CompleteTaskDocument } from './CompleteTask.generated';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
-import {
-  completeSimpleTaskMutationMock,
-  completeTaskMutationMock,
-  createTaskCommentMutation,
-} from './TaskModalCompleteForm.mock';
 
 jest.mock('../../../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
 const onClose = jest.fn();
 const onErrorMock = jest.fn();
+const mutationSpy = jest.fn();
 
 beforeEach(() => {
   (useTaskModal as jest.Mock).mockReturnValue({
@@ -73,29 +65,37 @@ const task = {
   notificationType: NotificationTypeEnum.Both,
   notificationTimeUnit: NotificationTimeUnitEnum.Hours,
 };
-
 type ComponentsProps = {
-  mocks?: MockedResponse[];
+  mocks?: ApolloErgonoMockMap;
   taskOverrides?: object;
   props?: object;
 };
-const Components = ({ mocks = [], taskOverrides, props }: ComponentsProps) => (
-  <ThemeProvider theme={theme}>
-    <TestWrapper
-      mocks={[LoadConstantsMock(), ...mocks]}
-      onErrorMock={onErrorMock}
-    >
-      <TaskModalCompleteForm
-        accountListId={accountListId}
-        onClose={onClose}
-        task={{
-          ...task,
-          ...taskOverrides,
-        }}
-        {...props}
-      />
-    </TestWrapper>
-  </ThemeProvider>
+const Components = ({ mocks = {}, taskOverrides, props }: ComponentsProps) => (
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          LoadConstant: LoadConstantsQuery;
+        }>
+          mocks={{
+            LoadConstants: loadConstantsMockData,
+            ...mocks,
+          }}
+          onCall={mutationSpy}
+        >
+          <TaskModalCompleteForm
+            accountListId={accountListId}
+            onClose={onClose}
+            task={{
+              ...task,
+              ...taskOverrides,
+            }}
+            {...props}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </LocalizationProvider>
 );
 
 describe('TaskModalCompleteForm', () => {
@@ -158,13 +158,6 @@ describe('TaskModalCompleteForm', () => {
               nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
             },
           }}
-          mocks={[
-            ContactStatusQueryMock(
-              accountListId,
-              'contact-1',
-              StatusEnum.NeverContacted,
-            ),
-          ]}
         />,
       );
 
@@ -193,13 +186,6 @@ describe('TaskModalCompleteForm', () => {
               nodes: [{ id: 'contact-1', name: 'Anderson, Robert' }],
             },
           }}
-          mocks={[
-            ContactStatusQueryMock(
-              accountListId,
-              'contact-1',
-              StatusEnum.NeverContacted,
-            ),
-          ]}
         />,
       );
 
@@ -325,14 +311,7 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('saves the default values correctly', async () => {
-    const { getByRole } = render(
-      <Components
-        mocks={[
-          completeTaskMutationMock(accountListId, taskId),
-          GetThisWeekDefaultMocks()[0],
-        ]}
-      />,
-    );
+    const { getByRole } = render(<Components />);
     expect(getByRole('textbox', { name: /^Choose date/ })).toHaveValue(
       '01/01/2020',
     );
@@ -341,10 +320,6 @@ describe('TaskModalCompleteForm', () => {
   it('saves simple', async () => {
     const { getByText } = render(
       <Components
-        mocks={[
-          completeTaskMutationMock(accountListId, taskId),
-          GetThisWeekDefaultMocks()[0],
-        ]}
         taskOverrides={{
           activityType: null,
           completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
@@ -359,49 +334,40 @@ describe('TaskModalCompleteForm', () => {
 
   it('saves complex', async () => {
     const completedAt = DateTime.local(2015, 1, 5, 1, 2).toISO();
-    const taskAttributes = {
-      id: task.id,
+
+    const taskOverrides = {
+      activityType: ActivityTypeEnum.FollowUpPhoneCall,
       completedAt,
-      displayResult: DisplayResultEnum.FollowUpResultPartnerSpecial,
-      result: ResultEnum.Completed,
-      nextAction: ActivityTypeEnum.PartnerCareThank,
       tagList: ['tag-1', 'tag-2'],
     };
-    const { findByRole, getByText } = render(
-      <Components
-        mocks={[
-          completeTaskMutationMock(accountListId, taskId),
-          GetThisWeekDefaultMocks()[0],
-          {
-            request: {
-              query: CompleteTaskDocument,
-              variables: {
-                accountListId,
-                attributes: taskAttributes,
-              },
-            },
-            result: {
-              data: {
-                updateTask: {
-                  task: taskAttributes,
-                },
-              },
-            },
-          },
-        ]}
-        taskOverrides={{
-          activityType: ActivityTypeEnum.FollowUpPhoneCall,
-          completedAt,
-          tagList: ['tag-1', 'tag-2'],
-        }}
-      />,
+    const { getByText, findByText, getByRole } = render(
+      <Components taskOverrides={taskOverrides} />,
     );
-    userEvent.click(await findByRole('combobox', { name: 'Result' }));
-    userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
-    userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
-    userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
+    await waitFor(() => {
+      expect(getByText(/subject/i)).toBeInTheDocument();
+      userEvent.click(getByRole('combobox', { name: 'Result' }));
+    });
+    await waitFor(() => {
+      userEvent.click(getByText('Partner-Special'));
+      userEvent.click(getByRole('combobox', { name: 'Next Action' }));
+      userEvent.click(getByRole('option', { name: 'Thank You Note' }));
+    });
+
+    expect(getByText('Suggested Tags')).toBeInTheDocument();
+    userEvent.click(await findByText('Financial Support'));
 
     userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('CompleteTask', {
+        accountListId: 'abc',
+        attributes: {
+          nextAction: ActivityTypeEnum.PartnerCareThank,
+          result: ResultEnum.Completed,
+          tagList: ['tag-1', 'tag-2', 'financial support'],
+        },
+      }),
+    );
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({
         view: TaskModalEnum.Add,
@@ -417,46 +383,8 @@ describe('TaskModalCompleteForm', () => {
 
   it('saves contacts new status', async () => {
     const completedAt = DateTime.local(2015, 1, 5, 1, 2).toISO();
-    const taskAttributes = {
-      id: task.id,
-      completedAt,
-      displayResult: DisplayResultEnum.FollowUpResultPartnerSpecial,
-      result: ResultEnum.Completed,
-      nextAction: ActivityTypeEnum.PartnerCareThank,
-      tagList: ['tag-1', 'tag-2'],
-    };
     const { findByRole, getByText, findByText } = render(
       <Components
-        mocks={[
-          ContactStatusQueryMock(
-            accountListId,
-            'contact-1',
-            StatusEnum.ContactForAppointment,
-          ),
-          completeTaskMutationMock(accountListId, taskId),
-          GetThisWeekDefaultMocks()[0],
-          {
-            request: {
-              query: CompleteTaskDocument,
-              variables: {
-                accountListId,
-                attributes: taskAttributes,
-              },
-            },
-            result: {
-              data: {
-                updateTask: {
-                  task: taskAttributes,
-                },
-              },
-            },
-          },
-          updateContactStatusMutationMock(
-            accountListId,
-            'contact-1',
-            StatusEnum.PartnerSpecial,
-          ),
-        ]}
         taskOverrides={{
           activityType: ActivityTypeEnum.AppointmentInPerson,
           completedAt,
@@ -498,10 +426,6 @@ describe('TaskModalCompleteForm', () => {
   it('saves result as Completed when no activityType', async () => {
     const { getByRole } = render(
       <Components
-        mocks={[
-          completeSimpleTaskMutationMock(accountListId, taskId),
-          GetThisWeekDefaultMocks()[0],
-        ]}
         taskOverrides={{
           activityType: null,
           completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
@@ -516,19 +440,7 @@ describe('TaskModalCompleteForm', () => {
   });
 
   it('saves comment', async () => {
-    const { getByRole } = render(
-      <Components
-        mocks={[
-          completeSimpleTaskMutationMock(accountListId, taskId),
-          createTaskCommentMutation(accountListId, taskId),
-          GetThisWeekDefaultMocks()[0],
-        ]}
-        taskOverrides={{
-          activityType: null,
-          completedAt: DateTime.local(2015, 1, 5, 1, 2).toISO(),
-        }}
-      />,
-    );
+    const { getByRole } = render(<Components />);
     userEvent.type(
       getByRole('textbox', { name: 'Add New Comment' }),
       'Comment',
