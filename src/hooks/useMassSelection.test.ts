@@ -87,7 +87,7 @@ describe('useMassSelection', () => {
   });
 
   describe('selectMultipleIds()', () => {
-    it('should return what type of selection', () => {
+    it('should select multiple ids and deduplicate selected ids', () => {
       const { result, rerender } = renderHook(() =>
         useMassSelection(defaultIdsList),
       );
@@ -96,7 +96,7 @@ describe('useMassSelection', () => {
       rerender();
       expect(result.current.ids).toEqual(['1', '2', '3']);
 
-      result.current.selectMultipleIds(['4', '5', '6']);
+      result.current.selectMultipleIds(['3', '4', '5', '6']);
       rerender();
       expect(result.current.ids).toEqual(['1', '2', '3', '4', '5', '6']);
     });

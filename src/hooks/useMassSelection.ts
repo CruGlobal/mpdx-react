@@ -28,7 +28,7 @@ export const useMassSelection = (
   };
 
   const selectMultipleIds = (newIds: string[]) => {
-    setIds([...ids, ...newIds]);
+    setIds([...ids, ...newIds.filter((newId) => !ids.includes(newId))]);
   };
 
   const deselectMultipleIds = (idsToRemove: string[]) => {
