@@ -1,5 +1,7 @@
 import { TFunction } from 'react-i18next';
 
+const appName = process.env.APP_NAME ?? 'MPDX';
+
 export const sourceToStr = (t: TFunction, source: string): string => {
   switch (source) {
     case 'Siebel':
@@ -7,12 +9,12 @@ export const sourceToStr = (t: TFunction, source: string): string => {
     case 'DataServer':
       return t('DonorHub');
     case 'MPDX':
-      return t('MPDX');
+      return appName;
     case 'TntImport':
       return t('Tnt Import');
     case 'GoogleImport':
       return t('Google Import');
     default:
-      return t('MPDX');
+      return appName;
   }
 };
