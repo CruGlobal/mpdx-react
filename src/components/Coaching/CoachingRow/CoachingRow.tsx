@@ -4,7 +4,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Box, Button, Link, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { Confirmation } from '../../common/Modal/Confirmation/Confirmation';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
@@ -39,12 +41,14 @@ export const CoachingRow: React.FC<Props> = ({
     currency,
     users,
     name,
+    balance,
     totalPledges,
     receivedPledges,
     primaryAppeal,
   } = coachingAccount;
 
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const calculatedMonthlyGoal = monthlyGoal ?? 0;
   const appealCurrencyCode = primaryAppeal?.amountCurrency ?? 'USD';
@@ -61,6 +65,10 @@ export const CoachingRow: React.FC<Props> = ({
       cache.gc();
     },
   });
+
+  const usersList = users.nodes
+    .map((user) => user.firstName + ' ' + user.lastName)
+    .join(', ');
 
   return (
     <>
@@ -79,9 +87,16 @@ export const CoachingRow: React.FC<Props> = ({
                 <Link underline="hover">{name}</Link>
               </NextLink>
             </CoachingNameText>
-            <Typography variant="subtitle1">{`${users.nodes[0].firstName} ${users.nodes[0].lastName}`}</Typography>
+            <Typography variant="subtitle1">{usersList}</Typography>
           </Box>
           <Box>
+            <Typography
+              variant="h6"
+              sx={{ float: 'left', marginInline: '5px' }}
+            >
+              {t('Balance:')}{' '}
+              {balance && currencyFormat(balance, currency, locale)}
+            </Typography>
             <Tooltip title={t('Remove Access')}>
               <Button
                 onClick={(event) => {

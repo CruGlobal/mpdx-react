@@ -135,6 +135,10 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 
   const handleCloseDrawer = () => setDrawerVisible(false);
 
+  const usersList = accountListData?.users.nodes
+    .map((user) => user.firstName + ' ' + user.lastName)
+    .join(', ');
+
   const sidebarDrawer = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.down('md'),
   );
@@ -183,10 +187,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                   </Hidden>
                   {accountListData?.name}
                 </Typography>
-                <Typography
-                  mx={1}
-                  variant="subtitle1"
-                >{`${accountListData?.users.nodes[0]?.firstName} ${accountListData?.users.nodes[0]?.lastName}`}</Typography>
+                <Typography mx={1} variant="subtitle1">
+                  {usersList}
+                </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
                 <AppealProgress
