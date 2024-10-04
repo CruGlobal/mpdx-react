@@ -59,16 +59,28 @@ const TestComponent: React.FC<TestComponentProps> = ({
         mocks={{
           LoadCoachingDetail: {
             coachingAccountList: {
-              name: 'John Doe',
+              name: 'John Doe Account',
               currency: 'USD',
               monthlyGoal,
+              users: {
+                nodes: [
+                  { firstName: 'John', lastName: 'Doe' },
+                  { firstName: 'Sally', lastName: 'Doe' },
+                ],
+              },
             },
           },
           LoadAccountListCoachingDetail: {
             accountList: {
-              name: 'John Doe',
+              name: 'John Doe Account',
               currency: 'USD',
               monthlyGoal,
+              users: {
+                nodes: [
+                  { firstName: 'John', lastName: 'Doe' },
+                  { firstName: 'Sally', lastName: 'Doe' },
+                ],
+              },
             },
           },
           LoadCoachingCommitments: {
@@ -130,10 +142,13 @@ describe('LoadCoachingDetail', () => {
     { type: AccountListTypeEnum.Own, name: 'own' },
   ])('$name account list', ({ type: accountListType }) => {
     it('view', async () => {
-      const { findByRole, getByText } = render(
+      const { findByRole, getByText, findByText } = render(
         <TestComponent accountListType={accountListType} monthlyGoal={55} />,
       );
-      expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
+      expect(
+        await findByRole('heading', { name: 'John Doe Account' }),
+      ).toBeVisible();
+      expect(await findByText('John Doe, Sally Doe')).toBeVisible();
       expect(getByText('Monthly $55')).toBeVisible();
       expect(getByText('Monthly Giving')).toBeVisible();
     });
@@ -142,7 +157,9 @@ describe('LoadCoachingDetail', () => {
       const { findByRole, getByText } = render(
         <TestComponent accountListType={accountListType} />,
       );
-      expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
+      expect(
+        await findByRole('heading', { name: 'John Doe Account' }),
+      ).toBeVisible();
       expect(getByText('Monthly $0')).toBeVisible();
       expect(getByText('Monthly Giving')).toBeVisible();
     });
@@ -154,7 +171,9 @@ describe('LoadCoachingDetail', () => {
 
       const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
 
-      expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
+      expect(
+        await findByRole('heading', { name: 'John Doe Account' }),
+      ).toBeVisible();
       expect(getByRole('heading', { name: 'Coaching' })).toBeInTheDocument();
       expect(
         queryByRole('button', {
@@ -169,7 +188,9 @@ describe('LoadCoachingDetail', () => {
 
       const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
 
-      expect(await findByRole('heading', { name: 'John Doe' })).toBeVisible();
+      expect(
+        await findByRole('heading', { name: 'John Doe Account' }),
+      ).toBeVisible();
       expect(
         queryByRole('heading', { name: 'Coaching' }),
       ).not.toBeInTheDocument();
