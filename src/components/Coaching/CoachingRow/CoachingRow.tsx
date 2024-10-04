@@ -24,12 +24,6 @@ const CoachingRowWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-const CoachingNameText = styled(Typography)(() => ({
-  margin: 0,
-  cursor: 'pointer',
-  display: 'inline',
-}));
-
 export const CoachingRow: React.FC<Props> = ({
   coachingAccount,
   accountListId,
@@ -75,7 +69,7 @@ export const CoachingRow: React.FC<Props> = ({
       <CoachingRowWrapper role="listitem">
         <Box display="flex">
           <Box flex={1}>
-            <CoachingNameText variant="h6" color="primary">
+            <Typography variant="h6" display="inline">
               <NextLink
                 href={{
                   pathname:
@@ -86,7 +80,7 @@ export const CoachingRow: React.FC<Props> = ({
               >
                 <Link underline="hover">{name}</Link>
               </NextLink>
-            </CoachingNameText>
+            </Typography>
             <Typography variant="subtitle1">{usersList}</Typography>
           </Box>
           <Box>
@@ -94,8 +88,7 @@ export const CoachingRow: React.FC<Props> = ({
               variant="h6"
               sx={{ float: 'left', marginInline: '5px' }}
             >
-              {t('Balance:')}{' '}
-              {balance && currencyFormat(balance, currency, locale)}
+              {t('Balance:')} {currencyFormat(balance, currency, locale)}
             </Typography>
             <Tooltip title={t('Remove Access')}>
               <Button
