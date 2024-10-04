@@ -27,6 +27,13 @@ fragment CoachedPerson on CoachingAccountList {
     pledgesAmountProcessed
     pledgesAmountTotal
   }
+  users {
+    nodes {
+      firstName
+      lastName
+      id
+    }
+  }
   currency
   monthlyGoal
   balance

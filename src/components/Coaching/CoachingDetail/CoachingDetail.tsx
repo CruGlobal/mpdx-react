@@ -135,6 +135,10 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 
   const handleCloseDrawer = () => setDrawerVisible(false);
 
+  const usersList = accountListData?.users.nodes
+    .map((user) => user.firstName + ' ' + user.lastName)
+    .join(', ');
+
   const sidebarDrawer = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.down('md'),
   );
@@ -171,7 +175,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           <>
             <CoachingMainTitleContainer>
               <Box style={{ flexGrow: 1 }}>
-                <Typography variant="h5" m={1}>
+                <Typography variant="h5" mx={1}>
                   <Hidden mdUp>
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
@@ -182,6 +186,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                     </IconButton>
                   </Hidden>
                   {accountListData?.name}
+                </Typography>
+                <Typography mx={1} variant="subtitle1">
+                  {usersList}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
