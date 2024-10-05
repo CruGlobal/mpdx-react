@@ -33,6 +33,7 @@ import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmat
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 import PhoneValidationForm from './PhoneNumberValidationForm';
@@ -307,13 +308,7 @@ const Contact: React.FC<Props> = ({
                     }
                   ></ContactHeader>
                 </Grid>
-                <CardContent
-                  className={
-                    (classes.paddingX,
-                    classes.paddingY,
-                    classes.phoneNumberContainer)
-                  }
-                >
+                <CardContent sx={{ padding: 2 }}>
                   <Grid container display="flex" alignItems="center">
                     <Hidden smDown>
                       <Grid item xs={6} sm={4} className={classes.paddingY}>
@@ -392,7 +387,10 @@ const Contact: React.FC<Props> = ({
                                     </Typography>
                                   </Hidden>
                                   <Typography display="inline" variant="body2">
-                                    {`${phoneNumber.source} (${dateFormatShort(
+                                    {`${sourceToStr(
+                                      t,
+                                      phoneNumber.source,
+                                    )} (${dateFormatShort(
                                       DateTime.fromISO(phoneNumber.updatedAt),
                                       locale,
                                     )})`}
@@ -483,7 +481,7 @@ const Contact: React.FC<Props> = ({
                                       setFieldValue('newPhone', e.target.value);
                                       handleSubmit();
                                     }}
-                                    disabled={phoneNumber.source !== appName}
+                                    disabled={phoneNumber.source !== 'MPDX'}
                                   />
                                   <FormHelperText
                                     error={true}

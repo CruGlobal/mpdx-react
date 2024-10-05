@@ -18,7 +18,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -116,8 +116,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
 }: Props) => {
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
-  const [defaultSource, setDefaultSource] = useState<string>(appName || 'MPDX');
+  const [defaultSource, setDefaultSource] = useState<string>('MPDX');
 
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
   const { data } = useGetInvalidPhoneNumbersQuery({
@@ -129,16 +128,14 @@ const FixPhoneNumbers: React.FC<Props> = ({
     [key: string]: PhoneNumberData;
   }>({});
 
-  const [sourceOptions, setSourceOptions] = useState([appName]);
+  const [sourceOptions, setSourceOptions] = useState(['MPDX']);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
     const existingSources = new Set<string>();
 
-    if (appName) {
-      existingSources.add(appName);
-    }
+    existingSources.add('MPDX');
 
     const newDataState = data
       ? data.people.nodes?.reduce(
@@ -313,7 +310,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                             value={source}
                             data-testid="select-option"
                           >
-                            {source}
+                            {sourceToStr(t, source)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -330,7 +327,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       />
                       {t('Confirm {{amount}} as {{source}}', {
                         amount: data.people.totalCount,
-                        source: defaultSource,
+                        source: sourceToStr(t, defaultSource),
                       })}
                     </Button>
                   </Box>
@@ -389,7 +386,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
           `You are updating all contacts visible on this page, setting the first {{defaultSource}} phone number as the
           primary phone number. If no such phone number exists, the contact will not be updated.
           Are you sure you want to do this?`,
-          { defaultSource },
+          { defaultSource: sourceToStr(t, defaultSource) },
         )}
       />
     </Box>
