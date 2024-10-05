@@ -15,6 +15,6 @@ export const sourceToStr = (t: TFunction, source: string): string => {
     case 'GoogleImport':
       return t('Google Import');
     default:
-      return appName;
+      return source;
   }
 };

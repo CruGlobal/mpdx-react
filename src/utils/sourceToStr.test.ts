@@ -19,6 +19,6 @@ describe('SourceToStr', () => {
     expect(sourceToStr(t, 'GoogleImport')).toBe('Google Import');
   });
   it('should convert default case', () => {
-    expect(sourceToStr(t, 'test')).toBe('MPDX');
+    expect(sourceToStr(t, 'test')).toBe('test');
   });
 });
