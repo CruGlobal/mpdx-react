@@ -37,6 +37,7 @@ import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipSt
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
 import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
@@ -112,7 +113,6 @@ interface Props {
   name: string;
   status: string;
   addresses: ContactAddressFragment[];
-  appName: string;
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
   setContactFocus: SetContactFocus;
@@ -128,7 +128,6 @@ const Contact: React.FC<Props> = ({
   name,
   status,
   addresses,
-  appName,
   openEditAddressModal,
   openNewAddressModal,
   setContactFocus,
@@ -245,7 +244,7 @@ const Contact: React.FC<Props> = ({
                         </Typography>
                       </Hidden>
                       <Typography display="inline">
-                        {address.source}{' '}
+                        {sourceToStr(t, address.source)}{' '}
                       </Typography>
                       <Typography display="inline">
                         {dateFormatShort(
@@ -296,9 +295,11 @@ const Contact: React.FC<Props> = ({
                   >
                     <Box className={classes.address}>
                       <Typography>
-                        {`${address.street}, ${address.city} ${
-                          address.state ? address.state : ''
-                        }. ${address.postalCode}`}
+                        {`${address.street ? address.street : ''}, ${
+                          address.city ? address.city : ''
+                        } ${address.state ? address.state : ''} ${
+                          address.postalCode ? address.postalCode : ''
+                        }`}
                       </Typography>
                     </Box>
 
@@ -321,9 +322,6 @@ const Contact: React.FC<Props> = ({
                       <strong>{t('Source')}: </strong>
                     </Typography>
                   </Hidden>
-                  <Typography display="inline">
-                    {t('{{appName}}', { appName })}
-                  </Typography>
                 </Box>
               </Box>
             </Grid>

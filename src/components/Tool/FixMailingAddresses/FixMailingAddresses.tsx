@@ -20,6 +20,7 @@ import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/C
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -94,12 +95,10 @@ const useStyles = makeStyles()(() => ({
     },
   },
 }));
-
-const appName = process.env.APP_NAME || 'MPDX';
-
+//Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
-  source: appName,
+  source: 'MPDX',
   street: '',
   region: '',
   location: '',
@@ -130,9 +129,10 @@ const FixMailingAddresses: React.FC<Props> = ({
   const [showNewAddressModal, setShowNewAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
   const [selectedContactId, setSelectedContactId] = useState('');
-  const [defaultSource, setDefaultSource] = useState(appName);
+  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+  const [defaultSource, setDefaultSource] = useState('MPDX');
   const [openBulkConfirmModal, setOpenBulkConfirmModal] = useState(false);
-  const [sourceOptions, setSourceOptions] = useState<string[]>([appName]);
+  const [sourceOptions, setSourceOptions] = useState<string[]>(['MPDX']);
 
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
@@ -142,7 +142,8 @@ const FixMailingAddresses: React.FC<Props> = ({
 
   useEffect(() => {
     const existingSources = new Set<string>();
-    existingSources.add(appName);
+    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+    existingSources.add('MPDX');
 
     data?.contacts.nodes.forEach((contact) => {
       contact.addresses.nodes.forEach((address) => {
@@ -199,9 +200,7 @@ const FixMailingAddresses: React.FC<Props> = ({
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
       data?.contacts?.nodes.forEach((contact) => {
         const primaryAddress = contact.addresses.nodes.find(
-          (address) =>
-            address.source === defaultSource ||
-            (defaultSource === appName && address.source === 'MPDX'),
+          (address) => address.source === defaultSource,
         );
         if (primaryAddress) {
           const addresses: ContactAddressFragment[] = [];
@@ -380,7 +379,7 @@ const FixMailingAddresses: React.FC<Props> = ({
                         >
                           {sourceOptions.map((source) => (
                             <MenuItem key={source} value={source}>
-                              {source}
+                              {sourceToStr(t, source)}
                             </MenuItem>
                           ))}
                         </Select>
@@ -396,7 +395,7 @@ const FixMailingAddresses: React.FC<Props> = ({
                           />
                           {t('Confirm {{amount}} as {{source}}', {
                             amount: totalContacts,
-                            source: defaultSource,
+                            source: sourceToStr(t, defaultSource),
                           })}
                         </Button>
                       </Box>
@@ -410,7 +409,6 @@ const FixMailingAddresses: React.FC<Props> = ({
                         status={contact.status || ''}
                         key={contact.id}
                         addresses={contact.addresses.nodes}
-                        appName={appName}
                         openEditAddressModal={(address, contactId) =>
                           handleModalOpen(ModalEnum.Edit, address, contactId)
                         }
@@ -463,7 +461,7 @@ const FixMailingAddresses: React.FC<Props> = ({
           title={t('Confirm')}
           message={t(
             `You are updating all contacts visible on this page, setting the first {{source}} address as the primary address. If no such address exists the contact will not be updated. Are you sure you want to do this?`,
-            { source: defaultSource },
+            { source: sourceToStr(t, defaultSource) },
           )}
           handleClose={handleBulkConfirmModalClose}
           mutation={handleBulkConfirm}

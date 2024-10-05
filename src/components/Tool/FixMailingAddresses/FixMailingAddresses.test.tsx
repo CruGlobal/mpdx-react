@@ -164,7 +164,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL. 32832'));
+      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL 32832'));
 
       await waitFor(() => {
         expect(getByText('Edit Address')).toBeInTheDocument();
@@ -210,7 +210,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL. 32832'));
+      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL 32832'));
 
       await waitFor(() => {
         expect(getByText('Edit Address')).toBeInTheDocument();
@@ -230,7 +230,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() =>
         expect(
-          queryByText('100 Lake Hart Drive, Orlando FL. 32832'),
+          queryByText('100 Lake Hart Drive, Orlando FL 32832'),
         ).not.toBeInTheDocument(),
       );
     });
@@ -313,7 +313,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() =>
         expect(
-          queryByText('Buckingham Palace, College Park England. SW1A 1AA'),
+          queryByText('Buckingham Palace, College Park England SW1A 1AA'),
         ).not.toBeInTheDocument(),
       );
 
@@ -360,7 +360,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Buckingham Palace, London . SW1A 1AA'),
+          getByText('Buckingham Palace, London SW1A 1AA'),
         ).toBeInTheDocument(),
       );
     }, 10000);
@@ -493,7 +493,6 @@ describe('FixMailingAddresses', () => {
     const name2 = 'Gamgee, Samwise';
 
     it('should handle Error', async () => {
-      process.env.APP_NAME = 'MPDX';
       const { getByRole, getByText, queryByTestId } = render(
         <Components
           mocks={{
@@ -568,7 +567,6 @@ describe('FixMailingAddresses', () => {
     });
 
     it('should handle success and remove contacts', async () => {
-      process.env.APP_NAME = 'MPDX';
       const { getByRole, queryByTestId, queryByText } = render(
         <Components
           mocks={{
@@ -623,7 +621,6 @@ describe('FixMailingAddresses', () => {
   });
 
   it('should not fire handleSingleConfirm', async () => {
-    process.env.APP_NAME = 'MPDX';
     const { getByRole, queryByTestId, queryByText } = render(
       <Components
         mocks={{
@@ -638,9 +635,9 @@ describe('FixMailingAddresses', () => {
     );
     const name = 'Baggins, Frodo';
     userEvent.click(getByRole('combobox'));
-    userEvent.click(getByRole('option', { name: 'DataServer' }));
+    userEvent.click(getByRole('option', { name: 'DonorHub' }));
 
-    userEvent.click(getByRole('button', { name: 'Confirm 1 as DataServer' }));
+    userEvent.click(getByRole('button', { name: 'Confirm 1 as DonorHub' }));
 
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
