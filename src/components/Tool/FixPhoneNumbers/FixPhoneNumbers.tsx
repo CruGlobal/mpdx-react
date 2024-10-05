@@ -116,7 +116,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
 }: Props) => {
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const [defaultSource, setDefaultSource] = useState<string>('MPDX');
 
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
   const { data } = useGetInvalidPhoneNumbersQuery({
@@ -127,14 +126,15 @@ const FixPhoneNumbers: React.FC<Props> = ({
   const [dataState, setDataState] = useState<{
     [key: string]: PhoneNumberData;
   }>({});
-
+  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
+  const [defaultSource, setDefaultSource] = useState<string>('MPDX');
   const [sourceOptions, setSourceOptions] = useState(['MPDX']);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
     const existingSources = new Set<string>();
-
+    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
     existingSources.add('MPDX');
 
     const newDataState = data

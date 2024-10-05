@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -457,8 +458,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                       setFieldValue('newEmail', e.target.value);
                                       handleSubmit();
                                     }}
-                                    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-                                    disabled={email.source !== 'MPDX'}
+                                    disabled={
+                                      editableSources.indexOf(email.source) ===
+                                      -1
+                                    }
                                   />
                                   <FormHelperText
                                     error={true}
@@ -468,7 +471,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                   </FormHelperText>
                                 </FormControl>
 
-                                {email.source === 'MPDX' ? (
+                                {editableSources.indexOf(email.source) > -1 ? (
                                   <Box
                                     display="flex"
                                     alignItems="center"

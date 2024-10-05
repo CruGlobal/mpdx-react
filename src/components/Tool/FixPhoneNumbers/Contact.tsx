@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
+import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
@@ -481,7 +482,11 @@ const Contact: React.FC<Props> = ({
                                       setFieldValue('newPhone', e.target.value);
                                       handleSubmit();
                                     }}
-                                    disabled={phoneNumber.source !== 'MPDX'}
+                                    disabled={
+                                      editableSources.indexOf(
+                                        phoneNumber.source,
+                                      ) === -1
+                                    }
                                   />
                                   <FormHelperText
                                     error={true}
@@ -490,7 +495,8 @@ const Contact: React.FC<Props> = ({
                                     {errors.newPhone}
                                   </FormHelperText>
                                 </FormControl>
-                                {phoneNumber.source === 'MPDX' ? (
+                                {editableSources.indexOf(phoneNumber.source) >
+                                -1 ? (
                                   <Box
                                     display="flex"
                                     justifyContent="center"
