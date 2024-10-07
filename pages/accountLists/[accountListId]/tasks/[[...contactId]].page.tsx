@@ -231,14 +231,8 @@ const TasksPage: React.FC = () => {
     deselectAll,
     toggleSelectAll,
     toggleSelectionById,
-    deselectIds,
-  } = useMassSelection(
-    data?.tasks?.totalCount ?? 0,
-    allTaskIds,
-    activeFilters,
-    searchTerm as string,
-    starredFilter,
-  );
+    deselectMultipleIds,
+  } = useMassSelection(allTaskIds);
   //#endregion
 
   //#region User Actions
@@ -413,7 +407,7 @@ const TasksPage: React.FC = () => {
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
                             contactDetailsOpen={contactDetailsOpen}
-                            removeSelectedIds={deselectIds}
+                            removeSelectedIds={deselectMultipleIds}
                           />
                         </Box>
                       )}

@@ -62,9 +62,7 @@ export const DeleteAppealContactModal: React.FC<
     while (hasNextPage) {
       const response = await fetchMore({
         variables: {
-          appealId: appealId,
           after: cursor,
-          first: 100,
         },
       });
 

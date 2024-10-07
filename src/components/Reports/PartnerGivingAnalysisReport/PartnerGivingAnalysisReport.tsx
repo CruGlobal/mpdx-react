@@ -141,7 +141,7 @@ export const PartnerGivingAnalysisReport = forwardRef<
       toggleSelectAll,
       toggleSelectionById,
       isRowChecked,
-    } = useMassSelection(contactCount, allContactIds, activeFilters, query);
+    } = useMassSelection(allContactIds);
 
     const handleRequestSort = (
       event: React.MouseEvent<unknown>,
