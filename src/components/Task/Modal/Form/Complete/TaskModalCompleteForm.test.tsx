@@ -149,15 +149,13 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          queryByText(
-            "Change the contact's status to: CONTACT_FOR_APPOINTMENT",
-          ),
+          queryByText("Change the contact's status to:"),
         ).not.toBeInTheDocument();
       });
     });
 
     it('renders suggested status when single contact', async () => {
-      const { getByRole, getByText, findByRole } = render(
+      const { getByRole, getByText, findByRole, findByText } = render(
         <Components
           taskOverrides={{
             activityType: ActivityTypeEnum.AppointmentInPerson,
@@ -176,12 +174,8 @@ describe('TaskModalCompleteForm', () => {
         );
       });
 
-      await waitFor(() => {
-        expect(
-          getByText("Change the contact's status to:"),
-        ).toBeInTheDocument();
-        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
-      });
+      expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
+      expect(getByText("Change the contact's status to:")).toBeInTheDocument();
     });
 
     it('does not render suggested status when the Phase Constant does not provide a suggested status', async () => {
@@ -407,8 +401,8 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
-    userEvent.click(await findByText("Change the contact's status to:"));
-    expect(getByText('Partner - Special')).toBeInTheDocument();
+    expect(await findByText('Partner - Special')).toBeInTheDocument();
+    userEvent.click(getByText("Change the contact's status to:"));
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>

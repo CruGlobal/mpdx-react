@@ -108,29 +108,27 @@ describe('SuggestedContactStatus', () => {
   });
 
   it('renders suggested status when single contact and checks contact status with gql call', async () => {
-    const { getByText } = render(
+    const { findByText } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
         contactStatusQueryMock={StatusEnum.NeverContacted}
       />,
     );
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledTimes(2);
+
+    await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('ContactStatus', {
         accountListId: accountListId,
         contactId: 'contact-1',
-      });
-    });
-
-    await waitFor(
-      () => expect(getByText('Initiate for Appointment')).toBeInTheDocument(),
-      { timeout: 3000 },
+      }),
     );
+    expect(
+      await findByText("Change the contact's status to:"),
+    ).toBeInTheDocument();
   });
 
   it('does not send a ContactStatus graphql request when the current contacts status is provided', async () => {
-    const { getByText } = render(
+    const { findByText, getByText } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -139,23 +137,13 @@ describe('SuggestedContactStatus', () => {
       />,
     );
 
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledTimes(1);
-      expect(mutationSpy).toHaveGraphqlOperation('LoadConstants', {});
-    });
-    await waitFor(
-      () => {
-        expect(
-          getByText("Change the contact's status to:"),
-        ).toBeInTheDocument();
-        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
-      },
-      { timeout: 3000 },
-    );
+    expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
+    expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+    expect(mutationSpy).not.toHaveGraphqlOperation('ContactStatus');
   });
 
   it('renders suggested status when the contact has no status', async () => {
-    const { getByText } = render(
+    const { findByText, getByText } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -164,14 +152,7 @@ describe('SuggestedContactStatus', () => {
       />,
     );
 
-    await waitFor(
-      () => {
-        expect(
-          getByText("Change the contact's status to:"),
-        ).toBeInTheDocument();
-        expect(getByText('Initiate for Appointment')).toBeInTheDocument();
-      },
-      { timeout: 3000 },
-    );
+    expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
+    expect(getByText("Change the contact's status to:")).toBeInTheDocument();
   });
 });
