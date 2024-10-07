@@ -153,7 +153,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     toggleSelectAll,
     toggleSelectionById,
     deselectAll,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
+  } = useMassSelection(allTaskIds);
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
 

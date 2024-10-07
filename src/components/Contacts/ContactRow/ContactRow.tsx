@@ -41,13 +41,11 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   },
 }));
 
-export const StyledCheckbox = styled(Checkbox, {
-  shouldForwardProp: (prop) => prop !== 'value',
-})(() => ({
+export const StyledCheckbox = styled(Checkbox)({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
-}));
+});
 
 interface Props {
   contact: ContactRowFragment;
@@ -99,7 +97,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             color="secondary"
             onClick={(event) => event.stopPropagation()}
             onChange={() => onContactCheckToggle(contact.id)}
-            value={isChecked}
           />
         </ListItemIcon>
       </Hidden>

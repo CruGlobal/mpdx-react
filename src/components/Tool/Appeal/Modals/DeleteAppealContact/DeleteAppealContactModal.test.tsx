@@ -83,7 +83,7 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
                             ],
                             pageInfo: {
                               hasNextPage: true,
-                              endCursor: 'endCursor',
+                              endCursor: `endCursor${requestCount}`,
                             },
                           },
                         };
@@ -112,13 +112,25 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
                             ],
                             pageInfo: {
                               hasNextPage: false,
-                              endCursor: 'endCursor',
+                              endCursor: 'endCursor3',
                             },
                           },
                         };
                       }
                       requestCount++;
                       return mutationResponse;
+                    },
+                    GetContactIdsForMassSelection: {
+                      contacts: {
+                        nodes: [
+                          { id: '01' },
+                          { id: '02' },
+                          { id: '03' },
+                          { id: '04' },
+                          { id: '05' },
+                          { id: '06' },
+                        ],
+                      },
                     },
                   }}
                   onCall={mutationSpy}
@@ -179,25 +191,21 @@ describe('DeleteAppealContactModal', () => {
   it('fetches all the appealContacts and matches up the correct ID to send to the API', async () => {
     const { getByRole } = render(<Components />);
 
-    expect(mutationSpy).toHaveBeenCalledTimes(0);
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledTimes(8);
+    // Call AppealContacts 3 times getting all contacts.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
+        after: 'endCursor2',
+        appealId: 'appealId',
+      }),
+    );
+    expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
+      after: null,
+      appealId: 'appealId',
     });
-
-    // Call AppealContacts 4 times getting all contacts.
-    expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(
-      'AppealContacts',
-    );
-    expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
-      'AppealContacts',
-    );
-    expect(mutationSpy.mock.calls[5][0].operation.operationName).toEqual(
-      'AppealContacts',
-    );
-    expect(mutationSpy.mock.calls[6][0].operation.operationName).toEqual(
-      'AppealContacts',
-    );
+    expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
+      after: 'endCursor1',
+      appealId: 'appealId',
+    });
 
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
