@@ -48,8 +48,8 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       arrow
       title={
         page === PageEnum.Task
-          ? t('Search subject, tags, contact name, comments')
-          : t('Search name, phone, email, partner #')
+          ? t('Search by subject, tags, contact name, or comments')
+          : t('Search by name, phone, email, or partner #')
       }
     >
       <SearchInput

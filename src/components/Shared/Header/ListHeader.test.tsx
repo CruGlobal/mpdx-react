@@ -140,7 +140,7 @@ describe('ListHeader', () => {
 
       userEvent.hover(searchBox);
       expect(
-        await findByText('Search name, phone, email, partner #'),
+        await findByText('Search by name, phone, email, or partner #'),
       ).toBeVisible();
       expect(getByText('Actions')).toBeInTheDocument();
       expect(getByTestId('star-filter-button')).toBeInTheDocument();
@@ -228,7 +228,7 @@ describe('ListHeader', () => {
 
       userEvent.hover(searchBox);
       expect(
-        await findByText('Search subject, tags, contact name, comments'),
+        await findByText('Search by subject, tags, contact name, or comments'),
       ).toBeVisible();
     });
   });
