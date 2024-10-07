@@ -132,12 +132,16 @@ const ButtonGroup: React.FC = () => {
 
 describe('ListHeader', () => {
   describe('Contact', () => {
-    it('renders contact header', () => {
-      const { getByPlaceholderText, getByTestId, getByText } = render(
-        <Components />,
-      );
+    it('renders contact header', async () => {
+      const { getByPlaceholderText, getByTestId, getByText, findByText } =
+        render(<Components />);
+      const searchBox = getByPlaceholderText('Search Contacts');
+      expect(searchBox).toBeInTheDocument();
 
-      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+      userEvent.hover(searchBox);
+      expect(
+        await findByText('Search name, phone, email, partner #'),
+      ).toBeVisible();
       expect(getByText('Actions')).toBeInTheDocument();
       expect(getByTestId('star-filter-button')).toBeInTheDocument();
       expect(getByTestId('showing-text')).toBeInTheDocument();
@@ -214,12 +218,18 @@ describe('ListHeader', () => {
   });
 
   describe('Task', () => {
-    it('renders task header', () => {
-      const { getByPlaceholderText } = render(
+    it('renders task header', async () => {
+      const { getByPlaceholderText, findByText } = render(
         <Components page={PageEnum.Task} />,
       );
 
-      expect(getByPlaceholderText('Search Tasks')).toBeVisible();
+      const searchBox = getByPlaceholderText('Search Tasks');
+      expect(searchBox).toBeVisible();
+
+      userEvent.hover(searchBox);
+      expect(
+        await findByText('Search subject, tags, contact name, comments'),
+      ).toBeVisible();
     });
   });
 
