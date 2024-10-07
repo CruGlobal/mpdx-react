@@ -15,18 +15,15 @@ const Welcome = ({ firstName }: Props): ReactElement => {
   const { appName } = useGetAppSettings();
   const currentHour = today.hour;
 
-  let greeting = firstName
-    ? t('Good Evening, {{ firstName }}.', { firstName })
-    : t('Good Evening,');
+  let greeting = t('Good Evening,');
 
   if (currentHour < 12) {
-    greeting = firstName
-      ? t('Good Morning, {{ firstName }}.', { firstName })
-      : t('Good Morning,');
+    greeting = t('Good Morning,');
   } else if (currentHour < 18) {
-    greeting = firstName
-      ? t('Good Afternoon, {{ firstName }}.', { firstName })
-      : t('Good Afternoon,');
+    greeting = t('Good Afternoon,');
+  }
+  if (firstName) {
+    greeting += ` ${firstName}.`;
   }
 
   return (

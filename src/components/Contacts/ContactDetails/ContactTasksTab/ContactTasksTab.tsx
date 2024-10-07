@@ -6,7 +6,10 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
-import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
+import {
+  ListHeaderCheckBoxState,
+  PageEnum,
+} from 'src/components/Shared/Header/ListHeader';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
@@ -227,6 +230,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               showContactSearchIcon={false}
               onChange={setSearchTerm}
               placeholder={t('Search Tasks')}
+              page={PageEnum.Task}
             />
           </HeaderItemsWrap>
           <HeaderItemsWrap>

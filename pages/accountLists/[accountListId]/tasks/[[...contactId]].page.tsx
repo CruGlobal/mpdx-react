@@ -120,7 +120,7 @@ const TasksPage: React.FC = () => {
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
 
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
     urlFilters ?? {},
   );

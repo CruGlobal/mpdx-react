@@ -170,6 +170,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           placeholder={
             page === PageEnum.Task ? t('Search Tasks') : t('Search Contacts')
           }
+          page={page}
         />
         <Hidden smDown>
           <ItemsShowingText data-testid="showing-text">

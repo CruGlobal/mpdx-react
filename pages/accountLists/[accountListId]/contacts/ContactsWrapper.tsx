@@ -19,7 +19,7 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
     [activeFilters],
