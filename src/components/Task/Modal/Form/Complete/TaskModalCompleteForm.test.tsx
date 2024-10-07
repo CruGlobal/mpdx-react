@@ -20,6 +20,7 @@ import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { TaskModalEnum } from '../../TaskModal';
+import { ContactStatusQuery } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus.generated';
 import { taskModalTests } from '../TaskModalTests';
 import TaskModalCompleteForm from './TaskModalCompleteForm';
 
@@ -76,9 +77,15 @@ const Components = ({ mocks = {}, taskOverrides, props }: ComponentsProps) => (
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           LoadConstant: LoadConstantsQuery;
+          ContactStatus: ContactStatusQuery;
         }>
           mocks={{
             LoadConstants: loadConstantsMockData,
+            ContactStatus: {
+              contact: {
+                status: null,
+              },
+            },
             ...mocks,
           }}
           onCall={mutationSpy}
