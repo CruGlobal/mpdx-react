@@ -29,13 +29,13 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
+import { isEditableSource } from '../helpers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 import PhoneValidationForm from './PhoneNumberValidationForm';
 import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
@@ -483,9 +483,7 @@ const Contact: React.FC<Props> = ({
                                       handleSubmit();
                                     }}
                                     disabled={
-                                      editableSources.indexOf(
-                                        phoneNumber.source,
-                                      ) === -1
+                                      !isEditableSource(phoneNumber.source)
                                     }
                                   />
                                   <FormHelperText
@@ -495,8 +493,7 @@ const Contact: React.FC<Props> = ({
                                     {errors.newPhone}
                                   </FormHelperText>
                                 </FormControl>
-                                {editableSources.indexOf(phoneNumber.source) >
-                                -1 ? (
+                                {isEditableSource(phoneNumber.source) ? (
                                   <Box
                                     display="flex"
                                     justifyContent="center"

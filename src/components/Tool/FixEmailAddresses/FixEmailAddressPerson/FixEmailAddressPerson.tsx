@@ -28,7 +28,6 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -37,6 +36,7 @@ import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceToStr';
+import { isEditableSource } from '../../helpers';
 import EmailValidationForm from '../EmailValidationForm';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
 import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
@@ -458,10 +458,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                       setFieldValue('newEmail', e.target.value);
                                       handleSubmit();
                                     }}
-                                    disabled={
-                                      editableSources.indexOf(email.source) ===
-                                      -1
-                                    }
+                                    disabled={!isEditableSource(email.source)}
                                   />
                                   <FormHelperText
                                     error={true}
@@ -471,7 +468,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                   </FormHelperText>
                                 </FormControl>
 
-                                {editableSources.indexOf(email.source) > -1 ? (
+                                {isEditableSource(email.source) ? (
                                   <Box
                                     display="flex"
                                     alignItems="center"

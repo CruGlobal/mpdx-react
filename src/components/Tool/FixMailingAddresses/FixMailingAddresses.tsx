@@ -331,6 +331,8 @@ const FixMailingAddresses: React.FC<Props> = ({
     setOpenBulkConfirmModal(false);
   };
 
+  const defaultSourceToDisplay = sourceToStr(t, defaultSource);
+
   const totalContacts = data?.contacts?.nodes?.length || 0;
 
   return (
@@ -395,7 +397,7 @@ const FixMailingAddresses: React.FC<Props> = ({
                           />
                           {t('Confirm {{amount}} as {{source}}', {
                             amount: totalContacts,
-                            source: sourceToStr(t, defaultSource),
+                            source: defaultSourceToDisplay,
                           })}
                         </Button>
                       </Box>
@@ -461,7 +463,7 @@ const FixMailingAddresses: React.FC<Props> = ({
           title={t('Confirm')}
           message={t(
             `You are updating all contacts visible on this page, setting the first {{source}} address as the primary address. If no such address exists the contact will not be updated. Are you sure you want to do this?`,
-            { source: sourceToStr(t, defaultSource) },
+            { source: defaultSourceToDisplay },
           )}
           handleClose={handleBulkConfirmModalClose}
           mutation={handleBulkConfirm}

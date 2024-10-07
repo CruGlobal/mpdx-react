@@ -21,6 +21,7 @@ import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { isEditableSource } from 'src/components/Tool/helpers';
 import {
   CancelButton,
   DeleteButton,
@@ -64,8 +65,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
-
-export const editableSources = ['MPDX', 'manual', 'TntImport'];
 
 interface EditContactAddressModalProps {
   accountListId: string;
@@ -171,7 +170,7 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
-  const editingDisabled = editableSources.indexOf(address.source) === -1;
+  const editingDisabled = !isEditableSource(address.source);
   const { data: emailData } = useDonationServicesEmailQuery({
     variables: {
       accountListId,

@@ -24,7 +24,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddButton,
@@ -39,6 +38,7 @@ import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/utils/sourceToStr';
 import theme from '../../../theme';
+import { isEditableSource } from '../helpers';
 import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 
@@ -304,7 +304,7 @@ const Contact: React.FC<Props> = ({
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {editableSources.indexOf(address.source) > -1 ? (
+                      {isEditableSource(address.source) ? (
                         <EditIcon />
                       ) : (
                         <LockIcon />
