@@ -20,7 +20,11 @@ import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/C
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { sourceToStr } from 'src/utils/sourceHelper';
+import {
+  manualSourceValue,
+  sourceToStr,
+  sourcesMatch,
+} from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -95,10 +99,9 @@ const useStyles = makeStyles()(() => ({
     },
   },
 }));
-//Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
-  source: 'MPDX',
+  source: manualSourceValue,
   street: '',
   region: '',
   location: '',
@@ -129,10 +132,12 @@ const FixMailingAddresses: React.FC<Props> = ({
   const [showNewAddressModal, setShowNewAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(emptyAddress);
   const [selectedContactId, setSelectedContactId] = useState('');
-  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+
+  const [defaultSource, setDefaultSource] = useState(manualSourceValue);
   const [openBulkConfirmModal, setOpenBulkConfirmModal] = useState(false);
-  const [sourceOptions, setSourceOptions] = useState<string[]>(['MPDX']);
+  const [sourceOptions, setSourceOptions] = useState<string[]>([
+    manualSourceValue,
+  ]);
 
   const { data, loading } = useInvalidAddressesQuery({
     variables: { accountListId },
@@ -142,8 +147,7 @@ const FixMailingAddresses: React.FC<Props> = ({
 
   useEffect(() => {
     const existingSources = new Set<string>();
-    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-    existingSources.add('MPDX');
+    existingSources.add(manualSourceValue);
 
     data?.contacts.nodes.forEach((contact) => {
       contact.addresses.nodes.forEach((address) => {
@@ -199,8 +203,8 @@ const FixMailingAddresses: React.FC<Props> = ({
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
       data?.contacts?.nodes.forEach((contact) => {
-        const primaryAddress = contact.addresses.nodes.find(
-          (address) => address.source === defaultSource,
+        const primaryAddress = contact.addresses.nodes.find((address) =>
+          sourcesMatch(defaultSource, address.source),
         );
         if (primaryAddress) {
           const addresses: ContactAddressFragment[] = [];

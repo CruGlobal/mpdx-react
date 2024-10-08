@@ -15,7 +15,7 @@ export const mpdxSourcedAddress = {
   historic: false,
 };
 
-export const tntSourcedAddress = {
+export const siebelSourcedAddress = {
   id: '2454d81a-7985-460d-ab1e-9daa776c348a',
   street: '1001 Denman St',
   city: 'Vancouver',
@@ -25,7 +25,7 @@ export const tntSourcedAddress = {
   country: null,
   postalCode: 'V6G 2M4',
   primaryMailingAddress: false,
-  source: 'DataServer',
+  source: 'Siebel',
   location: null,
   createdAt: '2022-01-10T16:05:26-05:00',
   historic: false,
@@ -42,9 +42,9 @@ export const mockInvalidAddressesResponse = {
           addresses: {
             nodes: [
               mpdxSourcedAddress,
-              tntSourcedAddress,
+              siebelSourcedAddress,
               {
-                ...tntSourcedAddress,
+                ...siebelSourcedAddress,
                 id: 'differentId',
                 country: 'Canada',
               },

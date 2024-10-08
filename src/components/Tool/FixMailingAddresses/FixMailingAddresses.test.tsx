@@ -12,7 +12,7 @@ import FixMailingAddresses from './FixMailingAddresses';
 import {
   mockInvalidAddressesResponse,
   mpdxSourcedAddress,
-  tntSourcedAddress,
+  siebelSourcedAddress,
 } from './FixMailingAddressesMock';
 import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 
@@ -94,7 +94,7 @@ describe('FixMailingAddresses', () => {
         mocks={{
           InvalidAddresses: {
             contacts: {
-              nodes: [tntSourcedAddress],
+              nodes: [siebelSourcedAddress],
             },
           },
         }}
@@ -146,9 +146,9 @@ describe('FixMailingAddresses', () => {
                     addresses: {
                       nodes: [
                         mpdxSourcedAddress,
-                        tntSourcedAddress,
+                        siebelSourcedAddress,
                         {
-                          ...tntSourcedAddress,
+                          ...siebelSourcedAddress,
                           country: 'Canada',
                         },
                       ],
@@ -235,7 +235,7 @@ describe('FixMailingAddresses', () => {
       );
     });
 
-    it("should not allow deletion of address when source isn't MPDX", async () => {
+    it("should not allow deletion of address when source isn't editable", async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
       const { getByTestId, getByText, getByRole, queryByTestId, queryByRole } =
@@ -246,7 +246,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByTestId(`address-${tntSourcedAddress.id}`));
+      userEvent.click(getByTestId(`address-${siebelSourcedAddress.id}`));
 
       await waitFor(() => {
         expect(getByText('Edit Address')).toBeInTheDocument();
@@ -504,7 +504,7 @@ describe('FixMailingAddresses', () => {
                     name: name1,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                   {
@@ -512,7 +512,7 @@ describe('FixMailingAddresses', () => {
                     name: name2,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                 ],
@@ -578,7 +578,7 @@ describe('FixMailingAddresses', () => {
                     name: name1,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                   {
@@ -586,7 +586,7 @@ describe('FixMailingAddresses', () => {
                     name: name2,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                 ],
@@ -635,9 +635,11 @@ describe('FixMailingAddresses', () => {
     );
     const name = 'Baggins, Frodo';
     userEvent.click(getByRole('combobox'));
-    userEvent.click(getByRole('option', { name: 'DonorHub' }));
+    userEvent.click(getByRole('option', { name: 'US Donation Services' }));
 
-    userEvent.click(getByRole('button', { name: 'Confirm 1 as DonorHub' }));
+    userEvent.click(
+      getByRole('button', { name: 'Confirm 1 as US Donation Services' }),
+    );
 
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),

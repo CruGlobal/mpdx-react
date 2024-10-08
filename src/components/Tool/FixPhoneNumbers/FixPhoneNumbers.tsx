@@ -18,7 +18,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { sourceToStr } from 'src/utils/sourceHelper';
+import { manualSourceValue, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -126,16 +126,15 @@ const FixPhoneNumbers: React.FC<Props> = ({
   const [dataState, setDataState] = useState<{
     [key: string]: PhoneNumberData;
   }>({});
-  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-  const [defaultSource, setDefaultSource] = useState<string>('MPDX');
-  const [sourceOptions, setSourceOptions] = useState(['MPDX']);
+
+  const [defaultSource, setDefaultSource] = useState<string>(manualSourceValue);
+  const [sourceOptions, setSourceOptions] = useState([manualSourceValue]);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
     const existingSources = new Set<string>();
-    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-    existingSources.add('MPDX');
+    existingSources.add(manualSourceValue);
 
     const newDataState = data
       ? data.people.nodes?.reduce(

@@ -30,7 +30,11 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
-import { sourceToStr } from 'src/utils/sourceHelper';
+import {
+  manualSourceValue,
+  sourceToStr,
+  sourcesMatch,
+} from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';
@@ -110,8 +114,8 @@ export const determineBulkDataToSend = (
   const dataToSend = [] as PersonUpdateInput[];
 
   Object.entries(dataState).forEach((value) => {
-    const primaryEmailAddress = value[1].emailAddresses.find(
-      (email) => email.source === defaultSource,
+    const primaryEmailAddress = value[1].emailAddresses.find((email) =>
+      sourcesMatch(defaultSource, email.source),
     );
     if (primaryEmailAddress) {
       dataToSend.push({
@@ -135,8 +139,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
   setContactFocus,
 }) => {
-  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-  const [defaultSource, setDefaultSource] = useState('MPDX');
+  const [defaultSource, setDefaultSource] = useState(manualSourceValue);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -150,14 +153,15 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   const [dataState, setDataState] = useState<{
     [key: string]: PersonEmailAddresses;
   }>({});
-  //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-  const [sourceOptions, setSourceOptions] = useState<string[]>(['MPDX']);
+
+  const [sourceOptions, setSourceOptions] = useState<string[]>([
+    manualSourceValue,
+  ]);
 
   // Create a mutable copy of the query data and store in the state
   useEffect(() => {
     const existingSources = new Set<string>();
-    //Do NOT change "MPDX" to appName here. The source value needs to stay the same. The user will see their appName displayed since we use sourceToString()
-    existingSources.add('MPDX');
+    existingSources.add(manualSourceValue);
 
     const newDataState = data
       ? data.people.nodes?.reduce<{ [key: string]: PersonEmailAddresses }>(
@@ -285,12 +289,9 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       });
     } else {
       enqueueSnackbar(
-        t(
-          `No ${sourceToStr(
-            t,
-            defaultSource,
-          )} primary email address exists to update`,
-        ),
+        t(`No {{source}} primary email address exists to update`, {
+          source: sourceToStr(t, defaultSource),
+        }),
         {
           variant: 'warning',
           autoHideDuration: 7000,
