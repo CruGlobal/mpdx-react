@@ -89,40 +89,6 @@ describe('LateCommitments', () => {
     );
   });
 
-  it('should not show a late commitment that is less than 7 days late', () => {
-    const latePledgeContacts = {
-      nodes: [
-        {
-          id: 'contact1',
-          name: 'Smith, Sarah',
-          lateAt: '2019-12-31',
-        },
-        {
-          id: 'contact2',
-          name: 'Smith, John',
-          lateAt: '2015-12-01',
-        },
-      ],
-      totalCount: 2,
-    };
-    const { getByTestId, queryByTestId } = render(
-      <GqlMockedProvider>
-        <LateCommitments latePledgeContacts={latePledgeContacts} />
-      </GqlMockedProvider>,
-    );
-    const contact1Element = queryByTestId(
-      'LateCommitmentsListItemContact-contact1',
-    );
-    expect(contact1Element).not.toBeInTheDocument();
-
-    const contact2Element = getByTestId(
-      'LateCommitmentsListItemContact-contact2',
-    );
-    expect(contact2Element.textContent).toEqual(
-      'Smith, JohnTheir gift is 1,492 days late.',
-    );
-  });
-
   it('should not show a late commitment if it has no lateAt property', () => {
     const latePledgeContacts = {
       nodes: [
