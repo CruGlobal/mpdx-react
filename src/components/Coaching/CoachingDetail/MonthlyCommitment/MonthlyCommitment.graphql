@@ -4,6 +4,6 @@ query GetReportsPledgeHistories($coachingId: ID!) {
     startDate
     endDate
     pledged
-    recieved
+    received
   }
 }

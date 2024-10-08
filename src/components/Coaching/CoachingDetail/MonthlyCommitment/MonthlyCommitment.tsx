@@ -52,7 +52,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
               year: '2-digit',
             })
         : '';
-      const received = Math.round(pledge?.recieved ?? 0);
+      const received = Math.round(pledge?.received ?? 0);
       const committed = Math.round(pledge?.pledged ?? 0);
       return { startDate, received, committed };
     }) ?? [];

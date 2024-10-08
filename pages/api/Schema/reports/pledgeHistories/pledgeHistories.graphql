@@ -5,7 +5,7 @@ extend type Query {
 type ReportsPledgeHistories {
   id: ID!
   pledged: Float
-  recieved: Float
+  received: Float
   endDate: ISO8601DateTime
   startDate: ISO8601DateTime
   createdAt: ISO8601DateTime

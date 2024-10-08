@@ -46,7 +46,7 @@ describe('MonthlyCommitment', () => {
             reportPledgeHistories: [...Array(12)].map((x, i) => ({
               startDate: DateTime.local().minus({ month: i }).toISO(),
               endDate: DateTime.local().minus({ month: i }).toISO(),
-              recieved: i * 5,
+              received: i * 5,
               pledged: i * 10,
             })),
           },
@@ -74,13 +74,13 @@ describe('MonthlyCommitment', () => {
               {
                 startDate: null,
                 endDate: null,
-                recieved: null,
+                received: null,
                 pledged: null,
               },
               {
                 startDate: DateTime.local().toISO(),
                 endDate: DateTime.local().toISO(),
-                recieved: 100,
+                received: 100,
                 pledged: 200,
               },
             ],
