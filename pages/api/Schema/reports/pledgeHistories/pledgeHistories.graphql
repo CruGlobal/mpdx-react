@@ -1,5 +1,9 @@
 extend type Query {
-  reportPledgeHistories(accountListId: ID!): [ReportsPledgeHistories]
+  reportPledgeHistories(
+    accountListId: ID!
+    range: String
+    endDate: String
+  ): [ReportsPledgeHistories]
 }
 
 type ReportsPledgeHistories {
