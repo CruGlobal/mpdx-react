@@ -134,7 +134,7 @@ describe('TaskModalCompleteForm', () => {
     });
 
     it("doesn't render suggested contact status when multiple contacts", async () => {
-      const { queryByText, findByRole } = render(
+      const { queryByRole, findByRole } = render(
         <Components
           taskOverrides={{ activityType: ActivityTypeEnum.AppointmentInPerson }}
         />,
@@ -149,13 +149,13 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          queryByText("Change the contact's status to:"),
+          queryByRole('checkbox', { name: /^Change the contact's status/ }),
         ).not.toBeInTheDocument();
       });
     });
 
     it('renders suggested status when single contact', async () => {
-      const { getByRole, getByText, findByRole, findByText } = render(
+      const { getByRole, findByRole } = render(
         <Components
           taskOverrides={{
             activityType: ActivityTypeEnum.AppointmentInPerson,
@@ -174,12 +174,15 @@ describe('TaskModalCompleteForm', () => {
         );
       });
 
-      expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
-      expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+      expect(
+        await findByRole('checkbox', {
+          name: "Change the contact's status to: Initiate for Appointment",
+        }),
+      ).toBeInTheDocument();
     });
 
     it('does not render suggested status when the Phase Constant does not provide a suggested status', async () => {
-      const { getByRole, queryByText, findByRole } = render(
+      const { getByRole, queryByRole, findByRole } = render(
         <Components
           taskOverrides={{
             activityType: ActivityTypeEnum.InitiationEmail,
@@ -200,7 +203,7 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          queryByText("Change the contact's status to:"),
+          queryByRole('checkbox', { name: /^Change the contact's status/ }),
         ).not.toBeInTheDocument();
       });
     });
@@ -384,7 +387,7 @@ describe('TaskModalCompleteForm', () => {
 
   it('saves contacts new status', async () => {
     const completedAt = DateTime.local(2015, 1, 5, 1, 2).toISO();
-    const { findByRole, getByText, findByText } = render(
+    const { findByRole, getByText } = render(
       <Components
         taskOverrides={{
           activityType: ActivityTypeEnum.AppointmentInPerson,
@@ -401,8 +404,11 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
 
-    expect(await findByText('Partner - Special')).toBeInTheDocument();
-    userEvent.click(getByText("Change the contact's status to:"));
+    userEvent.click(
+      await findByRole('checkbox', {
+        name: "Change the contact's status to: Partner - Special",
+      }),
+    );
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>

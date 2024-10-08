@@ -62,7 +62,7 @@ const Components = ({
 
 describe('SuggestedContactStatus', () => {
   it("doesn't render suggested contact status when there are multiple contacts", async () => {
-    const { queryByText } = render(
+    const { queryByRole } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1', 'contact-2']}
@@ -71,14 +71,14 @@ describe('SuggestedContactStatus', () => {
     );
     await waitFor(() => {
       expect(
-        queryByText("Change the contact's status to:"),
+        queryByRole('checkbox', { name: /^Change the contact's status/ }),
       ).not.toBeInTheDocument();
     });
   });
 
   it("doesn't render suggested contact status when suggested status is the same as the current status", async () => {
     const sameStatus = StatusEnum.ContactForAppointment;
-    const { queryByText } = render(
+    const { queryByRole } = render(
       <Components
         suggestedContactStatus={sameStatus}
         contactIds={['contact-1']}
@@ -87,13 +87,13 @@ describe('SuggestedContactStatus', () => {
     );
     await waitFor(() => {
       expect(
-        queryByText("Change the contact's status to:"),
+        queryByRole('checkbox', { name: /^Change the contact's status/ }),
       ).not.toBeInTheDocument();
     });
   });
 
   it("doesn't render suggested contact status when the current contact is a Prayer, Special or Financial Partner", async () => {
-    const { queryByText } = render(
+    const { queryByRole } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -102,13 +102,13 @@ describe('SuggestedContactStatus', () => {
     );
     await waitFor(() => {
       expect(
-        queryByText("Change the contact's status to:"),
+        queryByRole('checkbox', { name: /^Change the contact's status/ }),
       ).not.toBeInTheDocument();
     });
   });
 
   it('renders suggested status when single contact and checks contact status with gql call', async () => {
-    const { findByText } = render(
+    const { findByRole } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -123,12 +123,14 @@ describe('SuggestedContactStatus', () => {
       }),
     );
     expect(
-      await findByText("Change the contact's status to:"),
+      await findByRole('checkbox', {
+        name: "Change the contact's status to: Initiate for Appointment",
+      }),
     ).toBeInTheDocument();
   });
 
   it('does not send a ContactStatus graphql request when the current contacts status is provided', async () => {
-    const { findByText, getByText } = render(
+    const { findByRole } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -137,13 +139,16 @@ describe('SuggestedContactStatus', () => {
       />,
     );
 
-    expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
-    expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+    expect(
+      await findByRole('checkbox', {
+        name: "Change the contact's status to: Initiate for Appointment",
+      }),
+    ).toBeInTheDocument();
     expect(mutationSpy).not.toHaveGraphqlOperation('ContactStatus');
   });
 
   it('renders suggested status when the contact has no status', async () => {
-    const { findByText, getByText } = render(
+    const { findByRole } = render(
       <Components
         suggestedContactStatus={StatusEnum.ContactForAppointment}
         contactIds={['contact-1']}
@@ -152,7 +157,10 @@ describe('SuggestedContactStatus', () => {
       />,
     );
 
-    expect(await findByText('Initiate for Appointment')).toBeInTheDocument();
-    expect(getByText("Change the contact's status to:")).toBeInTheDocument();
+    expect(
+      await findByRole('checkbox', {
+        name: "Change the contact's status to: Initiate for Appointment",
+      }),
+    ).toBeInTheDocument();
   });
 });

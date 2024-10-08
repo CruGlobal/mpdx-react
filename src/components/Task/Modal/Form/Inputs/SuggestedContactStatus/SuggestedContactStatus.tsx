@@ -84,7 +84,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
               values={{
                 status: contactStatuses[suggestedContactStatus]?.translated,
               }}
-              components={{ italic: <i />, bold: <strong /> }}
+              components={{ bold: <strong /> }}
             />
           }
         />
