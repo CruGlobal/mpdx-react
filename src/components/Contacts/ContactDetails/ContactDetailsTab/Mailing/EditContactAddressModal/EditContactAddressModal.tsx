@@ -21,7 +21,6 @@ import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { isEditableSource } from 'src/components/Tool/helpers';
 import {
   CancelButton,
   DeleteButton,
@@ -29,6 +28,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressUpdateInput } from 'src/graphql/types.generated';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
+import { isEditableSource } from 'src/utils/sourceHelper';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
