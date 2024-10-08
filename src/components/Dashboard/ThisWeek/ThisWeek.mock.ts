@@ -146,7 +146,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
         variables: {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
-          today: endOfDay.toISODate(),
+          thirtyDaysAgo: endOfDay.minus({ days: 30 }).toISODate(),
           threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
           twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },
@@ -181,7 +181,7 @@ export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
         variables: {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
-          today: endOfDay.toISODate(),
+          thirtyDaysAgo: endOfDay.minus({ days: 30 }).toISODate(),
           threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
           twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },

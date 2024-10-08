@@ -15,8 +15,6 @@ import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
-  Contact,
-  ContactConnection,
   ContactFilterPledgeReceivedEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
@@ -76,27 +74,6 @@ const LateCommitments = ({
   const accountListId = useAccountListId();
   const { push } = useRouter();
 
-  const showLateCommitments = (latePledgeContacts?: ContactConnection) => {
-    if (!latePledgeContacts || latePledgeContacts.nodes.length === 0) {
-      return false;
-    }
-    const filteredLatePledges = latePledgeContacts.nodes.filter(
-      (contact: Contact) => {
-        if (contact.lateAt) {
-          return determineDaysLate(contact.lateAt) >= 7;
-        }
-        return false;
-      },
-    );
-    return filteredLatePledges.length > 0;
-  };
-
-  const determineDaysLate = (lateAt: string) => {
-    return Math.round(
-      DateTime.local().diff(DateTime.fromISO(lateAt), 'days').days,
-    );
-  };
-
   return (
     <LateCommitmentsContainer>
       <CardHeader title={t('Late Commitments')} />
@@ -130,84 +107,82 @@ const LateCommitments = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {!showLateCommitments(latePledgeContacts as ContactConnection) && (
+          {!latePledgeContacts?.nodes.length && (
             <LateCommitmentsCardContent data-testid="LateCommitmentsCardContentEmpty">
               <img src={illustration14} alt="empty" />
               {t('No late commitments to show.')}
             </LateCommitmentsCardContent>
           )}
-          {latePledgeContacts &&
-            showLateCommitments(latePledgeContacts as ContactConnection) && (
-              <>
-                <CardList data-testid="LateCommitmentsListContacts">
-                  {latePledgeContacts.nodes.map((contact) => {
-                    if (!contact.lateAt) {
-                      return null;
-                    }
-                    const daysLate = Math.round(
-                      DateTime.local().diff(
-                        DateTime.fromISO(contact.lateAt),
-                        'days',
-                      ).days,
-                    );
+          {!!latePledgeContacts?.nodes.length && (
+            <>
+              <CardList data-testid="LateCommitmentsListContacts">
+                {latePledgeContacts.nodes.map((contact) => {
+                  if (!contact.lateAt) {
+                    return null;
+                  }
+                  const daysLate = Math.round(
+                    DateTime.local().diff(
+                      DateTime.fromISO(contact.lateAt),
+                      'days',
+                    ).days,
+                  );
 
-                    return (
-                      daysLate >= 7 && (
-                        <ListItem
-                          component="a"
-                          button
-                          data-testid={`LateCommitmentsListItemContact-${contact.id}`}
-                          onClick={() =>
-                            push(
-                              `/accountLists/${accountListId}/contacts/list/${contact.id}`,
-                            )
-                          }
-                          key={contact.id}
-                        >
-                          <ListItemText
-                            primary={contact.name}
-                            secondary={t(
-                              'Their gift is {{daysLate}} day late._plural',
-                              {
-                                daysLate: numberFormat(daysLate, locale),
-                              },
-                            )}
-                          />
-                        </ListItem>
-                      )
-                    );
+                  return (
+                    daysLate && (
+                      <ListItem
+                        component="a"
+                        button
+                        data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                        onClick={() =>
+                          push(
+                            `/accountLists/${accountListId}/contacts/list/${contact.id}`,
+                          )
+                        }
+                        key={contact.id}
+                      >
+                        <ListItemText
+                          primary={contact.name}
+                          secondary={t(
+                            'Their gift is {{daysLate}} day late._plural',
+                            {
+                              daysLate: numberFormat(daysLate, locale),
+                            },
+                          )}
+                        />
+                      </ListItem>
+                    )
+                  );
+                })}
+              </CardList>
+              <CardActions>
+                <Button
+                  size="small"
+                  color="primary"
+                  data-testid="LateCommitmentsButtonViewAll"
+                  href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
+                    JSON.stringify({
+                      lateAt: {
+                        min: DateTime.fromISO('1970-01-01'),
+                        max: DateTime.local()
+                          .endOf('day')
+                          .minus({ days: 30 })
+                          .toISODate(),
+                      },
+                      pledgeReceived: ContactFilterPledgeReceivedEnum.Received,
+                      status: [StatusEnum.PartnerFinancial],
+                    }),
+                  )}`}
+                >
+                  {t('View All ({{totalCount}})', {
+                    totalCount: numberFormat(
+                      latePledgeContacts?.totalCount ?? 0,
+                      locale,
+                    ),
                   })}
-                </CardList>
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="primary"
-                    data-testid="LateCommitmentsButtonViewAll"
-                    href={`/accountLists/${accountListId}/contacts/list?filters=${encodeURIComponent(
-                      JSON.stringify({
-                        lateAt: {
-                          min: DateTime.fromISO('1970-01-01'),
-                          max: DateTime.local()
-                            .endOf('day')
-                            .minus({ days: 30 })
-                            .toISODate(),
-                        },
-                        pledgeReceived:
-                          ContactFilterPledgeReceivedEnum.Received,
-                        status: [StatusEnum.PartnerFinancial],
-                      }),
-                    )}`}
-                  >
-                    {t('View All ({{totalCount}})', {
-                      totalCount: numberFormat(
-                        latePledgeContacts?.totalCount ?? 0,
-                        locale,
-                      ),
-                    })}
-                  </Button>
-                </CardActions>
-              </>
-            )}
+                </Button>
+              </CardActions>
+            </>
+          )}
         </MotionDiv>
       )}
     </LateCommitmentsContainer>

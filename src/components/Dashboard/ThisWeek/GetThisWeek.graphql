@@ -1,7 +1,7 @@
 query GetThisWeek(
   $accountListId: ID!
   $endOfDay: ISO8601DateTime!
-  $today: ISO8601Date!
+  $thirtyDaysAgo: ISO8601Date!
   $threeWeeksFromNow: ISO8601Date!
   $twoWeeksAgo: ISO8601Date!
 ) {
@@ -60,7 +60,7 @@ query GetThisWeek(
     accountListId: $accountListId
     first: 3
     contactsFilter: {
-      lateAt: { max: $today }
+      lateAt: { max: $thirtyDaysAgo }
       status: PARTNER_FINANCIAL
       pledgeReceived: RECEIVED
     }
