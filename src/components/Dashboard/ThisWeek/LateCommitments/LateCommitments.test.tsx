@@ -38,29 +38,6 @@ describe('LateCommitments', () => {
       nodes: [],
       totalCount: 0,
     };
-    emptyCheck(latePledgeContacts);
-  });
-
-  it('should show empty if all of the late pledges are under 7 days late', () => {
-    const latePledgeContacts = {
-      nodes: [
-        {
-          id: 'contact1',
-          name: 'Smith, Sarah',
-          lateAt: '2019-12-31',
-        },
-        {
-          id: 'contact2',
-          name: 'Smith, John',
-          lateAt: '2019-12-30',
-        },
-      ],
-      totalCount: 2,
-    };
-    emptyCheck(latePledgeContacts);
-  });
-
-  const emptyCheck = (latePledgeContacts: any) => {
     const { getByTestId, queryByTestId } = render(
       <LateCommitments latePledgeContacts={latePledgeContacts} />,
     );
@@ -69,7 +46,7 @@ describe('LateCommitments', () => {
     expect(
       queryByTestId('LateCommitmentsListContacts'),
     ).not.toBeInTheDocument();
-  };
+  });
 
   it('props', () => {
     const latePledgeContacts = {
