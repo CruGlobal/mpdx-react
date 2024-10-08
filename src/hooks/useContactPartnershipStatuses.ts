@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
@@ -50,19 +51,25 @@ export const useContactPartnershipStatuses = () => {
   //     translated: "Appointment Scheduled"
   //   }
   // }
-  const contactStatuses: ContactStatuses = phases
-    ? phases?.reduce((acc, phase) => {
-        phase?.contactStatuses?.map((status) => {
-          const statusName = statuses?.find(({ id }) => status === id)?.value;
-          acc[status] = {
-            name: statusName,
-            translated: getLocalizedContactStatus(t, status),
-            phase: phase.id,
-          };
-        });
-        return acc;
-      }, otherStatuses)
-    : otherStatuses;
+  const contactStatuses: ContactStatuses = useMemo(
+    () =>
+      phases
+        ? phases?.reduce((acc, phase) => {
+            phase?.contactStatuses?.map((status) => {
+              const statusName = statuses?.find(
+                ({ id }) => status === id,
+              )?.value;
+              acc[status] = {
+                name: statusName,
+                translated: getLocalizedContactStatus(t, status),
+                phase: phase.id,
+              };
+            });
+            return acc;
+          }, otherStatuses)
+        : otherStatuses,
+    [phases],
+  );
 
   //   statusMap: {
   //     "Never Ask": "NEVER_ASK",
