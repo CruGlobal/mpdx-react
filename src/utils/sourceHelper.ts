@@ -18,3 +18,8 @@ export const sourceToStr = (t: TFunction, source: string): string => {
       return source;
   }
 };
+
+export const editableSources = ['MPDX', 'manual', 'TntImport'];
+
+export const isEditableSource = (source: string) =>
+  editableSources.indexOf(source) > -1;

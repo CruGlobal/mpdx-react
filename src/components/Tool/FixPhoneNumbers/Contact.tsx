@@ -33,9 +33,8 @@ import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmat
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
-import { isEditableSource } from '../helpers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 import PhoneValidationForm from './PhoneNumberValidationForm';
 import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';

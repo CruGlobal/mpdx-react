@@ -1,4 +1,4 @@
-import { sourceToStr } from './sourceToStr';
+import { isEditableSource, sourceToStr } from './sourceHelper';
 
 describe('SourceToStr', () => {
   const t = (label: string) => label;
@@ -20,5 +20,12 @@ describe('SourceToStr', () => {
   });
   it('should convert default case', () => {
     expect(sourceToStr(t, 'test')).toBe('test');
+  });
+});
+
+describe('Sources-Helpers', () => {
+  it('isEditableSource', () => {
+    expect(isEditableSource('MPDX')).toBe(true);
+    expect(isEditableSource('Siebel')).toBe(false);
   });
 });

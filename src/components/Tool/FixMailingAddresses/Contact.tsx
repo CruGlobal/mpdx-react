@@ -36,9 +36,8 @@ import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipSt
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
-import { isEditableSource } from '../helpers';
 import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
 

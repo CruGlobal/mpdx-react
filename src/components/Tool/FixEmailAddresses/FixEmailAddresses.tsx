@@ -30,7 +30,7 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';

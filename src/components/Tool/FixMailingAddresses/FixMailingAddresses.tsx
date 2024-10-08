@@ -20,7 +20,7 @@ import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/C
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
