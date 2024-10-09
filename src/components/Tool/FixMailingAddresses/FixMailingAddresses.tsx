@@ -101,7 +101,7 @@ const useStyles = makeStyles()(() => ({
 }));
 export const emptyAddress: ContactAddressFragment = {
   id: 'new',
-  source: manualSourceValue,
+  source: '',
   street: '',
   region: '',
   location: '',
