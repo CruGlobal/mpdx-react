@@ -112,4 +112,19 @@ describe('useMonthlyCommitmentAverage', () => {
     // Increase of $150/month over 12 months
     expect(result.current).toEqual({ loading: false, average: 12.5 });
   });
+
+  it('average is 0 when start and finish dates are in the same month', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () =>
+        useMonthlyCommitmentAverage(accountListId, {
+          activeMpdStartAt: '2019-01-05',
+          activeMpdFinishAt: '2019-01-25',
+        }),
+      { wrapper: Wrapper },
+    );
+
+    await waitForNextUpdate();
+
+    expect(result.current).toEqual({ loading: false, average: 0 });
+  });
 });
