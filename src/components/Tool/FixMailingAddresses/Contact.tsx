@@ -33,6 +33,7 @@ import {
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -141,6 +142,7 @@ const Contact: React.FC<Props> = ({
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache(id);
   const { contactStatuses } = useContactPartnershipStatuses();
+  const { appName } = useGetAppSettings();
 
   const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
     await setContactPrimaryAddress({
@@ -339,7 +341,9 @@ const Contact: React.FC<Props> = ({
                   onClick={() => openNewAddressModal(newAddress, id)}
                 >
                   <AddIcon />
-                  <AddText variant="subtitle1">{t('Add Address')}</AddText>
+                  <AddText variant="subtitle1">
+                    {t('Add Address ({{appName}})', { appName })}
+                  </AddText>
                 </AddButton>
               </Box>
             </Grid>

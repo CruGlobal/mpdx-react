@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import theme from 'src/theme';
 import FixMailingAddresses from './FixMailingAddresses';
 import {
@@ -44,24 +45,26 @@ const Components = ({
   mocks: ApolloErgonoMockMap;
   cache?: ApolloCache<object>;
 }) => (
-  <SnackbarProvider>
-    <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          InvalidAddresses: InvalidAddressesQuery;
-          CreateContactAddress: CreateContactAddressMutation;
-        }>
-          mocks={mocks}
-          cache={cache}
-        >
-          <FixMailingAddresses
-            accountListId={accountListId}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>
-    </TestRouter>
-  </SnackbarProvider>
+  <AppSettingsProvider>
+    <SnackbarProvider>
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            InvalidAddresses: InvalidAddressesQuery;
+            CreateContactAddress: CreateContactAddressMutation;
+          }>
+            mocks={mocks}
+            cache={cache}
+          >
+            <FixMailingAddresses
+              accountListId={accountListId}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>
+    </SnackbarProvider>
+  </AppSettingsProvider>
 );
 
 describe('FixMailingAddresses', () => {
@@ -321,7 +324,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() => {
         expect(
-          getByRole('heading', { name: 'Add Address' }),
+          getByRole('heading', { name: 'Add Address (MPDX)' }),
         ).toBeInTheDocument();
       });
 
