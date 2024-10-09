@@ -2,10 +2,8 @@ import { TFunction } from 'react-i18next';
 
 const appName = process.env.APP_NAME ?? 'MPDX';
 
-// This value should be used in the database for a custom/manual source. Like when the user creates a new email, phone number, address, etc.
-export const manualSourceValue = 'manual';
-// In the past, 'MPDX' was saved to the database as the source for manual entries.
-export const oldManualSourceValue = 'MPDX';
+// This value is what the API sets as the source for new data created from MPDX. For example when the user creates a new email, phone number, address, etc.
+export const manualSourceValue = 'MPDX';
 
 export const sourceToStr = (
   t: TFunction,
@@ -16,7 +14,6 @@ export const sourceToStr = (
       return t('US Donation Services');
     case 'DataServer':
       return t('DonorHub');
-    case 'manual':
     case 'MPDX':
       return appName;
     case 'TntImport':
@@ -28,7 +25,7 @@ export const sourceToStr = (
   }
 };
 
-export const editableSources = ['MPDX', 'manual', 'TntImport'];
+export const editableSources = ['MPDX', 'TntImport'];
 
 export const isEditableSource = (source: string | undefined): boolean => {
   // A source is editable if it is undefined or if it is in the list of editable sources.
@@ -43,8 +40,5 @@ export const sourcesMatch = (
   defaultSource: string | undefined,
   itemSource: string | undefined,
 ): boolean => {
-  return (
-    itemSource === defaultSource ||
-    (defaultSource === manualSourceValue && itemSource === oldManualSourceValue)
-  );
+  return itemSource === defaultSource;
 };

@@ -127,7 +127,7 @@ const FixPhoneNumbers: React.FC<Props> = ({
     [key: string]: PhoneNumberData;
   }>({});
 
-  const [defaultSource, setDefaultSource] = useState<string>(manualSourceValue);
+  const [defaultSource, setDefaultSource] = useState(manualSourceValue);
   const [sourceOptions, setSourceOptions] = useState([manualSourceValue]);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 

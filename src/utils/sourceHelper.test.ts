@@ -26,13 +26,9 @@ describe('Sources-Helpers', () => {
 
   describe('sourcesMatch()', () => {
     it('default', () => {
-      expect(sourcesMatch('manual', 'manual')).toBe(true);
-      expect(sourcesMatch('Siebel', 'Siebel')).toBe(true);
+      expect(sourcesMatch('MPDX', 'MPDX')).toBe(true);
       expect(sourcesMatch('Siebel', undefined)).toBe(false);
-      expect(sourcesMatch('manual', 'random custom')).toBe(false);
-    });
-    it('matches sources with the old MPDX database value', () => {
-      expect(sourcesMatch('manual', 'MPDX')).toBe(true);
+      expect(sourcesMatch('MDPX', 'random custom')).toBe(false);
     });
   });
 
