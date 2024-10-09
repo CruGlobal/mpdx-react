@@ -155,7 +155,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 <Typography variant="subtitle1">
                   {t('Source:')} {sourceToStr(t, primaryAddress.source)} (
                   {dateFormat(
-                    DateTime.fromISO(primaryAddress.createdAt),
+                    DateTime.fromISO(
+                      primaryAddress.startDate || primaryAddress.createdAt,
+                    ),
                     locale,
                   )}
                   )
@@ -195,7 +197,11 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   </StyledAddressTypography>
                   <Typography variant="subtitle1">
                     {t('Source:')} {sourceToStr(t, address.source)} (
-                    {dateFormat(DateTime.fromISO(address.createdAt), locale)})
+                    {dateFormat(
+                      DateTime.fromISO(address.startDate || address.createdAt),
+                      locale,
+                    )}
+                    )
                   </Typography>
                 </ContactDetailsMailingTextContainer>
               ))}

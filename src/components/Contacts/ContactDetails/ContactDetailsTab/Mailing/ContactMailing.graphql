@@ -14,11 +14,13 @@ fragment ContactMailing on Contact {
       region
       source
       sourceDonorAccount {
+        id
         accountNumber
       }
       state
       street
       createdAt
+      startDate
     }
   }
   greeting

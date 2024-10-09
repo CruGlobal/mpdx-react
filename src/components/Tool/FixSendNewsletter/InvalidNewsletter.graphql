@@ -45,6 +45,7 @@ fragment ContactPrimaryAddress on Address {
   postalCode
   source
   createdAt
+  startDate
 }
 
 fragment ContactPrimaryPerson on Person {
