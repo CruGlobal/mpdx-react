@@ -108,13 +108,24 @@ describe('FixMailingAddresses', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should count total contacts', async () => {
+  it('should count total contacts and startDate', async () => {
     const { queryByTestId, getByText } = render(
       <Components
         mocks={{
           InvalidAddresses: {
             contacts: {
-              nodes: [{}, {}, {}],
+              nodes: [
+                {
+                  id: contactId,
+                  name: 'Baggins, Frodo',
+                  status: null,
+                  addresses: {
+                    nodes: [tntSourcedAddress],
+                  },
+                },
+                {},
+                {},
+              ],
             },
           },
         }}
@@ -126,6 +137,7 @@ describe('FixMailingAddresses', () => {
     expect(
       getByText('You have 3 mailing addresses to confirm.'),
     ).toBeInTheDocument();
+    expect(getByText(/12\/10\/2022/i)).toBeInTheDocument();
   });
 
   describe('Editing an address', () => {

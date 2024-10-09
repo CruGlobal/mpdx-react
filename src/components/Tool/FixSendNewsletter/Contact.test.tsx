@@ -79,16 +79,19 @@ describe('Fix Newsletter - Contact', () => {
       ).toBeInTheDocument();
     });
 
-    it('should be Physical', () => {
+    it('should be Physical and display startDate', () => {
       primaryAddress.street = '100 Test St';
+      primaryAddress.startDate = '2022-12-10T16:05:26-05:00';
+      primaryAddress.source = 'Siebel';
 
-      const { getByRole } = render(
+      const { getByRole, getByText } = render(
         <TestComponent
           primaryPerson={primaryPerson}
           primaryAddress={primaryAddress}
         />,
       );
 
+      expect(getByText(/(12\/10\/2022)/i)).toBeInTheDocument();
       expect(
         within(getByRole('combobox')).getByText('Physical'),
       ).toBeInTheDocument();

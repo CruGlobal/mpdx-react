@@ -257,7 +257,10 @@ const Contact = ({
                     values={{
                       where: contact?.primaryAddress?.source,
                       date: dateFormatShort(
-                        DateTime.fromISO(contact?.primaryAddress?.createdAt),
+                        DateTime.fromISO(
+                          contact?.primaryAddress?.startDate ||
+                            contact?.primaryAddress?.createdAt,
+                        ),
                         locale,
                       ),
                     }}

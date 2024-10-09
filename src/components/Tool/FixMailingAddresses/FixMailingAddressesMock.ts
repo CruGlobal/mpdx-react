@@ -28,6 +28,7 @@ export const tntSourcedAddress = {
   source: 'DataServer',
   location: null,
   createdAt: '2022-01-10T16:05:26-05:00',
+  startDate: '2022-12-10T16:05:26-05:00',
   historic: false,
 };
 
