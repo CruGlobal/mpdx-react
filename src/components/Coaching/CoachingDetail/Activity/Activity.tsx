@@ -32,6 +32,7 @@ import {
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
+import { CoachingLink } from '../CoachingLink';
 import { HelpButton } from '../HelpButton';
 import { useCoachingDetailActivityQuery } from './Activity.generated';
 import { AppealProgress } from './AppealProgress';
@@ -152,22 +153,6 @@ const StatsText = styled(Typography)({
   fontSize: '0.9em',
 });
 
-interface LinkProps {
-  accountListType: AccountListTypeEnum;
-  children: React.ReactNode;
-  href: string;
-}
-
-const Link: React.FC<LinkProps> = ({ accountListType, children, href }) =>
-  // Only show links when the account list belongs to the user
-  accountListType === AccountListTypeEnum.Own ? (
-    <NextLink href={href} passHref>
-      <MuiLink underline="none">{children}</MuiLink>
-    </NextLink>
-  ) : (
-    <span>{children}</span>
-  );
-
 interface ActivityProps {
   accountListId: string;
   accountListType: AccountListTypeEnum;
@@ -256,7 +241,7 @@ export const Activity: React.FC<ActivityProps> = ({
           <PeopleOutline sx={{ fontSize: '6rem' }} />
           <SectionTitle>{t('Connections Remaining')}</SectionTitle>
           <SectionTitleNumber>
-            <Link
+            <CoachingLink
               href={contactsLink({
                 status: [
                   ContactFilterStatusEnum.NeverContacted,
@@ -272,14 +257,14 @@ export const Activity: React.FC<ActivityProps> = ({
                     .connectionsRemaining
                 }
               </StatsText>
-            </Link>
+            </CoachingLink>
           </SectionTitleNumber>
           {loading ? (
             <MultilineSkeleton lines={2} width="90%" />
           ) : (
             <StatsRow>
               <StatsColumn>
-                <Link
+                <CoachingLink
                   href={contactsLink({
                     status: [
                       ContactFilterStatusEnum.Null,
@@ -294,10 +279,10 @@ export const Activity: React.FC<ActivityProps> = ({
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(t, StatusEnum.NeverContacted)}
                   </StatsColumnTitle>
-                </Link>
+                </CoachingLink>
               </StatsColumn>
               <StatsColumn>
-                <Link
+                <CoachingLink
                   href={contactsLink({
                     status: [ContactFilterStatusEnum.AskInFuture],
                   })}
@@ -309,10 +294,10 @@ export const Activity: React.FC<ActivityProps> = ({
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(t, StatusEnum.AskInFuture)}
                   </StatsColumnTitle>
-                </Link>
+                </CoachingLink>
               </StatsColumn>
               <StatsColumn>
-                <Link
+                <CoachingLink
                   href={contactsLink({
                     status: [ContactFilterStatusEnum.CultivateRelationship],
                   })}
@@ -327,7 +312,7 @@ export const Activity: React.FC<ActivityProps> = ({
                       StatusEnum.CultivateRelationship,
                     )}
                   </StatsColumnTitle>
-                </Link>
+                </CoachingLink>
               </StatsColumn>
             </StatsRow>
           )}
@@ -336,7 +321,7 @@ export const Activity: React.FC<ActivityProps> = ({
           <CalendarMonthOutlined sx={{ fontSize: '6rem' }} />
           <SectionTitle>{t('Partners Currently Initiating With')}</SectionTitle>
           <SectionTitleNumber>
-            <Link
+            <CoachingLink
               href={contactsLink({
                 status: [
                   ContactFilterStatusEnum.ContactForAppointment,
@@ -349,14 +334,14 @@ export const Activity: React.FC<ActivityProps> = ({
               <StatsText sx={{ fontWeight: 'bold' }}>
                 {data?.accountListAnalytics.contactsByStatus.initiations}
               </StatsText>
-            </Link>
+            </CoachingLink>
           </SectionTitleNumber>
           {loading ? (
             <MultilineSkeleton lines={2} width="90%" />
           ) : (
             <StatsRow>
               <StatsColumn>
-                <Link
+                <CoachingLink
                   href={contactsLink({
                     status: [ContactFilterStatusEnum.ContactForAppointment],
                   })}
@@ -374,10 +359,10 @@ export const Activity: React.FC<ActivityProps> = ({
                       StatusEnum.ContactForAppointment,
                     )}
                   </StatsColumnTitle>
-                </Link>
+                </CoachingLink>
               </StatsColumn>
               <StatsColumn>
-                <Link
+                <CoachingLink
                   href={contactsLink({
                     status: [ContactFilterStatusEnum.AppointmentScheduled],
                   })}
@@ -395,10 +380,10 @@ export const Activity: React.FC<ActivityProps> = ({
                       StatusEnum.AppointmentScheduled,
                     )}
                   </StatsColumnTitle>
-                </Link>
+                </CoachingLink>
               </StatsColumn>
               <StatsColumn>
-                <Link
+                <CoachingLink
                   href={contactsLink({
                     status: [ContactFilterStatusEnum.CallForDecision],
                   })}
@@ -413,7 +398,7 @@ export const Activity: React.FC<ActivityProps> = ({
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(t, StatusEnum.CallForDecision)}
                   </StatsColumnTitle>
-                </Link>
+                </CoachingLink>
               </StatsColumn>
             </StatsRow>
           )}
@@ -489,14 +474,14 @@ export const Activity: React.FC<ActivityProps> = ({
               {data?.accountListAnalytics.contactsByStatus.financial}
             </StatsLargeNumber>
           )}
-          <Link
+          <CoachingLink
             href={contactsLink({
               status: [ContactFilterStatusEnum.PartnerFinancial],
             })}
             accountListType={accountListType}
           >
             <SectionTitle>{t('Financial Partners')}</SectionTitle>
-          </Link>
+          </CoachingLink>
         </ActivitySection>
         <ActivitySection data-testid="CurrentRealityPartnerSpecial">
           {loading ? (
@@ -506,14 +491,14 @@ export const Activity: React.FC<ActivityProps> = ({
               {data?.accountListAnalytics.contactsByStatus.special}
             </StatsLargeNumber>
           )}
-          <Link
+          <CoachingLink
             href={contactsLink({
               status: [ContactFilterStatusEnum.PartnerSpecial],
             })}
             accountListType={accountListType}
           >
             <SectionTitle>{t('Special Gift Partners')}</SectionTitle>
-          </Link>
+          </CoachingLink>
         </ActivitySection>
         <ActivitySection data-testid="CurrentRealityPartnerPrayer">
           {loading ? (
@@ -523,14 +508,14 @@ export const Activity: React.FC<ActivityProps> = ({
               {data?.accountListAnalytics.contactsByStatus.prayer}
             </StatsLargeNumber>
           )}
-          <Link
+          <CoachingLink
             href={contactsLink({
               status: [ContactFilterStatusEnum.PartnerPray],
             })}
             accountListType={accountListType}
           >
             <SectionTitle>{t('Prayer Partners')}</SectionTitle>
-          </Link>
+          </CoachingLink>
         </ActivitySection>
       </SectionsContainer>
     </AnimatedCard>
