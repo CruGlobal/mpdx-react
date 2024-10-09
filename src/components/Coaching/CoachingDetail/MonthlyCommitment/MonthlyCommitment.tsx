@@ -20,20 +20,36 @@ import {
   YAxis,
 } from 'recharts';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { AccountList, Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { AccountListTypeEnum } from '../CoachingDetail';
+import { CoachingLink } from '../CoachingLink';
 import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
-import { formatStartDate } from './helpers';
+import { calculateMonthlyCommitmentGoal, formatStartDate } from './helpers';
+import { useMonthlyCommitmentAverage } from './useMonthlyCommitmentAverage';
 
-interface MonthlyCommitmentProps {
+export interface MonthlyCommitmentProps {
   coachingId: string;
-  goal?: number;
+  accountListType: AccountListTypeEnum;
   currencyCode?: string;
+  mpdInfo: Maybe<
+    Pick<
+      AccountList,
+      | 'activeMpdMonthlyGoal'
+      | 'activeMpdStartAt'
+      | 'activeMpdFinishAt'
+      | 'monthlyGoal'
+    >
+  >;
 }
+
 export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   coachingId,
-  goal = 0,
+  accountListType,
   currencyCode = 'USD',
+  mpdInfo,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -41,6 +57,13 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   const { data, loading } = useGetReportsPledgeHistoriesQuery({
     variables: { coachingId },
   });
+
+  const { average: monthlyCommitmentAverage, loading: averageLoading } =
+    useMonthlyCommitmentAverage(coachingId, mpdInfo);
+
+  const monthlyCommitmentGoal = mpdInfo
+    ? calculateMonthlyCommitmentGoal(mpdInfo)
+    : null;
 
   const pledges =
     data?.reportPledgeHistories?.map((pledge) => ({
@@ -58,14 +81,51 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   const domainMax = Math.max(
     ...pledges.map((pledge) => pledge.received),
     ...pledges.map((pledge) => pledge.committed),
-    goal,
+    mpdInfo?.monthlyGoal ?? 0,
   );
+
   return (
     <AnimatedCard>
       <CardHeader
         title={
-          <Box>
-            <Typography variant="h6">{t('Monthly Commitments')}</Typography>
+          <Box textAlign="center">
+            {mpdInfo &&
+            (!mpdInfo.activeMpdStartAt ||
+              !mpdInfo.activeMpdFinishAt ||
+              !mpdInfo.activeMpdMonthlyGoal) ? (
+              <CoachingLink
+                href={`/accountLists/${coachingId}/settings/preferences`}
+                accountListType={accountListType}
+                underline="hover"
+              >
+                {t('MPD info not set up on account list')}
+              </CoachingLink>
+            ) : !mpdInfo || averageLoading ? (
+              <Skeleton
+                variant="text"
+                data-testid="MonthlyCommitmentSkeleton"
+              />
+            ) : (
+              <Typography data-testid="MonthlyCommitmentSummary">
+                {t('Monthly Commitment Average: ')}
+                <strong style={{ color: theme.palette.progressBarOrange.main }}>
+                  {currencyFormat(
+                    Math.round(monthlyCommitmentAverage ?? 0),
+                    currencyCode,
+                    locale,
+                  )}
+                </strong>
+                {' | '}
+                {t('Monthly Commitment Goal: ')}
+                <strong style={{ color: theme.palette.mpdxBlue.main }}>
+                  {currencyFormat(
+                    Math.round(monthlyCommitmentGoal ?? 0),
+                    currencyCode,
+                    locale,
+                  )}
+                </strong>
+              </Typography>
+            )}
           </Box>
         }
       />
@@ -99,9 +159,9 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
               <Tooltip />
               <Legend />
               <CartesianGrid vertical={false} />
-              {goal && (
+              {mpdInfo?.monthlyGoal && (
                 <ReferenceLine
-                  y={goal}
+                  y={mpdInfo.monthlyGoal}
                   stroke={theme.palette.mpdxBlue.main}
                   strokeWidth={3}
                 />
