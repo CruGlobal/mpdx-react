@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime, DateTimeUnit } from 'luxon';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import {
@@ -194,21 +194,32 @@ export const Activity: React.FC<ActivityProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const periodUnit: DateTimeUnit =
-    period === CoachingPeriodEnum.Weekly ? 'week' : 'month';
   const periodDuration =
     period === CoachingPeriodEnum.Weekly ? { weeks: 1 } : { months: 1 };
-  const [start, setStart] = useState(DateTime.now().startOf(periodUnit));
-  const end = useMemo(() => start.endOf(periodUnit), [start, periodUnit]);
+  const startDate = useMemo((): DateTime => {
+    // The default startOf('week') is Monday. Subtract 1 day to start the week on Sunday.
+    if (period === CoachingPeriodEnum.Weekly) {
+      return DateTime.now().startOf('week').minus({ day: 1 });
+    }
+    return DateTime.now().startOf('month');
+  }, [period]);
+  const [start, setStart] = useState(startDate);
+  const end = useMemo(
+    () =>
+      period === CoachingPeriodEnum.Weekly
+        ? start.plus({ days: 6 }).endOf('day')
+        : start.endOf('month'),
+    [start, period],
+  );
 
   useEffect(() => {
-    setStart(DateTime.now().startOf(periodUnit));
-  }, [periodUnit]);
+    setStart(startDate);
+  }, [startDate]);
 
   const { data, loading } = useCoachingDetailActivityQuery({
     variables: {
       accountListId,
-      dateRange: `${start.toISODate()}..${start.endOf(periodUnit).toISODate()}`,
+      dateRange: `${start.toISODate()}..${end.toISODate()}`,
     },
   });
 
