@@ -3,6 +3,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { Box } from '@mui/material';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AccountListTypeEnum } from '../CoachingDetail';
 import { MonthlyCommitment } from './MonthlyCommitment';
 import {
   GetReportsPledgeHistoriesDocument,
@@ -33,8 +34,9 @@ export const Default = (): ReactElement => {
       >
         <MonthlyCommitment
           coachingId={coachingId}
+          accountListType={AccountListTypeEnum.Own}
+          mpdInfo={null}
           currencyCode="USD"
-          goal={2000}
         />
       </GqlMockedProvider>
     </Box>
@@ -57,8 +59,9 @@ export const Loading = (): ReactElement => {
       >
         <MonthlyCommitment
           coachingId={coachingId}
+          accountListType={AccountListTypeEnum.Own}
+          mpdInfo={null}
           currencyCode="USD"
-          goal={200}
         />
       </MockedProvider>
     </Box>
