@@ -35,6 +35,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import EmailValidationForm from '../EmailValidationForm';
 import { EmailAddressData, PersonEmailAddresses } from '../FixEmailAddresses';
 import { PersonInvalidEmailFragment } from '../FixEmailAddresses.generated';
@@ -359,7 +360,10 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                     </Typography>
                                   </Hidden>
                                   <Typography display="inline" variant="body2">
-                                    {`${email.source} (${dateFormatShort(
+                                    {`${sourceToStr(
+                                      t,
+                                      email.source,
+                                    )} (${dateFormatShort(
                                       DateTime.fromISO(email.updatedAt),
                                       locale,
                                     )})`}
@@ -453,7 +457,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                       setFieldValue('newEmail', e.target.value);
                                       handleSubmit();
                                     }}
-                                    disabled={email.source !== appName}
+                                    disabled={!isEditableSource(email.source)}
                                   />
                                   <FormHelperText
                                     error={true}
@@ -463,7 +467,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                   </FormHelperText>
                                 </FormControl>
 
-                                {email.source === appName ? (
+                                {isEditableSource(email.source) ? (
                                   <Box
                                     display="flex"
                                     alignItems="center"

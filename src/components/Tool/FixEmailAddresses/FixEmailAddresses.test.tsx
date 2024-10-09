@@ -596,11 +596,7 @@ describe('FixEmailAddresses-Home', () => {
       } as { [key: string]: PersonEmailAddresses };
       const defaultSource = 'MPDX';
 
-      const dataToSend = determineBulkDataToSend(
-        dataState,
-        defaultSource,
-        'MPDX',
-      );
+      const dataToSend = determineBulkDataToSend(dataState, defaultSource);
 
       const emails = dataToSend[0].emailAddresses ?? [];
       expect(emails[0].primary).toEqual(true);
@@ -625,11 +621,7 @@ describe('FixEmailAddresses-Home', () => {
       } as { [key: string]: PersonEmailAddresses };
       const defaultSource = 'DonorHub';
 
-      const dataToSend = determineBulkDataToSend(
-        dataState,
-        defaultSource,
-        'MPDX',
-      );
+      const dataToSend = determineBulkDataToSend(dataState, defaultSource);
       expect(dataToSend.length).toEqual(0);
     });
   });

@@ -203,12 +203,12 @@ describe('FixPhoneNumbers-Home', () => {
     const primarySource = getByRole('combobox');
 
     userEvent.click(primarySource);
-    userEvent.click(getByRole('option', { name: 'DataServer' }));
+    userEvent.click(getByRole('option', { name: 'DonorHub' }));
 
-    expect(primarySource).toHaveTextContent('DataServer');
+    expect(primarySource).toHaveTextContent('DonorHub');
 
     expect(getByTestId('source-button')).toHaveTextContent(
-      'Confirm 2 as DataServer',
+      'Confirm 2 as DonorHub',
     );
 
     const confirmAllButton = getByTestId('source-button');

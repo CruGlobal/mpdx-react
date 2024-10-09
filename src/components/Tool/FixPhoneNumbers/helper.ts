@@ -1,4 +1,5 @@
 import { PersonUpdateInput } from 'src/graphql/types.generated';
+import { sourcesMatch } from 'src/utils/sourceHelper';
 import { PhoneNumberData } from './Contact';
 
 export const determineBulkDataToSend = (
@@ -10,8 +11,8 @@ export const determineBulkDataToSend = (
   const dataToSend = [] as PersonUpdateInput[];
 
   Object.entries(dataState).forEach(([id, data]) => {
-    const primaryNumber = data.phoneNumbers.find(
-      (number) => number.source === defaultSource,
+    const primaryNumber = data.phoneNumbers.find((number) =>
+      sourcesMatch(defaultSource, number.source),
     );
     if (primaryNumber) {
       dataToSend.push({

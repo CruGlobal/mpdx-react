@@ -17,6 +17,7 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { isEditableSource } from 'src/utils/sourceHelper';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { NewSocial } from '../PersonModal';
@@ -69,7 +70,7 @@ export const PersonEmailItem: React.FC<Props> = ({
 
   const source = sources?.find((email) => email.id === emailAddress.id)?.source;
 
-  const locked = source !== 'MPDX' && source !== undefined;
+  const locked = !isEditableSource(source);
 
   React.useEffect(() => {
     setIsEmailPrimaryChecked(index === primaryIndex);
