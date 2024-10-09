@@ -52,13 +52,14 @@ const data: ContactMailingFragment = {
         state: null,
         street: '101 Lake Hart Dr',
         createdAt: new Date(2023, 0, 2).toISOString(),
+        startDate: new Date(2023, 0, 30).toISOString(),
       },
     ],
   },
 };
 
 describe('ContactDetailsTabMailing', () => {
-  it('shows address date', () => {
+  it('shows address createdAt date', () => {
     const { getByText } = render(
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
@@ -77,6 +78,27 @@ describe('ContactDetailsTabMailing', () => {
     );
 
     expect(getByText('Source: MPDX (Jan 1, 2023)')).toBeInTheDocument();
+  });
+
+  it('shows address startDate instead of createdAt date', () => {
+    const { getByText } = render(
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <ContactsWrapper>
+              <ContactDetailProvider>
+                <ContactDetailsTabMailing
+                  accountListId={accountListId}
+                  data={data}
+                />
+              </ContactDetailProvider>
+            </ContactsWrapper>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
+    );
+    userEvent.click(getByText('Show 1 More'));
+    expect(getByText('Source: MPDX (Jan 30, 2023)')).toBeInTheDocument();
   });
 
   it('does not show state if null', () => {

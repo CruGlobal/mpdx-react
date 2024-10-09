@@ -19,6 +19,7 @@ fragment ContactMailing on Contact {
       state
       street
       createdAt
+      startDate
     }
   }
   greeting

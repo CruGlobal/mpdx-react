@@ -114,7 +114,11 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                   ...dataFromCache.contact.addresses,
                   nodes: [
                     ...dataFromCache.contact.addresses.nodes,
-                    { ...createdAddressData?.createAddress?.address },
+                    {
+                      ...createdAddressData?.createAddress?.address,
+                      sourceDonorAccount: { accountNumber: null },
+                      startDate: '',
+                    },
                   ],
                 },
               },
