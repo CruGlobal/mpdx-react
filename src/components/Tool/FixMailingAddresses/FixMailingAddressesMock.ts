@@ -12,6 +12,7 @@ export const mpdxSourcedAddress = {
   source: 'MPDX',
   location: 'Home',
   createdAt: '2024-06-12T13:07:40-04:00',
+  startDate: null,
   historic: false,
 };
 

@@ -37,6 +37,7 @@ const data: ContactMailingFragment = {
         state: null,
         street: '100 Lake Hart Dr',
         createdAt: new Date(2023, 0, 1).toISOString(),
+        startDate: null,
       },
       {
         id: 'address-2',

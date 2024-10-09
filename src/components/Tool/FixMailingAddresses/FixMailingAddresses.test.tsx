@@ -140,6 +140,33 @@ describe('FixMailingAddresses', () => {
     expect(getByText(/12\/10\/2022/i)).toBeInTheDocument();
   });
 
+  it('should show createdAt date when startDate is null', async () => {
+    const { queryByTestId, getByText } = render(
+      <Components
+        mocks={{
+          InvalidAddresses: {
+            contacts: {
+              nodes: [
+                {
+                  id: contactId,
+                  name: 'Baggins, Frodo',
+                  status: null,
+                  addresses: {
+                    nodes: [mpdxSourcedAddress],
+                  },
+                },
+              ],
+            },
+          },
+        }}
+      />,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('loading')).not.toBeInTheDocument(),
+    );
+    expect(getByText(/6\/12\/2024/i)).toBeInTheDocument();
+  });
+
   describe('Editing an address', () => {
     it('should edit Address via EditContactAddressModal', async () => {
       const cache = new InMemoryCache();

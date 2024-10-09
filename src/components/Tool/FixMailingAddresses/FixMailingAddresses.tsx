@@ -282,10 +282,7 @@ const FixMailingAddresses: React.FC<Props> = ({
                 addresses: {
                   nodes: [
                     ...contact.addresses.nodes,
-                    {
-                      ...createdAddressData.createAddress.address,
-                      startDate: '',
-                    },
+                    createdAddressData.createAddress.address,
                   ],
                 },
               };
