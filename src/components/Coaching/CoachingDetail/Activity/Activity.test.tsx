@@ -122,13 +122,10 @@ describe('Activity', () => {
     it('is a week long when in weekly mode', async () => {
       const { getByTestId } = render(<TestComponent />);
 
-      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 6 - Jan 12');
+      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 5 - Jan 11');
       await waitFor(() =>
-        expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-          operationName: 'CoachingDetailActivity',
-          variables: {
-            dateRange: '2020-01-06..2020-01-12',
-          },
+        expect(mutationSpy).toHaveGraphqlOperation('CoachingDetailActivity', {
+          dateRange: '2020-01-05..2020-01-11',
         }),
       );
     });
@@ -140,11 +137,8 @@ describe('Activity', () => {
 
       expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 1 - Jan 31');
       await waitFor(() =>
-        expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-          operationName: 'CoachingDetailActivity',
-          variables: {
-            dateRange: '2020-01-01..2020-01-31',
-          },
+        expect(mutationSpy).toHaveGraphqlOperation('CoachingDetailActivity', {
+          dateRange: '2020-01-01..2020-01-31',
         }),
       );
     });
@@ -154,7 +148,7 @@ describe('Activity', () => {
 
       userEvent.click(getByRole('button', { name: 'Previous' }));
       expect(getByTestId('ActivityPeriod')).toHaveTextContent(
-        'Dec 30, 2019 - Jan 5, 2020',
+        'Dec 29, 2019 - Jan 4, 2020',
       );
     });
 
@@ -165,7 +159,7 @@ describe('Activity', () => {
 
       userEvent.click(getByRole('button', { name: 'Previous' }));
       rerender(<TestComponent />);
-      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 6 - Jan 12');
+      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 5 - Jan 11');
     });
   });
 
@@ -181,7 +175,7 @@ describe('Activity', () => {
         expect(mutationSpy.mock.calls[1][0].operation).toMatchObject({
           operationName: 'CoachingDetailActivity',
           variables: {
-            dateRange: '2019-12-30..2020-01-05',
+            dateRange: '2019-12-29..2020-01-04',
           },
         }),
       );
@@ -191,7 +185,7 @@ describe('Activity', () => {
         expect(mutationSpy.mock.calls[2][0].operation).toMatchObject({
           operationName: 'CoachingDetailActivity',
           variables: {
-            dateRange: '2020-01-06..2020-01-12',
+            dateRange: '2020-01-05..2020-01-11',
           },
         }),
       );
@@ -237,11 +231,11 @@ describe('Activity', () => {
 
       userEvent.click(previous);
       expect(next).not.toBeDisabled();
-      expect(period).toHaveTextContent('Dec 30, 2019 - Jan 5, 2020');
+      expect(period).toHaveTextContent('Dec 29, 2019 - Jan 4, 2020');
 
       userEvent.click(next);
       expect(next).toBeDisabled();
-      expect(period).toHaveTextContent('Jan 6 - Jan 12');
+      expect(period).toHaveTextContent('Jan 5 - Jan 11');
     });
   });
 

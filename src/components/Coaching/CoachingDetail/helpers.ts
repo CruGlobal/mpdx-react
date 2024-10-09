@@ -42,7 +42,10 @@ export const getMonthOrWeekDateRange = (
       ? new Intl.DateTimeFormat(locale, {
           month: 'short',
           day: 'numeric',
-        }).formatRange(Date.parse(startDate), Date.parse(endDate))
+        }).formatRange(
+          DateTime.fromISO(startDate).toJSDate(),
+          DateTime.fromISO(endDate).toJSDate(),
+        )
       : startDate
       ? dateFormatMonthOnly(DateTime.fromISO(startDate), locale)
       : null)
