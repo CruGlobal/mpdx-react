@@ -82,6 +82,7 @@ describe('Fix Newsletter - Contact', () => {
     it('should be Physical and display startDate', () => {
       primaryAddress.street = '100 Test St';
       primaryAddress.startDate = '2022-12-10T16:05:26-05:00';
+      primaryAddress.createdAt = '2022-10-10T16:05:26-05:00';
       primaryAddress.source = 'Siebel';
 
       const { getByRole, getByText } = render(
@@ -92,6 +93,25 @@ describe('Fix Newsletter - Contact', () => {
       );
 
       expect(getByText(/(12\/10\/2022)/i)).toBeInTheDocument();
+      expect(
+        within(getByRole('combobox')).getByText('Physical'),
+      ).toBeInTheDocument();
+    });
+
+    it('should show createdAt if startDate is null', () => {
+      primaryAddress.street = '100 Test St';
+      primaryAddress.startDate = null;
+      primaryAddress.createdAt = '2022-10-10T16:05:26-05:00';
+      primaryAddress.source = 'Siebel';
+
+      const { getByRole, getByText } = render(
+        <TestComponent
+          primaryPerson={primaryPerson}
+          primaryAddress={primaryAddress}
+        />,
+      );
+
+      expect(getByText(/(10\/10\/2022)/i)).toBeInTheDocument();
       expect(
         within(getByRole('combobox')).getByText('Physical'),
       ).toBeInTheDocument();

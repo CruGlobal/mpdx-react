@@ -116,9 +116,6 @@ describe('FixMailingAddresses', () => {
             contacts: {
               nodes: [
                 {
-                  id: contactId,
-                  name: 'Baggins, Frodo',
-                  status: null,
                   addresses: {
                     nodes: [tntSourcedAddress],
                   },
@@ -148,9 +145,6 @@ describe('FixMailingAddresses', () => {
             contacts: {
               nodes: [
                 {
-                  id: contactId,
-                  name: 'Baggins, Frodo',
-                  status: null,
                   addresses: {
                     nodes: [mpdxSourcedAddress],
                   },
