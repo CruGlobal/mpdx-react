@@ -299,7 +299,13 @@ const Contact: React.FC<Props> = ({
                     onClick={() => openEditAddressModal(address, id)}
                   >
                     <Box className={classes.address}>
-                      <Typography>
+                      <Typography
+                        style={{
+                          textDecoration: address.historic
+                            ? 'line-through'
+                            : 'none',
+                        }}
+                      >
                         {`${address.street}, ${address.city} ${
                           address.state ? address.state : ''
                         }. ${address.postalCode}`}
