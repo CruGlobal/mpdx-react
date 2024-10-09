@@ -6,7 +6,6 @@ import {
   Skeleton,
   Typography,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -24,6 +23,7 @@ import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { useGetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
+import { formatStartDate } from './helpers';
 
 interface MonthlyCommitmentProps {
   coachingId: string;
@@ -43,19 +43,11 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
   });
 
   const pledges =
-    data?.reportPledgeHistories?.map((pledge) => {
-      const startDate = pledge?.startDate
-        ? DateTime.fromISO(pledge.startDate)
-            .toJSDate()
-            .toLocaleDateString(locale, {
-              month: 'short',
-              year: '2-digit',
-            })
-        : '';
-      const received = Math.round(pledge?.received ?? 0);
-      const committed = Math.round(pledge?.pledged ?? 0);
-      return { startDate, received, committed };
-    }) ?? [];
+    data?.reportPledgeHistories?.map((pledge) => ({
+      startDate: formatStartDate(pledge?.startDate, locale),
+      received: Math.round(pledge?.received ?? 0),
+      committed: Math.round(pledge?.pledged ?? 0),
+    })) ?? [];
 
   const averageCommitments =
     pledges.length > 0
