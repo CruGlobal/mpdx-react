@@ -10,7 +10,6 @@ import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
-  Panel,
   PartnerGivingAnalysisReport,
   PartnerGivingAnalysisReportRef,
 } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
@@ -25,6 +24,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
+import { Panel } from '../helpers';
 
 // The order here is also the sort order and the display order
 const reportFilters = [

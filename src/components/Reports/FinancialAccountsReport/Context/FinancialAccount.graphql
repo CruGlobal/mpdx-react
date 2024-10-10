@@ -1,0 +1,22 @@
+query FinancialAccount($financialAccountId: ID!, $accountListId: ID!) {
+  financialAccount(id: $financialAccountId, accountListId: $accountListId) {
+    id
+    code
+    name
+    balance {
+      convertedAmount
+      convertedCurrency
+    }
+    categories {
+      nodes {
+        id
+        code
+        entryType
+        name
+      }
+    }
+    organization {
+      name
+    }
+  }
+}
