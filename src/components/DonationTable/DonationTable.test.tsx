@@ -85,8 +85,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                         {
                           id: 'donation-2',
                           amount: {
-                            amount: hasForeignCurrency ? 200 : 100,
-                            convertedAmount: 100,
+                            amount: hasForeignCurrency ? 200.55 : 100,
+                            convertedAmount: hasForeignCurrency ? 100.89 : 100,
                             convertedCurrency: 'CAD',
                             currency: hasForeignCurrency ? 'USD' : 'CAD',
                           },
@@ -260,10 +260,10 @@ describe('DonationTable', () => {
     expect(totalsRows[1].children[1]).toHaveTextContent('CA$10');
     expect(totalsRows[1].children[2]).toHaveTextContent('CA$10');
     expect(totalsRows[2].children[0]).toHaveTextContent('Total USD Donations:');
-    expect(totalsRows[2].children[1]).toHaveTextContent('CA$100');
-    expect(totalsRows[2].children[2]).toHaveTextContent('$200');
+    expect(totalsRows[2].children[1]).toHaveTextContent('CA$101');
+    expect(totalsRows[2].children[2]).toHaveTextContent('$200.55');
     expect(totalsRows[3].children[0]).toHaveTextContent('Total Donations:');
-    expect(totalsRows[3].children[1]).toHaveTextContent('CA$110');
+    expect(totalsRows[3].children[1]).toHaveTextContent('CA$111');
   });
 
   it('updates the sort order', async () => {
