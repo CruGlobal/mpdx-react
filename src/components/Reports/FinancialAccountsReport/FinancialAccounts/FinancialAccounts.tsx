@@ -1,11 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Alert,
-  Box,
-  CircularProgress,
-  Divider,
-  Typography,
-} from '@mui/material';
+import { Box, CircularProgress, Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
@@ -17,7 +11,11 @@ import {
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { AccountsList as List } from '../AccountsListLayout/List/List';
+import { AccountsList as List } from '../../AccountsListLayout/List/List';
+import {
+  FinancialAccountContext,
+  FinancialAccountType,
+} from '../Context/FinancialAccountsContext';
 import { useEntryHistoriesQuery } from './GetEntryHistories.generated';
 import {
   FinancialAccountsDocument,
@@ -25,34 +23,27 @@ import {
   useFinancialAccountsQuery,
 } from './GetFinancialAccounts.generated';
 import { useSetActiveFinancialAccountMutation } from './SetActiveFinancialAccount.generated';
-import type { Account } from '../AccountsListLayout/List/ListItem/ListItem';
+import type { Account } from '../../AccountsListLayout/List/ListItem/ListItem';
 import type {
   FinancialAccountsGroup,
   PreFinancialAccountsGroup,
-} from './ResponsibilityCentersReport.type';
-
-interface Props {
-  accountListId: string;
-  designationAccounts?: string[];
-  isNavListOpen: boolean;
-  onNavListToggle: () => void;
-  title: string;
-}
+} from './FinancialAccounts.type';
 
 const ScrollBox = styled(Box)(({}) => ({
   height: 'calc(100vh - 160px)',
   overflowY: 'auto',
 }));
 
-export const ResponsibilityCentersReport: React.FC<Props> = ({
-  accountListId,
-  designationAccounts,
-  isNavListOpen,
-  onNavListToggle,
-  title,
-}) => {
+export const FinancialAccounts: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const {
+    accountListId,
+    isNavListOpen,
+    designationAccounts,
+    handleNavListToggle,
+  } = React.useContext(FinancialAccountContext) as FinancialAccountType;
 
   const financialAccountsQueryVariables = {
     accountListId,
@@ -187,8 +178,8 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
     <Box>
       <MultiPageHeader
         isNavListOpen={isNavListOpen}
-        onNavListToggle={onNavListToggle}
-        title={title}
+        onNavListToggle={handleNavListToggle}
+        title={t('Responsibility Centers')}
         headerType={HeaderTypeEnum.Report}
         rightExtra={balanceNode}
       />
@@ -199,25 +190,20 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
           alignItems="center"
           height="100%"
         >
-          <CircularProgress data-testid="LoadingResponsibilityCenters" />
+          <CircularProgress data-testid="LoadingFinancialAccounts" />
         </Box>
       ) : error ? (
         <Notification type="error" message={error.toString()} />
       ) : data?.financialAccounts.nodes.length === 0 ? (
         <EmptyReport
           hasAddNewDonation={false}
-          title={t('You have no financial accounts')}
+          title={t('You have no responsibility centers.')}
           subTitle={t(
-            'You can setup an organization account to import your financial accounts.',
+            'You can setup an organization account to import your responsibility centers.',
           )}
         />
       ) : (
-        <ScrollBox data-testid="ResponsibilityCentersScrollBox">
-          <Alert severity="warning">
-            {t(
-              'The Responsibility Centers page has some features that are not working. Developers are prioritizing this issue and it should be ready in the next few days. Please check back later.',
-            )}
-          </Alert>
+        <ScrollBox data-testid="FinancialAccountsScrollBox">
           <Divider />
           {financialAccountsGroups?.map((financialAccountGroup) => {
             const accounts: Account[] =
