@@ -35,6 +35,9 @@ class MyDocument extends Document {
            * defer. This is not ideal for first-load performance and should be
            * switched to <Script> as soon as Helpjuice can fix their swifty.js
            * script.
+           * Caleb Cox reached out to HelpJuice on August 30, 2024, and they
+           * a ticket for the issue on October 10, 2024.
+           * https://helpjuice.canny.io/feature-requests/p/swifty-swiftyjs-beacon-setup-fails-due-to-domcontentloaded-event-already-fired
            */}
           {process.env.HELPJUICE_ORIGIN && (
             <script
