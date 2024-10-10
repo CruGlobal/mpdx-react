@@ -170,17 +170,15 @@ export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
                     </AlignedTableCell>
                     <AlignedTableCell
                       sx={{
-                        color: checkDueDate(need.expectedDate)['color'],
+                        color: checkDueDate(need.expectedDate).color,
                       }}
                     >
-                      {`${
-                        need.expectedDate
-                          ? dateFormatShort(
-                              DateTime.fromISO(need.expectedDate),
-                              locale,
-                            )
-                          : ''
-                      } ${checkDueDate(need.expectedDate)['overdue']}`}
+                      {need.expectedDate &&
+                        dateFormatShort(
+                          DateTime.fromISO(need.expectedDate),
+                          locale,
+                        )}{' '}
+                      {checkDueDate(need.expectedDate).overdue}
                     </AlignedTableCell>
                   </TableRow>
                 ))}
