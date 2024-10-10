@@ -50,10 +50,11 @@ export const monthYearFormat = (
   month: number,
   year: number,
   locale: string,
+  fullYear = true,
 ): string =>
   new Intl.DateTimeFormat(locale, {
     month: 'short',
-    year: 'numeric',
+    year: fullYear ? 'numeric' : '2-digit',
   }).format(DateTime.local(year, month, 1).toJSDate());
 
 export const dateFormat = (date: DateTime | null, locale: string): string => {
