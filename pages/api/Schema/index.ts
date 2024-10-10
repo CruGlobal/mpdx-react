@@ -41,6 +41,8 @@ import { ExpectedMonthlyTotalReportResolvers } from './reports/expectedMonthlyTo
 import FinancialAccountsTypeDefs from './reports/financialAccounts/financialAccounts.graphql';
 import FinancialAccountSummaryTypeDefs from './reports/financialAccounts/financialAccounts/financialAccounts.graphql';
 import { FinancialAccountSummaryResolvers } from './reports/financialAccounts/financialAccounts/resolvers';
+import FinancialAccountEntriesTypeDefs from './reports/financialAccounts/financialEntries/financialEntries.graphql';
+import { financialAccountEntriesResolvers } from './reports/financialAccounts/financialEntries/resolvers';
 import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
 import { FourteenMonthReportResolvers } from './reports/fourteenMonth/resolvers';
@@ -132,6 +134,10 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: FinancialAccountSummaryTypeDefs,
     resolvers: FinancialAccountSummaryResolvers,
+  },
+  {
+    typeDefs: FinancialAccountEntriesTypeDefs,
+    resolvers: financialAccountEntriesResolvers,
   },
   ...integrationSchema,
   ...organizationSchema,

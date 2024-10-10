@@ -16,7 +16,7 @@ import { FilterButton } from 'src/components/Shared/Header/styledComponents';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { formatNumber } from '../AccountSummary/AccountSummary';
+import { formatNumber } from '../AccountSummary/AccountSummaryHelper';
 import {
   FinancialAccountContext,
   FinancialAccountType,
@@ -71,10 +71,12 @@ const HeaderActions = styled(Box)(({ theme }) => ({
 
 interface FinancialAccountHeaderProps {
   onTransactionPage?: boolean;
+  disableExportCSV?: boolean;
   handleExportCSV?: () => void;
 }
 export const FinancialAccountHeader: React.FC<FinancialAccountHeaderProps> = ({
   onTransactionPage = false,
+  disableExportCSV = false,
   handleExportCSV,
 }) => {
   const { t } = useTranslation();
@@ -201,6 +203,7 @@ export const FinancialAccountHeader: React.FC<FinancialAccountHeaderProps> = ({
                 size="large"
                 variant="contained"
                 onClick={handleExportCSV}
+                disabled={disableExportCSV}
                 sx={{
                   paddingBottom: '11px',
                   paddingTop: '11px',

@@ -110,6 +110,7 @@ import {
   setActiveFinancialAccount,
 } from './Schema/reports/financialAccounts/datahandler';
 import { financialAccountSummaryHandler } from './Schema/reports/financialAccounts/financialAccounts/datahandler';
+import { financialAccountEntriesHandler } from './Schema/reports/financialAccounts/financialEntries/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -779,6 +780,30 @@ class MpdxRestApi extends RESTDataSource {
 
     return financialAccountSummaryHandler(data);
   }
+
+  async financialAccountEntries(
+    accountListId: string,
+    financialAccountId: string,
+    dateRange: string,
+    categoryId?: string | null,
+    wildcardSearch?: string | null,
+  ) {
+    const fields =
+      'fields[financial_account_entry_categories]=name,code&fields[financial_account_entry_credits]=amount,code,currency,description,entry_date,category,type' +
+      '&fields[financial_account_entry_debits]=amount,code,currency,description,entry_date,category,type';
+
+    let filters = `filter[entryDate]=${dateRange}&filter[financialAccountId]=${financialAccountId}`;
+    if (categoryId) {
+      filters += `&filter[categoryId]=${categoryId}`;
+    }
+    if (wildcardSearch) {
+      filters += `&filter[wildcardSearch]=${wildcardSearch}`;
+    }
+    const data = await this.get(
+      `account_lists/${accountListId}/entries?${fields}&${filters}&include=category&per_page=10000&sort=-entry_date`,
+    );
+
+    return financialAccountEntriesHandler(data);
   }
 
   async getEntryHistories(

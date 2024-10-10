@@ -1,8 +1,10 @@
+import NextLink from 'next/link';
 import React, { useContext, useMemo } from 'react';
 import {
   Box,
   CircularProgress,
   Divider,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -23,6 +25,12 @@ import {
   FinancialAccountType,
 } from '../Context/FinancialAccountsContext';
 import { FinancialAccountHeader } from '../Header/Header';
+import { AccountSummaryCategory } from './AccountSummaryCategory/AccountSummaryCategory';
+import {
+  Category,
+  createTransactionsUrl,
+  formatNumber,
+} from './AccountSummaryHelper';
 import {
   FinancialAccountCategoriesFragment,
   useFinancialAccountSummaryQuery,
@@ -38,32 +46,19 @@ interface Periods {
   endDate: string;
 }
 
-interface Category {
-  id: string;
-  name: string;
-  amounts: number[];
-}
-
-export const formatNumber = (
-  numberAsString?: string | number | null,
-  makeAbsolute = true,
-) => {
-  const number =
-    typeof numberAsString === 'string'
-      ? Number(numberAsString)
-      : numberAsString ?? 0;
-  return Math.ceil(makeAbsolute ? Math.abs(number) : number);
-};
-
 export interface AppendCategoryToCategoriesArray {
   categories: Maybe<FinancialAccountCategoriesFragment>[];
   categoryArray: Category[];
+  startDate: string;
+  endDate: string;
   index: number;
 }
 
 export const appendCategoryToCategoriesArray = ({
   categories,
   categoryArray,
+  startDate,
+  endDate,
   index,
 }: AppendCategoryToCategoriesArray) => {
   categories.forEach((category) => {
@@ -71,11 +66,15 @@ export const appendCategoryToCategoriesArray = ({
     const name = category?.category?.name ?? category?.category?.code ?? '';
     const amount = formatNumber(category?.amount);
     if (index === 0) {
-      categoryArray.push({ id, name, amounts: [amount] });
+      categoryArray.push({
+        id,
+        name,
+        months: [{ amount, startDate, endDate }],
+      });
     } else {
       const existingCategory = categoryArray.find((c) => c.id === id);
       if (existingCategory) {
-        existingCategory.amounts.push(amount);
+        existingCategory.months.push({ amount, startDate, endDate });
       }
     }
   });
@@ -153,6 +152,8 @@ export const AccountSummary: React.FC = () => {
       appendCategoryToCategoriesArray({
         categories: item.creditByCategories,
         categoryArray: creditsCategories,
+        startDate: item?.startDate ?? '',
+        endDate: item?.endDate ?? '',
         index: idx,
       });
 
@@ -160,6 +161,8 @@ export const AccountSummary: React.FC = () => {
       appendCategoryToCategoriesArray({
         categories: item.debitByCategories,
         categoryArray: debitsCategories,
+        startDate: item?.startDate ?? '',
+        endDate: item?.endDate ?? '',
         index: idx,
       });
     });
@@ -205,12 +208,26 @@ export const AccountSummary: React.FC = () => {
                     <Typography variant="h6">{t('Category')}</Typography>
                   </TableCell>
                   {tableData.periods?.map((period, idx) => {
+                    const monthStart = DateTime.fromISO(period.startDate)
+                      .startOf('month')
+                      .toISODate();
+                    const monthEnd = DateTime.fromISO(period.endDate)
+                      .endOf('month')
+                      .toISODate();
+                    const url = createTransactionsUrl({
+                      accountListId,
+                      financialAccountId,
+                      startDate: monthStart ?? '',
+                      endDate: monthEnd ?? '',
+                    });
                     return (
                       <TableCell
                         key={`startDate-${idx}-${period?.startDate}`}
                         align="right"
                       >
-                        {period.startDateFormatted}
+                        <NextLink href={url} passHref shallow>
+                          <Link>{period.startDateFormatted}</Link>
+                        </NextLink>
                       </TableCell>
                     );
                   })}
@@ -249,23 +266,14 @@ export const AccountSummary: React.FC = () => {
                 </TableRow>
 
                 {/* Income Categories */}
-                {tableData.creditsCategories?.map((category, idx) => {
-                  return (
-                    <TableRow key={`${idx}-${category.name}`}>
-                      <StyledTableCell component="th" scope="row">
-                        <Typography variant="body1" width="250px">
-                          {category.name}
-                        </Typography>
-                      </StyledTableCell>
-
-                      {category.amounts.map((amount, idx) => (
-                        <StyledTableCell key={`${idx}-${amount}`} align="right">
-                          {numberFormat(amount, locale)}
-                        </StyledTableCell>
-                      ))}
-                    </TableRow>
-                  );
-                })}
+                {tableData.creditsCategories?.map((category) => (
+                  <AccountSummaryCategory
+                    key={category.id}
+                    category={category}
+                    accountListId={accountListId}
+                    financialAccountId={financialAccountId ?? ''}
+                  />
+                ))}
 
                 {/* Total Income */}
                 <TableRow>
@@ -301,23 +309,14 @@ export const AccountSummary: React.FC = () => {
                 </TableRow>
 
                 {/* Expenses Categories */}
-                {tableData.debitsCategories?.map((category, idx) => {
-                  return (
-                    <TableRow key={`${idx}-${category.name}`}>
-                      <StyledTableCell component="th" scope="row">
-                        <Typography variant="body1" width="250px">
-                          {category.name}
-                        </Typography>
-                      </StyledTableCell>
-
-                      {category.amounts.map((amount, idx) => (
-                        <StyledTableCell key={`${idx}-${amount}`} align="right">
-                          {numberFormat(amount, locale)}
-                        </StyledTableCell>
-                      ))}
-                    </TableRow>
-                  );
-                })}
+                {tableData.debitsCategories?.map((category) => (
+                  <AccountSummaryCategory
+                    key={category.id}
+                    category={category}
+                    accountListId={accountListId}
+                    financialAccountId={financialAccountId ?? ''}
+                  />
+                ))}
 
                 {/* Total Expenses */}
                 <TableRow>
