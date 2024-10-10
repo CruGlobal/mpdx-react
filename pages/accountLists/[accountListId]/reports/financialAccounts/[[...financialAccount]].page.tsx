@@ -139,7 +139,10 @@ const FinancialAccounts = (): ReactElement => {
                 />
               ) : panelOpen === Panel.Filters ? (
                 <DynamicFilterPanel
-                  filters={[] as FilterPanelGroupFragment[]}
+                  filters={filterGroups as FilterPanelGroupFragment[]}
+                  defaultExpandedFilterGroups={
+                    new Set(['Transaction Date', 'Category'])
+                  }
                   savedFilters={[]}
                   selectedFilters={activeFilters as FilterInput}
                   onClose={() => setPanelOpen(null)}
