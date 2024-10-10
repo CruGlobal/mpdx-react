@@ -1,33 +1,24 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Box } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { ResponsibilityCentersReport } from 'src/components/Reports/ResponsibilityCentersReport/ResponsibilityCentersReport';
+import { MainContent } from 'src/components/Reports/FinancialAccountsReport/MainContent/MainContent';
+import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { FinancialAccountsWrapper } from './Wrapper';
 
-const ResponsibilityCentersReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
-
-const ResponsibilityCentersReportPage: React.FC = () => {
+const FinancialAccounts = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-
-  const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
-  };
 
   return (
     <>
@@ -36,33 +27,27 @@ const ResponsibilityCentersReportPage: React.FC = () => {
           {appName} | {t('Reports - Responsibility Centers')}
         </title>
       </Head>
+
       {accountListId ? (
-        <ResponsibilityCentersReportPageWrapper>
+        <Box sx={{ background: 'common.white' }}>
           <SidePanelsLayout
+            headerHeight={headerHeight}
             isScrollBox={false}
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={<MainContent />}
             leftPanel={
               <MultiPageMenu
                 isOpen={isNavListOpen}
-                selectedId="responsibilityCenters"
+                selectedId="financialAccounts"
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
                 navType={NavTypeEnum.Reports}
               />
             }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <ResponsibilityCentersReport
-                accountListId={accountListId}
-                designationAccounts={designationAccounts}
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t('Responsibility Centers')}
-              />
-            }
           />
-        </ResponsibilityCentersReportPageWrapper>
+        </Box>
       ) : (
         <Loading loading />
       )}
@@ -70,6 +55,12 @@ const ResponsibilityCentersReportPage: React.FC = () => {
   );
 };
 
+const FinancialAccountsPage: React.FC = () => (
+  <FinancialAccountsWrapper>
+    <FinancialAccounts />
+  </FinancialAccountsWrapper>
+);
+
 export const getServerSideProps = loadSession;
 
-export default ResponsibilityCentersReportPage;
+export default FinancialAccountsPage;

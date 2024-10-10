@@ -1,8 +1,10 @@
+import NextLink from 'next/link';
 import React, { FC, useMemo } from 'react';
 import {
   Box,
   Checkbox,
   Divider,
+  Link,
   ListItem,
   ListItemText,
   Typography,
@@ -11,7 +13,8 @@ import { styled } from '@mui/material/styles';
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { EntryHistoriesQuery } from 'src/components/Reports/ResponsibilityCentersReport/GetEntryHistories.generated';
+import { EntryHistoriesQuery } from 'src/components/Reports/FinancialAccountsReport/FinancialAccounts/GetEntryHistories.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { Unarray } from '../../../Reports.type';
@@ -51,6 +54,7 @@ export const AccountListItem: FC<AccountListItemProps> = ({
   onCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId() ?? '';
   const locale = useLocale();
 
   const average = useMemo(() => {
@@ -109,16 +113,25 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                           : ''
                       }`}
                     </Typography>
-
-                    {/* {hasFinancial && (
-                      <Box display="flex">
-                        // Used to link to be a handoff link to /reports/financial_accounts/${account.id}
-                        <Link>Summary</Link>
+                    {hasFinancial && (
+                      <Box display="flex" gap={0.5}>
+                        <NextLink
+                          href={`/accountLists/${accountListId}/reports/financialAccounts/${account.id}`}
+                          passHref
+                          shallow
+                        >
+                          <Link>{t('Summary')}</Link>
+                        </NextLink>
                         {' · '}
-                        // Used to link to be a handoff link to /reports/financial_accounts/${account.id}/entries
-                        <Link>Transactions</Link>
+                        <NextLink
+                          href={`/accountLists/${accountListId}/reports/financialAccounts/${account.id}/entries`}
+                          passHref
+                          shallow
+                        >
+                          <Link>{t('Transactions')}</Link>
+                        </NextLink>
                       </Box>
-                    )} */}
+                    )}
                   </Box>
                   <Typography>
                     {currencyFormat(
