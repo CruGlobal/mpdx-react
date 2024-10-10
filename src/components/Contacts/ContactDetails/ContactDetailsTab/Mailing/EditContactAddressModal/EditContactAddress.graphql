@@ -15,6 +15,7 @@ mutation UpdateContactAddress(
     input: { accountListId: $accountListId, attributes: $attributes }
   ) {
     address {
+      id
       city
       country
       historic
@@ -26,6 +27,8 @@ mutation UpdateContactAddress(
       region
       state
       street
+      createdAt
+      startDate
     }
   }
 }

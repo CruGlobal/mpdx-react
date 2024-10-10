@@ -12,6 +12,7 @@ export const mpdxSourcedAddress = {
   source: 'MPDX',
   location: 'Home',
   createdAt: '2024-06-12T13:07:40-04:00',
+  startDate: null,
   historic: false,
 };
 
@@ -28,6 +29,7 @@ export const siebelSourcedAddress = {
   source: 'Siebel',
   location: null,
   createdAt: '2022-01-10T16:05:26-05:00',
+  startDate: '2022-12-10T16:05:26-05:00',
   historic: false,
 };
 

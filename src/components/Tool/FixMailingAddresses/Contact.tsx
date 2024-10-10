@@ -197,7 +197,9 @@ const Contact: React.FC<Props> = ({
         }
         title={
           <Link underline="hover" onClick={handleContactNameClick}>
-            <Typography variant="h6">{name}</Typography>
+            <Typography display="inline" variant="h6">
+              {name}
+            </Typography>
           </Link>
         }
         subheader={
@@ -249,7 +251,9 @@ const Contact: React.FC<Props> = ({
                       </Typography>
                       <Typography display="inline">
                         {dateFormatShort(
-                          DateTime.fromISO(address.createdAt),
+                          DateTime.fromISO(
+                            address.startDate || address.createdAt,
+                          ),
                           locale,
                         )}
                       </Typography>
@@ -295,7 +299,13 @@ const Contact: React.FC<Props> = ({
                     onClick={() => openEditAddressModal(address, id)}
                   >
                     <Box className={classes.address}>
-                      <Typography>
+                      <Typography
+                        style={{
+                          textDecoration: address.historic
+                            ? 'line-through'
+                            : 'none',
+                        }}
+                      >
                         {`${address.street ? address.street : ''}, ${
                           address.city ? address.city : ''
                         } ${address.state ? address.state : ''} ${

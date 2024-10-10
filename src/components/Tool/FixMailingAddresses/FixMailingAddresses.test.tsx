@@ -111,13 +111,21 @@ describe('FixMailingAddresses', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should count total contacts', async () => {
+  it('should count total contacts and startDate', async () => {
     const { queryByTestId, getByText } = render(
       <Components
         mocks={{
           InvalidAddresses: {
             contacts: {
-              nodes: [{}, {}, {}],
+              nodes: [
+                {
+                  addresses: {
+                    nodes: [siebelSourcedAddress],
+                  },
+                },
+                {},
+                {},
+              ],
             },
           },
         }}
@@ -129,6 +137,31 @@ describe('FixMailingAddresses', () => {
     expect(
       getByText('You have 3 mailing addresses to confirm.'),
     ).toBeInTheDocument();
+    expect(getByText(/12\/10\/2022/i)).toBeInTheDocument();
+  });
+
+  it('should show createdAt date when startDate is null', async () => {
+    const { queryByTestId, getByText } = render(
+      <Components
+        mocks={{
+          InvalidAddresses: {
+            contacts: {
+              nodes: [
+                {
+                  addresses: {
+                    nodes: [mpdxSourcedAddress],
+                  },
+                },
+              ],
+            },
+          },
+        }}
+      />,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('loading')).not.toBeInTheDocument(),
+    );
+    expect(getByText(/6\/12\/2024/i)).toBeInTheDocument();
   });
 
   describe('Editing an address', () => {
