@@ -215,8 +215,9 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               />
               <MonthlyCommitment
                 coachingId={accountListId}
+                accountListType={accountListType}
                 currencyCode={accountListData?.currency}
-                goal={accountListData?.monthlyGoal ?? 0}
+                mpdInfo={accountListData ?? null}
               />
               <PartnersProgress
                 accountListId={accountListId}

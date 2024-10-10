@@ -6,10 +6,14 @@ const ReportsPledgeHistoriesResolvers: Resolvers = {
   Query: {
     reportPledgeHistories: async (
       _source,
-      { accountListId },
+      { accountListId, range, endDate },
       { dataSources },
     ) => {
-      return dataSources.mpdxRestApi.getReportPldegeHistories(accountListId);
+      return dataSources.mpdxRestApi.getReportPledgeHistories(
+        accountListId,
+        range,
+        endDate,
+      );
     },
   },
 };

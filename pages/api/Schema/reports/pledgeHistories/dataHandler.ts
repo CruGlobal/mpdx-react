@@ -33,7 +33,7 @@ const getReportsPledgeHistories = (
         id: id,
         endDate: end_date,
         pledged: pledged,
-        recieved: received,
+        received: received,
         startDate: start_date,
         updatedAt: updated_at,
         updatedInDbAt: updated_in_db_at,

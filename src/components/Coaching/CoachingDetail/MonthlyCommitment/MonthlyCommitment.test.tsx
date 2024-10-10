@@ -1,18 +1,64 @@
-import { render, waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { MonthlyCommitment } from './MonthlyCommitment';
-import {
-  GetReportsPledgeHistoriesQuery,
-  useGetReportsPledgeHistoriesQuery,
-} from './MonthlyCommitment.generated';
+import { AccountListTypeEnum } from '../CoachingDetail';
+import { MonthlyCommitment, MonthlyCommitmentProps } from './MonthlyCommitment';
+import { GetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
 
 const coachingId = 'coaching-id';
+const defaultMpdInfo = {
+  monthlyGoal: 5000,
+  activeMpdStartAt: '2019-01-15',
+  activeMpdFinishAt: '2019-04-15',
+  activeMpdMonthlyGoal: 1500,
+};
+
+interface TestComponentProps {
+  missingData?: boolean;
+  mpdInfo?: MonthlyCommitmentProps['mpdInfo'];
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  missingData,
+  mpdInfo = defaultMpdInfo,
+}) => (
+  <GqlMockedProvider<{
+    GetReportsPledgeHistories: GetReportsPledgeHistoriesQuery;
+  }>
+    mocks={{
+      GetReportsPledgeHistories: {
+        reportPledgeHistories: [...Array(12)].map((x, i) =>
+          missingData && i === 0
+            ? null
+            : {
+                startDate: DateTime.local().minus({ month: i }).toISO(),
+                endDate: DateTime.local().minus({ month: i }).toISO(),
+                received: i * 5,
+                pledged: i * 10,
+              },
+        ),
+      },
+      MonthlyCommitmentSingleMonth: {
+        reportPledgeHistories: jest
+          .fn()
+          .mockReturnValueOnce([{ pledged: 50, received: 50 }])
+          .mockReturnValueOnce([{ pledged: 100, received: 150 }]),
+      },
+    }}
+  >
+    <MonthlyCommitment
+      coachingId={coachingId}
+      accountListType={AccountListTypeEnum.Own}
+      currencyCode="USD"
+      mpdInfo={mpdInfo}
+    />
+  </GqlMockedProvider>
+);
+
 describe('MonthlyCommitment', () => {
   beforeEach(() => {
     beforeTestResizeObserver();
@@ -22,77 +68,33 @@ describe('MonthlyCommitment', () => {
     afterTestResizeObserver();
   });
 
-  it('query Monthly Commitment', async () => {
-    const { result, waitForNextUpdate } = renderHook(
-      () =>
-        useGetReportsPledgeHistoriesQuery({
-          variables: { coachingId: coachingId },
-        }),
-      {
-        wrapper: GqlMockedProvider,
-      },
-    );
-    await waitForNextUpdate();
-    expect(
-      result.current.data?.reportPledgeHistories?.length,
-    ).toMatchInlineSnapshot(`3`);
-  });
-
   it('renders', async () => {
-    const { getByText } = render(
-      <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
-        mocks={{
-          GetReportsPledgeHistories: {
-            reportPledgeHistories: [...Array(12)].map((x, i) => ({
-              startDate: DateTime.local().minus({ month: i }).toISO(),
-              endDate: DateTime.local().minus({ month: i }).toISO(),
-              recieved: i * 5,
-              pledged: i * 10,
-            })),
-          },
-        }}
-      >
-        <MonthlyCommitment
-          coachingId={coachingId}
-          currencyCode="USD"
-          goal={2000}
-        />
-      </GqlMockedProvider>,
-    );
+    const { findByTestId } = render(<TestComponent missingData />);
 
-    await waitFor(() =>
-      expect(getByText('Monthly Commitments')).toBeInTheDocument(),
+    expect(await findByTestId('MonthlyCommitmentSummary')).toHaveTextContent(
+      'Monthly Commitment Average: $50 | Monthly Commitment Goal: $500',
     );
   });
 
   it('renders with missing data', async () => {
-    const { getByText } = render(
-      <GqlMockedProvider<GetReportsPledgeHistoriesQuery>
-        mocks={{
-          GetReportsPledgeHistories: {
-            reportPledgeHistories: [
-              {
-                startDate: null,
-                endDate: null,
-                recieved: null,
-                pledged: null,
-              },
-              {
-                startDate: DateTime.local().toISO(),
-                endDate: DateTime.local().toISO(),
-                recieved: 100,
-                pledged: 200,
-              },
-            ],
-          },
-        }}
-      >
-        <MonthlyCommitment coachingId={coachingId} />
-      </GqlMockedProvider>,
-    );
+    const { findByTestId } = render(<TestComponent missingData />);
 
-    await waitFor(() =>
-      expect(getByText('Monthly Commitments')).toBeInTheDocument(),
+    expect(await findByTestId('MonthlyCommitmentSummary')).toHaveTextContent(
+      'Monthly Commitment Average: $50 | Monthly Commitment Goal: $500',
     );
+  });
+
+  it('renders skeleton when MPD info is loading', () => {
+    const { getByTestId } = render(<TestComponent mpdInfo={null} />);
+
+    expect(getByTestId('MonthlyCommitmentSkeleton')).toBeInTheDocument();
+  });
+
+  it('renders placeholder when MPD info is missing', async () => {
+    const { getByText } = render(<TestComponent mpdInfo={{}} />);
+
+    expect(
+      getByText('MPD info not set up on account list'),
+    ).toBeInTheDocument();
   });
 });

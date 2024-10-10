@@ -276,9 +276,15 @@ class MpdxRestApi extends RESTDataSource {
     return getAppointmentResults(data);
   }
 
-  async getReportPldegeHistories(accountListId: string) {
+  async getReportPledgeHistories(
+    accountListId: string,
+    range: string | null | undefined,
+    endDate: string | null | undefined,
+  ) {
+    const rangeFilter = range ? `&filter[range]=${range}` : '';
+    const endDateFilter = endDate ? `&filter[end_date]=${endDate}` : '';
     const { data } = await this.get(
-      `reports/pledge_histories?filter%5Baccount_list_id%5D=${accountListId}`,
+      `reports/pledge_histories?filter[account_list_id]=${accountListId}${rangeFilter}${endDateFilter}`,
     );
     return getReportsPledgeHistories(data);
   }
@@ -447,7 +453,7 @@ class MpdxRestApi extends RESTDataSource {
   ) {
     const designationAccountFilter =
       designationAccountId && designationAccountId.length > 0
-        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
     const { data }: { data: FourteenMonthReportResponse } = await this.get(
       `reports/${
@@ -467,7 +473,7 @@ class MpdxRestApi extends RESTDataSource {
   ) {
     const designationAccountFilter =
       designationAccountId && designationAccountId.length > 0
-        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
     const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
       `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}${designationAccountFilter}`,

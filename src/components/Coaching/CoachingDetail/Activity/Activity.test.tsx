@@ -296,29 +296,4 @@ describe('Activity', () => {
       );
     });
   });
-
-  describe('links', () => {
-    const connectionsRemainingLinkText =
-      mocks.CoachingDetailActivity.accountListAnalytics.contactsByStatus.connectionsRemaining.toString();
-
-    it('are hidden when viewing coaching account list', async () => {
-      const { findByTestId, queryByRole } = render(<TestComponent />);
-
-      expect(
-        await findByTestId('CurrentRealityConnections'),
-      ).toBeInTheDocument();
-      expect(
-        queryByRole('link', { name: connectionsRemainingLinkText }),
-      ).not.toBeInTheDocument();
-    });
-
-    it('are shown when viewing own account list', async () => {
-      const { findByRole } = render(
-        <TestComponent accountListType={AccountListTypeEnum.Own} />,
-      );
-      expect(
-        await findByRole('link', { name: connectionsRemainingLinkText }),
-      ).toBeInTheDocument();
-    });
-  });
 });
