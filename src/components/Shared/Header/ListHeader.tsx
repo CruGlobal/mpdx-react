@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import FilterList from '@mui/icons-material/FilterList';
 import ViewList from '@mui/icons-material/ViewList';
-import { Box, Checkbox, Hidden, IconButton } from '@mui/material';
+import { Box, Checkbox, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,6 +13,7 @@ import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
+import { FilterButton } from './styledComponents';
 
 export const headerHeight = theme.spacing(12);
 
@@ -42,17 +43,6 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
 }));
-
-const FilterButton = styled(IconButton, {
-  shouldForwardProp: (prop) => prop !== 'activeFilters' && prop !== 'panelOpen',
-})<{ activeFilters?: boolean; panelOpen?: boolean }>(
-  ({ theme, activeFilters }) => ({
-    marginRight: theme.spacing(2),
-    backgroundColor: activeFilters
-      ? theme.palette.cruYellow.main
-      : 'transparent',
-  }),
-);
 
 const FilterIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
@@ -152,11 +142,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton
-          activeFilters={activeFilters}
-          panelOpen={filterPanelOpen}
-          onClick={toggleFilterPanel}
-        >
+        <FilterButton activeFilters={activeFilters} onClick={toggleFilterPanel}>
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (

@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const StickyBox = styled(Box)(({ theme }) => ({
@@ -32,4 +32,11 @@ export const StickyButtonHeaderBox = styled(Box)(({ theme }) => ({
     alignItems: 'start',
     top: '56px',
   },
+}));
+
+export const FilterButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'activeFilters',
+})<{ activeFilters?: boolean }>(({ theme, activeFilters }) => ({
+  marginRight: theme.spacing(2),
+  backgroundColor: activeFilters ? theme.palette.cruYellow.main : 'transparent',
 }));

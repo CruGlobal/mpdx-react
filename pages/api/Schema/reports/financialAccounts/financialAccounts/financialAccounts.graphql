@@ -1,0 +1,35 @@
+extend type Query {
+  financialAccountSummary(
+    input: FinancialAccountSummaryInput!
+  ): [FinancialAccountSummaryResponse]!
+}
+
+input FinancialAccountSummaryInput {
+  accountListId: ID!
+  financialAccountId: ID!
+}
+
+type FinancialAccountSummaryResponse {
+  id: ID!
+  closingBalance: String
+  credits: String
+  debits: String
+  difference: String
+  endDate: String!
+  openingBalance: String
+  startDate: String!
+  creditByCategories: [FinancialAccountSummaryCategory]!
+  debitByCategories: [FinancialAccountSummaryCategory]!
+}
+
+type FinancialAccountSummaryCategory {
+  id: ID!
+  amount: String
+  category: FinancialAccountCategory
+}
+
+type FinancialAccountCategory {
+  id: ID!
+  code: String
+  name: String
+}

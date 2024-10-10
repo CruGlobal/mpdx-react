@@ -27,7 +27,7 @@ export const reportNavItems: NavItems[] = [
     title: 'Designation Accounts',
   },
   {
-    id: 'responsibilityCenters',
+    id: 'financialAccounts',
     title: 'Responsibility Centers',
   },
   {
