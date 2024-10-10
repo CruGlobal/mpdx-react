@@ -1,49 +1,45 @@
 query LoadCoachingNeeds($coachingAccountListId: ID!, $after: String) {
-  coachingAccountList(id: $coachingAccountListId) {
-    id
-    primaryAppeal {
+  # Coached account lists intentionally cannot see or filter by pledge statuses
+  coachingAccountListPledges(
+    accountListId: $coachingAccountListId
+    after: $after
+  ) {
+    nodes {
       id
-      pledges(first: 8, after: $after) {
-        nodes {
-          id
-          amount
-          amountCurrency
-          expectedDate
-          contact {
-            id
-            name
-          }
-        }
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
+      amount
+      amountCurrency
+      expectedDate
+      contact {
+        id
+        name
       }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }
 
 query LoadAccountListCoachingNeeds($accountListId: ID!, $after: String) {
-  accountList(id: $accountListId) {
-    id
-    primaryAppeal {
+  accountListPledges(
+    accountListId: $accountListId
+    after: $after
+    status: NOT_RECEIVED
+  ) {
+    nodes {
       id
-      pledges(first: 8, after: $after) {
-        nodes {
-          id
-          amount
-          amountCurrency
-          expectedDate
-          contact {
-            id
-            name
-          }
-        }
-        pageInfo {
-          endCursor
-          hasNextPage
-        }
+      amount
+      amountCurrency
+      expectedDate
+      contact {
+        id
+        name
       }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }
