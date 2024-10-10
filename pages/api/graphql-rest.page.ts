@@ -109,6 +109,7 @@ import {
   FinancialAccountResponse,
   setActiveFinancialAccount,
 } from './Schema/reports/financialAccounts/datahandler';
+import { financialAccountSummaryHandler } from './Schema/reports/financialAccounts/financialAccounts/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -758,11 +759,26 @@ class MpdxRestApi extends RESTDataSource {
     return setActiveFinancialAccount(data);
   }
 
-  async deleteComment(taskId: string, commentId: string) {
-    const { data }: { data: DeleteCommentResponse } = await this.delete(
-      `tasks/${taskId}/comments/${commentId}`,
+  //
+  // Financial Account Report -- Start
+
+  async financialAccountSummary(
+    accountListId: string,
+    financialAccountId: string,
+  ) {
+    const include =
+      'credit_by_categories,debit_by_categories,credit_by_categories.category,debit_by_categories.category';
+    const filters = `filter[account_list_id]=${accountListId}&filter[financial_account_id]=${financialAccountId}`;
+    const fields =
+      'fields[financial_account_entry_by_categories]=amount,category&fields[financial_account_entry_categories]=name,code' +
+      '&fields[reports_entry_histories_periods]=closing_balance,opening_balance,start_date,end_date,credits,debits,difference,credit_by_categories,debit_by_categories';
+
+    const data = await this.get(
+      `reports/entry_histories?${fields}&${filters}&include=${include}`,
     );
-    return DeleteComment({ ...data, id: commentId });
+
+    return financialAccountSummaryHandler(data);
+  }
   }
 
   async getEntryHistories(
@@ -780,6 +796,16 @@ class MpdxRestApi extends RESTDataSource {
         return createEntryHistoriesGroup(data, financialAccountIds[idx]);
       });
     });
+  }
+
+  //
+  // Financial Account Report -- End
+
+  async deleteComment(taskId: string, commentId: string) {
+    const { data }: { data: DeleteCommentResponse } = await this.delete(
+      `tasks/${taskId}/comments/${commentId}`,
+    );
+    return DeleteComment({ ...data, id: commentId });
   }
 
   async updateComment(taskId: string, commentId: string, body: string) {
