@@ -24,7 +24,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { editableSources } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddressModal';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddButton,
@@ -34,9 +33,11 @@ import {
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import { HandleSingleConfirmProps, emptyAddress } from './FixMailingAddresses';
 import { ContactAddressFragment } from './GetInvalidAddresses.generated';
@@ -112,7 +113,6 @@ interface Props {
   name: string;
   status: string;
   addresses: ContactAddressFragment[];
-  appName: string;
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
   setContactFocus: SetContactFocus;
@@ -128,7 +128,6 @@ const Contact: React.FC<Props> = ({
   name,
   status,
   addresses,
-  appName,
   openEditAddressModal,
   openNewAddressModal,
   setContactFocus,
@@ -143,6 +142,7 @@ const Contact: React.FC<Props> = ({
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache(id);
   const { contactStatuses } = useContactPartnershipStatuses();
+  const { appName } = useGetAppSettings();
 
   const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
     await setContactPrimaryAddress({
@@ -247,7 +247,7 @@ const Contact: React.FC<Props> = ({
                         </Typography>
                       </Hidden>
                       <Typography display="inline">
-                        {address.source}{' '}
+                        {sourceToStr(t, address.source)}{' '}
                       </Typography>
                       <Typography display="inline">
                         {dateFormatShort(
@@ -306,14 +306,16 @@ const Contact: React.FC<Props> = ({
                             : 'none',
                         }}
                       >
-                        {`${address.street}, ${address.city} ${
-                          address.state ? address.state : ''
-                        }. ${address.postalCode}`}
+                        {`${address.street ? address.street : ''}, ${
+                          address.city ? address.city : ''
+                        } ${address.state ? address.state : ''} ${
+                          address.postalCode ? address.postalCode : ''
+                        }`}
                       </Typography>
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {editableSources.indexOf(address.source) > -1 ? (
+                      {isEditableSource(address.source) ? (
                         <EditIcon />
                       ) : (
                         <LockIcon />
@@ -331,9 +333,6 @@ const Contact: React.FC<Props> = ({
                       <strong>{t('Source')}: </strong>
                     </Typography>
                   </Hidden>
-                  <Typography display="inline">
-                    {t('{{appName}}', { appName })}
-                  </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -352,7 +351,9 @@ const Contact: React.FC<Props> = ({
                   onClick={() => openNewAddressModal(newAddress, id)}
                 >
                   <AddIcon />
-                  <AddText variant="subtitle1">{t('Add Address')}</AddText>
+                  <AddText variant="subtitle1">
+                    {t('Add Address ({{appName}})', { appName })}
+                  </AddText>
                 </AddButton>
               </Box>
             </Grid>

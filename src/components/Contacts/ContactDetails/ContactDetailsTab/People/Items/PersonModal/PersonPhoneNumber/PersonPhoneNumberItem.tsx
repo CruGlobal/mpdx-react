@@ -17,6 +17,7 @@ import {
   PersonPhoneNumberInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { isEditableSource } from 'src/utils/sourceHelper';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { NewSocial } from '../PersonModal';
@@ -70,7 +71,7 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
     (number) => number.id === phoneNumber.id,
   )?.source;
 
-  const locked = source !== 'MPDX' && source !== undefined;
+  const locked = !isEditableSource(source);
 
   React.useEffect(() => {
     setIsPrimaryChecked(index === primaryIndex);
