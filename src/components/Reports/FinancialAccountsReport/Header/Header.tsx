@@ -16,7 +16,7 @@ import { FilterButton } from 'src/components/Shared/Header/styledComponents';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { formatNumber } from '../AccountSummary/AccountSummary';
+import { formatNumber } from '../AccountSummary/AccountSummaryHelper';
 import {
   FinancialAccountContext,
   FinancialAccountType,

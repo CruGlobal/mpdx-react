@@ -1,14 +1,16 @@
+import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { formatNumber } from '../AccountSummary/AccountSummary';
+import { formatNumber } from '../AccountSummary/AccountSummaryHelper';
 import {
   FinancialAccountContext,
   FinancialAccountType,
@@ -40,6 +42,7 @@ const defaultStartDate = defaultDateRange.split('..')[0];
 const defaultEndDate = defaultDateRange.split('..')[1];
 
 export const AccountTransactions: React.FC = () => {
+  const { query } = useRouter();
   const { t } = useTranslation();
   const locale = useLocale();
   const {
@@ -49,11 +52,25 @@ export const AccountTransactions: React.FC = () => {
     setActiveFilters,
     hasActiveFilters,
     searchTerm,
+    setPanelOpen,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
-    if (!hasActiveFilters) {
+    // On loading the transactions page, open the filters panel and reset the active filters.
+    // We need to reset thr active filters to ensure the date range is set to the date range in the URL if it exists.
+    const urlFilters =
+      query?.filters && JSON.parse(decodeURI(query.filters as string));
+    setPanelOpen(Panel.Filters);
+    setActiveFilters(urlFilters ?? {});
+    return () => {
+      setPanelOpen(null);
+      setActiveFilters({});
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasActiveFilters && !query?.filters) {
       setActiveFilters({
         dateRange: {
           min: defaultStartDate,

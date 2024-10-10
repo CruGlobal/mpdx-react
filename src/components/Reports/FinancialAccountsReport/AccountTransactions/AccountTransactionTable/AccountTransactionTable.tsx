@@ -13,7 +13,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { formatNumber } from '../../AccountSummary/AccountSummary';
+import { formatNumber } from '../../AccountSummary/AccountSummaryHelper';
 import {
   FinancialAccountContext,
   FinancialAccountType,
