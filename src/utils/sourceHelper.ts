@@ -2,9 +2,10 @@ import { TFunction } from 'react-i18next';
 
 const appName = process.env.APP_NAME ?? 'MPDX';
 
-// This value is what the API sets as the source for new data created from MPDX. For example when the user creates a new email, phone number, address, etc.
+// 'MPDX' is what the API sets as the 'source' for new data created from MPDX. For example when the user creates a new email, phone number, address, etc. The API does not use appName so we need to keep 'manualSourceValue' as 'MPDX'
 export const manualSourceValue = 'MPDX';
 
+// 'MPDX' source values in the database will display as appName
 export const sourceToStr = (
   t: TFunction,
   source: string | undefined | null,
