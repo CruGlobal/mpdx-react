@@ -46,12 +46,31 @@ interface Periods {
   endDate: string;
 }
 
+/**
+ * Converts the "amount" string to a number.
+ * If the value is 0 or isExpense is true, it returns the value as is.
+ * Otherwise, it removes the '-' character if present, or prepends it if absent.
+ */
+const formatAmount = (amount?: string | null, isExpense?: boolean): number => {
+  if (!amount) {
+    return 0;
+  }
+
+  if (amount === '0' || isExpense) {
+    return formatNumber(amount, false);
+  }
+  const formattedAmount =
+    amount?.[0] === '-' ? amount.substring(1) : `-${amount}`;
+  return formatNumber(formattedAmount, false);
+};
+
 export interface AppendCategoryToCategoriesArray {
   categories: Maybe<FinancialAccountCategoriesFragment>[];
   categoryArray: Category[];
   startDate: string;
   endDate: string;
   index: number;
+  isExpenses?: boolean;
 }
 
 export const appendCategoryToCategoriesArray = ({
@@ -60,11 +79,12 @@ export const appendCategoryToCategoriesArray = ({
   startDate,
   endDate,
   index,
+  isExpenses = false,
 }: AppendCategoryToCategoriesArray) => {
   categories.forEach((category) => {
     const id = category?.category?.id ?? '';
     const name = category?.category?.name ?? category?.category?.code ?? '';
-    const amount = formatNumber(category?.amount);
+    const amount = formatAmount(category?.amount, isExpenses);
     if (index === 0) {
       categoryArray.push({
         id,
@@ -122,15 +142,8 @@ export const AccountSummary: React.FC = () => {
       closingBalances.push(formatNumber(item.closingBalance));
 
       // Surplus
-      /**
-       * If the first character of the `item.difference` is '-', it removes the '-' character.
-       * Otherwise, it prepends the '-' character to the `item.difference` value.
-       */
-      const difference =
-        item.difference?.[0] === '-'
-          ? item.difference.substring(1)
-          : `-${item.difference}`;
-      surplus.push(formatNumber(difference, false));
+      const difference = formatAmount(item.difference);
+      surplus.push(difference);
 
       // Periods
       const startDateFormatted = monthYearFormat(
@@ -164,6 +177,7 @@ export const AccountSummary: React.FC = () => {
         startDate: item?.startDate ?? '',
         endDate: item?.endDate ?? '',
         index: idx,
+        isExpenses: true,
       });
     });
 
@@ -216,7 +230,7 @@ export const AccountSummary: React.FC = () => {
                       .toISODate();
                     const url = createTransactionsUrl({
                       accountListId,
-                      financialAccountId,
+                      financialAccountId: financialAccountId ?? '',
                       startDate: monthStart ?? '',
                       endDate: monthEnd ?? '',
                     });
@@ -257,10 +271,7 @@ export const AccountSummary: React.FC = () => {
                   </StyledTableCell>
                   {tableData.periods?.map((_, idx) => {
                     return (
-                      <StyledTableCell
-                        key={`income-${idx}`}
-                        align="right"
-                      ></StyledTableCell>
+                      <StyledTableCell key={`income-${idx}`}></StyledTableCell>
                     );
                   })}
                 </TableRow>
@@ -302,7 +313,6 @@ export const AccountSummary: React.FC = () => {
                     return (
                       <StyledTableCell
                         key={`expenses-${idx}`}
-                        align="right"
                       ></StyledTableCell>
                     );
                   })}

@@ -2,12 +2,12 @@ import { DateTime } from 'luxon';
 
 interface CreateFiltersProps {
   accountListId: string;
-  financialAccountId;
+  financialAccountId: string;
   startDate?: string;
   endDate?: string;
   categoryId?: string;
 }
-export interface FIlters {
+interface Filters {
   dateRange?: {
     min?: string;
     max?: string;
@@ -43,7 +43,7 @@ export const createTransactionsUrl = ({
     return transactionsUrl;
   }
 
-  const filters: FIlters = {};
+  const filters: Filters = {};
   if (startDate && endDate) {
     filters['dateRange'] = { min: startDate, max: endDate };
   }

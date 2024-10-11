@@ -21,6 +21,7 @@ import {
 } from './AccountSummary';
 import {
   creditByCategories,
+  defaultFinancialAccount,
   defaultFinancialAccountSummary,
 } from './AccountSummaryMock';
 import { FinancialAccountSummaryQuery } from './financialAccountSummary.generated';
@@ -31,6 +32,8 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
+const startDate = '2024-01-01';
+const endDate = '2024-01-31';
 const mutationSpy = jest.fn();
 
 const Component = () => (
@@ -53,6 +56,10 @@ const Component = () => (
                     {
                       accountListId,
                       financialAccountId,
+                      financialAccountsQuery: {
+                        data: defaultFinancialAccount,
+                        loading: false,
+                      },
                     } as unknown as FinancialAccountType
                   }
                 >
@@ -88,6 +95,8 @@ describe('AccountSummary', () => {
       categories:
         creditByCategories as AppendCategoryToCategoriesArray['categories'],
       categoryArray,
+      startDate,
+      endDate,
       index: 0,
     });
 
@@ -96,12 +105,24 @@ describe('AccountSummary', () => {
       {
         id: '111',
         name: 'Category 1',
-        amounts: [5000],
+        months: [
+          {
+            amount: 5000,
+            endDate,
+            startDate,
+          },
+        ],
       },
       {
         id: '222',
         name: 'Code 2',
-        amounts: [5000],
+        months: [
+          {
+            amount: 5000,
+            endDate,
+            startDate,
+          },
+        ],
       },
     ]);
 
@@ -117,6 +138,8 @@ describe('AccountSummary', () => {
         },
       ] as AppendCategoryToCategoriesArray['categories'],
       categoryArray,
+      startDate: '2024-02-01',
+      endDate: '2024-02-29',
       index: 1,
     });
 
@@ -125,12 +148,34 @@ describe('AccountSummary', () => {
       {
         id: '111',
         name: 'Category 1',
-        amounts: [5000, 3000],
+        months: [
+          {
+            amount: 5000,
+            endDate,
+            startDate,
+          },
+          {
+            amount: 3000,
+            startDate: '2024-02-01',
+            endDate: '2024-02-29',
+          },
+        ],
       },
       {
         id: '222',
         name: 'Code 2',
-        amounts: [5000, 6000],
+        months: [
+          {
+            amount: 5000,
+            endDate,
+            startDate,
+          },
+          {
+            amount: 6000,
+            startDate: '2024-02-01',
+            endDate: '2024-02-29',
+          },
+        ],
       },
     ]);
   });
