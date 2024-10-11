@@ -19,17 +19,12 @@ describe('OutstandingNeeds', () => {
       }>
         mocks={{
           LoadAccountListCoachingNeeds: {
-            accountList: {
-              id: accountListId,
-              primaryAppeal: {
-                pledges: {
-                  nodes: [
-                    {
-                      amountCurrency: 'USD',
-                    },
-                  ],
+            accountListPledges: {
+              nodes: [
+                {
+                  amountCurrency: 'USD',
                 },
-              },
+              ],
             },
           },
         }}
@@ -51,22 +46,17 @@ describe('OutstandingNeeds', () => {
       }>
         mocks={{
           LoadAccountListCoachingNeeds: {
-            accountList: {
-              id: accountListId,
-              primaryAppeal: {
-                pledges: {
-                  nodes: [
-                    {
-                      amount: 32.29,
-                      amountCurrency: 'USD',
-                      expectedDate: '2017-02-15',
-                      contact: {
-                        name: 'Dennis Reynolds',
-                      },
-                    },
-                  ],
+            accountListPledges: {
+              nodes: [
+                {
+                  amount: 32.29,
+                  amountCurrency: 'USD',
+                  expectedDate: '2017-02-15',
+                  contact: {
+                    name: 'Dennis Reynolds',
+                  },
                 },
-              },
+              ],
             },
           },
         }}
@@ -94,22 +84,17 @@ describe('OutstandingNeeds', () => {
       }>
         mocks={{
           LoadAccountListCoachingNeeds: {
-            accountList: {
-              id: accountListId,
-              primaryAppeal: {
-                pledges: {
-                  nodes: [
-                    {
-                      amount: 32.29,
-                      amountCurrency: 'USD',
-                      expectedDate: '2019-02-15',
-                      contact: {
-                        name: 'Dennis Reynolds',
-                      },
-                    },
-                  ],
+            accountListPledges: {
+              nodes: [
+                {
+                  amount: 32.29,
+                  amountCurrency: 'USD',
+                  expectedDate: '2019-02-15',
+                  contact: {
+                    name: 'Dennis Reynolds',
+                  },
                 },
-              },
+              ],
             },
           },
         }}
@@ -137,22 +122,17 @@ describe('OutstandingNeeds', () => {
       }>
         mocks={{
           LoadCoachingNeeds: {
-            coachingAccountList: {
-              id: accountListId,
-              primaryAppeal: {
-                pledges: {
-                  nodes: [
-                    {
-                      amount: 0,
-                      amountCurrency: null,
-                      expectedDate: '',
-                      contact: {
-                        name: 'Charlie Kelly',
-                      },
-                    },
-                  ],
+            coachingAccountListPledges: {
+              nodes: [
+                {
+                  amount: 0,
+                  amountCurrency: null,
+                  expectedDate: '',
+                  contact: {
+                    name: 'Charlie Kelly',
+                  },
                 },
-              },
+              ],
             },
           },
         }}
@@ -180,23 +160,18 @@ describe('OutstandingNeeds', () => {
       }>
         mocks={{
           LoadCoachingNeeds: {
-            coachingAccountList: {
-              id: accountListId,
-              primaryAppeal: {
-                pledges: {
-                  nodes: [...Array(15)].map((x, i) => {
-                    return {
-                      expectedDate: DateTime.local()
-                        .minus({ month: i })
-                        .toISO()
-                        .toString(),
-                      amountCurrency: 'USD',
-                    };
-                  }),
-                  pageInfo: {
-                    hasNextPage: true,
-                  },
-                },
+            coachingAccountListPledges: {
+              nodes: [...Array(15)].map((x, i) => {
+                return {
+                  expectedDate: DateTime.local()
+                    .minus({ month: i })
+                    .toISO()
+                    .toString(),
+                  amountCurrency: 'USD',
+                };
+              }),
+              pageInfo: {
+                hasNextPage: true,
               },
             },
           },
