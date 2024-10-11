@@ -211,7 +211,7 @@ export const FinancialAccounts: React.FC = () => {
           {financialAccountsGroups?.map((financialAccountGroup) => {
             const accounts: Account[] =
               financialAccountGroup.financialAccounts.map((account) => ({
-                active: account?.active,
+                active: account?.active ?? false,
                 balance: -(account?.balance.convertedAmount ?? 0),
                 code: account?.code,
                 currency: account?.balance.convertedCurrency ?? '',
