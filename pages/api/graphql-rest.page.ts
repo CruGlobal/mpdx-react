@@ -109,6 +109,8 @@ import {
   FinancialAccountResponse,
   setActiveFinancialAccount,
 } from './Schema/reports/financialAccounts/datahandler';
+import { financialAccountSummaryHandler } from './Schema/reports/financialAccounts/financialAccounts/datahandler';
+import { financialAccountEntriesHandler } from './Schema/reports/financialAccounts/financialEntries/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -758,11 +760,50 @@ class MpdxRestApi extends RESTDataSource {
     return setActiveFinancialAccount(data);
   }
 
-  async deleteComment(taskId: string, commentId: string) {
-    const { data }: { data: DeleteCommentResponse } = await this.delete(
-      `tasks/${taskId}/comments/${commentId}`,
+  //
+  // Financial Account Report -- Start
+
+  async financialAccountSummary(
+    accountListId: string,
+    financialAccountId: string,
+  ) {
+    const include =
+      'credit_by_categories,debit_by_categories,credit_by_categories.category,debit_by_categories.category';
+    const filters = `filter[account_list_id]=${accountListId}&filter[financial_account_id]=${financialAccountId}`;
+    const fields =
+      'fields[financial_account_entry_by_categories]=amount,category&fields[financial_account_entry_categories]=name,code' +
+      '&fields[reports_entry_histories_periods]=closing_balance,opening_balance,start_date,end_date,credits,debits,difference,credit_by_categories,debit_by_categories';
+
+    const data = await this.get(
+      `reports/entry_histories?${fields}&${filters}&include=${include}`,
     );
-    return DeleteComment({ ...data, id: commentId });
+
+    return financialAccountSummaryHandler(data);
+  }
+
+  async financialAccountEntries(
+    accountListId: string,
+    financialAccountId: string,
+    dateRange: string,
+    categoryId?: string | null,
+    wildcardSearch?: string | null,
+  ) {
+    const fields =
+      'fields[financial_account_entry_categories]=name,code&fields[financial_account_entry_credits]=amount,code,currency,description,entry_date,category,type' +
+      '&fields[financial_account_entry_debits]=amount,code,currency,description,entry_date,category,type';
+
+    let filters = `filter[entryDate]=${dateRange}&filter[financialAccountId]=${financialAccountId}`;
+    if (categoryId) {
+      filters += `&filter[categoryId]=${categoryId}`;
+    }
+    if (wildcardSearch) {
+      filters += `&filter[wildcardSearch]=${wildcardSearch}`;
+    }
+    const data = await this.get(
+      `account_lists/${accountListId}/entries?${fields}&${filters}&include=category&per_page=10000&sort=-entry_date`,
+    );
+
+    return financialAccountEntriesHandler(data);
   }
 
   async getEntryHistories(
@@ -780,6 +821,16 @@ class MpdxRestApi extends RESTDataSource {
         return createEntryHistoriesGroup(data, financialAccountIds[idx]);
       });
     });
+  }
+
+  //
+  // Financial Account Report -- End
+
+  async deleteComment(taskId: string, commentId: string) {
+    const { data }: { data: DeleteCommentResponse } = await this.delete(
+      `tasks/${taskId}/comments/${commentId}`,
+    );
+    return DeleteComment({ ...data, id: commentId });
   }
 
   async updateComment(taskId: string, commentId: string, body: string) {

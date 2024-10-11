@@ -1,0 +1,26 @@
+query FinancialAccountEntries($input: FinancialAccountEntriesInput!) {
+  financialAccountEntries(input: $input) {
+    entries {
+      id
+      amount
+      currency
+      code
+      description
+      entryDate
+      type
+      category {
+        id
+        code
+        name
+      }
+    }
+    metaData {
+      credits
+      debits
+      difference
+      currency
+      closingBalance
+      openingBalance
+    }
+  }
+}

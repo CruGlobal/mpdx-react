@@ -144,7 +144,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     {
       name: t('Reports - Responsibility Centers'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/responsibilityCenters`,
+      link: `/accountLists/${accountListId}/reports/financialAccounts`,
     },
     {
       name: t('Reports - Expected Monthly Total'),
