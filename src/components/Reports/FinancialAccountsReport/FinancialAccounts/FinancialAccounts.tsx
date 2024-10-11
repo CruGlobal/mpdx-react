@@ -16,13 +16,13 @@ import {
   FinancialAccountContext,
   FinancialAccountType,
 } from '../Context/FinancialAccountsContext';
-import { useEntryHistoriesQuery } from './GetEntryHistories.generated';
 import {
   FinancialAccountsDocument,
   FinancialAccountsQuery,
+  useEntryHistoriesQuery,
   useFinancialAccountsQuery,
-} from './GetFinancialAccounts.generated';
-import { useSetActiveFinancialAccountMutation } from './SetActiveFinancialAccount.generated';
+  useSetActiveFinancialAccountMutation,
+} from './FinancialAccounts.generated';
 import type { Account } from '../../AccountsListLayout/List/ListItem/ListItem';
 import type {
   FinancialAccountsGroup,
@@ -80,7 +80,9 @@ export const FinancialAccounts: React.FC = () => {
         preFinancialAccountsGroup,
       ).map(([organizationName, financialAccounts]) => ({
         organizationName,
-        financialAccounts,
+        financialAccounts: financialAccounts.sort((a, b) =>
+          (a?.name ?? '').localeCompare(b?.name ?? ''),
+        ),
       }));
 
       return financialAccountsGroup;
@@ -162,6 +164,7 @@ export const FinancialAccounts: React.FC = () => {
       accountListId,
       financialAccountIds: activeFinancialAccountIds,
     },
+    skip: !activeFinancialAccountIds.length,
   });
 
   const balanceNode =
@@ -213,7 +216,7 @@ export const FinancialAccounts: React.FC = () => {
                 code: account?.code,
                 currency: account?.balance.convertedCurrency ?? '',
                 id: account?.id,
-                lastSyncDate: account?.balance.conversionDate,
+                lastSyncDate: account?.updatedAt,
                 name: account?.name,
                 entryHistories:
                   entryHistoriesResponse?.data?.entryHistories?.find(

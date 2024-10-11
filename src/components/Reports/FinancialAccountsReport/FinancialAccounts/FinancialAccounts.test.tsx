@@ -14,7 +14,7 @@ import { FinancialAccounts } from './FinancialAccounts';
 import {
   FinancialAccountsDocument,
   FinancialAccountsQuery,
-} from './GetFinancialAccounts.generated';
+} from './FinancialAccounts.generated';
 
 jest.mock('next/router', () => ({
   useRouter: () => {

@@ -13,7 +13,7 @@ import { styled } from '@mui/material/styles';
 import { Maybe } from 'graphql/jsutils/Maybe';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { EntryHistoriesQuery } from 'src/components/Reports/FinancialAccountsReport/FinancialAccounts/GetEntryHistories.generated';
+import { EntryHistoriesQuery } from 'src/components/Reports/FinancialAccountsReport/FinancialAccounts/FinancialAccounts.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
