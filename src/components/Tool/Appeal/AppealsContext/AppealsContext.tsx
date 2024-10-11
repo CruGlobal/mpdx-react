@@ -60,7 +60,7 @@ export interface AppealsType
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
   setViewMode: (mode: TableViewModeEnum) => void;
-  setContactFocus: (id?: string | undefined, openDetails?: boolean) => void;
+  setContactFocus: (id: string | undefined) => void;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   page: PageEnum | undefined;
@@ -104,10 +104,9 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 }) => {
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
-  const { query, push, replace, isReady, pathname } = router;
+  const { query, push, replace, pathname } = router;
 
-  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
-  const [contactDetailsId, setContactDetailsId] = useState<string>();
+  const [contactDetailsId, setContactDetailsId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
     TableViewModeEnum.Flows,
   );
@@ -212,23 +211,21 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   useEffect(() => {
-    if (isReady && contactId) {
+    if (contactId) {
       if (
         contactId[contactId.length - 1] !== 'flows' &&
         contactId[contactId.length - 1] !== 'list' &&
         contactId[contactId.length - 1] !== 'tour'
       ) {
         setContactDetailsId(contactId[contactId.length - 1]);
-        setContactDetailsOpen(true);
       }
       if (contactId.includes('tour') && !tour) {
         setTour(AppealTourEnum.Start);
       }
-    } else if (isReady && !contactId) {
-      setContactDetailsId('');
-      setContactDetailsOpen(false);
+    } else {
+      setContactDetailsId(null);
     }
-  }, [isReady, contactId]);
+  }, [contactId]);
 
   useEffect(() => {
     if (userOptionsLoading) {
@@ -337,11 +334,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (
-    id?: string,
-    openDetails = true,
-    endTour = false,
-  ) => {
+  const setContactFocus = (id: string | undefined, endTour = false) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -378,10 +371,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       pathname,
       query: filteredQuery,
     });
-    if (openDetails) {
-      id && setContactDetailsId(id);
-      setContactDetailsOpen(!!id);
-    }
+    setContactDetailsId(id ?? null);
   };
   const setSearchTerm = useCallback(
     debounce((searchTerm: string) => {
@@ -474,14 +464,14 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       default:
         setTour(null);
         // Need to remove tour from URL
-        setContactFocus('', false, true);
+        setContactFocus(undefined, true);
         break;
     }
   };
   const hideTour = () => {
     setTour(null);
     // Need to remove tour from URL
-    setContactFocus('', false, true);
+    setContactFocus(undefined, true);
   };
 
   return (
@@ -512,10 +502,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         setStarredFilter: setStarredFilter,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
-        contactDetailsOpen: contactDetailsOpen,
-        setContactDetailsOpen: setContactDetailsOpen,
-        contactDetailsId: contactDetailsId,
-        setContactDetailsId: setContactDetailsId,
+        contactDetailsOpen: contactDetailsId !== null,
+        contactDetailsId: contactDetailsId ?? undefined,
         viewMode: viewMode,
         setViewMode: setViewMode,
         urlFilters: urlFilters,
