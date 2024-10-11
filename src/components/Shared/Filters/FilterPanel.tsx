@@ -22,6 +22,10 @@ import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
+  FinancialAccountContext,
+  FinancialAccountType,
+} from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
+import {
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
@@ -102,13 +106,14 @@ const FlatAccordion = styled(Accordion)(({ theme }) => ({
   },
 }));
 
-type FilterInput = ContactFilterSetInput &
+export type FilterInput = ContactFilterSetInput &
   TaskFilterSetInput &
   ReportContactFilterSetInput;
 
 export enum ContextTypesEnum {
   Contacts = 'contacts',
   Appeals = 'appeals',
+  FinancialAccountReport = 'financialAccountReport',
 }
 export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
@@ -119,6 +124,7 @@ export interface FilterPanelProps {
   onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
   onHandleClearSearch?: () => void;
   contextType?: ContextTypesEnum;
+  showSaveButton?: boolean;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -130,6 +136,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onSelectedFiltersChanged,
   onHandleClearSearch,
   contextType = ContextTypesEnum.Contacts,
+  showSaveButton = true,
   ...boxProps
 }) => {
   const theme = useTheme();
@@ -142,10 +149,18 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [filterToBeDeleted, setFilterToBeDeleted] =
     useState<UserOptionFragment | null>(null);
 
+  const contactsContext = React.useContext(ContactsContext) as ContactsType;
+  const appealsContext = React.useContext(AppealsContext) as AppealsType;
+  const financialAccountContext = React.useContext(
+    FinancialAccountContext,
+  ) as FinancialAccountType;
+
   const handleClearAll =
     contextType === ContextTypesEnum.Contacts
-      ? (React.useContext(ContactsContext) as ContactsType).handleClearAll
-      : (React.useContext(AppealsContext) as AppealsType).handleClearAll;
+      ? contactsContext.handleClearAll
+      : contextType === ContextTypesEnum.Appeals
+      ? appealsContext.handleClearAll
+      : financialAccountContext.handleClearAll;
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
@@ -612,15 +627,19 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
+              {showSaveButton && (
+                <LinkButton
+                  style={{ marginInlineStart: theme.spacing(-1) }}
+                  disabled={noSelectedFilters}
+                  onClick={() => setSaveFilterModalOpen(true)}
+                >
+                  {t('Save')}
+                </LinkButton>
+              )}
               <LinkButton
-                style={{ marginInlineStart: theme.spacing(-1) }}
-                disabled={noSelectedFilters}
-                onClick={() => setSaveFilterModalOpen(true)}
-              >
-                {t('Save')}
-              </LinkButton>
-              <LinkButton
-                style={{ marginInlineStart: theme.spacing(2) }}
+                style={{
+                  marginInlineStart: theme.spacing(showSaveButton ? 2 : -1),
+                }}
                 disabled={noSelectedFilters}
                 onClick={handleClearAllClick}
               >

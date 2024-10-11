@@ -1,3 +1,17 @@
+query EntryHistories($accountListId: ID!, $financialAccountIds: [ID!]!) {
+  entryHistories(
+    accountListId: $accountListId
+    financialAccountIds: $financialAccountIds
+  ) {
+    financialAccountId
+    entryHistories {
+      closingBalance
+      endDate
+      id
+    }
+  }
+}
+
 query FinancialAccounts(
   $accountListId: ID!
   $designationAccountIds: [ID!]
@@ -28,5 +42,12 @@ query FinancialAccounts(
       endCursor
       hasNextPage
     }
+  }
+}
+
+mutation SetActiveFinancialAccount($input: SetActiveFinancialAccountInput!) {
+  setActiveFinancialAccount(input: $input) {
+    active
+    id
   }
 }

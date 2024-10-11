@@ -14,6 +14,7 @@ export interface SearchBoxProps {
   placeholder?: string;
   showContactSearchIcon: boolean;
   page?: PageEnum;
+  toolTipText?: string;
 }
 
 const SearchInput = styled(TextField)(() => ({
@@ -28,6 +29,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
   placeholder,
   showContactSearchIcon,
   page,
+  toolTipText,
 }) => {
   const { t } = useTranslation();
   const [currentSearchTerm, setSearchTerm] = useState(searchTerm ?? '');
@@ -47,7 +49,9 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     <Tooltip
       arrow
       title={
-        page === PageEnum.Task
+        toolTipText
+          ? toolTipText
+          : page === PageEnum.Task
           ? t('Search by subject, tags, contact name, or comments')
           : t('Search by name, phone, email, or partner #')
       }

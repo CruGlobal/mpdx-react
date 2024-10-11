@@ -1,0 +1,40 @@
+extend type Query {
+  financialAccountEntries(
+    input: FinancialAccountEntriesInput!
+  ): FinancialAccountEntriesResponse!
+}
+
+input FinancialAccountEntriesInput {
+  accountListId: ID!
+  financialAccountId: ID!
+  dateRange: String!
+  categoryId: ID
+  wildcardSearch: String
+}
+
+type FinancialAccountEntriesResponse {
+  entries: [FinancialAccountEntry!]!
+  metaData: FinancialAccountMetaData!
+}
+
+type FinancialAccountEntry {
+  id: ID!
+  amount: String!
+  currency: String!
+  code: String!
+  description: String!
+  entryDate: ISO8601Date!
+  type: String!
+  category: FinancialAccountCategory!
+}
+
+type FinancialAccountMetaData {
+  sort: String
+  filter: String
+  credits: String
+  debits: String
+  difference: String
+  currency: String
+  closingBalance: String
+  openingBalance: String
+}
