@@ -2,6 +2,7 @@ import { GetServerSideProps } from 'next';
 import { ReactNode } from 'react';
 import { getSession } from 'next-auth/react';
 
+// This page redirect old email invite links to the new page that handles invites
 const InvitePage = (): ReactNode => null;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
