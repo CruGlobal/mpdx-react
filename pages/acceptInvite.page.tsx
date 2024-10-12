@@ -1,18 +1,51 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
-import { getSession } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { loadSession } from './api/utils/pagePropsHelpers';
+
+interface FetchAcceptInviteProps {
+  apiToken: string;
+  url: string;
+  inviteType: string;
+  id: string;
+  code: string;
+}
+
+export const fetchAcceptInvite = ({
+  apiToken,
+  url,
+  inviteType,
+  id,
+  code,
+}: FetchAcceptInviteProps): Promise<Response> => {
+  return fetch(process.env.REST_API_URL + url, {
+    method: 'PUT',
+    headers: {
+      authorization: `Bearer ${apiToken}`,
+      'content-type': 'application/vnd.api+json',
+      accept: 'application/vnd.api+json',
+    },
+    body: JSON.stringify({
+      data: {
+        type: inviteType,
+        id,
+        attributes: { code },
+      },
+    }),
+  });
+};
 
 const AcceptInvitePage = (): ReactElement => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+  const session = useRequiredSession();
 
   useEffect(() => {
     if (!router.isReady) {
@@ -26,23 +59,14 @@ const AcceptInvitePage = (): ReactElement => {
         : 'account_list_invites';
 
       try {
-        const session = await getSession();
-        const apiToken = session?.user?.apiToken;
+        const apiToken = session?.apiToken;
 
-        const response = await fetch(process.env.REST_API_URL + url, {
-          method: 'PUT',
-          headers: {
-            authorization: `Bearer ${apiToken}`,
-            'content-type': 'application/vnd.api+json',
-            accept: 'application/vnd.api+json',
-          },
-          body: JSON.stringify({
-            data: {
-              type: inviteType,
-              id,
-              attributes: { code },
-            },
-          }),
+        const response = await fetchAcceptInvite({
+          apiToken,
+          url,
+          inviteType,
+          id,
+          code,
         });
 
         if (!response.ok) {
