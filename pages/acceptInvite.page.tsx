@@ -4,6 +4,7 @@ import React, { ReactElement, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { loadSession } from './api/utils/pagePropsHelpers';
@@ -46,13 +47,14 @@ const AcceptInvitePage = (): ReactElement => {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const session = useRequiredSession();
+  const currentUserAccountListId = useAccountListId();
 
   useEffect(() => {
     if (!router.isReady) {
       return;
     }
-    const { accountListId, inviteCode, accountInviteId, orgInviteId, orgId } =
-      router.query;
+    const { inviteCode, accountInviteId, orgInviteId, orgId } = router.query;
+    const inviterAccountListId = router.query.accountListId || undefined;
     const acceptInvite = async (id, code, url) => {
       const inviteType = url.includes('organizations')
         ? 'organization_invites'
@@ -76,12 +78,14 @@ const AcceptInvitePage = (): ReactElement => {
           enqueueSnackbar(t('Accepted invite successfully.'), {
             variant: 'success',
           });
-          router.push(`/accountLists/${accountListId}/settings/preferences`);
+          router.push(
+            `/accountLists/${currentUserAccountListId}/settings/preferences`,
+          );
         } else {
           enqueueSnackbar(t('Accepted invite successfully.'), {
             variant: 'success',
           });
-          router.push(`/accountLists/${accountListId}/`);
+          router.push(`/accountLists/${currentUserAccountListId}`);
         }
       } catch (err) {
         enqueueSnackbar(
@@ -95,10 +99,10 @@ const AcceptInvitePage = (): ReactElement => {
       }
     };
 
-    if (accountInviteId && inviteCode && accountListId) {
-      const url = `account_lists/${accountListId}/invites/${accountInviteId}/accept`;
+    if (accountInviteId && inviteCode && inviterAccountListId) {
+      const url = `account_lists/${inviterAccountListId}/invites/${accountInviteId}/accept`;
       acceptInvite(accountInviteId, inviteCode, url);
-    } else if (orgInviteId && inviteCode && orgId && accountListId) {
+    } else if (orgInviteId && inviteCode && orgId) {
       const url = `organizations/${orgId}/invites/${orgInviteId}/accept`;
       acceptInvite(orgInviteId, inviteCode, url);
     }
