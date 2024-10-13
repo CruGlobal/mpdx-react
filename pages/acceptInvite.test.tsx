@@ -4,11 +4,13 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import AcceptInvitePage from './acceptInvite.page';
 import 'node-fetch';
 
 jest.mock('node-fetch', () => jest.fn());
+jest.mock('src/hooks/useAccountListId');
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
@@ -41,6 +43,7 @@ describe('AcceptInvitePage', () => {
       },
       push: mockPush,
     });
+    (useAccountListId as jest.Mock).mockReturnValue('currentUserAccountListId');
 
     global.fetch = jest.fn();
   });
@@ -83,7 +86,7 @@ describe('AcceptInvitePage', () => {
         { variant: 'success' },
       );
       expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/test-account-list-id/',
+        '/accountLists/currentUserAccountListId',
       );
     });
   });
@@ -156,7 +159,7 @@ describe('AcceptInvitePage', () => {
         { variant: 'success' },
       );
       expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/test-account-list-id/settings/preferences',
+        '/accountLists/currentUserAccountListId/settings/preferences',
       );
     });
   });
