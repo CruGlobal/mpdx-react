@@ -1,4 +1,4 @@
-import { FinancialAccountsQuery } from './GetFinancialAccounts.generated';
+import { FinancialAccountsQuery } from './FinancialAccounts.generated';
 
 export type FinancialAccount =
   | FinancialAccountsQuery['financialAccounts']['nodes'][0]
