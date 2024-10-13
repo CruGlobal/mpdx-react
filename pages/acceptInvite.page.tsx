@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
@@ -49,8 +49,11 @@ const AcceptInvitePage = (): ReactElement => {
   const session = useRequiredSession();
   const currentUserAccountListId = useAccountListId();
 
+  // Ref to track if the API call has already been triggered
+  const hasFetchedRef = useRef(false);
+
   useEffect(() => {
-    if (!router.isReady) {
+    if (!router.isReady || hasFetchedRef.current) {
       return;
     }
     const { inviteCode, accountInviteId, orgInviteId, orgId } = router.query;
@@ -102,9 +105,11 @@ const AcceptInvitePage = (): ReactElement => {
     if (accountInviteId && inviteCode && inviterAccountListId) {
       const url = `account_lists/${inviterAccountListId}/invites/${accountInviteId}/accept`;
       acceptInvite(accountInviteId, inviteCode, url);
+      hasFetchedRef.current = true;
     } else if (orgInviteId && inviteCode && orgId) {
       const url = `organizations/${orgId}/invites/${orgInviteId}/accept`;
       acceptInvite(orgInviteId, inviteCode, url);
+      hasFetchedRef.current = true;
     }
   }, [router.query]);
 
