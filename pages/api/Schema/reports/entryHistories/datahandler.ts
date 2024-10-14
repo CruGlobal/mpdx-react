@@ -36,13 +36,16 @@ export const createEntryHistoriesGroup = (
   entryHistories: data
     // The last entry is the total for the whole year, so ignore it
     .slice(0, -1)
-    .map((entryHistory) => createEntryHistory(entryHistory)),
+    .map((entryHistory) =>
+      createEntryHistory(entryHistory, financialAccountId),
+    ),
 });
 
 const createEntryHistory = (
   history: EntryHistoriesResponse,
+  financialAccountId: string,
 ): EntryHistoryRest => ({
   closingBalance: Number(history.attributes.closing_balance),
   endDate: history.attributes.end_date,
-  id: history.id,
+  id: `${history.id}-${financialAccountId}`,
 });

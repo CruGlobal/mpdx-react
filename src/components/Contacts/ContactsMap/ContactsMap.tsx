@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import {
   ContactsContext,
   ContactsType,
@@ -35,7 +35,7 @@ const MapLoading = styled(CircularProgress)(() => ({
 const mapContainerStyle = {
   height: '100%',
   width: '100%',
-  zIndex: 2000,
+  zIndex: 1000,
 };
 
 const options = {

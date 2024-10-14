@@ -28,6 +28,7 @@ import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToo
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import { PersonInfoFragment } from '../MergePeople/GetPersonDuplicates.generated';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';
@@ -224,7 +225,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
             <Trans
               defaults="<bold>Source:</bold> {{where}}"
               shouldUnescape
-              values={{ where: contact.source }}
+              values={{ where: sourceToStr(t, contact.source) }}
               components={{ bold: <strong /> }}
             />
           </Typography>
@@ -239,7 +240,9 @@ const ContactItem: React.FC<ContactItemProps> = ({
                 <Trans
                   defaults=" ({{source}})"
                   shouldUnescape
-                  values={{ source: contact.primaryPhoneNumber?.source }}
+                  values={{
+                    source: sourceToStr(t, contact.primaryPhoneNumber?.source),
+                  }}
                   components={{ bold: <strong /> }}
                 />
               </InlineTypography>
@@ -256,7 +259,9 @@ const ContactItem: React.FC<ContactItemProps> = ({
                 <Trans
                   defaults=" ({{where}})"
                   shouldUnescape
-                  values={{ where: contact.primaryEmailAddress?.source }}
+                  values={{
+                    where: sourceToStr(t, contact.primaryEmailAddress?.source),
+                  }}
                   components={{ bold: <strong /> }}
                 />
               </InlineTypography>

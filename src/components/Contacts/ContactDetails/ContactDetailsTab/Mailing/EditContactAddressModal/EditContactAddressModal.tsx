@@ -28,6 +28,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AddressUpdateInput } from 'src/graphql/types.generated';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
+import { isEditableSource } from 'src/utils/sourceHelper';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,
@@ -64,8 +65,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
-
-export const editableSources = ['MPDX', 'manual', 'TntImport'];
 
 interface EditContactAddressModalProps {
   accountListId: string;
@@ -171,7 +170,7 @@ export const EditContactAddressModal: React.FC<
     handleClose();
   };
 
-  const editingDisabled = editableSources.indexOf(address.source) === -1;
+  const editingDisabled = !isEditableSource(address.source);
   const { data: emailData } = useDonationServicesEmailQuery({
     variables: {
       accountListId,

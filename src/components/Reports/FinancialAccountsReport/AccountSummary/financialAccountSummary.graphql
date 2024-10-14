@@ -1,0 +1,33 @@
+query FinancialAccountSummary($accountListId: ID!, $financialAccountId: ID!) {
+  financialAccountSummary(
+    input: {
+      accountListId: $accountListId
+      financialAccountId: $financialAccountId
+    }
+  ) {
+    id
+    closingBalance
+    credits
+    debits
+    difference
+    endDate
+    openingBalance
+    startDate
+    creditByCategories {
+      ...FinancialAccountCategories
+    }
+    debitByCategories {
+      ...FinancialAccountCategories
+    }
+  }
+}
+
+fragment FinancialAccountCategories on FinancialAccountSummaryCategory {
+  id
+  amount
+  category {
+    id
+    code
+    name
+  }
+}

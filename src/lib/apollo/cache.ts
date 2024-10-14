@@ -72,6 +72,8 @@ export const createCache = () =>
       Tag: { keyFields: false },
       Query: {
         fields: {
+          accountListPledges: paginationFieldPolicy,
+          coachingAccountListPledges: paginationFieldPolicy,
           contacts: paginationFieldPolicy,
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,

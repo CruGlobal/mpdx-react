@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { ListHeader, PageEnum } from 'src/components/Shared/Header/ListHeader';
 import {
@@ -24,11 +25,6 @@ import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';
-
-export enum Panel {
-  Navigation = 'Navigation',
-  Filters = 'Filters',
-}
 
 interface Props {
   accountListId: string;
