@@ -222,6 +222,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
             },
           )}
         >
+          {/* We are rounding to avoid confusion. The number displayed won't exactly match the number in their account due to variations in exchange rates  */}
           <DashUnderlineTypography>
             {currencyFormat(
               Math.round(row.convertedAmount),
