@@ -4,7 +4,7 @@ import { getServerSideProps } from './[inviteId].page';
 
 jest.mock('next-auth/react');
 
-describe('Account Invite Link Redirect', () => {
+describe('Org Invite Link Redirect', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -12,7 +12,7 @@ describe('Account Invite Link Redirect', () => {
   it('redirects to acceptInvite when query parameters are provided', async () => {
     const context = {
       query: {
-        accountListId: 'test-account-list-id',
+        orgId: 'test-org-id',
         inviteId: 'test-invite-id',
         code: 'test-code',
       },
@@ -23,7 +23,7 @@ describe('Account Invite Link Redirect', () => {
     expect(result).toEqual({
       redirect: {
         destination:
-          '/acceptInvite?accountListId=test-account-list-id&accountInviteId=test-invite-id&inviteCode=test-code',
+          '/acceptInvite?orgId=test-org-id&orgInviteId=test-invite-id&inviteCode=test-code',
         permanent: true,
       },
       props: {
@@ -35,7 +35,7 @@ describe('Account Invite Link Redirect', () => {
   it('redirects to accountList Dashboard when missing query parameters', async () => {
     const context = {
       query: {
-        accountListId: 'test-account-list-id',
+        orgId: 'org-id',
         // inviteId and code are missing
       },
     } as unknown as GetServerSidePropsContext;

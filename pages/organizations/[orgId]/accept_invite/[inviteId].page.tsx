@@ -3,15 +3,15 @@ import { ReactNode } from 'react';
 import { getSession } from 'next-auth/react';
 
 // This page redirect old email invite links to the new page that handles invites
-const InvitePage = (): ReactNode => null;
+const OrgInvitePage = (): ReactNode => null;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
-  const { accountListId, inviteId, code } = context.query;
+  const { orgId, inviteId, code } = context.query;
 
   const redirectURL =
-    accountListId && inviteId && code
-      ? `/acceptInvite?accountListId=${accountListId}&accountInviteId=${inviteId}&inviteCode=${code}`
+    orgId && inviteId && code
+      ? `/acceptInvite?orgId=${orgId}&orgInviteId=${inviteId}&inviteCode=${code}`
       : // Intentionally redirect to invalid accountListId since we don't have the current user's accountListId
         '/accountLists/_/';
 
@@ -31,4 +31,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-export default InvitePage;
+export default OrgInvitePage;
