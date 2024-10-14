@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { formatNumber } from '../../AccountSummary/AccountSummaryHelper';
@@ -61,15 +62,15 @@ type RenderCell = GridColDef<TransactionRow>['renderCell'];
 
 interface TransactionRow {
   id: string;
-  code: string;
-  description: string;
-  type: string;
+  code?: Maybe<string>;
+  description?: Maybe<string>;
+  type?: Maybe<string>;
   categoryName: string;
   categoryCode: string;
-  currency: string;
-  expenseAmount?: string;
-  incomeAmount?: string;
-  entryDate: DateTime<boolean>;
+  currency?: Maybe<string>;
+  expenseAmount?: Maybe<string>;
+  incomeAmount?: Maybe<string>;
+  entryDate: DateTime<boolean> | string;
 }
 
 const createTransactionRow = (
@@ -85,7 +86,9 @@ const createTransactionRow = (
     ...amounts,
     categoryName: entry.category.name ?? entry.category.code ?? '',
     categoryCode: entry.category.code ?? '',
-    entryDate: DateTime.fromISO(entry.entryDate),
+    entryDate: entry.entryDate
+      ? DateTime.fromISO(entry.entryDate)
+      : 'No entry date',
   };
 };
 
@@ -186,7 +189,11 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
   }, [entries, currency, openingBalance, closingBalance, activeFilters]);
 
   const Date: RenderCell = ({ row }) => (
-    <Typography>{dateFormatShort(row.entryDate, locale)}</Typography>
+    <Typography>
+      {typeof row.entryDate === 'string'
+        ? row.entryDate
+        : dateFormatShort(row.entryDate, locale)}
+    </Typography>
   );
   const Category: RenderCell = ({ row }) => (
     <Box>
