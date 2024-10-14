@@ -60,8 +60,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                         {
                           id: 'donation-1',
                           amount: {
-                            amount: 10,
-                            convertedAmount: 10,
+                            amount: 11.55,
+                            convertedAmount: 11.55,
                             convertedCurrency: 'CAD',
                             currency: 'CAD',
                           },
@@ -85,8 +85,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                         {
                           id: 'donation-2',
                           amount: {
-                            amount: hasForeignCurrency ? 200 : 100,
-                            convertedAmount: 100,
+                            amount: hasForeignCurrency ? 200.55 : 100,
+                            convertedAmount: hasForeignCurrency ? 100.89 : 100,
                             convertedCurrency: 'CAD',
                             currency: hasForeignCurrency ? 'USD' : 'CAD',
                           },
@@ -139,7 +139,7 @@ describe('DonationTable', () => {
 
     expect(await findByRole('cell', { name: 'Donor 1' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Donor 2' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'CA$10' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'CA$11.55' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'CA$100' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '3/1/2023' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '3/2/2023' })).toBeInTheDocument();
@@ -242,28 +242,34 @@ describe('DonationTable', () => {
       await findByRole('table', { name: 'Donation Totals' }),
     ).getByRole('row');
     expect(totalRow.children[0]).toHaveTextContent('Total Donations:');
-    expect(totalRow.children[1]).toHaveTextContent('CA$110');
+    expect(totalRow.children[1]).toHaveTextContent('CA$111.55');
   });
 
   it('shows currency column and additional total rows when a currency does not match the account currency', async () => {
-    const { findByRole } = render(<TestComponent hasForeignCurrency />);
+    const { findByRole, getAllByRole } = render(
+      <TestComponent hasForeignCurrency />,
+    );
 
     expect(
       await findByRole('columnheader', { name: 'Foreign Amount' }),
     ).toBeInTheDocument();
+    expect(await findByRole('cell', { name: 'Donor 1' })).toBeInTheDocument();
+    // a donation with the same currency as the contact is not rounded
+    // It should be found 4 times - two in the donation table and two in the totals table
+    expect(getAllByRole('cell', { name: 'CA$11.55' })).toHaveLength(4);
 
     const totalsRows = within(
       await findByRole('table', { name: 'Donation Totals' }),
     ).getAllByRole('row');
     expect(totalsRows).toHaveLength(4);
     expect(totalsRows[1].children[0]).toHaveTextContent('Total CAD Donations:');
-    expect(totalsRows[1].children[1]).toHaveTextContent('CA$10');
-    expect(totalsRows[1].children[2]).toHaveTextContent('CA$10');
+    expect(totalsRows[1].children[1]).toHaveTextContent('CA$11.55');
+    expect(totalsRows[1].children[2]).toHaveTextContent('CA$11.55');
     expect(totalsRows[2].children[0]).toHaveTextContent('Total USD Donations:');
-    expect(totalsRows[2].children[1]).toHaveTextContent('CA$100');
-    expect(totalsRows[2].children[2]).toHaveTextContent('$200');
+    expect(totalsRows[2].children[1]).toHaveTextContent('CA$101');
+    expect(totalsRows[2].children[2]).toHaveTextContent('$200.55');
     expect(totalsRows[3].children[0]).toHaveTextContent('Total Donations:');
-    expect(totalsRows[3].children[1]).toHaveTextContent('CA$110');
+    expect(totalsRows[3].children[1]).toHaveTextContent('CA$112');
   });
 
   it('updates the sort order', async () => {
@@ -276,13 +282,13 @@ describe('DonationTable', () => {
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
     const cellsAsc = getAllByRole('cell', { name: /CA/ });
-    expect(cellsAsc[0]).toHaveTextContent('CA$10');
+    expect(cellsAsc[0]).toHaveTextContent('CA$11.55');
     expect(cellsAsc[1]).toHaveTextContent('CA$100');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
     const cellsDesc = getAllByRole('cell', { name: /CA/ });
     expect(cellsDesc[0]).toHaveTextContent('CA$100');
-    expect(cellsDesc[1]).toHaveTextContent('CA$10');
+    expect(cellsDesc[1]).toHaveTextContent('CA$11.55');
   });
 
   it('loads multiple pages and shows the progress bar', async () => {
