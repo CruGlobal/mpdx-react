@@ -19,12 +19,12 @@ type FinancialAccountEntriesResponse {
 
 type FinancialAccountEntry {
   id: ID!
-  amount: String!
-  currency: String!
-  code: String!
-  description: String!
+  amount: String
+  currency: String
+  code: String
+  description: String
   entryDate: ISO8601Date!
-  type: String!
+  type: String
   category: FinancialAccountCategory!
 }
 

@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { formatNumber } from '../../AccountSummary/AccountSummaryHelper';
@@ -61,14 +62,14 @@ type RenderCell = GridColDef<TransactionRow>['renderCell'];
 
 interface TransactionRow {
   id: string;
-  code: string;
-  description: string;
-  type: string;
+  code?: Maybe<string>;
+  description?: Maybe<string>;
+  type?: Maybe<string>;
   categoryName: string;
   categoryCode: string;
-  currency: string;
-  expenseAmount?: string;
-  incomeAmount?: string;
+  currency?: Maybe<string>;
+  expenseAmount?: Maybe<string>;
+  incomeAmount?: Maybe<string>;
   entryDate: DateTime<boolean>;
 }
 
