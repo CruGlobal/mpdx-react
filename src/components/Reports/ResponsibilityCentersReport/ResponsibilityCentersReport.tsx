@@ -222,7 +222,7 @@ export const ResponsibilityCentersReport: React.FC<Props> = ({
           {financialAccountsGroups?.map((financialAccountGroup) => {
             const accounts: Account[] =
               financialAccountGroup.financialAccounts.map((account) => ({
-                active: account?.active,
+                active: account?.active || undefined,
                 balance: -(account?.balance.convertedAmount ?? 0),
                 code: account?.code,
                 currency: account?.balance.convertedCurrency ?? '',
