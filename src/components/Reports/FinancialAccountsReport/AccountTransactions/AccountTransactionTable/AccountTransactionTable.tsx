@@ -70,7 +70,7 @@ interface TransactionRow {
   currency?: Maybe<string>;
   expenseAmount?: Maybe<string>;
   incomeAmount?: Maybe<string>;
-  entryDate: DateTime<boolean>;
+  entryDate: DateTime<boolean> | string;
 }
 
 const createTransactionRow = (
@@ -86,7 +86,9 @@ const createTransactionRow = (
     ...amounts,
     categoryName: entry.category.name ?? entry.category.code ?? '',
     categoryCode: entry.category.code ?? '',
-    entryDate: DateTime.fromISO(entry.entryDate),
+    entryDate: entry.entryDate
+      ? DateTime.fromISO(entry.entryDate)
+      : 'No entry date',
   };
 };
 
@@ -187,7 +189,11 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
   }, [entries, currency, openingBalance, closingBalance, activeFilters]);
 
   const Date: RenderCell = ({ row }) => (
-    <Typography>{dateFormatShort(row.entryDate, locale)}</Typography>
+    <Typography>
+      {typeof row.entryDate === 'string'
+        ? row.entryDate
+        : dateFormatShort(row.entryDate, locale)}
+    </Typography>
   );
   const Category: RenderCell = ({ row }) => (
     <Box>

@@ -23,7 +23,7 @@ type FinancialAccountEntry {
   currency: String
   code: String
   description: String
-  entryDate: ISO8601Date!
+  entryDate: ISO8601Date
   type: String
   category: FinancialAccountCategory!
 }

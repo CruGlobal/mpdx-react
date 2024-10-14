@@ -120,7 +120,9 @@ export const AccountTransactions: React.FC = () => {
     ];
     const convertDataToArray = data.financialAccountEntries.entries.map(
       (entry) => [
-        dateFormatShort(DateTime.fromISO(entry.entryDate), locale),
+        entry.entryDate
+          ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
+          : 'No entry date',
         entry.description ?? '',
         entry.category?.name ?? entry.category?.code ?? '',
         entry.type === FinancialAccountEntryTypeEnum.Debit
