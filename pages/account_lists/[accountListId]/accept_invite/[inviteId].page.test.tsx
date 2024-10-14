@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next';
-import { getSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import { getServerSideProps } from './[inviteId].page';
 
 jest.mock('next-auth/react');
@@ -10,8 +10,6 @@ describe('Invite Link Redirect', () => {
   });
 
   it('redirects to acceptInvite when query parameters are provided', async () => {
-    (getSession as jest.Mock).mockResolvedValueOnce({ user: { name: 'test' } });
-
     const context = {
       query: {
         accountListId: 'test-account-list-id',
@@ -29,14 +27,12 @@ describe('Invite Link Redirect', () => {
         permanent: true,
       },
       props: {
-        session: { user: { name: 'test' } },
+        session: session,
       },
     });
   });
 
   it('redirects to accountList Dashboard when missing query parameters', async () => {
-    (getSession as jest.Mock).mockResolvedValueOnce({ user: { name: 'test' } });
-
     const context = {
       query: {
         accountListId: 'test-account-list-id',
@@ -52,7 +48,7 @@ describe('Invite Link Redirect', () => {
         permanent: true,
       },
       props: {
-        session: { user: { name: 'test' } },
+        session: session,
       },
     });
   });

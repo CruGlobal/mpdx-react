@@ -1,20 +1,17 @@
-import { useRouter } from 'next/router';
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
+import TestRouter from '__tests__/util/TestRouter';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import AcceptInvitePage from './acceptInvite.page';
 import 'node-fetch';
 
 jest.mock('node-fetch', () => jest.fn());
 jest.mock('src/hooks/useAccountListId');
-
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
-}));
+const mockPush = jest.fn();
+const dashboardLink = '/accountLists/_/';
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
@@ -29,22 +26,7 @@ jest.mock('notistack', () => ({
 }));
 
 describe('AcceptInvitePage', () => {
-  const mockPush = jest.fn();
-
   beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({
-      isReady: true,
-      query: {
-        accountListId: 'test-account-list-id',
-        inviteCode: 'test-invite-code',
-        accountInviteId: null,
-        orgInviteId: null,
-        orgId: null,
-      },
-      push: mockPush,
-    });
-    (useAccountListId as jest.Mock).mockReturnValue('currentUserAccountListId');
-
     global.fetch = jest.fn();
   });
 
@@ -54,7 +36,7 @@ describe('AcceptInvitePage', () => {
   });
 
   it('renders the page and accepts an invite', async () => {
-    (useRouter as jest.Mock).mockReturnValueOnce({
+    const router = {
       isReady: true,
       query: {
         accountListId: 'test-account-list-id',
@@ -62,20 +44,62 @@ describe('AcceptInvitePage', () => {
         accountInviteId: 'test-invite-id',
       },
       push: mockPush,
-    });
+    };
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: jest.fn().mockResolvedValueOnce({}),
     });
 
     const { getByText } = render(
-      <AppSettingsProvider>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
-      </AppSettingsProvider>,
+      <TestRouter router={router}>
+        <AppSettingsProvider>
+          <I18nextProvider i18n={i18n}>
+            <SnackbarProvider>
+              <AcceptInvitePage />
+            </SnackbarProvider>
+          </I18nextProvider>
+        </AppSettingsProvider>
+      </TestRouter>,
+    );
+
+    expect(getByText(/You will be redirected soon.../i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Accepted invite successfully.',
+        { variant: 'success' },
+      );
+      expect(mockPush).toHaveBeenCalledWith(dashboardLink);
+    });
+  });
+
+  it('redirects to preferences settings for organization invites', async () => {
+    const router = {
+      isReady: true,
+      query: {
+        accountListId: 'test-account-list-id',
+        inviteCode: 'test-invite-code',
+        orgInviteId: 'test-org-invite-id',
+        orgId: 'test-org-id',
+      },
+      push: mockPush,
+    };
+
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValueOnce({}),
+    });
+
+    const { getByText } = render(
+      <TestRouter router={router}>
+        <AppSettingsProvider>
+          <I18nextProvider i18n={i18n}>
+            <SnackbarProvider>
+              <AcceptInvitePage />
+            </SnackbarProvider>
+          </I18nextProvider>
+        </AppSettingsProvider>
+      </TestRouter>,
     );
 
     expect(getByText(/You will be redirected soon/i)).toBeInTheDocument();
@@ -86,13 +110,13 @@ describe('AcceptInvitePage', () => {
         { variant: 'success' },
       );
       expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/currentUserAccountListId',
+        `${dashboardLink}settings/integrations?selectedTab=organization`,
       );
     });
   });
 
   it('handles invite acceptance error', async () => {
-    (useRouter as jest.Mock).mockReturnValueOnce({
+    const router = {
       isReady: true,
       query: {
         accountListId: 'test-account-list-id',
@@ -100,20 +124,22 @@ describe('AcceptInvitePage', () => {
         accountInviteId: 'another-invite-id',
       },
       push: mockPush,
-    });
+    };
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       json: jest.fn().mockResolvedValueOnce({}),
     });
 
     render(
-      <AppSettingsProvider>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
-      </AppSettingsProvider>,
+      <TestRouter router={router}>
+        <AppSettingsProvider>
+          <I18nextProvider i18n={i18n}>
+            <SnackbarProvider>
+              <AcceptInvitePage />
+            </SnackbarProvider>
+          </I18nextProvider>
+        </AppSettingsProvider>
+      </TestRouter>,
     );
 
     await waitFor(() => {
@@ -124,43 +150,35 @@ describe('AcceptInvitePage', () => {
     });
   });
 
-  it('redirects to preferences settings for organization invites', async () => {
-    (useRouter as jest.Mock).mockReturnValueOnce({
+  it('handles invalid url props', async () => {
+    const router = {
       isReady: true,
       query: {
-        accountListId: 'test-account-list-id',
+        accountListId: '',
         inviteCode: 'test-invite-code',
-        orgInviteId: 'test-org-invite-id',
-        orgId: 'test-org-id',
+        accountInviteId: 'another-invite-id',
       },
       push: mockPush,
-    });
+    };
 
-    (fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce({}),
-    });
-
-    const { getByText } = render(
-      <AppSettingsProvider>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
-      </AppSettingsProvider>,
+    render(
+      <TestRouter router={router}>
+        <AppSettingsProvider>
+          <I18nextProvider i18n={i18n}>
+            <SnackbarProvider>
+              <AcceptInvitePage />
+            </SnackbarProvider>
+          </I18nextProvider>
+        </AppSettingsProvider>
+      </TestRouter>,
     );
-
-    expect(getByText(/You will be redirected soon/i)).toBeInTheDocument();
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Accepted invite successfully.',
-        { variant: 'success' },
-      );
-      expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/currentUserAccountListId/settings/preferences',
+        'Invalid invite URL. Try asking the the inviter to resend the invite.',
+        { variant: 'error' },
       );
     });
+    expect(mockPush).toHaveBeenCalledWith(dashboardLink);
   });
 });

@@ -4,7 +4,6 @@ import React, { ReactElement, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { loadSession } from './api/utils/pagePropsHelpers';
@@ -29,7 +28,6 @@ export const fetchAcceptInvite = ({
     headers: {
       authorization: `Bearer ${apiToken}`,
       'content-type': 'application/vnd.api+json',
-      accept: 'application/vnd.api+json',
     },
     body: JSON.stringify({
       data: {
@@ -46,25 +44,36 @@ const AcceptInvitePage = (): ReactElement => {
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+  const query = router.query;
   const session = useRequiredSession();
-  const currentUserAccountListId = useAccountListId();
 
   // Ref to track if the API call has already been triggered
   const hasFetchedRef = useRef(false);
+  // Since we don't have the user's accountListId, use an invalid accountListId so the page redirects on it's own.
+  const dashboardLink = '/accountLists/_/';
 
   useEffect(() => {
     if (!router.isReady || hasFetchedRef.current) {
       return;
     }
-    const { inviteCode, accountInviteId, orgInviteId, orgId } = router.query;
+    const orgInviteId =
+      typeof query.orgInviteId === 'string' ? query.orgInviteId : undefined;
+    const orgId = typeof query.orgId === 'string' ? query.orgId : undefined;
+    const accountInviteId =
+      typeof query.accountInviteId === 'string'
+        ? query.accountInviteId
+        : undefined;
+    const inviteCode =
+      typeof query.inviteCode === 'string' ? query.inviteCode : undefined;
+
     const inviterAccountListId = router.query.accountListId || undefined;
-    const acceptInvite = async (id, code, url) => {
+    const acceptInvite = async (id: string, code: string, url: string) => {
       const inviteType = url.includes('organizations')
         ? 'organization_invites'
         : 'account_list_invites';
 
       try {
-        const apiToken = session?.apiToken;
+        const apiToken = session.apiToken;
 
         const response = await fetchAcceptInvite({
           apiToken,
@@ -81,19 +90,24 @@ const AcceptInvitePage = (): ReactElement => {
           enqueueSnackbar(t('Accepted invite successfully.'), {
             variant: 'success',
           });
+
           router.push(
-            `/accountLists/${currentUserAccountListId}/settings/preferences`,
+            dashboardLink + 'settings/integrations?selectedTab=organization',
           );
         } else {
           enqueueSnackbar(t('Accepted invite successfully.'), {
             variant: 'success',
           });
-          router.push(`/accountLists/${currentUserAccountListId}`);
+          router.push(dashboardLink);
         }
       } catch (err) {
+        const inviter = url.includes('organizations')
+          ? 'organization admin'
+          : 'account holder';
         enqueueSnackbar(
           t(
-            'Unable to accept invite. Try asking the account holder to resend the invite.',
+            'Unable to accept invite. Try asking the {{inviter}} to resend the invite.',
+            { inviter },
           ),
           {
             variant: 'error',
@@ -110,6 +124,16 @@ const AcceptInvitePage = (): ReactElement => {
       const url = `organizations/${orgId}/invites/${orgInviteId}/accept`;
       acceptInvite(orgInviteId, inviteCode, url);
       hasFetchedRef.current = true;
+    } else {
+      enqueueSnackbar(
+        t(
+          'Invalid invite URL. Try asking the the inviter to resend the invite.',
+        ),
+        {
+          variant: 'error',
+        },
+      );
+      router.push(dashboardLink);
     }
   }, [router.query]);
 
@@ -121,7 +145,7 @@ const AcceptInvitePage = (): ReactElement => {
         </title>
       </Head>
       <SetupPage title={t('Accepting Invite')}>
-        <p>{t('You will be redirected soon')}</p>
+        <p>{t('You will be redirected soon...')}</p>
       </SetupPage>
     </>
   );

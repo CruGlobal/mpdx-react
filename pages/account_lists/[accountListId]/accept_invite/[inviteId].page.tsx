@@ -15,10 +15,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       : `/accountLists/${accountListId}`;
 
   return {
-    redirect: {
-      destination: session ? redirectURL : '/login',
-      permanent: true,
-    },
+    redirect: session
+      ? {
+          destination: redirectURL,
+          permanent: true,
+        }
+      : {
+          destination: '/login',
+          permanent: false,
+        },
     props: {
       session,
     },
