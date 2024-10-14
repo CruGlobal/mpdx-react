@@ -2,8 +2,6 @@ import { GetServerSidePropsContext } from 'next';
 import { session } from '__tests__/fixtures/session';
 import { getServerSideProps } from './[inviteId].page';
 
-jest.mock('next-auth/react');
-
 describe('Account Invite Link Redirect', () => {
   beforeEach(() => {
     jest.clearAllMocks();

@@ -102,8 +102,8 @@ const AcceptInvitePage = (): ReactElement => {
         }
       } catch (err) {
         const inviter = url.includes('organizations')
-          ? 'organization admin'
-          : 'account holder';
+          ? t('organization admin')
+          : t('account holder');
         enqueueSnackbar(
           t(
             'Unable to accept invite. Try asking the {{inviter}} to resend the invite.',
