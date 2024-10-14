@@ -35,7 +35,7 @@ const MapLoading = styled(CircularProgress)(() => ({
 const mapContainerStyle = {
   height: '100%',
   width: '100%',
-  zIndex: 2000,
+  zIndex: 1000,
 };
 
 const options = {
