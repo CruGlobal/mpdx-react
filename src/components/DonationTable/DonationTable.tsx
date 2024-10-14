@@ -97,6 +97,7 @@ export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 const DashUnderlineTypography = styled(Typography)(() => ({
   borderBottom: '1px dashed black',
   display: 'inline',
+  fontSize: 'inherit',
 }));
 
 export interface DonationRow {
