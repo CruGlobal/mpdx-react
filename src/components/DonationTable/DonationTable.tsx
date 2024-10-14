@@ -11,6 +11,7 @@ import {
   TableHead,
   TableRow,
   Tooltip,
+  Typography,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
@@ -91,6 +92,12 @@ export const LoadingBox = styled(Box)(({ theme }) => ({
 
 export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
+}));
+
+const DashUnderlineTypography = styled(Typography)(() => ({
+  borderBottom: '1px dashed black',
+  display: 'inline',
+  fontSize: 'inherit',
 }));
 
 export interface DonationRow {
@@ -203,8 +210,33 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     </Tooltip>
   );
 
-  const amount: RenderCell = ({ row }) =>
-    currencyFormat(row.convertedAmount, row.currency, locale);
+  const amount: RenderCell = ({ row }) => {
+    if (row.currency !== row.foreignCurrency) {
+      return (
+        <Tooltip
+          arrow
+          placement="bottom"
+          title={t(
+            'Conversion rate of {{rate}}. This conversion is approximate.',
+            {
+              rate: (row.convertedAmount / row.foreignAmount).toFixed(4),
+            },
+          )}
+        >
+          {/* We are rounding to avoid confusion. The number displayed won't exactly match the number in their account due to variations in exchange rates  */}
+          <DashUnderlineTypography>
+            {currencyFormat(
+              Math.round(row.convertedAmount),
+              row.currency,
+              locale,
+            )}
+          </DashUnderlineTypography>
+        </Tooltip>
+      );
+    } else {
+      return currencyFormat(row.convertedAmount, row.currency, locale);
+    }
+  };
 
   const foreignAmount: RenderCell = ({ row }) =>
     currencyFormat(row.foreignAmount, row.foreignCurrency, locale);
@@ -379,10 +411,27 @@ export const DonationTable: React.FC<DonationTableProps> = ({
                           {t('Total {{currency}} Donations:', { currency })}
                         </TableCell>
                         <TableCell>
-                          {currencyFormat(
-                            total.convertedTotal,
-                            accountCurrency,
-                            locale,
+                          {accountCurrency !== currency ? (
+                            <Tooltip
+                              arrow
+                              title={t('This conversion is approximate')}
+                            >
+                              <DashUnderlineTypography>
+                                {currencyFormat(
+                                  Math.round(total.convertedTotal),
+                                  accountCurrency,
+                                  locale,
+                                )}
+                              </DashUnderlineTypography>
+                            </Tooltip>
+                          ) : (
+                            <>
+                              {currencyFormat(
+                                total.convertedTotal,
+                                accountCurrency,
+                                locale,
+                              )}
+                            </>
                           )}
                         </TableCell>
                         <TableCell>
@@ -397,7 +446,13 @@ export const DonationTable: React.FC<DonationTableProps> = ({
                     {t('Total Donations: ')}
                   </TableCell>
                   <TableCell style={{ width: 100 }}>
-                    {currencyFormat(totalDonations, accountCurrency, locale)}
+                    {currencyFormat(
+                      hasForeignDonations
+                        ? Math.round(totalDonations)
+                        : totalDonations,
+                      accountCurrency,
+                      locale,
+                    )}
                   </TableCell>
                   <TableCell />
                 </TableRow>
