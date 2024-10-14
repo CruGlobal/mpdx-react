@@ -27,12 +27,17 @@ onesky
             if (!fs.existsSync('public/locales/' + lang.code)) {
               fs.promises.mkdir('public/locales/' + lang.code);
             }
+            const sortedContent = Object.fromEntries(
+              Object.entries(JSON.parse(langContent)).sort(([key1], [key2]) =>
+                key1.localeCompare(key2),
+              ),
+            );
             fs.promises.writeFile(
               'public/locales/' + lang.code + '/translation.json',
-              langContent,
+              JSON.stringify(sortedContent, null, 2),
             );
             // For printing results in CLI log
-            console.log(langContent);
+            console.log(sortedContent);
           })
           .catch(function (langError) {
             console.log(langError); // log error results
