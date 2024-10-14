@@ -1,7 +1,9 @@
+import { NextRouter } from 'next/router';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { getSession } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
@@ -25,7 +27,7 @@ const mockEnqueue = jest.fn();
 const mutationSpy = jest.fn();
 const push = jest.fn();
 
-const router = {
+const defaultRouter = {
   query: { accountListId },
   pathname: '/accountLists/[accountListId]/settings/preferences',
   isReady: true,
@@ -48,6 +50,7 @@ interface MocksProvidersProps {
   canUserExportData: boolean;
   singleOrg?: boolean;
   setup?: string;
+  router?: Partial<NextRouter> | undefined;
 }
 
 const MocksProviders: React.FC<MocksProvidersProps> = ({
@@ -55,6 +58,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
   canUserExportData,
   singleOrg,
   setup,
+  router = defaultRouter,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
@@ -212,6 +216,41 @@ describe('Preferences page', () => {
     await waitFor(() =>
       expect(queryByText('Primary Organization')).not.toBeInTheDocument(),
     );
+  });
+  describe('Export Redirect', () => {
+    const apiToken = 'apiToken';
+    beforeEach(() => {
+      (getSession as jest.Mock).mockResolvedValue({
+        apiToken,
+      });
+    });
+    it('redirects when exportId is provided in the URL', () => {
+      const router = {
+        isReady: true,
+        query: {
+          exportId: 'export_id',
+          accountListId,
+        },
+      };
+
+      const {} = render(
+        <MocksProviders
+          canUserExportData={false}
+          singleOrg={true}
+          router={router}
+        >
+          <Preferences />
+        </MocksProviders>,
+      );
+
+      expect(window.location.replace).toHaveBeenCalledWith(
+        `${
+          process.env.REST_API_URL
+        }/account_lists/${accountListId}/exports/${encodeURIComponent(
+          'export_id',
+        )}.xml?access_token=${apiToken}`,
+      );
+    });
   });
 
   describe('Setup Tour', () => {
