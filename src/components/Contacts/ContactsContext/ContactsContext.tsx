@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { type DebouncedFunc, debounce, omit } from 'lodash';
+import { omit } from 'lodash';
 import {
   ContactFiltersQuery,
   useContactFiltersQuery,
@@ -20,6 +20,7 @@ import {
 } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';
@@ -48,7 +49,7 @@ export type ContactsType = {
   handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
   setContactFocus: (id: string | undefined) => void;
-  setSearchTerm: DebouncedFunc<(searchTerm: string) => void>;
+  setSearchTerm: (searchTerm: string) => void;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
     view: string,
@@ -178,7 +179,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     },
     skip: !accountListId,
   });
-  const { data, loading, fetchMore } = contactsQueryResult;
+  const { data, fetchMore } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -216,6 +217,20 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     }
   }, [contactId]);
 
+  // Load all pages of contacts on the map view
+  useEffect(() => {
+    if (
+      viewMode === TableViewModeEnum.Map &&
+      data?.contacts.pageInfo.hasNextPage
+    ) {
+      fetchMore({
+        variables: {
+          after: data.contacts.pageInfo.endCursor,
+        },
+      });
+    }
+  }, [data, viewMode]);
+
   useEffect(() => {
     if (userOptionsLoading) {
       return;
@@ -224,22 +239,12 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setContactFocus(
       contactId &&
         contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'map' &&
-        contactId[contactId.length - 1] !== 'list'
+        contactId[contactId.length - 1] !== 'list' &&
+        contactId[contactId.length - 1] !== 'tour'
         ? contactId[contactId.length - 1]
         : undefined,
-      contactId ? true : false,
     );
-    if (!loading && viewMode === TableViewModeEnum.Map) {
-      if (data?.contacts.pageInfo.hasNextPage) {
-        fetchMore({
-          variables: {
-            after: data.contacts?.pageInfo.endCursor,
-          },
-        });
-      }
-    }
-  }, [loading, viewMode]);
+  }, [userOptionsLoading, viewMode]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -300,9 +305,10 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     });
     setContactDetailsId(id ?? null);
   };
-  const setSearchTerm = useCallback(
-    debounce((searchTerm: string) => {
-      const { searchTerm: _, ...oldQuery } = query;
+
+  const handleSetSearchTerm = useCallback(
+    (searchTerm: string) => {
+      const { searchTerm: _, ...oldQuery } = router.query;
       if (searchTerm !== '') {
         replace({
           pathname,
@@ -321,9 +327,10 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
           },
         });
       }
-    }, 500),
-    [accountListId],
+    },
+    [router, accountListId],
   );
+  const setSearchTerm = useDebouncedCallback(handleSetSearchTerm, 500);
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
