@@ -10,7 +10,6 @@ describe('ContactsMap', () => {
       <TestRouter>
         <GqlMockedProvider>
           <ContactsProvider
-            urlFilters={{}}
             activeFilters={{}}
             setActiveFilters={jest.fn()}
             starredFilter={{}}
@@ -19,6 +18,7 @@ describe('ContactsMap', () => {
             setFilterPanelOpen={jest.fn()}
             contactId={undefined}
             searchTerm={''}
+            setSearchTerm={jest.fn()}
           >
             <ContactsMap />
           </ContactsProvider>

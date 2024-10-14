@@ -70,7 +70,6 @@ export type ContactsType = {
   contactDetailsId: string | undefined;
   viewMode: TableViewModeEnum | undefined;
   setViewMode: (mode: TableViewModeEnum) => void;
-  urlFilters: any;
   isFiltered: boolean;
   selectedIds: string[];
   deselectAll: () => void;
@@ -81,7 +80,6 @@ export const ContactsContext = React.createContext<ContactsType | null>(null);
 
 export interface ContactsContextProps {
   children?: React.ReactNode;
-  urlFilters?: any;
   activeFilters: ContactFilterSetInput;
   setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
   starredFilter: ContactFilterSetInput;
@@ -89,7 +87,8 @@ export interface ContactsContextProps {
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   contactId: string | string[] | undefined;
-  searchTerm: string | string[] | undefined;
+  searchTerm: string;
+  setSearchTerm: Dispatch<SetStateAction<string>>;
 }
 
 export const ContactsContextSavedFilters = (
@@ -118,7 +117,6 @@ export const ContactsContextSavedFilters = (
 
 export const ContactsProvider: React.FC<ContactsContextProps> = ({
   children,
-  urlFilters,
   activeFilters,
   setActiveFilters,
   starredFilter,
@@ -127,11 +125,12 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   setFilterPanelOpen,
   contactId,
   searchTerm,
+  setSearchTerm,
 }) => {
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
   const router = useRouter();
-  const { query, push, replace, pathname } = router;
+  const { query, push } = router;
 
   const [contactDetailsId, setContactDetailsId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<TableViewModeEnum>(
@@ -166,7 +165,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       ...starredFilter,
       wildcardSearch: searchTerm as string,
       ids:
-        viewMode === TableViewModeEnum.Map && urlFilters ? urlFilters.ids : [],
+        viewMode === TableViewModeEnum.Map && activeFilters
+          ? activeFilters.ids
+          : [],
     }),
     [sanitizedFilters, starredFilter, searchTerm],
   );
@@ -267,11 +268,8 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     accountListId,
   );
 
-  const isFiltered =
-    Object.keys(urlFilters ?? {}).length > 0 ||
-    Object.values(urlFilters ?? {}).some(
-      (filter) => filter !== ([] as Array<string>),
-    );
+  const isFiltered = Object.keys(activeFilters).length > 0;
+
   //#endregion
 
   //#region User Actions
@@ -284,7 +282,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     if (viewMode === TableViewModeEnum.Map && ids && ids.length > 0) {
       filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
     }
-    if (viewMode !== TableViewModeEnum.Map && urlFilters && urlFilters.ids) {
+    if (
+      viewMode !== TableViewModeEnum.Map &&
+      activeFilters &&
+      activeFilters.ids
+    ) {
       const newFilters = omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
@@ -306,31 +308,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setContactDetailsId(id ?? null);
   };
 
-  const handleSetSearchTerm = useCallback(
-    (searchTerm: string) => {
-      const { searchTerm: _, ...oldQuery } = router.query;
-      if (searchTerm !== '') {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
-            ...(searchTerm && { searchTerm }),
-          },
-        });
-      } else {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
-          },
-        });
-      }
-    },
-    [router, accountListId],
-  );
-  const setSearchTerm = useDebouncedCallback(handleSetSearchTerm, 500);
+  const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
 
   const handleViewModeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -392,7 +370,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
-        setSearchTerm: setSearchTerm,
+        setSearchTerm: setSearchTermDebounced,
         handleViewModeChange: handleViewModeChange,
         selected: selected,
         setSelected: setSelected,
@@ -410,7 +388,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         contactDetailsId: contactDetailsId ?? undefined,
         viewMode: viewMode,
         setViewMode: setViewMode,
-        urlFilters: urlFilters,
         isFiltered: isFiltered,
         selectedIds: ids,
         deselectAll: deselectAll,

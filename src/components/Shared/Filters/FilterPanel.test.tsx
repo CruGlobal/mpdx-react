@@ -89,7 +89,6 @@ describe('FilterPanel', () => {
     return (
       <TestRouter router={router}>
         <ContactsProvider
-          urlFilters={{}}
           activeFilters={{}}
           setActiveFilters={() => {}}
           starredFilter={{}}
@@ -98,6 +97,7 @@ describe('FilterPanel', () => {
           setFilterPanelOpen={() => {}}
           contactId={[]}
           searchTerm={'test'}
+          setSearchTerm={jest.fn()}
         >
           <FilterPanel
             filters={filters}

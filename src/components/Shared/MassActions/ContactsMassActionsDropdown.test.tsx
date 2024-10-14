@@ -7,8 +7,8 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -264,16 +264,7 @@ describe('ContactsMassActionsDropdown', () => {
           <GqlMockedProvider>
             <LocalizationProvider dateAdapter={AdapterLuxon}>
               <SnackbarProvider>
-                <ContactsProvider
-                  activeFilters={{}}
-                  setActiveFilters={() => {}}
-                  starredFilter={{}}
-                  setStarredFilter={() => {}}
-                  filterPanelOpen={false}
-                  setFilterPanelOpen={() => {}}
-                  contactId={[]}
-                  searchTerm={''}
-                >
+                <ContactsWrapper>
                   <ContactsMassActionsDropdown
                     filterPanelOpen={false}
                     contactDetailsOpen={false}
@@ -281,7 +272,7 @@ describe('ContactsMassActionsDropdown', () => {
                     selectedIds={selectedIdsMerge}
                     page={PageEnum.Contact}
                   />
-                </ContactsProvider>
+                </ContactsWrapper>
               </SnackbarProvider>
             </LocalizationProvider>
           </GqlMockedProvider>

@@ -1,3 +1,4 @@
+import { ParsedUrlQueryInput } from 'querystring';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
@@ -10,43 +11,46 @@ interface Props {
 
 export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, replace, pathname, isReady } = router;
-
-  const urlFilters =
-    query?.filters && JSON.parse(decodeURI(query.filters as string));
+  const { query, replace, pathname } = router;
+  const { accountListId, contactId } = query;
 
   const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
-    urlFilters ?? {},
+    typeof query.filters === 'string'
+      ? JSON.parse(decodeURIComponent(query.filters))
+      : {},
   );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
-  const sanitizedFilters = useMemo(
-    () => sanitizeFilters(activeFilters),
-    [activeFilters],
+  const [searchTerm, setSearchTerm] = useState(
+    typeof query.searchTerm === 'string' ? query.searchTerm : '',
   );
+  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
 
-  const { contactId, searchTerm } = query;
+  const urlQuery = useMemo(() => {
+    const query: ParsedUrlQueryInput = {
+      accountListId,
+    };
+    if (contactId) {
+      query.contactId = contactId;
+    }
+    const sanitizedFilters = sanitizeFilters(activeFilters);
+    if (Object.keys(sanitizedFilters).length) {
+      query.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
+    }
+    if (searchTerm) {
+      query.searchTerm = encodeURIComponent(searchTerm);
+    }
+    return query;
+  }, [accountListId, contactId, activeFilters, searchTerm]);
 
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const { filters: _, ...oldQuery } = query;
     replace({
       pathname,
-      query: {
-        ...oldQuery,
-        ...(Object.keys(sanitizedFilters).length
-          ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
-          : undefined),
-      },
+      query: urlQuery,
     });
-  }, [sanitizedFilters, isReady]);
+  }, [urlQuery]);
 
   return (
     <ContactsProvider
-      urlFilters={urlFilters}
       activeFilters={activeFilters}
       setActiveFilters={setActiveFilters}
       starredFilter={starredFilter}
@@ -55,6 +59,7 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
       setFilterPanelOpen={setFilterPanelOpen}
       contactId={contactId}
       searchTerm={searchTerm}
+      setSearchTerm={setSearchTerm}
     >
       {children}
     </ContactsProvider>
