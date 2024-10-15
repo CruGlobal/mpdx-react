@@ -1,4 +1,4 @@
-import { ParsedUrlQueryInput } from 'querystring';
+import { ParsedUrlQuery, ParsedUrlQueryInput } from 'node:querystring';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
@@ -10,23 +10,36 @@ interface Props {
   children?: React.ReactNode;
 }
 
+/*
+ * Extract the contact id from the contactId query param, which is an array that may also contain
+ * the view mode.
+ */
+export const extractContactId = (query: ParsedUrlQuery): string | undefined => {
+  const contactId = query.contactId?.at(-1);
+  if (
+    !contactId ||
+    (Object.values(TableViewModeEnum) as string[]).includes(contactId)
+  ) {
+    return undefined;
+  } else {
+    return contactId;
+  }
+};
+
 export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const { query, replace, pathname } = router;
   const { accountListId } = query;
 
   // Extract the initial contact id from the URL
-  const [contactId, setContactId] = useState<string | undefined>(() => {
-    const contactId = query.contactId?.at(-1);
-    if (
-      !contactId ||
-      (Object.values(TableViewModeEnum) as string[]).includes(contactId)
-    ) {
-      return undefined;
-    } else {
-      return contactId;
-    }
-  });
+  const [contactId, setContactId] = useState<string | undefined>(() =>
+    extractContactId(query),
+  );
+  // Update the contact id when the URL changes
+  useEffect(() => {
+    setContactId(extractContactId(query));
+  }, [query]);
+
   // Extract the initial view mode from the URL
   const [viewMode, setViewMode] = useState(() => {
     const viewMode = query.contactId?.[0];

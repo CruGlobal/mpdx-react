@@ -19,7 +19,7 @@ import {
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactsWrapper } from './ContactsWrapper';
+import { ContactsWrapper, extractContactId } from './ContactsWrapper';
 
 const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();
@@ -185,5 +185,31 @@ describe('ContactsWrapper', () => {
         filters: '%7B%22tags%22:%5B%22Tag%201%22%5D%7D',
       },
     });
+  });
+});
+
+describe('extractContactId', () => {
+  it('returns the last item in the contactId query param', () => {
+    expect(
+      extractContactId({
+        contactId: ['flows', 'contact-1'],
+      }),
+    ).toBe('contact-1');
+  });
+
+  it('returns undefined when the last item in the contactId query param is the view mode', () => {
+    expect(
+      extractContactId({
+        contactId: ['flows'],
+      }),
+    ).toBeUndefined();
+  });
+
+  it('returns undefined when the last item in the contactId query param is empty', () => {
+    expect(
+      extractContactId({
+        contactId: [],
+      }),
+    ).toBeUndefined();
   });
 });
