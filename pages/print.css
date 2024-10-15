@@ -18,4 +18,8 @@
   header {
     display: none !important;
   }
+
+  #helpjuice-widget {
+    display: none;
+  }
 }
