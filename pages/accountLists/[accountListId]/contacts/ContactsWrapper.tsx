@@ -3,7 +3,10 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
 interface Props {
@@ -53,12 +56,16 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
     }
   });
 
-  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
+  const [activeFilters, setActiveFilters] = useState<
+    ContactFilterSetInput & TaskFilterSetInput
+  >(
     typeof query.filters === 'string'
       ? JSON.parse(decodeURIComponent(query.filters))
       : {},
   );
-  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
+  const [starredFilter, setStarredFilter] = useState<
+    ContactFilterSetInput & TaskFilterSetInput
+  >({});
   const [searchTerm, setSearchTerm] = useState(
     typeof query.searchTerm === 'string' ? query.searchTerm : '',
   );

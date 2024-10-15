@@ -13,7 +13,10 @@ import {
   useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
+import {
+  ContactFilterSetInput,
+  TaskFilterSetInput,
+} from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
@@ -32,7 +35,7 @@ import { Coordinates } from '../ContactsMap/coordinates';
 export type ContactsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
-  searchTerm: string | string[] | undefined;
+  searchTerm: string;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -54,11 +57,15 @@ export type ContactsType = {
   mapRef: React.MutableRefObject<google.maps.Map | null>;
   panTo: (coords: { lat: number; lng: number }) => void;
   mapData: Coordinates[] | undefined;
-  activeFilters: ContactFilterSetInput;
-  sanitizedFilters: ContactFilterSetInput;
-  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
-  starredFilter: ContactFilterSetInput;
-  setStarredFilter: (filter: ContactFilterSetInput) => void;
+  activeFilters: ContactFilterSetInput & TaskFilterSetInput;
+  sanitizedFilters: ContactFilterSetInput & TaskFilterSetInput;
+  setActiveFilters: Dispatch<
+    SetStateAction<ContactFilterSetInput & TaskFilterSetInput>
+  >;
+  starredFilter: ContactFilterSetInput & TaskFilterSetInput;
+  setStarredFilter: (
+    filter: ContactFilterSetInput & TaskFilterSetInput,
+  ) => void;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   contactDetailsOpen: boolean;
@@ -75,10 +82,14 @@ export const ContactsContext = React.createContext<ContactsType | null>(null);
 
 export interface ContactsContextProps {
   children?: React.ReactNode;
-  activeFilters: ContactFilterSetInput;
-  setActiveFilters: Dispatch<SetStateAction<ContactFilterSetInput>>;
-  starredFilter: ContactFilterSetInput;
-  setStarredFilter: (filter: ContactFilterSetInput) => void;
+  activeFilters: ContactFilterSetInput & TaskFilterSetInput;
+  setActiveFilters: Dispatch<
+    SetStateAction<ContactFilterSetInput & TaskFilterSetInput>
+  >;
+  starredFilter: ContactFilterSetInput & TaskFilterSetInput;
+  setStarredFilter: (
+    filter: ContactFilterSetInput & TaskFilterSetInput,
+  ) => void;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   contactId: string | undefined;
