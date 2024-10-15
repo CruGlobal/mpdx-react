@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,16 +7,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { omit } from 'lodash';
 import {
   ContactFiltersQuery,
   useContactFiltersQuery,
   useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import {
-  coordinatesFromContacts,
-  getRedirectPathname,
-} from 'pages/accountLists/[accountListId]/contacts/helpers';
+import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
@@ -86,7 +81,10 @@ export interface ContactsContextProps {
   setStarredFilter: (filter: ContactFilterSetInput) => void;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
-  contactId: string | string[] | undefined;
+  contactId: string | undefined;
+  setContactId: Dispatch<SetStateAction<string | undefined>>;
+  viewMode: TableViewModeEnum;
+  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
 }
@@ -124,37 +122,28 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   filterPanelOpen,
   setFilterPanelOpen,
   contactId,
+  setContactId,
+  viewMode,
+  setViewMode,
   searchTerm,
   setSearchTerm,
 }) => {
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
-  const router = useRouter();
-  const { query, push } = router;
 
-  const [contactDetailsId, setContactDetailsId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
-    TableViewModeEnum.List,
-  );
   const sanitizedFilters = useMemo(
     () => sanitizeFilters(activeFilters),
     [activeFilters],
   );
 
-  if (contactId !== undefined && !Array.isArray(contactId)) {
-    throw new Error('contactId should be an array or undefined');
-  }
-
-  //User options for display view
+  // Load the user's view preference
   const { loading: userOptionsLoading } = useGetUserOptionsQuery({
     onCompleted: ({ userOptions }) => {
-      if (contactId?.includes('list')) {
-        setViewMode(TableViewModeEnum.List);
-      } else {
-        setViewMode(
-          (userOptions.find((option) => option.key === 'contacts_view')
-            ?.value as TableViewModeEnum) || TableViewModeEnum.List,
-        );
+      const option = userOptions.find(
+        (option) => option.key === 'contacts_view',
+      );
+      if (option && option.value) {
+        setViewMode(option.value as TableViewModeEnum);
       }
     },
   });
@@ -176,7 +165,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,
-      first: contactId?.includes('map') ? 20000 : 25,
+      first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
     },
     skip: !accountListId,
   });
@@ -208,16 +197,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   } = useMassSelection(allContactIds);
   //#endregion
 
-  useEffect(() => {
-    if (contactId) {
-      if (!['flows', 'map', 'list'].includes(contactId[contactId.length - 1])) {
-        setContactDetailsId(contactId[contactId.length - 1]);
-      }
-    } else {
-      setContactDetailsId(null);
-    }
-  }, [contactId]);
-
   // Load all pages of contacts on the map view
   useEffect(() => {
     if (
@@ -231,21 +210,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       });
     }
   }, [data, viewMode]);
-
-  useEffect(() => {
-    if (userOptionsLoading) {
-      return;
-    }
-
-    setContactFocus(
-      contactId &&
-        contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'list' &&
-        contactId[contactId.length - 1] !== 'tour'
-        ? contactId[contactId.length - 1]
-        : undefined,
-    );
-  }, [userOptionsLoading, viewMode]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -273,40 +237,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id: string | undefined) => {
-    const {
-      accountListId: _accountListId,
-      contactId: _contactId,
-      ...filteredQuery
-    } = query;
-    if (viewMode === TableViewModeEnum.Map && ids && ids.length > 0) {
-      filteredQuery.filters = encodeURI(JSON.stringify({ ids }));
-    }
-    if (
-      viewMode !== TableViewModeEnum.Map &&
-      activeFilters &&
-      activeFilters.ids
-    ) {
-      const newFilters = omit(activeFilters, 'ids');
-      if (Object.keys(newFilters).length > 0) {
-        filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
-      } else {
-        delete filteredQuery['filters'];
-      }
-    }
-
-    const pathname = getRedirectPathname({
-      routerPathname: router.pathname,
-      accountListId,
-      contactId: id,
-      viewMode,
-    });
-    push({
-      pathname,
-      query: filteredQuery,
-    });
-    setContactDetailsId(id ?? null);
-  };
 
   const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
 
@@ -369,7 +299,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         toggleFilterPanel: toggleFilterPanel,
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
-        setContactFocus: setContactFocus,
+        setContactFocus: setContactId,
         setSearchTerm: setSearchTermDebounced,
         handleViewModeChange: handleViewModeChange,
         selected: selected,
@@ -384,8 +314,8 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         setStarredFilter: setStarredFilter,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
-        contactDetailsOpen: contactDetailsId !== null,
-        contactDetailsId: contactDetailsId ?? undefined,
+        contactDetailsOpen: contactId !== undefined,
+        contactDetailsId: contactId,
         viewMode: viewMode,
         setViewMode: setViewMode,
         isFiltered: isFiltered,
