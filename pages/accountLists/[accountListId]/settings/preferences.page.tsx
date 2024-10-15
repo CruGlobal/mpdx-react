@@ -61,7 +61,9 @@ const Preferences: React.FC = () => {
 
   useEffect(() => {
     const redirectToDownloadExportedData = (exportDataExportId: string) => {
-      if (!exportDataExportId) {return;}
+      if (!exportDataExportId) {
+        return;
+      }
 
       const url = `${
         process.env.REST_API_URL

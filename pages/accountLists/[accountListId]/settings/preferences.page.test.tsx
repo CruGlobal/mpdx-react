@@ -3,7 +3,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
@@ -218,12 +218,6 @@ describe('Preferences page', () => {
     );
   });
   describe('Export Redirect', () => {
-    const apiToken = 'apiToken';
-    beforeEach(() => {
-      (getSession as jest.Mock).mockResolvedValue({
-        apiToken,
-      });
-    });
     it('redirects when exportId is provided in the URL', () => {
       const router = {
         isReady: true,
@@ -248,7 +242,7 @@ describe('Preferences page', () => {
           process.env.REST_API_URL
         }/account_lists/${accountListId}/exports/${encodeURIComponent(
           'export_id',
-        )}.xml?access_token=${apiToken}`,
+        )}.xml?access_token=${session.user.apiToken}`,
       );
     });
   });
