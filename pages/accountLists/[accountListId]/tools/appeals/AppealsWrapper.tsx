@@ -1,8 +1,12 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
-import { AppealsProvider } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import React, { useEffect, useState } from 'react';
+import {
+  AppealsContextProps,
+  AppealsProvider,
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { getQueryParam } from 'src/utils/queryParam';
 
 interface Props {
   children?: React.ReactNode;
@@ -15,12 +19,12 @@ export enum PageEnum {
 
 export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, replace, push, pathname, isReady } = router;
+  const { query, replace, push, pathname } = router;
 
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
 
-  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
+  const [activeFilters, setActiveFiltersRaw] = useState<ContactFilterSetInput>(
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
@@ -30,12 +34,9 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const [contactId, setContactId] = useState<string | string[] | undefined>(
     undefined,
   );
-  const sanitizedFilters = useMemo(
-    () => sanitizeFilters(activeFilters),
-    [activeFilters],
-  );
 
-  const { appealId: appealIdParams, searchTerm, accountListId } = query;
+  const { appealId: appealIdParams, accountListId } = query;
+  const searchTerm = getQueryParam(query, 'searchTerm') ?? '';
 
   useEffect(() => {
     if (appealIdParams === undefined) {
@@ -67,12 +68,11 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     }
   }, [appealIdParams, accountListId]);
 
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
+  const updateUrlFilters = (filters: ContactFilterSetInput) => {
     const { filters: _, ...oldQuery } = query;
+
+    const sanitizedFilters = sanitizeFilters(filters);
+
     replace({
       pathname,
       query: {
@@ -82,11 +82,16 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
           : undefined),
       },
     });
-  }, [sanitizedFilters, isReady]);
+  };
+
+  const setActiveFilters: AppealsContextProps['setActiveFilters'] = (value) => {
+    const filters = typeof value === 'function' ? value(activeFilters) : value;
+    updateUrlFilters(filters);
+    setActiveFiltersRaw(filters);
+  };
 
   return (
     <AppealsProvider
-      urlFilters={urlFilters}
       activeFilters={activeFilters}
       setActiveFilters={setActiveFilters}
       starredFilter={starredFilter}
@@ -95,7 +100,9 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
       setFilterPanelOpen={setFilterPanelOpen}
       appealId={appealId}
       contactId={contactId}
+      setContactId={() => {}}
       searchTerm={searchTerm}
+      setSearchTerm={() => {}}
       page={page}
     >
       {children}

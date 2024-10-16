@@ -83,14 +83,15 @@ export enum AppealTourEnum {
   ExportContacts = 'exportContacts',
   Finish = 'finish',
 }
-interface AppealsContextProps extends ContactsContextProps {
+export interface AppealsContextProps
+  extends Omit<ContactsContextProps, 'contactId'> {
+  contactId: string | string[] | undefined;
   appealId: string | undefined;
   page?: PageEnum;
 }
 
 export const AppealsProvider: React.FC<AppealsContextProps> = ({
   children,
-  urlFilters,
   activeFilters,
   setActiveFilters,
   starredFilter,
@@ -164,7 +165,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     },
     skip: !accountListId,
   });
-  const { data, loading } = contactsQueryResult;
+  const { data } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -241,7 +242,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         : undefined,
       contactId ? true : false,
     );
-  }, [loading, viewMode]);
+  }, [viewMode]);
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -326,11 +327,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     accountListId,
   );
 
-  const isFiltered =
-    Object.keys(urlFilters ?? {}).length > 0 ||
-    Object.values(urlFilters ?? {}).some(
-      (filter) => filter !== ([] as Array<string>),
-    );
+  const isFiltered = Object.keys(activeFilters).length > 0;
   //#endregion
 
   //#region User Actions
@@ -341,7 +338,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       appealId: _appealId,
       ...filteredQuery
     } = query;
-    if (urlFilters && urlFilters.ids) {
+    if (activeFilters && activeFilters.ids) {
       const newFilters = omit(activeFilters, 'ids');
       if (Object.keys(newFilters).length > 0) {
         filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
@@ -409,12 +406,13 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
-    setActiveFilters({});
     if (view === TableViewModeEnum.List) {
       setFilterPanelOpen(true);
       setActiveFilters({
         appealStatus: AppealStatusEnum.Asked,
       });
+    } else {
+      setActiveFilters({});
     }
   };
   //#endregion
@@ -506,7 +504,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         contactDetailsId: contactDetailsId ?? undefined,
         viewMode: viewMode,
         setViewMode: setViewMode,
-        urlFilters: urlFilters,
         isFiltered: isFiltered,
         selectedIds: ids,
         deselectAll: deselectAll,
