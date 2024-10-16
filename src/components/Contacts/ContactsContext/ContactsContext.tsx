@@ -159,18 +159,18 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     },
   });
 
-  const contactsFilters = useMemo(
-    () => ({
-      ...sanitizedFilters,
+  const contactsFilters = useMemo(() => {
+    // Remove filters in the map view
+    const viewFilters =
+      viewMode === TableViewModeEnum.Map
+        ? { ids: sanitizedFilters.ids }
+        : sanitizedFilters;
+    return {
+      ...viewFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
-      ids:
-        viewMode === TableViewModeEnum.Map && activeFilters
-          ? activeFilters.ids
-          : [],
-    }),
-    [sanitizedFilters, starredFilter, searchTerm],
-  );
+    };
+  }, [sanitizedFilters, viewMode, starredFilter, searchTerm]);
 
   const contactsQueryResult = useContactsQuery({
     variables: {
