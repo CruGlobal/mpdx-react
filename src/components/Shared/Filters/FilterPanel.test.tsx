@@ -90,11 +90,11 @@ describe('FilterPanel', () => {
       <TestRouter router={router}>
         <ContactsProvider
           activeFilters={{}}
-          setActiveFilters={() => {}}
+          setActiveFilters={jest.fn()}
           starredFilter={{}}
-          setStarredFilter={() => {}}
+          setStarredFilter={jest.fn()}
           filterPanelOpen={false}
-          setFilterPanelOpen={() => {}}
+          setFilterPanelOpen={jest.fn()}
           contactId={undefined}
           setContactId={jest.fn()}
           searchTerm={'test'}
