@@ -1,6 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { AppealsProvider } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import {
+  AppealsContextProps,
+  AppealsProvider,
+} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -21,7 +24,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
 
-  const [activeFilters, setActiveFilters] = useState<ContactFilterSetInput>(
+  const [activeFilters, setActiveFiltersRaw] = useState<ContactFilterSetInput>(
     urlFilters ?? {},
   );
   const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
@@ -81,15 +84,16 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     });
   };
 
+  const setActiveFilters: AppealsContextProps['setActiveFilters'] = (value) => {
+    const filters = typeof value === 'function' ? value(activeFilters) : value;
+    updateUrlFilters(filters);
+    setActiveFiltersRaw(filters);
+  };
+
   return (
     <AppealsProvider
       activeFilters={activeFilters}
-      setActiveFilters={(value) => {
-        const filters =
-          typeof value === 'function' ? value(activeFilters) : value;
-        updateUrlFilters(filters);
-        setActiveFilters(filters);
-      }}
+      setActiveFilters={setActiveFilters}
       starredFilter={starredFilter}
       setStarredFilter={setStarredFilter}
       filterPanelOpen={filterPanelOpen}

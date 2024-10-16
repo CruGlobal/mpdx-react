@@ -83,7 +83,8 @@ export enum AppealTourEnum {
   ExportContacts = 'exportContacts',
   Finish = 'finish',
 }
-interface AppealsContextProps extends Omit<ContactsContextProps, 'contactId'> {
+export interface AppealsContextProps
+  extends Omit<ContactsContextProps, 'contactId'> {
   contactId: string | string[] | undefined;
   appealId: string | undefined;
   page?: PageEnum;
