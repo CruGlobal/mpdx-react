@@ -38,8 +38,8 @@ const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
 };
 
 const defaultDateRange = formatDateRange();
-const defaultStartDate = defaultDateRange.split('..')[0];
-const defaultEndDate = defaultDateRange.split('..')[1];
+export const defaultStartDate = defaultDateRange.split('..')[0];
+export const defaultEndDate = defaultDateRange.split('..')[1];
 
 export const AccountTransactions: React.FC = () => {
   const { query } = useRouter();
@@ -118,28 +118,33 @@ export const AccountTransactions: React.FC = () => {
       t('Outflow'),
       t('Inflow'),
     ];
-    const convertDataToArray = data.financialAccountEntries.entries.map(
-      (entry) => [
-        entry.entryDate
-          ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
-          : 'No entry date',
-        entry.description ?? '',
-        entry.category?.name ?? entry.category?.code ?? '',
-        entry.type === FinancialAccountEntryTypeEnum.Debit
-          ? currencyFormat(
-              formatNumber(entry.amount),
-              entry.currency,
-              locale,
-            ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
-          : '',
-        entry.type === FinancialAccountEntryTypeEnum.Credit
-          ? currencyFormat(
-              formatNumber(entry.amount),
-              entry.currency,
-              locale,
-            ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
-          : '',
-      ],
+    const convertDataToArray = data.financialAccountEntries.entries.reduce(
+      (array, entry) => {
+        return [
+          ...array,
+          [
+            entry.entryDate
+              ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
+              : 'No entry date',
+            entry.description ?? '',
+            entry.category?.name ?? entry.category?.code ?? '',
+            entry.type === FinancialAccountEntryTypeEnum.Debit
+              ? currencyFormat(
+                  formatNumber(entry.amount),
+                  entry.currency,
+                  locale,
+                ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
+              : '',
+            entry.type === FinancialAccountEntryTypeEnum.Credit
+              ? currencyFormat(
+                  formatNumber(entry.amount),
+                  entry.currency,
+                  locale,
+                ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
+              : '',
+          ],
+        ];
+      },
       [columnHeaders],
     );
 

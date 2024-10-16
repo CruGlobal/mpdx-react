@@ -11,10 +11,12 @@ import {
   FinancialAccountType,
 } from '../Context/FinancialAccountsContext';
 import { FinancialAccounts } from './FinancialAccounts';
+import { FinancialAccountsQuery } from './FinancialAccounts.generated';
 import {
-  FinancialAccountsDocument,
-  FinancialAccountsQuery,
-} from './FinancialAccounts.generated';
+  FinancialAccountsEmptyMock,
+  FinancialAccountsErrorMock,
+  FinancialAccountsMock,
+} from './FinancialAccountsMocks';
 
 jest.mock('next/router', () => ({
   useRouter: () => {
@@ -28,46 +30,6 @@ jest.mock('next/router', () => ({
 const accountListId = '111';
 const onNavListToggle = jest.fn();
 const mutationSpy = jest.fn();
-
-const mocks = {
-  FinancialAccounts: {
-    financialAccounts: {
-      nodes: [
-        {
-          active: true,
-          balance: {
-            conversionDate: '2021-02-02',
-            convertedAmount: 3500,
-            convertedCurrency: 'CAD',
-          },
-          code: '13212',
-          id: 'test-id-111',
-          name: 'Test Account',
-          organization: {
-            id: '111-2222-3333',
-            name: 'test org 01',
-          },
-          updatedAt: '2021-02-02',
-        },
-      ],
-    },
-  },
-};
-
-const errorMock = {
-  request: {
-    query: FinancialAccountsDocument,
-  },
-  error: { name: 'error', message: 'Error loading data.  Try again.' },
-};
-
-const emptyMocks = {
-  FinancialAccounts: {
-    financialAccounts: {
-      nodes: [],
-    },
-  },
-};
 
 interface ComponentsProps {
   mocks?: ApolloErgonoMockMap;
@@ -91,7 +53,7 @@ const Components: React.FC<ComponentsProps> = ({
       }
     >
       {useErrorMockedProvider ? (
-        <MockedProvider mocks={[errorMock]}>
+        <MockedProvider mocks={[FinancialAccountsErrorMock]}>
           <FinancialAccounts />
         </MockedProvider>
       ) : (
@@ -112,7 +74,7 @@ describe('FinancialAccounts', () => {
   });
   it('default', async () => {
     const { getByText, getByTestId, queryByTestId } = render(
-      <Components mocks={mocks} />,
+      <Components mocks={FinancialAccountsMock} />,
     );
 
     await waitFor(() => {
@@ -127,7 +89,9 @@ describe('FinancialAccounts', () => {
   });
 
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {
-    const { getByTestId } = render(<Components mocks={mocks} />);
+    const { getByTestId } = render(
+      <Components mocks={FinancialAccountsMock} />,
+    );
 
     expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsFilterIcon'));
@@ -135,7 +99,9 @@ describe('FinancialAccounts', () => {
   });
 
   it('loading', async () => {
-    const { queryByTestId, getByText } = render(<Components mocks={mocks} />);
+    const { queryByTestId, getByText } = render(
+      <Components mocks={FinancialAccountsMock} />,
+    );
 
     expect(getByText('Responsibility Centers')).toBeInTheDocument();
     expect(queryByTestId('LoadingFinancialAccounts')).toBeInTheDocument();
@@ -153,7 +119,9 @@ describe('FinancialAccounts', () => {
   });
 
   it('empty', async () => {
-    const { queryByTestId } = render(<Components mocks={emptyMocks} />);
+    const { queryByTestId } = render(
+      <Components mocks={FinancialAccountsEmptyMock} />,
+    );
 
     await waitFor(() => {
       expect(queryByTestId('LoadingFinancialAccounts')).not.toBeInTheDocument();
@@ -163,7 +131,12 @@ describe('FinancialAccounts', () => {
   });
 
   it('filters report by designation account', async () => {
-    render(<Components mocks={mocks} designationAccounts={['account-1']} />);
+    render(
+      <Components
+        mocks={FinancialAccountsMock}
+        designationAccounts={['account-1']}
+      />,
+    );
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('FinancialAccounts', {
@@ -173,7 +146,7 @@ describe('FinancialAccounts', () => {
   });
 
   it('does not filter report by designation account', async () => {
-    render(<Components mocks={mocks} />);
+    render(<Components mocks={FinancialAccountsMock} />);
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('FinancialAccounts', {
