@@ -1,4 +1,4 @@
-import { ParsedUrlQuery, ParsedUrlQueryInput } from 'node:querystring';
+import { ParsedUrlQuery } from 'node:querystring';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
@@ -72,9 +72,11 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const [filterPanelOpen, setFilterPanelOpen] = useState(true);
 
   const urlQuery = useMemo(() => {
-    const query: ParsedUrlQueryInput = {
-      accountListId,
-    };
+    // Omit the filters and searchTerm from the previous query because we don't want them in the URL
+    // if they are empty and Next.js will still add them to the URL query even if they are undefined.
+    // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm
+    const { filters: _filters, searchTerm: _searchTerm, ...newQuery } = query;
+
     const queryContactId: string[] = [];
     if (viewMode !== TableViewModeEnum.List) {
       queryContactId.push(viewMode);
@@ -82,18 +84,20 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
     if (contactId) {
       queryContactId.push(contactId);
     }
-    query.contactId = queryContactId;
+    newQuery.contactId = queryContactId;
+
     const sanitizedFilters = sanitizeFilters(activeFilters);
     if (
       viewMode !== TableViewModeEnum.Map &&
       Object.keys(sanitizedFilters).length
     ) {
-      query.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
+      newQuery.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
     }
+
     if (searchTerm) {
-      query.searchTerm = encodeURIComponent(searchTerm);
+      newQuery.searchTerm = encodeURIComponent(searchTerm);
     }
-    return query;
+    return newQuery;
   }, [accountListId, contactId, viewMode, activeFilters, searchTerm]);
 
   useEffect(() => {
