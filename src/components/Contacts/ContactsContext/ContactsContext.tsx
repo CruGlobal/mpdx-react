@@ -94,8 +94,8 @@ export interface ContactsContextProps {
   setFilterPanelOpen: (open: boolean) => void;
   contactId: string | undefined;
   setContactId: Dispatch<SetStateAction<string | undefined>>;
-  viewMode: TableViewModeEnum;
-  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
+  viewMode?: TableViewModeEnum;
+  setViewMode?: Dispatch<SetStateAction<TableViewModeEnum>>;
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
 }
@@ -134,8 +134,8 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   setFilterPanelOpen,
   contactId,
   setContactId,
-  viewMode,
-  setViewMode,
+  viewMode = TableViewModeEnum.List,
+  setViewMode = () => {},
   searchTerm,
   setSearchTerm,
 }) => {
