@@ -213,7 +213,7 @@ const TasksPage: React.FC = () => {
       {accountListId ? (
         <WhiteBackground>
           <ContactsProvider
-            activeFilters={activeFilters}
+            activeFilters={{}}
             setActiveFilters={setActiveFilters}
             starredFilter={{}}
             setStarredFilter={setStarredFilter}
