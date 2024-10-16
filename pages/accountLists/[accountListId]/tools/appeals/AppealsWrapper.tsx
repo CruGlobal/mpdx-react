@@ -90,6 +90,12 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     setActiveFiltersRaw(filters);
   };
 
+  // In the future, we should build the URL based on the view, tour, and contactId like in
+  // ContactsWrapper. But for now, the contactId and search term are extracted from the URL so we
+  // don't need to handle setContactId or setSearchTerm. The contact id and search term are
+  // currently set by directly updating the URL.
+  const doNothing = () => {};
+
   return (
     <AppealsProvider
       activeFilters={activeFilters}
@@ -100,9 +106,9 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
       setFilterPanelOpen={setFilterPanelOpen}
       appealId={appealId}
       contactId={contactId}
-      setContactId={() => {}}
+      setContactId={doNothing}
       searchTerm={searchTerm}
-      setSearchTerm={() => {}}
+      setSearchTerm={doNothing}
       page={page}
     >
       {children}
