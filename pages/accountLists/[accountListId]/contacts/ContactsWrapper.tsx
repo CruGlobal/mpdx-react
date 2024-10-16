@@ -8,6 +8,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { getQueryParam } from 'src/utils/queryParam';
 
 interface Props {
   children?: React.ReactNode;
@@ -57,16 +58,12 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
 
   const [activeFilters, setActiveFilters] = useState<
     ContactFilterSetInput & TaskFilterSetInput
-  >(
-    typeof query.filters === 'string'
-      ? JSON.parse(decodeURIComponent(query.filters))
-      : {},
-  );
+  >(JSON.parse(decodeURIComponent(getQueryParam(query, 'filters') ?? '{}')));
   const [starredFilter, setStarredFilter] = useState<
     ContactFilterSetInput & TaskFilterSetInput
   >({});
   const [searchTerm, setSearchTerm] = useState(
-    typeof query.searchTerm === 'string' ? query.searchTerm : '',
+    getQueryParam(query, 'searchTerm') ?? '',
   );
   const [filterPanelOpen, setFilterPanelOpen] = useState(true);
 
