@@ -125,7 +125,8 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                   setStarredFilter={() => undefined}
                   filterPanelOpen={false}
                   setFilterPanelOpen={() => undefined}
-                  contactId={[]}
+                  contactId={undefined}
+                  setContactId={() => undefined}
                   searchTerm={''}
                   setSearchTerm={() => {}}
                 >

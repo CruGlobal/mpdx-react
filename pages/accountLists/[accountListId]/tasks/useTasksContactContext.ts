@@ -2,7 +2,6 @@ import { ParsedUrlQuery } from 'node:querystring';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import { ContactsContextProps } from 'src/components/Contacts/ContactsContext/ContactsContext';
-import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 
@@ -83,8 +82,6 @@ export const useTasksContactContext = (): ContactsContextProps => {
     setFilterPanelOpen,
     contactId,
     setContactId,
-    viewMode: TableViewModeEnum.List,
-    setViewMode: () => {},
     searchTerm,
     setSearchTerm,
   };

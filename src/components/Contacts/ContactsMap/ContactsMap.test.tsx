@@ -17,6 +17,7 @@ describe('ContactsMap', () => {
             filterPanelOpen={false}
             setFilterPanelOpen={jest.fn()}
             contactId={undefined}
+            setContactId={jest.fn()}
             searchTerm={''}
             setSearchTerm={jest.fn()}
           >

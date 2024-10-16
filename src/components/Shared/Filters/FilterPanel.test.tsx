@@ -95,7 +95,8 @@ describe('FilterPanel', () => {
           setStarredFilter={() => {}}
           filterPanelOpen={false}
           setFilterPanelOpen={() => {}}
-          contactId={[]}
+          contactId={undefined}
+          setContactId={jest.fn()}
           searchTerm={'test'}
           setSearchTerm={jest.fn()}
         >
