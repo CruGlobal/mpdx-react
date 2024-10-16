@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ContactsContextProps } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { getQueryParam } from 'src/utils/queryParam';
 
 /*
  * Extract the contact id from the contactId query param.
@@ -32,13 +33,11 @@ export const useTasksContactContext = (): ContactsContextProps => {
   }, [query]);
 
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
-    typeof query.filters === 'string'
-      ? JSON.parse(decodeURIComponent(query.filters))
-      : {},
+    JSON.parse(decodeURIComponent(getQueryParam(query, 'filters') ?? '{}')),
   );
   const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
   const [searchTerm, setSearchTerm] = useState(
-    typeof query.searchTerm === 'string' ? query.searchTerm : '',
+    getQueryParam(query, 'searchTerm') ?? '',
   );
   const [filterPanelOpen, setFilterPanelOpen] = useState(true);
 
