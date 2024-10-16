@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Add from '@mui/icons-material/Add';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
-import { Box, Button, Checkbox, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Hidden, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { StyledCheckbox } from '../../ContactRow/ContactRow';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import {
   useContactPhaseQuery,
@@ -220,7 +221,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
         </HeaderRow>
         <HeaderRow mb={1}>
           <HeaderItemsWrap>
-            <Checkbox
+            <StyledCheckbox
               checked={selectionType === ListHeaderCheckBoxState.Checked}
               color="secondary"
               indeterminate={selectionType === ListHeaderCheckBoxState.Partial}
@@ -232,6 +233,13 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               placeholder={t('Search Tasks')}
               page={PageEnum.Task}
             />
+            {!!ids.length && (
+              <Hidden smDown>
+                <Typography ml={2}>
+                  {t('{{count}} Selected', { count: ids.length })}
+                </Typography>
+              </Hidden>
+            )}
           </HeaderItemsWrap>
           <HeaderItemsWrap>
             <PlaceholderActionBar />
