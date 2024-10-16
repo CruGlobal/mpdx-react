@@ -26,6 +26,13 @@ const defaultRouter = {
   query: { accountListId },
   isReady: true,
 };
+const entriesRouter = {
+  query: {
+    accountListId,
+    financialAccount: [financialAccountId, 'entries'],
+  },
+  isReady: true,
+};
 
 const Components = ({ router = defaultRouter }: { router?: object }) => (
   <I18nextProvider i18n={i18n}>
@@ -85,17 +92,7 @@ describe('Financial Accounts Page', () => {
 
   it('should show the transactions page for a financial account', async () => {
     const { findByText, findByRole, getByText, queryByText, queryByRole } =
-      render(
-        <Components
-          router={{
-            query: {
-              accountListId,
-              financialAccount: [financialAccountId, 'entries'],
-            },
-            isReady: true,
-          }}
-        />,
-      );
+      render(<Components router={entriesRouter} />);
 
     expect(await findByText('Account 1')).toBeInTheDocument();
 
@@ -112,17 +109,7 @@ describe('Financial Accounts Page', () => {
   });
 
   it('should open filters on load and set initial date Range filter', async () => {
-    const { findByRole } = render(
-      <Components
-        router={{
-          query: {
-            accountListId,
-            financialAccount: [financialAccountId, 'entries'],
-          },
-          isReady: true,
-        }}
-      />,
-    );
+    const { findByRole } = render(<Components router={entriesRouter} />);
 
     expect(
       await findByRole('heading', { name: 'Filter (1)' }),
@@ -131,15 +118,7 @@ describe('Financial Accounts Page', () => {
 
   it('should open and close filters and menu', async () => {
     const { findByRole, getByRole, queryByRole } = render(
-      <Components
-        router={{
-          query: {
-            accountListId,
-            financialAccount: [financialAccountId, 'entries'],
-          },
-          isReady: true,
-        }}
-      />,
+      <Components router={entriesRouter} />,
     );
 
     // Filters

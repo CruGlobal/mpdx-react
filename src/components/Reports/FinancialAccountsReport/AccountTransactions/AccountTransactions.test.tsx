@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
@@ -20,11 +21,7 @@ import {
   FinancialAccountContext,
   FinancialAccountType,
 } from '../Context/FinancialAccountsContext';
-import {
-  AccountTransactions,
-  defaultEndDate,
-  defaultStartDate,
-} from './AccountTransactions';
+import { AccountTransactions } from './AccountTransactions';
 import { financialAccountEntriesMock } from './AccountTransactionsMocks';
 import { FinancialAccountEntriesQuery } from './financialAccountTransactions.generated';
 
@@ -96,6 +93,9 @@ const Components = ({
 );
 
 describe('Financial Account Transactions', () => {
+  beforeEach(() => {
+    Settings.now = () => new Date(2024, 7, 31).valueOf();
+  });
   describe('Resetting filters', () => {
     it('should reset the activeFilters with the filters from the url filters', () => {
       render(
@@ -113,8 +113,8 @@ describe('Financial Account Transactions', () => {
 
       expect(setActiveFilters).not.toHaveBeenCalledWith({
         dateRange: {
-          min: defaultStartDate,
-          max: defaultEndDate,
+          min: '2024-08-01',
+          max: '2024-08-31',
         },
       });
 
@@ -129,8 +129,8 @@ describe('Financial Account Transactions', () => {
 
       expect(setActiveFilters).toHaveBeenCalledWith({
         dateRange: {
-          min: defaultStartDate,
-          max: defaultEndDate,
+          min: '2024-08-01',
+          max: '2024-08-31',
         },
       });
     });
@@ -143,6 +143,7 @@ describe('Financial Account Transactions', () => {
     expect(getAllByText('category1Code')).toHaveLength(2);
 
     // Header
+    expect(getByText('8/31/2024')).toBeInTheDocument();
     expect(getByText('Closing Balance')).toBeInTheDocument();
     expect(getByText('UAH 280,414')).toBeInTheDocument();
 
@@ -165,6 +166,7 @@ describe('Financial Account Transactions', () => {
     expect(getByText('UAH 37')).toBeInTheDocument();
 
     // Footer
+    expect(getByText('8/1/2024')).toBeInTheDocument();
     expect(getByText('Opening Balance')).toBeInTheDocument();
     expect(getByText('UAH 202,240')).toBeInTheDocument();
 
@@ -312,9 +314,9 @@ describe('Financial Account Transactions', () => {
 
       const csvContentArray = [
         ['Date', 'Payee', 'Memo', 'Outflow', 'Inflow'],
-        ['8/9/2024', 'description1', 'category1Name', '', 'UAH 7,048'],
-        ['8/8/2024', 'description2', 'category1Name', 'UAH 15,008', ''],
-        ['8/7/2024', 'description3', 'category2Name', '', 'UAH 37'],
+        ['8/9/2024', 'description1', 'category1Name', '', '7047.28'],
+        ['8/8/2024', 'description2', 'category1Name', '15008', ''],
+        ['8/7/2024', 'description3', 'category2Name', '', '36.2'],
       ];
 
       const csvContent =
