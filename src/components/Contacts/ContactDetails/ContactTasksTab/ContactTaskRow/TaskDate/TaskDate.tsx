@@ -10,7 +10,7 @@ const TaskRowWrap = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  margin: theme.spacing(1),
+  margin: theme.spacing(1, 0.5),
 }));
 
 const TaskCommentIcon = styled(CalendarToday, {
@@ -32,7 +32,7 @@ const DateText = styled(Typography, {
       : isComplete
       ? theme.palette.text.secondary
       : theme.palette.text.primary,
-    marginLeft: theme.spacing(1),
+    marginLeft: small ? theme.spacing(0.5) : theme.spacing(1),
   }),
 );
 
