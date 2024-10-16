@@ -9,8 +9,7 @@ import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { formatNumber } from '../AccountSummary/AccountSummaryHelper';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import {
   FinancialAccountContext,
   FinancialAccountType,
@@ -27,19 +26,31 @@ const Container = styled(Box)(() => ({
   overflowY: 'auto',
 }));
 
-const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
-  if (!startDate) {
-    startDate = DateTime.local().minus({ months: 1 }).plus({ days: 1 });
+/**
+ * Converts the "amount" string to a number to remove ".0"
+ * If the value is 0 or isExpense is true, it returns the value as is.
+ * Otherwise, it removes the '-' character if present, or prepends it if absent.
+ */
+const formatAmountForExport = (
+  amount?: string | null,
+  isExpense?: boolean,
+): number => {
+  if (!amount) {
+    return 0;
   }
-  if (!endDate) {
-    endDate = DateTime.local();
+
+  if (amount === '0' || isExpense) {
+    return Number(amount);
   }
-  return `${startDate.toISODate()}..${endDate.toISODate()}`;
+  return -Number(amount);
 };
 
-const defaultDateRange = formatDateRange();
-const defaultStartDate = defaultDateRange.split('..')[0];
-const defaultEndDate = defaultDateRange.split('..')[1];
+const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
+  const minDate =
+    startDate ?? DateTime.local().minus({ months: 1 }).plus({ days: 1 });
+  const maxDate = endDate ?? DateTime.local();
+  return `${minDate.toISODate()}..${maxDate.toISODate()}`;
+};
 
 export const AccountTransactions: React.FC = () => {
   const { query } = useRouter();
@@ -68,6 +79,10 @@ export const AccountTransactions: React.FC = () => {
       setActiveFilters({});
     };
   }, [query?.filters]);
+
+  const defaultDateRange = useMemo(() => formatDateRange(), []);
+  const defaultStartDate = defaultDateRange.split('..')[0];
+  const defaultEndDate = defaultDateRange.split('..')[1];
 
   useEffect(() => {
     if (!hasActiveFilters && !query?.filters) {
@@ -118,28 +133,25 @@ export const AccountTransactions: React.FC = () => {
       t('Outflow'),
       t('Inflow'),
     ];
-    const convertDataToArray = data.financialAccountEntries.entries.map(
-      (entry) => [
-        entry.entryDate
-          ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
-          : 'No entry date',
-        entry.description ?? '',
-        entry.category?.name ?? entry.category?.code ?? '',
-        entry.type === FinancialAccountEntryTypeEnum.Debit
-          ? currencyFormat(
-              formatNumber(entry.amount),
-              entry.currency,
-              locale,
-            ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
-          : '',
-        entry.type === FinancialAccountEntryTypeEnum.Credit
-          ? currencyFormat(
-              formatNumber(entry.amount),
-              entry.currency,
-              locale,
-            ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
-          : '',
-      ],
+    const convertDataToArray = data.financialAccountEntries.entries.reduce(
+      (array, entry) => {
+        return [
+          ...array,
+          [
+            entry.entryDate
+              ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
+              : 'No entry date',
+            entry.description ?? '',
+            entry.category?.name ?? entry.category?.code ?? '',
+            entry.type === FinancialAccountEntryTypeEnum.Debit
+              ? `${formatAmountForExport(entry.amount, true)}`
+              : '',
+            entry.type === FinancialAccountEntryTypeEnum.Credit
+              ? `${formatAmountForExport(entry.amount)}`
+              : '',
+          ],
+        ];
+      },
       [columnHeaders],
     );
 

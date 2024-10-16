@@ -69,7 +69,7 @@ const HeaderActions = styled(Box)(({ theme }) => ({
   width: 'calc(100% - 150px)',
 }));
 
-interface FinancialAccountHeaderProps {
+export interface FinancialAccountHeaderProps {
   onTransactionPage?: boolean;
   disableExportCSV?: boolean;
   handleExportCSV?: () => void;
