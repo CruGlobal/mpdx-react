@@ -59,9 +59,9 @@ export type ContactsType = {
   mapData: Coordinates[] | undefined;
   activeFilters: ContactFilterSetInput & TaskFilterSetInput;
   sanitizedFilters: ContactFilterSetInput & TaskFilterSetInput;
-  setActiveFilters: Dispatch<
-    SetStateAction<ContactFilterSetInput & TaskFilterSetInput>
-  >;
+  setActiveFilters: (
+    filters: ContactFilterSetInput & TaskFilterSetInput,
+  ) => void;
   starredFilter: ContactFilterSetInput & TaskFilterSetInput;
   setStarredFilter: (
     filter: ContactFilterSetInput & TaskFilterSetInput,
@@ -83,9 +83,9 @@ export const ContactsContext = React.createContext<ContactsType | null>(null);
 export interface ContactsContextProps {
   children?: React.ReactNode;
   activeFilters: ContactFilterSetInput & TaskFilterSetInput;
-  setActiveFilters: Dispatch<
-    SetStateAction<ContactFilterSetInput & TaskFilterSetInput>
-  >;
+  setActiveFilters: (
+    filters: ContactFilterSetInput & TaskFilterSetInput,
+  ) => void;
   starredFilter: ContactFilterSetInput & TaskFilterSetInput;
   setStarredFilter: (
     filter: ContactFilterSetInput & TaskFilterSetInput,
