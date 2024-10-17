@@ -406,8 +406,8 @@ const TasksPage: React.FC = () => {
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
-                            contactDetailsOpen={contactDetailsOpen}
                             removeSelectedIds={deselectMultipleIds}
+                            filterPanelOpen={filterPanelOpen}
                           />
                         </Box>
                       )}

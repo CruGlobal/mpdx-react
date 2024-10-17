@@ -61,6 +61,7 @@ describe('TaskRow', () => {
             onTaskCheckToggle={onTaskCheckSelected}
             onContactSelected={onContactSelected}
             isChecked={false}
+            filterPanelOpen={false}
           />
         </ThemeProvider>
       </GqlMockedProvider>,
@@ -89,6 +90,7 @@ describe('TaskRow', () => {
             onTaskCheckToggle={onTaskCheckSelected}
             onContactSelected={onContactSelected}
             isChecked={false}
+            filterPanelOpen={false}
           />
         </ThemeProvider>
       </GqlMockedProvider>,
@@ -119,6 +121,7 @@ describe('TaskRow', () => {
             onTaskCheckToggle={onTaskCheckSelected}
             onContactSelected={onContactSelected}
             isChecked={false}
+            filterPanelOpen={false}
           />
         </ThemeProvider>
       </GqlMockedProvider>,
@@ -156,6 +159,7 @@ describe('TaskRow', () => {
             onTaskCheckToggle={onTaskCheckSelected}
             onContactSelected={onContactSelected}
             isChecked={false}
+            filterPanelOpen={false}
           />
         </ThemeProvider>
       </GqlMockedProvider>,
@@ -166,7 +170,7 @@ describe('TaskRow', () => {
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
 
     expect(
-      await findByText(`${assignee.firstName} ${assignee.lastName}`),
+      await findByText(`${assignee.firstName[0]}${assignee.lastName[0]}`),
     ).toBeVisible();
   });
 
@@ -179,7 +183,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { getByText, getByRole } = render(
+      const { getAllByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -188,11 +192,12 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
       );
-      expect(getByText(task.subject)).toBeVisible();
+      expect(getAllByText(task.subject).length).toBe(2);
       userEvent.click(getByRole('checkbox', { hidden: true }));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
@@ -205,7 +210,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByTestId } = render(
+      const { getAllByText, getByTestId } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -214,11 +219,12 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
       );
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getAllByText(task.subject).length).toBe(2);
       userEvent.click(getByTestId('task-row'));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
@@ -231,7 +237,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByRole } = render(
+      const { getAllByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -240,12 +246,13 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
       );
 
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getAllByText(task.subject).length).toBe(2);
       userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       expect(openTaskModal).toHaveBeenCalledWith({
@@ -274,6 +281,7 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
@@ -292,7 +300,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByRole } = render(
+      const { getAllByText, getByRole } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -301,12 +309,13 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
       );
 
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getAllByText(task.subject).length).toBe(2);
 
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
@@ -325,7 +334,7 @@ describe('TaskRow', () => {
         },
       });
 
-      const { findByText, getByTestId } = render(
+      const { getAllByText, getByTestId } = render(
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <TaskRow
@@ -334,12 +343,13 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
       );
 
-      expect(await findByText(task.subject)).toBeVisible();
+      expect(getAllByText(task.subject).length).toBe(2);
       userEvent.click(getByTestId('subject-wrap'));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
@@ -364,6 +374,7 @@ describe('TaskRow', () => {
               onTaskCheckToggle={onTaskCheckSelected}
               onContactSelected={onContactSelected}
               isChecked={false}
+              filterPanelOpen={false}
             />
           </ThemeProvider>
         </GqlMockedProvider>,
@@ -407,6 +418,7 @@ describe('TaskRow', () => {
             onTaskCheckToggle={onTaskCheckSelected}
             onContactSelected={onContactSelected}
             isChecked={false}
+            filterPanelOpen={false}
           />
         </ThemeProvider>
       </GqlMockedProvider>,

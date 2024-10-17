@@ -241,7 +241,7 @@ const TaskModalForm = ({
         nextAction: task.nextAction ?? null,
         tagList: additionalTags ?? [],
         contactIds: task.contacts.nodes.map(({ id }) => id),
-        userId: task.user?.id ?? session.data?.user.userID ?? null,
+        userId: task.user?.id ?? null,
         notificationTimeBefore: task.notificationTimeBefore,
         notificationType: task.notificationType,
         notificationTimeUnit: task.notificationTimeUnit,
