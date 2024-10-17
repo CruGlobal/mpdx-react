@@ -266,7 +266,7 @@ describe('ProfileMenu while Impersonating', () => {
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Stopping Impersonating and redirecting you to the legacy MPDX',
+        'Stopping impersonation and redirecting you to the login page',
         {
           variant: 'success',
         },

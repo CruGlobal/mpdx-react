@@ -163,7 +163,7 @@ const ProfileMenu = (): ReactElement => {
   }
   const handleStopImpersonating = async () => {
     enqueueSnackbar(
-      t('Stopping Impersonating and redirecting you to the legacy MPDX'),
+      t('Stopping impersonation and redirecting you to the login page'),
       {
         variant: 'success',
       },
