@@ -121,7 +121,7 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsWrapper>
+            <ContactsWrapper addViewMode>
               <TestRender />
             </ContactsWrapper>
           </GqlMockedProvider>
@@ -166,7 +166,7 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsWrapper>
+            <ContactsWrapper addViewMode>
               <TestRender />
             </ContactsWrapper>
           </GqlMockedProvider>
@@ -223,7 +223,7 @@ describe('ContactsPageContext', () => {
               },
             }}
           >
-            <ContactsWrapper>
+            <ContactsWrapper addViewMode>
               <TestRender />
             </ContactsWrapper>
           </GqlMockedProvider>
