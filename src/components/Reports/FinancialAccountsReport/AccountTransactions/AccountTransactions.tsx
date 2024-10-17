@@ -19,31 +19,13 @@ import {
   AccountTransactionTable,
   FinancialAccountEntryTypeEnum,
 } from './AccountTransactionTable/AccountTransactionTable';
+import { formatTransactionAmount } from './AccountTransactionsHelper';
 import { useFinancialAccountEntriesQuery } from './financialAccountTransactions.generated';
 
 const Container = styled(Box)(() => ({
   height: `calc(100vh - ${headerHeight})`,
   overflowY: 'auto',
 }));
-
-/**
- * Converts the "amount" string to a number to remove ".0"
- * If the value is 0 or isExpense is true, it returns the value as is.
- * Otherwise, it removes the '-' character if present, or prepends it if absent.
- */
-const formatAmountForExport = (
-  amount?: string | null,
-  isExpense?: boolean,
-): number => {
-  if (!amount) {
-    return 0;
-  }
-
-  if (amount === '0' || isExpense) {
-    return Number(amount);
-  }
-  return -Number(amount);
-};
 
 const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
   const minDate =
@@ -144,10 +126,10 @@ export const AccountTransactions: React.FC = () => {
             entry.description ?? '',
             entry.category?.name ?? entry.category?.code ?? '',
             entry.type === FinancialAccountEntryTypeEnum.Debit
-              ? `${formatAmountForExport(entry.amount, true)}`
+              ? `${formatTransactionAmount(entry.amount, true)}`
               : '',
             entry.type === FinancialAccountEntryTypeEnum.Credit
-              ? `${formatAmountForExport(entry.amount)}`
+              ? `${formatTransactionAmount(entry.amount)}`
               : '',
           ],
         ];

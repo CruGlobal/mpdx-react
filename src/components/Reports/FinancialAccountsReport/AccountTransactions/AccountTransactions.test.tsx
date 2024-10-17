@@ -145,13 +145,13 @@ describe('Financial Account Transactions', () => {
     // Header
     expect(getByText('8/31/2024')).toBeInTheDocument();
     expect(getByText('Closing Balance')).toBeInTheDocument();
-    expect(getByText('UAH 280,414')).toBeInTheDocument();
+    expect(getByText('UAH 280,413.99')).toBeInTheDocument();
 
     // Row 1
     expect(getByText('8/9/2024')).toBeInTheDocument();
     expect(getByText('description3')).toBeInTheDocument();
     expect(getByText('code3')).toBeInTheDocument();
-    expect(getByText('UAH 7,048')).toBeInTheDocument();
+    expect(getByText('UAH 7,047.28')).toBeInTheDocument();
 
     // Row 2
     expect(getByText('8/8/2024')).toBeInTheDocument();
@@ -163,22 +163,22 @@ describe('Financial Account Transactions', () => {
     expect(getByText('8/7/2024')).toBeInTheDocument();
     expect(getByText('description2')).toBeInTheDocument();
     expect(getByText('code2')).toBeInTheDocument();
-    expect(getByText('UAH 37')).toBeInTheDocument();
+    expect(getByText('UAH 36.20')).toBeInTheDocument();
 
     // Footer
     expect(getByText('8/1/2024')).toBeInTheDocument();
     expect(getByText('Opening Balance')).toBeInTheDocument();
-    expect(getByText('UAH 202,240')).toBeInTheDocument();
+    expect(getByText('UAH 202,239.12')).toBeInTheDocument();
 
     // Totals
     expect(getByText('Income:')).toBeInTheDocument();
-    expect(getByText('UAH 307,519')).toBeInTheDocument();
+    expect(getByText('UAH 307,518.87')).toBeInTheDocument();
 
     expect(getByText('Expenses:')).toBeInTheDocument();
     expect(getByText('UAH 229,344')).toBeInTheDocument();
 
     expect(getByText('Differences:')).toBeInTheDocument();
-    expect(getByText('UAH 78,175')).toBeInTheDocument();
+    expect(getByText('UAH 78,174.87')).toBeInTheDocument();
   });
 
   it('should render closing and opening dates correctly when using filtered dates', async () => {
