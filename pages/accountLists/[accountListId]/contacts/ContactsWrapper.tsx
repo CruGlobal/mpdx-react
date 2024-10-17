@@ -33,7 +33,6 @@ export const extractContactId = (query: ParsedUrlQuery): string | undefined => {
 export const ContactsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const { query, replace, pathname } = router;
-  const { accountListId } = query;
 
   // Extract the initial contact id from the URL
   const [contactId, setContactId] = useState<string | undefined>(() =>
@@ -95,7 +94,7 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
       newQuery.searchTerm = encodeURIComponent(searchTerm);
     }
     return newQuery;
-  }, [accountListId, contactId, viewMode, activeFilters, searchTerm]);
+  }, [contactId, viewMode, activeFilters, searchTerm]);
 
   useEffect(() => {
     replace({
