@@ -2,15 +2,17 @@ import React from 'react';
 import { HeaderTopDetails } from './HeaderTopDetails';
 import { StickyHeader } from './styledComponents';
 
-interface FinancialAccountSummaryHeaderProps {
+interface SummaryHeaderProps {
   accountListId: string;
   financialAccountId: string;
   handleNavListToggle: () => void;
 }
 
-export const FinancialAccountSummaryHeader: React.FC<
-  FinancialAccountSummaryHeaderProps
-> = ({ accountListId, financialAccountId, handleNavListToggle }) => {
+export const SummaryHeader: React.FC<SummaryHeaderProps> = ({
+  accountListId,
+  financialAccountId,
+  handleNavListToggle,
+}) => {
   return (
     <StickyHeader
       p={2}

@@ -34,11 +34,11 @@ const HeaderActions = styled(Box)(({ theme }) => ({
   width: 'calc(100% - 150px)',
 }));
 
-interface FinancialAccountHeaderProps {
+interface TransactionsHeaderProps {
   disableExportCSV: boolean;
   handleExportCSV: () => void;
 }
-export const FinancialAccountHeader: React.FC<FinancialAccountHeaderProps> = ({
+export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
   disableExportCSV = false,
   handleExportCSV,
 }) => {
@@ -76,20 +76,18 @@ export const FinancialAccountHeader: React.FC<FinancialAccountHeaderProps> = ({
           </FilterButton>
         </HeaderFilterAction>
         <HeaderActions>
-          {handleExportCSV && (
-            <Button
-              size="large"
-              variant="contained"
-              onClick={handleExportCSV}
-              disabled={disableExportCSV}
-              sx={{
-                paddingBottom: '11px',
-                paddingTop: '11px',
-              }}
-            >
-              {t('Export CSV')}
-            </Button>
-          )}
+          <Button
+            size="large"
+            variant="contained"
+            onClick={handleExportCSV}
+            disabled={disableExportCSV}
+            sx={{
+              paddingBottom: '11px',
+              paddingTop: '11px',
+            }}
+          >
+            {t('Export CSV')}
+          </Button>
 
           <SearchBox
             showContactSearchIcon={false}

@@ -22,7 +22,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat, numberFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { FinancialAccountSummaryHeader } from '../Header/SummaryHeader';
+import { SummaryHeader } from '../Header/SummaryHeader';
 import { AccountSummaryCategory } from './AccountSummaryCategory/AccountSummaryCategory';
 import {
   Category,
@@ -218,7 +218,7 @@ export const AccountSummary: React.FC<AccountSummaryProps> = ({
 
   return (
     <>
-      <FinancialAccountSummaryHeader
+      <SummaryHeader
         accountListId={accountListId}
         financialAccountId={financialAccountId}
         handleNavListToggle={handleNavListToggle}

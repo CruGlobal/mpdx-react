@@ -115,7 +115,7 @@ const FinancialAccountEntries = (): ReactElement => {
     <>
       <Head>
         <title>
-          {appName} | {t('Reports - Responsibility Centers')}
+          {appName} | {t('Transactions Report - Responsibility Centers')}
         </title>
       </Head>
 
