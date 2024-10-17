@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { Box, Checkbox, Skeleton, Typography } from '@mui/material';
+import LocalOffer from '@mui/icons-material/LocalOffer';
+import {
+  Avatar,
+  Box,
+  Checkbox,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { StyledCheckbox } from 'src/components/Contacts/ContactRow/ContactRow';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { TaskActionPhase } from 'src/components/Task/TaskRow/TaskActionPhase';
 import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
 import { StarredItemIcon } from 'src/components/common/StarredItemIcon/StarredItemIcon';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { DeleteTaskIconButton } from '../DeleteTaskIconButton/DeleteTaskIconButton';
 import { StarTaskIconButton } from '../StarTaskIconButton/StarTaskIconButton';
 import { TaskCommentsButton } from './TaskCommentsButton/TaskCommentsButton';
@@ -36,12 +45,6 @@ const TaskItemWrap = styled(Box)(({ theme }) => ({
   height: '100%',
 }));
 
-const TaskType = styled(Typography)(({ theme }) => ({
-  fontSize: 14,
-  fontWeight: 700,
-  color: theme.palette.text.primary,
-}));
-
 const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
@@ -50,6 +53,10 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   display: '-webkit-box',
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
+}));
+
+const TooltipTypography = styled(Typography)(() => ({
+  fontSize: 11,
 }));
 
 const SubjectWrap = styled(Box)(({}) => ({
@@ -64,14 +71,6 @@ const SubjectWrap = styled(Box)(({}) => ({
     textDecoration: 'underline',
     cursor: 'pointer',
   },
-}));
-
-const AssigneeName = styled(Typography)(({ theme }) => ({
-  fontSize: 14,
-  color: theme.palette.text.primary,
-  margin: theme.spacing(1),
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
 }));
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
@@ -156,12 +155,13 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const dateToShow = completedAt ?? startAt;
   const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
+  const tagList = !!task.tagList.length ? task.tagList.join(', ') : '';
   const activityData = activityType ? activityTypes.get(activityType) : null;
 
   return !hasBeenDeleted ? (
     <TaskRowWrap isChecked={isChecked}>
       <TaskItemWrap width={theme.spacing(20)} justifyContent="space-between">
-        <Checkbox
+        <StyledCheckbox
           checked={isChecked}
           color="secondary"
           onChange={() => onTaskCheckToggle(task.id)}
@@ -177,30 +177,71 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         onClick={handleSubjectPressed}
         onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
       >
-        <TaskType>
-          {activityData && `${activityData.phase} - `}
-          {getLocalizedTaskType(t, activityType)}
-        </TaskType>
-        <TaskDescription>{subject}</TaskDescription>
+        <TaskActionPhase
+          activityData={activityData}
+          activityType={activityType}
+        />
+
+        <Tooltip title={subject} placement="top-start" arrow>
+          <TaskDescription>{subject}</TaskDescription>
+        </Tooltip>
       </SubjectWrap>
 
       <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
-        <AssigneeName noWrap>{assigneeName}</AssigneeName>
-        <Box width={theme.spacing(16)}>
-          <TaskDate isComplete={isComplete} taskDate={taskDate} />
+        {(assigneeName || tagList) && (
+          <Tooltip
+            title={
+              <>
+                {assigneeName && (
+                  <TooltipTypography>
+                    {t('Assignee: ') + assigneeName}
+                  </TooltipTypography>
+                )}
+                {tagList && (
+                  <TooltipTypography>{t('Tags: ') + tagList}</TooltipTypography>
+                )}
+              </>
+            }
+            placement="top"
+            arrow
+          >
+            {assigneeName ? (
+              <Avatar
+                data-testid={`assigneeAvatar-${task.id}`}
+                sx={{
+                  width: 30,
+                  height: 30,
+                }}
+              >
+                {(task?.user?.firstName?.[0] || '') +
+                  task?.user?.lastName?.[0] || ''}
+              </Avatar>
+            ) : (
+              <LocalOffer
+                data-testid={`tagIcon-${task.id}`}
+                sx={{ color: theme.palette.secondary.dark }}
+              />
+            )}
+          </Tooltip>
+        )}
+        <Box>
+          <TaskDate isComplete={isComplete} taskDate={taskDate} small />
+          <Box>
+            <TaskCommentsButton
+              isComplete={isComplete}
+              numberOfComments={comments?.totalCount}
+              onClick={handleCommentButtonPressed}
+              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
+              small
+            />
+          </Box>
         </Box>
-        <TaskCommentsButton
-          isComplete={isComplete}
-          numberOfComments={comments?.totalCount}
-          onClick={handleCommentButtonPressed}
-          onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
-          detailsPage
-        />
 
         <DeleteTaskIconButton
           accountListId={accountListId}
           taskId={task.id}
           onDeleteConfirm={handleDeleteConfirm}
+          small
         />
         <StarTaskIconButton
           accountListId={accountListId}
