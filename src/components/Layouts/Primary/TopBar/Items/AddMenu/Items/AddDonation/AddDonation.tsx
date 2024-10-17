@@ -126,7 +126,8 @@ export const AddDonation = ({
     appealAmount: null,
     appealId: null,
     currency: accountListData?.accountList.currency ?? '',
-    designationAccountId: '',
+    designationAccountId:
+      designationAccounts?.length === 1 ? designationAccounts[0].id : '',
     donationDate: DateTime.local().startOf('day'),
     donorAccountId: '',
     memo: null,
@@ -411,7 +412,7 @@ export const AddDonation = ({
                                 ({ id }) => id === accountId,
                               );
                               return account
-                                ? `${account?.name} (${account.id}) `
+                                ? `${account?.name} (${account.id})`
                                 : '';
                             }}
                             renderInput={(params): ReactElement => (
