@@ -15,7 +15,7 @@ import {
   FinancialAccountContext,
   FinancialAccountType,
 } from '../Context/FinancialAccountsContext';
-import { FinancialAccountHeader } from '../Header/Header';
+import { FinancialAccountHeader } from '../Header/TransactionsHeader';
 import {
   AccountTransactionTable,
   FinancialAccountEntryTypeEnum,
@@ -38,8 +38,8 @@ const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
 };
 
 const defaultDateRange = formatDateRange();
-const defaultStartDate = defaultDateRange.split('..')[0];
-const defaultEndDate = defaultDateRange.split('..')[1];
+export const defaultStartDate = defaultDateRange.split('..')[0];
+export const defaultEndDate = defaultDateRange.split('..')[1];
 
 export const AccountTransactions: React.FC = () => {
   const { query } = useRouter();
@@ -167,7 +167,6 @@ export const AccountTransactions: React.FC = () => {
   return (
     <Container>
       <FinancialAccountHeader
-        onTransactionPage
         disableExportCSV={loading}
         handleExportCSV={handleExportCSV}
       />

@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { AccountTransactions } from 'src/components/Reports/FinancialAccountsReport/AccountTransactions/AccountTransactions';
 import {
   FinancialAccountContext,
   FinancialAccountType,
 } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
-import { MainContent } from 'src/components/Reports/FinancialAccountsReport/MainContent/MainContent';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   ContextTypesEnum,
@@ -22,13 +22,13 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { Panel } from '../helpers';
+import { Panel } from '../../helpers';
 import {
   FinancialAccountTransactionFilters,
   FinancialAccountsWrapper,
 } from './Wrapper';
 
-const FinancialAccounts = (): ReactElement => {
+const FinancialAccountEntries = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
@@ -38,7 +38,7 @@ const FinancialAccounts = (): ReactElement => {
     designationAccounts,
     setDesignationAccounts,
     handleNavListToggle,
-    financialAccountsQuery,
+    financialAccountQuery,
     activeFilters,
     panelOpen,
     setPanelOpen,
@@ -46,7 +46,7 @@ const FinancialAccounts = (): ReactElement => {
     setSearchTerm,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
-  const { data } = financialAccountsQuery;
+  const { data } = financialAccountQuery;
 
   const filterGroups = useMemo(() => {
     const categoryOptions =
@@ -126,7 +126,7 @@ const FinancialAccounts = (): ReactElement => {
             isScrollBox={false}
             leftOpen={isNavListOpen}
             leftWidth="290px"
-            mainContent={<MainContent />}
+            mainContent={<AccountTransactions />}
             leftPanel={
               panelOpen === Panel.Navigation ? (
                 <MultiPageMenu
@@ -164,7 +164,7 @@ const FinancialAccounts = (): ReactElement => {
 
 const FinancialAccountsPage: React.FC = () => (
   <FinancialAccountsWrapper>
-    <FinancialAccounts />
+    <FinancialAccountEntries />
   </FinancialAccountsWrapper>
 );
 
