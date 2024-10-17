@@ -24,6 +24,7 @@ fragment ContactPartnerAccounts on Contact {
 
 query GetAccountListSalaryOrganization($accountListId: ID!) {
   accountList(id: $accountListId) {
+    id
     salaryOrganizationId
   }
 }
