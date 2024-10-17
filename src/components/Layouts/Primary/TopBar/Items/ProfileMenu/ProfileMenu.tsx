@@ -195,7 +195,9 @@ const ProfileMenu = (): ReactElement => {
       });
     } else if (
       router.pathname ===
-      '/accountLists/[accountListId]/reports/financialAccounts/[[...financialAccount]]'
+        '/accountLists/[accountListId]/reports/financialAccounts/[financialAccountId]/entries' ||
+      router.pathname ===
+        '/accountLists/[accountListId]/reports/financialAccounts/[financialAccountId]'
     ) {
       router.push({
         pathname: '/accountLists/[accountListId]/reports/financialAccounts',
