@@ -111,11 +111,11 @@ const TestRender: React.FC = () => {
             Flows Button
           </Button>
 
-          <Button onClick={() => setContactFocus(contactId, true)}>
+          <Button onClick={() => setContactFocus(contactId)}>
             Open Contact
           </Button>
 
-          <Button onClick={() => setContactFocus(undefined, false)}>
+          <Button onClick={() => setContactFocus(undefined)}>
             Close Contact
           </Button>
         </>

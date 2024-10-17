@@ -20,7 +20,7 @@ const AppealsDetailsPage: React.FC = () => {
       mainContent={<AppealsMainPanel />}
       rightPanel={
         <DynamicContactsRightPanel
-          onClose={() => setContactFocus(undefined, true)}
+          onClose={() => setContactFocus(undefined)}
           contextType={ContactContextTypesEnum.Appeals}
         />
       }
