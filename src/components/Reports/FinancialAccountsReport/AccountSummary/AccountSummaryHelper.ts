@@ -38,7 +38,7 @@ export const createTransactionsUrl = ({
   endDate,
   categoryId,
 }: CreateFiltersProps) => {
-  const transactionsUrl = `/accountLists/${accountListId}/reports/financialAccounts/${financialAccountId}/transactions`;
+  const transactionsUrl = `/accountLists/${accountListId}/reports/financialAccounts/${financialAccountId}/entries`;
   if (!startDate && !endDate && !categoryId) {
     return transactionsUrl;
   }
