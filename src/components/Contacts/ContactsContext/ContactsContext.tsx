@@ -149,6 +149,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   // Load the user's view preference
   const { loading: userOptionsLoading } = useGetUserOptionsQuery({
+    // This fetch policy ensures that our onCompleted callback will only be called once instead of
+    // being called every time the cached user options are updated by the updateUserOptions mutation.
+    nextFetchPolicy: 'standby',
     onCompleted: ({ userOptions }) => {
       const option = userOptions.find(
         (option) => option.key === 'contacts_view',
