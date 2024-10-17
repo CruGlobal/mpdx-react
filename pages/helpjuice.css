@@ -1,3 +1,7 @@
+#helpjuice-widget {
+  --right-position: 80px;
+}
+
 #helpjuice-widget .article .footer {
   /* Hide the estimated reading time and last updated time in search results */
   display: none !important;
@@ -18,30 +22,36 @@
   height: var(--content-height) !important;
 }
 
+#dismiss-beacon {
+  cursor: pointer;
+}
+
 #helpjuice-widget.bottomRight {
-  right: 130px !important;
+  right: 10px !important;
+  transition: right 0.3s ease;
 }
 
-/* Move the beacon higher from the bottom when it is not expanded */
-#helpjuice-widget.bottomRight:has(#helpjuice-widget-expanded:not(.hj-shown)) {
-  bottom: 170px !important;
+#helpjuice-widget.bottomRight.visible,
+#helpjuice-widget.bottomRight:hover {
+  right: 80px !important;
 }
 
-/* If the browser doesn't support :has and :not selectors, always move the beacon higher. */
-@supports not selector(:has(*):not(*)) {
-  #helpjuice-widget.bottomRight {
-    bottom: 170px !important;
-  }
+/*
+ * Expand the hover hitbox to be 20px above and below the button, extend to the right edge of the
+ * screen and be 20px past the left edge of the button.
+ */
+#helpjuice-widget.bottomRight::before {
+  content: '';
+  position: absolute;
+  height: calc(var(--right-position) + 40px);
+  top: -20px;
+  right: calc(var(--right-position) * -1);
+  left: -20px;
+  z-index: -1;
 }
 
-@media (max-width: 900px) {
-  #helpjuice-widget.bottomRight {
-    right: 100px !important;
-  }
-}
-
-@media (max-width: 600px) {
-  #helpjuice-widget.bottomRight {
-    right: 90px !important;
-  }
+/* Hide the popup when the beacon is dismissed and not being hovered. */
+#helpjuice-widget.bottomRight:not(.visible):not(:hover)
+  #helpjuice-widget-expanded.hj-shown {
+  display: none !important;
 }

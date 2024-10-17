@@ -191,7 +191,10 @@ const App = ({
                             pageContent
                           ) : (
                             <RouterGuard>
-                              <GraphQLProviders>{pageContent}</GraphQLProviders>
+                              <GraphQLProviders>
+                                {pageContent}
+                                <Helpjuice />
+                              </GraphQLProviders>
                             </RouterGuard>
                           )}
                           <Loading />
@@ -202,7 +205,6 @@ const App = ({
                 </StyledEngineProvider>
               </I18nextProvider>
               <DataDog />
-              <Helpjuice />
             </SessionProvider>
             {process.env.ALERT_MESSAGE ? (
               <AlertBanner
