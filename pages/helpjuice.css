@@ -4,12 +4,13 @@
 }
 
 /*
- * The default height of #helpjuice-widget-expanded is 620px and #helpjuice-widget-content is 500px. It fits well when
- * the screen is 800px. Therefore, the widget content height should be 300px less than the screen height, while keeping
- * its height between 300px and 500px. And the widget itself should be 120px taller than the content.
+ * The default height of #helpjuice-widget-expanded is 620px and #helpjuice-widget-content is 500px.
+ * It fits well when the screen is 800px. However, on smaller screens, the widget content height
+ * should be be 300px less than the screen height. And the widget itself should be 120px taller than
+ * the content.
  */
 #helpjuice-widget #helpjuice-widget-expanded {
-  --content-height: clamp(100vh - 300px, 300px, 500px);
+  --content-height: min(100vh - 300px, 500px);
   height: calc(var(--content-height) + 120px) !important;
 }
 
