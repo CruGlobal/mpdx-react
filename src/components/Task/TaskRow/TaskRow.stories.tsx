@@ -31,6 +31,7 @@ export const Default = (): ReactElement => {
       isChecked={false}
       onContactSelected={onContactSelected}
       onTaskCheckToggle={onTaskCheckSelected}
+      filterPanelOpen={false}
     />
   );
 };
@@ -49,6 +50,7 @@ export const Starred = (): ReactElement => {
       isChecked={false}
       onContactSelected={onContactSelected}
       onTaskCheckToggle={onTaskCheckSelected}
+      filterPanelOpen={false}
     />
   );
 };
@@ -63,6 +65,7 @@ export const Checked = (): ReactElement => {
       isChecked={true}
       onContactSelected={onContactSelected}
       onTaskCheckToggle={onTaskCheckSelected}
+      filterPanelOpen={false}
     />
   );
 };
@@ -82,6 +85,7 @@ export const Complete = (): ReactElement => {
       isChecked={false}
       onContactSelected={onContactSelected}
       onTaskCheckToggle={onTaskCheckSelected}
+      filterPanelOpen={false}
     />
   );
 };
@@ -101,6 +105,7 @@ export const Late = (): ReactElement => {
       isChecked={false}
       onContactSelected={onContactSelected}
       onTaskCheckToggle={onTaskCheckSelected}
+      filterPanelOpen={false}
     />
   );
 };
