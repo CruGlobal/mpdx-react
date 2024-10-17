@@ -13,10 +13,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { AccountsList as List } from '../../AccountsListLayout/List/List';
 import {
-  FinancialAccountContext,
-  FinancialAccountType,
-} from '../Context/FinancialAccountsContext';
-import {
   FinancialAccountsDocument,
   FinancialAccountsQuery,
   useEntryHistoriesQuery,
@@ -34,16 +30,21 @@ const ScrollBox = styled(Box)(({}) => ({
   overflowY: 'auto',
 }));
 
-export const FinancialAccounts: React.FC = () => {
+interface FinancialAccountsProps {
+  accountListId: string;
+  isNavListOpen: boolean;
+  designationAccounts: string[];
+  handleNavListToggle: () => void;
+}
+
+export const FinancialAccounts: React.FC<FinancialAccountsProps> = ({
+  accountListId,
+  isNavListOpen,
+  designationAccounts,
+  handleNavListToggle,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
-
-  const {
-    accountListId,
-    isNavListOpen,
-    designationAccounts,
-    handleNavListToggle,
-  } = React.useContext(FinancialAccountContext) as FinancialAccountType;
 
   const financialAccountsQueryVariables = {
     accountListId,

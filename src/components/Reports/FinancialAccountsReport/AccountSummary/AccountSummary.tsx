@@ -1,5 +1,6 @@
 import NextLink from 'next/link';
-import React, { useContext, useMemo } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   CircularProgress,
@@ -17,14 +18,11 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Maybe } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { monthYearFormat, numberFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import {
-  FinancialAccountContext,
-  FinancialAccountType,
-} from '../Context/FinancialAccountsContext';
-import { FinancialAccountHeader } from '../Header/Header';
+import { SummaryHeader } from '../Header/SummaryHeader';
 import { AccountSummaryCategory } from './AccountSummaryCategory/AccountSummaryCategory';
 import {
   Category,
@@ -100,12 +98,33 @@ export const appendCategoryToCategoriesArray = ({
   });
 };
 
-export const AccountSummary: React.FC = () => {
+interface AccountSummaryProps {
+  handleNavListToggle: () => void;
+}
+
+export const AccountSummary: React.FC<AccountSummaryProps> = ({
+  handleNavListToggle,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { accountListId, financialAccountId } = useContext(
-    FinancialAccountContext,
-  ) as FinancialAccountType;
+  const accountListId = useAccountListId() ?? '';
+  const router = useRouter();
+  const { query } = router;
+
+  const [financialAccountId, setFinancialAccountId] = useState(
+    typeof query.financialAccountId === 'string'
+      ? query.financialAccountId
+      : '',
+  );
+
+  useEffect(() => {
+    if (!query.financialAccountId) {
+      return;
+    }
+    if (typeof query.financialAccountId === 'string') {
+      setFinancialAccountId(query.financialAccountId);
+    }
+  }, [query.financialAccountId]);
 
   const { data } = useFinancialAccountSummaryQuery({
     variables: {
@@ -199,7 +218,11 @@ export const AccountSummary: React.FC = () => {
 
   return (
     <>
-      <FinancialAccountHeader />
+      <SummaryHeader
+        accountListId={accountListId}
+        financialAccountId={financialAccountId}
+        handleNavListToggle={handleNavListToggle}
+      />
       <Divider />
       {!data && (
         <Box

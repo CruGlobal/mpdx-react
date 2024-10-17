@@ -6,6 +6,7 @@ import {
   InputMaybe,
   Scalars,
 } from 'src/graphql/types.generated';
+import { getQueryParam } from 'src/utils/queryParam';
 
 interface Props {
   children?: React.ReactNode;
@@ -32,28 +33,20 @@ export const FinancialAccountsWrapper: React.FC<Props> = ({ children }) => {
   const [activeFilters, setActiveFilters] =
     useState<FinancialAccountTransactionFilters>(urlFilters ?? {});
 
-  const [page, setPage] = useState<FinancialAccountPageEnum>(
-    FinancialAccountPageEnum.FinancialAccountPage,
+  const [financialAccountId, setFinancialAccountId] = useState(
+    getQueryParam(query, 'financialAccountId') ?? '',
   );
-  const [financialAccountId, setFinancialAccountId] = useState<
-    string | undefined
-  >(undefined);
 
-  const { financialAccount, searchTerm, accountListId } = query;
+  const { searchTerm } = query;
 
   useEffect(() => {
-    if (!financialAccount) {
-      setPage(FinancialAccountPageEnum.FinancialAccountPage);
+    if (!query.financialAccountId) {
       return;
     }
-    const length = financialAccount.length;
-    setFinancialAccountId(financialAccount[0]);
-    if (length === 1) {
-      setPage(FinancialAccountPageEnum.AccountSummaryPage);
-    } else if (length > 1) {
-      setPage(FinancialAccountPageEnum.AccountTransactionsPage);
+    if (typeof query.financialAccountId === 'string') {
+      setFinancialAccountId(query.financialAccountId);
     }
-  }, [financialAccount, accountListId]);
+  }, [query.financialAccountId]);
 
   useEffect(() => {
     if (!isReady) {
@@ -79,8 +72,6 @@ export const FinancialAccountsWrapper: React.FC<Props> = ({ children }) => {
       setActiveFilters={setActiveFilters}
       financialAccountId={financialAccountId}
       search={searchTerm}
-      page={page}
-      setPage={setPage}
     >
       {children}
     </FinancialAccountProvider>

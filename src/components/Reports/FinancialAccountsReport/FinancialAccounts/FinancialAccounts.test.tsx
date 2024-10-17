@@ -6,10 +6,6 @@ import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import {
-  FinancialAccountContext,
-  FinancialAccountType,
-} from '../Context/FinancialAccountsContext';
 import { FinancialAccounts } from './FinancialAccounts';
 import { FinancialAccountsQuery } from './FinancialAccounts.generated';
 import {
@@ -42,29 +38,28 @@ const Components: React.FC<ComponentsProps> = ({
   useErrorMockedProvider = false,
 }) => (
   <ThemeProvider theme={theme}>
-    <FinancialAccountContext.Provider
-      value={
-        {
-          accountListId,
-          isNavListOpen: true,
-          designationAccounts,
-          handleNavListToggle: onNavListToggle,
-        } as unknown as FinancialAccountType
-      }
-    >
-      {useErrorMockedProvider ? (
-        <MockedProvider mocks={[FinancialAccountsErrorMock]}>
-          <FinancialAccounts />
-        </MockedProvider>
-      ) : (
-        <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <FinancialAccounts />
-        </GqlMockedProvider>
-      )}
-    </FinancialAccountContext.Provider>
+    {useErrorMockedProvider ? (
+      <MockedProvider mocks={[FinancialAccountsErrorMock]}>
+        <FinancialAccounts
+          accountListId={accountListId}
+          isNavListOpen={true}
+          designationAccounts={designationAccounts}
+          handleNavListToggle={onNavListToggle}
+        />
+      </MockedProvider>
+    ) : (
+      <GqlMockedProvider<{ FinancialAccounts: FinancialAccountsQuery }>
+        mocks={mocks}
+        onCall={mutationSpy}
+      >
+        <FinancialAccounts
+          accountListId={accountListId}
+          isNavListOpen={true}
+          designationAccounts={designationAccounts}
+          handleNavListToggle={onNavListToggle}
+        />
+      </GqlMockedProvider>
+    )}
   </ThemeProvider>
 );
 

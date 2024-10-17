@@ -1,10 +1,6 @@
 import { ParsedUrlQueryInput } from 'querystring';
-import { useRouter } from 'next/router';
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import {
-  FinancialAccountPageEnum,
-  FinancialAccountTransactionFilters,
-} from 'pages/accountLists/[accountListId]/reports/financialAccounts/Wrapper';
+import { FinancialAccountTransactionFilters } from 'pages/accountLists/[accountListId]/reports/financialAccounts/[financialAccountId]/Wrapper';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFinancialAccountQuery } from './FinancialAccount.generated';
@@ -26,16 +22,13 @@ export interface FinancialAccountType {
   financialAccountId: string | undefined;
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
-  financialAccountsQuery: ReturnType<typeof useFinancialAccountQuery>;
-  setFinancialAccount: SetFinancialAccountFunction;
+  financialAccountQuery: ReturnType<typeof useFinancialAccountQuery>;
   activeFilters: FinancialAccountTransactionFilters;
   hasActiveFilters: boolean;
   setActiveFilters: Dispatch<
     SetStateAction<FinancialAccountTransactionFilters>
   >;
   urlFilters: any;
-  page: FinancialAccountPageEnum | undefined;
-  setPage: Dispatch<SetStateAction<FinancialAccountPageEnum>>;
   isNavListOpen: boolean;
   designationAccounts: string[];
   setDesignationAccounts: Dispatch<SetStateAction<string[]>>;
@@ -58,8 +51,6 @@ interface FinancialAccountProviderProps {
   >;
   financialAccountId: string | undefined;
   search: string | string[] | undefined;
-  page: FinancialAccountPageEnum;
-  setPage: Dispatch<SetStateAction<FinancialAccountPageEnum>>;
 }
 
 export const FinancialAccountProvider: React.FC<
@@ -71,12 +62,8 @@ export const FinancialAccountProvider: React.FC<
   setActiveFilters,
   financialAccountId,
   search,
-  page,
-  setPage,
 }) => {
   const accountListId = useAccountListId() ?? '';
-  const router = useRouter();
-  const { push } = router;
 
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
@@ -96,34 +83,13 @@ export const FinancialAccountProvider: React.FC<
     setSearchTerm('');
   };
 
-  const financialAccountsQuery = useFinancialAccountQuery({
+  const financialAccountQuery = useFinancialAccountQuery({
     variables: {
       accountListId,
       financialAccountId: financialAccountId ?? '',
     },
     skip: !financialAccountId,
   });
-
-  const setFinancialAccount: SetFinancialAccountFunction = ({
-    id,
-    viewTransactions,
-    transactionFilters,
-  }: SetFinancialAccountProps) => {
-    let pathname = '';
-    pathname = `/accountLists/${accountListId}/reports/financialAccounts`;
-
-    if (id) {
-      pathname += `/${id}`;
-      if (viewTransactions) {
-        pathname += `/entries`;
-      }
-    }
-
-    push({
-      pathname,
-      query: transactionFilters ?? {},
-    });
-  };
 
   const hasActiveFilters = !!Object.keys(activeFilters).length;
   const isNavListOpen = !!panelOpen;
@@ -133,16 +99,13 @@ export const FinancialAccountProvider: React.FC<
       value={{
         accountListId: accountListId ?? '',
         financialAccountId,
-        financialAccountsQuery,
+        financialAccountQuery,
         searchTerm,
         setSearchTerm,
-        setFinancialAccount,
         activeFilters,
         hasActiveFilters,
         setActiveFilters,
         urlFilters,
-        page,
-        setPage,
         isNavListOpen,
         designationAccounts,
         setDesignationAccounts,
