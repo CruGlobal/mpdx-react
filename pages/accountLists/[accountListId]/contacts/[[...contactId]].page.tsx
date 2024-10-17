@@ -64,7 +64,7 @@ const Contacts: React.FC = ({}) => {
 };
 
 const ContactsPage: React.FC = () => (
-  <ContactsWrapper>
+  <ContactsWrapper addViewMode>
     <Contacts />
   </ContactsWrapper>
 );

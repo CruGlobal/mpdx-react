@@ -12,6 +12,7 @@ import { getQueryParam } from 'src/utils/queryParam';
 
 interface Props {
   children?: React.ReactNode;
+  addViewMode?: boolean;
 }
 
 /*
@@ -30,7 +31,10 @@ export const extractContactId = (query: ParsedUrlQuery): string | undefined => {
   }
 };
 
-export const ContactsWrapper: React.FC<Props> = ({ children }) => {
+export const ContactsWrapper: React.FC<Props> = ({
+  children,
+  addViewMode = false,
+}) => {
   const router = useRouter();
   const { query, replace, pathname } = router;
 
@@ -74,7 +78,7 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
     const { filters: _filters, searchTerm: _searchTerm, ...newQuery } = query;
 
     const queryContactId: string[] = [];
-    if (viewMode !== TableViewModeEnum.List) {
+    if (addViewMode && viewMode !== TableViewModeEnum.List) {
       queryContactId.push(viewMode);
     }
     if (contactId) {
