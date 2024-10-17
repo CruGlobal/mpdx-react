@@ -102,7 +102,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
         {t(
           `This will log you in on behalf of the user specified below. You will be able to see what the user sees on {{appName}}.
           Impersonation sessions have 20 minute timeout where you will automatically be logged out of the user's account after
-          the specified amount of time. Once you are finished impersonating, click 'Exit Impersonation Mode' at the top of the
+          the specified amount of time. Once you are finished impersonating, click 'Stop Impersonating' at the top of the
           page.`,
           { appName },
         )}
