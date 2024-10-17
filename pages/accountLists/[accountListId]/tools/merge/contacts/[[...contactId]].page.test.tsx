@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { GetContactDuplicatesQuery } from 'src/components/Tool/MergeContacts/GetContactDuplicates.generated';
 import { getContactDuplicatesMocks } from 'src/components/Tool/MergeContacts/MergeContactsMock';
 import i18n from 'src/lib/i18n';
@@ -16,9 +17,6 @@ import MergeContactsPage from './[[...contactId]].page';
 jest.mock('next-auth/react');
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
-}));
-jest.mock('src/lib/helpScout', () => ({
-  suggestArticles: jest.fn(),
 }));
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -48,7 +46,10 @@ const Components = () => (
       <GqlMockedProvider<{
         GetContactDuplicates: GetContactDuplicatesQuery;
       }>
-        mocks={getContactDuplicatesMocks}
+        mocks={{
+          ...getContactDuplicatesMocks,
+          LoadConstants: loadConstantsMockData,
+        }}
       >
         <I18nextProvider i18n={i18n}>
           <SnackbarProvider>

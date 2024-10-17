@@ -26,9 +26,16 @@ const TestComponent: React.FC = () => {
     {
       mocks: {
         id: 'coaching-account',
-        name: 'John Doe',
+        name: 'John Doe Account',
         currency: 'USD',
         primaryAppeal: null,
+        balance: 100,
+        users: {
+          nodes: [
+            { firstName: 'John', lastName: 'Doe' },
+            { firstName: 'Sally', lastName: 'Doe' },
+          ],
+        },
       },
     },
   );
@@ -49,9 +56,13 @@ const TestComponent: React.FC = () => {
 
 describe('CoachingRow', () => {
   it('renders', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole, getByText } = render(<TestComponent />);
 
-    expect(getByRole('heading', { name: 'John Doe' })).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'John Doe Account' }),
+    ).toBeInTheDocument();
+    expect(getByText('John Doe, Sally Doe')).toBeInTheDocument();
+    expect(getByText('Balance: $100')).toBeInTheDocument();
   });
 
   it('deletes coaching account list', async () => {

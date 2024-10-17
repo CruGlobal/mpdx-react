@@ -1,16 +1,15 @@
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/system';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -21,12 +20,23 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  DisplayResultEnum,
+  PhaseEnum,
+  ResultEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
+import {
+  getPhaseByActivityType,
+  inPersonActivityTypes,
+} from 'src/utils/phases/taskActivityTypes';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
@@ -34,17 +44,32 @@ import { TaskModalEnum } from '../../TaskModal';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
+import { PhaseTags } from '../Inputs/PhaseTags/PhaseTags';
+import { ResultAutocomplete } from '../Inputs/ResultAutocomplete/ResultAutocomplete';
+import { SuggestedContactStatus } from '../Inputs/SuggestedContactStatus/SuggestedContactStatus';
 import {
   TagTypeEnum,
   TagsAutocomplete,
 } from '../Inputs/TagsAutocomplete/TagsAutocomplete';
-import { possibleNextActions } from '../PossibleNextActions';
-import { possibleResults } from '../PossibleResults';
+import { useUpdateContactStatusMutation } from '../TaskModal.generated';
+import {
+  extractSuggestedTags,
+  getDatabaseValueFromResult,
+} from '../TaskModalHelper';
+import { possibleNextActions } from '../possibleNextActions';
+import { possiblePartnerStatus } from '../possiblePartnerStatus';
+import { possibleResults } from '../possibleResults';
 import { useCompleteTaskMutation } from './CompleteTask.generated';
+
+const StyledGrid = styled(Grid)(() => ({
+  paddingTop: '0 !important',
+}));
 
 const taskSchema = yup.object({
   id: yup.string().required(),
+  displayResult: yup.mixed<DisplayResultEnum>().nullable(),
   result: yup.mixed<ResultEnum>().required(),
+  changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   tagList: yup.array().of(yup.string().required()).default([]),
   completedAt: nullableDateTime(),
@@ -56,46 +81,88 @@ interface Props {
   accountListId: string;
   task: GetTaskForTaskModalQuery['task'];
   onClose: () => void;
+  showFlowsMessage?: boolean;
 }
 
 const TaskModalCompleteForm = ({
   accountListId,
   task,
   onClose,
+  showFlowsMessage = false,
 }: Props): ReactElement => {
-  const { activityType } = task;
+  const { t } = useTranslation();
+  const { openTaskModal } = useTaskModal();
+  const { enqueueSnackbar } = useSnackbar();
+  const activityType = task.activityType || undefined;
+  const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
+  const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
+
   const initialCompletedAt =
     task.completedAt ||
-    (activityType === ActivityTypeEnum.Appointment ? task.startAt : null);
+    (inPersonActivityTypes.includes(activityType as ActivityTypeEnum) ||
+    taskPhase === PhaseEnum.Appointment
+      ? task.startAt
+      : null);
   const initialTask = useMemo(
     () => ({
       id: task.id,
       completedAt: initialCompletedAt
         ? DateTime.fromISO(initialCompletedAt)
         : DateTime.local(),
+      displayResult: null,
       result: ResultEnum.Completed,
-      nextAction:
-        activityType && possibleNextActions(activityType).includes(activityType)
-          ? activityType
-          : null,
+      changeContactStatus: false,
+      nextAction: null,
       tagList: task.tagList,
       comment: '',
     }),
     [task],
   );
 
-  const { t } = useTranslation();
-  const { openTaskModal } = useTaskModal();
-  const { enqueueSnackbar } = useSnackbar();
+  const [resultSelected, setResultSelected] = useState<
+    ResultEnum | DisplayResultEnum | null
+  >(task?.result || null);
 
+  const activityData = activityType
+    ? activityTypes.get(activityType)
+    : undefined;
+  const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
+    [],
+  );
+
+  const [updateContactStatus] = useUpdateContactStatusMutation();
   const [updateTask, { loading: saving }] = useCompleteTaskMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
-  const onSubmit = async ({
-    completedAt,
-    comment,
-    ...attributes
-  }: Attributes): Promise<void> => {
+
+  useEffect(() => {
+    if (activityType && activityTypes) {
+      const activityData = activityTypes.get(activityType);
+      if (activityData) {
+        setPhaseId(activityData.phaseId);
+      }
+    }
+  }, [activityTypes]);
+
+  const onSubmit = async (
+    { completedAt, comment, changeContactStatus, ...attributes }: Attributes,
+    suggestedPartnerStatus?: StatusEnum | null,
+  ): Promise<void> => {
+    const updatingContactStatus =
+      changeContactStatus && !!suggestedPartnerStatus;
+
+    if (attributes.displayResult) {
+      attributes.result = getDatabaseValueFromResult(
+        phaseData,
+        attributes.displayResult,
+        activityType,
+      );
+    }
+
+    if (selectedSuggestedTags.length) {
+      attributes.tagList = attributes.tagList.concat(selectedSuggestedTags);
+    }
+
     const mutations = [
       updateTask({
         variables: {
@@ -117,43 +184,103 @@ const TaskModalCompleteForm = ({
         }),
       );
     }
+    if (updatingContactStatus) {
+      task.contacts.nodes.forEach((contact) => {
+        mutations.push(
+          updateContactStatus({
+            variables: {
+              accountListId,
+              attributes: {
+                id: contact.id,
+                status: suggestedPartnerStatus,
+              },
+            },
+            onError: () => {
+              enqueueSnackbar(
+                t("Error while updating {{name}}'s status", {
+                  name: contact.name,
+                }),
+                {
+                  variant: 'error',
+                },
+              );
+            },
+          }),
+        );
+      });
+    }
     await Promise.all(mutations);
     update();
 
     dispatch('mpdx-task-completed');
     enqueueSnackbar(t('Task saved successfully'), { variant: 'success' });
+    if (updatingContactStatus) {
+      enqueueSnackbar(t('Updated contact(s) status successfully'), {
+        variant: 'success',
+      });
+    }
     onClose();
     if (attributes.nextAction) {
       openTaskModal({
         view: TaskModalEnum.Add,
         defaultValues: {
-          subject: task.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),
           userId: task.user?.id,
-          tagList: task.tagList,
+          tagList: extractSuggestedTags(task?.tagList, phaseTags)
+            ?.additionalTags,
         },
       });
     }
   };
 
-  const availableResults = task.activityType
-    ? possibleResults(task.activityType)
-    : [];
-  const availableNextActions = task.activityType
-    ? possibleNextActions(task.activityType)
-    : [];
+  const availableResults = useMemo(
+    () => possibleResults(phaseData),
+    [phaseData],
+  );
+
+  const partnerStatus = useMemo(
+    () => possiblePartnerStatus(phaseData, resultSelected, activityType),
+    [phaseData, resultSelected, activityType],
+  );
+
+  const nextActions = useMemo(
+    () => possibleNextActions(phaseData, resultSelected, activityType),
+    [phaseData, resultSelected, activityType],
+  );
+
+  const phaseTags = useMemo(
+    () =>
+      phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
+    [phaseData],
+  );
+
+  const contactIds = useMemo(
+    () => task.contacts.nodes.map((contact) => contact.id) || [],
+    [task],
+  );
+
+  const numberOfContacts = contactIds.length;
 
   return (
     <Formik<Attributes>
       initialValues={initialTask}
       validationSchema={taskSchema}
-      onSubmit={onSubmit}
+      onSubmit={(values) =>
+        onSubmit(values, partnerStatus?.suggestedContactStatus)
+      }
       enableReinitialize
     >
       {({
-        values: { completedAt, tagList, result, nextAction, comment },
+        values: {
+          completedAt,
+          tagList,
+          displayResult,
+          changeContactStatus,
+          nextAction,
+          comment,
+        },
         setFieldValue,
         handleChange,
         handleSubmit,
@@ -162,20 +289,45 @@ const TaskModalCompleteForm = ({
       }): ReactElement => (
         <form onSubmit={handleSubmit} noValidate>
           <DialogContent dividers style={{ maxHeight: 'calc(100vh - 200px)' }}>
+            {showFlowsMessage && (
+              <Alert sx={{ marginBottom: 2 }}>
+                {t(
+                  "The contact's status has been updated. Now you can complete the contact's most recent task.",
+                )}
+              </Alert>
+            )}
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {getLocalizedTaskType(t, task?.activityType)}
-                </Typography>{' '}
-                <Typography display="inline">{task?.subject}</Typography>{' '}
+                  {activityData ? activityData.phase + ' - ' : ''}
+                  {getLocalizedTaskType(t, activityType)}
+                </Typography>
+              </Grid>
+              <StyledGrid item>
+                <Typography style={{ fontWeight: 600 }} display="inline">
+                  {t('Subject: ')}
+                </Typography>
+                <Typography display="inline">{task?.subject}</Typography>
+              </StyledGrid>
+              <StyledGrid item>
+                <Typography style={{ fontWeight: 600 }} display="inline">
+                  {numberOfContacts > 1
+                    ? t('Contacts: ')
+                    : numberOfContacts > 0
+                    ? t('Contact: ')
+                    : null}
+                </Typography>
                 {task?.contacts.nodes.map((contact, index) => (
-                  <Typography key={contact.id}>
-                    {index !== task.contacts.nodes.length - 1
+                  <Typography
+                    display={numberOfContacts === 1 ? 'inline' : 'block'}
+                    key={contact.id}
+                  >
+                    {index !== numberOfContacts - 1
                       ? `${contact.name},`
                       : contact.name}
                   </Typography>
                 ))}
-              </Grid>
+              </StyledGrid>
               <Grid item>
                 <FormControl fullWidth>
                   <DateTimeFieldPair
@@ -198,44 +350,53 @@ const TaskModalCompleteForm = ({
                   />
                 </FormControl>
               </Grid>
-              {availableResults.length > 0 && (
-                <Grid item>
-                  <FormControl fullWidth required>
-                    <InputLabel id="result">{t('Result')}</InputLabel>
-                    <Select
-                      label={t('Result')}
-                      labelId="result"
-                      value={result}
-                      onChange={(e) => setFieldValue('result', e.target.value)}
-                    >
-                      {availableResults.map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedResultString(t, val)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              )}
-              {availableNextActions.length > 0 && (
+
+              <ResultAutocomplete
+                availableResults={availableResults}
+                result={displayResult}
+                setFieldValue={setFieldValue}
+                setResultSelected={setResultSelected}
+                phaseData={phaseData}
+              />
+
+              <SuggestedContactStatus
+                suggestedContactStatus={partnerStatus?.suggestedContactStatus}
+                changeContactStatus={changeContactStatus}
+                handleChange={handleChange}
+                accountListId={accountListId}
+                contactIds={contactIds}
+                contactStatus={
+                  numberOfContacts === 1 ? task.contacts.nodes[0]?.status : null
+                }
+              />
+
+              {nextActions.length > 0 && (
                 <Grid item>
                   <ActivityTypeAutocomplete
-                    options={availableNextActions}
-                    value={nextAction}
+                    options={nextActions}
+                    value={nextAction || undefined}
                     label={t('Next Action')}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
+                    activityTypes={activityTypes}
                   />
                 </Grid>
               )}
-              {/*Add field to change contact statuses */}
+              {!!phaseTags?.length && (
+                <PhaseTags
+                  tags={phaseTags}
+                  selectedTags={selectedSuggestedTags}
+                  setSelectedTags={setSelectedSuggestedTags}
+                />
+              )}
               <Grid item>
                 <TagsAutocomplete
                   accountListId={accountListId}
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
+                  label={phaseTags?.length ? t('Additional Tags') : ''}
                 />
               </Grid>
 

@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
@@ -10,7 +10,6 @@ import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
-  Panel,
   PartnerGivingAnalysisReport,
   PartnerGivingAnalysisReportRef,
 } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
@@ -23,10 +22,10 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetContactLinks } from 'src/hooks/useContactLinks';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
+import { Panel } from '../helpers';
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -90,10 +89,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     };
     return [reportFilterGroup, ...groups];
   }, [filterData]);
-
-  useEffect(() => {
-    suggestArticles('HS_REPORTS_SUGGESTIONS');
-  }, []);
 
   const handleClearSearch = () => {
     reportRef.current?.clearSearchInput();

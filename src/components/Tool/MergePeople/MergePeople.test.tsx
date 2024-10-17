@@ -98,7 +98,7 @@ describe('Tools - MergePeople', () => {
     await waitFor(() =>
       expect(queryAllByTestId('MergeContactPair')).toHaveLength(2),
     );
-    expect(getByText('(Siebel)')).toBeInTheDocument();
+    expect(getByText('(US Donation Services)')).toBeInTheDocument();
 
     expect(
       getByRole('button', { name: 'Confirm and Continue' }),

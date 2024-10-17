@@ -63,7 +63,7 @@ export const MassActionsExportEmailsModal: React.FC<
       <ContentWrapper data-testid="ExportEmailsModal">
         <HelperText variant="body2">
           {t(
-            'This is the primary email for every person in the selected contacts. If they are marked as "Opted out of Email Newsletter", they are not included in this list.',
+            'This is the primary email for every person in the selected contacts. If they are marked as "Opted out of Digital Newsletter", they are not included in this list.',
           )}
         </HelperText>
         <HelperText variant="body2" style={{ color: theme.palette.error.dark }}>

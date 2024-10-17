@@ -5,6 +5,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {
   Button,
   CardActions,
+  CardContent,
   CardHeader,
   IconButton,
   Skeleton,
@@ -53,6 +54,20 @@ const useStyles = makeStyles()((theme: Theme) => ({
     alignSelf: 'inherit',
     marginTop: 0,
   },
+  cardContent: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing(2),
+  },
+  cardContentExpanded: {
+    padding: theme.spacing(0, 2),
+    [theme.breakpoints.down('xs')]: {
+      padding: theme.spacing(2),
+    },
+  },
   tableContainer: {
     flex: 1,
   },
@@ -81,7 +96,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
     throw new Error(`Invalid interval: ${interval.invalidReason}`);
   }
 
-  const { data, loading } = useGetWeeklyActivityQuery({
+  const { data } = useGetWeeklyActivityQuery({
     variables: {
       accountListId,
       startOfWeek: interval.start.toISO(),
@@ -143,113 +158,100 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
         exit={{ opacity: 0 }}
         className={classes.div}
       >
-        <TableContainer component="div" className={classes.tableContainer}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell data-testid="WeeklyActivityTableCellDateRange">
-                  {`${intlDateFormat(interval.start)} - ${intlDateFormat(
-                    interval.end,
-                  )}`}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {t('Completed')}
-                </StyledTableCell>
-                <StyledTableCell align="right">
-                  {t('Appt Produced')}
-                </StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <StyledTableCell>{t('Calls')}</StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  data-testid="WeeklyActivityTableCellCompletedCalls"
-                >
-                  {loading || !data ? (
-                    <Skeleton
-                      variant="text"
-                      data-testid="WeeklyActivitySkeletonLoading"
-                    />
-                  ) : (
-                    numberFormat(data.completedCalls.totalCount, locale)
-                  )}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  data-testid="WeeklyActivityTableCellCallsThatProducedAppointments"
-                >
-                  {loading || !data ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    numberFormat(
-                      data.callsThatProducedAppointments.totalCount,
-                      locale,
-                    )
-                  )}
-                </StyledTableCell>
-              </TableRow>
-              <TableRow>
-                <StyledTableCell>{t('Messages')}</StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  data-testid="WeeklyActivityTableCellCompletedMessages"
-                >
-                  {loading || !data ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    numberFormat(data.completedMessages.totalCount, locale)
-                  )}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  data-testid="WeeklyActivityTableCellMessagesThatProducedAppointments"
-                >
-                  {loading || !data ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    numberFormat(
-                      data.messagesThatProducedAppointments.totalCount,
-                      locale,
-                    )
-                  )}
-                </StyledTableCell>
-              </TableRow>
-              <TableRow>
-                <StyledTableCell>{t('Appointments')}</StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  data-testid="WeeklyActivityTableCellCompletedAppointments"
-                >
-                  {loading || !data ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    numberFormat(data.completedAppointments.totalCount, locale)
-                  )}
-                </StyledTableCell>
-                <StyledTableCell></StyledTableCell>
-              </TableRow>
-              <TableRow>
-                <StyledTableCell>{t('Correspondence')}</StyledTableCell>
-                <StyledTableCell
-                  align="right"
-                  data-testid="WeeklyActivityTableCellCompletedCorrespondence"
-                >
-                  {loading || !data ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    numberFormat(
-                      data.completedCorrespondence.totalCount,
-                      locale,
-                    )
-                  )}
-                </StyledTableCell>
-                <StyledTableCell></StyledTableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <CardContent
+          className={[classes.cardContent, classes.cardContentExpanded].join(
+            ' ',
+          )}
+        >
+          <TableContainer component="div" className={classes.tableContainer}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell data-testid="WeeklyActivityTableCellDateRange">
+                    {`${intlDateFormat(interval.start)} - ${intlDateFormat(
+                      interval.end,
+                    )}`}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    {t('Completed')}
+                  </StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <StyledTableCell>{t('Initiations')}</StyledTableCell>
+                  <StyledTableCell
+                    align="right"
+                    data-testid="WeeklyActivityTableCellCompletedInitiations"
+                  >
+                    {!data ? (
+                      <Skeleton
+                        sx={{ width: 20, float: 'right' }}
+                        variant="text"
+                        data-testid="WeeklyActivitySkeletonLoading"
+                      />
+                    ) : (
+                      numberFormat(data.completedInitiations.totalCount, locale)
+                    )}
+                  </StyledTableCell>
+                </TableRow>
+                <TableRow>
+                  <StyledTableCell>{t('Appointments')}</StyledTableCell>
+                  <StyledTableCell
+                    align="right"
+                    data-testid="WeeklyActivityTableCellCompletedAppointments"
+                  >
+                    {!data ? (
+                      <Skeleton
+                        sx={{ width: 20, float: 'right' }}
+                        variant="text"
+                      />
+                    ) : (
+                      numberFormat(
+                        data.completedAppointments.totalCount,
+                        locale,
+                      )
+                    )}
+                  </StyledTableCell>
+                </TableRow>
+                <TableRow>
+                  <StyledTableCell>{t('Follow-Up')}</StyledTableCell>
+                  <StyledTableCell
+                    align="right"
+                    data-testid="WeeklyActivityTableCellCompletedFollowUps"
+                  >
+                    {!data ? (
+                      <Skeleton
+                        sx={{ width: 20, float: 'right' }}
+                        variant="text"
+                      />
+                    ) : (
+                      numberFormat(data.completedFollowUps.totalCount, locale)
+                    )}
+                  </StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
+                </TableRow>
+                <TableRow>
+                  <StyledTableCell>{t('Partner Care')}</StyledTableCell>
+                  <StyledTableCell
+                    align="right"
+                    data-testid="WeeklyActivityTableCellCompletedPartnerCare"
+                  >
+                    {!data ? (
+                      <Skeleton
+                        sx={{ width: 20, float: 'right' }}
+                        variant="text"
+                      />
+                    ) : (
+                      numberFormat(data.completedPartnerCare.totalCount, locale)
+                    )}
+                  </StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
         <CardActions sx={{ justifyContent: 'space-between' }}>
           <Link
             href={`/accountLists/${accountListId}/reports/coaching`}

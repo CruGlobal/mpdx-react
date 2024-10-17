@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -155,7 +155,9 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                 <Typography variant="subtitle1">
                   {t('Source:')} {sourceToStr(t, primaryAddress.source)} (
                   {dateFormat(
-                    DateTime.fromISO(primaryAddress.createdAt),
+                    DateTime.fromISO(
+                      primaryAddress.startDate || primaryAddress.createdAt,
+                    ),
                     locale,
                   )}
                   )
@@ -195,7 +197,11 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
                   </StyledAddressTypography>
                   <Typography variant="subtitle1">
                     {t('Source:')} {sourceToStr(t, address.source)} (
-                    {dateFormat(DateTime.fromISO(address.createdAt), locale)})
+                    {dateFormat(
+                      DateTime.fromISO(address.startDate || address.createdAt),
+                      locale,
+                    )}
+                    )
                   </Typography>
                 </ContactDetailsMailingTextContainer>
               ))}

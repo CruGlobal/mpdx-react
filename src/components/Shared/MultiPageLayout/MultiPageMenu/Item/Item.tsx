@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { Collapse, ListItem, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import HandoffLink from 'src/components/HandoffLink';
+import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { NavTypeEnum } from '../MultiPageMenu';
@@ -72,12 +72,8 @@ export const Item: React.FC<Props> = ({
 
   return (
     <>
-      {item.handoff && (
-        <HandoffLink path={item.id} auth={item.handoffAuth}>
-          {children}
-        </HandoffLink>
-      )}
-      {!item.handoff && (
+      {item.oauth && <OauthLink path={item.id}>{children}</OauthLink>}
+      {!item.oauth && (
         <NextLink
           href={`/accountLists/${accountListId}/${navType}/${item.id}`}
           scroll={false}

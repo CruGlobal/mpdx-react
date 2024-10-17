@@ -78,10 +78,10 @@ export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
     accountListType === AccountListTypeEnum.Own
       ? ownFetchMore
       : coachingFetchMore;
-  const accountListData =
+  const pledges =
     accountListType === AccountListTypeEnum.Own
-      ? ownData?.accountList
-      : coachingData?.coachingAccountList;
+      ? ownData?.accountListPledges
+      : coachingData?.coachingAccountListPledges;
 
   const checkDueDate = (
     expectedDate: string | null | undefined,
@@ -124,16 +124,14 @@ export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
         title={
           <Box display="flex" alignItems="center">
             <Box flex={1}>{t('Outstanding Special Needs')}</Box>
-            {accountListData?.primaryAppeal?.pledges.pageInfo.hasNextPage && (
+            {pledges?.pageInfo.hasNextPage && (
               <LoadMoreButton
                 role="button"
                 variant="outlined"
                 onClick={() =>
                   fetchMore({
                     variables: {
-                      after:
-                        accountListData?.primaryAppeal?.pledges.pageInfo
-                          .endCursor,
+                      after: pledges?.pageInfo.endCursor,
                     },
                   })
                 }
@@ -145,7 +143,7 @@ export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
         }
       />
       <ContentContainer>
-        {loading && !accountListData ? (
+        {loading && !pledges ? (
           <MultilineSkeleton lines={8} />
         ) : (
           <TableContainer sx={{ minWidth: 600 }}>
@@ -158,7 +156,7 @@ export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {accountListData?.primaryAppeal?.pledges.nodes.map((need) => (
+                {pledges?.nodes.map((need) => (
                   <TableRow role="row" key={need.id}>
                     <AlignedTableCell>{need.contact.name}</AlignedTableCell>
                     <AlignedTableCell>
@@ -172,17 +170,15 @@ export const OutstandingNeeds: React.FC<OutstandingNeedsProps> = ({
                     </AlignedTableCell>
                     <AlignedTableCell
                       sx={{
-                        color: checkDueDate(need.expectedDate)['color'],
+                        color: checkDueDate(need.expectedDate).color,
                       }}
                     >
-                      {`${
-                        need.expectedDate
-                          ? dateFormatShort(
-                              DateTime.fromISO(need.expectedDate),
-                              locale,
-                            )
-                          : ''
-                      } ${checkDueDate(need.expectedDate)['overdue']}`}
+                      {need.expectedDate &&
+                        dateFormatShort(
+                          DateTime.fromISO(need.expectedDate),
+                          locale,
+                        )}{' '}
+                      {checkDueDate(need.expectedDate).overdue}
                     </AlignedTableCell>
                   </TableRow>
                 ))}

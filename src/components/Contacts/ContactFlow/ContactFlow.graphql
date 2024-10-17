@@ -1,0 +1,12 @@
+query HasActiveTask($accountListId: ID!, $tasksFilter: TaskFilterSetInput) {
+  tasks(
+    accountListId: $accountListId
+    tasksFilter: $tasksFilter
+    first: 1
+    sortBy: START_AT_ASC
+  ) {
+    nodes {
+      id
+    }
+  }
+}

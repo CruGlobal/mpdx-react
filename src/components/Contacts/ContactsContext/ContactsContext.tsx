@@ -214,13 +214,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     toggleSelectAll,
     toggleSelectionById,
     deselectAll,
-  } = useMassSelection(
-    contactCount,
-    allContactIds,
-    activeFilters,
-    searchTerm as string,
-    starredFilter,
-  );
+  } = useMassSelection(allContactIds);
   //#endregion
 
   useEffect(() => {

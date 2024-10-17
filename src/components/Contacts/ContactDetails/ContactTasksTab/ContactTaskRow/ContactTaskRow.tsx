@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
 import { StarredItemIcon } from 'src/components/common/StarredItemIcon/StarredItemIcon';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
@@ -99,6 +100,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   onTaskCheckToggle,
 }) => {
   const { t } = useTranslation();
+  const { activityTypes } = usePhaseData();
   const [hasBeenDeleted, setHasBeenDeleted] = useState<boolean>(false);
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
@@ -154,6 +156,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const dateToShow = completedAt ?? startAt;
   const taskDate = (dateToShow && DateTime.fromISO(dateToShow)) || null;
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
+  const activityData = activityType ? activityTypes.get(activityType) : null;
 
   return !hasBeenDeleted ? (
     <TaskRowWrap isChecked={isChecked}>
@@ -174,7 +177,10 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         onClick={handleSubjectPressed}
         onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
       >
-        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
+        <TaskType>
+          {activityData && `${activityData.phase} - `}
+          {getLocalizedTaskType(t, activityType)}
+        </TaskType>
         <TaskDescription>{subject}</TaskDescription>
       </SubjectWrap>
 

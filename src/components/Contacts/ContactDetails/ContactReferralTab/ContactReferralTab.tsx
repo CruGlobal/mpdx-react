@@ -107,7 +107,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               onMouseEnter={preloadCreateMultipleContacts}
             >
               <Add />
-              {t('Add Referrals')}
+              {t('Add Connections')}
             </AddButton>
           </Box>
           <TableContainer component={Paper}>
@@ -115,7 +115,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
               <TableHead>
                 <TableRow>
                   <TableCell>{t('Name')}</TableCell>
-                  <TableCell>{t('Referral Date')}</TableCell>
+                  <TableCell>{t('Date of Connection')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -141,7 +141,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                   )
                 ) : (
                   <TableRow key="no_data">
-                    <TableCell>{t('No Referrals')}</TableCell>
+                    <TableCell>{t('No Connections')}</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -150,8 +150,8 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
           <Modal
             isOpen={modalContactReferralOpen}
             handleClose={handleModalClose}
-            title={t('Add Referrals')}
-            aria-labelledby={t('Create Referral Dialog')}
+            title={t('Add Connections')}
+            aria-labelledby={t('Create Connection Dialog')}
             fullWidth
             size={'xl'} // TODO: Expand logic as more menu modals are added
           >

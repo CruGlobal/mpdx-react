@@ -1,6 +1,0 @@
-mutation SetActiveFinancialAccount($input: SetActiveFinancialAccountInput!) {
-  setActiveFinancialAccount(input: $input) {
-    active
-    id
-  }
-}

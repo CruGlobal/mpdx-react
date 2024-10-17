@@ -92,4 +92,45 @@ describe('ContactFlow', () => {
       expect(getByTestId('contactsFlowUntitledTwo')).toBeInTheDocument(),
     );
   });
+
+  it('shows the default flow values if no values are saved', async () => {
+    const { queryByTestId, getByRole } = render(
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
+            mocks={{
+              GetUserOptions: {
+                userOptions: [],
+              },
+            }}
+          >
+            <ThemeProvider theme={theme}>
+              <ContactsWrapper>
+                <DndProvider backend={HTML5Backend}>
+                  <ContactFlow
+                    accountListId={accountListId}
+                    selectedFilters={{}}
+                  />
+                </DndProvider>
+              </ContactsWrapper>
+            </ThemeProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </SnackbarProvider>,
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId('contactsFlowUntitledOne')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => {
+      expect(getByRole('heading', { name: 'Connections' })).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'Initiation' })).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'Appointment' })).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'Follow-Up' })).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: 'Partner Care' }),
+      ).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'Archive' })).toBeInTheDocument();
+    });
+  });
 });

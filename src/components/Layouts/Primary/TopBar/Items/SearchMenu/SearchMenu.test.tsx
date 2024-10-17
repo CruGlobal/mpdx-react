@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { StatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -34,7 +36,11 @@ jest.mock('notistack', () => ({
 describe('SearchMenu', () => {
   it('default', async () => {
     const { getByRole, getByPlaceholderText } = render(
-      <GqlMockedProvider>
+      <GqlMockedProvider<{
+        LoadConstants: LoadConstantsQuery;
+      }>
+        mocks={{ LoadConstants: loadConstantsMockData }}
+      >
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
             <SearchMenu />
@@ -89,6 +95,7 @@ describe('SearchMenu', () => {
                 totalCount: 8,
               },
             },
+            LoadConstants: loadConstantsMockData,
           }}
         >
           <ThemeProvider theme={theme}>
@@ -140,6 +147,7 @@ describe('SearchMenu', () => {
                 ],
               },
             },
+            LoadConstants: loadConstantsMockData,
           }}
         >
           <ThemeProvider theme={theme}>

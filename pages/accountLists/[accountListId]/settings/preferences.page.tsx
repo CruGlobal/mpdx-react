@@ -32,8 +32,8 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { getCountries } from 'src/lib/data/countries';
-import { suggestArticles } from 'src/lib/helpScout';
 import { SettingsWrapper } from './Wrapper';
 
 const AccordionLoading = styled(Skeleton)(() => ({
@@ -47,6 +47,7 @@ const Preferences: React.FC = () => {
   const { push, query } = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { onSetupTour } = useSetupContext();
+  const session = useRequiredSession();
 
   const setupAccordions = ['locale', 'monthly goal', 'home country'];
   const [setup, setSetup] = useState(0);
@@ -57,6 +58,22 @@ const Preferences: React.FC = () => {
   const timeZones = useGetTimezones();
 
   const [updateUserOptions] = useUpdateUserOptionsMutation();
+
+  useEffect(() => {
+    const redirectToDownloadExportedData = (exportDataExportId: string) => {
+      const url = `${
+        process.env.REST_API_URL
+      }/account_lists/${accountListId}/exports/${encodeURIComponent(
+        exportDataExportId,
+      )}.xml?access_token=${session.apiToken}`;
+
+      window.location.replace(url);
+    };
+
+    if (query.exportId && typeof query.exportId === 'string') {
+      redirectToDownloadExportedData(query.exportId);
+    }
+  }, [query.exportId, accountListId]);
 
   const { data: personalPreferencesData, loading: personalPreferencesLoading } =
     useGetPersonalPreferencesQuery({
@@ -79,10 +96,6 @@ const Preferences: React.FC = () => {
 
   const { data: userOrganizationAccountsData } =
     useGetUsersOrganizationsAccountsQuery();
-
-  useEffect(() => {
-    suggestArticles('HS_SETTINGS_PREFERENCES_SUGGESTIONS');
-  }, []);
 
   useEffect(() => {
     if (onSetupTour) {

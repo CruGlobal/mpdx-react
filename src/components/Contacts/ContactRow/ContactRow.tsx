@@ -31,10 +31,10 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   flex: '1 1 auto',
   textAlign: 'left',
   padding: theme.spacing(0, 0.5, 0, 2),
+  width: '100%',
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(0, 0.5),
   },
-  width: '100%',
   '&.top-margin': {
     marginTop: 16,
   },
@@ -43,13 +43,11 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   },
 }));
 
-export const StyledCheckbox = styled(Checkbox, {
-  shouldForwardProp: (prop) => prop !== 'value',
-})(() => ({
+export const StyledCheckbox = styled(Checkbox)({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
-}));
+});
 
 interface Props {
   contact: ContactRowFragment;
@@ -61,8 +59,8 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     accountListId,
     isRowChecked: isChecked,
     contactDetailsOpen,
-    setContactFocus: onContactSelected,
     getContactUrl,
+    setContactFocus: onContactSelected,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
 
@@ -115,7 +113,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
               color="secondary"
               onClick={(event) => event.stopPropagation()}
               onChange={() => onContactCheckToggle(contact.id)}
-              value={isChecked}
             />
           </ListItemIcon>
         </Hidden>
@@ -124,7 +121,16 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             <ListItemText
               primary={
                 <Typography component="span" variant="h6" noWrap>
-                  <Box component="span" display="flex" alignItems="center">
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'block',
+                      alignItems: 'center',
+                      overflow: 'clip',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
                     {name}
                     <CelebrationIcons contact={contact} />
                   </Box>

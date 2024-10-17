@@ -10,7 +10,6 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
@@ -112,10 +111,6 @@ const router = {
   push,
 };
 
-beforeEach(() => {
-  (useAccountListId as jest.Mock).mockReturnValue(router);
-});
-
 const ButtonGroup: React.FC = () => {
   return (
     <>
@@ -137,12 +132,16 @@ const ButtonGroup: React.FC = () => {
 
 describe('ListHeader', () => {
   describe('Contact', () => {
-    it('renders contact header', () => {
-      const { getByPlaceholderText, getByTestId, getByText } = render(
-        <Components />,
-      );
+    it('renders contact header', async () => {
+      const { getByPlaceholderText, getByTestId, getByText, findByText } =
+        render(<Components />);
+      const searchBox = getByPlaceholderText('Search Contacts');
+      expect(searchBox).toBeInTheDocument();
 
-      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
+      userEvent.hover(searchBox);
+      expect(
+        await findByText('Search by name, phone, email, or partner #'),
+      ).toBeVisible();
       expect(getByText('Actions')).toBeInTheDocument();
       expect(getByTestId('star-filter-button')).toBeInTheDocument();
       expect(getByTestId('showing-text')).toBeInTheDocument();
@@ -219,12 +218,18 @@ describe('ListHeader', () => {
   });
 
   describe('Task', () => {
-    it('renders task header', () => {
-      const { getByPlaceholderText } = render(
+    it('renders task header', async () => {
+      const { getByPlaceholderText, findByText } = render(
         <Components page={PageEnum.Task} />,
       );
 
-      expect(getByPlaceholderText('Search Tasks')).toBeVisible();
+      const searchBox = getByPlaceholderText('Search Tasks');
+      expect(searchBox).toBeVisible();
+
+      userEvent.hover(searchBox);
+      expect(
+        await findByText('Search by subject, tags, contact name, or comments'),
+      ).toBeVisible();
     });
   });
 
@@ -471,5 +476,31 @@ describe('ListHeader', () => {
     );
     expect(queryByText('Selected')).not.toBeInTheDocument();
     expect(queryByText('Actions')).not.toBeInTheDocument();
+  });
+});
+
+describe('Counts', () => {
+  it('Should update count upon deletion', async () => {
+    const { queryByText, getByText } = render(
+      <Components
+        selectedIds={['a', 'b', 'c']}
+        page={PageEnum.Task}
+        totalItems={50}
+        showShowingCount={true}
+      />,
+    );
+    expect(queryByText('Showing 50')).toBeInTheDocument();
+    expect(queryByText('3 Selected')).toBeInTheDocument();
+    const actionsButton = getByText('Actions');
+    userEvent.click(actionsButton);
+    expect(getByText('Delete Tasks')).toBeInTheDocument();
+    userEvent.click(getByText('Delete Tasks'));
+    await waitFor(() => {
+      expect(
+        queryByText('Are you sure you wish to delete the 3 selected tasks?'),
+      ).toBeInTheDocument();
+    });
+    userEvent.click(getByText('Yes'));
+    expect(queryByText('Showing 50')).toBeInTheDocument();
   });
 });

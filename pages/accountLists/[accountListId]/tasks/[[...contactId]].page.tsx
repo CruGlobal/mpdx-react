@@ -32,7 +32,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { suggestArticles } from 'src/lib/helpScout';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import theme from 'src/theme';
 import {
@@ -123,15 +122,11 @@ const TasksPage: React.FC = () => {
     }
   }, [isReady, contactId]);
 
-  useEffect(() => {
-    suggestArticles('HS_TASKS_SUGGESTIONS');
-  }, []);
-
   //#region Filters
   const urlFilters =
     query?.filters && JSON.parse(decodeURI(query.filters as string));
 
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
     urlFilters ?? {},
   );
@@ -242,13 +237,8 @@ const TasksPage: React.FC = () => {
     deselectAll,
     toggleSelectAll,
     toggleSelectionById,
-  } = useMassSelection(
-    data?.tasks?.totalCount ?? 0,
-    allTaskIds,
-    activeFilters,
-    searchTerm as string,
-    starredFilter,
-  );
+    deselectMultipleIds,
+  } = useMassSelection(allTaskIds);
   //#endregion
 
   //#region User Actions
@@ -354,6 +344,7 @@ const TasksPage: React.FC = () => {
                     toggleStarredFilter={setStarredFilter}
                     headerCheckboxState={selectionType}
                     massDeselectAll={deselectAll}
+                    showShowingCount
                     selectedIds={ids}
                     buttonGroup={
                       <Hidden xsDown>
@@ -426,6 +417,8 @@ const TasksPage: React.FC = () => {
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
                             getContactUrl={getContactUrl}
+                            contactDetailsOpen={contactDetailsOpen}
+                            removeSelectedIds={deselectMultipleIds}
                           />
                         </Box>
                       )}

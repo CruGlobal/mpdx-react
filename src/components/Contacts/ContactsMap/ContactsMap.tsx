@@ -3,15 +3,16 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   GoogleMap,
-  InfoWindow,
+  InfoWindowF,
   Marker,
   MarkerClusterer,
   useJsApiLoader,
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
-import { sourceToStr } from 'src/utils/sourceToStr';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import {
   ContactsContext,
   ContactsType,
@@ -34,7 +35,7 @@ const MapLoading = styled(CircularProgress)(() => ({
 const mapContainerStyle = {
   height: '100%',
   width: '100%',
-  zIndex: 2000,
+  zIndex: 1000,
 };
 
 const options = {
@@ -47,31 +48,6 @@ const defaultCenter = {
   lng: -95,
 };
 
-const getStatusPin = (status: StatusEnum | null | undefined): string => {
-  switch (status) {
-    case StatusEnum.AppointmentScheduled:
-      return '_appt_scheduled';
-    case StatusEnum.AskInFuture:
-      return '_ask_in_future';
-    case StatusEnum.CallForDecision:
-      return '_call_for_decision';
-    case StatusEnum.ContactForAppointment:
-      return '_contact_for_appt';
-    case StatusEnum.CultivateRelationship:
-      return '_cultivate_relationship';
-    case StatusEnum.NeverContacted:
-      return '_never_contacted';
-    case StatusEnum.PartnerFinancial:
-      return '_partner_financial';
-    case StatusEnum.PartnerPray:
-      return '_partner_pray';
-    case StatusEnum.PartnerSpecial:
-      return '_partner_special';
-    default:
-      return '_grey';
-  }
-};
-
 export const ContactsMap: React.FC = ({}) => {
   const { t } = useTranslation();
   const {
@@ -81,6 +57,7 @@ export const ContactsMap: React.FC = ({}) => {
     setSelected,
     setContactFocus: onContactSelected,
   } = React.useContext(ContactsContext) as ContactsType;
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -92,15 +69,14 @@ export const ContactsMap: React.FC = ({}) => {
   });
 
   useEffect(() => {
-    // Add styles to HelpScout Beacon to move left of Google zoom buttons.
-    const beacon = document.querySelector(
-      '#beacon-container .BeaconFabButtonFrame',
-    ) as HTMLElement;
-    if (!beacon) {
+    // Add styles to Helpjuice beacon to move left of Google zoom buttons.
+    const beacon = document.querySelector('#helpjuice-widget.bottomRight');
+    if (!(beacon instanceof HTMLElement)) {
       return;
     }
-    beacon.style.setProperty('right', '60px', 'important');
-    return () => beacon.style.setProperty('right', '20px');
+    const oldRight = beacon.style.getPropertyValue('right');
+    beacon.style.setProperty('right', '120px', 'important');
+    return () => beacon.style.setProperty('right', oldRight);
   }, []);
 
   useEffect(() => {
@@ -117,6 +93,10 @@ export const ContactsMap: React.FC = ({}) => {
     });
     mapRef.current.fitBounds(bounds);
   }, [data, isLoaded, mapRef.current]);
+
+  const getStatusPin = (status: StatusEnum | null | undefined): string => {
+    return status && contactStatuses[status] ? status.toLowerCase() : 'grey';
+  };
 
   return !loadError && isLoaded ? (
     // Important! Always set the container height explicitly
@@ -155,7 +135,9 @@ export const ContactsMap: React.FC = ({}) => {
                           setSelected(contact);
                         }}
                         icon={{
-                          url: `/images/pin${getStatusPin(contact.status)}.png`,
+                          url: `/images/pin_${getStatusPin(
+                            contact.status,
+                          )}.png`,
                           origin: new window.google.maps.Point(0, 0),
                           anchor: new window.google.maps.Point(15, 48),
                           scaledSize: new window.google.maps.Size(30, 48),
@@ -167,9 +149,9 @@ export const ContactsMap: React.FC = ({}) => {
             )}
           </MarkerClusterer>
         )}
-
+        {/* Using InfoWindowF instead of InfoWindow as there is a problem with React Strict rendering the component twice. */}
         {selected ? (
-          <InfoWindow
+          <InfoWindowF
             position={{
               lat: selected.lat ?? 0,
               lng: selected.lng ?? 0,
@@ -202,7 +184,7 @@ export const ContactsMap: React.FC = ({}) => {
                 Show Contact
               </ContactLink>
             </Box>
-          </InfoWindow>
+          </InfoWindowF>
         ) : null}
       </GoogleMap>
     </div>

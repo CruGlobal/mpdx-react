@@ -6,7 +6,10 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
-import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
+import {
+  ListHeaderCheckBoxState,
+  PageEnum,
+} from 'src/components/Shared/Header/ListHeader';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
@@ -16,7 +19,10 @@ import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelec
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
-import { useContactTasksTabQuery } from './ContactTasksTab.generated';
+import {
+  useContactPhaseQuery,
+  useContactTasksTabQuery,
+} from './ContactTasksTab.generated';
 import { ContactTasksTabNullState } from './NullState/ContactTasksTabNullState';
 
 const ContactDetailsTabContainer = styled(Box)(({ theme }) => ({
@@ -113,6 +119,14 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     },
   });
 
+  const { data: phaseData } = useContactPhaseQuery({
+    variables: {
+      accountListId,
+      contactId,
+    },
+  });
+  const contactPhase = phaseData?.contact?.contactPhase;
+
   const tasksFilter = useMemo(
     () => ({
       contactIds: [contactId],
@@ -142,7 +156,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     toggleSelectAll,
     toggleSelectionById,
     deselectAll,
-  } = useMassSelection(data?.tasks?.totalCount ?? 0, allTaskIds);
+  } = useMassSelection(allTaskIds);
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
 
@@ -165,7 +179,10 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               onClick={() =>
                 openTaskModal({
                   view: TaskModalEnum.Add,
-                  defaultValues: { contactIds: [contactId] },
+                  defaultValues: {
+                    contactIds: [contactId],
+                    taskPhase: contactPhase || undefined,
+                  },
                 })
               }
               onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
@@ -180,6 +197,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
                   defaultValues: {
                     completedAt: DateTime.local().toISO(),
                     contactIds: [contactId],
+                    taskPhase: contactPhase || undefined,
                   },
                 })
               }
@@ -212,6 +230,7 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
               showContactSearchIcon={false}
               onChange={setSearchTerm}
               placeholder={t('Search Tasks')}
+              page={PageEnum.Task}
             />
           </HeaderItemsWrap>
           <HeaderItemsWrap>

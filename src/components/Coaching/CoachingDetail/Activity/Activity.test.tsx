@@ -50,6 +50,19 @@ const mocks = {
         received: 80,
         sent: 81,
       },
+      contactsByStatus: {
+        appointmentScheduled: 7,
+        callForDecision: 6,
+        connectionsRemaining: 25,
+        contactForAppointment: 6,
+        cultivate: 7,
+        financial: 9,
+        future: 7,
+        initiations: 19,
+        neverContacted: 11,
+        prayer: 7,
+        special: 7,
+      },
     },
   },
 };
@@ -109,13 +122,10 @@ describe('Activity', () => {
     it('is a week long when in weekly mode', async () => {
       const { getByTestId } = render(<TestComponent />);
 
-      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 6 - Jan 12');
+      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 5 - Jan 11');
       await waitFor(() =>
-        expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-          operationName: 'CoachingDetailActivity',
-          variables: {
-            dateRange: '2020-01-06..2020-01-12',
-          },
+        expect(mutationSpy).toHaveGraphqlOperation('CoachingDetailActivity', {
+          dateRange: '2020-01-05..2020-01-11',
         }),
       );
     });
@@ -127,11 +137,8 @@ describe('Activity', () => {
 
       expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 1 - Jan 31');
       await waitFor(() =>
-        expect(mutationSpy.mock.calls[0][0].operation).toMatchObject({
-          operationName: 'CoachingDetailActivity',
-          variables: {
-            dateRange: '2020-01-01..2020-01-31',
-          },
+        expect(mutationSpy).toHaveGraphqlOperation('CoachingDetailActivity', {
+          dateRange: '2020-01-01..2020-01-31',
         }),
       );
     });
@@ -141,7 +148,7 @@ describe('Activity', () => {
 
       userEvent.click(getByRole('button', { name: 'Previous' }));
       expect(getByTestId('ActivityPeriod')).toHaveTextContent(
-        'Dec 30, 2019 - Jan 5, 2020',
+        'Dec 29, 2019 - Jan 4, 2020',
       );
     });
 
@@ -152,7 +159,7 @@ describe('Activity', () => {
 
       userEvent.click(getByRole('button', { name: 'Previous' }));
       rerender(<TestComponent />);
-      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 6 - Jan 12');
+      expect(getByTestId('ActivityPeriod')).toHaveTextContent('Jan 5 - Jan 11');
     });
   });
 
@@ -168,7 +175,7 @@ describe('Activity', () => {
         expect(mutationSpy.mock.calls[1][0].operation).toMatchObject({
           operationName: 'CoachingDetailActivity',
           variables: {
-            dateRange: '2019-12-30..2020-01-05',
+            dateRange: '2019-12-29..2020-01-04',
           },
         }),
       );
@@ -178,7 +185,7 @@ describe('Activity', () => {
         expect(mutationSpy.mock.calls[2][0].operation).toMatchObject({
           operationName: 'CoachingDetailActivity',
           variables: {
-            dateRange: '2020-01-06..2020-01-12',
+            dateRange: '2020-01-05..2020-01-11',
           },
         }),
       );
@@ -224,11 +231,11 @@ describe('Activity', () => {
 
       userEvent.click(previous);
       expect(next).not.toBeDisabled();
-      expect(period).toHaveTextContent('Dec 30, 2019 - Jan 5, 2020');
+      expect(period).toHaveTextContent('Dec 29, 2019 - Jan 4, 2020');
 
       userEvent.click(next);
       expect(next).toBeDisabled();
-      expect(period).toHaveTextContent('Jan 6 - Jan 12');
+      expect(period).toHaveTextContent('Jan 5 - Jan 11');
     });
   });
 
@@ -236,21 +243,35 @@ describe('Activity', () => {
     const { getByTestId } = render(<TestComponent />);
 
     await waitFor(() =>
-      expect(getByTestId('ActivitySectionContacts')).toHaveTextContent(
-        'Contacts20Active22Referrals On-hand21Referrals Gained',
+      expect(getByTestId('CurrentRealityPartnerFinancial')).toHaveTextContent(
+        'Financial Partners',
       ),
     );
-    expect(getByTestId('ActivitySectionAppointments')).toHaveTextContent(
-      'Appointments10Completed',
+    await waitFor(() =>
+      expect(getByTestId('CurrentRealityPartnerFinancial')).toHaveTextContent(
+        '9',
+      ),
     );
-    expect(getByTestId('ActivitySectionCorrespondence')).toHaveTextContent(
-      'Correspondence30Pre-call32Support33Thank You31Reminder',
+    expect(getByTestId('CurrentRealityPartnerSpecial')).toHaveTextContent(
+      'Special Gift Partners',
     );
-    expect(getByTestId('ActivitySectionPhone')).toHaveTextContent(
-      'Phone Calls142Outgoing145Talked To71Appts Produced72Completed70Attempted73Received',
+    expect(getByTestId('CurrentRealityPartnerSpecial')).toHaveTextContent('7');
+
+    expect(getByTestId('CurrentRealityPartnerPrayer')).toHaveTextContent(
+      'Prayer Partners',
     );
-    expect(getByTestId('ActivitySectionElectronic')).toHaveTextContent(
-      'Electronic Messages42Sent41Received40Appts Produced51 Sent / 50 ReceivedEmail61 Sent / 60 ReceivedFacebook81 Sent / 80 ReceivedText Message',
+    expect(getByTestId('CurrentRealityPartnerPrayer')).toHaveTextContent('7');
+
+    expect(getByTestId('CurrentRealityConnections')).toHaveTextContent(
+      'Connections Remaining',
+    );
+    expect(getByTestId('CurrentRealityConnections')).toHaveTextContent('25');
+
+    expect(getByTestId('CurrentRealityPartnerInitiations')).toHaveTextContent(
+      'Partners Currently Initiating With',
+    );
+    expect(getByTestId('CurrentRealityPartnerInitiations')).toHaveTextContent(
+      '19',
     );
   });
 
@@ -273,23 +294,6 @@ describe('Activity', () => {
           'Primary AppealNo Primary Appeal Set$0 (0%) / $0 (0%) / $0 (0%)',
         ),
       );
-    });
-  });
-
-  describe('links', () => {
-    it('are hidden when viewing coaching account list', async () => {
-      const { findByTestId, queryByRole } = render(<TestComponent />);
-
-      expect(await findByTestId('ActivitySectionContacts')).toBeInTheDocument();
-      expect(queryByRole('link')).not.toBeInTheDocument();
-    });
-
-    it('are shown when viewing own account list', async () => {
-      const { findAllByRole } = render(
-        <TestComponent accountListType={AccountListTypeEnum.Own} />,
-      );
-
-      expect((await findAllByRole('link')).length).toBeGreaterThan(0);
     });
   });
 });

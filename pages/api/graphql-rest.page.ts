@@ -14,6 +14,8 @@ import {
   MergeContactsInput,
   MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
+import { getLocalizedContactStatus } from '../../src/utils/functions/getLocalizedContactStatus';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
@@ -29,23 +31,15 @@ import {
   DestroyDonorAccountResponse,
 } from './Schema/Contacts/DonorAccounts/Destroy/datahander';
 import { SendToChalkline } from './Schema/Settings/Integrations/Chalkine/sendToChalkline/datahandler';
-import {
-  CreateGoogleIntegration,
-  CreateGoogleIntegrationResponse,
-} from './Schema/Settings/Integrations/Google/createGoogleIntegration/datahandler';
-import {
-  GoogleAccountIntegrations,
-  GoogleAccountIntegrationsResponse,
-} from './Schema/Settings/Integrations/Google/googleAccountIntegrations/datahandler';
+import { CreateGoogleIntegration } from './Schema/Settings/Integrations/Google/createGoogleIntegration/datahandler';
+import { GoogleAccountIntegrations } from './Schema/Settings/Integrations/Google/googleAccountIntegrations/datahandler';
 import {
   GoogleAccounts,
   GoogleAccountsResponse,
 } from './Schema/Settings/Integrations/Google/googleAccounts/datahandler';
+import { GoogleIntegrationResponse } from './Schema/Settings/Integrations/Google/parse';
 import { SyncGoogleIntegration } from './Schema/Settings/Integrations/Google/syncGoogleIntegration/datahandler';
-import {
-  UpdateGoogleIntegration,
-  UpdateGoogleIntegrationResponse,
-} from './Schema/Settings/Integrations/Google/updateGoogleIntegration/datahandler';
+import { UpdateGoogleIntegration } from './Schema/Settings/Integrations/Google/updateGoogleIntegration/datahandler';
 import {
   MailchimpAccount,
   MailchimpAccountResponse,
@@ -115,6 +109,8 @@ import {
   FinancialAccountResponse,
   setActiveFinancialAccount,
 } from './Schema/reports/financialAccounts/datahandler';
+import { financialAccountSummaryHandler } from './Schema/reports/financialAccounts/financialAccounts/datahandler';
+import { financialAccountEntriesHandler } from './Schema/reports/financialAccounts/financialEntries/datahandler';
 import {
   FourteenMonthReportResponse,
   mapFourteenMonthReport,
@@ -282,9 +278,15 @@ class MpdxRestApi extends RESTDataSource {
     return getAppointmentResults(data);
   }
 
-  async getReportPldegeHistories(accountListId: string) {
+  async getReportPledgeHistories(
+    accountListId: string,
+    range: string | null | undefined,
+    endDate: string | null | undefined,
+  ) {
+    const rangeFilter = range ? `&filter[range]=${range}` : '';
+    const endDateFilter = endDate ? `&filter[end_date]=${endDate}` : '';
     const { data } = await this.get(
-      `reports/pledge_histories?filter%5Baccount_list_id%5D=${accountListId}`,
+      `reports/pledge_histories?filter[account_list_id]=${accountListId}${rangeFilter}${endDateFilter}`,
     );
     return getReportsPledgeHistories(data);
   }
@@ -453,7 +455,7 @@ class MpdxRestApi extends RESTDataSource {
   ) {
     const designationAccountFilter =
       designationAccountId && designationAccountId.length > 0
-        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
     const { data }: { data: FourteenMonthReportResponse } = await this.get(
       `reports/${
@@ -473,7 +475,7 @@ class MpdxRestApi extends RESTDataSource {
   ) {
     const designationAccountFilter =
       designationAccountId && designationAccountId.length > 0
-        ? `&filter[designation_account_id=${designationAccountId.join(',')}`
+        ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
     const { data }: { data: ExpectedMonthlyTotalResponse } = await this.get(
       `reports/expected_monthly_totals?filter[account_list_id]=${accountListId}${designationAccountFilter}`,
@@ -612,37 +614,9 @@ class MpdxRestApi extends RESTDataSource {
 
         // Status
         case 'status':
-          const statusMap = new Map<ContactFilterStatusEnum, string>([
-            [ContactFilterStatusEnum.Active, 'active'],
-            [ContactFilterStatusEnum.Hidden, 'hidden'],
-            [ContactFilterStatusEnum.Null, 'null'],
-            [
-              ContactFilterStatusEnum.AppointmentScheduled,
-              'Appointment Scheduled',
-            ],
-            [ContactFilterStatusEnum.AskInFuture, 'Ask in Future'],
-            [ContactFilterStatusEnum.CallForDecision, 'Call for Decision'],
-            [
-              ContactFilterStatusEnum.ContactForAppointment,
-              'Contact for Appointment',
-            ],
-            [
-              ContactFilterStatusEnum.CultivateRelationship,
-              'Cultivate Relationship',
-            ],
-            [ContactFilterStatusEnum.ExpiredReferral, 'Expired Referral'],
-            [ContactFilterStatusEnum.NeverAsk, 'Never Ask'],
-            [ContactFilterStatusEnum.NeverContacted, 'Never Contacted'],
-            [ContactFilterStatusEnum.NotInterested, 'Not Interested'],
-            [ContactFilterStatusEnum.PartnerFinancial, 'Partner - Financial'],
-            [ContactFilterStatusEnum.PartnerPray, 'Partner - Pray'],
-            [ContactFilterStatusEnum.PartnerSpecial, 'Partner - Special'],
-            [ContactFilterStatusEnum.ResearchAbandoned, 'Research Abandoned'],
-            [ContactFilterStatusEnum.Unresponsive, 'Unresponsive'],
-          ]);
           filters[snakedKey] = (value as ContactFilterStatusEnum[])
             .map((status) => {
-              const translated = statusMap.get(status);
+              const translated = getLocalizedContactStatus(i18n.t, status);
               if (!translated) {
                 throw new Error(
                   `Unrecognized ContactFilterStatusEnum value ${value}`,
@@ -792,11 +766,50 @@ class MpdxRestApi extends RESTDataSource {
     return setActiveFinancialAccount(data);
   }
 
-  async deleteComment(taskId: string, commentId: string) {
-    const { data }: { data: DeleteCommentResponse } = await this.delete(
-      `tasks/${taskId}/comments/${commentId}`,
+  //
+  // Financial Account Report -- Start
+
+  async financialAccountSummary(
+    accountListId: string,
+    financialAccountId: string,
+  ) {
+    const include =
+      'credit_by_categories,debit_by_categories,credit_by_categories.category,debit_by_categories.category';
+    const filters = `filter[account_list_id]=${accountListId}&filter[financial_account_id]=${financialAccountId}`;
+    const fields =
+      'fields[financial_account_entry_by_categories]=amount,category&fields[financial_account_entry_categories]=name,code' +
+      '&fields[reports_entry_histories_periods]=closing_balance,opening_balance,start_date,end_date,credits,debits,difference,credit_by_categories,debit_by_categories';
+
+    const data = await this.get(
+      `reports/entry_histories?${fields}&${filters}&include=${include}`,
     );
-    return DeleteComment({ ...data, id: commentId });
+
+    return financialAccountSummaryHandler(data);
+  }
+
+  async financialAccountEntries(
+    accountListId: string,
+    financialAccountId: string,
+    dateRange: string,
+    categoryId?: string | null,
+    wildcardSearch?: string | null,
+  ) {
+    const fields =
+      'fields[financial_account_entry_categories]=name,code&fields[financial_account_entry_credits]=amount,code,currency,description,entry_date,category,type' +
+      '&fields[financial_account_entry_debits]=amount,code,currency,description,entry_date,category,type';
+
+    let filters = `filter[entryDate]=${dateRange}&filter[financialAccountId]=${financialAccountId}`;
+    if (categoryId) {
+      filters += `&filter[categoryId]=${categoryId}`;
+    }
+    if (wildcardSearch) {
+      filters += `&filter[wildcardSearch]=${wildcardSearch}`;
+    }
+    const data = await this.get(
+      `account_lists/${accountListId}/entries?${fields}&${filters}&include=category&per_page=10000&sort=-entry_date`,
+    );
+
+    return financialAccountEntriesHandler(data);
   }
 
   async getEntryHistories(
@@ -814,6 +827,16 @@ class MpdxRestApi extends RESTDataSource {
         return createEntryHistoriesGroup(data, financialAccountIds[idx]);
       });
     });
+  }
+
+  //
+  // Financial Account Report -- End
+
+  async deleteComment(taskId: string, commentId: string) {
+    const { data }: { data: DeleteCommentResponse } = await this.delete(
+      `tasks/${taskId}/comments/${commentId}`,
+    );
+    return DeleteComment({ ...data, id: commentId });
   }
 
   async updateComment(taskId: string, commentId: string, body: string) {
@@ -928,12 +951,11 @@ class MpdxRestApi extends RESTDataSource {
     googleAccountId: string,
     accountListId: string,
   ) {
-    const { data }: { data: GoogleAccountIntegrationsResponse[] } =
-      await this.get(
-        `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
-          `filter[account_list_id]=${accountListId}`,
-        )}`,
-      );
+    const { data }: { data: GoogleIntegrationResponse[] } = await this.get(
+      `user/google_accounts/${googleAccountId}/google_integrations?${encodeURI(
+        `filter[account_list_id]=${accountListId}`,
+      )}`,
+    );
     return GoogleAccountIntegrations(data);
   }
 
@@ -957,13 +979,11 @@ class MpdxRestApi extends RESTDataSource {
     Object.keys(googleIntegration).forEach((key) => {
       attributes[camelToSnake(key)] = googleIntegration[key];
     });
-    const { data }: { data: CreateGoogleIntegrationResponse } = await this.post(
+    const { data }: { data: GoogleIntegrationResponse } = await this.post(
       `user/google_accounts/${googleAccountId}/google_integrations`,
       {
         data: {
-          attributes: {
-            ...attributes,
-          },
+          attributes,
           relationships: {
             account_list: {
               data: {
@@ -989,13 +1009,11 @@ class MpdxRestApi extends RESTDataSource {
       attributes[camelToSnake(key)] = googleIntegration[key];
     });
 
-    const { data }: { data: UpdateGoogleIntegrationResponse } = await this.put(
+    const { data }: { data: GoogleIntegrationResponse } = await this.put(
       `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
       {
         data: {
-          attributes: {
-            ...attributes,
-          },
+          attributes,
           id: googleIntegrationId,
           type: 'google_integrations',
         },

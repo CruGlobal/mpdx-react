@@ -13,9 +13,10 @@ import { Box, Card, CardContent, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { debounce } from 'lodash';
 import { DropTargetMonitor, useDrag, useDrop } from 'react-dnd';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { colorMap } from '../../ContactFlow';
+import { FlowOption } from '../../useFlowOptions';
 import { ContactFlowSetupDropZone } from '../DropZone/ContactFlowSetupDropZone';
 import { ContactFlowSetupStatusRow } from '../Row/ContactFlowSetupStatusRow';
 import type { Identifier, XYCoord } from 'dnd-core';
@@ -58,7 +59,7 @@ const DraggableMenuIcon = styled(Menu)(() => ({
 }));
 
 interface Props {
-  statuses: { id: ContactFilterStatusEnum; value: string }[];
+  statuses: StatusEnum[];
   title: string;
   color: string;
   accountListId: string;
@@ -70,21 +71,16 @@ interface Props {
   ) => void;
   deleteColumn: (index: number) => void;
   moveStatus: (
-    originindex: number,
+    originIndex: number,
     destinationIndex: number,
-    status: string,
+    status: StatusEnum,
   ) => void;
   loading: boolean;
   columnWidth: number;
   setColumnWidth: Dispatch<SetStateAction<number>>;
   moveColumns: (dragIndex: number, hoverIndex: number) => void;
   updateColumns: () => void;
-  flowOptions: {
-    name: string;
-    statuses: string[];
-    color: string;
-    id: string;
-  }[];
+  flowOptions: FlowOption[];
 }
 
 interface DragItem {
@@ -194,7 +190,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
         height={theme.spacing(7)}
       >
         <Box
-          {...{ ref: dragRef }}
+          ref={dragRef}
           data-handler-id={handlerId}
           display="flex"
           alignItems="center"
@@ -230,7 +226,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
         }}
       >
         <Box
-          {...{ ref: CardContentRef }}
+          ref={CardContentRef}
           width="100%"
           height="100%"
           display="flex"
@@ -244,43 +240,39 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
             style={{ backgroundColor: theme.palette.common.white }}
           >
-            {Object.entries(colorMap).map(([colorKey, colorValue]) => {
-              return (
-                <Box
-                  key={colorKey}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  m={0.5}
-                  height={theme.spacing(4)}
-                  width={theme.spacing(4)}
+            {Object.entries(colorMap).map(([colorKey, colorValue]) => (
+              <Box
+                key={colorKey}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                m={0.5}
+                height={theme.spacing(4)}
+                width={theme.spacing(4)}
+              >
+                <IconButton
+                  data-testid={`colorButton-${colorKey}`}
+                  onClick={() => changeColor(index, colorKey)}
+                  style={{
+                    padding: 0,
+                  }}
                 >
-                  <IconButton
-                    data-testid={`colorButton-${colorKey}`}
-                    onClick={() => changeColor(index, colorKey)}
-                    style={{
-                      padding: 0,
-                    }}
-                  >
-                    <ColoredCircle
-                      circlecolor={colorValue}
-                      selected={color === colorValue}
-                      size={
-                        color === colorValue
-                          ? theme.spacing(4)
-                          : theme.spacing(3)
-                      }
-                    />
-                  </IconButton>
-                </Box>
-              );
-            })}
+                  <ColoredCircle
+                    circlecolor={colorValue}
+                    selected={color === colorValue}
+                    size={
+                      color === colorValue ? theme.spacing(4) : theme.spacing(3)
+                    }
+                  />
+                </IconButton>
+              </Box>
+            ))}
           </Box>
           {columnWidth > 0 && (
             <Box style={{ backgroundColor: theme.palette.common.white }}>
               {statuses.map((status) => (
                 <ContactFlowSetupStatusRow
-                  key={status.id}
+                  key={status}
                   status={status}
                   columnWidth={columnWidth}
                   columnIndex={index}

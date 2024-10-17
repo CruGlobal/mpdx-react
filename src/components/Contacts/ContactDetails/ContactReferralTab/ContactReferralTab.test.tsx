@@ -57,7 +57,7 @@ describe('ContactReferralTab', () => {
         />
       </GqlMockedProvider>,
     );
-    expect(await findByText('No Referrals')).toBeVisible();
+    expect(await findByText('No Connections')).toBeVisible();
   });
 
   it('tests render with data and click event', async () => {

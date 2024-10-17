@@ -20,6 +20,11 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import {
+  FinancialAccountContext,
+  FinancialAccountType,
+} from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
 import {
   AppealsContext,
   AppealsType,
@@ -37,6 +42,7 @@ import {
   ResultEnum,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import {
   ContactsContext,
@@ -52,7 +58,7 @@ import {
 import { FilterKey, FilterValue } from './FilterPanelTypes';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
-import { reverseFiltersMap } from './helpers';
+import { renameFilterNames, reverseFiltersMap } from './helpers';
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -100,13 +106,14 @@ const FlatAccordion = styled(Accordion)(({ theme }) => ({
   },
 }));
 
-type FilterInput = ContactFilterSetInput &
+export type FilterInput = ContactFilterSetInput &
   TaskFilterSetInput &
   ReportContactFilterSetInput;
 
 export enum ContextTypesEnum {
   Contacts = 'contacts',
   Appeals = 'appeals',
+  FinancialAccountReport = 'financialAccountReport',
 }
 export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
@@ -117,6 +124,7 @@ export interface FilterPanelProps {
   onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
   onHandleClearSearch?: () => void;
   contextType?: ContextTypesEnum;
+  showSaveButton?: boolean;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
@@ -128,20 +136,31 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   onSelectedFiltersChanged,
   onHandleClearSearch,
   contextType = ContextTypesEnum.Contacts,
+  showSaveButton = true,
   ...boxProps
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { statusMapForFilters } = useContactPartnershipStatuses();
+  const activities = useApiConstants()?.activities;
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [filterToBeDeleted, setFilterToBeDeleted] =
     useState<UserOptionFragment | null>(null);
 
+  const contactsContext = React.useContext(ContactsContext) as ContactsType;
+  const appealsContext = React.useContext(AppealsContext) as AppealsType;
+  const financialAccountContext = React.useContext(
+    FinancialAccountContext,
+  ) as FinancialAccountType;
+
   const handleClearAll =
     contextType === ContextTypesEnum.Contacts
-      ? (React.useContext(ContactsContext) as ContactsType).handleClearAll
-      : (React.useContext(AppealsContext) as AppealsType).handleClearAll;
+      ? contactsContext.handleClearAll
+      : contextType === ContextTypesEnum.Appeals
+      ? appealsContext.handleClearAll
+      : financialAccountContext.handleClearAll;
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
@@ -427,138 +446,48 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 return {
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
-                    switch (enumValue) {
-                      // Status
-                      case 'active':
-                        return ContactFilterStatusEnum.Active;
-                      case 'hidden':
-                        return ContactFilterStatusEnum.Hidden;
-                      case 'null':
-                        return ContactFilterStatusEnum.Null;
-                      case 'Appointment Scheduled':
-                        return ContactFilterStatusEnum.AppointmentScheduled;
-                      case 'Ask in Future':
-                        return ContactFilterStatusEnum.AskInFuture;
-                      case 'Call for Decision':
-                        return ContactFilterStatusEnum.CallForDecision;
-                      case 'Contact for Appointment':
-                        return ContactFilterStatusEnum.ContactForAppointment;
-                      case 'Cultivate Relationship':
-                        return ContactFilterStatusEnum.CultivateRelationship;
-                      case 'Expired Referral':
-                        return ContactFilterStatusEnum.ExpiredReferral;
-                      case 'Never Ask':
-                        return ContactFilterStatusEnum.NeverAsk;
-                      case 'Never Contacted':
-                        return ContactFilterStatusEnum.NeverContacted;
-                      case 'Not Interested':
-                        return ContactFilterStatusEnum.NotInterested;
-                      case 'Partner - Financial':
-                        return ContactFilterStatusEnum.PartnerFinancial;
-                      case 'Partner - Pray':
-                        return ContactFilterStatusEnum.PartnerPray;
-                      case 'Partner - Special':
-                        return ContactFilterStatusEnum.PartnerSpecial;
-                      case 'Research Abandoned':
-                        return ContactFilterStatusEnum.ResearchAbandoned;
-                      case 'Unresponsive':
-                        return ContactFilterStatusEnum.Unresponsive;
-                      default:
-                        return ContactFilterStatusEnum.Null;
-                    }
+                    // Status
+                    // Check if saved filter (enumValue) is either the status  (partner_financial) or (Partner - Financial)
+                    const matchedStatus = Object.entries(
+                      statusMapForFilters,
+                    )?.find(([statusKey, status]) => {
+                      return (
+                        statusKey === enumValue ||
+                        status === enumValue ||
+                        status.toLowerCase() === enumValue
+                      );
+                    });
+                    return (
+                      (matchedStatus &&
+                        (matchedStatus[1] as ContactFilterStatusEnum)) ||
+                      ContactFilterStatusEnum.Null
+                    );
                   }),
                 };
               // Activity Type
               case 'activityType':
-                if (value.includes('--any--')) {
-                  return { ...acc, [key]: Object.values(ActivityTypeEnum) };
-                }
-                return {
-                  ...acc,
-                  [key]: value.split(',').map((enumValue) => {
-                    // --any--,none
-                    switch (enumValue) {
-                      case 'Appointment':
-                        return ActivityTypeEnum.Appointment;
-                      case 'Call':
-                        return ActivityTypeEnum.Call;
-                      case 'Email':
-                        return ActivityTypeEnum.Email;
-                      case 'Facebook Message':
-                        return ActivityTypeEnum.FacebookMessage;
-                      case 'Prayer Request':
-                        return ActivityTypeEnum.PrayerRequest;
-                      case 'Talk to In Person':
-                        return ActivityTypeEnum.TalkToInPerson;
-                      case 'Text Message':
-                        return ActivityTypeEnum.TextMessage;
-                      case 'Thank':
-                        return ActivityTypeEnum.Thank;
-                      case 'None':
-                        return ActivityTypeEnum.None;
-                      case 'Letter':
-                        return ActivityTypeEnum.Letter;
-                      case 'Newsletter - Physical':
-                        return ActivityTypeEnum.NewsletterPhysical;
-                      case 'Newsletter - Email':
-                        return ActivityTypeEnum.NewsletterEmail;
-                      case 'Pre Call Letter':
-                        return ActivityTypeEnum.PreCallLetter;
-                      case 'Reminder Letter':
-                        return ActivityTypeEnum.ReminderLetter;
-                      case 'Support Letter':
-                        return ActivityTypeEnum.SupportLetter;
-                      case 'To Do':
-                        return ActivityTypeEnum.ToDo;
-                      default:
-                        return ActivityTypeEnum.None;
-                    }
-                  }),
-                };
-
+              case 'relatedTaskAction':
               // Next Action
               case 'nextAction':
                 if (value.includes('--any--')) {
                   return {
                     ...acc,
-                    [key]: [
-                      ActivityTypeEnum.Appointment,
-                      ActivityTypeEnum.Call,
-                      ActivityTypeEnum.Email,
-                      ActivityTypeEnum.FacebookMessage,
-                      ActivityTypeEnum.PrayerRequest,
-                      ActivityTypeEnum.TalkToInPerson,
-                      ActivityTypeEnum.TextMessage,
-                      ActivityTypeEnum.Thank,
-                      ActivityTypeEnum.None,
-                    ],
+                    [key]: Object.values(ActivityTypeEnum),
                   };
                 }
                 return {
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
-                    switch (enumValue) {
-                      case 'Appointment':
-                        return ActivityTypeEnum.Appointment;
-                      case 'Call':
-                        return ActivityTypeEnum.Call;
-                      case 'Email':
-                        return ActivityTypeEnum.Email;
-                      case 'Facebook Message':
-                        return ActivityTypeEnum.FacebookMessage;
-                      case 'Prayer Request':
-                        return ActivityTypeEnum.PrayerRequest;
-                      case 'Talk to In Person':
-                        return ActivityTypeEnum.TalkToInPerson;
-                      case 'Text Message':
-                        return ActivityTypeEnum.TextMessage;
-                      case 'Thank':
-                        return ActivityTypeEnum.Thank;
-                      case 'None':
-                        return ActivityTypeEnum.None;
-                      default:
-                        return ActivityTypeEnum.None;
-                    }
+                    // --any--,none
+                    return (
+                      (activities?.find((activity) => {
+                        return (
+                          activity.id === enumValue ||
+                          activity.value === enumValue ||
+                          activity?.id?.toLowerCase() === enumValue
+                        );
+                      })?.id as ActivityTypeEnum) || ActivityTypeEnum.None
+                    );
                   }),
                 };
               // Result
@@ -698,15 +627,19 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   <Close titleAccess={t('Close')} />
                 </IconButton>
               </Box>
+              {showSaveButton && (
+                <LinkButton
+                  style={{ marginInlineStart: theme.spacing(-1) }}
+                  disabled={noSelectedFilters}
+                  onClick={() => setSaveFilterModalOpen(true)}
+                >
+                  {t('Save')}
+                </LinkButton>
+              )}
               <LinkButton
-                style={{ marginInlineStart: theme.spacing(-1) }}
-                disabled={noSelectedFilters}
-                onClick={() => setSaveFilterModalOpen(true)}
-              >
-                {t('Save')}
-              </LinkButton>
-              <LinkButton
-                style={{ marginInlineStart: theme.spacing(2) }}
+                style={{
+                  marginInlineStart: theme.spacing(showSaveButton ? 2 : -1),
+                }}
                 disabled={noSelectedFilters}
                 onClick={handleClearAllClick}
               >
@@ -783,6 +716,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                     )
                     ?.map((group) => {
                       const selectedOptions = getOptionsSelected(group);
+                      const groupName = renameFilterNames(group.name);
                       return (
                         <Collapse
                           key={group.name}
@@ -797,7 +731,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                           >
                             <AccordionSummary expandIcon={<ExpandMore />}>
                               <Typography>
-                                {group.name}
+                                {groupName}
                                 {selectedOptions.length > 0
                                   ? ` (${selectedOptions.length})`
                                   : ''}

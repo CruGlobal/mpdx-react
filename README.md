@@ -5,8 +5,8 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 
 ## Environments
 
-- Production: https://next.mpdx.org/
-- Staging: https://next-stage.mpdx.org/
+- Production: https://mpdx.org/
+- Staging: https://stage.mpdx.org/
 - Local: http://localhost:3000/
 
 ## Getting Started
@@ -65,19 +65,18 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `GOOGLE_TAG_MANAGER_CONTAINER_ID` - Optional Google Tag Manager container ID
 - `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
 - `NEXT_PUBLIC_MEDIA_LOGO` - Application logo image url
-- `REWRITE_DOMAIN` - The domain which where new & old MPDX applications live. Set to `mpdx.org` for next.mpdx.org & `stage.mpdx.org` for staging.
 - `DATADOG_APP_ID` - Datadog tracking application ID.
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `DD_ENV` - Datadog environment.
-- `BEACON_TOKEN` - HelpScout beacon token
-- `HS_CONTACTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contacts page
-- `HS_CONTACTS_CONTACT_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the contact page
-- `HS_HOME_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the dashboard page
-- `HS_REPORTS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the reports pages
-- `HS_TASKS_SUGGESTIONS` - Comma-separated IDs of the HelpScout articles to suggest on the tasks page
+- `HELPJUICE_ORIGIN` - Helpjuice origin for documentation and user support (example: `https://www.helpducks.org`)
+- `HELPJUICE_KNOWLEDGE_BASE_URL` - Knowledge base page to make the Helpjuice "Visit Knowledge Base" page link to (example: `https://www.helpducks.org/mpdx`)
+- `HELP_WHATS_NEW_URL` - URL of a page explaining what is new in the new version of MPDX
+- `HELP_WHATS_NEW_IMAGE_URL` - URL of an image for the What's New link
+- `HELP_URL_COACHING_ACTIVITY` - Link to an article explaining the coaching activity table
+- `HELP_URL_COACHING_APPOINTMENTS_AND_RESULTS` - Link to an article explaining the coaching appointments and results table
+- `HELP_URL_SETUP_FIND_ORGANIZATION` - Link to an article explaining how to find an organization
 - `PRIVACY_POLICY_URL` - URL of the privacy policy
 - `TERMS_OF_USE_URL` - URL of the terms of use
-- `DISABLE_SETUP_TOUR` - Set to `true` to disable starting users on the welcome tour. This should be removed from the codebase once tools are live.
 
 #### Auth provider
 
@@ -144,12 +143,13 @@ Apollo Studio is an invaluable tool/interface for testing out queries and mutati
 
 You can access Apollo Studio for the GraphQL API server at https://studio.apollographql.com/sandbox/explorer?endpoint=https://api.stage.mpdx.org/graphql. Once you navigate to Apollo Studio, you will need to set a header to authenticate with the API server.
 
-1. Go to https://stage.mpdx.org and login.
-2. Open developer tools and run `localStorage.getItem('token')` in the console.
-3. Copy the value of the token.
-4. Back in Apollo Studio, find the Headers tab near the bottom and click the "Set shared headers" button.
-5. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key. For the value, type `Bearer` followed by a space followed by the value of the token.
-6. After you click save, all queries and mutations you make in Apollo Studio will be authenticated.
+1. Go to https://mpdx.org and login.
+2. Open developer tools and go to the `Network` tab.
+3. Click on a graphql request to the API server. it should look something like `graphql`.
+4. On the `Headers` tab, under the request headers, Copy the `authorization` value, including `Bearer `.
+5. Back in Apollo Studio, find the Headers tab near the bottom and click the "Set shared headers" button.
+6. In the modal, click the "+ New shared header button" and choose "Authorization" for the header key. For the value, paste in the authorization value.
+7. After you click save, all queries and mutations you make in Apollo Studio will be authenticated.
 
 #### Apollo Studio for the REST Proxy Server
 
@@ -344,7 +344,7 @@ To learn more about Apollo's cache normalization, [this](https://www.apollograph
 
 Originally, the API server provided a REST API for reading and writing data that all clients used. However, with the rewrite of the web client in React, it was decided to use GraphQL. The API server now exposes a GraphQL endpoint in addition to the original REST API. To see the queries and mutations provided by the API server, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://api.mpdx.org/graphql).
 
-However, the GraphQL API doesn't yet fully expose all of the data that was available in the REST API. To prevent the web client from having to query some data through GraphQL and other data through the REST API, this project includes a REST->GraphQL proxy. The REST proxy is a GraphQL server hosted at `/api/graphql-rest`. It runs as a Next.js lambda. It receives GraphQL requests, makes a fetch request to the REST API, manipulates the data as necessary, and returns the response back to the client in the GraphQL response. To see the queries and mutations provided by the REST proxy server, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://next.mpdx.org/api/graphql-rest).
+However, the GraphQL API doesn't yet fully expose all of the data that was available in the REST API. To prevent the web client from having to query some data through GraphQL and other data through the REST API, this project includes a REST->GraphQL proxy. The REST proxy is a GraphQL server hosted at `/api/graphql-rest`. It runs as a Next.js lambda. It receives GraphQL requests, makes a fetch request to the REST API, manipulates the data as necessary, and returns the response back to the client in the GraphQL response. To see the queries and mutations provided by the REST proxy server, you can go [here](https://studio.apollographql.com/sandbox/explorer?endpoint=https://mpdx.org/api/graphql-rest).
 
 Additionally, there is logic in the Apollo link to route GraphQL operations to the correct GraphQL server. The link inspects the operation, and if it contains fields provided by the GraphQL API server, it forwards the request to that server. And if it contains fields provided by the REST proxy server, it forwards the request to that server.
 

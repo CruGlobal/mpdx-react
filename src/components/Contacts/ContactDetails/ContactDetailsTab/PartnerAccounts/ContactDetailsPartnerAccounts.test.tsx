@@ -8,6 +8,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { ContactDetailsPartnerAccounts } from './ContactDetailsPartnerAccounts';
+import {
+  ContactDonorAccountsQuery,
+  GetAccountListSalaryOrganizationQuery,
+} from './ContactPartnerAccounts.generated';
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -18,6 +22,7 @@ const router = {
 };
 
 const mockEnqueue = jest.fn();
+const mutationSpy = jest.fn();
 
 const getOperationByName = (mutationSpy: jest.Mock, operationName: string) => {
   const operations = mutationSpy.mock.calls
@@ -38,72 +43,83 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const contact = {
-  id: '123',
-  contactDonorAccounts: {
-    nodes: [
-      {
-        id: 'donor1',
-        donorAccount: {
-          id: 'account1',
-          displayName: 'donor-1',
-          accountNumber: 'donor-1',
-          organization: {
-            id: 'org1',
-            name: 'org1',
+const ContactDonorAccountsMock: ContactDonorAccountsQuery = {
+  contact: {
+    id: contactId,
+    contactDonorAccounts: {
+      nodes: [
+        {
+          id: 'donor1',
+          donorAccount: {
+            id: 'account1',
+            displayName: 'donor-1',
+            accountNumber: 'accountNumber-1',
+            organization: {
+              id: 'org1',
+              name: 'org1',
+            },
           },
         },
-      },
-      {
-        id: 'donor2',
-        donorAccount: {
-          id: 'account2',
-          displayName: 'donor-2',
-          accountNumber: 'donor-2',
-          organization: {
-            id: 'org2',
-            name: 'org2',
+        {
+          id: 'donor2',
+          donorAccount: {
+            id: 'account2',
+            displayName: 'donor-2',
+            accountNumber: 'accountNumber-2',
+            organization: {
+              id: 'org2',
+              name: 'org2',
+            },
           },
         },
-      },
-    ],
+      ],
+    },
   },
 };
 
+const Components = () => (
+  <SnackbarProvider>
+    <TestRouter router={router}>
+      <GqlMockedProvider<{
+        ContactDonorAccounts: ContactDonorAccountsQuery;
+        GetAccountListSalaryOrganization: GetAccountListSalaryOrganizationQuery;
+      }>
+        mocks={{
+          ContactDonorAccounts: ContactDonorAccountsMock,
+          GetAccountListSalaryOrganization: {
+            accountList: { salaryOrganizationId: 'organizationId' },
+          },
+        }}
+        onCall={mutationSpy}
+      >
+        <ThemeProvider theme={theme}>
+          <ContactDetailProvider>
+            <ContactDetailsPartnerAccounts
+              contactId={contactId}
+              accountListId={accountListId}
+            />
+          </ContactDetailProvider>
+        </ThemeProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </SnackbarProvider>
+);
+
 describe('ContactDetailsPartnerAccounts', () => {
   it('should render donor account', async () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider>
-            <ThemeProvider theme={theme}>
-              <ContactDetailProvider>
-                <ContactDetailsPartnerAccounts contact={contact} />
-              </ContactDetailProvider>
-            </ThemeProvider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
+    const { findByText, getByText, getAllByText } = render(<Components />);
 
-    expect(getByText('donor-1')).toBeInTheDocument();
-    expect(getByText('donor-2')).toBeInTheDocument();
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
+    expect(getByText('accountNumber-2')).toBeInTheDocument();
+
+    expect(getAllByText('Account Number:')).toHaveLength(2);
+    expect(getAllByText('Account Name:')).toHaveLength(2);
   });
 
   it('should render new donor account form', async () => {
-    const { getByRole, queryByRole } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider>
-            <ThemeProvider theme={theme}>
-              <ContactDetailProvider>
-                <ContactDetailsPartnerAccounts contact={contact} />
-              </ContactDetailProvider>
-            </ThemeProvider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
+    const { getByRole, findByText, queryByRole } = render(<Components />);
+
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
 
     expect(
       queryByRole('textbox', { name: 'Account Number' }),
@@ -115,20 +131,9 @@ describe('ContactDetailsPartnerAccounts', () => {
   });
 
   it('handle submitting new donor account', async () => {
-    const mutationSpy = jest.fn();
-    const { queryByRole, getByRole } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <ThemeProvider theme={theme}>
-              <ContactDetailProvider>
-                <ContactDetailsPartnerAccounts contact={contact} />
-              </ContactDetailProvider>
-            </ThemeProvider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
+    const { queryByRole, findByText, getByRole } = render(<Components />);
+
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
 
     expect(
       queryByRole('textbox', { name: 'Account Number' }),
@@ -158,11 +163,11 @@ describe('ContactDetailsPartnerAccounts', () => {
     ).toEqual({
       accountListId,
       attributes: {
-        id: contact.id,
+        id: contactId,
         donorAccount: {
           accountNumber: 'new-account',
           name: 'new-account',
-          organizationId: '',
+          organizationId: 'organizationId',
         },
       },
     });
@@ -172,24 +177,13 @@ describe('ContactDetailsPartnerAccounts', () => {
   });
 
   it('handle clicking delete button', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText, queryAllByRole } = render(
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <ThemeProvider theme={theme}>
-              <ContactDetailProvider>
-                <ContactDetailsPartnerAccounts contact={contact} />
-              </ContactDetailProvider>
-            </ThemeProvider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>,
-    );
+    const { getByText, findByText, queryAllByRole } = render(<Components />);
+
+    expect(await findByText('accountNumber-1')).toBeInTheDocument();
 
     userEvent.click(queryAllByRole('button', { name: '' })[0]);
-    expect(getByText('donor-1')).toBeInTheDocument();
-    expect(getByText('donor-2')).toBeInTheDocument();
+    expect(getByText('accountNumber-1')).toBeInTheDocument();
+    expect(getByText('accountNumber-2')).toBeInTheDocument();
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith('Partner account deleted!', {
         variant: 'success',
@@ -199,7 +193,7 @@ describe('ContactDetailsPartnerAccounts', () => {
     expect(
       getOperationByName(mutationSpy, 'DeleteDonorAccount').variables,
     ).toEqual({
-      contactId: contact.id,
+      contactId: contactId,
       donorAccountId: 'account1',
     });
   });

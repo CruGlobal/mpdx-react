@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
   Avatar,
@@ -11,6 +11,7 @@ import {
   IconButton,
   InputLabel,
   Link,
+  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -26,13 +27,17 @@ import * as yup from 'yup';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
-import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   PledgeCurrencyOptionFormatEnum,
   getPledgeCurrencyOptions,
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
@@ -166,8 +171,7 @@ interface Props {
   id: string;
   name: string;
   donations: DonationsType[];
-  statusTitle: string | null | undefined;
-  statusValue: string;
+  currentStatus: StatusEnum | undefined;
   amount: number;
   amountCurrency: string;
   frequencyValue: PledgeFrequencyEnum | string;
@@ -177,7 +181,6 @@ interface Props {
     title: string,
     updateType: UpdateTypeEnum,
   ) => void;
-  statuses: string[];
   setContactFocus: SetContactFocus;
   avatar?: string;
   suggestedChanges?: SuggestedChangesType;
@@ -187,13 +190,11 @@ const Contact: React.FC<Props> = ({
   id,
   name,
   donations,
-  statusTitle,
-  statusValue,
+  currentStatus,
   amount,
   amountCurrency,
   frequencyValue,
   showModal,
-  statuses,
   setContactFocus,
   avatar,
   suggestedChanges,
@@ -202,12 +203,32 @@ const Contact: React.FC<Props> = ({
   const locale = useLocale();
   const { classes } = useStyles();
   const { t } = useTranslation();
+  const constants = useApiConstants();
+  const frequencyOptions = constants?.pledgeFrequency;
+  const statusOptions = constants?.status;
+  const { contactStatuses } = useContactPartnershipStatuses();
+  const phases = constants?.phases;
+  const { appName } = useGetAppSettings();
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
-  const suggestedFrequency = suggestedChanges?.pledge_frequency || '';
+  const suggestedFrequency = useMemo(
+    () =>
+      frequencyOptions?.find((frequency) => {
+        return frequency?.key === suggestedChanges?.pledge_frequency;
+      })?.id || null,
+    [frequencyOptions, suggestedChanges?.pledge_frequency],
+  );
 
-  const suggestedStatus = suggestedChanges?.status || '';
+  const suggestedStatus = useMemo(
+    () =>
+      statusOptions?.find(
+        (status) =>
+          status.id === suggestedChanges?.status?.toUpperCase() ||
+          status.value === suggestedChanges?.status,
+      )?.id || '',
+    [statusOptions, suggestedChanges?.status],
+  );
 
   const onSubmit = async ({
     status,
@@ -220,22 +241,25 @@ const Contact: React.FC<Props> = ({
       status,
       name: name,
       pledgeCurrency,
-      pledgeAmount,
+      pledgeAmount:
+        typeof pledgeAmount === 'string'
+          ? parseFloat(pledgeAmount)
+          : pledgeAmount,
       pledgeFrequency,
     };
 
     showModal(
       modalContact,
-      t(`Are you sure you wish to update {{source}} commitment info?`, {
+      t(`Are you sure you wish to update the commitment info for {{source}}?`, {
         source: name,
       }),
-      t('Update'),
+      t('Update Commitment Info'),
       UpdateTypeEnum.Change,
     );
   };
 
   const commitmentInfoFormSchema = yup.object({
-    statusValue: yup.string().required('Please select a status'),
+    status: yup.string().nullable(),
     pledgeCurrency: yup.string().nullable(),
     pledgeAmount: yup.number().nullable(),
     pledgeFrequency: yup.string().nullable(),
@@ -245,10 +269,10 @@ const Contact: React.FC<Props> = ({
     <Grid container className={classes.container}>
       <Formik
         initialValues={{
-          statusValue: suggestedStatus || statusValue,
+          status: suggestedStatus || currentStatus,
           pledgeCurrency: amountCurrency,
           pledgeAmount: suggestedAmount || amount,
-          pledgeFrequency: suggestedFrequency || frequencyValue,
+          pledgeFrequency: suggestedFrequency || frequencyValue || undefined,
         }}
         validationSchema={commitmentInfoFormSchema}
         onSubmit={async (values) => {
@@ -256,19 +280,14 @@ const Contact: React.FC<Props> = ({
         }}
       >
         {({
-          values: {
-            statusValue,
-            pledgeCurrency,
-            pledgeAmount,
-            pledgeFrequency,
-          },
+          values: { status, pledgeCurrency, pledgeAmount, pledgeFrequency },
           handleSubmit,
           setFieldValue,
           errors,
         }): ReactElement => {
           const modalContact = {
             id: id,
-            status: statusValue,
+            status,
             name: name,
             pledgeCurrency,
             pledgeAmount,
@@ -279,7 +298,7 @@ const Contact: React.FC<Props> = ({
               <Grid container className={classes.formWrapper}>
                 <Card className={classes.formInner}>
                   <Grid container>
-                    <Grid item md={4} xs={12}>
+                    <Grid item sm={12} md={4}>
                       <Box
                         display="flex"
                         p={2}
@@ -301,115 +320,114 @@ const Contact: React.FC<Props> = ({
                             <Typography variant="subtitle1">{name}</Typography>
                           </Link>
                           <Typography variant="subtitle2">
-                            {`Current: ${statusTitle || ''} ${
-                              amount && amountCurrency
-                                ? currencyFormat(amount, amountCurrency, locale)
-                                : ''
-                            } ${getLocalizedPledgeFrequency(
+                            {t('Current: {{status}}', {
+                              status: getLocalizedContactStatus(
+                                t,
+                                currentStatus,
+                              ),
+                            })}
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            {amount && amountCurrency
+                              ? currencyFormat(amount, amountCurrency, locale)
+                              : null}{' '}
+                            {getLocalizedPledgeFrequency(
                               t,
                               frequencyValue as PledgeFrequencyEnum,
-                            )}`}
+                            )}
                           </Typography>
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item xs={12} md={8} className={classes.right}>
+                    <Grid item sm={12} md={8} className={classes.right}>
                       <Grid
                         container
                         style={{ paddingRight: theme.spacing(1) }}
                       >
-                        {statuses.length && (
-                          <Grid
-                            item
-                            xs={12}
-                            md={6}
-                            lg={12}
-                            className={classes.boxTop}
-                          >
+                        <Grid
+                          item
+                          xs={12}
+                          md={6}
+                          lg={12}
+                          className={classes.boxTop}
+                        >
+                          <FormControl fullWidth size="small">
+                            <InputLabel id="status-label">
+                              {t('Status')}
+                            </InputLabel>
+                            <Select
+                              className={classes.select}
+                              size="small"
+                              placeholder="Status"
+                              labelId="status-label"
+                              label={t('Status')}
+                              inputProps={{
+                                'data-testid': 'pledgeStatus-input',
+                              }}
+                              data-testid="statusSelect"
+                              style={{ width: '100%' }}
+                              value={status}
+                              onChange={(event) =>
+                                setFieldValue('status', event.target.value)
+                              }
+                            >
+                              {phases?.map((phase) => [
+                                <ListSubheader key={phase?.id}>
+                                  {getLocalizedPhase(t, phase?.id)}
+                                </ListSubheader>,
+                                phase?.contactStatuses.map((status) => (
+                                  <MenuItem key={status} value={status}>
+                                    {contactStatuses[status]?.translated}
+                                  </MenuItem>
+                                )),
+                              ])}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} md={6} lg={4}>
+                          <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
-                              <InputLabel id="status-label">
-                                {t('Status')}
+                              <InputLabel id="currency-label">
+                                {t('Currency')}
                               </InputLabel>
                               <Select
                                 className={classes.select}
+                                labelId="currency-label"
                                 size="small"
-                                placeholder="Status"
-                                labelId="status-label"
-                                label={t('Status')}
+                                label={t('Currency')}
+                                placeholder="Currency"
+                                data-testid="pledgeCurrency"
                                 inputProps={{
-                                  'data-testid': 'pledgeStatus-input',
+                                  'data-testid': 'pledgeCurrency-input',
                                 }}
-                                data-testid="statusSelect"
-                                style={{ width: '100%' }}
-                                value={statusValue}
-                                onChange={(event) =>
+                                value={pledgeCurrency}
+                                onChange={(e) =>
                                   setFieldValue(
-                                    'statusValue',
-                                    event.target.value,
+                                    'pledgeCurrency',
+                                    e.target.value,
                                   )
                                 }
                               >
-                                {statuses.map((status) => (
-                                  <MenuItem
-                                    value={status}
-                                    key={status}
-                                    data-testid="statusSelectOptions"
-                                  >
-                                    {status}
+                                {pledgeCurrencies ? (
+                                  getPledgeCurrencyOptions(
+                                    pledgeCurrencies,
+                                    PledgeCurrencyOptionFormatEnum.Short,
+                                  )
+                                ) : (
+                                  <MenuItem key={''} value={''}>
+                                    {t('Loading')}
                                   </MenuItem>
-                                ))}
+                                )}
                               </Select>
                             </FormControl>
                             <FormHelperText
                               error={true}
-                              data-testid="statusSelectError"
+                              data-testid="pledgeCurrencyError"
                             >
-                              {errors.statusValue && errors.statusValue}
+                              {errors.pledgeCurrency && errors.pledgeCurrency}
                             </FormHelperText>
-                          </Grid>
-                        )}
-                        {pledgeCurrencies && (
-                          <Grid item xs={12} md={6} lg={4}>
-                            <Box className={classes.boxBottom}>
-                              <FormControl fullWidth size="small">
-                                <InputLabel id="currency-label">
-                                  {t('Currency')}
-                                </InputLabel>
-
-                                <Select
-                                  className={classes.select}
-                                  labelId="currency-label"
-                                  size="small"
-                                  label={t('Currency')}
-                                  placeholder="Currency"
-                                  data-testid="pledgeCurrency"
-                                  inputProps={{
-                                    'data-testid': 'pledgeCurrency-input',
-                                  }}
-                                  value={pledgeCurrency}
-                                  onChange={(e) =>
-                                    setFieldValue(
-                                      'pledgeCurrency',
-                                      e.target.value,
-                                    )
-                                  }
-                                >
-                                  {pledgeCurrencies &&
-                                    getPledgeCurrencyOptions(
-                                      pledgeCurrencies,
-                                      PledgeCurrencyOptionFormatEnum.Short,
-                                    )}
-                                </Select>
-                              </FormControl>
-                              <FormHelperText
-                                error={true}
-                                data-testid="pledgeCurrencyError"
-                              >
-                                {errors.pledgeCurrency && errors.pledgeCurrency}
-                              </FormHelperText>
-                            </Box>
-                          </Grid>
-                        )}
+                          </Box>
+                        </Grid>
                         <Grid item xs={12} lg={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
@@ -446,15 +464,9 @@ const Contact: React.FC<Props> = ({
                                 )}
                               </Field>
                             </FormControl>
-                            <FormHelperText
-                              error={true}
-                              data-testid="pledgeAmountError"
-                            >
-                              {errors.pledgeAmount && errors.pledgeAmount}
-                            </FormHelperText>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} lg={4}>
+                        <Grid item xs={12} sm={4}>
                           <Box
                             className={classes.boxBottom}
                             data-testid="BoxBottom"
@@ -495,12 +507,6 @@ const Contact: React.FC<Props> = ({
                                 )}
                               </Select>
                             </FormControl>
-                            <FormHelperText
-                              error={true}
-                              data-testid="pledgeFrequencyError"
-                            >
-                              {errors.pledgeFrequency && errors.pledgeFrequency}
-                            </FormHelperText>
                           </Box>
                         </Grid>
                       </Grid>
@@ -564,7 +570,7 @@ const Contact: React.FC<Props> = ({
                           showModal(
                             modalContact,
                             t(
-                              `Are you sure you wish to leave {{source}}'s commitment information unchanged?`,
+                              `Are you sure you wish to leave the commitment information unchanged for {{source}}?`,
                               { source: name },
                             ),
                             t("Don't Change"),
@@ -583,8 +589,8 @@ const Contact: React.FC<Props> = ({
                             showModal(
                               modalContact,
                               t(
-                                `Are you sure you wish to hide {{source}}? Hiding a contact in MPDX actually sets the contact status to "Never Ask".`,
-                                { source: name },
+                                `Are you sure you wish to hide {{source}}? Hiding a contact in {{appName}} actually sets the contact status to "Never Ask".`,
+                                { source: name, appName: appName },
                               ),
                               t('Hide'),
                               UpdateTypeEnum.Hide,

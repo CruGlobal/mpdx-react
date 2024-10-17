@@ -9,11 +9,11 @@ import {
   ListItem,
   ListSubheader,
   Menu,
-  Theme,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import theme from 'src/theme';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import illustration13 from '../../../../../../images/drawkit/grape/drawkit-grape-pack-illustration-13.svg';
 import { useAcknowledgeAllUserNotificationsMutation } from './AcknowledgeAllUserNotifications.generated';
@@ -28,7 +28,7 @@ interface NotificationMenuProps {
   isInDrawer?: boolean;
 }
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   link: {
     textTransform: 'none',
     color: 'rgba(255,255,255,0.75)',
@@ -63,6 +63,11 @@ const useStyles = makeStyles()((theme: Theme) => ({
     height: '150px',
     marginBottom: theme.spacing(2),
   },
+  customBadge: {
+    backgroundColor: theme.palette.progressBarYellow.main,
+    color: 'white',
+    fontWeight: '700',
+  },
 }));
 
 export const NotificationContent = ({
@@ -71,12 +76,14 @@ export const NotificationContent = ({
   onAcknowledgeAllClick,
   onClose,
   onFetchMore,
+  isInDrawer,
 }: {
   data: GetNotificationsQuery | undefined;
   loading: boolean;
   onAcknowledgeAllClick: () => void;
   onClose: () => void;
   onFetchMore: () => void;
+  isInDrawer?: boolean;
 }): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
@@ -110,6 +117,7 @@ export const NotificationContent = ({
           previousItem={nodes[index - 1]}
           last={index + 1 === nodes.length && !loading}
           onClick={onClose}
+          isInDrawer={isInDrawer}
         />
       ))}
       {!loading && data?.userNotifications?.pageInfo?.hasNextPage && (
@@ -221,6 +229,7 @@ const NotificationMenu = ({
         onAcknowledgeAllClick={handleAcknowledgeAllClick}
         onClose={handleClose}
         onFetchMore={handleFetchMore}
+        isInDrawer={true}
       />
     );
   }
@@ -235,7 +244,8 @@ const NotificationMenu = ({
       >
         <Badge
           badgeContent={data?.userNotifications?.unreadCount}
-          color="secondary"
+          classes={{ badge: classes.customBadge }}
+          max={99}
         >
           {data?.userNotifications?.unreadCount !== 0 ? (
             <NotificationsIcon />

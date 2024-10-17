@@ -1,25 +1,24 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { PhaseEnum } from 'pages/api/graphql-rest.page.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import {
-  ActivityTypeEnum,
-  ContactFilterSetInput,
-  ContactFilterStatusEnum,
-  IdValue,
-  StatusEnum,
-} from 'src/graphql/types.generated';
+import { ContactFilterSetInput, StatusEnum } from 'src/graphql/types.generated';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
+import { useHasActiveTaskLazyQuery } from './ContactFlow.generated';
 import { ContactFlowColumn } from './ContactFlowColumn/ContactFlowColumn';
 import { ContactFlowDragLayer } from './ContactFlowDragLayer/ContactFlowDragLayer';
-import { useGetUserOptionsQuery } from './GetUserOptions.generated';
+import { getDefaultFlowOptions } from './contactFlowDefaultOptions';
+import { useFlowOptions } from './useFlowOptions';
 
 interface Props {
   accountListId: string;
@@ -30,32 +29,9 @@ interface Props {
 export interface ContactFlowOption {
   id: string;
   name: string;
-  statuses: string[];
+  statuses: StatusEnum[];
   color: string;
 }
-
-export const statusMap: { [key: string]: string } = {
-  'Never Contacted': 'NEVER_CONTACTED',
-  'Ask in Future': 'ASK_IN_FUTURE',
-  'Cultivate Relationship': 'CULTIVATE_RELATIONSHIP',
-  'Contact for Appointment': 'CONTACT_FOR_APPOINTMENT',
-  'Appointment Scheduled': 'APPOINTMENT_SCHEDULED',
-  'Call for Decision': 'CALL_FOR_DECISION',
-  'Partner - Financial': 'PARTNER_FINANCIAL',
-  'Partner - Special': 'PARTNER_SPECIAL',
-  'Partner - Pray': 'PARTNER_PRAY',
-  'Not Interested': 'NOT_INTERESTED',
-  Unresponsive: 'UNRESPONSIVE',
-  'Never Ask': 'NEVER_ASK',
-  'Research Abandoned': 'RESEARCH_ABANDONED',
-  'Expired Referral': 'EXPIRED_REFERRAL',
-};
-
-const taskStatuses: { [key: string]: ActivityTypeEnum } = {
-  APPOINTMENT_SCHEDULED: ActivityTypeEnum.Appointment,
-  CONTACT_FOR_APPOINTMENT: ActivityTypeEnum.Call,
-  CALL_FOR_DECISION: ActivityTypeEnum.Call,
-};
 
 export const colorMap: { [key: string]: string } = {
   'color-danger': theme.palette.error.main,
@@ -70,31 +46,38 @@ export const ContactFlow: React.FC<Props> = ({
   selectedFilters,
   searchTerm,
 }: Props) => {
-  const { data: userOptions, loading: loadingUserOptions } =
-    useGetUserOptionsQuery({});
+  const { options: userFlowOptions, loading: loadingUserOptions } =
+    useFlowOptions();
 
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
-  const flowOptions: ContactFlowOption[] = JSON.parse(
-    userOptions?.userOptions.find((option) => option.key === 'flows')?.value ||
-      '[]',
-  );
+  const flowOptions = useMemo(() => {
+    if (loadingUserOptions) {
+      return [];
+    }
+    if (userFlowOptions.length) {
+      return userFlowOptions;
+    }
+
+    return getDefaultFlowOptions(t, contactStatuses);
+  }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();
+  const [hasActiveTask] = useHasActiveTaskLazyQuery();
 
   const changeContactStatus = async (
     id: string,
-    status: {
-      __typename?: 'IdValue' | undefined;
-    } & Pick<IdValue, 'id' | 'value'>,
+    status: StatusEnum,
+    contactPhase: PhaseEnum | null | undefined,
   ): Promise<void> => {
     const attributes = {
       id,
-      status: status.id as StatusEnum,
+      status,
     };
-    await updateContactOther({
+    const { data } = await updateContactOther({
       variables: {
         accountListId,
         attributes,
@@ -105,25 +88,78 @@ export const ContactFlow: React.FC<Props> = ({
           variables: {
             accountListId,
             contactsFilters: {
-              status: flowOption.statuses.map(
-                (status) => statusMap[status] as ContactFilterStatusEnum,
-              ),
+              status: flowOption.statuses,
               ...selectedFilters,
             },
           },
         })),
     });
-    enqueueSnackbar(t('Contact status info updated!'), {
+    enqueueSnackbar(t('Contact status updated!'), {
       variant: 'success',
     });
-    if (status.id && taskStatuses[status.id]) {
-      openTaskModal({
-        view: TaskModalEnum.Add,
-        defaultValues: {
-          activityType: taskStatuses[status.id],
-          contactIds: [id],
-        },
-      });
+
+    const newContactPhase = data?.updateContact?.contact.contactPhase;
+
+    switch (contactPhase) {
+      case PhaseEnum.Initiation:
+      case PhaseEnum.Appointment:
+      case PhaseEnum.FollowUp:
+      case PhaseEnum.PartnerCare:
+        const { data } = await hasActiveTask({
+          variables: {
+            accountListId,
+            tasksFilter: {
+              completed: false,
+              contactIds: [id],
+              activityType: contactPhase
+                ? getActivitiesByPhaseType(contactPhase)
+                : [],
+            },
+          },
+        });
+
+        const taskId = data?.tasks.nodes[0]?.id || undefined;
+        if (taskId) {
+          openTaskModal({
+            view: TaskModalEnum.Complete,
+            taskId,
+            showFlowsMessage: true,
+          });
+        } else if (
+          newContactPhase &&
+          newContactPhase !== PhaseEnum.Connection &&
+          newContactPhase !== PhaseEnum.Archive
+        ) {
+          openTaskModal({
+            view: TaskModalEnum.Log,
+            showFlowsMessage: true,
+            defaultValues: {
+              taskPhase: contactPhase,
+              contactIds: [id],
+            },
+          });
+        }
+        break;
+
+      case PhaseEnum.Connection:
+        if (
+          newContactPhase &&
+          newContactPhase !== PhaseEnum.Connection &&
+          newContactPhase !== PhaseEnum.Archive
+        ) {
+          openTaskModal({
+            view: TaskModalEnum.Add,
+            showFlowsMessage: true,
+            defaultValues: {
+              taskPhase: newContactPhase,
+              contactIds: [id],
+            },
+          });
+        }
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -160,9 +196,7 @@ export const ContactFlow: React.FC<Props> = ({
                 title={column.name}
                 selectedFilters={selectedFilters}
                 color={colorMap[column.color]}
-                statuses={column.statuses.map(
-                  (status) => statusMap[status] as ContactFilterStatusEnum,
-                )}
+                statuses={column.statuses}
                 changeContactStatus={changeContactStatus}
                 searchTerm={searchTerm}
               />

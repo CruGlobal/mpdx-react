@@ -20,9 +20,8 @@ import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated'
 import { MultilineSkeleton } from '../../Shared/MultilineSkeleton';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { Activity } from './Activity/Activity';
-import { ActivitySummary } from './ActivitySummary/ActivitySummary';
-import { AppointmentResults } from './AppointmentResults/AppointmentResults';
 import { CoachingSidebar } from './CoachingSidebar';
+import { LevelOfEffort } from './LevelOfEffort/LevelOfEffort';
 import {
   useGetCoachingDonationGraphQuery,
   useLoadAccountListCoachingDetailQuery,
@@ -31,6 +30,7 @@ import {
 import { MonthlyCommitment } from './MonthlyCommitment/MonthlyCommitment';
 import { OutstandingCommitments } from './OutstandingCommitments/OutstandingCommitments';
 import { OutstandingNeeds } from './OutstandingNeeds/OutstandingNeeds';
+import { PartnersProgress } from './PartnersProgress/PartnersProgress';
 import { TagsSummary } from './TagsSummary/TagsSummary';
 import { WeeklyReport } from './WeeklyReport/WeeklyReport';
 
@@ -58,7 +58,7 @@ const CoachingDetailContainer = styled(Box)({
 const CoachingMainContainer = styled(Box)(({ theme }) => ({
   flex: 1,
   padding: theme.spacing(1),
-  paddingBottom: theme.spacing(6), // prevent the HelpScout beacon from obscuring content at the bottom
+  paddingBottom: theme.spacing(6), // prevent the Helpjuice beacon from obscuring content at the bottom
   overflowY: 'scroll',
 }));
 
@@ -135,6 +135,10 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
 
   const handleCloseDrawer = () => setDrawerVisible(false);
 
+  const usersList = accountListData?.users.nodes
+    .map((user) => user.firstName + ' ' + user.lastName)
+    .join(', ');
+
   const sidebarDrawer = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.down('md'),
   );
@@ -171,16 +175,20 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
           <>
             <CoachingMainTitleContainer>
               <Box style={{ flexGrow: 1 }}>
-                <Typography variant="h5" m={1}>
+                <Typography variant="h5" mx={1}>
                   <Hidden mdUp>
                     <IconButton
                       onClick={() => setDrawerVisible(!drawerVisible)}
                       aria-label={t('Toggle account details')}
+                      name={t('Toggle account details')}
                     >
                       <MenuOpenIcon />
                     </IconButton>
                   </Hidden>
                   {accountListData?.name}
+                </Typography>
+                <Typography mx={1} variant="subtitle1">
+                  {usersList}
                 </Typography>
               </Box>
               <Box style={{ flexGrow: 1 }}>
@@ -207,20 +215,16 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
               />
               <MonthlyCommitment
                 coachingId={accountListId}
+                accountListType={accountListType}
                 currencyCode={accountListData?.currency}
-                goal={accountListData?.monthlyGoal ?? 0}
+                mpdInfo={accountListData ?? null}
               />
-              <AppointmentResults
+              <PartnersProgress
                 accountListId={accountListId}
                 currency={accountListData?.currency}
                 period={period}
               />
-              <ActivitySummary accountListId={accountListId} period={period} />
-              <TagsSummary
-                accountListId={accountListId}
-                period={period}
-                association={ReportsTagHistoriesAssociationEnum.Contacts}
-              />
+              <LevelOfEffort accountListId={accountListId} period={period} />
               <TagsSummary
                 accountListId={accountListId}
                 period={period}

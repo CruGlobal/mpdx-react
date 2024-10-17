@@ -22,7 +22,7 @@ describe('LogNewsletter', () => {
         </GqlMockedProvider>
       </ThemeProvider>,
     );
-    expect(queryByText('Email Newsletter List')).toBeInTheDocument();
+    expect(queryByText('Digital Newsletter List')).toBeInTheDocument();
   });
 
   it('creates emailList string', async () => {

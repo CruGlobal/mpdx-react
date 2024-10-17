@@ -41,4 +41,15 @@ const reverseFiltersOptions = {
   user_ids: 'reverseUserIds',
 };
 
+export const renameFilterNames = (name: string | undefined) => {
+  switch (name) {
+    case 'Referrer':
+      return 'Connecting Partner';
+    case 'Contact Referrer':
+      return 'Contact Connecting Partner';
+    default:
+      return name;
+  }
+};
+
 export const reverseFiltersMap = new Map(Object.entries(reverseFiltersOptions));

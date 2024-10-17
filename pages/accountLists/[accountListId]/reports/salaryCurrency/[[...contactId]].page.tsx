@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,6 @@ import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { suggestArticles } from 'src/lib/helpScout';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
@@ -36,10 +35,6 @@ const SalaryCurrencyReportPage: React.FC = () => {
   const { handleCloseContact, getContactUrl } = useGetContactLinks({
     url: `/accountLists/${accountListId}/reports/salaryCurrency/`,
   });
-
-  useEffect(() => {
-    suggestArticles('HS_REPORTS_SUGGESTIONS');
-  }, []);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

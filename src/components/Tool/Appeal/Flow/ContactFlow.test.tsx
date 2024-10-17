@@ -146,13 +146,15 @@ const Components = ({
 
 describe('ContactFlow', () => {
   it('default', async () => {
-    const { getByText, findByText } = render(<Components />);
+    const { getByRole, findByRole } = render(<Components />);
 
-    expect(await findByText('Excluded')).toBeInTheDocument();
-    expect(getByText('Asked')).toBeInTheDocument();
-    expect(getByText('Committed')).toBeInTheDocument();
-    expect(getByText('Received')).toBeInTheDocument();
-    expect(getByText('Given')).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Excluded' }),
+    ).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'Asked' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'Committed' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'Received' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'Given' })).toBeInTheDocument();
   });
 
   describe('Excluded Drag and Drop functionality', () => {

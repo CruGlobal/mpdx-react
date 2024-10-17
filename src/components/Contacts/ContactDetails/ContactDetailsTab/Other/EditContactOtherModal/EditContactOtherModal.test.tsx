@@ -133,7 +133,7 @@ describe('EditContactOtherModal', () => {
     expect(getByText('Edit Contact Other Details')).toBeInTheDocument();
     const referredByElement = getByRole('combobox', {
       hidden: true,
-      name: 'Referred By',
+      name: 'Connecting Partner',
     });
     userEvent.click(referredByElement);
     await waitFor(() => expect(getByText('Ccc Ddd')).toBeInTheDocument());
@@ -318,7 +318,7 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
-    const referredByInput = getByLabelText('Referred By');
+    const referredByInput = getByLabelText('Connecting Partner');
     await waitFor(() => expect(referredByInput).toBeInTheDocument());
     userEvent.click(referredByInput);
     userEvent.type(referredByInput, 'G');
@@ -362,7 +362,7 @@ describe('EditContactOtherModal', () => {
       </SnackbarProvider>,
     );
 
-    const referredByInput = getByLabelText('Referred By');
+    const referredByInput = getByLabelText('Connecting Partner');
     await waitFor(() => expect(referredByInput).toBeInTheDocument());
     userEvent.click(referredByInput);
     expect(getByText('No options')).toBeInTheDocument();

@@ -43,8 +43,6 @@ describe('Account Lists page', () => {
 
   describe('NextAuth authorized', () => {
     beforeEach(() => {
-      process.env.DISABLE_SETUP_TOUR = undefined;
-
       (getSession as jest.Mock).mockResolvedValue(session);
     });
 
@@ -60,27 +58,6 @@ describe('Account Lists page', () => {
 
       const result = await getServerSideProps(context);
       expect(result).toEqual({
-        redirect: {
-          destination: '/setup/start',
-          permanent: false,
-        },
-      });
-    });
-
-    it('does not redirect to the setup tour when DISABLE_SETUP_TOUR is true', async () => {
-      process.env.DISABLE_SETUP_TOUR = 'true';
-
-      (makeSsrClient as jest.Mock).mockReturnValue({
-        query: jest.fn().mockResolvedValue({
-          data: {
-            user: { id: 'user-1', setup: UserSetupStageEnum.NoAccountLists },
-            accountLists: { nodes: [] },
-          },
-        }),
-      });
-
-      const result = await getServerSideProps(context);
-      expect(result).not.toEqual({
         redirect: {
           destination: '/setup/start',
           permanent: false,

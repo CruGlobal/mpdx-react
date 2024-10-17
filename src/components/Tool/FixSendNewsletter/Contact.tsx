@@ -25,6 +25,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import { ContactUpdateData } from './FixSendNewsletter';
 import { InvalidNewsletterContactFragment } from './InvalidNewsletter.generated';
@@ -255,9 +256,12 @@ const Contact = ({
                     defaults="<bold>Source:</bold> {{where}} ({{date}})"
                     shouldUnescape
                     values={{
-                      where: contact?.primaryAddress?.source,
+                      where: sourceToStr(t, contact?.primaryAddress?.source),
                       date: dateFormatShort(
-                        DateTime.fromISO(contact?.primaryAddress?.createdAt),
+                        DateTime.fromISO(
+                          contact?.primaryAddress?.startDate ||
+                            contact?.primaryAddress?.createdAt,
+                        ),
                         locale,
                       ),
                     }}

@@ -2,17 +2,18 @@ import NextLink from 'next/link';
 import React from 'react';
 import {
   Box,
-  Button,
   Checkbox,
   Hidden,
   Tooltip,
   Typography,
   TypographyProps,
+  useMediaQuery,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ContactUrl } from 'pages/accountLists/[accountListId]/tasks/[[...contactId]].page';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import theme from 'src/theme';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -46,11 +47,20 @@ const ContactText = styled(Typography)(({ theme }) => ({
   letterSpacing: '0.25',
 }));
 
-const TaskType = styled(Typography)(({ theme }) => ({
+const TaskPhase = styled(Typography)(() => ({
   fontSize: '14px',
   letterSpacing: '0.25',
   whiteSpace: 'nowrap',
   fontWeight: 700,
+}));
+
+const TaskType = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'condensed',
+})<{ condensed?: boolean }>(({ theme, condensed = false }) => ({
+  fontSize: '14px',
+  letterSpacing: '0.25',
+  whiteSpace: 'nowrap',
+  fontWeight: condensed ? 400 : 700,
   marginRight: theme.spacing(0.5),
 }));
 
@@ -111,6 +121,8 @@ interface TaskRowProps {
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
   getContactUrl?: (contactId: string) => ContactUrl;
+  contactDetailsOpen?: boolean;
+  removeSelectedIds?: (id: string[]) => void;
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({
@@ -121,8 +133,26 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onTaskCheckToggle,
   useTopMargin,
   getContactUrl,
+  contactDetailsOpen,
+  removeSelectedIds,
 }) => {
+  const {
+    activityType,
+    comments,
+    contacts,
+    id: taskId,
+    starred,
+    startAt,
+    completedAt,
+    subject,
+  } = task;
   const { t } = useTranslation();
+  const { activityTypes } = usePhaseData();
+  const activityData = activityType ? activityTypes.get(activityType) : null;
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const condensed = isSmallScreen || contactDetailsOpen;
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
     ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
@@ -152,18 +182,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     event.stopPropagation();
     onContactSelected(contactId);
   };
-
-  const {
-    activityType,
-    comments,
-    contacts,
-    id: taskId,
-
-    starred,
-    startAt,
-    completedAt,
-    subject,
-  } = task;
 
   const handleCompleteButtonPressed = () => {
     openTaskModal({ taskId: task?.id, view: TaskModalEnum.Complete });
@@ -212,6 +230,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             <Box padding="checkbox">
               <Checkbox
                 checked={isChecked}
+                data-testid={`task-checkbox-${taskId}`}
                 color="secondary"
                 onClick={(event) => event.stopPropagation()}
                 onChange={() => onTaskCheckToggle(taskId)}
@@ -236,69 +255,97 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               textOverflow: 'ellipsis',
             }}
           >
-            <SubjectWrapOuter>
-              <SubjectWrapInner
-                data-testid="subject-wrap"
-                onClick={(e) => {
-                  handleSubjectPressed();
-                  e.stopPropagation();
-                }}
-                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
-              >
-                <TaskType>
-                  {activityType ? getLocalizedTaskType(t, activityType) : ''}
-                </TaskType>
-                <Tooltip title={subject}>
-                  <ContactText>{subject}</ContactText>
-                </Tooltip>
-              </SubjectWrapInner>
-            </SubjectWrapOuter>
+            {(activityData?.phase || activityType) && (
+              <SubjectWrapOuter>
+                <SubjectWrapInner
+                  data-testid="phase-action-wrap"
+                  onClick={(e) => {
+                    handleSubjectPressed();
+                    e.stopPropagation();
+                  }}
+                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
+                  style={{
+                    minWidth: condensed ? '92px' : 'none',
+                    flexDirection: condensed ? 'column' : 'row',
+                  }}
+                >
+                  <TaskPhase>
+                    {activityData?.phase && condensed
+                      ? activityData.phase
+                      : activityData?.phase
+                      ? activityData.phase + ' - ' + '\u00A0'
+                      : ''}
+                  </TaskPhase>
+                  <TaskType condensed={condensed}>
+                    {activityType ? getLocalizedTaskType(t, activityType) : ''}
+                  </TaskType>
+                </SubjectWrapInner>
+              </SubjectWrapOuter>
+            )}
             <Box
               style={{
                 width: '100%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                display: 'flex',
+                flexDirection: condensed ? 'column' : 'row',
               }}
             >
-              {contacts.nodes.map((contact, index) => {
-                if (getContactUrl) {
-                  const { contactUrl } = getContactUrl(contact.id);
+              <SubjectWrapOuter>
+                <SubjectWrapInner
+                  data-testid="subject-wrap"
+                  onClick={(e) => {
+                    handleSubjectPressed();
+                    e.stopPropagation();
+                  }}
+                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
+                >
+                  <Tooltip title={subject} placement="top-start">
+                    <ContactText>{subject}</ContactText>
+                  </Tooltip>
+                </SubjectWrapInner>
+              </SubjectWrapOuter>
+              <Box
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {contacts.nodes.map((contact, index) => {
+                  if (getContactUrl) {
+                    const { contactUrl } = getContactUrl(contact.id);
 
-                  return (
-                    <NextLink
-                      href={contactUrl}
-                      shallow
-                      legacyBehavior
-                      passHref
-                      key={contact.id}
-                    >
+                    return (
+                      <NextLink
+                        href={contactUrl}
+                        shallow
+                        legacyBehavior
+                        passHref
+                        key={contact.id}
+                      >
+                        <TaskRowContactName
+                          contact={contact}
+                          itemIndex={index}
+                          contactsLength={contacts.nodes.length}
+                          selectContact={onClick}
+                          component="a"
+                        />
+                      </NextLink>
+                    );
+                  } else {
+                    return (
                       <TaskRowContactName
                         contact={contact}
                         itemIndex={index}
                         contactsLength={contacts.nodes.length}
                         selectContact={onClick}
-                        component="a"
+                        key={contact.id}
                       />
-                    </NextLink>
-                  );
-                } else {
-                  return (
-                    <TaskRowContactName
-                      contact={contact}
-                      itemIndex={index}
-                      contactsLength={contacts.nodes.length}
-                      selectContact={onClick}
-                      key={contact.id}
-                    />
-                  );
-                }
-              })}
+                    );
+                  }
+                })}
+              </Box>
             </Box>
-            <Hidden smUp>
-              <Button>
-                <ContactText>{assigneeName}</ContactText>
-              </Button>
-            </Hidden>
           </Box>
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
@@ -333,6 +380,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               <DeleteTaskIconButton
                 accountListId={accountListId}
                 taskId={taskId}
+                removeSelectedIds={removeSelectedIds}
               />
             </Box>
             <Box onClick={(e) => e.stopPropagation()}>

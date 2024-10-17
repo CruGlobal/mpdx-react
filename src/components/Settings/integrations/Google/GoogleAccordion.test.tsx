@@ -124,14 +124,13 @@ describe('GoogleAccordion', () => {
 
       expect(getByText(/continue/i)).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
       );
     });
   });
 
   describe('Connected', () => {
     let googleAccount = { ...standardGoogleAccount };
-    process.env.REWRITE_DOMAIN = 'stage.mpdx.org';
 
     beforeEach(() => {
       googleAccount = { ...standardGoogleAccount };
@@ -165,7 +164,7 @@ describe('GoogleAccordion', () => {
       userEvent.click(getByText(/import contacts/i));
       expect(getByText(/import contacts/i)).toHaveAttribute(
         'href',
-        `https://stage.mpdx.org/tools/import/google`,
+        '/accountLists/account-list-1/tools/import/google',
       );
 
       userEvent.click(getByTestId('EditIcon'));
@@ -224,7 +223,7 @@ describe('GoogleAccordion', () => {
 
         expect(getByText(/continue/i)).toHaveAttribute(
           'href',
-          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fnext.mpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
         );
       });
     });

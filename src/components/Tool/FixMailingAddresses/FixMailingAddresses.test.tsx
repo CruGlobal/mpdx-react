@@ -7,12 +7,13 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import theme from 'src/theme';
 import FixMailingAddresses from './FixMailingAddresses';
 import {
   mockInvalidAddressesResponse,
   mpdxSourcedAddress,
-  tntSourcedAddress,
+  siebelSourcedAddress,
 } from './FixMailingAddressesMock';
 import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 
@@ -44,24 +45,26 @@ const Components = ({
   mocks: ApolloErgonoMockMap;
   cache?: ApolloCache<object>;
 }) => (
-  <SnackbarProvider>
-    <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          InvalidAddresses: InvalidAddressesQuery;
-          CreateContactAddress: CreateContactAddressMutation;
-        }>
-          mocks={mocks}
-          cache={cache}
-        >
-          <FixMailingAddresses
-            accountListId={accountListId}
-            setContactFocus={setContactFocus}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>
-    </TestRouter>
-  </SnackbarProvider>
+  <AppSettingsProvider>
+    <SnackbarProvider>
+      <TestRouter router={router}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{
+            InvalidAddresses: InvalidAddressesQuery;
+            CreateContactAddress: CreateContactAddressMutation;
+          }>
+            mocks={mocks}
+            cache={cache}
+          >
+            <FixMailingAddresses
+              accountListId={accountListId}
+              setContactFocus={setContactFocus}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>
+    </SnackbarProvider>
+  </AppSettingsProvider>
 );
 
 describe('FixMailingAddresses', () => {
@@ -94,7 +97,7 @@ describe('FixMailingAddresses', () => {
         mocks={{
           InvalidAddresses: {
             contacts: {
-              nodes: [tntSourcedAddress],
+              nodes: [siebelSourcedAddress],
             },
           },
         }}
@@ -108,13 +111,21 @@ describe('FixMailingAddresses', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should count total contacts', async () => {
+  it('should count total contacts and startDate', async () => {
     const { queryByTestId, getByText } = render(
       <Components
         mocks={{
           InvalidAddresses: {
             contacts: {
-              nodes: [{}, {}, {}],
+              nodes: [
+                {
+                  addresses: {
+                    nodes: [siebelSourcedAddress],
+                  },
+                },
+                {},
+                {},
+              ],
             },
           },
         }}
@@ -126,6 +137,31 @@ describe('FixMailingAddresses', () => {
     expect(
       getByText('You have 3 mailing addresses to confirm.'),
     ).toBeInTheDocument();
+    expect(getByText(/12\/10\/2022/i)).toBeInTheDocument();
+  });
+
+  it('should show createdAt date when startDate is null', async () => {
+    const { queryByTestId, getByText } = render(
+      <Components
+        mocks={{
+          InvalidAddresses: {
+            contacts: {
+              nodes: [
+                {
+                  addresses: {
+                    nodes: [mpdxSourcedAddress],
+                  },
+                },
+              ],
+            },
+          },
+        }}
+      />,
+    );
+    await waitFor(() =>
+      expect(queryByTestId('loading')).not.toBeInTheDocument(),
+    );
+    expect(getByText(/6\/12\/2024/i)).toBeInTheDocument();
   });
 
   describe('Editing an address', () => {
@@ -146,9 +182,9 @@ describe('FixMailingAddresses', () => {
                     addresses: {
                       nodes: [
                         mpdxSourcedAddress,
-                        tntSourcedAddress,
+                        siebelSourcedAddress,
                         {
-                          ...tntSourcedAddress,
+                          ...siebelSourcedAddress,
                           country: 'Canada',
                         },
                       ],
@@ -164,7 +200,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL. 32832'));
+      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL 32832'));
 
       await waitFor(() => {
         expect(getByText('Edit Address')).toBeInTheDocument();
@@ -210,7 +246,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL. 32832'));
+      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL 32832'));
 
       await waitFor(() => {
         expect(getByText('Edit Address')).toBeInTheDocument();
@@ -230,12 +266,12 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() =>
         expect(
-          queryByText('100 Lake Hart Drive, Orlando FL. 32832'),
+          queryByText('100 Lake Hart Drive, Orlando FL 32832'),
         ).not.toBeInTheDocument(),
       );
     });
 
-    it("should not allow deletion of address when source isn't MPDX", async () => {
+    it("should not allow deletion of address when source isn't editable", async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
       const { getByTestId, getByText, getByRole, queryByTestId, queryByRole } =
@@ -246,7 +282,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByTestId(`address-${tntSourcedAddress.id}`));
+      userEvent.click(getByTestId(`address-${siebelSourcedAddress.id}`));
 
       await waitFor(() => {
         expect(getByText('Edit Address')).toBeInTheDocument();
@@ -313,7 +349,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() =>
         expect(
-          queryByText('Buckingham Palace, College Park England. SW1A 1AA'),
+          queryByText('Buckingham Palace, College Park England SW1A 1AA'),
         ).not.toBeInTheDocument(),
       );
 
@@ -321,7 +357,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() => {
         expect(
-          getByRole('heading', { name: 'Add Address' }),
+          getByRole('heading', { name: 'Add Address (MPDX)' }),
         ).toBeInTheDocument();
       });
 
@@ -360,7 +396,7 @@ describe('FixMailingAddresses', () => {
 
       await waitFor(() =>
         expect(
-          getByText('Buckingham Palace, London . SW1A 1AA'),
+          getByText('Buckingham Palace, London SW1A 1AA'),
         ).toBeInTheDocument(),
       );
     }, 10000);
@@ -493,7 +529,6 @@ describe('FixMailingAddresses', () => {
     const name2 = 'Gamgee, Samwise';
 
     it('should handle Error', async () => {
-      process.env.APP_NAME = 'MPDX';
       const { getByRole, getByText, queryByTestId } = render(
         <Components
           mocks={{
@@ -505,7 +540,7 @@ describe('FixMailingAddresses', () => {
                     name: name1,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                   {
@@ -513,7 +548,7 @@ describe('FixMailingAddresses', () => {
                     name: name2,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                 ],
@@ -568,7 +603,6 @@ describe('FixMailingAddresses', () => {
     });
 
     it('should handle success and remove contacts', async () => {
-      process.env.APP_NAME = 'MPDX';
       const { getByRole, queryByTestId, queryByText } = render(
         <Components
           mocks={{
@@ -580,7 +614,7 @@ describe('FixMailingAddresses', () => {
                     name: name1,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                   {
@@ -588,7 +622,7 @@ describe('FixMailingAddresses', () => {
                     name: name2,
                     status: null,
                     addresses: {
-                      nodes: [mpdxSourcedAddress, tntSourcedAddress],
+                      nodes: [mpdxSourcedAddress, siebelSourcedAddress],
                     },
                   },
                 ],
@@ -623,7 +657,6 @@ describe('FixMailingAddresses', () => {
   });
 
   it('should not fire handleSingleConfirm', async () => {
-    process.env.APP_NAME = 'MPDX';
     const { getByRole, queryByTestId, queryByText } = render(
       <Components
         mocks={{
@@ -638,9 +671,11 @@ describe('FixMailingAddresses', () => {
     );
     const name = 'Baggins, Frodo';
     userEvent.click(getByRole('combobox'));
-    userEvent.click(getByRole('option', { name: 'DataServer' }));
+    userEvent.click(getByRole('option', { name: 'US Donation Services' }));
 
-    userEvent.click(getByRole('button', { name: 'Confirm 1 as DataServer' }));
+    userEvent.click(
+      getByRole('button', { name: 'Confirm 1 as US Donation Services' }),
+    );
 
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),

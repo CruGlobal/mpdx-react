@@ -14,7 +14,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
   const task = {
     id: 'task',
     subject: 'the quick brown fox jumps over the lazy dog',
-    activityType: ActivityTypeEnum.PrayerRequest,
+    activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
     contacts: { nodes: [{ name: 'Smith, Roger', id: '1' }], totalCount: 1 },
     startAt: DateTime.local(2012, 1, 5, 1, 2).toISODate(),
     completedAt: null,
@@ -146,7 +146,7 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
         variables: {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
-          today: endOfDay.toISODate(),
+          thirtyDaysAgo: endOfDay.minus({ days: 30 }).toISODate(),
           threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
           twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },
@@ -181,7 +181,7 @@ export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
         variables: {
           accountListId: 'abc',
           endOfDay: endOfDay.toISO(),
-          today: endOfDay.toISODate(),
+          thirtyDaysAgo: endOfDay.minus({ days: 30 }).toISODate(),
           threeWeeksFromNow: endOfDay.plus({ weeks: 3 }).toISODate(),
           twoWeeksAgo: endOfDay.minus({ weeks: 2 }).toISODate(),
         },

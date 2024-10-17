@@ -2,6 +2,7 @@ import React, { CSSProperties } from 'react';
 import { XYCoord, useDragLayer } from 'react-dnd';
 import theme from '../../../../../theme';
 import { ContactFlowSetupDragPreviewStatus } from '../DragPreview/ContactFlowSetupDragPreviewStatus';
+import { ContactFlowSetupItemDrag } from '../Row/ContactFlowSetupStatusRow';
 
 const layerStyles: CSSProperties = {
   position: 'absolute',
@@ -49,11 +50,12 @@ export const ContactFlowSetupDragLayer: React.FC = () => {
   function renderItem() {
     switch (itemType) {
       case 'status':
+        const status: ContactFlowSetupItemDrag = item;
         return (
           <div style={dragPreviewStyle}>
             <ContactFlowSetupDragPreviewStatus
-              status={item.status}
-              width={item.columnWidth}
+              status={status.status}
+              width={status.columnWidth}
             />
           </div>
         );

@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { StatusEnum } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import {
@@ -14,10 +14,7 @@ import {
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
-const status = {
-  id: StatusEnum.PartnerFinancial,
-  value: 'Partner - Financial',
-};
+const status = StatusEnum.PartnerFinancial;
 const contact = {
   id: '123',
   name: 'Test Name',
@@ -48,6 +45,7 @@ const Components = () => (
             accountListId={accountListId}
             contact={contact}
             status={status}
+            contactPhase={PhaseEnum.PartnerCare}
           />
         </ContactsContext.Provider>
       </TestWrapper>

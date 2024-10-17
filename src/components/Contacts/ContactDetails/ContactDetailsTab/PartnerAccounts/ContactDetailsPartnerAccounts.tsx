@@ -8,11 +8,11 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
+import { ContactDetailLoadingPlaceHolder } from '../StyledComponents';
 import {
-  ContactPartnerAccountsFragment,
+  useContactDonorAccountsQuery,
   useGetAccountListSalaryOrganizationQuery,
 } from './ContactPartnerAccounts.generated';
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
@@ -37,19 +37,36 @@ const ContactPartnerAccountsTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(2),
   alignItems: 'center',
 }));
+const PartnerAccountTextContainer = styled(Box)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+}));
 
+const PartnerAccountTextLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  marginRight: '5px',
+  fontSize: '13px',
+}));
 interface ContactDetailsPartnerAccountsProps {
-  contact: ContactPartnerAccountsFragment;
+  accountListId: string;
+  contactId: string;
 }
 
 export const ContactDetailsPartnerAccounts: React.FC<
   ContactDetailsPartnerAccountsProps
-> = ({ contact }) => {
+> = ({ accountListId, contactId }) => {
+  // The API returns different results for displayName when using Contacts vs Donations.
+  // Because of this we use the fetchPolicy: 'no-cache' to ensure we don't override the displayName elsewhere.
+  // This is also why I have removed the partnerAccount query from the rest of the ContactDetailsTab queries.
+  const { data } = useContactDonorAccountsQuery({
+    variables: { accountListId, contactId },
+    fetchPolicy: 'no-cache',
+  });
+
   const [deleteDonorAccount] = useDeleteDonorAccountMutation();
   const [updateContact, { loading: updating }] =
     useUpdateContactOtherMutation();
   const [showForm, setShowForm] = useState(false);
-  const accountListId = useAccountListId() ?? '';
   const { data: accountListData } = useGetAccountListSalaryOrganizationQuery({
     variables: { accountListId: accountListId },
   });
@@ -59,7 +76,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
   const deleteContactDonorAccount = async (id: string) => {
     await deleteDonorAccount({
       variables: {
-        contactId: contact.id,
+        contactId,
         donorAccountId: id,
       },
       refetchQueries: [
@@ -67,12 +84,12 @@ export const ContactDetailsPartnerAccounts: React.FC<
           query: ContactDetailsTabDocument,
           variables: {
             accountListId,
-            contactId: contact.id,
+            contactId,
           },
         },
       ],
     });
-    enqueueSnackbar('Partner account deleted!', { variant: 'success' });
+    enqueueSnackbar(t('Partner account deleted!'), { variant: 'success' });
   };
 
   const onAddPartnerAccount = async (fields: Attributes) => {
@@ -80,7 +97,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
       variables: {
         accountListId,
         attributes: {
-          id: contact.id,
+          id: contactId,
           donorAccount: {
             name: fields.accountNumber,
             accountNumber: fields.accountNumber,
@@ -94,16 +111,22 @@ export const ContactDetailsPartnerAccounts: React.FC<
           query: ContactDetailsTabDocument,
           variables: {
             accountListId,
-            contactId: contact.id,
+            contactId,
           },
         },
       ],
     });
     setShowForm(false);
-    enqueueSnackbar('Partner account added!', { variant: 'success' });
+    enqueueSnackbar(t('Partner account added!'), { variant: 'success' });
   };
 
-  return (
+  return !data ? (
+    <>
+      <ContactDetailLoadingPlaceHolder variant="rectangular" />
+      <ContactDetailLoadingPlaceHolder variant="rectangular" />
+      <ContactDetailLoadingPlaceHolder variant="rectangular" />
+    </>
+  ) : (
     <ContactPartnerAccountsContainer>
       <ActionButton onClick={() => setShowForm(!showForm)}>
         <Add />
@@ -153,7 +176,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
           )}
         </Formik>
       )}
-      {contact.contactDonorAccounts.nodes.map((donorAccount) => (
+      {data.contact.contactDonorAccounts.nodes.map((donorAccount) => (
         <ContactPartnerAccountsTextContainer key={donorAccount.id}>
           <Box display="flex" flexDirection="column">
             {donorAccount.donorAccount.organization.id && (
@@ -161,7 +184,20 @@ export const ContactDetailsPartnerAccounts: React.FC<
                 {donorAccount.donorAccount.organization.name}
               </OrganizationName>
             )}
-            <Typography>{donorAccount.donorAccount.accountNumber}</Typography>
+            <PartnerAccountTextContainer>
+              <PartnerAccountTextLabel>
+                {t('Account Number:')}
+              </PartnerAccountTextLabel>
+              <Typography>{donorAccount.donorAccount.accountNumber}</Typography>
+            </PartnerAccountTextContainer>
+            <PartnerAccountTextContainer>
+              <PartnerAccountTextLabel>
+                {t('Account Name:')}
+              </PartnerAccountTextLabel>
+              <Typography variant="body2">
+                {donorAccount.donorAccount.displayName}
+              </Typography>
+            </PartnerAccountTextContainer>
           </Box>
           <IconButton
             onClick={() =>

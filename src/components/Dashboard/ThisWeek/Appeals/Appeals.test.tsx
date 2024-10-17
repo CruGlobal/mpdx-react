@@ -46,11 +46,9 @@ describe('Appeals', () => {
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotal').children[0].className,
     ).toContain('MuiSkeleton-root');
-    expect(
-      getByRole('link', { hidden: true, name: 'View All' }),
-    ).toHaveAttribute(
+    expect(getByRole('link', { name: 'View All' })).toHaveAttribute(
       'href',
-      `https://${process.env.REWRITE_DOMAIN}/tools/appeals`,
+      '/accountLists/abc/tools',
     );
   });
 

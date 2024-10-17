@@ -20,6 +20,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import Modal from '../../../common/Modal/Modal';
 import {
   ContactsContext,
@@ -165,7 +166,8 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
                         {contact.primaryAddress.state}{' '}
                         {contact.primaryAddress.postalCode}
                         <br />
-                        {t('From')}: {contact.primaryAddress.source}
+                        {t('From')}:{' '}
+                        {sourceToStr(t, contact.primaryAddress.source)}
                         <br />
                       </>
                     )}

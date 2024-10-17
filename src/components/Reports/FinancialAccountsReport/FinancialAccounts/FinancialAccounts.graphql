@@ -1,0 +1,53 @@
+query EntryHistories($accountListId: ID!, $financialAccountIds: [ID!]!) {
+  entryHistories(
+    accountListId: $accountListId
+    financialAccountIds: $financialAccountIds
+  ) {
+    financialAccountId
+    entryHistories {
+      closingBalance
+      endDate
+      id
+    }
+  }
+}
+
+query FinancialAccounts(
+  $accountListId: ID!
+  $designationAccountIds: [ID!]
+  $after: String
+) {
+  financialAccounts(
+    accountListId: $accountListId
+    designationAccountId: $designationAccountIds
+    after: $after
+  ) {
+    nodes {
+      active
+      balance {
+        conversionDate
+        convertedAmount
+        convertedCurrency
+      }
+      code
+      id
+      name
+      organization {
+        id
+        name
+      }
+      updatedAt
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+
+mutation SetActiveFinancialAccount($input: SetActiveFinancialAccountInput!) {
+  setActiveFinancialAccount(input: $input) {
+    active
+    id
+  }
+}

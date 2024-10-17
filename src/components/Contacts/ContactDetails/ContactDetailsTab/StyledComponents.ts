@@ -1,7 +1,7 @@
 import Add from '@mui/icons-material/Add';
 import Create from '@mui/icons-material/Create';
 import Lock from '@mui/icons-material/Lock';
-import { Button, Typography } from '@mui/material';
+import { Button, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const AddIcon = styled(Add)(({ theme }) => ({
@@ -31,3 +31,11 @@ export const LockIcon = styled(Lock)(({ theme }) => ({
   margin: theme.spacing(0),
   color: theme.palette.cruGrayMedium.main,
 }));
+
+export const ContactDetailLoadingPlaceHolder = styled(Skeleton)(
+  ({ theme }) => ({
+    width: '100%',
+    height: '24px',
+    margin: theme.spacing(2, 0),
+  }),
+);

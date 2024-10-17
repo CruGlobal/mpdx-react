@@ -12,6 +12,7 @@ import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.ge
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
+import { sourceToStr } from 'src/utils/sourceHelper';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
@@ -111,7 +112,9 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
               t('No Frequency Set')
             }`}
           </LabelsAndText>
-          <LabelsAndText variant="subtitle1">{contact?.source}</LabelsAndText>
+          <LabelsAndText variant="subtitle1">
+            {sourceToStr(t, contact?.source)}
+          </LabelsAndText>
         </Box>
       </IconAndTextContainer>
       <IconAndTextContainerCenter>
@@ -206,7 +209,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           <ClearIcon />
         </IconContainer>
         <LabelsAndText variant="subtitle1" color="textSecondary">
-          {t('Referred by ')}
+          {t('Connecting Partner ')}
         </LabelsAndText>
         <LabelsAndText variant="subtitle1">
           {contact?.contactReferralsToMe.nodes

@@ -96,7 +96,7 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     color={theme.palette.mpdxBlue.main}
                     title={title}
                     changeContactStatus={changeContactStatus}
-                    statuses={[ContactFilterStatusEnum.PartnerFinancial]}
+                    statuses={[StatusEnum.PartnerFinancial]}
                   />
                 </ContactsContext.Provider>
               </VirtuosoMockContext.Provider>

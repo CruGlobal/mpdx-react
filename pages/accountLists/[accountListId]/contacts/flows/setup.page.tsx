@@ -12,7 +12,6 @@ import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import {
   ContactFlowOption,
   colorMap,
-  statusMap,
 } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
@@ -22,11 +21,16 @@ import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlo
 import {
   GetUserOptionsDocument,
   GetUserOptionsQuery,
-  useGetUserOptionsQuery,
 } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { getDefaultFlowOptions } from 'src/components/Contacts/ContactFlow/contactFlowDefaultOptions';
+import {
+  FlowOption,
+  useFlowOptions,
+} from 'src/components/Contacts/ContactFlow/useFlowOptions';
 import Loading from 'src/components/Loading';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 
@@ -41,23 +45,20 @@ const StickyBox = styled(Box)(() => ({
 const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { statusMap, contactStatuses } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
-  const [flowOptions, setFlowOptions] = useState<
-    {
-      name: string;
-      statuses: string[];
-      color: string;
-      id: string;
-    }[]
-  >([]);
-  const { data: userOptions, loading } = useGetUserOptionsQuery();
+  const [flowOptions, setFlowOptions] = useState<FlowOption[]>([]);
+  const resetColumnsMessage = t(
+    'Since all columns have been removed, resetting columns to their default values',
+  );
+  const { options: userOptions, loading } = useFlowOptions();
 
   useEffect(() => {
-    const newOptions = JSON.parse(
-      userOptions?.userOptions.find((option) => option.key === 'flows')
-        ?.value || '[]',
-    );
-    setFlowOptions(newOptions);
+    if (!userOptions.length) {
+      setFlowOptions(getDefaultFlowOptions(t, contactStatuses));
+    } else {
+      setFlowOptions(userOptions);
+    }
   }, [userOptions]);
 
   const [updateUserOptions] = useUpdateUserOptionsMutation();
@@ -66,47 +67,50 @@ const ContactFlowSetupPage: React.FC = () => {
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)
     : [];
-  const unusedStatuses = Object.keys(statusMap).filter(
+  const unusedStatuses = Object.values(statusMap).filter(
     (status) => !allUsedStatuses.includes(status),
   );
 
-  const updateOptions = async (options: ContactFlowOption[]): Promise<void> => {
-    const stringified = JSON.stringify(options);
-    await updateUserOptions({
-      variables: {
-        key: 'flows',
-        value: stringified,
-      },
-      update: (cache, { data: updatedUserOption }) => {
-        const query = {
-          query: GetUserOptionsDocument,
-        };
-        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
-
-        if (dataFromCache) {
-          const filteredOld = dataFromCache.userOptions.filter(
-            (option) => option.key !== 'flows',
-          );
-          const userOptions = [
-            ...filteredOld,
-            {
-              __typename: 'Option',
-              id: updatedUserOption?.createOrUpdateUserOption?.option.id,
-              key: 'flows',
-              value: stringified,
-            },
-          ];
-          const data = {
-            userOptions,
+  const updateOptions = useCallback(
+    async (options: ContactFlowOption[]): Promise<void> => {
+      const stringified = JSON.stringify(options);
+      await updateUserOptions({
+        variables: {
+          key: 'flows',
+          value: stringified,
+        },
+        update: (cache, { data: updatedUserOption }) => {
+          const query = {
+            query: GetUserOptionsDocument,
           };
-          cache.writeQuery({ ...query, data });
-        }
-        enqueueSnackbar(t('User options updated!'), {
-          variant: 'success',
-        });
-      },
-    });
-  };
+          const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
+
+          if (dataFromCache) {
+            const filteredOld = dataFromCache.userOptions.filter(
+              (option) => option.key !== 'flows',
+            );
+
+            const data = {
+              userOptions: [
+                ...filteredOld,
+                {
+                  __typename: 'Option',
+                  id: updatedUserOption?.createOrUpdateUserOption?.option.id,
+                  key: 'flows',
+                  value: stringified,
+                },
+              ],
+            };
+            cache.writeQuery({ ...query, data });
+          }
+          enqueueSnackbar(t('User options updated!'), {
+            variant: 'success',
+          });
+        },
+      });
+    },
+    [],
+  );
 
   const addColumn = (): Promise<void> => {
     return updateOptions([
@@ -123,6 +127,12 @@ const ContactFlowSetupPage: React.FC = () => {
   const deleteColumn = (index: number): void => {
     const temp = [...flowOptions];
     temp.splice(index, 1);
+
+    if (!temp.length) {
+      enqueueSnackbar(resetColumnsMessage, {
+        variant: 'warning',
+      });
+    }
     updateOptions(temp);
   };
 
@@ -135,7 +145,7 @@ const ContactFlowSetupPage: React.FC = () => {
   const moveStatus = (
     originIndex: number,
     destinationIndex: number,
-    draggedStatus: string,
+    draggedStatus: StatusEnum,
   ): void => {
     const temp = [...flowOptions];
     if (originIndex > -1) {
@@ -177,10 +187,7 @@ const ContactFlowSetupPage: React.FC = () => {
   );
 
   const updateColumns = () => {
-    const originalOptions = userOptions?.userOptions.find(
-      (option) => option.key === 'flows',
-    )?.value;
-    if (!isEqual(originalOptions, flowOptions)) {
+    if (!isEqual(userOptions, flowOptions)) {
       updateOptions(flowOptions);
     }
   };
@@ -196,7 +203,11 @@ const ContactFlowSetupPage: React.FC = () => {
         <DndProvider backend={HTML5Backend}>
           {!loading && <ContactFlowSetupDragLayer />}
           <Box>
-            <ContactFlowSetupHeader addColumn={addColumn} />
+            <ContactFlowSetupHeader
+              addColumn={addColumn}
+              updateOptions={updateOptions}
+              resetColumnsMessage={resetColumnsMessage}
+            />
             {flowOptions && (
               <Box
                 display="grid"
@@ -231,10 +242,7 @@ const ContactFlowSetupPage: React.FC = () => {
                       updateColumns={updateColumns}
                       columnWidth={columnWidth}
                       setColumnWidth={setColumnWidth}
-                      statuses={column.statuses.map((status) => ({
-                        id: statusMap[status] as ContactFilterStatusEnum,
-                        value: status,
-                      }))}
+                      statuses={column.statuses}
                       flowOptions={flowOptions}
                     />
                   </Box>
@@ -245,10 +253,7 @@ const ContactFlowSetupPage: React.FC = () => {
                     columnWidth={columnWidth}
                     loading={loading}
                     moveStatus={moveStatus}
-                    statuses={unusedStatuses.map((status) => ({
-                      id: statusMap[status] as ContactFilterStatusEnum,
-                      value: status,
-                    }))}
+                    statuses={unusedStatuses}
                   />
                 </StickyBox>
               </Box>

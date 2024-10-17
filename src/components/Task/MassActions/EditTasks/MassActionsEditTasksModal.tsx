@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import {
+  Alert,
   Checkbox,
   DialogActions,
   DialogContent,
@@ -19,16 +20,23 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { ActivityTypeEnum, TaskUpdateInput } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  PhaseEnum,
+  TaskUpdateInput,
+} from 'src/graphql/types.generated';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import Modal from '../../../common/Modal/Modal';
 import { ActivityTypeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
+import { TaskPhaseAutocomplete } from '../../Modal/Form/Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';
 import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 
 const massActionsEditTasksSchema = yup.object({
   subject: yup.string().nullable(),
+  taskPhase: yup.mixed<PhaseEnum>().nullable(),
   activityType: yup.mixed<ActivityTypeEnum>().nullable(),
   userId: yup.string().nullable(),
   startAt: nullableDateTime(),
@@ -53,6 +61,7 @@ export const MassActionsEditTasksModal: React.FC<
   const [updateTasks] = useMassActionsUpdateTasksMutation();
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
+  const { taskPhases, activitiesByPhase } = usePhaseData();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -105,10 +114,14 @@ export const MassActionsEditTasksModal: React.FC<
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
+      <Alert severity="warning" style={{ justifyContent: 'center' }}>
+        Blank fields will not be affected!
+      </Alert>
       <Formik<Attributes>
         initialValues={{
           subject: '',
-          activityType: null,
+          taskPhase: null,
+          activityType: undefined,
           userId: null,
           startAt: null,
           noDueDate: false,
@@ -118,7 +131,15 @@ export const MassActionsEditTasksModal: React.FC<
         validationSchema={massActionsEditTasksSchema}
       >
         {({
-          values: { subject, activityType, userId, startAt, noDueDate, body },
+          values: {
+            subject,
+            taskPhase,
+            activityType,
+            userId,
+            startAt,
+            noDueDate,
+            body,
+          },
           handleChange,
           handleSubmit,
           setFieldValue,
@@ -142,11 +163,23 @@ export const MassActionsEditTasksModal: React.FC<
                     inputProps={{ 'aria-label': t('Task Name') }}
                   />
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
+                  <TaskPhaseAutocomplete
+                    options={taskPhases}
+                    value={taskPhase}
+                    onChange={(phase) => {
+                      setFieldValue('taskPhase', phase);
+                      setFieldValue('activityType', '');
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
                   <ActivityTypeAutocomplete
-                    options={Object.values(ActivityTypeEnum)}
+                    options={
+                      (taskPhase && activitiesByPhase.get(taskPhase)) || []
+                    }
                     label={t('Action')}
-                    value={activityType}
+                    value={activityType || undefined}
                     onChange={(activityType) =>
                       setFieldValue('activityType', activityType)
                     }
@@ -154,7 +187,7 @@ export const MassActionsEditTasksModal: React.FC<
                     preserveNone
                   />
                 </Grid>
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
                   <AssigneeAutocomplete
                     accountListId={accountListId}
                     value={userId}
@@ -169,17 +202,17 @@ export const MassActionsEditTasksModal: React.FC<
                     onChange={(date) => setFieldValue('startAt', date)}
                     render={(dateField, timeField) => (
                       <>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} sm={6}>
                           {dateField}
                         </Grid>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} sm={6}>
                           {timeField}
                         </Grid>
                       </>
                     )}
                   />
                 )}
-                <Grid item xs={12} lg={6}>
+                <Grid item xs={12} sm={6}>
                   <FormControlLabel
                     control={<Checkbox checked={noDueDate} color="secondary" />}
                     label={t('No Due Date')}

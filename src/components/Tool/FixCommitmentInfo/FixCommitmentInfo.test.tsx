@@ -7,7 +7,15 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import {
+  fireEvent,
+  render,
+  waitFor,
+} from '__tests__/util/testingLibraryReactMock';
+import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
@@ -33,44 +41,50 @@ const router = {
 };
 
 const setContactFocus = jest.fn();
+const mutationSpy = jest.fn();
 
 const Components = ({
   mockNodes = mockInvalidStatusesResponse,
 }: {
   mockNodes?: ErgonoMockShape[];
 }) => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <TestWrapper>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 1000, itemHeight: 100 }}
-          >
-            <GqlMockedProvider<{
-              InvalidStatuses: InvalidStatusesQuery;
-            }>
-              mocks={{
-                InvalidStatuses: {
-                  contacts: {
-                    nodes: mockNodes,
-                    totalCount: 2,
-                  },
-                },
-              }}
+  <AppSettingsProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <TestWrapper>
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
-              <FixCommitmentInfo
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
-            </GqlMockedProvider>
-          </VirtuosoMockContext.Provider>
-        </TestWrapper>
-      </TestRouter>
-    </ThemeProvider>
-  </SnackbarProvider>
+              <GqlMockedProvider<{
+                LoadConstants: LoadConstantsQuery;
+                InvalidStatuses: InvalidStatusesQuery;
+              }>
+                mocks={{
+                  LoadConstants: loadConstantsMockData,
+                  InvalidStatuses: {
+                    contacts: {
+                      nodes: mockNodes,
+                      totalCount: 2,
+                    },
+                  },
+                }}
+                onCall={mutationSpy}
+              >
+                <FixCommitmentInfo
+                  accountListId={accountListId}
+                  setContactFocus={setContactFocus}
+                />
+              </GqlMockedProvider>
+            </VirtuosoMockContext.Provider>
+          </TestWrapper>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </AppSettingsProvider>
 );
 
-describe('FixCommitmentContact', () => {
+describe('FixCommitmentInfo', () => {
   beforeEach(() => {
     setContactFocus.mockClear();
   });
@@ -81,9 +95,8 @@ describe('FixCommitmentContact', () => {
     expect(
       await findByText('You have 2 partner statuses to confirm.'),
     ).toBeInTheDocument();
-    expect(getAllByText('Current: Partner - Financial $1 Weekly')).toHaveLength(
-      2,
-    );
+    expect(getAllByText('Current: Partner - Financial')).toHaveLength(2);
+    expect(getAllByText('$1 Weekly')).toHaveLength(2);
   });
 
   it('has correct styles', async () => {
@@ -127,32 +140,54 @@ describe('FixCommitmentContact', () => {
   });
 
   it('updates commitment info', async () => {
-    const { getAllByTestId, queryByText, findByText, findAllByTestId } = render(
-      <Components />,
-    );
+    const {
+      getAllByTestId,
+      queryByText,
+      findByText,
+      findAllByTestId,
+      getByText,
+    } = render(<Components />);
 
     userEvent.click((await findAllByTestId('confirmButton'))[0]);
 
     expect(
       await findByText(
-        'Are you sure you wish to update Tester 1 commitment info?',
+        'Are you sure you wish to update the commitment info for Tester 1?',
       ),
     ).toBeInTheDocument(),
-      userEvent.click(getAllByTestId('action-button')[1]);
+      userEvent.click(getByText('Yes'));
 
     await waitFor(() =>
       expect(queryByText('Tester 1')).not.toBeInTheDocument(),
     );
 
+    const status = getAllByTestId('pledgeStatus-input')[0];
+    fireEvent.change(status, {
+      target: { value: StatusEnum.PartnerSpecial },
+    });
+    expect(status).toHaveValue(StatusEnum.PartnerSpecial);
+
     userEvent.click((await findAllByTestId('confirmButton'))[0]);
 
     expect(
       await findByText(
-        'Are you sure you wish to update Tester 2 commitment info?',
+        'Are you sure you wish to update the commitment info for Tester 2?',
       ),
     ).toBeInTheDocument();
+    userEvent.click(await findByText('Yes'));
 
-    userEvent.click((await findAllByTestId('hideButton'))[0]);
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateStatus', {
+        attributes: { status: StatusEnum.PartnerSpecial },
+      }),
+    );
+  });
+
+  it('hides contact', async () => {
+    const { getAllByTestId, queryByText, findByText, findAllByTestId } = render(
+      <Components />,
+    );
+    userEvent.click((await findAllByTestId('hideButton'))[1]);
 
     expect(
       await findByText(
@@ -186,7 +221,7 @@ describe('FixCommitmentContact', () => {
 
     expect(
       await findByText(
-        "Are you sure you wish to leave Tester 1's commitment information unchanged?",
+        'Are you sure you wish to leave the commitment information unchanged for Tester 1?',
       ),
     ).toBeInTheDocument();
 

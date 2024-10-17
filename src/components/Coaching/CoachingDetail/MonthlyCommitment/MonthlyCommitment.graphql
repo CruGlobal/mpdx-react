@@ -4,6 +4,18 @@ query GetReportsPledgeHistories($coachingId: ID!) {
     startDate
     endDate
     pledged
-    recieved
+    received
+  }
+}
+
+query MonthlyCommitmentSingleMonth($accountListId: ID!, $month: String!) {
+  reportPledgeHistories(
+    accountListId: $accountListId
+    range: "1m"
+    endDate: $month
+  ) {
+    id
+    pledged
+    received
   }
 }

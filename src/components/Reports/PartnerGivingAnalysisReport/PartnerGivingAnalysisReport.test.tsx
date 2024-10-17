@@ -3,7 +3,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import {
+  GetPartnerGivingAnalysisIdsForMassSelectionQuery,
+  GetTaskIdsForMassSelectionQuery,
+} from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
 import {
   PartnerGivingAnalysisReport,
@@ -204,15 +207,17 @@ const mocks: Mocks = {
   GetPartnerGivingAnalysisIdsForMassSelection: {
     partnerGivingAnalysisReport: {
       contacts: [
-        {
-          id: '01',
-        },
-        {
-          id: '02',
-        },
-        {
-          id: '03',
-        },
+        { id: '01' },
+        { id: '02' },
+        { id: '03' },
+        { id: '04' },
+        { id: '05' },
+        { id: '06' },
+        { id: '07' },
+        { id: '08' },
+        { id: '09' },
+        { id: '10' },
+        { id: '11' },
       ],
     },
   },
@@ -447,6 +452,7 @@ describe('PartnerGivingAnalysisReport', () => {
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
           GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+          GetTaskIdsForMassSelection: GetTaskIdsForMassSelectionQuery;
         }>
           mocks={mocks}
         >

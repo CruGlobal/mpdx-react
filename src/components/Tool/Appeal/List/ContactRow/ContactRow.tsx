@@ -167,7 +167,6 @@ export const ContactRow: React.FC<Props> = ({
                     color="secondary"
                     onClick={(event) => event.stopPropagation()}
                     onChange={() => onContactCheckToggle(contact.id)}
-                    value={isChecked}
                   />
                 </ListItemIcon>
               </Hidden>

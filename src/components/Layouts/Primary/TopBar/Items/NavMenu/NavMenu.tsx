@@ -18,7 +18,7 @@ import {
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import HandoffLink from 'src/components/HandoffLink';
+import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
@@ -62,13 +62,19 @@ const useStyles = makeStyles()(() => ({
   },
   notificationBox: {
     backgroundColor: theme.palette.progressBarYellow.main,
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    borderRadius: '25%',
+    borderRadius: '10px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(1),
+    '&>.MuiTypography-root': {
+      fontSize: '12px',
+      whiteSpace: 'nowrap',
+      fontWeight: '700',
+      lineHeight: 1,
+      minWidth: '10px',
+      padding: '3px 7px',
+    },
   },
   darkText: {
     color: theme.palette.cruGrayDark.main,
@@ -77,6 +83,7 @@ const useStyles = makeStyles()(() => ({
     color: 'white',
   },
   menuItem: {
+    paddingInline: '10px',
     '&:focus-visible, &:hover, &[aria-current=page]': {
       backgroundColor: theme.palette.cruGrayMedium.main,
       backgroundBlendMode: 'multiply',
@@ -94,20 +101,6 @@ export enum ToolName {
   MergePeople = 'mergePeople',
 }
 
-export const toolsRedirectLinks: { [key: string]: string } = {
-  appeals: 'appeals',
-  fixCommitmentInfo: 'fix/commitment-info',
-  fixEmailAddresses: 'fix/email-addresses',
-  fixPhoneNumbers: 'fix/phone-numbers',
-  fixSendNewsletter: 'fix/send-newsletter',
-  fixMailingAddresses: 'fix/addresses',
-  mergePeople: 'merge/people',
-  mergeContacts: 'merge/contacts',
-  google: 'import/google',
-  tntConnect: 'import/tnt',
-  csv: 'import/csv/upload',
-};
-
 const NavMenu: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -117,6 +110,9 @@ const NavMenu: React.FC = () => {
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
+  const { data: coachingData } = useLoadCoachingListQuery();
+
+  const coachingAccounts = coachingData?.coachingAccountLists;
 
   const toolData: { [key: string]: { totalCount: number } } = {
     [ToolName.FixCommitmentInfo]: data?.[ToolName.FixCommitmentInfo] ?? {
@@ -171,7 +167,8 @@ const NavMenu: React.FC = () => {
   const handleToolsMenuClose = () => {
     setToolsMenuOpen(false);
   };
-  const router = useRouter();
+  const { pathname } = useRouter();
+
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
       <Grid item className={classes.navListItem}>
@@ -181,7 +178,7 @@ const NavMenu: React.FC = () => {
             tabIndex={0}
             className={classes.menuItem}
             aria-current={
-              router.asPath === `/accountLists/${accountListId}` && 'page'
+              pathname === '/accountLists/[accountListId]' ? 'page' : undefined
             }
           >
             <ListItemText primary={t('Dashboard')} />
@@ -194,7 +191,12 @@ const NavMenu: React.FC = () => {
             component="a"
             tabIndex={0}
             className={classes.menuItem}
-            aria-current={router.asPath?.includes('contacts') && 'page'}
+            aria-current={
+              pathname ===
+              '/accountLists/[accountListId]/contacts/[[...contactId]]'
+                ? 'page'
+                : undefined
+            }
           >
             <ListItemText primary={t('Contacts')} />
           </MenuItem>
@@ -206,7 +208,12 @@ const NavMenu: React.FC = () => {
             component="a"
             tabIndex={0}
             className={classes.menuItem}
-            aria-current={router.asPath?.includes('tasks') && 'page'}
+            aria-current={
+              pathname ===
+              '/accountLists/[accountListId]/tasks/[[...contactId]]'
+                ? 'page'
+                : undefined
+            }
           >
             <ListItemText primary={t('Tasks')} />
           </MenuItem>
@@ -224,7 +231,8 @@ const NavMenu: React.FC = () => {
           className={clsx(
             classes.menuItem,
             reportsMenuOpen && classes.menuItemSelected,
-            router.asPath?.includes('reports') && classes.menuItemSelected,
+            pathname.startsWith('/accountLists/[accountListId]/reports') &&
+              classes.menuItemSelected,
           )}
         >
           <ListItemText primary={t('Reports')} />
@@ -263,7 +271,11 @@ const NavMenu: React.FC = () => {
                           onClick={handleReportsMenuClose}
                           tabIndex={0}
                           aria-current={
-                            router.asPath.includes(`${id}`) && 'page'
+                            pathname.startsWith(
+                              `/accountLists/[accountListId]/reports/${id}`,
+                            )
+                              ? 'page'
+                              : undefined
                           }
                         >
                           <ListItemText primary={t(title)} />
@@ -288,7 +300,8 @@ const NavMenu: React.FC = () => {
           className={clsx(
             classes.menuItem,
             toolsMenuOpen && classes.menuItemSelected,
-            router.asPath?.includes('tools') && classes.menuItemSelected,
+            pathname.startsWith('/accountLists/[accountListId]/tools') &&
+              classes.menuItemSelected,
           )}
           aria-expanded={toolsMenuOpen}
         >
@@ -299,7 +312,7 @@ const NavMenu: React.FC = () => {
               data-testid="notificationTotal"
             >
               <Typography data-testid="notificationTotalText">
-                {sum < 10 ? sum : '9+'}
+                {sum < 100 ? sum : '99+'}
               </Typography>
             </Box>
           )}
@@ -334,24 +347,24 @@ const NavMenu: React.FC = () => {
                             ? toolData[tool.id]?.totalCount > 0
                             : false;
                           return (
-                            <HandoffLink
+                            <NextLink
                               key={tool.id}
-                              path={`https://${
-                                process.env.REWRITE_DOMAIN
-                              }/tools/${toolsRedirectLinks[tool.id]}`}
+                              href={`/accountLists/${accountListId}/tools/${tool.url}`}
+                              passHref
                             >
-                              {/* When switching to pointing tools at this app we need to add these attributes
-                                href={`/accountLists/${accountListId}/tools/${tool.id}`}
-                                component="a"
-                              */}
                               <MenuItem
+                                component="a"
                                 tabIndex={0}
                                 onClick={handleToolsMenuClose}
                                 data-testid={`${tool.id}-${
                                   currentToolId === tool.id
                                 }`}
                                 aria-current={
-                                  router.asPath.includes(tool.url) && 'page'
+                                  pathname.startsWith(
+                                    `/accountLists/[accountListId]/tools/${tool.url}`,
+                                  )
+                                    ? 'page'
+                                    : undefined
                                 }
                                 className={clsx(
                                   classes.menuItem,
@@ -382,14 +395,14 @@ const NavMenu: React.FC = () => {
                                     data-testid={`${tool.id}-notifications`}
                                   >
                                     <Typography>
-                                      {toolData[tool.id].totalCount < 10
+                                      {toolData[tool.id].totalCount < 100
                                         ? toolData[tool.id].totalCount
-                                        : '9+'}
+                                        : '99+'}
                                     </Typography>
                                   </Box>
                                 )}
                               </MenuItem>
-                            </HandoffLink>
+                            </NextLink>
                           );
                         })}
                       </Box>
@@ -401,18 +414,48 @@ const NavMenu: React.FC = () => {
           )}
         </Popper>
       </Grid>
-      <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/coaching`} passHref>
-          <MenuItem
-            component="a"
-            tabIndex={0}
-            className={classes.menuItem}
-            aria-current={router.asPath?.includes(`/coaching`) && 'page'}
-          >
-            <ListItemText primary={t('Coaches')} />
-          </MenuItem>
-        </NextLink>
-      </Grid>
+
+      {!!coachingAccounts?.totalCount && (
+        <Grid item className={classes.navListItem}>
+          <NextLink href={`/accountLists/${accountListId}/coaching`} passHref>
+            <MenuItem
+              component="a"
+              tabIndex={0}
+              className={classes.menuItem}
+              aria-current={
+                pathname === '/accountLists/[accountListId]/coaching'
+                  ? 'page'
+                  : undefined
+              }
+            >
+              <ListItemText primary={t('Coaching')} />
+            </MenuItem>
+          </NextLink>
+        </Grid>
+      )}
+
+      {process.env.HELP_WHATS_NEW_URL && (
+        <Grid item className={classes.navListItem}>
+          <NextLink href={process.env.HELP_WHATS_NEW_URL} passHref>
+            <MenuItem
+              component="a"
+              tabIndex={0}
+              className={classes.menuItem}
+              target="_blank"
+            >
+              {process.env.HELP_WHATS_NEW_IMAGE_URL && (
+                <img
+                  src={process.env.HELP_WHATS_NEW_IMAGE_URL}
+                  alt={t('Help logo')}
+                  height={24}
+                  style={{ marginRight: theme.spacing(1) }}
+                />
+              )}
+              <ListItemText primary={t("What's New")} />
+            </MenuItem>
+          </NextLink>
+        </Grid>
+      )}
     </Grid>
   ) : null;
 };

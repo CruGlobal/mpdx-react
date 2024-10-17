@@ -12,6 +12,9 @@ i18next
     keySeparator: false,
     fallbackLng: {
       'fr-ca': ['fr-CA', 'fr-FR', 'en'],
+      'de-ch': ['de-CH', 'de', 'en'],
+      'nl-nl': ['nl-NL', 'en'],
+      'pt-br': ['pt-BR', 'en'],
       default: ['en'],
     },
     react: {

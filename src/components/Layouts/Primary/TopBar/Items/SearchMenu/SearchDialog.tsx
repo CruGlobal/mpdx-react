@@ -23,7 +23,7 @@ import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { contactPartnershipStatus } from 'src/utils/contacts/contactPartnershipStatus';
+import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
@@ -64,6 +64,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter();
+  const { contactStatuses } = useContactPartnershipStatuses();
 
   //#region Search
   const [wildcardSearch, setWildcardSearch] = useState('');
@@ -143,7 +144,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     {
       name: t('Reports - Responsibility Centers'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/responsibilityCenters`,
+      link: `/accountLists/${accountListId}/reports/financialAccounts`,
     },
     {
       name: t('Reports - Expected Monthly Total'),
@@ -305,7 +306,8 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
                   <Box display="flex" flexDirection="column">
                     <Typography>{option.name}</Typography>
                     <Typography variant="subtitle2">
-                      {option.status && contactPartnershipStatus[option.status]}
+                      {option.status &&
+                        contactStatuses[option.status].translated}
                     </Typography>
                   </Box>
                 </ClickableBox>
