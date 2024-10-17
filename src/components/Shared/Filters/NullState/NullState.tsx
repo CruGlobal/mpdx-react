@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { useState } from 'react';
 import { mdiFormatListBulleted, mdiHome } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Typography } from '@mui/material';
@@ -71,9 +71,7 @@ interface Props {
   filtered: boolean;
   title?: string;
   paragraph?: string;
-  changeFilters:
-    | Dispatch<SetStateAction<TaskFilterSetInput>>
-    | Dispatch<SetStateAction<ContactFilterSetInput>>;
+  changeFilters: (filters: ContactFilterSetInput & TaskFilterSetInput) => void;
 }
 
 const NullState: React.FC<Props> = ({

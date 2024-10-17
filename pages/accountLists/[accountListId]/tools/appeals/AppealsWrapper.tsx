@@ -84,8 +84,9 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     });
   };
 
-  const setActiveFilters: AppealsContextProps['setActiveFilters'] = (value) => {
-    const filters = typeof value === 'function' ? value(activeFilters) : value;
+  const setActiveFilters: AppealsContextProps['setActiveFilters'] = (
+    filters,
+  ) => {
     updateUrlFilters(filters);
     setActiveFiltersRaw(filters);
   };
