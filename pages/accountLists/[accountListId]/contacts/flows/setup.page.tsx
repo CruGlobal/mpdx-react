@@ -45,7 +45,8 @@ const StickyBox = styled(Box)(() => ({
 const ContactFlowSetupPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { statusMap, contactStatuses } = useContactPartnershipStatuses();
+  const { statusMap, getContactStatusesByPhase } =
+    useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const [flowOptions, setFlowOptions] = useState<FlowOption[]>([]);
   const resetColumnsMessage = t(
@@ -55,7 +56,7 @@ const ContactFlowSetupPage: React.FC = () => {
 
   useEffect(() => {
     if (!userOptions.length) {
-      setFlowOptions(getDefaultFlowOptions(t, contactStatuses));
+      setFlowOptions(getDefaultFlowOptions(t, getContactStatusesByPhase));
     } else {
       setFlowOptions(userOptions);
     }
