@@ -8,10 +8,6 @@ import {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
-  GetUserOptionsDocument,
-  GetUserOptionsQuery,
-} from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
@@ -42,21 +38,10 @@ export const DeleteFilterModal: React.FC<DeleteFilterModalProps> = ({
         },
       },
       update: (cache) => {
-        const query = {
-          query: GetUserOptionsDocument,
-        };
-        const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
-        if (dataFromCache) {
-          const filteredOutDeleted = dataFromCache.userOptions.filter(
-            (option) => option.id !== filter.id,
-          );
-
-          cache.writeQuery({
-            ...query,
-            data: {
-              userOptions: filteredOutDeleted,
-            },
-          });
+        const cacheId = cache.identify(filter);
+        if (cacheId) {
+          cache.evict({ id: cacheId });
+          cache.gc();
         }
 
         enqueueSnackbar(t('Saved Filter Deleted!'), {
