@@ -16,7 +16,6 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { manualSourceValue, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -96,11 +95,6 @@ export interface PersonPhoneNumbers {
   phoneNumbers: PersonPhoneNumberFragment[];
 }
 
-interface Props {
-  accountListId: string;
-  setContactFocus: SetContactFocus;
-}
-
 export interface FormValuesPerson extends PersonInvalidNumberFragment {
   newPhoneNumber: string;
   isNewPhoneNumber: boolean;
@@ -110,10 +104,11 @@ export interface FormValues {
   people: FormValuesPerson[];
 }
 
-const FixPhoneNumbers: React.FC<Props> = ({
-  accountListId,
-  setContactFocus,
-}: Props) => {
+interface Props {
+  accountListId: string;
+}
+
+const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -343,7 +338,6 @@ const FixPhoneNumbers: React.FC<Props> = ({
                       key={person.id}
                       person={person}
                       handleChange={handleChange}
-                      setContactFocus={setContactFocus}
                       handleSingleConfirm={handleSingleConfirm}
                       dataState={dataState}
                       handleChangePrimary={handleChangePrimary}

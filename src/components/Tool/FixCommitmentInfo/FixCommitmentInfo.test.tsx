@@ -16,11 +16,13 @@ import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.gener
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
 import { InvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
+jest.mock('src/hooks/useAccountListId');
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -35,12 +37,10 @@ jest.mock('notistack', () => ({
 
 const accountListId = 'test121';
 const router = {
-  pathname: '/accountLists/[accountListId]/tools/fixCommitmentInfo',
   query: { accountListId: accountListId },
   push: jest.fn(),
 };
 
-const setContactFocus = jest.fn();
 const mutationSpy = jest.fn();
 
 const Components = ({
@@ -71,10 +71,7 @@ const Components = ({
                 }}
                 onCall={mutationSpy}
               >
-                <FixCommitmentInfo
-                  accountListId={accountListId}
-                  setContactFocus={setContactFocus}
-                />
+                <FixCommitmentInfo accountListId={accountListId} />
               </GqlMockedProvider>
             </VirtuosoMockContext.Provider>
           </TestWrapper>
@@ -86,7 +83,7 @@ const Components = ({
 
 describe('FixCommitmentInfo', () => {
   beforeEach(() => {
-    setContactFocus.mockClear();
+    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
   });
 
   it('default with test data', async () => {
@@ -202,14 +199,15 @@ describe('FixCommitmentInfo', () => {
     );
   });
 
-  it('opens contact drawer to donations tab', async () => {
-    const { findAllByTestId } = render(<Components />);
+  it('should render contact link correctly', async () => {
+    const { findByRole } = render(<Components />);
 
-    userEvent.click((await findAllByTestId('hideButton'))[0]);
+    const contactName = await findByRole('heading', { name: 'Tester 1' });
 
-    userEvent.click((await findAllByTestId('contactSelect'))[0]);
-
-    expect(setContactFocus).toHaveBeenCalled();
+    expect(contactName.parentElement).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/commitmentInfo/tester-1?tab=Donations`,
+    );
   });
 
   it('updates contact info with dontChange enum', async () => {

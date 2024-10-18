@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
@@ -28,8 +29,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -148,7 +149,6 @@ interface Props {
     numberIndex: number,
     newNumber: string,
   ) => void;
-  setContactFocus: SetContactFocus;
   handleSingleConfirm: (
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
@@ -161,7 +161,6 @@ interface Props {
 const Contact: React.FC<Props> = ({
   person,
   handleChange,
-  setContactFocus,
   handleSingleConfirm,
   dataState,
   handleChangePrimary,
@@ -172,11 +171,16 @@ const Contact: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const { appName } = useGetAppSettings();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/tools/fix/phoneNumbers/`,
+  });
   const [updatePhoneNumber] = useUpdatePhoneNumberMutation();
   const [numberToDelete, setNumberToDelete] = useState<NumberToDelete | null>(
     null,
   );
   const { id: personId, contactId } = person;
+
+  const contactUrl = getContactUrl(contactId);
 
   const numbers: PhoneNumber[] = useMemo(() => {
     return (
@@ -201,10 +205,6 @@ const Contact: React.FC<Props> = ({
       )
       .required(t('This field is required')),
   });
-
-  const handleContactNameClick = () => {
-    setContactFocus(contactId);
-  };
 
   const handleDeleteNumberOpen = ({
     personId,
@@ -275,21 +275,26 @@ const Contact: React.FC<Props> = ({
                 <Grid item xs={12}>
                   <ContactHeader
                     avatar={
-                      <ContactAvatar
-                        src={person?.avatar || ''}
-                        aria-label="Contact Avatar"
-                        onClick={handleContactNameClick}
-                      />
+                      <NextLink href={contactUrl} passHref shallow>
+                        <Link underline="hover">
+                          <ContactAvatar
+                            src={person?.avatar || ''}
+                            aria-label="Contact Avatar"
+                          />
+                        </Link>
+                      </NextLink>
                     }
                     title={
-                      <Link underline="hover" onClick={handleContactNameClick}>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ display: 'inline' }}
-                        >
-                          {name}
-                        </Typography>
-                      </Link>
+                      <NextLink href={contactUrl} passHref shallow>
+                        <Link underline="hover">
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ display: 'inline' }}
+                          >
+                            {name}
+                          </Typography>
+                        </Link>
+                      </NextLink>
                     }
                     action={
                       <Button

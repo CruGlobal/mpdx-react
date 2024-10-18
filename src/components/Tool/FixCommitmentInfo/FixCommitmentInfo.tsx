@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { ItemProps } from 'react-virtuoso';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import {
   InfiniteList,
   ItemWithBorders,
@@ -90,7 +89,6 @@ const defaultModalState = {
 
 interface Props {
   accountListId: string;
-  setContactFocus: SetContactFocus;
 }
 
 export enum UpdateTypeEnum {
@@ -103,10 +101,7 @@ const ItemOverride: React.ComponentType<ItemProps> = (props) => (
   <ItemWithBorders disableGutters disableHover {...props} />
 );
 
-const FixCommitmentInfo: React.FC<Props> = ({
-  accountListId,
-  setContactFocus,
-}: Props) => {
+const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const [modalState, setModalState] =
     useState<ModalStateType>(defaultModalState);
@@ -240,7 +235,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
               <InfiniteList
                 loading={loading}
                 data={data.contacts.nodes}
-                itemContent={(index, contact) => (
+                itemContent={(_, contact) => (
                   <Grid item xs={12}>
                     <Box>
                       <Contact
@@ -253,7 +248,6 @@ const FixCommitmentInfo: React.FC<Props> = ({
                         amountCurrency={contact.pledgeCurrency || ''}
                         frequencyValue={contact.pledgeFrequency || ''}
                         showModal={handleShowModal}
-                        setContactFocus={setContactFocus}
                         avatar={contact?.avatar}
                         suggestedChanges={formatSuggestedChanges(
                           contact?.suggestedChanges,
@@ -278,7 +272,7 @@ const FixCommitmentInfo: React.FC<Props> = ({
                 }}
                 ItemOverride={ItemOverride}
                 increaseViewportBy={{ top: 2000, bottom: 2000 }}
-              ></InfiniteList>
+              />
             </>
           ) : (
             <NoData tool="fixCommitmentInfo" />
