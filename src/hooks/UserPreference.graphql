@@ -1,0 +1,15 @@
+query UserOption($key: String!) {
+  userOption(key: $key) {
+    key
+    value
+  }
+}
+
+mutation UpdateUserOption($key: String!, $value: String!) {
+  createOrUpdateUserOption(input: { key: $key, value: $value }) {
+    option {
+      key
+      value
+    }
+  }
+}

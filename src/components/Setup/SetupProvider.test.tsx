@@ -37,12 +37,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
           user: {
             setup,
           },
-          userOptions: [
-            {
-              key: 'setup_position',
-              value: setupPosition,
-            },
-          ],
+          userOption: {
+            key: 'setup_position',
+            value: setupPosition,
+          },
         },
       }}
     >

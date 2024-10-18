@@ -8,20 +8,18 @@ import { useFlowOptions } from './useFlowOptions';
 const Wrapper = ({ children }: { children: ReactElement }) => (
   <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
     mocks={{
-      GetUserOptions: {
-        userOptions: [
-          {
-            key: 'flows',
-            value: JSON.stringify([
-              {
-                id: 'flow-1',
-                name: 'Column',
-                statuses: ['NEVER_ASK', 'Partner - Financial', 'foo'],
-                color: 'color-success',
-              },
-            ]),
-          },
-        ],
+      UserOption: {
+        userOption: {
+          key: 'flows',
+          value: JSON.stringify([
+            {
+              id: 'flow-1',
+              name: 'Column',
+              statuses: ['NEVER_ASK', 'Partner - Financial', 'foo'],
+              color: 'color-success',
+            },
+          ]),
+        },
       },
     }}
   >
@@ -35,8 +33,11 @@ describe('useFlowOptions', () => {
       wrapper: Wrapper,
     });
 
-    expect(result.current.options).toEqual([]);
-    expect(result.current.loading).toBe(true);
+    expect(result.current).toEqual([
+      [],
+      expect.any(Function),
+      { loading: true },
+    ]);
   });
 
   it('converts old and new statuses to StatusEnum values and filters out invalid values', async () => {
@@ -46,14 +47,17 @@ describe('useFlowOptions', () => {
 
     await waitForNextUpdate();
 
-    expect(result.current.options).toEqual([
-      {
-        id: 'flow-1',
-        name: 'Column',
-        statuses: [StatusEnum.NeverAsk, StatusEnum.PartnerFinancial],
-        color: 'color-success',
-      },
+    expect(result.current).toEqual([
+      [
+        {
+          id: 'flow-1',
+          name: 'Column',
+          statuses: [StatusEnum.NeverAsk, StatusEnum.PartnerFinancial],
+          color: 'color-success',
+        },
+      ],
+      expect.any(Function),
+      { loading: false },
     ]);
-    expect(result.current.loading).toBe(false);
   });
 });
