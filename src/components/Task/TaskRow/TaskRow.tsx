@@ -1,4 +1,3 @@
-import NextLink from 'next/link';
 import React from 'react';
 import {
   Box,
@@ -6,7 +5,6 @@ import {
   Hidden,
   Tooltip,
   Typography,
-  TypographyProps,
   useMediaQuery,
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
@@ -14,7 +12,6 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ContactUrl } from 'pages/accountLists/[accountListId]/tasks/[[...contactId]].page';
 import { usePhaseData } from 'src/hooks/usePhaseData';
-import theme from 'src/theme';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
@@ -24,6 +21,7 @@ import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasks
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskModalEnum } from '../Modal/TaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
+import { TaskRowContactName } from './TaskRowContactName';
 
 const SubjectWrapOuter = styled(Box)(({ theme }) => ({
   width: 'fit-content',
@@ -64,54 +62,10 @@ const TaskType = styled(Typography, {
   marginRight: theme.spacing(0.5),
 }));
 
-type OnClickFunction = (
+type OnContactClickFunction = (
   event: React.MouseEvent<HTMLElement, MouseEvent>,
   contactId: string,
 ) => void;
-
-type TaskRowContactNameProps = {
-  contact: TaskRowFragment['contacts']['nodes'][0];
-  itemIndex: number;
-  contactsLength: number;
-  selectContact: OnClickFunction;
-} & TypographyProps;
-
-const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
-  contact,
-  itemIndex,
-  contactsLength,
-  selectContact,
-  ...props
-}) => {
-  const { id, name } = contact;
-  const contactName = itemIndex !== contactsLength - 1 ? `${name},` : name;
-  return (
-    <Typography
-      {...props}
-      noWrap
-      display="inline"
-      onClick={(e) => {
-        selectContact(e, id);
-        e.stopPropagation();
-      }}
-      sx={{
-        margin: '0',
-        marginRight: theme.spacing(0.5),
-        color: theme.palette.text.primary,
-        fontFamily: theme.typography.fontFamily,
-        fontSize: '14px',
-        letterSpacing: '0.25',
-        fontWeight: 700,
-        whiteSpace: 'nowrap',
-        '&:hover': {
-          textDecoration: 'underline',
-        },
-      }}
-    >
-      {contactName}
-    </Typography>
-  );
-};
 
 interface TaskRowProps {
   accountListId: string;
@@ -174,12 +128,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }));
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
-  const onClick: OnClickFunction = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    contactId: string,
-  ) => {
-    // Prevent parent onClick from firing on child click
-    event.stopPropagation();
+  const onContactClick: OnContactClickFunction = (event, contactId) => {
+    event.preventDefault();
     onContactSelected(contactId);
   };
 
@@ -312,37 +262,16 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 }}
               >
                 {contacts.nodes.map((contact, index) => {
-                  if (getContactUrl) {
-                    const { contactUrl } = getContactUrl(contact.id);
-
-                    return (
-                      <NextLink
-                        href={contactUrl}
-                        shallow
-                        legacyBehavior
-                        passHref
-                        key={contact.id}
-                      >
-                        <TaskRowContactName
-                          contact={contact}
-                          itemIndex={index}
-                          contactsLength={contacts.nodes.length}
-                          selectContact={onClick}
-                          component="a"
-                        />
-                      </NextLink>
-                    );
-                  } else {
-                    return (
-                      <TaskRowContactName
-                        contact={contact}
-                        itemIndex={index}
-                        contactsLength={contacts.nodes.length}
-                        selectContact={onClick}
-                        key={contact.id}
-                      />
-                    );
-                  }
+                  return (
+                    <TaskRowContactName
+                      contact={contact}
+                      itemIndex={index}
+                      contactsLength={contacts.nodes.length}
+                      selectContact={onContactClick}
+                      getContactUrl={getContactUrl}
+                      key={contact.id}
+                    />
+                  );
                 })}
               </Box>
             </Box>

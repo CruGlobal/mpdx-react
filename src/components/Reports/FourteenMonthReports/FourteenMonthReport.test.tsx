@@ -523,7 +523,7 @@ describe('FourteenMonthReport', () => {
 
   it('can click on a contact name', async () => {
     const mutationSpy = jest.fn();
-    const { findAllByRole, findByText, queryByTestId } = render(
+    const { findAllByRole, getAllByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<FourteenMonthReportQuery>
           mocks={mocks}
@@ -545,7 +545,7 @@ describe('FourteenMonthReport', () => {
     });
 
     expect(getContactUrl).toHaveBeenCalledWith('contact-1');
-    expect(await findByText('Totals')).toBeInTheDocument();
+    await waitFor(() => expect(getAllByText('Totals')[0]).toBeInTheDocument());
     const contactLinks = await findAllByRole('link', { name: 'test name' });
     expect(contactLinks[0]).toHaveAttribute('href', '/test-url');
   });

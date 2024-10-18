@@ -144,7 +144,6 @@ export const ContactRow: React.FC<Props> = ({
         data-testid="contactRowLink"
       >
         <ListButton
-          LinkComponent={'a'}
           focusRipple
           onMouseEnter={preloadContactsRightPanel}
           className={clsx({

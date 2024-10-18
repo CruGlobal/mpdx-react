@@ -5,7 +5,7 @@ import { Box, Button, Divider, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { DonationTable } from 'src/components/DonationTable/DonationTable';
-import { useGetContactLinks } from 'src/hooks/useContactLinks';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 
@@ -24,7 +24,7 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { getContactUrl } = useGetContactLinks({
+  const { getContactUrl } = useContactLinks({
     url: `/accountLists/${accountListId}/reports/donations/`,
   });
 

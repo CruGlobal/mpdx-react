@@ -14,7 +14,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGetContactLinks } from 'src/hooks/useContactLinks';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
@@ -31,7 +31,7 @@ const DonationsReportPage: React.FC = () => {
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
-  const { handleCloseContact } = useGetContactLinks({
+  const { handleCloseContact } = useContactLinks({
     url: `/accountLists/${accountListId}/reports/donations/`,
   });
 

@@ -1,16 +1,16 @@
 import { useRouter } from 'next/router';
 
-interface UseGetContactLinksProps {
+interface UseContactLinksProps {
   url: string;
 }
-interface UseGetContactLinksReturn {
+interface UseContactLinksReturn {
   getContactUrl: (contactId: string) => string;
   handleCloseContact: () => void;
 }
 
-export const useGetContactLinks = ({
+export const useContactLinks = ({
   url,
-}: UseGetContactLinksProps): UseGetContactLinksReturn => {
+}: UseContactLinksProps): UseContactLinksReturn => {
   const router = useRouter();
 
   const getContactUrl = (contactId: string) => {

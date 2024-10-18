@@ -14,7 +14,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGetContactLinks } from 'src/hooks/useContactLinks';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -60,7 +60,7 @@ export const PartnerGivingAnalysisReportTable: FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const { getContactUrl } = useGetContactLinks({
+  const { getContactUrl } = useContactLinks({
     url: `/accountLists/${accountListId}/reports/partnerGivingAnalysis/`,
   });
 

@@ -181,7 +181,7 @@ export const ContactsMap: React.FC = ({}) => {
               </Typography>
               <Typography display="inline">{selected.date}</Typography>
               <ContactLink onClick={() => onContactSelected(selected.id, true)}>
-                Show Contact
+                {t('Show Contact')}
               </ContactLink>
             </Box>
           </InfoWindowF>

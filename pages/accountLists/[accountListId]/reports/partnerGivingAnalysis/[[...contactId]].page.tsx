@@ -19,7 +19,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGetContactLinks } from 'src/hooks/useContactLinks';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -57,7 +57,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
 
   const [activeFilters, setActiveFilters] =
     useState<ReportContactFilterSetInput>({});
-  const { handleCloseContact } = useGetContactLinks({
+  const { handleCloseContact } = useContactLinks({
     url: `/accountLists/${accountListId}/reports/partnerGivingAnalysis/`,
   });
   const debouncedFilters = useDebouncedValue(activeFilters, 500);

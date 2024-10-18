@@ -62,7 +62,6 @@ describe('ContactFlowRow', () => {
   it('should call contact selected function', () => {
     const { getByRole } = render(<Components />);
     const contactName = getByRole('link', { name: 'Test Name' });
-    expect(contactName).toBeInTheDocument();
     expect(contactName).toHaveAttribute('href', `/contacts/${contact.id}`);
   });
 });

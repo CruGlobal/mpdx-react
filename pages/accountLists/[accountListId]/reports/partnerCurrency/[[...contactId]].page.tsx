@@ -15,7 +15,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGetContactLinks } from 'src/hooks/useContactLinks';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
@@ -32,7 +32,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
   const selectedContactId = getQueryParam(router.query, 'contactId');
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-  const { handleCloseContact, getContactUrl } = useGetContactLinks({
+  const { handleCloseContact, getContactUrl } = useContactLinks({
     url: `/accountLists/${accountListId}/reports/partnerCurrency/`,
   });
 

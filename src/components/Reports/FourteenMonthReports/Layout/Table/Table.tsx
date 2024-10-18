@@ -137,7 +137,7 @@ export const FourteenMonthReportTable: React.FC<
                           passHref
                           onMouseEnter={preloadContactsRightPanel}
                         >
-                          <Link component="a">{contact.name}</Link>
+                          <Link>{contact.name}</Link>
                         </NextLink>
                       </NameTypography>
                     </Box>

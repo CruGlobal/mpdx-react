@@ -60,13 +60,8 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     isRowChecked: isChecked,
     contactDetailsOpen,
     getContactUrl,
-    setContactFocus: onContactSelected,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
-
-  const onClick = () => {
-    onContactSelected(contact.id);
-  };
 
   const {
     id: contactId,
@@ -96,9 +91,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
       data-testid="contactRowLink"
     >
       <ListItemButton
-        LinkComponent={'a'}
         focusRipple
-        onClick={onClick}
         onMouseEnter={preloadContactsRightPanel}
         className={clsx({
           'top-margin': useTopMargin,
