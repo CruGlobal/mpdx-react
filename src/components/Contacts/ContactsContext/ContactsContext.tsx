@@ -20,7 +20,7 @@ import {
 } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useUpdateUserOptionMutation } from 'src/hooks/SavedPreference.generated';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';

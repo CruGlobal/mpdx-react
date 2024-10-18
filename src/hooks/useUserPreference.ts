@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   useUpdateUserOptionMutation,
   useUserOptionQuery,
-} from './SavedPreference.generated';
+} from './UserPreference.generated';
 
 interface UseUserPreferenceOptions<T> {
   /** The unique name of the user preference key. */

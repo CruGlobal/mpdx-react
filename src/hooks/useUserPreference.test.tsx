@@ -6,7 +6,7 @@ import {
   UpdateUserOptionMutation,
   UserOptionDocument,
   UserOptionQuery,
-} from './SavedPreference.generated';
+} from './UserPreference.generated';
 import { useUserPreference } from './useUserPreference';
 
 const key = 'test_option';
