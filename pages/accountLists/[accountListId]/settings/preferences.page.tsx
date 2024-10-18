@@ -2,10 +2,8 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   useCanUserExportDataQuery,
@@ -33,6 +31,7 @@ import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { useSavedPreference } from 'src/hooks/useSavedPreference';
 import { getCountries } from 'src/lib/data/countries';
 import { SettingsWrapper } from './Wrapper';
 
@@ -45,7 +44,6 @@ const Preferences: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() || '';
   const { push, query } = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
   const { onSetupTour } = useSetupContext();
   const session = useRequiredSession();
 
@@ -57,7 +55,10 @@ const Preferences: React.FC = () => {
   const countries = getCountries();
   const timeZones = useGetTimezones();
 
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [_, setSetupPosition] = useSavedPreference({
+    key: 'setup_position',
+    defaultValue: '',
+  });
 
   useEffect(() => {
     const redirectToDownloadExportedData = (exportDataExportId: string) => {
@@ -109,17 +110,7 @@ const Preferences: React.FC = () => {
   };
 
   const resetWelcomeTour = async () => {
-    await updateUserOptions({
-      variables: {
-        key: 'setup_position',
-        value: 'start',
-      },
-      onError: () => {
-        enqueueSnackbar(t('Resetting the welcome tour failed.'), {
-          variant: 'error',
-        });
-      },
-    });
+    setSetupPosition('start');
     push('/setup/start');
   };
 
@@ -130,17 +121,7 @@ const Preferences: React.FC = () => {
     const nextNav = setup + 1;
 
     if (setupAccordions.length === nextNav) {
-      await updateUserOptions({
-        variables: {
-          key: 'setup_position',
-          value: 'preferences.notifications',
-        },
-        onError: () => {
-          enqueueSnackbar(t('Saving setup phase failed.'), {
-            variant: 'error',
-          });
-        },
-      });
+      setSetupPosition('preferences.notifications');
       push(`/accountLists/${accountListId}/settings/notifications`);
     } else {
       setSetup(nextNav);

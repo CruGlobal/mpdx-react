@@ -1,16 +1,15 @@
 import { useRouter } from 'next/router';
 import React from 'react';
 import { Box, Button } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useSavedPreference } from 'src/hooks/useSavedPreference';
 import { SettingsWrapper } from './Wrapper';
 
 const Notifications: React.FC = () => {
@@ -18,27 +17,19 @@ const Notifications: React.FC = () => {
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId() || '';
   const { push } = useRouter();
-  const { enqueueSnackbar } = useSnackbar();
   const { onSetupTour } = useSetupContext();
 
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [_, setSetupPosition] = useSavedPreference({
+    key: 'setup_position',
+    defaultValue: '',
+  });
 
   const handleSetupChange = async () => {
     if (!onSetupTour) {
       return;
     }
 
-    await updateUserOptions({
-      variables: {
-        key: 'setup_position',
-        value: 'preferences.integrations',
-      },
-      onError: () => {
-        enqueueSnackbar(t('Saving setup phase failed.'), {
-          variant: 'error',
-        });
-      },
-    });
+    setSetupPosition('preferences.integrations');
     push(`/accountLists/${accountListId}/settings/integrations`);
   };
 
