@@ -79,7 +79,7 @@ const ContactFlowSetupPage: React.FC = () => {
           key: 'flows',
           value: stringified,
         },
-        update: (cache, { data: updatedUserOption }) => {
+        update: (cache) => {
           const query = {
             query: GetUserOptionsDocument,
           };
@@ -95,7 +95,6 @@ const ContactFlowSetupPage: React.FC = () => {
                 ...filteredOld,
                 {
                   __typename: 'Option',
-                  id: updatedUserOption?.createOrUpdateUserOption?.option.id,
                   key: 'flows',
                   value: stringified,
                 },
