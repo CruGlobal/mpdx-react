@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { placePromise, setupMocks } from '__tests__/util/googlePlacesMock';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -19,7 +18,6 @@ jest.mock('@react-google-maps/api');
 interface CreateContactMocks {
   CreateContact: CreateContactMutation;
   CreateContactAddress: CreateContactAddressMutation;
-  LoadConstants: LoadConstantsQuery;
 }
 
 const accountListId = '111';
@@ -433,7 +431,6 @@ describe('CreateMultipleContacts', () => {
               <GqlMockedProvider<CreateContactMocks>
                 onCall={mutationSpy}
                 mocks={{
-                  LoadConstants: loadConstantsMockData,
                   CreateContact: {
                     createContact: {
                       contact: {
@@ -514,7 +511,6 @@ describe('CreateMultipleContacts', () => {
               <GqlMockedProvider<CreateContactMocks>
                 onCall={mutationSpy}
                 mocks={{
-                  LoadConstants: loadConstantsMockData,
                   CreateContact: {
                     createContact: {
                       contact: {

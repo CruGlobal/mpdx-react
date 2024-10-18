@@ -7,11 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import {
-  loadConstantsMockData as LoadConstants,
-  loadConstantsMockData,
-} from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
@@ -63,11 +58,7 @@ describe('TaskModalLogForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider
-              addTypename={false}
-              onCall={mutationSpy}
-              mocks={{ LoadConstants: loadConstantsMockData }}
-            >
+            <GqlMockedProvider addTypename={false} onCall={mutationSpy}>
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={onClose}
@@ -115,7 +106,6 @@ describe('TaskModalLogForm', () => {
                     })),
                   },
                 },
-                LoadConstants: loadConstantsMockData,
               }}
             >
               <TaskModalLogForm
@@ -160,14 +150,7 @@ describe('TaskModalLogForm', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <TestRouter router={router}>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{
-                LoadConstants,
-              }}
-              addTypename={false}
-            >
+            <GqlMockedProvider addTypename={false}>
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={onClose}
@@ -219,7 +202,6 @@ describe('TaskModalLogForm', () => {
             AssigneeOptions: AssigneeOptionsQuery;
             ContactOptions: ContactOptionsQuery;
             TagOptions: TagOptionsQuery;
-            LoadConstants: LoadConstantsQuery;
           }>
             mocks={{
               AssigneeOptions: {
@@ -247,7 +229,6 @@ describe('TaskModalLogForm', () => {
                   taskTagList: ['tag-1', 'tag-2'],
                 },
               },
-              LoadConstants: LoadConstants,
             }}
             onCall={mutationSpy}
           >
@@ -344,13 +325,7 @@ describe('TaskModalLogForm', () => {
     const { getByRole, findByRole, queryByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
-          <GqlMockedProvider<{
-            LoadConstants: LoadConstantsQuery;
-          }>
-            mocks={{
-              LoadConstants,
-            }}
-          >
+          <GqlMockedProvider>
             <TaskModalLogForm
               accountListId={accountListId}
               onClose={jest.fn()}
@@ -391,13 +366,7 @@ describe('TaskModalLogForm', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{
-                LoadConstants,
-              }}
-            >
+            <GqlMockedProvider>
               <TaskModalLogForm
                 accountListId={accountListId}
                 onClose={jest.fn()}
@@ -431,14 +400,7 @@ describe('TaskModalLogForm', () => {
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <TestRouter router={router}>
-                <GqlMockedProvider<{
-                  LoadConstants: LoadConstantsQuery;
-                }>
-                  onCall={mutationSpy}
-                  mocks={{
-                    LoadConstants,
-                  }}
-                >
+                <GqlMockedProvider onCall={mutationSpy}>
                   <TaskModalLogForm
                     accountListId={accountListId}
                     onClose={onClose}
@@ -505,14 +467,7 @@ describe('TaskModalLogForm', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <TestRouter router={router}>
-              <GqlMockedProvider<{
-                LoadConstants: LoadConstantsQuery;
-              }>
-                onCall={mutationSpy}
-                mocks={{
-                  LoadConstants,
-                }}
-              >
+              <GqlMockedProvider onCall={mutationSpy}>
                 <TaskModalLogForm
                   accountListId={accountListId}
                   onClose={onClose}

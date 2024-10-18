@@ -4,11 +4,9 @@ import { useApiConstants } from './UseApiConstants';
 
 describe('LoadConstants', () => {
   it('returns an object', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useApiConstants(), {
+    const { result } = renderHook(() => useApiConstants(), {
       wrapper: GqlMockedProvider,
     });
-
-    await waitForNextUpdate();
 
     expect(result.current?.activities).toBeTruthy();
     expect(result.current?.languages).toBeTruthy();

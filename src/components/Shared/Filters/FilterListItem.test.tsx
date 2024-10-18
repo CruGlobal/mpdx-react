@@ -4,8 +4,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import {
   CheckboxFilter,
   DateRangeInput,
@@ -132,13 +130,7 @@ describe('FilterListItem', () => {
 
   it('MultiSelectFilter blank', () => {
     const { getAllByText, getByTestId } = render(
-      <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
-      }>
-        mocks={{
-          LoadConstants: loadConstantsMockData,
-        }}
-      >
+      <GqlMockedProvider>
         <FilterListItem
           filter={multiselectFilter}
           value={undefined}

@@ -898,6 +898,11 @@ export const loadConstantsMockData: LoadConstantsQuery = {
         symbol: '$',
         value: 'USD ($)',
       },
+      {
+        code: 'EUR',
+        codeSymbolString: 'EUR (€)',
+        name: 'Euro',
+      },
     ],
     pledgeFrequency: [
       {
@@ -909,6 +914,55 @@ export const loadConstantsMockData: LoadConstantsQuery = {
         id: PledgeFrequencyEnum.Annual,
         key: '12.0',
         value: 'Annual',
+      },
+    ],
+    languages: [
+      {
+        id: 'en',
+        value: 'English',
+      },
+      {
+        id: 'elx',
+        value: 'Greek',
+      },
+      {
+        id: 'eka',
+        value: 'Ekajuk',
+      },
+      {
+        id: 'en-AU',
+        value: 'Australian English',
+      },
+    ],
+    locales: [
+      {
+        englishName: 'Filipino (fil)',
+        nativeName: 'Filipino',
+        shortName: 'fil',
+      },
+      {
+        englishName: 'UK English (en-GB)',
+        nativeName: 'UK English',
+        shortName: 'en-GB',
+      },
+      {
+        englishName: 'Latin American Spanish (es-419)',
+        nativeName: 'español latinoamericano',
+        shortName: 'es-419',
+      },
+    ],
+    times: [
+      {
+        key: 0,
+        value: '12:00 AM',
+      },
+      {
+        key: 5,
+        value: '5:00 AM',
+      },
+      {
+        key: null,
+        value: 'Immediately',
       },
     ],
   },

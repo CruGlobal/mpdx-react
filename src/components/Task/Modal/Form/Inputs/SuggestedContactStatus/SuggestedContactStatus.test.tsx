@@ -3,8 +3,6 @@ import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { StatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -34,11 +32,9 @@ const Components = ({
   <ThemeProvider theme={theme}>
     <I18nextProvider i18n={i18n}>
       <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
         ContactStatus: ContactStatusQuery;
       }>
         mocks={{
-          LoadConstants: loadConstantsMockData,
           ContactStatus: {
             contact: {
               status: contactStatusQueryMock || null,

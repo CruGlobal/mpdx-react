@@ -12,8 +12,6 @@ import {
   render,
   waitFor,
 } from '__tests__/util/testingLibraryReactMock';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
@@ -57,11 +55,9 @@ const Components = ({
               value={{ viewportHeight: 1000, itemHeight: 100 }}
             >
               <GqlMockedProvider<{
-                LoadConstants: LoadConstantsQuery;
                 InvalidStatuses: InvalidStatusesQuery;
               }>
                 mocks={{
-                  LoadConstants: loadConstantsMockData,
                   InvalidStatuses: {
                     contacts: {
                       nodes: mockNodes,

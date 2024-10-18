@@ -426,28 +426,6 @@ describe('EditContactOtherModal', () => {
             }>
               onCall={mutationSpy}
               mocks={{
-                LoadConstants: {
-                  constant: {
-                    languages: [
-                      {
-                        id: 'en',
-                        value: 'English',
-                      },
-                      {
-                        id: 'elx',
-                        value: 'Greek',
-                      },
-                      {
-                        id: 'eka',
-                        value: 'Ekajuk',
-                      },
-                      {
-                        id: 'en-AU',
-                        value: 'Australian English',
-                      },
-                    ],
-                  },
-                },
                 AssigneeOptions: {
                   accountListUsers: {
                     nodes: [

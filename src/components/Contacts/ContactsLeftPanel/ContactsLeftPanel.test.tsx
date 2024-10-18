@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import {
   ContactsContext,
   ContactsType,
@@ -58,7 +57,6 @@ const mocks = {
   ContactFilters: {
     userOptions,
   },
-  LoadConstants: loadConstantsMockData,
 };
 
 describe('ContactsLeftPanel', () => {
