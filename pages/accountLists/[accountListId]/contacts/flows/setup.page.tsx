@@ -9,19 +9,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import {
-  ContactFlowOption,
-  colorMap,
-} from 'src/components/Contacts/ContactFlow/ContactFlow';
+import { colorMap } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
 import { ContactFlowSetupDragLayer } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/DragLayer/ContactFlowSetupDragLayer';
 import { ContactFlowSetupHeader } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Header/ContactFlowSetupHeader';
-import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import {
-  GetUserOptionsDocument,
-  GetUserOptionsQuery,
-} from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { getDefaultFlowOptions } from 'src/components/Contacts/ContactFlow/contactFlowDefaultOptions';
 import {
   FlowOption,
@@ -51,7 +43,7 @@ const ContactFlowSetupPage: React.FC = () => {
   const resetColumnsMessage = t(
     'Since all columns have been removed, resetting columns to their default values',
   );
-  const { options: userOptions, loading } = useFlowOptions();
+  const [userOptions, updateOptions, { loading }] = useFlowOptions();
 
   useEffect(() => {
     if (!userOptions.length) {
@@ -61,7 +53,6 @@ const ContactFlowSetupPage: React.FC = () => {
     }
   }, [userOptions]);
 
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
   const { appName } = useGetAppSettings();
 
   const allUsedStatuses = flowOptions
@@ -71,48 +62,8 @@ const ContactFlowSetupPage: React.FC = () => {
     (status) => !allUsedStatuses.includes(status),
   );
 
-  const updateOptions = useCallback(
-    async (options: ContactFlowOption[]): Promise<void> => {
-      const stringified = JSON.stringify(options);
-      await updateUserOptions({
-        variables: {
-          key: 'flows',
-          value: stringified,
-        },
-        update: (cache) => {
-          const query = {
-            query: GetUserOptionsDocument,
-          };
-          const dataFromCache = cache.readQuery<GetUserOptionsQuery>(query);
-
-          if (dataFromCache) {
-            const filteredOld = dataFromCache.userOptions.filter(
-              (option) => option.key !== 'flows',
-            );
-
-            const data = {
-              userOptions: [
-                ...filteredOld,
-                {
-                  __typename: 'Option',
-                  key: 'flows',
-                  value: stringified,
-                },
-              ],
-            };
-            cache.writeQuery({ ...query, data });
-          }
-          enqueueSnackbar(t('User options updated!'), {
-            variant: 'success',
-          });
-        },
-      });
-    },
-    [],
-  );
-
-  const addColumn = (): Promise<void> => {
-    return updateOptions([
+  const addColumn = (): void => {
+    updateOptions([
       ...flowOptions,
       {
         name: 'Untitled',
@@ -137,27 +88,35 @@ const ContactFlowSetupPage: React.FC = () => {
 
   const changeColor = (index: number, color: string): void => {
     const temp = [...flowOptions];
-    temp[index].color = color;
+    temp[index] = { ...temp[index], color };
     updateOptions(temp);
   };
 
-  const moveStatus = (
-    originIndex: number,
-    destinationIndex: number,
-    draggedStatus: StatusEnum,
-  ): void => {
-    const temp = [...flowOptions];
-    if (originIndex > -1) {
-      temp[originIndex].statuses = temp[originIndex].statuses.filter(
-        (status) => status !== draggedStatus,
-      );
-    }
-    if (destinationIndex > -1) {
-      temp[destinationIndex].statuses.push(draggedStatus);
-    }
-    updateOptions(temp);
-    setFlowOptions(temp);
-  };
+  const moveStatus = useCallback(
+    (
+      originIndex: number,
+      destinationIndex: number,
+      draggedStatus: StatusEnum,
+    ): void => {
+      const temp = [...flowOptions];
+      if (originIndex > -1) {
+        temp[originIndex] = {
+          ...temp[originIndex],
+          statuses: temp[originIndex].statuses.filter(
+            (status) => status !== draggedStatus,
+          ),
+        };
+      }
+      if (destinationIndex > -1) {
+        temp[destinationIndex] = {
+          ...temp[destinationIndex],
+          statuses: [...temp[destinationIndex].statuses, draggedStatus],
+        };
+      }
+      updateOptions(temp);
+    },
+    [flowOptions],
+  );
 
   const changeTitle = (
     event: React.ChangeEvent<HTMLInputElement>,

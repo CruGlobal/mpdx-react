@@ -18,6 +18,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useUpdateUserOptionMutation } from 'src/hooks/SavedPreference.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
@@ -28,7 +29,6 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../Shared/Header/ListHeader';
-import { useUpdateUserOptionsMutation } from '../ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import { Coordinates } from '../ContactsMap/coordinates';
 
@@ -265,10 +265,10 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   //#region JSX
 
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [updateUserOption] = useUpdateUserOptionMutation();
 
   const updateOptions = async (view: string): Promise<void> => {
-    await updateUserOptions({
+    await updateUserOption({
       variables: {
         key: 'contacts_view',
         value: view,

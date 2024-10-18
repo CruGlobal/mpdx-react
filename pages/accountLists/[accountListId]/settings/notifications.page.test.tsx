@@ -110,7 +110,7 @@ describe('Notifications page', () => {
       // Move to Integrations
       userEvent.click(skipButton);
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
           key: 'setup_position',
           value: 'preferences.integrations',
         });
@@ -140,7 +140,7 @@ describe('Notifications page', () => {
       // Move to Integrations
       userEvent.click(saveButton);
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
           key: 'setup_position',
           value: 'preferences.integrations',
         });

@@ -154,7 +154,7 @@ describe('Connect Services page', () => {
       // Move to finish
       userEvent.click(nextButton);
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
           key: 'setup_position',
           value: 'finish',
         });
