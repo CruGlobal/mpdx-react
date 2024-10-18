@@ -10,11 +10,14 @@ import {
 import { useSavedPreference } from './useSavedPreference';
 
 const key = 'test_option';
+const defaultValue = 'default';
+const newValue = 'changed';
 
 const mutationSpy = jest.fn();
 
 interface WrapperProps {
   cached?: boolean;
+  json?: boolean;
 }
 
 /**
@@ -23,7 +26,7 @@ interface WrapperProps {
  * The component returned from this function can be passed as the `wrapper` option to `renderHook`.
  **/
 const makeWrapper = (props: WrapperProps = {}) => {
-  const { cached = true } = props;
+  const { cached = true, json = false } = props;
 
   const cache = createCache();
   if (cached) {
@@ -34,7 +37,7 @@ const makeWrapper = (props: WrapperProps = {}) => {
         userOption: {
           __typename: 'Option' as const,
           key,
-          value: 'cached',
+          value: json ? '["cached"]' : 'cached',
         },
       },
     });
@@ -49,14 +52,14 @@ const makeWrapper = (props: WrapperProps = {}) => {
         UserOption: {
           userOption: {
             key,
-            value: 'initial',
+            value: json ? '["initial"]' : 'initial',
           },
         },
         UpdateUserOptions: {
           createOrUpdateUserOption: {
             option: {
               key,
-              value: 'server',
+              value: json ? '["server"]' : 'server',
             },
           },
         },
@@ -77,25 +80,20 @@ const makeWrapper = (props: WrapperProps = {}) => {
 };
 
 describe('useSavedPreference', () => {
-  it('returns an empty string initially if there is no default value and the cache is empty', () => {
-    const { result } = renderHook(() => useSavedPreference(key), {
-      wrapper: makeWrapper({ cached: false }),
-    });
-
-    expect(result.current[0]).toBe('');
-  });
-
   it('returns the default value initially if the cache is empty', () => {
-    const { result } = renderHook(() => useSavedPreference(key, 'default'), {
-      wrapper: makeWrapper({ cached: false }),
-    });
+    const { result } = renderHook(
+      () => useSavedPreference({ key, defaultValue }),
+      {
+        wrapper: makeWrapper({ cached: false }),
+      },
+    );
 
-    expect(result.current[0]).toBe('default');
+    expect(result.current[0]).toBe(defaultValue);
   });
 
   it('returns the cached value until the option refreshes', async () => {
     const { result, waitForNextUpdate } = renderHook(
-      () => useSavedPreference(key),
+      () => useSavedPreference({ key, defaultValue }),
       {
         wrapper: makeWrapper(),
       },
@@ -111,13 +109,12 @@ describe('useSavedPreference', () => {
 
   it('setting the value updates the value optimistically then updates to the response value', async () => {
     const { result, waitForNextUpdate, rerender } = renderHook(
-      () => useSavedPreference(key),
+      () => useSavedPreference({ key, defaultValue }),
       {
         wrapper: makeWrapper({ cached: false }),
       },
     );
 
-    const newValue = 'changed';
     result.current[1](newValue);
     rerender();
     expect(result.current[0]).toBe(newValue);
@@ -129,5 +126,28 @@ describe('useSavedPreference', () => {
     });
 
     expect(result.current[0]).toBe('server');
+  });
+
+  it('serializes and deserializes the value as JSON', async () => {
+    const { result, waitForNextUpdate, rerender } = renderHook(
+      () => useSavedPreference({ key, defaultValue: [defaultValue] }),
+      {
+        wrapper: makeWrapper({ cached: false, json: true }),
+      },
+    );
+
+    expect(result.current[0]).toEqual([defaultValue]);
+
+    await waitForNextUpdate();
+
+    result.current[1]([newValue]);
+    rerender();
+    expect(result.current[0]).toEqual([newValue]);
+
+    await waitForNextUpdate();
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+      key,
+      value: '["changed"]',
+    });
   });
 });
