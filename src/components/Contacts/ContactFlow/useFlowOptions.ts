@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { useSavedPreference } from 'src/hooks/useSavedPreference';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 
 // Convert a status string from flow options into a StatusEnum
 const convertFlowOptionStatus = (status: string): StatusEnum | null => {
@@ -92,12 +92,12 @@ type UseFlowOptionReturn = [
 ];
 
 export const useFlowOptions = (): UseFlowOptionReturn => {
-  const [options, setOptions, { loading }] = useSavedPreference<
-    RawFlowOption[]
-  >({
-    key: 'flows',
-    defaultValue: [],
-  });
+  const [options, setOptions, { loading }] = useUserPreference<RawFlowOption[]>(
+    {
+      key: 'flows',
+      defaultValue: [],
+    },
+  );
 
   const convertedOptions = useMemo(
     () =>

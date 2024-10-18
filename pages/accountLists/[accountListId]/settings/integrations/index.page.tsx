@@ -15,7 +15,7 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useSavedPreference } from 'src/hooks/useSavedPreference';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { SettingsWrapper } from '../Wrapper';
 
 const Integrations: React.FC = () => {
@@ -31,7 +31,7 @@ const Integrations: React.FC = () => {
 
   const setupAccordions = ['google', 'mailchimp', 'prayerletters.com'];
 
-  const [_, setSetupPosition] = useSavedPreference({
+  const [_, setSetupPosition] = useUserPreference({
     key: 'setup_position',
     defaultValue: '',
   });

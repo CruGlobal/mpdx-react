@@ -9,7 +9,7 @@ import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useSavedPreference } from 'src/hooks/useSavedPreference';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { SettingsWrapper } from './Wrapper';
 
 const Notifications: React.FC = () => {
@@ -19,7 +19,7 @@ const Notifications: React.FC = () => {
   const { push } = useRouter();
   const { onSetupTour } = useSetupContext();
 
-  const [_, setSetupPosition] = useSavedPreference({
+  const [_, setSetupPosition] = useUserPreference({
     key: 'setup_position',
     defaultValue: '',
   });
