@@ -18,8 +18,12 @@ interface UseSavedPreferenceOptions<T> {
 export const useSavedPreference = <T>({
   key,
   defaultValue,
-}: UseSavedPreferenceOptions<T>): [T, (value: T) => void] => {
-  const { data } = useUserOptionQuery({
+}: UseSavedPreferenceOptions<T>): [
+  T,
+  (value: T) => void,
+  { loading: boolean },
+] => {
+  const { data, loading, error } = useUserOptionQuery({
     variables: {
       key,
     },
@@ -71,5 +75,5 @@ export const useSavedPreference = <T>({
     [value, key],
   );
 
-  return [value, changeValue];
+  return [value, changeValue, { loading: loading && !data && !error }];
 };

@@ -89,6 +89,7 @@ describe('useSavedPreference', () => {
     );
 
     expect(result.current[0]).toBe(defaultValue);
+    expect(result.current[2]).toEqual({ loading: true });
   });
 
   it('returns the cached value until the option refreshes', async () => {
@@ -100,6 +101,7 @@ describe('useSavedPreference', () => {
     );
 
     expect(result.current[0]).toBe('cached');
+    expect(result.current[2]).toEqual({ loading: false });
 
     await waitForNextUpdate();
 
