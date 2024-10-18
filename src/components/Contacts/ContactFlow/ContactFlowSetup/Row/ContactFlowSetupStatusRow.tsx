@@ -3,9 +3,8 @@ import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from '../../../../../theme';
 
 const StatusRow = styled(Box)(() => ({
@@ -35,7 +34,7 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
   columnWidth,
   columnIndex,
 }: Props) => {
-  const { t } = useTranslation();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
   const item: ContactFlowSetupItemDrag = {
     status,
     columnWidth,
@@ -55,7 +54,7 @@ export const ContactFlowSetupStatusRow: React.FC<Props> = ({
 
   return (
     <StatusRow ref={drag} data-testid={status}>
-      <Typography>{getLocalizedContactStatus(t, status)}</Typography>
+      <Typography>{getLocalizedContactStatus(status)}</Typography>
     </StatusRow>
   );
 };

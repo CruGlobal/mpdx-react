@@ -3,9 +3,17 @@ import 'isomorphic-fetch';
 import { Settings } from 'luxon';
 import { type useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
+import {
+  LoadConstantsDocument,
+  LoadConstantsQuery,
+} from 'src/components/Constants/LoadConstants.generated';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
+import { gqlMock } from './graphqlMocking';
 import matchMediaMock from './matchMediaMock';
 
+jest.mock('src/components/Constants/UseApiConstants');
 jest.mock('next-auth/react', () => {
   return {
     getSession: jest.fn().mockResolvedValue(session),
@@ -20,6 +28,12 @@ jest.mock('next-auth/react', () => {
     signOut: jest.fn().mockResolvedValue(undefined),
   };
 });
+
+(useApiConstants as jest.MockedFn<typeof useApiConstants>).mockReturnValue(
+  gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
+    mocks: loadConstantsMockData,
+  }).constant,
+);
 
 expect.extend({
   toHaveGraphqlOperation,

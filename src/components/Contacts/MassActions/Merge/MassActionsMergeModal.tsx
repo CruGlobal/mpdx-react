@@ -17,9 +17,9 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import Modal from '../../../common/Modal/Modal';
 import {
@@ -50,6 +50,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const [primaryContactId, setPrimaryContactId] = useState(ids[0]);
 
@@ -155,8 +156,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="subtitle1">{contact.name}</Typography>
                   <Typography variant="subtitle2">
-                    {t('Status')}:{' '}
-                    {getLocalizedContactStatus(t, contact.status)}
+                    {t('Status')}: {getLocalizedContactStatus(contact.status)}
                     <br />
                     {contact.primaryAddress && (
                       <>

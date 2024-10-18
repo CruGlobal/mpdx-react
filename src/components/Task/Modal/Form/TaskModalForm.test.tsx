@@ -8,10 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime, Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import LoadConstantsMock, {
-  loadConstantsMockData as LoadConstants,
-} from 'src/components/Constants/LoadConstantsMock';
+import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
@@ -128,7 +125,6 @@ describe('TaskModalForm', () => {
             AssigneeOptions: AssigneeOptionsQuery;
             ContactOptions: ContactOptionsQuery;
             TagOptions: TagOptionsQuery;
-            LoadConstants: LoadConstantsQuery;
           }>
             mocks={{
               AssigneeOptions: {
@@ -156,7 +152,6 @@ describe('TaskModalForm', () => {
                   taskTagList: ['tag-1', 'tag-2'],
                 },
               },
-              LoadConstants,
             }}
             onCall={mutationSpy}
           >
@@ -227,7 +222,6 @@ describe('TaskModalForm', () => {
             AssigneeOptions: AssigneeOptionsQuery;
             ContactOptions: ContactOptionsQuery;
             TagOptions: TagOptionsQuery;
-            LoadConstants: LoadConstantsQuery;
           }>
             mocks={{
               AssigneeOptions: {
@@ -255,7 +249,6 @@ describe('TaskModalForm', () => {
                   taskTagList: ['tag-1', 'tag-2'],
                 },
               },
-              LoadConstants,
             }}
             onCall={mutationSpy}
           >
@@ -392,14 +385,7 @@ describe('TaskModalForm', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{
-                LoadConstants,
-              }}
-              onCall={mutationSpy}
-            >
+            <GqlMockedProvider onCall={mutationSpy}>
               <TaskModalForm
                 accountListId={accountListId}
                 onClose={onClose}
@@ -451,13 +437,7 @@ describe('TaskModalForm', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{
-                LoadConstants,
-              }}
-            >
+            <GqlMockedProvider>
               <TaskModalForm
                 accountListId={accountListId}
                 onClose={onClose}

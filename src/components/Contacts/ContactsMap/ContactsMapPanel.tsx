@@ -118,7 +118,7 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     .map(([statusKey, status]) => {
       return {
         key: statusKey,
-        title: status.translated,
+        title: status.name,
         imgUrl: `/images/pin_${statusKey.toLowerCase()}.png`,
         data: data?.filter(
           (contact) => contact?.lat && contact?.status === statusKey,
