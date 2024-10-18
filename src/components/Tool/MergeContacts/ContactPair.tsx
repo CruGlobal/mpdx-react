@@ -25,8 +25,8 @@ import { DateTime } from 'luxon';
 import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -145,7 +145,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
   side,
   setContactFocus,
 }) => {
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const { classes } = useStyles();
   const locale = useLocale();
@@ -207,7 +207,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
         subheader={
           isContactType && (
             <Typography variant="subtitle2">
-              {contact?.status && contactStatuses[contact?.status]?.translated}
+              {getLocalizedContactStatus(contact?.status)}
             </Typography>
           )
         }
