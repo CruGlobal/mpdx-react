@@ -1,12 +1,12 @@
 import { ReactElement } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { UpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { createCache } from 'src/lib/apollo/cache';
 import {
+  UpdateUserOptionMutation,
   UserOptionDocument,
   UserOptionQuery,
-} from './UserPreference.generated';
+} from './SavedPreference.generated';
 import { useSavedPreference } from './useSavedPreference';
 
 const key = 'test_option';
@@ -46,7 +46,7 @@ const makeWrapper = (props: WrapperProps = {}) => {
   const Wrapper = ({ children }: { children: ReactElement }) => (
     <GqlMockedProvider<{
       UserOption: UserOptionQuery;
-      UpdateUserOptions: UpdateUserOptionsMutation;
+      UpdateUserOption: UpdateUserOptionMutation;
     }>
       mocks={{
         UserOption: {
@@ -55,7 +55,7 @@ const makeWrapper = (props: WrapperProps = {}) => {
             value: json ? '["initial"]' : 'initial',
           },
         },
-        UpdateUserOptions: {
+        UpdateUserOption: {
           createOrUpdateUserOption: {
             option: {
               key,
@@ -122,7 +122,7 @@ describe('useSavedPreference', () => {
     expect(result.current[0]).toBe(newValue);
 
     await waitForNextUpdate();
-    expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
       key,
       value: newValue,
     });
@@ -147,7 +147,7 @@ describe('useSavedPreference', () => {
     expect(result.current[0]).toEqual([newValue]);
 
     await waitForNextUpdate();
-    expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
       key,
       value: '["changed"]',
     });

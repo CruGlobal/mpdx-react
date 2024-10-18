@@ -1,6 +1,0 @@
-query UserOption($key: String!) {
-  userOption(key: $key) {
-    key
-    value
-  }
-}

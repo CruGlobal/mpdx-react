@@ -299,7 +299,7 @@ describe('Preferences page', () => {
       // Move to Notifications
       userEvent.click(skipButton);
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
           key: 'setup_position',
           value: 'preferences.notifications',
         });

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
-import { useUserOptionQuery } from './UserPreference.generated';
+import {
+  useUpdateUserOptionMutation,
+  useUserOptionQuery,
+} from './SavedPreference.generated';
 
 interface UseSavedPreferenceOptions<T> {
   /** The unique name of the user preference key. */
@@ -28,7 +30,7 @@ export const useSavedPreference = <T>({
       key,
     },
   });
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [updateUserOption] = useUpdateUserOptionMutation();
 
   const [value, setValue] = useState(defaultValue);
 
@@ -56,7 +58,7 @@ export const useSavedPreference = <T>({
 
       const serializedValue =
         typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
-      updateUserOptions({
+      updateUserOption({
         variables: {
           key,
           value: serializedValue,
