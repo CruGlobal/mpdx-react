@@ -1,10 +1,8 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
-import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
 import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
@@ -17,6 +15,7 @@ import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/Accordion
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useSavedPreference } from 'src/hooks/useSavedPreference';
 import { SettingsWrapper } from '../Wrapper';
 
 const Integrations: React.FC = () => {
@@ -27,13 +26,15 @@ const Integrations: React.FC = () => {
   );
   const accountListId = useAccountListId() || '';
   const { appName } = useGetAppSettings();
-  const { enqueueSnackbar } = useSnackbar();
   const { onSetupTour } = useSetupContext();
   const [setup, setSetup] = useState(0);
 
   const setupAccordions = ['google', 'mailchimp', 'prayerletters.com'];
 
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [_, setSetupPosition] = useSavedPreference({
+    key: 'setup_position',
+    defaultValue: '',
+  });
 
   const handleSetupChange = async () => {
     if (!onSetupTour) {
@@ -42,17 +43,7 @@ const Integrations: React.FC = () => {
     const nextNav = setup + 1;
 
     if (setupAccordions.length === nextNav) {
-      await updateUserOptions({
-        variables: {
-          key: 'setup_position',
-          value: 'finish',
-        },
-        onError: () => {
-          enqueueSnackbar(t('Saving setup phase failed.'), {
-            variant: 'error',
-          });
-        },
-      });
+      setSetupPosition('finish');
       push(`/accountLists/${accountListId}/setup/finish`);
     } else {
       setSetup(nextNav);

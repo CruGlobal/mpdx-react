@@ -4,12 +4,10 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
-import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import Integrations from './index.page';
@@ -40,48 +38,36 @@ jest.mock('notistack', () => ({
 }));
 interface MocksProvidersProps {
   children: JSX.Element;
-  setup?: string;
+  setup?: boolean;
 }
 
-const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
+const MocksProviders: React.FC<MocksProvidersProps> = ({
+  children,
+  setup = false,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider<{
-        GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
-        MailchimpAccount: MailchimpAccountQuery;
-        PrayerlettersAccount: PrayerlettersAccountQuery;
-        GetUserOptions: GetUserOptionsQuery;
-        SetupStage: SetupStageQuery;
-      }>
-        mocks={{
-          GetUsersOrganizationsAccounts: {
-            userOrganizationAccounts: [
-              {
-                organization: {},
-              },
-              {
-                organization: {},
-              },
-            ],
-          },
-          MailchimpAccount: { mailchimpAccount: [] },
-          PrayerlettersAccount: { prayerlettersAccount: [] },
-          SetupStage: {
-            user: {
-              setup: null,
+      <TestSetupProvider onSetupTour={setup}>
+        <GqlMockedProvider<{
+          GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
+          MailchimpAccount: MailchimpAccountQuery;
+          PrayerlettersAccount: PrayerlettersAccountQuery;
+        }>
+          mocks={{
+            GetUsersOrganizationsAccounts: {
+              userOrganizationAccounts: [
+                { organization: {} },
+                { organization: {} },
+              ],
             },
-            userOptions: [
-              {
-                key: 'setup_position',
-                value: setup || '',
-              },
-            ],
-          },
-        }}
-        onCall={mutationSpy}
-      >
-        <SetupProvider>{children}</SetupProvider>
-      </GqlMockedProvider>
+            MailchimpAccount: { mailchimpAccount: [] },
+            PrayerlettersAccount: { prayerlettersAccount: [] },
+          }}
+          onCall={mutationSpy}
+        >
+          {children}
+        </GqlMockedProvider>
+      </TestSetupProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -132,7 +118,7 @@ describe('Connect Services page', () => {
 
     it('should show setup banner and open google', async () => {
       const { findByText, getByRole, getByText } = render(
-        <MocksProviders setup="preferences.integrations">
+        <MocksProviders setup>
           <Integrations />
         </MocksProviders>,
       );
@@ -141,10 +127,10 @@ describe('Connect Services page', () => {
       ).toBeInTheDocument();
 
       //Accordions should be disabled
-      await waitFor(() => {
-        const label = getByText('Organization');
-        expect(() => userEvent.click(label)).toThrow();
-      });
+      expect(getByRole('button', { name: 'Organization' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
 
       const nextButton = getByRole('button', { name: 'Next Step' });
 

@@ -4,14 +4,12 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
   NotificationTypesQuery,
   NotificationsPreferencesQuery,
 } from 'src/components/Settings/notifications/Notifications.generated';
 import { notificationSettingsMocks } from 'src/components/Settings/notifications/notificationSettingsMocks';
-import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import Notifications from './notifications.page';
 
@@ -41,35 +39,25 @@ jest.mock('notistack', () => ({
 
 interface MocksProvidersProps {
   children: JSX.Element;
-  setup?: string;
+  setup?: boolean;
 }
 
-const MocksProviders: React.FC<MocksProvidersProps> = ({ children, setup }) => (
+const MocksProviders: React.FC<MocksProvidersProps> = ({
+  children,
+  setup = false,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <GqlMockedProvider<{
-        GetUserOptions: GetUserOptionsQuery;
         NotificationsPreferences: NotificationsPreferencesQuery;
         NotificationTypes: NotificationTypesQuery;
-        SetupStage: SetupStageQuery;
       }>
         mocks={{
           ...notificationSettingsMocks,
-          SetupStage: {
-            user: {
-              setup: null,
-            },
-            userOptions: [
-              {
-                key: 'setup_position',
-                value: setup || '',
-              },
-            ],
-          },
         }}
         onCall={mutationSpy}
       >
-        <SetupProvider>{children}</SetupProvider>
+        <TestSetupProvider onSetupTour={setup}>{children}</TestSetupProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -107,7 +95,7 @@ describe('Notifications page', () => {
 
     it('should show setup banner move to the next part', async () => {
       const { findByText, getByRole } = render(
-        <MocksProviders setup="preferences.notifications">
+        <MocksProviders setup>
           <Notifications />
         </MocksProviders>,
       );
@@ -133,8 +121,8 @@ describe('Notifications page', () => {
     });
 
     it('moves to the next section with Save Button', async () => {
-      const { getAllByRole, findByText } = render(
-        <MocksProviders setup="preferences.notifications">
+      const { findAllByRole, findByText } = render(
+        <MocksProviders setup>
           <Notifications />
         </MocksProviders>,
       );
@@ -143,7 +131,11 @@ describe('Notifications page', () => {
         await findByText('Setup your notifications here'),
       ).toBeInTheDocument();
 
-      const saveButton = getAllByRole('button', { name: 'Save Changes' })[0];
+      const saveButton = (
+        await findAllByRole('button', {
+          name: 'Save Changes',
+        })
+      )[0];
 
       // Move to Integrations
       userEvent.click(saveButton);
