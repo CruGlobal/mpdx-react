@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
-import { useSavedPreference } from 'src/hooks/useSavedPreference';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { useSetupStageLazyQuery } from './Setup.generated';
 
 interface UseNextSetupPageResult {
@@ -12,7 +12,7 @@ interface UseNextSetupPageResult {
 export const useNextSetupPage = (): UseNextSetupPageResult => {
   const { push } = useRouter();
   const [getSetupStage] = useSetupStageLazyQuery();
-  const [_, setSetupPosition] = useSavedPreference({
+  const [_, setSetupPosition] = useUserPreference({
     key: 'setup_position',
     defaultValue: '',
   });

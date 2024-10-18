@@ -31,7 +31,7 @@ import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGetTimezones } from 'src/hooks/useGetTimezones';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { useSavedPreference } from 'src/hooks/useSavedPreference';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getCountries } from 'src/lib/data/countries';
 import { SettingsWrapper } from './Wrapper';
 
@@ -55,7 +55,7 @@ const Preferences: React.FC = () => {
   const countries = getCountries();
   const timeZones = useGetTimezones();
 
-  const [_, setSetupPosition] = useSavedPreference({
+  const [_, setSetupPosition] = useUserPreference({
     key: 'setup_position',
     defaultValue: '',
   });

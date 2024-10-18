@@ -6,8 +6,8 @@ import {
   UpdateUserOptionMutation,
   UserOptionDocument,
   UserOptionQuery,
-} from './SavedPreference.generated';
-import { useSavedPreference } from './useSavedPreference';
+} from './UserPreference.generated';
+import { useUserPreference } from './useUserPreference';
 
 const key = 'test_option';
 const defaultValue = 'default';
@@ -79,10 +79,10 @@ const makeWrapper = (props: WrapperProps = {}) => {
   return Wrapper;
 };
 
-describe('useSavedPreference', () => {
+describe('useUserPreference', () => {
   it('returns the default value initially if the cache is empty', () => {
     const { result } = renderHook(
-      () => useSavedPreference({ key, defaultValue }),
+      () => useUserPreference({ key, defaultValue }),
       {
         wrapper: makeWrapper({ cached: false }),
       },
@@ -94,7 +94,7 @@ describe('useSavedPreference', () => {
 
   it('returns the cached value until the option refreshes', async () => {
     const { result, waitForNextUpdate } = renderHook(
-      () => useSavedPreference({ key, defaultValue }),
+      () => useUserPreference({ key, defaultValue }),
       {
         wrapper: makeWrapper(),
       },
@@ -111,7 +111,7 @@ describe('useSavedPreference', () => {
 
   it('setting the value updates the value optimistically then updates to the response value', async () => {
     const { result, waitForNextUpdate, rerender } = renderHook(
-      () => useSavedPreference({ key, defaultValue }),
+      () => useUserPreference({ key, defaultValue }),
       {
         wrapper: makeWrapper({ cached: false }),
       },
@@ -132,7 +132,7 @@ describe('useSavedPreference', () => {
 
   it('serializes and deserializes the value as JSON', async () => {
     const { result, waitForNextUpdate, rerender } = renderHook(
-      () => useSavedPreference({ key, defaultValue: [defaultValue] }),
+      () => useUserPreference({ key, defaultValue: [defaultValue] }),
       {
         wrapper: makeWrapper({ cached: false, json: true }),
       },

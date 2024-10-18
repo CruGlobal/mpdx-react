@@ -18,7 +18,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useUpdateUserOptionMutation } from 'src/hooks/SavedPreference.generated';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';

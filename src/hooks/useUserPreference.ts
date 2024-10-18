@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   useUpdateUserOptionMutation,
   useUserOptionQuery,
-} from './SavedPreference.generated';
+} from './UserPreference.generated';
 
-interface UseSavedPreferenceOptions<T> {
+interface UseUserPreferenceOptions<T> {
   /** The unique name of the user preference key. */
   key: string;
 
@@ -17,10 +17,10 @@ interface UseSavedPreferenceOptions<T> {
  * is not a string, the value will be transparently serialized and deserialized as JSON because the
  * server only supports string option values.
  */
-export const useSavedPreference = <T>({
+export const useUserPreference = <T>({
   key,
   defaultValue,
-}: UseSavedPreferenceOptions<T>): [
+}: UseUserPreferenceOptions<T>): [
   T,
   (value: T) => void,
   { loading: boolean },

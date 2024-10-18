@@ -11,7 +11,7 @@ import {
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useUpdateUserOptionMutation } from 'src/hooks/SavedPreference.generated';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
