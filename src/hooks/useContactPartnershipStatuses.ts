@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
@@ -111,13 +111,15 @@ export const useContactPartnershipStatuses = () => {
       return { id: statusKey, ...s };
     });
 
-  const getContactStatusesByPhase = (
-    phase: PhaseEnum | string | null,
-  ): StatusEnum[] => {
-    return (
-      phases?.find((p) => String(p.id) === String(phase))?.contactStatuses || []
-    );
-  };
+  const getContactStatusesByPhase = useCallback(
+    (phase: PhaseEnum | string | null): StatusEnum[] => {
+      return (
+        phases?.find((p) => String(p.id) === String(phase))?.contactStatuses ||
+        []
+      );
+    },
+    [phases],
+  );
 
   return {
     contactStatuses,

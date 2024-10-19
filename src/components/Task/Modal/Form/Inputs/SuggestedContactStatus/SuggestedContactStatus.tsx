@@ -65,7 +65,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     }
     // Show suggestedStatus if the contact has no status
     return true;
-  }, [currentContactStatus]);
+  }, [currentContactStatus, suggestedContactStatus, getContactStatusesByPhase]);
 
   return suggestedContactStatus && shouldRenderContactSuggestion ? (
     <Grid item>

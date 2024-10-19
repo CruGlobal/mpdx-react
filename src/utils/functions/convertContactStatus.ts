@@ -6,10 +6,9 @@ import { StatusEnum } from 'src/graphql/types.generated';
 export const convertStatus = (
   status: string | null | undefined,
 ): StatusEnum | null => {
-  const foundStatus =
-    Object.values(StatusEnum).find((value) => {
-      return String(value.toLowerCase()) === String(status?.toLowerCase());
-    }) || null;
+  const foundStatus = Object.values(StatusEnum).find(
+    (value) => value.toLowerCase() === status?.toLowerCase(),
+  );
 
   if (foundStatus) {
     return foundStatus;
@@ -53,7 +52,7 @@ export const findOldStatus = (
     case 'Not Interested':
       return StatusEnum.NotInterested;
 
-    case 'UNRESPONSIVE':
+    case 'Unresponsive':
       return StatusEnum.Unresponsive;
 
     case 'Never Ask':

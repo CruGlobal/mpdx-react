@@ -156,9 +156,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const matchFilterContactStatuses = (status: string | null | undefined) => {
     return (
-      Object.values(ContactFilterStatusEnum).find((value) => {
-        return String(value.toLowerCase()) === String(status?.toLowerCase());
-      }) || null
+      Object.values(ContactFilterStatusEnum).find(
+        (value) => value === status?.toUpperCase(),
+      ) || null
     );
   };
 
