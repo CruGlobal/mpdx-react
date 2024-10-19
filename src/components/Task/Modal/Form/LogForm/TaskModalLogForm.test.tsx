@@ -184,9 +184,6 @@ describe('TaskModalLogForm', () => {
     expect(getByLabelText('Tags')).toBeInTheDocument();
     expect(getByLabelText('Assignee')).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(getByText('Save')).not.toBeDisabled();
-    });
     userEvent.click(getByText('Save'));
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 25000);

@@ -141,27 +141,27 @@ export const loadConstantsMockData: LoadConstantsQuery = {
       {
         id: ActivityTypeEnum.FollowUpPhoneCall,
         name: 'phone call to follow up',
-        value: 'Follow Up - Phone Call',
+        value: 'Follow-Up - Phone Call',
       },
       {
         id: ActivityTypeEnum.FollowUpEmail,
         name: 'email to follow up',
-        value: 'Follow Up - Email',
+        value: 'Follow-Up - Email',
       },
       {
         id: ActivityTypeEnum.FollowUpTextMessage,
         name: 'text message to follow up',
-        value: 'Follow Up - Text Message',
+        value: 'Follow-Up - Text Message',
       },
       {
         id: ActivityTypeEnum.FollowUpSocialMedia,
         name: 'social media message to follow up',
-        value: 'Follow Up - Social Media',
+        value: 'Follow-Up - Social Media',
       },
       {
         id: ActivityTypeEnum.FollowUpInPerson,
         name: 'follow up in person',
-        value: 'Follow Up - In Person',
+        value: 'Follow-Up - In Person',
       },
       {
         id: ActivityTypeEnum.PartnerCarePhoneCall,
@@ -191,7 +191,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
       {
         id: ActivityTypeEnum.PartnerCareThank,
         name: 'send thank you note',
-        value: 'Partner Care - Thank',
+        value: 'Partner Care - Thank You Note',
       },
       {
         id: ActivityTypeEnum.PartnerCareDigitalNewsletter,
@@ -901,7 +901,11 @@ export const loadConstantsMockData: LoadConstantsQuery = {
       {
         code: 'EUR',
         codeSymbolString: 'EUR (€)',
+        id: 'EUR',
+        key: 'EUR',
         name: 'Euro',
+        symbol: '€',
+        value: 'EUR (€)',
       },
     ],
     pledgeFrequency: [
