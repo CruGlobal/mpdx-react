@@ -23,7 +23,7 @@ import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
@@ -64,7 +64,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter();
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   //#region Search
   const [wildcardSearch, setWildcardSearch] = useState('');
@@ -306,8 +306,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
                   <Box display="flex" flexDirection="column">
                     <Typography>{option.name}</Typography>
                     <Typography variant="subtitle2">
-                      {option.status &&
-                        contactStatuses[option.status].translated}
+                      {getLocalizedContactStatus(option.status)}
                     </Typography>
                   </Box>
                 </ClickableBox>

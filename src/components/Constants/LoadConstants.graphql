@@ -31,9 +31,11 @@ query LoadConstants {
     # }
     pledgeCurrency {
       id
+      key
       codeSymbolString
       name
       code
+      value
       symbol
     }
     pledgeFrequency {
@@ -81,6 +83,13 @@ query LoadConstants {
       }
       contactStatuses
       tasks
+    }
+  }
+  user {
+    id
+    preferences {
+      id
+      locale
     }
   }
 }

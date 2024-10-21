@@ -3,7 +3,7 @@ import { Checkbox, FormControl, FormControlLabel, Grid } from '@mui/material';
 import { Trans } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import { getContactStatusesByPhase } from 'src/utils/functions/getLocalizedPhase';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { useContactStatusQuery } from './SuggestedContactStatus.generated';
 
 export type FormikHandleChange = {
@@ -44,7 +44,8 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     skip: !!contactStatus,
   });
 
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getContactStatusesByPhase } = useContactPartnershipStatuses();
 
   const currentContactStatus: StatusEnum | null | undefined =
     contactStatus || data?.contact.status;
@@ -58,14 +59,13 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
     if (currentContactStatus) {
       const disabledStatuses: StatusEnum[] = getContactStatusesByPhase(
         PhaseEnum.PartnerCare,
-        contactStatuses,
-      ).map((s) => s.id);
+      );
       // Hide suggestedStatus if the suggested status is a partner care status, otherwise, show it
       return !disabledStatuses.includes(currentContactStatus);
     }
     // Show suggestedStatus if the contact has no status
     return true;
-  }, [contactStatuses, currentContactStatus]);
+  }, [currentContactStatus, suggestedContactStatus, getContactStatusesByPhase]);
 
   return suggestedContactStatus && shouldRenderContactSuggestion ? (
     <Grid item>
@@ -82,7 +82,7 @@ export const SuggestedContactStatus: React.FC<SuggestedContactStatusProps> = ({
             <Trans
               defaults="Change the contact's status to: <bold>{{status}}</bold>" // optional defaultValue
               values={{
-                status: contactStatuses[suggestedContactStatus]?.translated,
+                status: getLocalizedContactStatus(suggestedContactStatus),
               }}
               components={{ bold: <strong /> }}
             />

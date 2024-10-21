@@ -35,7 +35,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
@@ -138,7 +138,7 @@ export const CreateMultipleContacts = ({
   };
   const constants = useApiConstants();
   const phases = constants?.phases;
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
@@ -462,7 +462,7 @@ export const CreateMultipleContacts = ({
                                   </ListSubheader>,
                                   phase?.contactStatuses.map((status) => (
                                     <MenuItem key={status} value={status}>
-                                      {contactStatuses[status]?.translated}
+                                      {getLocalizedContactStatus(status)}
                                     </MenuItem>
                                   )),
                                 ])}

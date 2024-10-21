@@ -3,8 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../hooks/useTaskModal';
@@ -104,9 +102,7 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, queryByTestId, getByText, findByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
-            mocks={{ LoadConstants: loadConstantsMockData }}
-          >
+          <GqlMockedProvider>
             <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
           </GqlMockedProvider>
         </ThemeProvider>,
@@ -167,16 +163,7 @@ describe('TasksDueThisWeek', () => {
       };
       const { getByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider<{ LoadConstants: LoadConstantsQuery }>
-            mocks={{
-              constant: {
-                activities: [
-                  { id: 'Prayer Request', value: 'Prayer Request' },
-                  { id: 'Appointment', value: 'Appointment' },
-                ],
-              },
-            }}
-          >
+          <GqlMockedProvider>
             <TasksDueThisWeek dueTasks={dueTasks} accountListId="abc" />
           </GqlMockedProvider>
         </ThemeProvider>,

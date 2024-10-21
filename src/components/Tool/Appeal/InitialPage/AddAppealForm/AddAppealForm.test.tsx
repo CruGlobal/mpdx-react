@@ -9,8 +9,6 @@ import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AddAppealForm, {
@@ -57,11 +55,9 @@ const Components = ({
           <TestRouter router={router}>
             <GqlMockedProvider<{
               ContactTags: ContactTagsQuery;
-              LoadConstants: LoadConstantsQuery;
             }>
               mocks={{
                 ContactTags: contactTagsMock,
-                LoadConstants: loadConstantsMockData,
               }}
               onCall={mutationSpy}
             >

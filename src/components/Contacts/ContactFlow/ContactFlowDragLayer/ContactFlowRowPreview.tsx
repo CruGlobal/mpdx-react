@@ -3,9 +3,8 @@ import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from '../../../../theme';
 
 export const PreviewBox = styled(Box)(({ theme }) => ({
@@ -36,7 +35,7 @@ export interface ContactFlowRowPreviewProps {
 
 export const ContactFlowRowPreview: React.FC<ContactFlowRowPreviewProps> = memo(
   function ContactFlowRowPreview({ name, status, starred, width }) {
-    const { t } = useTranslation();
+    const { getLocalizedContactStatus } = useLocalizedConstants();
 
     return (
       <PreviewBox width={width}>
@@ -53,7 +52,7 @@ export const ContactFlowRowPreview: React.FC<ContactFlowRowPreviewProps> = memo(
               <Typography style={{ color: theme.palette.mpdxBlue.main }}>
                 {name}
               </Typography>
-              <Typography>{getLocalizedContactStatus(t, status)}</Typography>
+              <Typography>{getLocalizedContactStatus(status)}</Typography>
             </Box>
           </DetailsBox>
           <Box display="flex" pr={2}>

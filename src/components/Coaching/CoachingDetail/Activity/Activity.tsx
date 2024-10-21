@@ -24,12 +24,12 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import {
   currencyFormat,
   dateFormat,
   dateFormatWithoutYear,
 } from 'src/lib/intlFormat';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum, CoachingPeriodEnum } from '../CoachingDetail';
 import { CoachingLink } from '../CoachingLink';
@@ -177,6 +177,7 @@ export const Activity: React.FC<ActivityProps> = ({
   primaryAppeal,
 }) => {
   const { t } = useTranslation();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
   const locale = useLocale();
 
   const periodDuration =
@@ -288,7 +289,7 @@ export const Activity: React.FC<ActivityProps> = ({
                     {data?.accountListAnalytics.contactsByStatus.neverContacted}
                   </StatsText>
                   <StatsColumnTitle>
-                    {getLocalizedContactStatus(t, StatusEnum.NeverContacted)}
+                    {getLocalizedContactStatus(StatusEnum.NeverContacted)}
                   </StatsColumnTitle>
                 </CoachingLink>
               </StatsColumn>
@@ -303,7 +304,7 @@ export const Activity: React.FC<ActivityProps> = ({
                     {data?.accountListAnalytics.contactsByStatus.future}
                   </StatsText>
                   <StatsColumnTitle>
-                    {getLocalizedContactStatus(t, StatusEnum.AskInFuture)}
+                    {getLocalizedContactStatus(StatusEnum.AskInFuture)}
                   </StatsColumnTitle>
                 </CoachingLink>
               </StatsColumn>
@@ -319,7 +320,6 @@ export const Activity: React.FC<ActivityProps> = ({
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(
-                      t,
                       StatusEnum.CultivateRelationship,
                     )}
                   </StatsColumnTitle>
@@ -366,7 +366,6 @@ export const Activity: React.FC<ActivityProps> = ({
                   </StatsText>
                   <StatsColumnTitle>
                     {getLocalizedContactStatus(
-                      t,
                       StatusEnum.ContactForAppointment,
                     )}
                   </StatsColumnTitle>
@@ -386,10 +385,7 @@ export const Activity: React.FC<ActivityProps> = ({
                     }
                   </StatsText>
                   <StatsColumnTitle>
-                    {getLocalizedContactStatus(
-                      t,
-                      StatusEnum.AppointmentScheduled,
-                    )}
+                    {getLocalizedContactStatus(StatusEnum.AppointmentScheduled)}
                   </StatsColumnTitle>
                 </CoachingLink>
               </StatsColumn>
@@ -407,7 +403,7 @@ export const Activity: React.FC<ActivityProps> = ({
                     }
                   </StatsText>
                   <StatsColumnTitle>
-                    {getLocalizedContactStatus(t, StatusEnum.CallForDecision)}
+                    {getLocalizedContactStatus(StatusEnum.CallForDecision)}
                   </StatsColumnTitle>
                 </CoachingLink>
               </StatsColumn>

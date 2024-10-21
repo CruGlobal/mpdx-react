@@ -8,8 +8,6 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import {
   ActivityTypeEnum,
   NotificationTimeUnitEnum,
@@ -76,11 +74,9 @@ const Components = ({ mocks = {}, taskOverrides, props }: ComponentsProps) => (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider<{
-          LoadConstant: LoadConstantsQuery;
           ContactStatus: ContactStatusQuery;
         }>
           mocks={{
-            LoadConstants: loadConstantsMockData,
             ContactStatus: {
               contact: {
                 status: null,

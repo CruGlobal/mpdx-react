@@ -2,12 +2,6 @@ import { renderHook } from '@testing-library/react-hooks';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
-import {
-  LoadConstantsDocument,
-  LoadConstantsQuery,
-} from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { CurrencyTable } from './FourteenMonthReport';
 import {
@@ -15,15 +9,6 @@ import {
   FourteenMonthReportContactFragmentDoc,
 } from './GetFourteenMonthReport.generated';
 import { useCsvData } from './useCsvData';
-
-jest.mock('src/components/Constants/UseApiConstants.tsx');
-
-// Mock useApiConstants to make the data available synchronously instead of having to wait for the GraphQL call
-(useApiConstants as jest.MockedFn<typeof useApiConstants>).mockReturnValue(
-  gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
-    mocks: loadConstantsMockData,
-  }).constant,
-);
 
 const mockContact = (
   mocks?: ErgonoMockShape & DeepPartial<FourteenMonthReportContactFragment>,

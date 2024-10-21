@@ -8,8 +8,8 @@ import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormat } from 'src/lib/intlFormat';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { sourceToStr } from 'src/utils/sourceHelper';
@@ -69,15 +69,7 @@ interface PartnershipInfoProp {
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { data } = useLoadConstantsQuery();
-  const constants = data?.constant;
-  const [status, setStatus] = React.useState(
-    constants?.status?.find(({ id }) => id === contact?.status),
-  );
-
-  React.useEffect(() => {
-    setStatus(constants?.status?.find(({ id }) => id === contact?.status));
-  }, [data?.constant]);
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -100,7 +92,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         </IconContainer>
         <Box style={{ margin: 0, padding: 0 }} role="cell">
           <LabelsAndText variant="subtitle1">
-            {contact?.status ? status?.value : t('No Status')}
+            {getLocalizedContactStatus(contact?.status) || t('No Status')}
           </LabelsAndText>
           <LabelsAndText variant="subtitle1">
             {`${currencyFormat(

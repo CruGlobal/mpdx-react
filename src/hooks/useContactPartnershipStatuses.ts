@@ -1,8 +1,7 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
 interface ContactStatus {
   name: string;
@@ -61,7 +60,7 @@ export const useContactPartnershipStatuses = () => {
               )?.value;
               acc[status] = {
                 name: statusName,
-                translated: getLocalizedContactStatus(t, status),
+                translated: statusName,
                 phase: phase.id,
               };
             });
@@ -112,10 +111,21 @@ export const useContactPartnershipStatuses = () => {
       return { id: statusKey, ...s };
     });
 
+  const getContactStatusesByPhase = useCallback(
+    (phase: PhaseEnum | string | null): StatusEnum[] => {
+      return (
+        phases?.find((p) => String(p.id) === String(phase))?.contactStatuses ||
+        []
+      );
+    },
+    [phases],
+  );
+
   return {
     contactStatuses,
     statusMap,
     statusMapForFilters,
     statusArray,
+    getContactStatusesByPhase,
   };
 };

@@ -3,9 +3,8 @@ import { Avatar, Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { useTranslation } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
@@ -81,7 +80,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
 }) => {
   const { id, name, starred, avatar } = contact;
 
-  const { t } = useTranslation();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const item: DraggedContact = {
     id,
@@ -115,7 +114,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
             <ContactLink onClick={() => onContactSelected(id, true, true)}>
               {name}
             </ContactLink>
-            <Typography>{getLocalizedContactStatus(t, status)}</Typography>
+            <Typography>{getLocalizedContactStatus(status)}</Typography>
           </Box>
         </Box>
         <Box display="flex">

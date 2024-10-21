@@ -6,7 +6,7 @@ const IS_SERVER = typeof window === 'undefined';
 
 export const useLocalStorage = <T>(
   key: string,
-  initialValue: T,
+  defaultValue: T,
 ): [T, Dispatch<SetStateAction<T>>] => {
   const deserializer = useCallback<(value: string) => T>(
     (value) => {
@@ -14,31 +14,31 @@ export const useLocalStorage = <T>(
       try {
         parsed = JSON.parse(value);
       } catch (error) {
-        return initialValue; // Return initialValue if parsing fails
+        return defaultValue; // Return defaultValue if parsing fails
       }
 
       return parsed as T;
     },
-    [initialValue],
+    [defaultValue],
   );
 
   // Get from local storage then
-  // parse stored json or return initialValue
+  // parse stored json or return defaultValue
   const readValue = useCallback((): T => {
     // Prevent build error "window is undefined" but keeps working
     if (IS_SERVER) {
-      return initialValue;
+      return defaultValue;
     }
 
     try {
       const raw = window.localStorage.getItem(key);
-      return raw ? deserializer(raw) : initialValue;
+      return raw ? deserializer(raw) : defaultValue;
     } catch (error) {
-      return initialValue;
+      return defaultValue;
     }
-  }, [initialValue, key, deserializer]);
+  }, [defaultValue, key, deserializer]);
 
-  const [storedValue, setStoredValue] = useState(initialValue);
+  const [storedValue, setStoredValue] = useState(readValue());
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.

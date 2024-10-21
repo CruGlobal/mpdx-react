@@ -1,22 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { gqlMock } from '__tests__/util/graphqlMocking';
-import {
-  LoadConstantsDocument,
-  LoadConstantsQuery,
-} from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PhaseEnum } from 'src/graphql/types.generated';
 import { usePhaseData } from 'src/hooks/usePhaseData';
-
-jest.mock('src/components/Constants/UseApiConstants.tsx');
-
-// Mock useApiConstants to make the data available synchronously instead of having to wait for the GraphQL call
-(useApiConstants as jest.MockedFn<typeof useApiConstants>).mockReturnValue(
-  gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
-    mocks: loadConstantsMockData,
-  }).constant,
-);
 
 describe('usePhaseData', () => {
   it('should return correctly formatted phaseData', () => {
@@ -104,7 +88,7 @@ describe('usePhaseData', () => {
         name: 'Text Message',
         phase: 'Follow-Up',
         phaseId: 'FOLLOW_UP',
-        title: 'Follow Up - Text Message',
+        title: 'Follow-Up - Text Message',
       },
       INITIATION_EMAIL: {
         name: 'Email',
@@ -116,7 +100,7 @@ describe('usePhaseData', () => {
         name: 'Social Media',
         phase: 'Follow-Up',
         phaseId: 'FOLLOW_UP',
-        title: 'Follow Up - Social Media',
+        title: 'Follow-Up - Social Media',
       },
       APPOINTMENT_VIDEO_CALL: {
         name: 'Video Call',

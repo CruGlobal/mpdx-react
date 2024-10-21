@@ -56,9 +56,9 @@ export const ContactFlow: React.FC<Props> = ({
     useFlowOptions();
 
   const { t } = useTranslation();
+  const { getContactStatusesByPhase } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { contactStatuses } = useContactPartnershipStatuses();
 
   const flowOptions = useMemo(() => {
     if (loadingUserOptions) {
@@ -68,7 +68,7 @@ export const ContactFlow: React.FC<Props> = ({
       return userFlowOptions;
     }
 
-    return getDefaultFlowOptions(t, contactStatuses);
+    return getDefaultFlowOptions(t, getContactStatusesByPhase);
   }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();

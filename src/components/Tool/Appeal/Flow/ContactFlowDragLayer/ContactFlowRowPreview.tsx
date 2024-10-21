@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import Star from '@mui/icons-material/Star';
 import StarBorder from '@mui/icons-material/StarBorder';
 import { Avatar, Box, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import {
   ContactFlowRowPreviewProps,
   DetailsBox,
@@ -10,8 +9,8 @@ import {
   PreviewInnerBox,
 } from 'src/components/Contacts/ContactFlow/ContactFlowDragLayer/ContactFlowRowPreview';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 
 interface Props extends Omit<ContactFlowRowPreviewProps, 'status'> {
   status: StatusEnum;
@@ -19,7 +18,7 @@ interface Props extends Omit<ContactFlowRowPreviewProps, 'status'> {
 
 export const ContactFlowRowPreview: React.FC<Props> = memo(
   function ContactFlowRowPreview({ name, status, starred, width }) {
-    const { t } = useTranslation();
+    const { getLocalizedContactStatus } = useLocalizedConstants();
     return (
       <PreviewBox width={width}>
         <PreviewInnerBox>
@@ -35,7 +34,7 @@ export const ContactFlowRowPreview: React.FC<Props> = memo(
               <Typography style={{ color: theme.palette.mpdxBlue.main }}>
                 {name}
               </Typography>
-              <Typography>{getLocalizedContactStatus(t, status)}</Typography>
+              <Typography>{getLocalizedContactStatus(status)}</Typography>
             </Box>
           </DetailsBox>
           <Box display="flex" pr={2}>

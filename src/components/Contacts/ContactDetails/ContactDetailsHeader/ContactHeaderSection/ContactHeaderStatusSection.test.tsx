@@ -2,8 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import i18n from '../../../../../lib/i18n';
@@ -53,17 +52,11 @@ interface ComponentsProps {
 }
 
 const Components = ({ loading, contact }: ComponentsProps) => (
-  <GqlMockedProvider<{
-    LoadConstants: LoadConstantsQuery;
-  }>
-    mocks={{ LoadConstants: loadConstantsMockData }}
-  >
-    <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <ContactHeaderStatusSection loading={loading} contact={contact} />
-      </I18nextProvider>
-    </ThemeProvider>
-  </GqlMockedProvider>
+  <ThemeProvider theme={theme}>
+    <I18nextProvider i18n={i18n}>
+      <ContactHeaderStatusSection loading={loading} contact={contact} />
+    </I18nextProvider>
+  </ThemeProvider>
 );
 
 describe('ContactHeaderStatusSection', () => {
