@@ -83,4 +83,11 @@ query LoadConstants {
       tasks
     }
   }
+  user {
+    id
+    preferences {
+      id
+      locale
+    }
+  }
 }
