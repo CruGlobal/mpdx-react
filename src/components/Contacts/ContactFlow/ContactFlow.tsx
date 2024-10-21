@@ -52,7 +52,7 @@ export const ContactFlow: React.FC<Props> = ({
   onContactSelected,
   searchTerm,
 }: Props) => {
-  const { options: userFlowOptions, loading: loadingUserOptions } =
+  const [userFlowOptions, _, { loading: loadingUserOptions }] =
     useFlowOptions();
 
   const { t } = useTranslation();

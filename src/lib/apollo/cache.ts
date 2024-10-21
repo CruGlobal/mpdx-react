@@ -42,6 +42,8 @@ export const createCache = () =>
         },
         merge: true,
       },
+      // For Options, use the key as the unique id to make it easier to find them in the cache
+      Option: { keyFields: ['key'] },
       User: { merge: true },
       Contact: {
         fields: {
@@ -80,6 +82,15 @@ export const createCache = () =>
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
+          // When loading a user option, look it up from the cache by its key
+          userOption: {
+            read: (_, { args, toReference }) =>
+              args &&
+              toReference({
+                __typename: 'Option',
+                key: args.key,
+              }),
+          },
           // Ignore the input.pageNumber arg so that queries with different page numbers will
           // be merged together
           searchOrganizationsAccountLists: {
