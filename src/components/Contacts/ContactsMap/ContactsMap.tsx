@@ -1,5 +1,6 @@
+import NextLink from 'next/link';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   GoogleMap,
@@ -10,6 +11,8 @@ import {
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceHelper';
@@ -18,12 +21,8 @@ import {
   ContactsType,
 } from '../ContactsContext/ContactsContext';
 
-const ContactLink = styled(Typography)(({ theme }) => ({
-  color: theme.palette.mpdxBlue.main,
-  '&:hover': {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
+const InlineTypography = styled(Typography)(() => ({
+  display: 'inline',
 }));
 
 const MapLoading = styled(CircularProgress)(() => ({
@@ -35,7 +34,7 @@ const MapLoading = styled(CircularProgress)(() => ({
 const mapContainerStyle = {
   height: '100%',
   width: '100%',
-  zIndex: 1000,
+  zIndex: 700, // contact details drawer are 800
 };
 
 const options = {
@@ -55,9 +54,13 @@ export const ContactsMap: React.FC = ({}) => {
     mapRef,
     selected,
     setSelected,
-    setContactFocus: onContactSelected,
   } = React.useContext(ContactsContext) as ContactsType;
   const { contactStatuses } = useContactPartnershipStatuses();
+  const accountListId = useAccountListId();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/contacts/map/`,
+  });
+  const contactUrl = (selected && getContactUrl(selected.id)) ?? '';
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -167,22 +170,18 @@ export const ContactsMap: React.FC = ({}) => {
               </Typography>
               <Typography>{selected.street}</Typography>
               <Typography>{`${selected.city} ${selected.state} ${selected.postal}`}</Typography>
-              <Typography
-                display="inline"
-                style={{ marginRight: theme.spacing(0.5) }}
-              >
+              <InlineTypography sx={{ marginRight: 0.5 }}>
                 {t('Source:')}
-              </Typography>
-              <Typography
-                display="inline"
-                style={{ marginRight: theme.spacing(0.5) }}
-              >
+              </InlineTypography>
+              <InlineTypography sx={{ marginRight: 0.5 }}>
                 {sourceToStr(t, selected.source ?? '')}
+              </InlineTypography>
+              <InlineTypography>{selected.date}</InlineTypography>
+              <Typography sx={{ cursor: 'pointer' }}>
+                <NextLink href={contactUrl} passHref shallow>
+                  <Link>{t('Show Contact')}</Link>
+                </NextLink>
               </Typography>
-              <Typography display="inline">{selected.date}</Typography>
-              <ContactLink onClick={() => onContactSelected(selected.id, true)}>
-                {t('Show Contact')}
-              </ContactLink>
             </Box>
           </InfoWindowF>
         ) : null}
