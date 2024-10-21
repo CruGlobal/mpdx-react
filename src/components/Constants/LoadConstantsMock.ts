@@ -24,6 +24,7 @@ const LoadConstantsMock = (): MockedResponse => {
 };
 
 export const loadConstantsMockData: LoadConstantsQuery = {
+  user: { id: '123', preferences: { id: '123', locale: 'en' } },
   constant: {
     status: [
       {
