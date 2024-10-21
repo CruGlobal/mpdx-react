@@ -43,32 +43,7 @@ const Components: React.FC<ComponentsProps> = ({
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider
-          onCall={mutationSpy}
-          mocks={{
-            LoadConstants: {
-              constant: {
-                locales: [
-                  {
-                    englishName: 'Filipino (fil)',
-                    nativeName: 'Filipino',
-                    shortName: 'fil',
-                  },
-                  {
-                    englishName: 'UK English (en-GB)',
-                    nativeName: 'UK English',
-                    shortName: 'en-GB',
-                  },
-                  {
-                    englishName: 'Latin American Spanish (es-419)',
-                    nativeName: 'español latinoamericano',
-                    shortName: 'es-419',
-                  },
-                ],
-              },
-            },
-          }}
-        >
+        <GqlMockedProvider onCall={mutationSpy}>
           <LocaleAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}

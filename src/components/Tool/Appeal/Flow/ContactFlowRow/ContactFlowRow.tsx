@@ -11,7 +11,6 @@ import {
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { useTranslation } from 'react-i18next';
 import {
   ContactFlowRowProps,
   ContactLink,
@@ -22,8 +21,8 @@ import {
 import { StarContactIconButton } from 'src/components/Contacts/StarContactIconButton/StarContactIconButton';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import {
   AppealStatusEnum,
   AppealsContext,
@@ -96,7 +95,7 @@ export const ContactFlowRow: React.FC<Props> = ({
   excludedContacts,
 }) => {
   const { id, name, starred } = contact;
-  const { t } = useTranslation();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
   const {
     appealId,
     isRowChecked: isChecked,
@@ -175,7 +174,7 @@ export const ContactFlowRow: React.FC<Props> = ({
                   {name}
                 </ContactLink>
                 <Typography variant="body2">
-                  {getLocalizedContactStatus(t, contact.status)}
+                  {getLocalizedContactStatus(contact.status)}
                 </Typography>
               </Box>
             </FlexCenterAlignedBox>

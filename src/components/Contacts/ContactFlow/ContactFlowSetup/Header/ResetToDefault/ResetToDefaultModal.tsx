@@ -41,14 +41,14 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
   resetColumnsMessage,
 }) => {
   const { t } = useTranslation();
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getContactStatusesByPhase } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const [updating, setUpdating] = useState(false);
 
   const handleOnSubmit = (values: { resetToDefaultType: string }) => {
     const defaultValues = getDefaultFlowOptions(
       t,
-      contactStatuses,
+      getContactStatusesByPhase,
       values.resetToDefaultType as DefaultTypeEnum,
     );
 

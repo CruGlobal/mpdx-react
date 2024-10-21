@@ -28,15 +28,14 @@ import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToo
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import {
   PledgeCurrencyOptionFormatEnum,
   getPledgeCurrencyOptions,
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import theme from '../../../theme';
@@ -206,7 +205,7 @@ const Contact: React.FC<Props> = ({
   const constants = useApiConstants();
   const frequencyOptions = constants?.pledgeFrequency;
   const statusOptions = constants?.status;
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
   const phases = constants?.phases;
   const { appName } = useGetAppSettings();
 
@@ -321,10 +320,7 @@ const Contact: React.FC<Props> = ({
                           </Link>
                           <Typography variant="subtitle2">
                             {t('Current: {{status}}', {
-                              status: getLocalizedContactStatus(
-                                t,
-                                currentStatus,
-                              ),
+                              status: getLocalizedContactStatus(currentStatus),
                             })}
                           </Typography>
                           <Typography variant="subtitle2">
@@ -377,7 +373,7 @@ const Contact: React.FC<Props> = ({
                                 </ListSubheader>,
                                 phase?.contactStatuses.map((status) => (
                                   <MenuItem key={status} value={status}>
-                                    {contactStatuses[status]?.translated}
+                                    {getLocalizedContactStatus(status)}
                                   </MenuItem>
                                 )),
                               ])}

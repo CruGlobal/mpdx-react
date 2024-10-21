@@ -42,8 +42,8 @@ import {
   ResultEnum,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
+import { convertStatus } from 'src/utils/functions/convertContactStatus';
 import {
   ContactsContext,
   ContactsType,
@@ -141,7 +141,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { statusMapForFilters } = useContactPartnershipStatuses();
   const activities = useApiConstants()?.activities;
   const [saveFilterModalOpen, setSaveFilterModalOpen] = useState(false);
   const [deleteFilterModalOpen, setDeleteFilterModalOpen] = useState(false);
@@ -154,6 +153,14 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const financialAccountContext = React.useContext(
     FinancialAccountContext,
   ) as FinancialAccountType;
+
+  const matchFilterContactStatuses = (status: string | null | undefined) => {
+    return (
+      Object.values(ContactFilterStatusEnum).find(
+        (value) => value === status?.toUpperCase(),
+      ) || null
+    );
+  };
 
   const handleClearAll =
     contextType === ContextTypesEnum.Contacts
@@ -446,20 +453,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 return {
                   ...acc,
                   [key]: value.split(',').map((enumValue) => {
-                    // Status
-                    // Check if saved filter (enumValue) is either the status  (partner_financial) or (Partner - Financial)
-                    const matchedStatus = Object.entries(
-                      statusMapForFilters,
-                    )?.find(([statusKey, status]) => {
-                      return (
-                        statusKey === enumValue ||
-                        status === enumValue ||
-                        status.toLowerCase() === enumValue
-                      );
-                    });
+                    // Saved Filters contact status could be in 'Partner - Financial' format from Angular or lowercase 'partner_financial' or uppercase ENUM
                     return (
-                      (matchedStatus &&
-                        (matchedStatus[1] as ContactFilterStatusEnum)) ||
+                      convertStatus(enumValue) ||
+                      matchFilterContactStatuses(enumValue) ||
                       ContactFilterStatusEnum.Null
                     );
                   }),

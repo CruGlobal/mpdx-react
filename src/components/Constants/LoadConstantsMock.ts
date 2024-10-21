@@ -24,6 +24,7 @@ const LoadConstantsMock = (): MockedResponse => {
 };
 
 export const loadConstantsMockData: LoadConstantsQuery = {
+  user: { id: '123', preferences: { id: '123', locale: 'en' } },
   constant: {
     status: [
       {
@@ -141,27 +142,27 @@ export const loadConstantsMockData: LoadConstantsQuery = {
       {
         id: ActivityTypeEnum.FollowUpPhoneCall,
         name: 'phone call to follow up',
-        value: 'Follow Up - Phone Call',
+        value: 'Follow-Up - Phone Call',
       },
       {
         id: ActivityTypeEnum.FollowUpEmail,
         name: 'email to follow up',
-        value: 'Follow Up - Email',
+        value: 'Follow-Up - Email',
       },
       {
         id: ActivityTypeEnum.FollowUpTextMessage,
         name: 'text message to follow up',
-        value: 'Follow Up - Text Message',
+        value: 'Follow-Up - Text Message',
       },
       {
         id: ActivityTypeEnum.FollowUpSocialMedia,
         name: 'social media message to follow up',
-        value: 'Follow Up - Social Media',
+        value: 'Follow-Up - Social Media',
       },
       {
         id: ActivityTypeEnum.FollowUpInPerson,
         name: 'follow up in person',
-        value: 'Follow Up - In Person',
+        value: 'Follow-Up - In Person',
       },
       {
         id: ActivityTypeEnum.PartnerCarePhoneCall,
@@ -191,7 +192,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
       {
         id: ActivityTypeEnum.PartnerCareThank,
         name: 'send thank you note',
-        value: 'Partner Care - Thank',
+        value: 'Partner Care - Thank You Note',
       },
       {
         id: ActivityTypeEnum.PartnerCareDigitalNewsletter,
@@ -898,6 +899,15 @@ export const loadConstantsMockData: LoadConstantsQuery = {
         symbol: '$',
         value: 'USD ($)',
       },
+      {
+        code: 'EUR',
+        codeSymbolString: 'EUR (€)',
+        id: 'EUR',
+        key: 'EUR',
+        name: 'Euro',
+        symbol: '€',
+        value: 'EUR (€)',
+      },
     ],
     pledgeFrequency: [
       {
@@ -909,6 +919,55 @@ export const loadConstantsMockData: LoadConstantsQuery = {
         id: PledgeFrequencyEnum.Annual,
         key: '12.0',
         value: 'Annual',
+      },
+    ],
+    languages: [
+      {
+        id: 'en',
+        value: 'English',
+      },
+      {
+        id: 'elx',
+        value: 'Greek',
+      },
+      {
+        id: 'eka',
+        value: 'Ekajuk',
+      },
+      {
+        id: 'en-AU',
+        value: 'Australian English',
+      },
+    ],
+    locales: [
+      {
+        englishName: 'Filipino (fil)',
+        nativeName: 'Filipino',
+        shortName: 'fil',
+      },
+      {
+        englishName: 'UK English (en-GB)',
+        nativeName: 'UK English',
+        shortName: 'en-GB',
+      },
+      {
+        englishName: 'Latin American Spanish (es-419)',
+        nativeName: 'español latinoamericano',
+        shortName: 'es-419',
+      },
+    ],
+    times: [
+      {
+        key: 0,
+        value: '12:00 AM',
+      },
+      {
+        key: 5,
+        value: '5:00 AM',
+      },
+      {
+        key: null,
+        value: 'Immediately',
       },
     ],
   },

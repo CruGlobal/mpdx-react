@@ -5,8 +5,6 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ContactsMapPanel } from './ContactsMapPanel';
@@ -51,11 +49,7 @@ describe('ContactsMapPanel', () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{
-            LoadConstants: LoadConstantsQuery;
-          }>
-            mocks={{ LoadConstants: loadConstantsMockData }}
-          >
+          <GqlMockedProvider>
             <ContactsWrapper>
               <ContactsMapPanel
                 data={data}
@@ -82,11 +76,7 @@ describe('ContactsMapPanel', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{
-            LoadConstants: LoadConstantsQuery;
-          }>
-            mocks={{ LoadConstants: loadConstantsMockData }}
-          >
+          <GqlMockedProvider>
             <ContactsWrapper>
               <ContactsMapPanel
                 data={data}

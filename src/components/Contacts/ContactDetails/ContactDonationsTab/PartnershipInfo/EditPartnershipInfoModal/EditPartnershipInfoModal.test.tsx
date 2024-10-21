@@ -6,11 +6,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import {
-  loadConstantsMockData as LoadConstants,
-  loadConstantsMockData,
-} from 'src/components/Constants/LoadConstantsMock';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -23,7 +18,6 @@ import {
   ContactDonorAccountsFragmentDoc,
 } from '../../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal';
-import { UpdateContactPartnershipMutation } from './EditPartnershipInfoModal.generated';
 
 const handleClose = jest.fn();
 const contactMock = gqlMock<ContactDonorAccountsFragment>(
@@ -196,11 +190,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{ LoadConstants }}
-            >
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={newContactMock}
                 handleClose={handleClose}
@@ -235,11 +225,7 @@ describe('EditPartnershipInfoModal', () => {
         <SnackbarProvider>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider<{
-                LoadConstants: LoadConstantsQuery;
-              }>
-                mocks={{ LoadConstants }}
-              >
+              <GqlMockedProvider>
                 <EditPartnershipInfoModal
                   contact={contactMock}
                   handleClose={handleClose}
@@ -308,11 +294,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{ LoadConstants: loadConstantsMockData }}
-            >
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -376,11 +358,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              LoadConstants: LoadConstantsQuery;
-            }>
-              mocks={{ LoadConstants }}
-            >
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -495,33 +473,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              UpdateContactPartnership: UpdateContactPartnershipMutation;
-            }>
-              mocks={{
-                LoadConstants: {
-                  constant: {
-                    pledgeCurrency: [
-                      {
-                        code: 'CAD',
-                        codeSymbolString: 'CAD ($)',
-                        name: 'Canadian Dollar',
-                      },
-                      {
-                        code: 'CDF',
-                        codeSymbolString: 'CDF (CDF)',
-                        name: 'Congolese Franc',
-                      },
-                      {
-                        code: 'CHE',
-                        codeSymbolString: 'CHE (CHE)',
-                        name: 'WIR Euro',
-                      },
-                    ],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -597,30 +549,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              UpdateContactPartnership: UpdateContactPartnershipMutation;
-            }>
-              mocks={{
-                LoadConstants: {
-                  constant: {
-                    pledgeCurrency: [
-                      {
-                        id: 'CAD',
-                        value: 'CAD ($)',
-                      },
-                      {
-                        id: 'CDF',
-                        value: 'CDF (CDF)',
-                      },
-                      {
-                        id: 'CHE',
-                        value: 'CHE (CHE)',
-                      },
-                    ],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}
@@ -748,30 +677,7 @@ describe('EditPartnershipInfoModal', () => {
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{
-              UpdateContactPartnership: UpdateContactPartnershipMutation;
-            }>
-              mocks={{
-                LoadConstants: {
-                  constant: {
-                    pledgeCurrency: [
-                      {
-                        id: 'CAD',
-                        value: 'CAD ($)',
-                      },
-                      {
-                        id: 'CDF',
-                        value: 'CDF (CDF)',
-                      },
-                      {
-                        id: 'CHE',
-                        value: 'CHE (CHE)',
-                      },
-                    ],
-                  },
-                },
-              }}
-            >
+            <GqlMockedProvider>
               <EditPartnershipInfoModal
                 contact={contactMock}
                 handleClose={handleClose}

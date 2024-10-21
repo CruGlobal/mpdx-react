@@ -1,21 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { gqlMock } from '__tests__/util/graphqlMocking';
-import {
-  LoadConstantsDocument,
-  LoadConstantsQuery,
-} from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from './useContactPartnershipStatuses';
-
-jest.mock('src/components/Constants/UseApiConstants.tsx');
-
-// Mock useApiConstants to make the data available synchronously instead of having to wait for the GraphQL call
-(useApiConstants as jest.MockedFn<typeof useApiConstants>).mockReturnValue(
-  gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
-    mocks: loadConstantsMockData,
-  }).constant,
-);
 
 describe('useContactPartnershipStatuses', () => {
   it('should return correctly formatted contactPartnershipStatuses.test', () => {
@@ -79,6 +64,22 @@ describe('useContactPartnershipStatuses', () => {
       active: 'ACTIVE',
       hidden: 'HIDDEN',
       null: 'NULL',
+    });
+  });
+  describe('getContactStatusesByPhase', () => {
+    it('returns array of Statuses', () => {
+      const { result } = renderHook(() => useContactPartnershipStatuses());
+      expect(
+        result.current.getContactStatusesByPhase(PhaseEnum.PartnerCare),
+      ).toEqual([
+        StatusEnum.PartnerFinancial,
+        StatusEnum.PartnerSpecial,
+        StatusEnum.PartnerPray,
+      ]);
+    });
+    it('returns empty array when invalid', () => {
+      const { result } = renderHook(() => useContactPartnershipStatuses());
+      expect(result.current.getContactStatusesByPhase('invalid')).toEqual([]);
     });
   });
 });

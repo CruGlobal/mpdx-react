@@ -17,8 +17,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../../theme';
 
@@ -41,7 +41,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const [visible, setVisible] = useState(true);
 
@@ -121,8 +121,9 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     </TableCell>
                     <TableCell align="left">
                       {row.contactStatus &&
-                        contactStatuses[row.contactStatus.toUpperCase()]
-                          ?.translated}
+                        getLocalizedContactStatus(
+                          row.contactStatus.toUpperCase(),
+                        )}
                     </TableCell>
                     <TableCell align="right">
                       {currencyFormat(

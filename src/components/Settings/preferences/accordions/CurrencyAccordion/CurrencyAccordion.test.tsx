@@ -41,37 +41,7 @@ const Components: React.FC<ComponentsProps> = ({ currency, expandedPanel }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider
-          onCall={mutationSpy}
-          mocks={{
-            LoadConstants: {
-              constant: {
-                pledgeCurrency: [
-                  {
-                    code: 'CAD',
-                    codeSymbolString: 'CAD ($)',
-                    name: 'Canadian Dollar',
-                  },
-                  {
-                    code: 'USD',
-                    codeSymbolString: 'USD ($)',
-                    name: 'US Dollar',
-                  },
-                  {
-                    code: 'EUR',
-                    codeSymbolString: 'EUR (€)',
-                    name: 'Euro',
-                  },
-                  {
-                    code: 'CHE',
-                    codeSymbolString: 'CHE (CHE)',
-                    name: 'WIR Euro',
-                  },
-                ],
-              },
-            },
-          }}
-        >
+        <GqlMockedProvider onCall={mutationSpy}>
           <CurrencyAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
