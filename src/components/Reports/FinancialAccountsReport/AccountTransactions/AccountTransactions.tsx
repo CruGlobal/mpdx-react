@@ -9,17 +9,17 @@ import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { formatNumber } from '../AccountSummary/AccountSummaryHelper';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import {
   FinancialAccountContext,
   FinancialAccountType,
 } from '../Context/FinancialAccountsContext';
-import { FinancialAccountHeader } from '../Header/Header';
+import { TransactionsHeader } from '../Header/TransactionsHeader';
 import {
   AccountTransactionTable,
   FinancialAccountEntryTypeEnum,
 } from './AccountTransactionTable/AccountTransactionTable';
+import { formatTransactionAmount } from './AccountTransactionsHelper';
 import { useFinancialAccountEntriesQuery } from './financialAccountTransactions.generated';
 
 const Container = styled(Box)(() => ({
@@ -28,18 +28,11 @@ const Container = styled(Box)(() => ({
 }));
 
 const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
-  if (!startDate) {
-    startDate = DateTime.local().minus({ months: 1 }).plus({ days: 1 });
-  }
-  if (!endDate) {
-    endDate = DateTime.local();
-  }
-  return `${startDate.toISODate()}..${endDate.toISODate()}`;
+  const minDate =
+    startDate ?? DateTime.local().minus({ months: 1 }).plus({ days: 1 });
+  const maxDate = endDate ?? DateTime.local();
+  return `${minDate.toISODate()}..${maxDate.toISODate()}`;
 };
-
-const defaultDateRange = formatDateRange();
-const defaultStartDate = defaultDateRange.split('..')[0];
-const defaultEndDate = defaultDateRange.split('..')[1];
 
 export const AccountTransactions: React.FC = () => {
   const { query } = useRouter();
@@ -68,6 +61,10 @@ export const AccountTransactions: React.FC = () => {
       setActiveFilters({});
     };
   }, [query?.filters]);
+
+  const defaultDateRange = useMemo(() => formatDateRange(), []);
+  const defaultStartDate = defaultDateRange.split('..')[0];
+  const defaultEndDate = defaultDateRange.split('..')[1];
 
   useEffect(() => {
     if (!hasActiveFilters && !query?.filters) {
@@ -118,28 +115,25 @@ export const AccountTransactions: React.FC = () => {
       t('Outflow'),
       t('Inflow'),
     ];
-    const convertDataToArray = data.financialAccountEntries.entries.map(
-      (entry) => [
-        entry.entryDate
-          ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
-          : 'No entry date',
-        entry.description ?? '',
-        entry.category?.name ?? entry.category?.code ?? '',
-        entry.type === FinancialAccountEntryTypeEnum.Debit
-          ? currencyFormat(
-              formatNumber(entry.amount),
-              entry.currency,
-              locale,
-            ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
-          : '',
-        entry.type === FinancialAccountEntryTypeEnum.Credit
-          ? currencyFormat(
-              formatNumber(entry.amount),
-              entry.currency,
-              locale,
-            ).replace(/[\xA0\u2000-\u200B\uFEFF]/g, ' ')
-          : '',
-      ],
+    const convertDataToArray = data.financialAccountEntries.entries.reduce(
+      (array, entry) => {
+        return [
+          ...array,
+          [
+            entry.entryDate
+              ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
+              : 'No entry date',
+            entry.description ?? '',
+            entry.category?.name ?? entry.category?.code ?? '',
+            entry.type === FinancialAccountEntryTypeEnum.Debit
+              ? `${formatTransactionAmount(entry.amount, true)}`
+              : '',
+            entry.type === FinancialAccountEntryTypeEnum.Credit
+              ? `${formatTransactionAmount(entry.amount)}`
+              : '',
+          ],
+        ];
+      },
       [columnHeaders],
     );
 
@@ -166,8 +160,7 @@ export const AccountTransactions: React.FC = () => {
 
   return (
     <Container>
-      <FinancialAccountHeader
-        onTransactionPage
+      <TransactionsHeader
         disableExportCSV={loading}
         handleExportCSV={handleExportCSV}
       />

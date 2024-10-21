@@ -6,7 +6,6 @@ import userEvent from '@testing-library/user-event';
 import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccount.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
@@ -16,8 +15,7 @@ import {
 } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
 import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
-import { SetupStageQuery } from 'src/components/Setup/Setup.generated';
-import { SetupProvider } from 'src/components/Setup/SetupProvider';
+import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import Preferences from './preferences.page';
 
@@ -49,7 +47,7 @@ interface MocksProvidersProps {
   children: JSX.Element;
   canUserExportData: boolean;
   singleOrg?: boolean;
-  setup?: string;
+  setup?: boolean;
   router?: Partial<NextRouter> | undefined;
 }
 
@@ -57,7 +55,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
   children,
   canUserExportData,
   singleOrg,
-  setup,
+  setup = false,
   router = defaultRouter,
 }) => (
   <ThemeProvider theme={theme}>
@@ -66,12 +64,10 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
         GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
         MailchimpAccount: MailchimpAccountQuery;
         PrayerlettersAccount: PrayerlettersAccountQuery;
-        GetUserOptions: GetUserOptionsQuery;
         GetAccountPreferences: GetAccountPreferencesQuery;
         GetPersonalPreferences: GetPersonalPreferencesQuery;
         GetProfileInfo: GetProfileInfoQuery;
         CanUserExportData: CanUserExportDataQuery;
-        SetupStage: SetupStageQuery;
       }>
         mocks={{
           GetAccountPreferences: {
@@ -127,19 +123,8 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
           },
           GetUsersOrganizationsAccounts: {
             userOrganizationAccounts: singleOrg
-              ? [
-                  {
-                    organization: {},
-                  },
-                ]
-              : [
-                  {
-                    organization: {},
-                  },
-                  {
-                    organization: {},
-                  },
-                ],
+              ? [{ organization: {} }]
+              : [{ organization: {} }, { organization: {} }],
           },
           CanUserExportData: {
             canUserExportData: {
@@ -147,21 +132,10 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
               exportedAt: null,
             },
           },
-          SetupStage: {
-            user: {
-              setup: null,
-            },
-            userOptions: [
-              {
-                key: 'setup_position',
-                value: setup || '',
-              },
-            ],
-          },
         }}
         onCall={mutationSpy}
       >
-        <SetupProvider>{children}</SetupProvider>
+        <TestSetupProvider onSetupTour={setup}>{children}</TestSetupProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -277,20 +251,18 @@ describe('Preferences page', () => {
     });
 
     it('should show setup banner and open locale', async () => {
-      const { findByText, getByRole, queryByText, getByText } = render(
-        <MocksProviders
-          canUserExportData={false}
-          singleOrg={true}
-          setup="preferences.personal"
-        >
+      const { findByRole, findByText, getByRole, queryByText } = render(
+        <MocksProviders canUserExportData={false} singleOrg={true} setup>
           <Preferences />
         </MocksProviders>,
       );
 
       //Accordions should be disabled
+      expect(await findByRole('button', { name: 'Language' })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
       await waitFor(() => {
-        const label = getByText('Language');
-        expect(() => userEvent.click(label)).toThrow();
         expect(
           queryByText('The language determines your default language for .'),
         ).not.toBeInTheDocument();
@@ -327,7 +299,7 @@ describe('Preferences page', () => {
       // Move to Notifications
       userEvent.click(skipButton);
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
           key: 'setup_position',
           value: 'preferences.notifications',
         });
@@ -335,6 +307,6 @@ describe('Preferences page', () => {
           '/accountLists/account-list-1/settings/notifications',
         );
       });
-    });
+    }, 15000);
   });
 });

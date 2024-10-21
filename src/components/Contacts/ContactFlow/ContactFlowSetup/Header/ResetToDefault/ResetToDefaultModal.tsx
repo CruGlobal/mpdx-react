@@ -26,7 +26,7 @@ import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipSt
 import { ContactFlowOption } from '../../../ContactFlow';
 
 interface ResetToDefaultModalProps {
-  updateOptions: (options: ContactFlowOption[]) => Promise<void>;
+  updateOptions: (options: ContactFlowOption[]) => void;
   handleClose: () => void;
   resetColumnsMessage: string;
 }
@@ -45,14 +45,14 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [updating, setUpdating] = useState(false);
 
-  const handleOnSubmit = async (values: { resetToDefaultType: string }) => {
+  const handleOnSubmit = (values: { resetToDefaultType: string }) => {
     const defaultValues = getDefaultFlowOptions(
       t,
       getContactStatusesByPhase,
       values.resetToDefaultType as DefaultTypeEnum,
     );
 
-    await updateOptions(defaultValues);
+    updateOptions(defaultValues);
     enqueueSnackbar(resetColumnsMessage, {
       variant: 'success',
     });
