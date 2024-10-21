@@ -9,7 +9,6 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { formatLanguage, languages } from 'src/lib/data/languages';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
@@ -34,7 +33,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   const { appName } = useGetAppSettings();
   const { enqueueSnackbar } = useSnackbar();
   const [updatePersonalPreferences] = useUpdatePersonalPreferencesMutation();
-  const [_, setLocaleStorageLanguage] = useLocalStorage(`user-language`, '');
 
   const label = t('Language');
 
@@ -57,7 +55,6 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        setLocaleStorageLanguage(attributes.locale || '');
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {

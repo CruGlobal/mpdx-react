@@ -14,14 +14,15 @@ export const useApiConstants = ():
   });
 
   const userSavedLanguage = data?.user.preferences?.locale;
-  const [localeStorageLanguage, setLocaleStorageLanguage] = useLocalStorage(
-    `user-language`,
+  const [localStorageLanguage, setLocalStorageLanguage] = useLocalStorage(
+    `constants-language`,
     '',
   );
   useEffect(() => {
-    // if the language in locale storage is different than the saved language, the user may have changed languages in a different browser. If so, refetch the constants.
-    if (localeStorageLanguage !== userSavedLanguage) {
-      setLocaleStorageLanguage(userSavedLanguage || '');
+    // if the language in local storage is different than the saved language, that may mean the cached constants are in the previous language. If so, refetch the constants.
+
+    if (userSavedLanguage && localStorageLanguage !== userSavedLanguage) {
+      setLocalStorageLanguage(userSavedLanguage || '');
       refetch();
     }
   }, [userSavedLanguage]);
