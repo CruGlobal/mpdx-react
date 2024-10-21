@@ -13,7 +13,7 @@ export const useApiConstants = ():
     fetchPolicy: 'cache-first',
   });
 
-  const userSavedLanguage = data?.user.preferences?.locale;
+  const currentLanguage = data?.user.preferences?.locale;
   const [localStorageLanguage, setLocalStorageLanguage] = useLocalStorage(
     `constants-language`,
     '',
@@ -21,11 +21,11 @@ export const useApiConstants = ():
   useEffect(() => {
     // if the language in local storage is different than the saved language, that may mean the cached constants are in the previous language. If so, refetch the constants.
 
-    if (userSavedLanguage && localStorageLanguage !== userSavedLanguage) {
-      setLocalStorageLanguage(userSavedLanguage || '');
+    if (currentLanguage && localStorageLanguage !== currentLanguage) {
+      setLocalStorageLanguage(currentLanguage);
       refetch();
     }
-  }, [userSavedLanguage]);
+  }, [currentLanguage]);
 
   return data?.constant;
 };
