@@ -180,12 +180,8 @@ export const ContactsMap: React.FC = ({}) => {
                 {sourceToStr(t, selected.source ?? '')}
               </Typography>
               <Typography display="inline">{selected.date}</Typography>
-              <ContactLink
-                onClick={() =>
-                  onContactSelected(selected.id, true, false, true)
-                }
-              >
-                Show Contact
+              <ContactLink onClick={() => onContactSelected(selected.id)}>
+                {t('Show Contact')}
               </ContactLink>
             </Box>
           </InfoWindowF>

@@ -59,6 +59,7 @@ const MocksProviders = (props: { children: JSX.Element }) => (
             tasks: {
               nodes: [task],
               pageInfo: { hasNextPage: false },
+              totalCount: 20,
             },
           },
         }}
@@ -204,7 +205,7 @@ describe('tasks page', () => {
     );
     await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
     userEvent.click(getByTestId('task-checkbox-1'));
-    expect(getByText('Showing 17')).toBeInTheDocument();
+    expect(getByText('Showing 20')).toBeInTheDocument();
     userEvent.click(getByTestId('DeleteIconButton-1'));
     // This is needed for some reason
     userEvent.click(getByTestId('DeleteIconButton-1'));

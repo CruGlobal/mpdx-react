@@ -119,15 +119,16 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                 <Loading loading />
               ) : (
                 <ContactsProvider
-                  urlFilters={{}}
                   activeFilters={{}}
                   setActiveFilters={() => undefined}
                   starredFilter={{}}
                   setStarredFilter={() => undefined}
                   filterPanelOpen={false}
                   setFilterPanelOpen={() => undefined}
-                  contactId={[]}
+                  contactId={undefined}
+                  setContactId={() => undefined}
                   searchTerm={''}
+                  setSearchTerm={() => {}}
                 >
                   <DynamicFilterPanel
                     filters={filterGroups}

@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import {
   ContactsContext,
-  ContactsProvider,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -86,22 +86,13 @@ const MassActionsMergeModalWrapper: React.FC<
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <ContactsProvider
-            activeFilters={{}}
-            setActiveFilters={() => {}}
-            starredFilter={{}}
-            setStarredFilter={() => {}}
-            filterPanelOpen={false}
-            setFilterPanelOpen={() => {}}
-            contactId={[]}
-            searchTerm={''}
-          >
+          <ContactsWrapper>
             <MassActionsMergeModal
               accountListId={accountListId}
               ids={['contact-1', 'contact-2']}
               handleClose={handleClose}
             />
-          </ContactsProvider>
+          </ContactsWrapper>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
