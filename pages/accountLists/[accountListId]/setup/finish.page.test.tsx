@@ -30,7 +30,7 @@ describe('Finish account page', () => {
     render(<TestComponent />);
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
         key: 'setup_position',
         value: 'finish',
       }),
@@ -40,10 +40,17 @@ describe('Finish account page', () => {
   it('yes button redirects to tools', async () => {
     const { getByRole } = render(<TestComponent />);
 
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+        key: 'setup_position',
+        value: 'finish',
+      }),
+    );
+
     userEvent.click(getByRole('button', { name: /Yes/ }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
         key: 'setup_position',
         value: '',
       }),
@@ -56,10 +63,17 @@ describe('Finish account page', () => {
   it('no button redirects to the dashboard', async () => {
     const { getByRole } = render(<TestComponent />);
 
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+        key: 'setup_position',
+        value: 'finish',
+      }),
+    );
+
     userEvent.click(getByRole('button', { name: /Nope/ }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
         key: 'setup_position',
         value: '',
       }),

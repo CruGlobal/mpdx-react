@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce, omit } from 'lodash';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
-import { useUpdateUserOptionsMutation } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
 import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
   ContactsContextSavedFilters as AppealsContextSavedFilters,
@@ -12,6 +11,7 @@ import {
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
@@ -419,10 +419,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   //#region JSX
 
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
+  const [updateUserOption] = useUpdateUserOptionMutation();
 
   const updateOptions = async (view: string): Promise<void> => {
-    await updateUserOptions({
+    await updateUserOption({
       variables: {
         key: 'contacts_view',
         value: view,
