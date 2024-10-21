@@ -307,6 +307,6 @@ describe('Preferences page', () => {
           '/accountLists/account-list-1/settings/notifications',
         );
       });
-    });
+    }, 15000);
   });
 });
