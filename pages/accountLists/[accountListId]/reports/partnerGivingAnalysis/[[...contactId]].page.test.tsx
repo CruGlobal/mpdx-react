@@ -5,10 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
@@ -80,18 +80,9 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       <TestRouter router={router}>
         <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
-            <ContactsProvider
-              activeFilters={{}}
-              setActiveFilters={() => {}}
-              starredFilter={{}}
-              setStarredFilter={() => {}}
-              filterPanelOpen={false}
-              setFilterPanelOpen={() => {}}
-              contactId={[]}
-              searchTerm={''}
-            >
+            <ContactsWrapper>
               <PartnerGivingAnalysisPage />
-            </ContactsProvider>
+            </ContactsWrapper>
           </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>
