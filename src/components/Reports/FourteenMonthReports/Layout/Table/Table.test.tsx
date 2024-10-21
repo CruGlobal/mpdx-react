@@ -202,10 +202,10 @@ interface ComponentsProps {
   mocks?: FourteenMonthReportQuery;
   orderBy?: OrderBy | null;
 }
-const Components = ({
+const Components: React.FC<ComponentsProps> = ({
   mocks = defaultFourteenMonthReport,
   orderBy = 'name',
-}: ComponentsProps) => (
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <GqlMockedProvider>

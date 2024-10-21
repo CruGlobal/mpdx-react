@@ -42,7 +42,6 @@ const router = {
   push: jest.fn(),
 };
 
-const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
 
 const TestComponent = ({
@@ -79,7 +78,6 @@ const TestComponent = ({
 describe('FixCommitmentContact', () => {
   beforeEach(() => {
     handleShowModal.mockClear();
-    setContactFocus.mockClear();
     (useAccountListId as jest.Mock).mockReturnValue(accountListId);
   });
 

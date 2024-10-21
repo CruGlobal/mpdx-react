@@ -8,6 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import FixMailingAddresses from './FixMailingAddresses';
 import {
@@ -18,13 +19,12 @@ import {
 import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 
 jest.mock('next-auth/react');
-
+jest.mock('src/hooks/useAccountListId');
 const accountListId = 'account-list-1';
 const contactId = 'contactId';
 const router = {
   isReady: true,
 };
-const setContactFocus = jest.fn();
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
@@ -56,10 +56,7 @@ const Components = ({
             mocks={mocks}
             cache={cache}
           >
-            <FixMailingAddresses
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
+            <FixMailingAddresses accountListId={accountListId} />
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>
@@ -69,8 +66,9 @@ const Components = ({
 
 describe('FixMailingAddresses', () => {
   beforeEach(() => {
-    setContactFocus.mockClear();
+    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
   });
+
   it('should show noData component', async () => {
     const { queryByTestId, getByText } = render(
       <Components
@@ -440,28 +438,22 @@ describe('FixMailingAddresses', () => {
     });
   });
 
-  describe('setContactFocus()', () => {
-    it('should open up contact details', async () => {
-      const { getByText, queryByTestId } = render(
-        <Components
-          mocks={{
-            InvalidAddresses: {
-              ...mockInvalidAddressesResponse.InvalidAddresses,
-            },
-          }}
-        />,
-      );
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
-      expect(setContactFocus).not.toHaveBeenCalled();
+  it('should render link with correct href', async () => {
+    const { findByRole } = render(
+      <Components
+        mocks={{
+          InvalidAddresses: {
+            ...mockInvalidAddressesResponse.InvalidAddresses,
+          },
+        }}
+      />,
+    );
 
-      const contactName = getByText('Baggins, Frodo');
-
-      expect(contactName).toBeInTheDocument();
-      userEvent.click(contactName);
-      expect(setContactFocus).toHaveBeenCalledWith(contactId);
-    });
+    const contactName = await findByRole('link', { name: 'Baggins, Frodo' });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/mailingAddresses/${contactId}`,
+    );
   });
 
   describe('handleSingleConfirm()', () => {

@@ -149,12 +149,14 @@ const ContactItem: React.FC<ContactItemProps> = ({
   const { classes } = useStyles();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/tools/merge/contacts/`,
-  });
-
   const isPersonType = contact.__typename === 'Person';
   const isContactType = contact.__typename === 'Contact';
+
+  const url = isContactType
+    ? `/accountLists/${accountListId}/tools/merge/contacts/`
+    : `/accountLists/${accountListId}/tools/merge/people/`;
+
+  const { getContactUrl } = useContactLinks({ url });
 
   const contactUrl = getContactUrl(
     isPersonType ? contact.contactId : contact.id,

@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
@@ -68,20 +67,16 @@ describe('FixPhoneNumbersPage', () => {
     });
   });
 
-  it('should open up contact details', async () => {
-    const { findByText, queryByTestId } = render(<Components />);
-    await waitFor(() =>
-      expect(queryByTestId('LoadingSpinner')).not.toBeInTheDocument(),
-    );
-    const contactName = await findByText('Test Contact');
+  it('should render contact link correctly with donations tab', async () => {
+    const { findByRole } = render(<Components />);
 
-    expect(contactName).toBeInTheDocument();
-    userEvent.click(contactName);
-
-    await waitFor(() => {
-      expect(pushFn).toHaveBeenCalledWith(
-        `/accountLists/${accountListId}/tools/fix/phoneNumbers/${GetInvalidPhoneNumbersMocks.GetInvalidPhoneNumbers.people.nodes[0].id}`,
-      );
+    const contactName = await findByRole('link', {
+      name: 'Test Contact',
     });
+
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/phoneNumbers/testid`,
+    );
   });
 });

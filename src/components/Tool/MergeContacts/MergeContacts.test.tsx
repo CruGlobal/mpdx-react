@@ -8,6 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TypeEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { GetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import MergeContacts from './MergeContacts';
@@ -15,9 +16,9 @@ import { getContactDuplicatesMocks } from './MergeContactsMock';
 
 const accountListId = '123';
 
-const setContactFocus = jest.fn();
 const mockEnqueue = jest.fn();
 
+jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -61,7 +62,6 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
           >
             <MergeContacts
               accountListId={accountListId}
-              setContactFocus={setContactFocus}
               contactId={contactId}
             />
           </ContactsProvider>
@@ -255,22 +255,17 @@ describe('Tools - MergeContacts', () => {
     );
   });
 
-  describe('setContactFocus()', () => {
-    it('should open up contact details', async () => {
-      const mutationSpy = jest.fn();
-      const { findByText, queryByTestId } = render(
-        <MergeContactsWrapper mutationSpy={mutationSpy} />,
-      );
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
-      expect(setContactFocus).not.toHaveBeenCalled();
+  it('should render link with correct href', async () => {
+    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
 
-      const contactName = await findByText('Doe, John and Nancy');
+    const { findByRole } = render(<MergeContactsWrapper />);
 
-      expect(contactName).toBeInTheDocument();
-      userEvent.click(contactName);
-      expect(setContactFocus).toHaveBeenCalledWith('contact-2');
+    const contactName = await findByRole('link', {
+      name: 'Doe, John and Nancy',
     });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/merge/contacts/contact-2`,
+    );
   });
 });

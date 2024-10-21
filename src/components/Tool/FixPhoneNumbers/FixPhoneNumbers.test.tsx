@@ -23,7 +23,6 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
-const setContactFocus = jest.fn();
 
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
@@ -59,10 +58,7 @@ const Components: React.FC<{
               }}
               cache={cache}
             >
-              <FixPhoneNumbers
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
           </TestWrapper>
         </TestRouter>
