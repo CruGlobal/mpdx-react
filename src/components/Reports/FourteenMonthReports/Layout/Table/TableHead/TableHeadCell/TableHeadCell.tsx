@@ -30,6 +30,17 @@ const PrintableTableSortLabel = styled(TableSortLabel)(() => ({
   },
 }));
 
+const TableCell = styled(StyledTableCell)(() => ({
+  top: 65,
+  position: 'sticky',
+  '@media print': {
+    position: 'static',
+    top: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+}));
+
 const HeadCellSpan = styled('span')(() => ({
   border: 0,
   clip: 'rect(0 0 0 0)',
@@ -54,11 +65,7 @@ export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
   onClick,
 }) => {
   return (
-    <StyledTableCell
-      align={align}
-      sortDirection={sortDirection}
-      style={{ top: 65 }}
-    >
+    <TableCell align={align} sortDirection={sortDirection}>
       <PrintableTableSortLabel
         active={isActive}
         direction={direction}
@@ -71,6 +78,6 @@ export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
           </HeadCellSpan>
         )}
       </PrintableTableSortLabel>
-    </StyledTableCell>
+    </TableCell>
   );
 };

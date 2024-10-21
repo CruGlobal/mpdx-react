@@ -45,6 +45,12 @@ const NameTypography = styled(Typography, {
   },
 }));
 
+const StyledLink = styled(Link)({
+  '@media print': {
+    color: theme.palette.text.primary,
+  },
+});
+
 const PrintableContainer = styled(TableContainer)({
   // First style sets size as landscape
   '@media print': {
@@ -129,13 +135,13 @@ export const FourteenMonthReportTable: React.FC<
                   <Box display="flex" alignItems="center">
                     {!isExpanded && <StyledInfoIcon fontSize="small" />}
                     <NameTypography variant="body1" expanded={isExpanded}>
-                      <Link
+                      <StyledLink
                         onClick={() => onSelectContact(contact.id)}
                         onMouseEnter={preloadContactsRightPanel}
                         underline="hover"
                       >
                         {contact.name}
-                      </Link>
+                      </StyledLink>
                     </NameTypography>
                   </Box>
                   {isExpanded && (
