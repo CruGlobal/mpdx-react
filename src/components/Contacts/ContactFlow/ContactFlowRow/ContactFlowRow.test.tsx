@@ -26,8 +26,9 @@ const contact = {
   uncompletedTasksCount: 0,
 } as ContactRowFragment;
 
-const getContactUrl = jest.fn().mockReturnValue({
-  contactUrl: `/contacts/${contact.id}`,
+const getContactHrefObject = jest.fn().mockReturnValue({
+  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+  query: { accountListId, contactId: contact.id },
 });
 
 const Components = () => (
@@ -37,7 +38,7 @@ const Components = () => (
         <ContactsContext.Provider
           value={
             {
-              getContactUrl,
+              getContactHrefObject,
             } as unknown as ContactsType
           }
         >
@@ -62,6 +63,9 @@ describe('ContactFlowRow', () => {
   it('should call contact selected function', () => {
     const { getByRole } = render(<Components />);
     const contactName = getByRole('link', { name: 'Test Name' });
-    expect(contactName).toHaveAttribute('href', `/contacts/${contact.id}`);
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/contacts/${contact.id}`,
+    );
   });
 });

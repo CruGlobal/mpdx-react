@@ -1,8 +1,8 @@
 import NextLink from 'next/link';
 import React from 'react';
-import { Theme, Typography, TypographyProps } from '@mui/material';
+import { Link, Theme, Typography, TypographyProps } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { ContactUrl } from 'pages/accountLists/[accountListId]/tasks/[[...contactId]].page';
+import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { TaskRowFragment } from './TaskRow.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -31,7 +31,7 @@ type TaskRowContactNameProps = {
   itemIndex: number;
   contactsLength: number;
   selectContact: OnClickFunction;
-  getContactUrl?: (contactId: string) => ContactUrl;
+  getContactHrefObject?: GetContactHrefObject;
 } & TypographyProps;
 
 export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
@@ -39,7 +39,7 @@ export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
   itemIndex,
   contactsLength,
   selectContact,
-  getContactUrl,
+  getContactHrefObject,
   ...props
 }) => {
   const { classes } = useStyles();
@@ -47,7 +47,8 @@ export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
   const { id, name } = contact;
   const contactName = itemIndex !== contactsLength - 1 ? `${name},` : name;
 
-  const contactUrl = getContactUrl && getContactUrl(contact.id).contactUrl;
+  const contactHrefObject =
+    getContactHrefObject && getContactHrefObject(contact.id);
 
   const handleOnContactClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -57,26 +58,28 @@ export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
   };
   return (
     <>
-      {contactUrl && (
+      {contactHrefObject && (
         <NextLink
-          href={contactUrl}
+          href={contactHrefObject}
           shallow
           legacyBehavior
           passHref
           key={contact.id}
         >
-          <Typography
-            {...props}
-            noWrap
-            display="inline"
-            onClick={handleOnContactClick}
-            className={classes.contactName}
-          >
-            {contactName}
-          </Typography>
+          <Link>
+            <Typography
+              {...props}
+              noWrap
+              display="inline"
+              onClick={handleOnContactClick}
+              className={classes.contactName}
+            >
+              {contactName}
+            </Typography>
+          </Link>
         </NextLink>
       )}
-      {!contactUrl && (
+      {!contactHrefObject && (
         <Typography
           {...props}
           noWrap

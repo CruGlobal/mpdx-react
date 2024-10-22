@@ -78,7 +78,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
   columnWidth,
 }) => {
   const { id, name, starred, avatar } = contact;
-  const { getContactUrl } = useContext(ContactsContext) as ContactsType;
+  const { getContactHrefObject } = useContext(ContactsContext) as ContactsType;
 
   const { t } = useTranslation();
 
@@ -105,7 +105,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
-  const contactUrl = getContactUrl(id).contactUrl;
+  const contactHrefObject = getContactHrefObject(id);
 
   return (
     <ContainerBox isDragging={isDragging} ref={drag}>
@@ -113,7 +113,7 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
         <Box display="flex" alignItems="center" width="100%">
           <StyledAvatar src={avatar || ''} />
           <Box display="flex" flexDirection="column" ml={2} draggable>
-            <NextLink href={contactUrl} passHref shallow>
+            <NextLink href={contactHrefObject} passHref shallow>
               <ContactLink>{name}</ContactLink>
             </NextLink>
             <Typography>{getLocalizedContactStatus(t, status)}</Typography>

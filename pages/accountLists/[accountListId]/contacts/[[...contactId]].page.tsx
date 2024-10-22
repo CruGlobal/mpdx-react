@@ -49,7 +49,7 @@ const Contacts: React.FC = ({}) => {
           mainContent={<ContactsMainPanel />}
           rightPanel={
             <DynamicContactsRightPanel
-              onClose={() => setContactFocus(undefined, true)}
+              onClose={() => setContactFocus(undefined)}
             />
           }
           rightOpen={contactDetailsOpen}
@@ -64,7 +64,7 @@ const Contacts: React.FC = ({}) => {
 };
 
 const ContactsPage: React.FC = () => (
-  <ContactsWrapper>
+  <ContactsWrapper addViewMode>
     <Contacts />
   </ContactsWrapper>
 );

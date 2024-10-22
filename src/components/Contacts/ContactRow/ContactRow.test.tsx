@@ -21,6 +21,7 @@ import {
 const accountListId = 'account-list-1';
 
 const router = {
+  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
   query: { accountListId },
   isReady: true,
 };
@@ -62,8 +63,8 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
 jest.mock('../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
-const getContactUrl = jest.fn().mockReturnValue({
-  contactUrl: `/contacts/${contact.id}`,
+const getContactHrefObject = jest.fn().mockReturnValue({
+  query: { accountListId, contactId: contact.id },
 });
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
@@ -78,7 +79,7 @@ const Components = () => (
             value={
               {
                 accountListId,
-                getContactUrl,
+                getContactHrefObject,
                 contactDetailsOpen,
                 toggleSelectionById,
                 isRowChecked,
@@ -147,6 +148,9 @@ describe('ContactsRow', () => {
 
     const rowButton = getByTestId('rowButton');
     expect(rowButton).toBeInTheDocument();
-    expect(rowButton).toHaveAttribute('href', `/contacts/${contact.id}`);
+    expect(rowButton).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/contacts/${contact.id}`,
+    );
   });
 });

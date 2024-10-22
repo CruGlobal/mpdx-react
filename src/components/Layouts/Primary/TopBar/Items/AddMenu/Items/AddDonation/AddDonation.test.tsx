@@ -5,6 +5,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import theme from '../../../../../../../../theme';
 import { AddDonation } from './AddDonation';
 import { AddDonationMutation } from './AddDonation.generated';
@@ -149,4 +150,44 @@ describe('AddDonation', () => {
       }),
     );
   }, 20000);
+
+  it('auto fills designation account when there is only one option', async () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <GqlMockedProvider<{
+              GetDesignationAccounts: GetDesignationAccountsQuery;
+            }>
+              mocks={{
+                GetDesignationAccounts: {
+                  designationAccounts: [
+                    {
+                      designationAccounts: [
+                        {
+                          id: '321',
+                          name: 'Cool Designation Account',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              }}
+            >
+              <AddDonation
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        getByRole('combobox', { name: 'Designation Account' }),
+      ).toHaveValue('Cool Designation Account (321)'),
+    );
+  });
 });

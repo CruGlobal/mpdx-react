@@ -59,7 +59,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     accountListId,
     isRowChecked: isChecked,
     contactDetailsOpen,
-    getContactUrl,
+    getContactHrefObject,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
 
@@ -77,11 +77,11 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     uncompletedTasksCount,
   } = contact;
 
-  const { contactUrl } = getContactUrl(contactId);
+  const contactHrefObject = getContactHrefObject(contactId);
 
   return (
     <NextLink
-      href={contactUrl}
+      href={contactHrefObject}
       scroll={false}
       prefetch={false}
       shallow

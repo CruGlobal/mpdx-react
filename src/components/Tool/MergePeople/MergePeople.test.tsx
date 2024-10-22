@@ -6,7 +6,7 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { TypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -48,18 +48,9 @@ const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <ContactsProvider
-            activeFilters={{}}
-            setActiveFilters={() => {}}
-            starredFilter={{}}
-            setStarredFilter={() => {}}
-            filterPanelOpen={false}
-            setFilterPanelOpen={() => {}}
-            contactId={[]}
-            searchTerm={''}
-          >
+          <ContactsWrapper>
             <MergePeople accountListId={accountListId} />
-          </ContactsProvider>
+          </ContactsWrapper>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>

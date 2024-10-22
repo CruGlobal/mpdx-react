@@ -163,7 +163,7 @@ const ProfileMenu = (): ReactElement => {
   }
   const handleStopImpersonating = async () => {
     enqueueSnackbar(
-      t('Stopping Impersonating and redirecting you to the legacy MPDX'),
+      t('Stopping impersonation and redirecting you to the login page'),
       {
         variant: 'success',
       },
@@ -189,6 +189,18 @@ const ProfileMenu = (): ReactElement => {
     ) {
       router.push({
         pathname: '/accountLists/[accountListId]/tools/appeals',
+        query: {
+          accountListId: accountList.id,
+        },
+      });
+    } else if (
+      router.pathname ===
+        '/accountLists/[accountListId]/reports/financialAccounts/[financialAccountId]/entries' ||
+      router.pathname ===
+        '/accountLists/[accountListId]/reports/financialAccounts/[financialAccountId]'
+    ) {
+      router.push({
+        pathname: '/accountLists/[accountListId]/reports/financialAccounts',
         query: {
           accountListId: accountList.id,
         },

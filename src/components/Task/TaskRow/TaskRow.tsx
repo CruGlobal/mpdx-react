@@ -10,7 +10,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { ContactUrl } from 'pages/accountLists/[accountListId]/tasks/[[...contactId]].page';
+import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -74,7 +74,7 @@ interface TaskRowProps {
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
-  getContactUrl?: (contactId: string) => ContactUrl;
+  getContactHrefObject?: GetContactHrefObject;
   contactDetailsOpen?: boolean;
   removeSelectedIds?: (id: string[]) => void;
 }
@@ -86,7 +86,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onContactSelected,
   onTaskCheckToggle,
   useTopMargin,
-  getContactUrl,
+  getContactHrefObject,
   contactDetailsOpen,
   removeSelectedIds,
 }) => {
@@ -268,7 +268,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                       itemIndex={index}
                       contactsLength={contacts.nodes.length}
                       selectContact={onContactClick}
-                      getContactUrl={getContactUrl}
+                      getContactHrefObject={getContactHrefObject}
                       key={contact.id}
                     />
                   );

@@ -1,12 +1,10 @@
 import { ParsedUrlQueryInput } from 'querystring';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Box, Button, ButtonGroup, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
@@ -26,13 +24,11 @@ import {
 } from 'src/components/Shared/Header/ListHeader';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
-import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import theme from 'src/theme';
 import {
   TaskFilterTabsTypes,
@@ -43,6 +39,7 @@ import {
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
+import { useTasksContactContext } from './useTasksContactContext';
 
 export type ContactUrl = {
   contactUrl: string;
@@ -102,39 +99,24 @@ export const tasksSavedFilters = (
 const TasksPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
-  const { query, push, replace, isReady, pathname } = useRouter();
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { appName } = useGetAppSettings();
 
-  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
-  const [contactDetailsId, setContactDetailsId] = useState<string>();
-
-  const { contactId, searchTerm } = query;
-
-  if (contactId !== undefined && !Array.isArray(contactId)) {
-    throw new Error('contactId should be an array or undefined');
-  }
-
-  useEffect(() => {
-    if (isReady && contactId) {
-      setContactDetailsId(contactId[0]);
-      setContactDetailsOpen(true);
-    }
-  }, [isReady, contactId]);
+  const {
+    activeFilters,
+    setActiveFilters,
+    starredFilter,
+    setStarredFilter,
+    searchTerm,
+    setSearchTerm,
+    getContactHrefObject,
+    contactId: contactDetailsId,
+    setContactId: setContactFocus,
+  } = useTasksContactContext();
+  const contactDetailsOpen = !!contactDetailsId;
+  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
 
   //#region Filters
-  const urlFilters =
-    query?.filters && JSON.parse(decodeURI(query.filters as string));
-
-  const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(true);
-  const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
-    urlFilters ?? {},
-  );
-  const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
-  const sanitizedFilters = useMemo(
-    () => sanitizeFilters(activeFilters),
-    [activeFilters],
-  );
 
   const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
     taskFiltersTabs[0].name,
@@ -145,18 +127,18 @@ const TasksPage: React.FC = () => {
     const typeDetails = taskFiltersTabs.find((item) => item.name === type);
 
     setActiveFilters({
-      ...urlFilters,
+      ...activeFilters,
       ...typeDetails?.activeFiltersOptions,
     });
   };
 
   const tasksFilter = useMemo(
     () => ({
-      ...sanitizedFilters,
+      ...activeFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
     }),
-    [sanitizedFilters, starredFilter, searchTerm],
+    [activeFilters, starredFilter, searchTerm],
   );
 
   const { data, loading, fetchMore } = useTasksQuery({
@@ -171,41 +153,27 @@ const TasksPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const { filters: _, ...oldQuery } = query;
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(Object.keys(sanitizedFilters).length
-          ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
-          : undefined),
-      },
-    });
-    if (!sanitizedFilters.completed && !sanitizedFilters.dateRange) {
+    if (!activeFilters.completed && !activeFilters.dateRange) {
       setTaskType('All');
-    } else if (sanitizedFilters.dateRange === 'overdue') {
+    } else if (activeFilters.dateRange === 'overdue') {
       setTaskType('Overdue');
-    } else if (sanitizedFilters.completed) {
+    } else if (activeFilters.completed) {
       setTaskType('Completed');
-    } else if (sanitizedFilters.dateRange === 'today') {
+    } else if (activeFilters.dateRange === 'today') {
       setTaskType('Today');
-    } else if (sanitizedFilters.dateRange === 'upcoming') {
+    } else if (activeFilters.dateRange === 'upcoming') {
       setTaskType('Upcoming');
-    } else if (sanitizedFilters.dateRange === 'no_date') {
+    } else if (activeFilters.dateRange === 'no_date') {
       setTaskType('NoDueDate');
     }
-  }, [sanitizedFilters, isReady]);
+  }, [activeFilters]);
 
   const { data: filterData, loading: filtersLoading } = useTaskFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
 
-  const isFiltered = Object.keys(sanitizedFilters).length > 0;
+  const isFiltered = Object.keys(activeFilters).length > 0;
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -241,58 +209,6 @@ const TasksPage: React.FC = () => {
   } = useMassSelection(allTaskIds);
   //#endregion
 
-  //#region User Actions
-  const getContactUrl = (id?: string): ContactUrl => {
-    const {
-      accountListId: _accountListId,
-      contactId: _contactId,
-      ...filteredQuery
-    } = query;
-
-    return {
-      contactUrl: id
-        ? `/accountLists/${accountListId}/tasks/${id}`
-        : `/accountLists/${accountListId}/tasks/`,
-      filteredQuery,
-    };
-  };
-
-  const setContactFocus = (id?: string) => {
-    const { contactUrl, filteredQuery } = getContactUrl(id);
-    push({
-      pathname: contactUrl,
-      query: filteredQuery,
-    });
-    id && setContactDetailsId(id);
-    setContactDetailsOpen(!!id);
-  };
-
-  const setSearchTerm = useCallback(
-    debounce((searchTerm: string) => {
-      const { searchTerm: _, ...oldQuery } = query;
-      if (searchTerm !== '') {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
-            ...(searchTerm && { searchTerm }),
-          },
-        });
-      } else {
-        replace({
-          pathname,
-          query: {
-            ...oldQuery,
-            accountListId,
-          },
-        });
-      }
-    }, 500),
-    [accountListId],
-  );
-  //#endregion
-
   //#region JSX
   return (
     <>
@@ -304,15 +220,17 @@ const TasksPage: React.FC = () => {
       {accountListId ? (
         <WhiteBackground>
           <ContactsProvider
-            urlFilters={urlFilters}
             activeFilters={{}}
             setActiveFilters={setActiveFilters}
             starredFilter={{}}
             setStarredFilter={setStarredFilter}
             filterPanelOpen={filterPanelOpen}
             setFilterPanelOpen={setFilterPanelOpen}
-            contactId={contactId}
+            contactId={contactDetailsId}
+            setContactId={setContactFocus}
+            getContactHrefObject={getContactHrefObject}
             searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
           >
             <SidePanelsLayout
               leftPanel={
@@ -416,7 +334,7 @@ const TasksPage: React.FC = () => {
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
-                            getContactUrl={getContactUrl}
+                            getContactHrefObject={getContactHrefObject}
                             contactDetailsOpen={contactDetailsOpen}
                             removeSelectedIds={deselectMultipleIds}
                           />
