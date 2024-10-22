@@ -156,10 +156,10 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       defaultValue: TableViewModeEnum.List,
     });
   useEffect(() => {
-    if (contactsView) {
+    if (contactsView && !userOptionsLoading) {
       setViewMode(contactsView);
     }
-  }, [contactsView]);
+  }, [contactsView, userOptionsLoading]);
 
   const contactsFilters = useMemo(() => {
     // Remove filters in the map view
