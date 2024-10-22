@@ -125,7 +125,6 @@ export const PartnerGivingAnalysisReportTable: FC<
                 <TableCell>
                   <NextLink href={contactUrl} passHref>
                     <Link
-                      component="a"
                       onMouseEnter={preloadContactsRightPanel}
                       style={{
                         whiteSpace: 'nowrap',

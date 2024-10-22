@@ -180,6 +180,7 @@ const theme = createTheme({
           cursor: 'pointer',
         },
       },
+      defaultProps: { underline: 'hover' },
     },
     MuiTableCell: {
       styleOverrides: {
