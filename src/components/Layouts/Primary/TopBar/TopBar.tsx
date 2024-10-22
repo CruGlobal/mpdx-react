@@ -23,7 +23,12 @@ interface TopBarProps {
   onMobileNavOpen?: () => void;
 }
 
-const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+const Offset = styled('div')(({ theme }) => ({
+  ...theme.mixins.toolbar,
+  '@media print': {
+    display: 'none',
+  },
+}));
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayDark.main,
