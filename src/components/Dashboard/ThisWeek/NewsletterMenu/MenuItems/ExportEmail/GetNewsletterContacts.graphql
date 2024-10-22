@@ -7,11 +7,14 @@ query GetEmailNewsletterContacts($accountListId: ID!, $after: String) {
   ) {
     nodes {
       id
-      primaryPerson {
-        id
-        primaryEmailAddress {
+      people {
+        nodes {
           id
-          email
+          optoutEnewsletter
+          primaryEmailAddress {
+            id
+            email
+          }
         }
       }
     }
