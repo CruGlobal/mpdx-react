@@ -9,8 +9,8 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
-import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
 
 const router = {
@@ -51,8 +51,8 @@ const mocks = {
       ],
     },
   },
-  GetUserOptions: {
-    userOptions,
+  UserOption: {
+    userOption: userOptions[0],
   },
   ContactFilters: {
     userOptions,
@@ -79,9 +79,7 @@ describe('ContactsLeftPanel', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
-            mocks={mocks}
-          >
+          <GqlMockedProvider<{ UserOption: UserOptionQuery }> mocks={mocks}>
             <ContactsWrapper>
               <>
                 <Component />
