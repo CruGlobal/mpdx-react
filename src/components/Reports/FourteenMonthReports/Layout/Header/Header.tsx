@@ -24,7 +24,10 @@ const StickyHeader = styled(Box)(({}) => ({
   top: 0,
   height: 96,
   '@media print': {
-    paddingTop: '0',
+    position: 'static',
+    paddingTop: '1rem',
+    paddingBottom: '1rem',
+    height: 'auto',
   },
 }));
 

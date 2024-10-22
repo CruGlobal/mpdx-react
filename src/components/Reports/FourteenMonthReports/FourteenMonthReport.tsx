@@ -54,6 +54,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
     theme.breakpoints.down('sm'),
   );
 
+  const isPrint = useMediaQuery('print');
+
   const { data, error } = useFourteenMonthReportQuery({
     variables: {
       accountListId,
@@ -117,7 +119,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
       ) : error ? (
         <Notification type="error" message={error.toString()} />
       ) : currencyTables.length > 0 ? (
-        <Box display="flex" flexDirection="column" gap={4}>
+        <Box display="flex" flexDirection="column" gap={isPrint ? 1 : 4}>
           {currencyTables.map(({ currency, orderedContacts, totals }) => (
             <Table
               key={currency}

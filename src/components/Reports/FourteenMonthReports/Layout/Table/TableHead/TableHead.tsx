@@ -29,10 +29,24 @@ export interface FourteenMonthReportTableHeadProps {
 
 const YearTableCell = styled(TableCell)(({}) => ({
   paddingLeft: 0,
+  '@media print': {
+    padding: '0px',
+  },
 }));
 
 const YearTypography = styled(Typography)(({ theme }) => ({
   borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+  '@media print': {
+    lineHeight: 1,
+    fontSize: '1rem',
+  },
+}));
+
+const CurrencyTypography = styled(Typography)(() => ({
+  '@media print': {
+    lineHeight: 1,
+    fontSize: '1rem',
+  },
 }));
 
 export const FourteenMonthReportTableHead: FC<
@@ -69,7 +83,7 @@ export const FourteenMonthReportTableHead: FC<
     <TableHead data-testid="SalaryReportTableHead">
       <TableRow>
         <StyledTableCell>
-          <Typography variant="h6">{salaryCurrency}</Typography>
+          <CurrencyTypography variant="h6">{salaryCurrency}</CurrencyTypography>
         </StyledTableCell>
         {isExpanded && (
           <>
