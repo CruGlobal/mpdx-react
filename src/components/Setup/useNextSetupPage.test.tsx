@@ -96,7 +96,7 @@ describe('useNextSetupPage', () => {
     result.current.next();
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOptions', {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
         key: 'setup_position',
         value: 'preferences.personal',
       }),

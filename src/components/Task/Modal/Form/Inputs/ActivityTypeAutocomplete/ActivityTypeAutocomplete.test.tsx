@@ -1,11 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import {
-  loadConstantsMockData as LoadConstants,
-  loadConstantsMockData,
-} from 'src/components/Constants/LoadConstantsMock';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
@@ -55,18 +50,12 @@ describe('ActivityTypeAutocomplete', () => {
     const onChange = jest.fn();
 
     const { getByRole } = render(
-      <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
-      }>
-        mocks={{ LoadConstants }}
-      >
-        <ActivityTypeAutocomplete
-          options={options}
-          label="Type"
-          value={ActivityTypeEnum.AppointmentPhoneCall}
-          onChange={onChange}
-        />
-      </GqlMockedProvider>,
+      <ActivityTypeAutocomplete
+        options={options}
+        label="Type"
+        value={ActivityTypeEnum.AppointmentPhoneCall}
+        onChange={onChange}
+      />,
     );
 
     const input = getByRole('combobox', { name: 'Type' });

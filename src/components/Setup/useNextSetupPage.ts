@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
-import { useUpdateUserOptionsMutation } from '../Contacts/ContactFlow/ContactFlowSetup/UpdateUserOptions.generated';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { useSetupStageLazyQuery } from './Setup.generated';
 
 interface UseNextSetupPageResult {
@@ -12,15 +12,10 @@ interface UseNextSetupPageResult {
 export const useNextSetupPage = (): UseNextSetupPageResult => {
   const { push } = useRouter();
   const [getSetupStage] = useSetupStageLazyQuery();
-  const [updateUserOptions] = useUpdateUserOptionsMutation();
-
-  const saveSetupPosition = (setupPosition: string) =>
-    updateUserOptions({
-      variables: {
-        key: 'setup_position',
-        value: setupPosition,
-      },
-    });
+  const [_, setSetupPosition] = useUserPreference({
+    key: 'setup_position',
+    defaultValue: '',
+  });
 
   const next = useCallback(async () => {
     const { data } = await getSetupStage();
@@ -35,7 +30,7 @@ export const useNextSetupPage = (): UseNextSetupPageResult => {
         return;
 
       case null:
-        await saveSetupPosition('preferences.personal');
+        setSetupPosition('preferences.personal');
         push(
           `/accountLists/${data.user.defaultAccountList}/settings/preferences`,
         );

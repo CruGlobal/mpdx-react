@@ -8,7 +8,6 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { LoadConstantsDocument } from 'src/components/Constants/LoadConstants.generated';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import {
@@ -37,6 +36,15 @@ const mock = gqlMock<ContactDonorAccountsFragment>(
   },
 );
 
+const emptyMock = gqlMock<ContactDonorAccountsFragment>(
+  ContactDonorAccountsFragmentDoc,
+  {
+    mocks: {
+      status: null,
+    },
+  },
+);
+
 jest.mock('next/router', () => ({
   useRouter: () => {
     return {
@@ -48,31 +56,11 @@ jest.mock('next/router', () => ({
 
 describe('PartnershipInfo', () => {
   it('test renderer', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <MockedProvider
-              mocks={[
-                {
-                  request: {
-                    query: LoadConstantsDocument,
-                  },
-                  result: {
-                    data: {
-                      constant: {
-                        status: [
-                          {
-                            id: StatusEnum.PartnerFinancial,
-                            value: 'Principal - Financial',
-                          },
-                        ],
-                      },
-                    },
-                  },
-                },
-              ]}
-            >
+            <MockedProvider>
               <PartnershipInfo contact={mock} />
             </MockedProvider>
           </LocalizationProvider>
@@ -82,8 +70,24 @@ describe('PartnershipInfo', () => {
 
     await waitFor(() => {
       expect(getByText('CA$55 - Annual')).toBeInTheDocument();
-      expect(getByText('Principal - Financial')).toBeInTheDocument();
     });
+    expect(await findByText('Partner - Financial')).toBeInTheDocument();
+  });
+
+  it('renders No Status', async () => {
+    const { findByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <MockedProvider>
+              <PartnershipInfo contact={emptyMock} />
+            </MockedProvider>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(await findByText('No Status')).toBeInTheDocument();
   });
 
   it('should open edit partnership information modal', () => {

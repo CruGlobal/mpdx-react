@@ -42,29 +42,7 @@ const Components: React.FC<ComponentsProps> = ({
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider
-          onCall={mutationSpy}
-          mocks={{
-            LoadConstants: {
-              constant: {
-                times: [
-                  {
-                    key: 0,
-                    value: '12:00 AM',
-                  },
-                  {
-                    key: 5,
-                    value: '5:00 AM',
-                  },
-                  {
-                    key: null,
-                    value: 'Immediately',
-                  },
-                ],
-              },
-            },
-          }}
-        >
+        <GqlMockedProvider onCall={mutationSpy}>
           <HourToSendNotificationsAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}

@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import {
   ActivityTypeEnum,
   GoogleAccountIntegration,
@@ -194,30 +193,11 @@ describe('EditGoogleAccountModal', () => {
     const { getByText, getByRole, findByRole, queryByRole } = render(
       <Components>
         <GqlMockedProvider<{
-          LoadConstants: LoadConstantsQuery;
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
         }>
           mocks={{
             GoogleAccountIntegrations: {
               googleAccountIntegrations: [googleIntegration],
-            },
-            LoadConstants: {
-              constant: {
-                activities: [
-                  {
-                    value: ActivityTypeEnum.AppointmentVideoCall,
-                    id: ActivityTypeEnum.AppointmentVideoCall,
-                  },
-                  {
-                    value: ActivityTypeEnum.AppointmentInPerson,
-                    id: ActivityTypeEnum.AppointmentInPerson,
-                  },
-                  {
-                    value: ActivityTypeEnum.FollowUpEmail,
-                    id: ActivityTypeEnum.FollowUpEmail,
-                  },
-                ],
-              },
             },
           }}
           onCall={mutationSpy}
@@ -286,29 +266,10 @@ describe('EditGoogleAccountModal', () => {
       <Components>
         <GqlMockedProvider<{
           GoogleAccountIntegrations: GoogleAccountIntegrationsQuery;
-          LoadConstants: LoadConstantsQuery;
         }>
           mocks={{
             GoogleAccountIntegrations: {
               googleAccountIntegrations: [googleIntegration],
-            },
-            LoadConstants: {
-              constant: {
-                activities: [
-                  {
-                    value: ActivityTypeEnum.AppointmentVideoCall,
-                    id: ActivityTypeEnum.AppointmentVideoCall,
-                  },
-                  {
-                    value: ActivityTypeEnum.AppointmentInPerson,
-                    id: ActivityTypeEnum.AppointmentInPerson,
-                  },
-                  {
-                    value: ActivityTypeEnum.FollowUpEmail,
-                    id: ActivityTypeEnum.FollowUpEmail,
-                  },
-                ],
-              },
             },
           }}
           onCall={mutationSpy}
@@ -330,11 +291,11 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'),
+        getByTestId('Appointment - Video Call-Checkbox'),
       ).toBeInTheDocument(),
     );
 
-    userEvent.click(getByTestId('APPOINTMENT_VIDEO_CALL-Checkbox'));
+    userEvent.click(getByTestId('Appointment - Video Call-Checkbox'));
     userEvent.click(getByRole('button', { name: /update/i }));
 
     await waitFor(() =>
@@ -510,13 +471,12 @@ describe('EditGoogleAccountModal', () => {
           variant: 'success',
         },
       );
-      expect(mutationSpy.mock.calls[2][0].operation.operationName).toEqual(
-        'SyncGoogleAccount',
-      );
-      expect(mutationSpy.mock.calls[2][0].operation.variables.input).toEqual({
-        googleAccountId: googleAccount.id,
-        integrationName: 'calendar',
-        googleIntegrationId: googleIntegration.id,
+      expect(mutationSpy).toHaveGraphqlOperation('SyncGoogleAccount', {
+        input: {
+          googleAccountId: googleAccount.id,
+          integrationName: 'calendar',
+          googleIntegrationId: googleIntegration.id,
+        },
       });
     });
   });

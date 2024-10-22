@@ -24,8 +24,8 @@ import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -105,6 +105,7 @@ const Contact = ({
     url: `/accountLists/${accountListId}/tools/fix/sendNewsletter/`,
   });
   const contactUrl = getContactUrl(contact.id);
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const matches = useMediaQuery('(min-width:600px)');
   useEffect(() => {
@@ -197,7 +198,7 @@ const Contact = ({
         }
         subheader={
           <Typography variant="body2">
-            {getLocalizedContactStatus(t, contact.status)}
+            {getLocalizedContactStatus(contact.status)}
           </Typography>
         }
       ></CardHeader>

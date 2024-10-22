@@ -27,7 +27,7 @@ import {
   LikelyToGiveEnum,
   SendNewsletterEnum,
 } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
@@ -115,7 +115,7 @@ export const MassActionsEditFieldsModal: React.FC<
     useLoadConstantsQuery();
 
   const phases = useApiConstants()?.phases;
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
@@ -181,7 +181,7 @@ export const MassActionsEditFieldsModal: React.FC<
                         </ListSubheader>,
                         phase?.contactStatuses.map((status) => (
                           <MenuItem key={status} value={status}>
-                            {contactStatuses[status]?.translated}
+                            {getLocalizedContactStatus(status)}
                           </MenuItem>
                         )),
                       ])}

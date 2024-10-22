@@ -19,20 +19,12 @@ const router = {
 };
 
 const mocks = {
-  GetUserOptions: {
-    userOptions: [
-      {
-        id: 'test-id',
-        key: 'contacts_view',
-        value: 'flows',
-      },
-      {
-        id: '551d0a2c-4c90-444c-97dc-11f4ca858e3c',
-        key: 'flows',
-        value:
-          '[{"name":"UntitledOne","id":"6ced166a-d570-4086-af56-e3eeed8a1f98","statuses":["Appointment Scheduled","Not Interested"],"color":"color-text"},{"name":"UntitledTwo","id":"8a6bc2ed-820e-437b-81b8-36fbbe91f5e3","statuses":["Partner - Pray","Never Ask","Partner - Financial"],"color":"color-info"}]',
-      },
-    ],
+  UserOption: {
+    userOption: {
+      key: 'flows',
+      value:
+        '[{"name":"UntitledOne","id":"6ced166a-d570-4086-af56-e3eeed8a1f98","statuses":["Appointment Scheduled","Not Interested"],"color":"color-text"},{"name":"UntitledTwo","id":"8a6bc2ed-820e-437b-81b8-36fbbe91f5e3","statuses":["Partner - Pray","Never Ask","Partner - Financial"],"color":"color-info"}]',
+    },
   },
 };
 
@@ -99,8 +91,8 @@ describe('ContactFlow', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
             mocks={{
-              GetUserOptions: {
-                userOptions: [],
+              UserOption: {
+                userOption: null,
               },
             }}
           >

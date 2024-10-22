@@ -34,9 +34,9 @@ import {
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactLinks } from 'src/hooks/useContactLinks';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
@@ -147,7 +147,7 @@ const Contact: React.FC<Props> = ({
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
   const { update } = useUpdateCache(id);
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
   const { appName } = useGetAppSettings();
 
   const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
@@ -206,9 +206,7 @@ const Contact: React.FC<Props> = ({
             </Link>
           </NextLink>
         }
-        subheader={
-          <Typography>{contactStatuses[status]?.translated}</Typography>
-        }
+        subheader={<Typography>{getLocalizedContactStatus(status)}</Typography>}
       />
       <CardContent className={(classes.paddingX, classes.paddingY)}>
         <Grid item xs={12}>

@@ -56,7 +56,7 @@ const AddColumnLoadingButton = styled(LoadingButton)(({ theme }) => ({
 
 interface Props {
   addColumn: () => void;
-  updateOptions: (options: ContactFlowOption[]) => Promise<void>;
+  updateOptions: (options: ContactFlowOption[]) => void;
   resetColumnsMessage: string;
 }
 
@@ -72,7 +72,7 @@ export const ContactFlowSetupHeader: React.FC<Props> = ({
 
   const handleAddColumnButtonClick = async () => {
     setAddingColumn(true);
-    await addColumn();
+    addColumn();
     setAddingColumn(false);
   };
 

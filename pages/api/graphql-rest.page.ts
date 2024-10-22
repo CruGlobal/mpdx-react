@@ -14,8 +14,6 @@ import {
   MergeContactsInput,
   MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
-import { getLocalizedContactStatus } from '../../src/utils/functions/getLocalizedContactStatus';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
@@ -615,16 +613,7 @@ class MpdxRestApi extends RESTDataSource {
         // Status
         case 'status':
           filters[snakedKey] = (value as ContactFilterStatusEnum[])
-            .map((status) => {
-              const translated = getLocalizedContactStatus(i18n.t, status);
-              if (!translated) {
-                throw new Error(
-                  `Unrecognized ContactFilterStatusEnum value ${value}`,
-                );
-              }
-
-              return translated;
-            })
+            .map((status) => status.toLowerCase())
             .join(',');
           break;
 

@@ -5,8 +5,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
@@ -51,13 +49,7 @@ const TestComponent = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestWrapper>
-      <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
-      }>
-        mocks={{
-          LoadConstants: loadConstantsMockData,
-        }}
-      >
+      <GqlMockedProvider>
         <Contact
           id={testData.id}
           name={testData.name}

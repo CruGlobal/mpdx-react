@@ -46,13 +46,13 @@ export const ContactFlow: React.FC<Props> = ({
   selectedFilters,
   searchTerm,
 }: Props) => {
-  const { options: userFlowOptions, loading: loadingUserOptions } =
+  const [userFlowOptions, _, { loading: loadingUserOptions }] =
     useFlowOptions();
 
   const { t } = useTranslation();
+  const { getContactStatusesByPhase } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { contactStatuses } = useContactPartnershipStatuses();
 
   const flowOptions = useMemo(() => {
     if (loadingUserOptions) {
@@ -62,7 +62,7 @@ export const ContactFlow: React.FC<Props> = ({
       return userFlowOptions;
     }
 
-    return getDefaultFlowOptions(t, contactStatuses);
+    return getDefaultFlowOptions(t, getContactStatusesByPhase);
   }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();

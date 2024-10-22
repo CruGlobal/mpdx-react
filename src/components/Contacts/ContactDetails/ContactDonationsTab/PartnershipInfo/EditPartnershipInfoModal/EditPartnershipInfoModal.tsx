@@ -36,8 +36,8 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
@@ -123,7 +123,7 @@ export const EditPartnershipInfoModal: React.FC<
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const phases = constants?.phases;
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
@@ -319,7 +319,7 @@ export const EditPartnershipInfoModal: React.FC<
                           </ListSubheader>,
                           phase?.contactStatuses.map((status) => (
                             <MenuItem key={status} value={status}>
-                              {contactStatuses[status]?.translated}
+                              {getLocalizedContactStatus(status)}
                             </MenuItem>
                           )),
                         ])}

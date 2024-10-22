@@ -36,7 +36,7 @@ export const ContactFlowSetupDropZone: React.FC<Props> = ({
         canDrop: !!monitor.canDrop(),
       }),
     }),
-    [flowOptions],
+    [columnIndex, moveStatus, flowOptions],
   );
 
   return (

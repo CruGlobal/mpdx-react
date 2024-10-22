@@ -3,8 +3,8 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import type { CurrencyTable } from './FourteenMonthReport';
 
@@ -23,7 +23,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const csvData = useMemo(
     () =>
@@ -98,9 +98,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
 
           return [
             contact.name,
-            contact.status
-              ? contactStatuses[contact.status.toUpperCase()]?.translated
-              : '',
+            getLocalizedContactStatus(contact.status?.toUpperCase()),
             contact.pledgeAmount ? Math.round(contact.pledgeAmount) : 0,
             contact.pledgeCurrency ?? '',
             getLocalizedPledgeFrequency(t, pledgeFrequency),

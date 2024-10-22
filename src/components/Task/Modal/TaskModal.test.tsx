@@ -112,7 +112,9 @@ describe('TaskModal', () => {
       const dialog = getByRole('dialog', {
         name: 'Complete Task',
       });
-      expect(within(dialog).getByText('Prayer Request')).toBeInTheDocument();
+      expect(
+        within(dialog).getByText('Partner Care - Prayer Request'),
+      ).toBeInTheDocument();
     });
   });
 
