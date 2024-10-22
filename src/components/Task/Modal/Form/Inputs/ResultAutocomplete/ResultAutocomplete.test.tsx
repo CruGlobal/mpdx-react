@@ -90,4 +90,11 @@ describe('ResultSelect', () => {
       completedAction: ActivityTypeEnum.FollowUpTextMessage,
     });
   });
+  it('Preselects result when only one result available', () => {
+    const { getByRole } = render(
+      <Components availableResults={[ResultEnum.Attempted]} />,
+    );
+    expect(getByRole('combobox', { name: 'Result' })).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Result' })).toHaveValue('Attempted');
+  });
 });

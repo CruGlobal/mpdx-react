@@ -38,7 +38,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
         openOnFocus
         autoHighlight
         autoSelect
-        value={result}
+        value={availableResults.length === 1 ? availableResults[0] : result}
         options={availableResults}
         getOptionLabel={(result) => getLocalizedResultString(t, result)}
         renderInput={(params) => <TextField {...params} label={t('Result')} />}
