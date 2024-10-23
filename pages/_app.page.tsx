@@ -110,6 +110,7 @@ const App = ({
     <TaskModalProvider>
       <Layout>
         <SnackbarUtilsConfigurator />
+        <Helpjuice />
         <Box
           sx={(theme) => ({
             fontFamily: theme.typography.fontFamily,
@@ -191,10 +192,7 @@ const App = ({
                             pageContent
                           ) : (
                             <RouterGuard>
-                              <GraphQLProviders>
-                                {pageContent}
-                                <Helpjuice />
-                              </GraphQLProviders>
+                              <GraphQLProviders>{pageContent}</GraphQLProviders>
                             </RouterGuard>
                           )}
                           <Loading />

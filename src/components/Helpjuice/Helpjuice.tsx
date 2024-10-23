@@ -1,75 +1,20 @@
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { getApolloContext } from '@apollo/client';
 import { useSession } from 'next-auth/react';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { DismissableBeacon } from './DismissableBeacon';
 import { useLocation } from './useLocation';
 
+/**
+ * This component doesn't render anything, but it finds the existing Helpjuice component in the DOM
+ * and tweaks some things about it.
+ */
 export const Helpjuice: React.FC = () => {
   // Because of the way the Helpjuice script is written, it must be added in _document.page.tsx instead of a component.
   // It adds content to the DOM in response to the DOMContentLoaded. If we add the Swifty script to this component, the
   // DOMContentLoaded event has already fired, and Swifty will not add the beacon elements to the page.
   const { data: session } = useSession();
   const href = useLocation();
-
-  const [dismissed, setDismissed] = useUserPreference({
-    key: 'beacon_dismissed',
-    defaultValue: false,
-  });
-
-  // Sync the #helpjuice-widget .visible classname with the dismissed state
-  useEffect(() => {
-    const widget = document.getElementById('helpjuice-widget');
-    if (dismissed) {
-      widget?.classList.remove('visible');
-    } else {
-      widget?.classList.add('visible');
-    }
-  }, [dismissed]);
-
-  // Add a Hide Beacon link to the bottom of the popup
-  useEffect(() => {
-    const dismissLink = document.createElement('a');
-    dismissLink.id = 'dismiss-beacon';
-    dismissLink.textContent = 'Hide Beacon';
-    dismissLink.tabIndex = 0;
-    document
-      .getElementById('helpjuice-widget-contact')
-      ?.appendChild(dismissLink);
-
-    return () => {
-      dismissLink?.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    // Dismiss the beacon when the Hide Beacon link is clicked
-    document.getElementById('dismiss-beacon')?.addEventListener(
-      'click',
-      () => {
-        // Hide the popup
-        document
-          .getElementById('helpjuice-widget-expanded')
-          ?.classList.remove('hj-shown');
-
-        setDismissed(true);
-      },
-      { signal: abortController.signal },
-    );
-
-    // Undismiss the beacon when it is clicked
-    document.getElementById('helpjuice-widget-trigger')?.addEventListener(
-      'click',
-      () => {
-        setDismissed(false);
-      },
-      { signal: abortController.signal },
-    );
-
-    // Remove all event listeners on unmount
-    return () => {
-      abortController.abort();
-    };
-  }, [setDismissed]);
 
   useEffect(() => {
     if (!process.env.HELPJUICE_ORIGIN) {
@@ -98,5 +43,34 @@ export const Helpjuice: React.FC = () => {
     }
   }, [session, href]);
 
-  return null;
+  // Use NoApolloBeacon on pages without an <ApolloProvider>
+  const hasApolloClient = Boolean(useContext(getApolloContext()).client);
+  return hasApolloClient ? <ApolloBeacon /> : <NoApolloBeacon />;
+};
+
+/**
+ * This variant of the dismissable beacon saves the dismissed state to a persistent user preference.
+ * It can only be used on pages with an <ApolloProvider>.
+ */
+const ApolloBeacon: React.FC = () => {
+  const [dismissed, setDismissed] = useUserPreference({
+    key: 'beacon_dismissed',
+    defaultValue: false,
+  });
+
+  return (
+    <DismissableBeacon dismissed={dismissed} setDismissed={setDismissed} />
+  );
+};
+
+/**
+ * This variant of the dismissable beacon saves the dismissed state to ephemeral state that will be
+ * lost when the page is reloaded. It is designed to be used on pages without an <ApolloProvider>.
+ */
+const NoApolloBeacon: React.FC = () => {
+  const [dismissed, setDismissed] = useState(false);
+
+  return (
+    <DismissableBeacon dismissed={dismissed} setDismissed={setDismissed} />
+  );
 };
