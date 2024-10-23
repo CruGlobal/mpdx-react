@@ -1,6 +1,8 @@
-import { act, render } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { Helpjuice } from './Helpjuice';
 
 describe('Helpjuice', () => {
@@ -95,6 +97,29 @@ describe('Helpjuice', () => {
     expect(document.querySelector('a.knowledge-base-link')).toHaveProperty(
       'href',
       'https://domain.helpjuice.com/kb',
+    );
+  });
+
+  it('uses the Apollo client when available', async () => {
+    const mutationSpy = jest.fn();
+    render(
+      <GqlMockedProvider<{ UserOption: UserOptionQuery }>
+        mocks={{
+          UserOption: {
+            userOption: {
+              key: 'dismissed',
+              value: 'false',
+            },
+          },
+        }}
+        onCall={mutationSpy}
+      >
+        <Helpjuice />
+      </GqlMockedProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UserOption'),
     );
   });
 });
