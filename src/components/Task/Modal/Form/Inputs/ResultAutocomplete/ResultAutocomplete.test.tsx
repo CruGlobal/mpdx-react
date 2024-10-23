@@ -90,7 +90,7 @@ describe('ResultSelect', () => {
       completedAction: ActivityTypeEnum.FollowUpTextMessage,
     });
   });
-  it('Preselects result when only one result available', () => {
+  it('preselects a result when only one result is available', () => {
     const { getByRole } = render(
       <Components availableResults={[ResultEnum.Attempted]} />,
     );
