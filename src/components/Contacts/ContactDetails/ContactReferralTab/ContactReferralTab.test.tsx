@@ -1,6 +1,5 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { ContactReferralTab } from './ContactReferralTab';
@@ -9,7 +8,8 @@ import {
   useContactReferralTabQuery,
 } from './ContactReferralTab.generated';
 
-const onContactSelected = jest.fn();
+const accountListId = 'accountListId';
+const contactId = 'contactId';
 
 describe('ContactReferralTab', () => {
   it('test query', async () => {
@@ -17,8 +17,8 @@ describe('ContactReferralTab', () => {
       () =>
         useContactReferralTabQuery({
           variables: {
-            accountListId: 'accountList-id',
-            contactId: 'contact-id',
+            accountListId,
+            contactId,
           },
         }),
       {
@@ -29,8 +29,8 @@ describe('ContactReferralTab', () => {
 
     expect(result.current.variables).toMatchInlineSnapshot(`
       Object {
-        "accountListId": "accountList-id",
-        "contactId": "contact-id",
+        "accountListId": "accountListId",
+        "contactId": "contactId",
       }
     `);
   });
@@ -51,9 +51,8 @@ describe('ContactReferralTab', () => {
         }}
       >
         <ContactReferralTab
-          accountListId="accountList-id"
-          contactId="contact-id"
-          onContactSelected={onContactSelected}
+          accountListId={accountListId}
+          contactId={contactId}
         />
       </GqlMockedProvider>,
     );
@@ -61,7 +60,7 @@ describe('ContactReferralTab', () => {
   });
 
   it('tests render with data and click event', async () => {
-    const { findByText, getByText } = render(
+    const { findByRole } = render(
       <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
         mocks={{
           ContactReferralTab: {
@@ -85,15 +84,17 @@ describe('ContactReferralTab', () => {
         }}
       >
         <ContactReferralTab
-          accountListId="accountList-id"
-          contactId="contact-id"
-          onContactSelected={onContactSelected}
+          accountListId={accountListId}
+          contactId={contactId}
         />
       </GqlMockedProvider>,
     );
-    expect(await findByText('name-2')).toBeVisible();
 
-    userEvent.click(getByText('name-2'));
-    expect(onContactSelected).toHaveBeenCalledWith('contact-id-2');
+    const contactLink = await findByRole('link', { name: 'name-2' });
+
+    expect(contactLink).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/contacts/contact-id-2`,
+    );
   });
 });

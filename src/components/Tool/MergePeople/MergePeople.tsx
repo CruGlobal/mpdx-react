@@ -3,7 +3,6 @@ import { Box, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { TypeEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
@@ -38,13 +37,9 @@ export interface ActionType {
 
 interface Props {
   accountListId: string;
-  setContactFocus: SetContactFocus;
 }
 
-const MergePeople: React.FC<Props> = ({
-  accountListId,
-  setContactFocus,
-}: Props) => {
+const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const [actions, setActions] = useState<Record<string, ActionType>>({});
   const { t } = useTranslation();
@@ -147,7 +142,6 @@ const MergePeople: React.FC<Props> = ({
                     contact2={duplicate.recordTwo}
                     update={updateActions}
                     updating={updating}
-                    setContactFocus={setContactFocus}
                   />
                 ))}
               </Grid>

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Button,
@@ -19,6 +19,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from 'src/lib/intlFormat';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
@@ -72,7 +73,9 @@ const LateCommitments = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const { push } = useRouter();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/contacts/`,
+  });
 
   return (
     <LateCommitmentsContainer>
@@ -126,30 +129,28 @@ const LateCommitments = ({
                       'days',
                     ).days,
                   );
+                  const contactUrl = getContactUrl(contact.id);
 
                   return (
                     daysLate && (
-                      <ListItem
-                        component="a"
-                        button
-                        data-testid={`LateCommitmentsListItemContact-${contact.id}`}
-                        onClick={() =>
-                          push(
-                            `/accountLists/${accountListId}/contacts/list/${contact.id}`,
-                          )
-                        }
-                        key={contact.id}
-                      >
-                        <ListItemText
-                          primary={contact.name}
-                          secondary={t(
-                            'Their gift is {{daysLate}} day late._plural',
-                            {
-                              daysLate: numberFormat(daysLate, locale),
-                            },
-                          )}
-                        />
-                      </ListItem>
+                      <NextLink href={contactUrl} passHref shallow>
+                        <ListItem
+                          component="a"
+                          button
+                          data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                          key={contact.id}
+                        >
+                          <ListItemText
+                            primary={contact.name}
+                            secondary={t(
+                              'Their gift is {{daysLate}} day late._plural',
+                              {
+                                daysLate: numberFormat(daysLate, locale),
+                              },
+                            )}
+                          />
+                        </ListItem>
+                      </NextLink>
                     )
                   );
                 })}

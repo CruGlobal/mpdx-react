@@ -40,17 +40,11 @@ const ContactDetailHeadingText = styled(Typography)(() => ({
 interface ContactDetailTabProps {
   accountListId: string;
   contactId: string;
-  onContactSelected: (
-    contactId: string,
-    openDetails?: boolean,
-    flows?: boolean,
-  ) => void;
 }
 
 export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
   accountListId,
   contactId,
-  onContactSelected,
 }) => {
   const { data } = useContactDetailsTabQuery({
     variables: { accountListId, contactId },
@@ -136,10 +130,7 @@ export const ContactDetailsTab: React.FC<ContactDetailTabProps> = ({
               <ContactDetailLoadingPlaceHolder variant="rectangular" />
             </>
           ) : (
-            <ContactDetailsOther
-              contact={data.contact}
-              onContactSelected={onContactSelected}
-            />
+            <ContactDetailsOther contact={data.contact} />
           )}
         </ContactDetailSectionContainer>
         <Divider />

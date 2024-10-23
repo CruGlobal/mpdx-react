@@ -35,7 +35,6 @@ const accountListId = 'account-id';
 const router = {
   isReady: true,
 };
-const setContactFocus = jest.fn();
 
 const TestComponent = ({
   mocks,
@@ -58,10 +57,7 @@ const TestComponent = ({
           cache={cache}
           onCall={onCall}
         >
-          <FixSendNewsletter
-            accountListId={accountListId}
-            setContactFocus={setContactFocus}
-          />
+          <FixSendNewsletter accountListId={accountListId} />
         </GqlMockedProvider>
       </ThemeProvider>
     </TestRouter>
@@ -76,10 +72,6 @@ describe('FixSendNewsletter', () => {
   const secondContactName = contacts[1].name;
   const initialNewsletterValue = 'None';
   const newNewsletterValue = 'Physical';
-
-  beforeEach(() => {
-    setContactFocus.mockClear();
-  });
 
   describe('render', () => {
     it('should show the readable value of contact status', async () => {

@@ -45,7 +45,6 @@ const person: PersonInvalidEmailFragment = {
   },
 };
 
-const setContactFocus = jest.fn();
 const mutationSpy = jest.fn();
 const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
@@ -98,7 +97,6 @@ const TestComponent = ({
               handleChange={handleChangeMock}
               handleChangePrimary={handleChangePrimaryMock}
               handleSingleConfirm={handleSingleConfirm}
-              setContactFocus={setContactFocus}
             />
           </GqlMockedProvider>
         </TestWrapper>

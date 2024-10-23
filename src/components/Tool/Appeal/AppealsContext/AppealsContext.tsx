@@ -1,3 +1,4 @@
+import { ParsedUrlQueryInput } from 'querystring';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce, omit } from 'lodash';
@@ -45,6 +46,11 @@ export const shouldSkipContactCount = (tour, filterPanelOpen, viewMode) => {
   }
 };
 
+type ContactUrl = {
+  pathname: string;
+  filteredQuery: string | ParsedUrlQueryInput;
+  contactUrl: string;
+};
 export interface AppealsType
   extends Omit<
     ContactsType,
@@ -56,11 +62,13 @@ export interface AppealsType
     | 'contactsQueryResult'
     | 'setContactFocus'
     | 'setViewMode'
+    | 'getContactHrefObject'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
   setViewMode: (mode: TableViewModeEnum) => void;
   setContactFocus: (id: string | undefined) => void;
+  getContactUrl: (id?: string, endTour?: boolean) => ContactUrl;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   page: PageEnum | undefined;
@@ -84,7 +92,7 @@ export enum AppealTourEnum {
   Finish = 'finish',
 }
 export interface AppealsContextProps
-  extends Omit<ContactsContextProps, 'contactId'> {
+  extends Omit<ContactsContextProps, 'contactId' | 'getContactUrl'> {
   contactId: string | string[] | undefined;
   appealId: string | undefined;
   page?: PageEnum;
@@ -331,7 +339,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id: string | undefined, endTour = false) => {
+
+  const getContactUrl = (id?: string, endTour = false) => {
     const {
       accountListId: _accountListId,
       contactId: _contactId,
@@ -364,6 +373,21 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       pathname += `/${id}`;
     }
 
+    const filterParams =
+      Object.keys(filteredQuery).length > 0
+        ? `?${new URLSearchParams(
+            filteredQuery as Record<string, string>,
+          ).toString()}`
+        : '';
+
+    return {
+      pathname,
+      filteredQuery,
+      contactUrl: pathname + filterParams,
+    };
+  };
+  const setContactFocus = (id?: string, endTour = false) => {
+    const { pathname, filteredQuery } = getContactUrl(id, endTour);
     push({
       pathname,
       query: filteredQuery,
@@ -491,6 +515,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
+        getContactUrl: getContactUrl,
         setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
         activeFilters: activeFilters,

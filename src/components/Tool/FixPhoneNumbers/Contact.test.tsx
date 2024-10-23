@@ -44,7 +44,6 @@ const person: PersonInvalidNumberFragment = {
   },
 };
 
-const setContactFocus = jest.fn();
 const mutationSpy = jest.fn();
 const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
@@ -97,7 +96,6 @@ const TestComponent = ({
                 handleChange={handleChangeMock}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
-                setContactFocus={setContactFocus}
               />
             </GqlMockedProvider>
           </TestWrapper>
@@ -130,6 +128,26 @@ describe('Fix PhoneNumber Contact', () => {
     expect(getByText('MPDX (6/22/2021)')).toBeInTheDocument();
     expect(getByTestId('textfield-contactTestId-number2')).toBeInTheDocument();
     expect(getByDisplayValue('78910')).toBeInTheDocument();
+  });
+
+  it('should render link with correct href', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        mocks={{
+          GetInvalidPhoneNumbers: {
+            people: {
+              nodes: mockInvalidPhoneNumbersResponse,
+            },
+          },
+        }}
+      />,
+    );
+
+    const contactName = await findByRole('link', { name: 'Test Contact' });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/phoneNumbers/${person.id}`,
+    );
   });
 
   it('input reset after adding a phone number', async () => {

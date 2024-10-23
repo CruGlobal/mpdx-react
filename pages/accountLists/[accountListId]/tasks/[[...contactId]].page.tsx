@@ -1,3 +1,4 @@
+import { ParsedUrlQueryInput } from 'querystring';
 import Head from 'next/head';
 import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
@@ -39,6 +40,11 @@ import {
   useTasksQuery,
 } from './Tasks.generated';
 import { useTasksContactContext } from './useTasksContactContext';
+
+export type ContactUrl = {
+  contactUrl: string;
+  filteredQuery: string | ParsedUrlQueryInput;
+};
 
 const buttonBarHeight = theme.spacing(6);
 
@@ -103,6 +109,7 @@ const TasksPage: React.FC = () => {
     setStarredFilter,
     searchTerm,
     setSearchTerm,
+    getContactHrefObject,
     contactId: contactDetailsId,
     setContactId: setContactFocus,
   } = useTasksContactContext();
@@ -221,6 +228,7 @@ const TasksPage: React.FC = () => {
             setFilterPanelOpen={setFilterPanelOpen}
             contactId={contactDetailsId}
             setContactId={setContactFocus}
+            getContactHrefObject={getContactHrefObject}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
           >
@@ -326,6 +334,7 @@ const TasksPage: React.FC = () => {
                             onTaskCheckToggle={toggleSelectionById}
                             isChecked={isRowChecked(task.id)}
                             useTopMargin={index === 0}
+                            getContactHrefObject={getContactHrefObject}
                             contactDetailsOpen={contactDetailsOpen}
                             removeSelectedIds={deselectMultipleIds}
                           />

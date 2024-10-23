@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -19,6 +18,7 @@ import Contacts from './[[...contactId]].page';
 const accountListId = 'account-list-1';
 
 const router = {
+  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
   query: { accountListId },
   isReady: true,
 };
@@ -97,8 +97,8 @@ it('should render list of people', async () => {
   expect(await findByTestId('rowButton')).toHaveTextContent(contact.name);
 });
 
-it('should render contact detail panel', async () => {
-  const { findByTestId, findAllByRole, getByText } = render(
+it('should render contact link correctly', async () => {
+  const { findByRole } = render(
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
         <GqlMockedProvider<{ Contacts: ContactsQuery }>
@@ -115,12 +115,11 @@ it('should render contact detail panel', async () => {
       </TestRouter>
     </ThemeProvider>,
   );
-  await waitFor(() => expect(getByText('Test Person')).toBeInTheDocument());
-  const row = await findByTestId('rowButton');
 
-  userEvent.click(row);
+  const contactLink = await findByRole('link', { name: /test Person/i });
 
-  const detailsTabList = (await findAllByRole('tablist'))[0];
-
-  expect(detailsTabList).toBeInTheDocument();
+  expect(contactLink).toHaveAttribute(
+    'href',
+    '/accountLists/account-list-1/contacts/1',
+  );
 });

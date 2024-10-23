@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -44,7 +45,7 @@ export interface DonationTableProps {
   accountListId: string;
   filter: Partial<DonationTableQueryVariables>;
   loading?: boolean;
-  onSelectContact?: (contactId: string) => void;
+  getContactUrl?: (contactId: string) => string;
   visibleColumnsStorageKey: string;
   emptyPlaceholder: React.ReactElement;
   hideDisplayName?: boolean;
@@ -140,7 +141,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   accountListId,
   filter,
   loading: skipped = false,
-  onSelectContact,
+  getContactUrl,
   visibleColumnsStorageKey,
   emptyPlaceholder,
   hideDisplayName = false,
@@ -195,20 +196,21 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const date: RenderCell = ({ row }) => dateFormatShort(row.date, locale);
 
-  const donor: RenderCell = ({ row }) => (
-    <Tooltip title={row.donorAccountName}>
-      {onSelectContact ? (
-        <Link
-          underline="hover"
-          onClick={() => row.contactId && onSelectContact(row.contactId)}
-        >
-          {row.donorAccountName}
-        </Link>
-      ) : (
-        <span>{row.donorAccountName}</span>
-      )}
-    </Tooltip>
-  );
+  const donor: RenderCell = ({ row }) => {
+    const contactUrl =
+      getContactUrl && row.contactId && getContactUrl(row.contactId);
+    return (
+      <Tooltip title={row.donorAccountName}>
+        {contactUrl ? (
+          <NextLink href={contactUrl} passHref>
+            <Link>{row.donorAccountName}</Link>
+          </NextLink>
+        ) : (
+          <span>{row.donorAccountName}</span>
+        )}
+      </Tooltip>
+    );
+  };
 
   const amount: RenderCell = ({ row }) => {
     if (row.currency !== row.foreignCurrency) {

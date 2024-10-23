@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { Fragment, ReactElement, useMemo } from 'react';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -27,9 +28,9 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
@@ -98,23 +99,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-export interface FixEmailAddressPersonProps {
-  person: PersonInvalidEmailFragment;
-  dataState: { [key: string]: PersonEmailAddresses };
-  accountListId: string;
-  handleChange: (
-    personId: string,
-    numberIndex: number,
-    newEmail: string,
-  ) => void;
-  handleChangePrimary: (personId: string, emailIndex: number) => void;
-  handleSingleConfirm: (
-    person: PersonInvalidEmailFragment,
-    emails: EmailAddressData[],
-  ) => void;
-  setContactFocus: SetContactFocus;
-}
-
 interface Email {
   isValid: boolean;
   personId: string;
@@ -138,6 +122,21 @@ const validationSchema = yup.object({
     .email(i18n.t('Invalid Email Address Format'))
     .required(i18n.t('Please enter a valid email address')),
 });
+export interface FixEmailAddressPersonProps {
+  person: PersonInvalidEmailFragment;
+  dataState: { [key: string]: PersonEmailAddresses };
+  accountListId: string;
+  handleChange: (
+    personId: string,
+    numberIndex: number,
+    newEmail: string,
+  ) => void;
+  handleChangePrimary: (personId: string, emailIndex: number) => void;
+  handleSingleConfirm: (
+    person: PersonInvalidEmailFragment,
+    emails: EmailAddressData[],
+  ) => void;
+}
 
 export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   person,
@@ -146,13 +145,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleChange,
   handleChangePrimary,
   handleSingleConfirm,
-  setContactFocus,
 }) => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/tools/fix/emailAddresses/`,
+  });
   const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [emailToDelete, setEmailToDelete] =
@@ -160,6 +161,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
   const { id, contactId } = person;
   const name = `${person.firstName} ${person.lastName}`;
+  const contactUrl = getContactUrl(contactId);
 
   const emails: Email[] = useMemo(() => {
     if (!dataState[id]?.emailAddresses.length) {
@@ -217,10 +219,6 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
     });
   };
 
-  const handleContactNameClick = () => {
-    setContactFocus(contactId);
-  };
-
   const handleDeleteEmailOpen = ({ id, email }: EmailToDelete) => {
     setDeleteModalOpen(true);
     setEmailToDelete({ id, email });
@@ -245,12 +243,15 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                   <CardHeader
                     className={classes.contactHeader}
                     avatar={
-                      <Avatar
-                        className={classes.contactAvatar}
-                        src={person?.avatar || ''}
-                        aria-label="Contact Avatar"
-                        onClick={handleContactNameClick}
-                      />
+                      <NextLink href={contactUrl} passHref shallow>
+                        <Link underline="hover">
+                          <Avatar
+                            className={classes.contactAvatar}
+                            src={person?.avatar || ''}
+                            aria-label="Contact Avatar"
+                          />
+                        </Link>
+                      </NextLink>
                     }
                     action={
                       <Button
@@ -273,11 +274,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Button>
                     }
                     title={
-                      <Link underline="hover" onClick={handleContactNameClick}>
-                        <Typography variant="subtitle1" display="inline">
-                          {name}
-                        </Typography>
-                      </Link>
+                      <NextLink href={contactUrl} passHref shallow>
+                        <Link underline="hover">
+                          <Typography variant="subtitle1" display="inline">
+                            {name}
+                          </Typography>
+                        </Link>
+                      </NextLink>
                     }
                   />
                 </Grid>

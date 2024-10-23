@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
@@ -74,22 +73,16 @@ describe('FixCommitmentInfoPage', () => {
     });
   });
 
-  it('should open up contact details', async () => {
-    const { getByText, queryByText } = render(<Components />);
-    await waitFor(() => expect(queryByText('Tester 1')).toBeInTheDocument());
+  it('should render contact link correctly with donations tab', async () => {
+    const { findByRole } = render(<Components />);
 
-    const contactName = getByText('Tester 1');
-
-    expect(contactName).toBeInTheDocument();
-    userEvent.click(contactName);
-
-    await waitFor(() => {
-      expect(pushFn).toHaveBeenCalledWith({
-        pathname:
-          '/accountLists/account-list-1/tools/fix/commitmentInfo/tester-1',
-
-        query: { tab: 'Donations' },
-      });
+    const contactName = await findByRole('link', {
+      name: 'Tester 1',
     });
+
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/commitmentInfo/tester-1?tab=Donations`,
+    );
   });
 });

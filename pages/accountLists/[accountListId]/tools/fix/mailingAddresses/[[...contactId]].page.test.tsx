@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
@@ -71,8 +70,8 @@ describe('FixMailingAddressesPage', () => {
     });
   });
 
-  it('should open up contact details', async () => {
-    const { getByText, queryByTestId } = render(
+  it('should render contact link correctly', async () => {
+    const { findByRole } = render(
       <Components
         mocks={{
           InvalidAddresses: {
@@ -81,19 +80,14 @@ describe('FixMailingAddressesPage', () => {
         }}
       />,
     );
-    await waitFor(() =>
-      expect(queryByTestId('loading')).not.toBeInTheDocument(),
-    );
 
-    const contactName = getByText('Baggins, Frodo');
-
-    expect(contactName).toBeInTheDocument();
-    userEvent.click(contactName);
-
-    await waitFor(() => {
-      expect(pushFn).toHaveBeenCalledWith(
-        `/accountLists/${accountListId}/tools/fix/mailingAddresses/${contactId}`,
-      );
+    const contactName = await findByRole('link', {
+      name: 'Baggins, Frodo',
     });
+
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/mailingAddresses/${contactId}`,
+    );
   });
 });

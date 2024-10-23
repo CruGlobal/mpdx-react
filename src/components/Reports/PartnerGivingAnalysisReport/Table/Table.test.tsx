@@ -2,11 +2,20 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { PartnerGivingAnalysisReportContact } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable } from './Table';
 import type { Order } from '../../Reports.type';
+
+const router = {
+  query: {
+    accountListId: 'account-list-1',
+  },
+  isReady: true,
+  push: jest.fn(),
+};
 
 type Contact = PartnerGivingAnalysisReportContact;
 
@@ -14,7 +23,6 @@ const order: Order = 'asc';
 const orderBy: keyof Contact = 'name';
 const ids = [];
 const isRowChecked = jest.fn();
-const onClick = jest.fn();
 const onRequestSort = jest.fn();
 const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
@@ -82,7 +90,6 @@ const defaultProps = {
   order,
   orderBy,
   onRequestSort,
-  onClick,
   onSelectAll,
   onSelectOne,
   ids,
@@ -90,19 +97,23 @@ const defaultProps = {
   isRowChecked,
 };
 
+const Components = () => (
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <PartnerGivingAnalysisReportTable
+        {...defaultProps}
+        contacts={
+          mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+            .contacts
+        }
+      />
+    </TestRouter>
+  </ThemeProvider>
+);
+
 describe('PartnerGivingAnalysisReportTable', () => {
   it('default', async () => {
-    const { getAllByTestId, getByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTable
-          {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
-        />
-      </ThemeProvider>,
-    );
+    const { getAllByTestId, getByRole, queryByTestId } = render(<Components />);
 
     await waitFor(() => {
       expect(
@@ -118,17 +129,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
   });
 
   it('check event should happen', async () => {
-    const { getAllByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTable
-          {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
-        />
-      </ThemeProvider>,
-    );
+    const { getAllByRole, queryByTestId } = render(<Components />);
 
     await waitFor(() => {
       expect(
@@ -142,17 +143,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
   });
 
   it('click event should happen', async () => {
-    const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <PartnerGivingAnalysisReportTable
-          {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
-        />
-      </ThemeProvider>,
-    );
+    const { getByRole, queryByTestId } = render(<Components />);
 
     await waitFor(() => {
       expect(
@@ -160,7 +151,8 @@ describe('PartnerGivingAnalysisReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    userEvent.click(getByText('Ababa, Aladdin und Jasmine (Princess)'));
-    expect(onClick).toHaveBeenCalledWith('01');
+    expect(
+      getByRole('link', { name: 'Ababa, Aladdin und Jasmine (Princess)' }),
+    ).toBeInTheDocument();
   });
 });

@@ -3,16 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import FixCommitmentInfo from 'src/components/Tool/FixCommitmentInfo/FixCommitmentInfo';
 import { ToolsWrapper } from '../../ToolsWrapper';
-import { SetContactFocus, useToolsHelper } from '../../useToolsHelper';
+import { useToolsHelper } from '../../useToolsHelper';
 
 const FixCommitmentInfoPage: React.FC = () => {
   const { t } = useTranslation();
-  const { accountListId, handleSelectContact } = useToolsHelper();
+  const { accountListId } = useToolsHelper();
   const pageUrl = 'tools/fix/commitmentInfo';
-
-  const setContactFocus: SetContactFocus = (contactId, tabKey) => {
-    handleSelectContact(pageUrl, contactId, tabKey);
-  };
 
   return (
     <ToolsWrapper
@@ -20,10 +16,7 @@ const FixCommitmentInfoPage: React.FC = () => {
       pageUrl={pageUrl}
       selectedMenuId="fixCommitmentInfo"
     >
-      <FixCommitmentInfo
-        accountListId={accountListId || ''}
-        setContactFocus={setContactFocus}
-      />
+      <FixCommitmentInfo accountListId={accountListId || ''} />
     </ToolsWrapper>
   );
 };

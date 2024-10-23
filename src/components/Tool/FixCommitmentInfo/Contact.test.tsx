@@ -5,13 +5,14 @@ import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
-import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
 import Contact from './Contact';
 
+jest.mock('src/hooks/useAccountListId');
 let testData = {
-  id: 'test 1',
+  id: 'tester-1',
   name: 'Tester 1',
   avatar: '',
   status: StatusEnum.PartnerFinancial,
@@ -33,12 +34,12 @@ let testData = {
     ],
   },
 };
-
+const accountListId = 'accountListId';
 const router = {
+  query: { accountListId: accountListId },
   push: jest.fn(),
 };
 
-const setContactFocus = jest.fn();
 const handleShowModal = jest.fn();
 
 const TestComponent = ({
@@ -59,7 +60,6 @@ const TestComponent = ({
           amount={testData.amount}
           amountCurrency={testData.amountCurrency}
           frequencyValue={testData.frequencyValue}
-          setContactFocus={setContactFocus}
           avatar={testData.avatar}
         />
       </GqlMockedProvider>
@@ -70,7 +70,7 @@ const TestComponent = ({
 describe('FixCommitmentContact', () => {
   beforeEach(() => {
     handleShowModal.mockClear();
-    setContactFocus.mockClear();
+    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
   });
 
   it('default', async () => {
@@ -89,15 +89,19 @@ describe('FixCommitmentContact', () => {
     expect(handleShowModal).toHaveBeenCalledTimes(2);
   });
 
-  it('should redirect the page', () => {
-    const { getByTestId } = render(
+  it('should render contact link correctly', async () => {
+    const { findByRole } = render(
       <TestRouter router={router}>
         <TestComponent />
       </TestRouter>,
     );
 
-    userEvent.click(getByTestId('contactSelect'));
-    expect(setContactFocus).toHaveBeenCalledWith(testData.id, TabKey.Donations);
+    const contactName = await findByRole('heading', { name: 'Tester 1' });
+
+    expect(contactName.parentElement).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/commitmentInfo/tester-1?tab=Donations`,
+    );
   });
 
   it('should should render select field options and inputs', async () => {

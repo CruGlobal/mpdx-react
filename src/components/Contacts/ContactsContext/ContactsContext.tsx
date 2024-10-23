@@ -12,15 +12,16 @@ import {
   useContactFiltersQuery,
   useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
@@ -29,7 +30,6 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from '../../Shared/Header/ListHeader';
-import { useGetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
@@ -47,6 +47,7 @@ export type ContactsType = {
   handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
   setContactFocus: (id: string | undefined) => void;
+  getContactHrefObject: GetContactHrefObject;
   setSearchTerm: (searchTerm: string) => void;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -94,6 +95,7 @@ export interface ContactsContextProps {
   setFilterPanelOpen: (open: boolean) => void;
   contactId: string | undefined;
   setContactId: Dispatch<SetStateAction<string | undefined>>;
+  getContactHrefObject: GetContactHrefObject;
   viewMode?: TableViewModeEnum;
   setViewMode?: Dispatch<SetStateAction<TableViewModeEnum>>;
   searchTerm: string;
@@ -134,6 +136,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   setFilterPanelOpen,
   contactId,
   setContactId,
+  getContactHrefObject,
   viewMode = TableViewModeEnum.List,
   setViewMode = () => {},
   searchTerm,
@@ -147,20 +150,16 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [activeFilters],
   );
 
-  // Load the user's view preference
-  const { loading: userOptionsLoading } = useGetUserOptionsQuery({
-    // This fetch policy ensures that our onCompleted callback will only be called once instead of
-    // being called every time the cached user options are updated by the updateUserOptions mutation.
-    nextFetchPolicy: 'standby',
-    onCompleted: ({ userOptions }) => {
-      const option = userOptions.find(
-        (option) => option.key === 'contacts_view',
-      );
-      if (option && option.value) {
-        setViewMode(option.value as TableViewModeEnum);
-      }
-    },
-  });
+  const [contactsView, updateOptions, { loading: userOptionsLoading }] =
+    useUserPreference({
+      key: 'contacts_view',
+      defaultValue: TableViewModeEnum.List,
+    });
+  useEffect(() => {
+    if (contactsView && !userOptionsLoading) {
+      setViewMode(contactsView);
+    }
+  }, [contactsView, userOptionsLoading]);
 
   const contactsFilters = useMemo(() => {
     // Remove filters in the map view
@@ -255,26 +254,15 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
 
   const handleViewModeChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
     setViewMode(view as TableViewModeEnum);
-    updateOptions(view);
+    updateOptions(view as TableViewModeEnum);
   };
   //#endregion
 
   //#region JSX
-
-  const [updateUserOption] = useUpdateUserOptionMutation();
-
-  const updateOptions = async (view: string): Promise<void> => {
-    await updateUserOption({
-      variables: {
-        key: 'contacts_view',
-        value: view,
-      },
-    });
-  };
 
   // map states and functions
   const [selected, setSelected] = useState<Coordinates | null>(null);
@@ -315,6 +303,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         savedFilters: savedFilters,
         setContactFocus: setContactId,
         setSearchTerm: setSearchTermDebounced,
+        getContactHrefObject: getContactHrefObject,
         handleViewModeChange: handleViewModeChange,
         selected: selected,
         setSelected: setSelected,

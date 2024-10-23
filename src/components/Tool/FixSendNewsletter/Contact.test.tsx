@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import Contact from './Contact';
 import {
@@ -9,6 +10,8 @@ import {
   InvalidNewsletterContactFragment,
 } from './InvalidNewsletter.generated';
 
+jest.mock('src/hooks/useAccountListId');
+const accountListId = 'accountListId';
 const TestComponent = ({
   primaryPerson,
   primaryAddress,
@@ -17,8 +20,8 @@ const TestComponent = ({
   primaryAddress: ContactPrimaryAddressFragment;
 }) => {
   const contact: InvalidNewsletterContactFragment = {
-    id: '',
-    name: '',
+    id: 'contact123',
+    name: 'Test Contact',
     avatar: '',
     primaryPerson: primaryPerson,
     status: null,
@@ -33,39 +36,37 @@ const TestComponent = ({
         ]}
         setContactUpdates={jest.fn()}
         handleSingleConfirm={jest.fn()}
-        setContactFocus={jest.fn()}
       />
     </ThemeProvider>
   );
 };
 
 describe('Fix Newsletter - Contact', () => {
-  describe('inital value for dropdown', () => {
-    let primaryPerson = {} as ContactPrimaryPersonFragment;
-    let primaryAddress = {} as ContactPrimaryAddressFragment;
+  let primaryPerson = {} as ContactPrimaryPersonFragment;
+  let primaryAddress = {} as ContactPrimaryAddressFragment;
 
-    beforeEach(() => {
-      primaryPerson = {
-        firstName: '',
-        lastName: '',
-        primaryEmailAddress: {
-          id: '',
-          email: '',
-        },
-        optoutEnewsletter: false,
-      } as ContactPrimaryPersonFragment;
-
-      primaryAddress = {
+  beforeEach(() => {
+    primaryPerson = {
+      firstName: '',
+      lastName: '',
+      primaryEmailAddress: {
         id: '',
-        street: '',
-        city: '',
-        state: '',
-        postalCode: '',
-        source: '',
-        createdAt: '',
-      } as ContactPrimaryAddressFragment;
-    });
+        email: '',
+      },
+      optoutEnewsletter: false,
+    } as ContactPrimaryPersonFragment;
 
+    primaryAddress = {
+      id: '',
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      source: '',
+      createdAt: '',
+    } as ContactPrimaryAddressFragment;
+  });
+  describe('inital value for dropdown', () => {
     it('should be None', () => {
       const { getByRole } = render(
         <TestComponent
@@ -180,5 +181,22 @@ describe('Fix Newsletter - Contact', () => {
         within(getByRole('combobox')).getByText('Physical'),
       ).toBeInTheDocument();
     });
+  });
+
+  it('should render link with correct href', async () => {
+    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
+
+    const { findByRole } = render(
+      <TestComponent
+        primaryPerson={primaryPerson}
+        primaryAddress={primaryAddress}
+      />,
+    );
+
+    const contactName = await findByRole('link', { name: 'Test Contact' });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/sendNewsletter/contact123`,
+    );
   });
 });

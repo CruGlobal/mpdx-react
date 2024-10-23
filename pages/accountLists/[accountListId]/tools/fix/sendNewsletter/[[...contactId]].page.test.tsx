@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
@@ -69,20 +68,16 @@ describe('FixSendNewsletterPage', () => {
     });
   });
 
-  it('should open up contact details', async () => {
-    const { findByText, queryByTestId } = render(<Components />);
-    await waitFor(() =>
-      expect(queryByTestId('LoadingSpinner')).not.toBeInTheDocument(),
-    );
-    const contactName = await findByText('Baggins, Frodo');
+  it('should render contact link correctly', async () => {
+    const { findByRole } = render(<Components />);
 
-    expect(contactName).toBeInTheDocument();
-    userEvent.click(contactName);
-
-    await waitFor(() => {
-      expect(pushFn).toHaveBeenCalledWith(
-        `/accountLists/${accountListId}/tools/fix/sendNewsletter/${'contactId1'}`,
-      );
+    const contactName = await findByRole('link', {
+      name: 'Baggins, Frodo',
     });
+
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/sendNewsletter/contactId1`,
+    );
   });
 });

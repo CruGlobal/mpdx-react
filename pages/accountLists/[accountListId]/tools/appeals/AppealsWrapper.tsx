@@ -108,6 +108,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
       appealId={appealId}
       contactId={contactId}
       setContactId={doNothing}
+      getContactHrefObject={() => ({ pathname: '', query: {} })}
       searchTerm={searchTerm}
       setSearchTerm={doNothing}
       page={page}

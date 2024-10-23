@@ -16,7 +16,6 @@ import { DonationsReport } from './DonationsReport';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
-const onSelectContact = jest.fn();
 
 const push = jest.fn();
 
@@ -118,7 +117,6 @@ describe('DonationsReport', () => {
               accountListId={'abc'}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
-              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>
@@ -146,7 +144,6 @@ describe('DonationsReport', () => {
               accountListId={'abc'}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
-              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>
@@ -180,7 +177,6 @@ describe('DonationsReport', () => {
               accountListId={'abc'}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
-              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>
@@ -202,7 +198,6 @@ describe('DonationsReport', () => {
               designationAccounts={['account-1']}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
-              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>
@@ -232,7 +227,6 @@ describe('DonationsReport', () => {
               accountListId={'abc'}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
-              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>
@@ -262,7 +256,6 @@ describe('DonationsReport', () => {
               accountListId={'abc'}
               isNavListOpen={true}
               onNavListToggle={onNavListToggle}
-              onSelectContact={onSelectContact}
               title={title}
             />
           </GqlMockedProvider>

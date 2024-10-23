@@ -10,6 +10,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -20,6 +21,7 @@ import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasks
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskModalEnum } from '../Modal/TaskModal';
 import { TaskRowFragment } from './TaskRow.generated';
+import { TaskRowContactName } from './TaskRowContactName';
 
 const SubjectWrapOuter = styled(Box)(({ theme }) => ({
   width: 'fit-content',
@@ -60,14 +62,10 @@ const TaskType = styled(Typography, {
   marginRight: theme.spacing(0.5),
 }));
 
-const TaskContactName = styled(ContactText)(({ theme }) => ({
-  fontWeight: 700,
-  whiteSpace: 'nowrap',
-  marginRight: theme.spacing(0.5),
-  '&:hover': {
-    textDecoration: 'underline',
-  },
-}));
+type OnContactClickFunction = (
+  event: React.MouseEvent<HTMLElement, MouseEvent>,
+  contactId: string,
+) => void;
 
 interface TaskRowProps {
   accountListId: string;
@@ -76,6 +74,7 @@ interface TaskRowProps {
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
+  getContactHrefObject?: GetContactHrefObject;
   contactDetailsOpen?: boolean;
   removeSelectedIds?: (id: string[]) => void;
 }
@@ -87,6 +86,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onContactSelected,
   onTaskCheckToggle,
   useTopMargin,
+  getContactHrefObject,
   contactDetailsOpen,
   removeSelectedIds,
 }) => {
@@ -128,12 +128,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   }));
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
-  const onClick = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    contactId: string,
-  ) => {
-    // Prevent parent onClick from firing on child click
-    event.stopPropagation();
+  const onContactClick: OnContactClickFunction = (event, contactId) => {
+    event.preventDefault();
     onContactSelected(contactId);
   };
 
@@ -265,21 +261,18 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   textOverflow: 'ellipsis',
                 }}
               >
-                {contacts.nodes.map((contact, index) => (
-                  <TaskContactName
-                    noWrap
-                    display="inline"
-                    key={contact.id}
-                    onClick={(e) => {
-                      onClick(e, contact.id);
-                      e.stopPropagation();
-                    }}
-                  >
-                    {index !== contacts.nodes.length - 1
-                      ? `${contact.name},`
-                      : contact.name}
-                  </TaskContactName>
-                ))}
+                {contacts.nodes.map((contact, index) => {
+                  return (
+                    <TaskRowContactName
+                      contact={contact}
+                      itemIndex={index}
+                      contactsLength={contacts.nodes.length}
+                      selectContact={onContactClick}
+                      getContactHrefObject={getContactHrefObject}
+                      key={contact.id}
+                    />
+                  );
+                })}
               </Box>
             </Box>
           </Box>

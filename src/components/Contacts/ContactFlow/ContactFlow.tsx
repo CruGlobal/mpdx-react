@@ -24,11 +24,6 @@ interface Props {
   accountListId: string;
   selectedFilters: ContactFilterSetInput;
   searchTerm?: string | string[];
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
 }
 
 export interface ContactFlowOption {
@@ -49,7 +44,6 @@ export const colorMap: { [key: string]: string } = {
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
   selectedFilters,
-  onContactSelected,
   searchTerm,
 }: Props) => {
   const [userFlowOptions, _, { loading: loadingUserOptions }] =
@@ -202,7 +196,6 @@ export const ContactFlow: React.FC<Props> = ({
                 title={column.name}
                 selectedFilters={selectedFilters}
                 color={colorMap[column.color]}
-                onContactSelected={onContactSelected}
                 statuses={column.statuses}
                 changeContactStatus={changeContactStatus}
                 searchTerm={searchTerm}

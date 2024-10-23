@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { Fragment } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
@@ -23,7 +24,6 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddButton,
@@ -32,6 +32,8 @@ import {
   EditIcon,
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -115,7 +117,6 @@ interface Props {
   addresses: ContactAddressFragment[];
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
-  setContactFocus: SetContactFocus;
   handleSingleConfirm: ({
     addresses,
     id,
@@ -130,13 +131,18 @@ const Contact: React.FC<Props> = ({
   addresses,
   openEditAddressModal,
   openNewAddressModal,
-  setContactFocus,
   handleSingleConfirm,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
+  const accountListId = useAccountListId();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/tools/fix/mailingAddresses/`,
+  });
+  const contactUrl = getContactUrl(id);
+
   const newAddress = { ...emptyAddress, newAddress: true };
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
@@ -171,19 +177,15 @@ const Contact: React.FC<Props> = ({
     handleSingleConfirm({ addresses, id, name });
   };
 
-  const handleContactNameClick = () => {
-    setContactFocus(id);
-  };
-
   return (
     <Card className={classes.contactCard}>
       <ContactHeader
         avatar={
-          <ContactAvatar
-            src=""
-            aria-label="Contact Avatar"
-            onClick={handleContactNameClick}
-          />
+          <NextLink href={contactUrl} passHref shallow>
+            <Link underline="hover">
+              <ContactAvatar src="" aria-label="Contact Avatar" />
+            </Link>
+          </NextLink>
         }
         action={
           <Button
@@ -196,11 +198,13 @@ const Contact: React.FC<Props> = ({
           </Button>
         }
         title={
-          <Link underline="hover" onClick={handleContactNameClick}>
-            <Typography display="inline" variant="h6">
-              {name}
-            </Typography>
-          </Link>
+          <NextLink href={contactUrl} passHref shallow>
+            <Link underline="hover">
+              <Typography display="inline" variant="h6">
+                {name}
+              </Typography>
+            </Link>
+          </NextLink>
         }
         subheader={<Typography>{getLocalizedContactStatus(status)}</Typography>}
       />

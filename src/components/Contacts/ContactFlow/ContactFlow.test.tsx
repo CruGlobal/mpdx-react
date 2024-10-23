@@ -39,7 +39,6 @@ describe('ContactFlow', () => {
                 <DndProvider backend={HTML5Backend}>
                   <ContactFlow
                     accountListId={accountListId}
-                    onContactSelected={jest.fn()}
                     selectedFilters={{}}
                   />
                 </DndProvider>
@@ -65,7 +64,6 @@ describe('ContactFlow', () => {
                 <DndProvider backend={HTML5Backend}>
                   <ContactFlow
                     accountListId={accountListId}
-                    onContactSelected={jest.fn()}
                     selectedFilters={{}}
                   />
                 </DndProvider>
@@ -103,7 +101,6 @@ describe('ContactFlow', () => {
                 <DndProvider backend={HTML5Backend}>
                   <ContactFlow
                     accountListId={accountListId}
-                    onContactSelected={jest.fn()}
                     selectedFilters={{}}
                   />
                 </DndProvider>

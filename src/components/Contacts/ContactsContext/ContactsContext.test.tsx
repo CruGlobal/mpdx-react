@@ -8,6 +8,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import theme from '../../../theme';
 import {
@@ -108,16 +109,14 @@ describe('ContactsPageContext', () => {
             replace,
           }}
         >
-          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
+          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
             mocks={{
-              GetUserOptions: {
-                userOptions: [
-                  {
-                    id: 'test-id',
-                    key: 'contacts_view',
-                    value: 'flows',
-                  },
-                ],
+              UserOption: {
+                userOption: {
+                  id: 'test-id',
+                  key: 'contacts_view',
+                  value: 'flows',
+                },
               },
             }}
           >
@@ -153,16 +152,14 @@ describe('ContactsPageContext', () => {
             replace,
           }}
         >
-          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
+          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
             mocks={{
-              GetUserOptions: {
-                userOptions: [
-                  {
-                    id: 'test-id',
-                    key: 'contacts_view',
-                    value: 'flows',
-                  },
-                ],
+              UserOption: {
+                userOption: {
+                  id: 'test-id',
+                  key: 'contacts_view',
+                  value: 'flows',
+                },
               },
             }}
           >
@@ -210,16 +207,14 @@ describe('ContactsPageContext', () => {
             replace,
           }}
         >
-          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
+          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
             mocks={{
-              GetUserOptions: {
-                userOptions: [
-                  {
-                    id: 'test-id',
-                    key: 'contacts_view',
-                    value: 'list',
-                  },
-                ],
+              UserOption: {
+                userOption: {
+                  id: 'test-id',
+                  key: 'contacts_view',
+                  value: 'list',
+                },
               },
             }}
           >

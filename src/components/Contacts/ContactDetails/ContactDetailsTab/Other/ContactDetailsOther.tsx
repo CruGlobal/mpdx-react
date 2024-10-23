@@ -1,9 +1,12 @@
+import NextLink from 'next/link';
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { formatLanguage } from 'src/lib/data/languages';
 import i18n from 'src/lib/i18n';
 import { ContactOtherFragment } from './ContactOther.generated';
@@ -25,19 +28,10 @@ const ContactOtherTextLabel = styled(Typography)(({ theme }) => ({
 
 const ReferralName = styled(Typography)(() => ({
   width: 'fit-content',
-  '&:hover': {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
 }));
 
 interface ContactDetailsOtherProp {
   contact: ContactOtherFragment;
-  onContactSelected: (
-    contactId: string,
-    openDetails?: boolean,
-    flows?: boolean,
-  ) => void;
 }
 
 export const localizedContactMethod = (method?: string | null): string => {
@@ -63,9 +57,12 @@ export const localizedContactMethod = (method?: string | null): string => {
 
 export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
-  onContactSelected,
 }) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/contacts/`,
+  });
   const constants = useApiConstants();
   const languages = constants?.languages || undefined;
   const {
@@ -81,6 +78,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   } = contact;
 
   const referredBy = contactReferralsToMe?.nodes[0]?.referredBy;
+  const contactUrl = getContactUrl(referredBy?.id);
 
   return (
     <Box>
@@ -113,11 +111,10 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
             {t('Connecting Partner')}
           </ContactOtherTextLabel>
           {referredBy && (
-            <ReferralName
-              variant="subtitle1"
-              onClick={() => onContactSelected(referredBy.id)}
-            >
-              {referredBy.name}
+            <ReferralName variant="subtitle1">
+              <NextLink href={contactUrl} passHref shallow>
+                <Link>{referredBy.name}</Link>
+              </NextLink>
             </ReferralName>
           )}
         </ContactOtherTextContainer>

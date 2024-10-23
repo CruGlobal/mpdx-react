@@ -3,7 +3,6 @@ import { Box, Button, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { StickyButtonHeaderBox } from 'src/components/Shared/Header/styledComponents';
@@ -46,13 +45,9 @@ export interface ContactUpdateData {
 
 interface Props {
   accountListId: string;
-  setContactFocus: SetContactFocus;
 }
 
-const FixSendNewsletter: React.FC<Props> = ({
-  accountListId,
-  setContactFocus,
-}: Props) => {
+const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -201,7 +196,6 @@ const FixSendNewsletter: React.FC<Props> = ({
                 contact={contact}
                 key={contact.id}
                 handleSingleConfirm={handleSingleConfirm}
-                setContactFocus={setContactFocus}
                 contactUpdates={contactUpdates}
                 setContactUpdates={setContactUpdates}
               />

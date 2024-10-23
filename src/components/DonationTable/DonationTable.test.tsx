@@ -14,7 +14,6 @@ import {
   DonationTableQuery,
 } from './DonationTable.generated';
 
-const onSelectContact = jest.fn();
 const mutationSpy = jest.fn();
 
 const router = {
@@ -117,7 +116,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
           >
             <DonationTable
               accountListId={'abc'}
-              onSelectContact={onSelectContact}
               filter={{
                 designationAccountIds: ['designation-1'],
               }}
@@ -205,29 +203,19 @@ describe('DonationTable', () => {
     expect(await findByText('Empty Table')).toBeInTheDocument();
   });
 
-  it('is clickable', async () => {
-    const { findByText } = render(<TestComponent />);
+  it('contact name is not link when getContactUrl is not provided', async () => {
+    const { findByText, queryByRole } = render(<TestComponent />);
 
-    const link = await findByText('Donor 1');
-    expect(link).toHaveClass('MuiLink-root');
-    userEvent.click(link);
-    expect(onSelectContact).toHaveBeenCalledWith('contact-1');
+    expect(await findByText('Donor 1')).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Donor 1' })).not.toBeInTheDocument();
   });
 
-  it('is not clickable', async () => {
-    const { findByText } = render(<TestComponent />);
-
-    userEvent.click(await findByText('Donor 1'));
-    expect(onSelectContact).toHaveBeenCalledWith('contact-1');
-  });
-
-  it('is not a link when onSelectContact is not provided', async () => {
-    const { findByText } = render(
-      <TestComponent tableProps={{ onSelectContact: undefined }} />,
+  it('contact name is a link when getContactUrl is provided', async () => {
+    const { findByRole } = render(
+      <TestComponent tableProps={{ getContactUrl: () => 'contact-1' }} />,
     );
 
-    expect(await findByText('Donor 1')).not.toHaveClass('MuiLink-root');
-    expect(onSelectContact).not.toHaveBeenCalled();
+    expect(await findByRole('link', { name: 'Donor 1' })).toBeInTheDocument();
   });
 
   it('hides currency column when all currencies match the account currency', async () => {

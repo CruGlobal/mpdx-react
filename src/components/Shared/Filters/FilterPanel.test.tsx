@@ -96,6 +96,7 @@ describe('FilterPanel', () => {
           setFilterPanelOpen={jest.fn()}
           contactId={undefined}
           setContactId={jest.fn()}
+          getContactHrefObject={jest.fn()}
           searchTerm={'test'}
           setSearchTerm={jest.fn()}
         >

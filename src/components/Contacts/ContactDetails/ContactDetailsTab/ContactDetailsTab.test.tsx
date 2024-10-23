@@ -22,7 +22,6 @@ const router = {
   query: { searchTerm: undefined, accountListId },
   push: jest.fn(),
 };
-const onContactSelected = jest.fn();
 
 const dates = {
   anniversaryDay: 1,
@@ -102,7 +101,6 @@ const TestComponent: React.FC<TestComponentProps> = (props) => (
                 <ContactDetailsTab
                   accountListId={accountListId}
                   contactId={contactId}
-                  onContactSelected={onContactSelected}
                 />
               </ContactDetailProvider>
             </ContactsWrapper>

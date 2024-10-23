@@ -1,13 +1,16 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
+import {
+  ContactsContext,
+  ContactsType,
+} from '../../ContactsContext/ContactsContext';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
@@ -23,47 +26,46 @@ const contact = {
   uncompletedTasksCount: 0,
 } as ContactRowFragment;
 
-const onContactSelected = jest.fn();
+const getContactHrefObject = jest.fn().mockReturnValue({
+  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
+  query: { accountListId, contactId: contact.id },
+});
 
+const Components = () => (
+  <DndProvider backend={HTML5Backend}>
+    <ThemeProvider theme={theme}>
+      <TestWrapper>
+        <ContactsContext.Provider
+          value={
+            {
+              getContactHrefObject,
+            } as unknown as ContactsType
+          }
+        >
+          <ContactFlowRow
+            accountListId={accountListId}
+            contact={contact}
+            status={status}
+            contactPhase={PhaseEnum.PartnerCare}
+          />
+        </ContactsContext.Provider>
+      </TestWrapper>
+    </ThemeProvider>
+  </DndProvider>
+);
 describe('ContactFlowRow', () => {
   it('should display contact name and status', () => {
-    const { getByText, getByTitle } = render(
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <ContactFlowRow
-              accountListId={accountListId}
-              contact={contact}
-              status={status}
-              contactPhase={PhaseEnum.PartnerCare}
-              onContactSelected={onContactSelected}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </DndProvider>,
-    );
+    const { getByText, getByTitle } = render(<Components />);
     expect(getByText('Test Name')).toBeInTheDocument();
     expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
   it('should call contact selected function', () => {
-    const { getByText } = render(
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <ContactFlowRow
-              accountListId={accountListId}
-              contact={contact}
-              status={status}
-              contactPhase={PhaseEnum.PartnerCare}
-              onContactSelected={onContactSelected}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </DndProvider>,
+    const { getByRole } = render(<Components />);
+    const contactName = getByRole('link', { name: 'Test Name' });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/contacts/${contact.id}`,
     );
-    userEvent.click(getByText('Test Name'));
-    expect(getByText('Test Name')).toBeInTheDocument();
-    expect(onContactSelected).toHaveBeenCalledWith('123', true, true);
   });
 });
