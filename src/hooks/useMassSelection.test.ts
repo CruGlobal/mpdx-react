@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
-import { useMassSelection } from './useMassSelection';
+import { UseMassSelectionResult, useMassSelection } from './useMassSelection';
 
 const defaultIdsList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -116,5 +116,19 @@ describe('useMassSelection', () => {
       rerender();
       expect(result.current.ids).toEqual(['1', '2', '3', '7', '8', '9', '10']);
     });
+  });
+
+  it('deselects removed ids', () => {
+    const { result, rerender } = renderHook<
+      UseMassSelectionResult,
+      { ids: string[] }
+    >(({ ids }) => useMassSelection(ids), {
+      initialProps: { ids: defaultIdsList },
+    });
+
+    result.current.selectMultipleIds(['1', '2', '3']);
+
+    rerender({ ids: ['2', '3', '4'] });
+    expect(result.current.ids).toEqual(['2', '3']);
   });
 });
