@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -90,7 +91,6 @@ export const ContactFlowRow: React.FC<Props> = ({
   accountListId,
   contact,
   appealStatus,
-  onContactSelected,
   columnWidth,
   excludedContacts,
 }) => {
@@ -100,6 +100,7 @@ export const ContactFlowRow: React.FC<Props> = ({
     appealId,
     isRowChecked: isChecked,
     toggleSelectionById: onContactCheckToggle,
+    getContactUrl,
   } = React.useContext(AppealsContext) as AppealsType;
   const [createPledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
@@ -152,6 +153,8 @@ export const ContactFlowRow: React.FC<Props> = ({
 
   const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
 
+  const contactUrl = getContactUrl(id).contactUrl;
+
   return (
     <>
       <ContainerBox isDragging={isDragging} ref={drag}>
@@ -170,9 +173,9 @@ export const ContactFlowRow: React.FC<Props> = ({
                 size="small"
               />
               <Box display="flex" flexDirection="column" ml={1} draggable>
-                <ContactLink onClick={() => onContactSelected(id, true, true)}>
-                  {name}
-                </ContactLink>
+                <NextLink href={contactUrl} passHref shallow>
+                  <ContactLink>{name}</ContactLink>
+                </NextLink>
                 <Typography variant="body2">
                   {getLocalizedContactStatus(contact.status)}
                 </Typography>

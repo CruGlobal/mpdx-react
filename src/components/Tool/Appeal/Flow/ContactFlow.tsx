@@ -27,11 +27,6 @@ export interface ContactFlowProps {
   searchTerm?: string | string[];
   appealInfo?: AppealQuery;
   appealInfoLoading: boolean;
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
 }
 
 export interface ContactFlowOption {
@@ -84,7 +79,6 @@ const flowOptions: ContactFlowOption[] = [
 
 export const ContactFlow: React.FC<ContactFlowProps> = ({
   accountListId,
-  onContactSelected,
   searchTerm,
   appealInfo,
   appealInfoLoading,
@@ -222,7 +216,6 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
                 accountListId={accountListId}
                 title={column.name}
                 color={column.color}
-                onContactSelected={onContactSelected}
                 appealStatus={column.status}
                 changeContactStatus={changeContactStatus}
                 searchTerm={searchTerm}

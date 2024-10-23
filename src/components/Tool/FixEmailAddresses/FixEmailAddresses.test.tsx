@@ -22,7 +22,6 @@ import {
   determineBulkDataToSend,
 } from './FixEmailAddresses';
 import {
-  contactId,
   contactOneEmailAddressNodes,
   mockInvalidEmailAddressesResponse,
   newEmail,
@@ -34,7 +33,6 @@ const router = {
   isReady: true,
 };
 
-const setContactFocus = jest.fn();
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
 
@@ -80,10 +78,7 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
               mocks={mocks}
               onCall={mutationSpy}
             >
-              <FixEmailAddresses
-                accountListId={accountListId}
-                setContactFocus={setContactFocus}
-              />
+              <FixEmailAddresses accountListId={accountListId} />
             </GqlMockedProvider>
           </VirtuosoMockContext.Provider>
         </TestWrapper>
@@ -296,20 +291,15 @@ describe('FixEmailAddresses-Home', () => {
     expect(firstInput).toHaveValue('email1@gmail.com123');
   });
 
-  describe('setContactFocus()', () => {
-    it('should open up contact details', async () => {
-      const { getByText, queryByTestId } = render(<Components />);
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
-      expect(setContactFocus).not.toHaveBeenCalled();
+  it('should render the contact link correctly', async () => {
+    const { findByRole } = render(<Components />);
 
-      const contactName = getByText('Test Contact');
+    const contactName = await findByRole('link', { name: 'Test Contact' });
 
-      expect(contactName).toBeInTheDocument();
-      userEvent.click(contactName);
-      expect(setContactFocus).toHaveBeenCalledWith(contactId);
-    });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/fix/emailAddresses/contactId`,
+    );
   });
 
   describe('Add email address - Testing cache', () => {

@@ -23,9 +23,11 @@ import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'account-list-1';
 const appealId = 'appealId';
-const onContactSelected = jest.fn();
 const toggleSelectionById = jest.fn();
 const isChecked = jest.fn().mockImplementation(() => false);
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/${defaultContact.id}`,
+});
 
 type ComponentsProps = {
   appealStatus?: AppealStatusEnum;
@@ -48,6 +50,7 @@ const Components = ({
                   appealId,
                   isRowChecked: isChecked,
                   toggleSelectionById,
+                  getContactUrl,
                 } as unknown as AppealsType
               }
             >
@@ -55,7 +58,6 @@ const Components = ({
                 accountListId={accountListId}
                 contact={contact}
                 appealStatus={appealStatus}
-                onContactSelected={onContactSelected}
                 excludedContacts={excludedContacts}
               />
             </AppealsContext.Provider>
@@ -86,15 +88,11 @@ describe('ContactFlowRow', () => {
     expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
-  it('should call contact selected function', () => {
-    const { getByText } = render(<Components />);
-    userEvent.click(getByText(defaultContact.name));
-    expect(getByText(defaultContact.name)).toBeInTheDocument();
-    expect(onContactSelected).toHaveBeenCalledWith(
-      defaultContact.id,
-      true,
-      true,
-    );
+  it('should render contact name as link', () => {
+    const { getByRole } = render(<Components />);
+    const contact = getByRole('link', { name: defaultContact.name });
+    expect(contact).toBeInTheDocument();
+    expect(contact).toHaveAttribute('href', `/contacts/${defaultContact.id}`);
   });
 
   it('should call check contact', async () => {

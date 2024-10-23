@@ -18,6 +18,7 @@ describe('ContactsMap', () => {
             setFilterPanelOpen={jest.fn()}
             contactId={undefined}
             setContactId={jest.fn()}
+            getContactHrefObject={jest.fn()}
             searchTerm={''}
             setSearchTerm={jest.fn()}
           >

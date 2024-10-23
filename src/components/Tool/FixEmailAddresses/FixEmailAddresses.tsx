@@ -13,7 +13,6 @@ import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { ItemProps } from 'react-virtuoso';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import {
   InfiniteList,
   ItemWithBorders,
@@ -99,11 +98,6 @@ export interface PersonEmailAddresses {
   emailAddresses: EmailAddressData[];
 }
 
-interface FixEmailAddressesProps {
-  accountListId: string;
-  setContactFocus: SetContactFocus;
-}
-
 //TODO: Try to make bulk confirm logic more similar across tools, perhaps we can factor out a common function
 export const determineBulkDataToSend = (
   dataState: {
@@ -135,9 +129,12 @@ export const determineBulkDataToSend = (
   return dataToSend;
 };
 
+interface FixEmailAddressesProps {
+  accountListId: string;
+}
+
 export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
   accountListId,
-  setContactFocus,
 }) => {
   const [defaultSource, setDefaultSource] = useState(manualSourceValue);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
@@ -365,7 +362,6 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
                         handleChange={handleChange}
                         handleChangePrimary={handleChangePrimary}
                         handleSingleConfirm={handleSingleConfirm}
-                        setContactFocus={setContactFocus}
                       />
                     </Box>
                   </Grid>

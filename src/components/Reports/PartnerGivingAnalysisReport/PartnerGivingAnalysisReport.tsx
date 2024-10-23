@@ -33,7 +33,6 @@ interface Props {
   onFilterListToggle: () => void;
   activeFilters?: ReportContactFilterSetInput;
   contactDetailsOpen: boolean;
-  onSelectContact: (contactId: string) => void;
   title: string;
   contactFilters?: ReportContactFilterSetInput;
 }
@@ -55,7 +54,6 @@ export const PartnerGivingAnalysisReport = forwardRef<
       onFilterListToggle,
       activeFilters,
       contactDetailsOpen,
-      onSelectContact,
       title,
       contactFilters: filters,
     },
@@ -195,7 +193,6 @@ export const PartnerGivingAnalysisReport = forwardRef<
         ) : contacts.length > 0 ? (
           <>
             <Table
-              onClick={onSelectContact}
               onRequestSort={handleRequestSort}
               onSelectOne={toggleSelectionById}
               order={order}

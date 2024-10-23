@@ -96,13 +96,10 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
 
-  const {
-    accountListId,
-    contactDetailsId: contactId,
-    setContactFocus,
-  } = contextType === ContactContextTypesEnum.Contacts
-    ? (React.useContext(ContactsContext) as ContactsType)
-    : (React.useContext(AppealsContext) as AppealsType);
+  const { accountListId, contactDetailsId: contactId } =
+    contextType === ContactContextTypesEnum.Contacts
+      ? (React.useContext(ContactsContext) as ContactsType)
+      : (React.useContext(AppealsContext) as AppealsType);
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
@@ -171,7 +168,6 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             <DynamicContactReferralTab
               accountListId={accountListId}
               contactId={contactId}
-              onContactSelected={setContactFocus}
             />
           )}
         </TabPanel>
@@ -180,7 +176,6 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             <DynamicContactDetailsTab
               accountListId={accountListId}
               contactId={contactId}
-              onContactSelected={setContactFocus}
             />
           )}
         </TabPanel>

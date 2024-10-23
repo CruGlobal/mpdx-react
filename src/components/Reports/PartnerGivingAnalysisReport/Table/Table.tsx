@@ -1,25 +1,28 @@
+import NextLink from 'next/link';
 import React, { FC } from 'react';
 import {
   Checkbox,
+  Link,
   Table,
   TableBody,
   TableCell as TableCellMui,
   TableContainer,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 import type { Order } from '../../Reports.type';
 import type { Contact } from '../PartnerGivingAnalysisReport';
 
 interface PartnerGivingAnalysisReportTableProps {
-  onClick: (contactId: string) => void;
   onSelectOne: (contactId: string) => void;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
@@ -44,29 +47,22 @@ const TableCell = styled(TableCellMui)({
   align: 'left',
 });
 
-const ContactName = styled(Typography)(({ theme }) => ({
-  fontWeight: 700,
-  whiteSpace: 'nowrap',
-  marginRight: theme.spacing(0.5),
-  cursor: 'pointer',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
-}));
-
 export const PartnerGivingAnalysisReportTable: FC<
   PartnerGivingAnalysisReportTableProps
 > = ({
   order,
   orderBy,
   contacts,
-  onClick,
   onRequestSort,
   onSelectOne,
   isRowChecked,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/reports/partnerGivingAnalysis/`,
+  });
 
   return (
     <StickyTableContainer>
@@ -112,6 +108,7 @@ export const PartnerGivingAnalysisReportTable: FC<
         />
         <TableBody>
           {contacts?.map((contact) => {
+            const contactUrl = getContactUrl(contact.id);
             return (
               <TableRow
                 key={contact.id}
@@ -126,12 +123,17 @@ export const PartnerGivingAnalysisReportTable: FC<
                   />
                 </TableCell>
                 <TableCell>
-                  <ContactName
-                    onClick={() => onClick(contact.id)}
-                    onMouseEnter={preloadContactsRightPanel}
-                  >
-                    {contact.name}
-                  </ContactName>
+                  <NextLink href={contactUrl} passHref>
+                    <Link
+                      onMouseEnter={preloadContactsRightPanel}
+                      style={{
+                        whiteSpace: 'nowrap',
+                        marginRight: theme.spacing(0.5),
+                      }}
+                    >
+                      {contact.name}
+                    </Link>
+                  </NextLink>
                 </TableCell>
                 <TableCell>
                   {currencyFormat(

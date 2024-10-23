@@ -68,11 +68,6 @@ export interface ContactFlowColumnProps {
   color: string;
   accountListId: string;
   searchTerm?: string | string[];
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
   changeContactStatus: (
     id: string,
     status: StatusEnum,
@@ -90,7 +85,6 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
   color,
   accountListId,
   searchTerm,
-  onContactSelected,
   changeContactStatus,
 }) => {
   const { sanitizedFilters, starredFilter } = React.useContext(
@@ -158,7 +152,6 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
                   contact={contact}
                   status={contact.status}
                   contactPhase={contact.contactPhase}
-                  onContactSelected={onContactSelected}
                   columnWidth={cardContentRef.current?.offsetWidth}
                 />
               )

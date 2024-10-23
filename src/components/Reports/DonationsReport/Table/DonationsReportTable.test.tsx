@@ -15,7 +15,6 @@ describe('DonationsReportTable', () => {
         <GqlMockedProvider onCall={jest.fn()}>
           <DonationsReportTable
             accountListId={'abc'}
-            onSelectContact={jest.fn()}
             time={DateTime.now()}
             setTime={setTime}
           />

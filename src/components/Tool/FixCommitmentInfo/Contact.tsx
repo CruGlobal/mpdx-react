@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement, useMemo } from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import {
@@ -24,10 +25,11 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -180,7 +182,6 @@ interface Props {
     title: string,
     updateType: UpdateTypeEnum,
   ) => void;
-  setContactFocus: SetContactFocus;
   avatar?: string;
   suggestedChanges?: SuggestedChangesType;
 }
@@ -194,7 +195,6 @@ const Contact: React.FC<Props> = ({
   amountCurrency,
   frequencyValue,
   showModal,
-  setContactFocus,
   avatar,
   suggestedChanges,
 }) => {
@@ -208,6 +208,12 @@ const Contact: React.FC<Props> = ({
   const { getLocalizedContactStatus } = useLocalizedConstants();
   const phases = constants?.phases;
   const { appName } = useGetAppSettings();
+  const accountListId = useAccountListId();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/tools/fix/commitmentInfo/`,
+  });
+
+  const contactUrl = `${getContactUrl(id)}?tab=${TabKey.Donations}`;
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
@@ -309,15 +315,13 @@ const Contact: React.FC<Props> = ({
                           aria-label="Contact Avatar"
                         />
                         <Box display="flex" flexDirection="column" ml={2}>
-                          <Link
-                            data-testid="contactSelect"
-                            underline="hover"
-                            onClick={() =>
-                              setContactFocus(id, TabKey.Donations)
-                            }
-                          >
-                            <Typography variant="subtitle1">{name}</Typography>
-                          </Link>
+                          <NextLink href={contactUrl} passHref shallow>
+                            <Link data-testid="contactSelect" underline="hover">
+                              <Typography variant="subtitle1">
+                                {name}
+                              </Typography>
+                            </Link>
+                          </NextLink>
                           <Typography variant="subtitle2">
                             {t('Current: {{status}}', {
                               status: getLocalizedContactStatus(currentStatus),

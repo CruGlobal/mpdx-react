@@ -1,8 +1,10 @@
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import Add from '@mui/icons-material/Add';
 import {
   Box,
   Button,
+  Link,
   Paper,
   Skeleton,
   Table,
@@ -21,6 +23,7 @@ import {
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import Modal from 'src/components/common/Modal/Modal';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
@@ -39,10 +42,6 @@ const ContactReferralLoadingPlaceHolder = styled(Skeleton)(({ theme }) => ({
 
 const ReferralName = styled(Typography)(() => ({
   width: 'fit-content',
-  '&:hover': {
-    textDecoration: 'underline',
-    cursor: 'pointer',
-  },
 }));
 
 const AddButton = styled(Button)(({ theme }) => ({
@@ -54,18 +53,16 @@ const AddButton = styled(Button)(({ theme }) => ({
 interface ContactReferralTabProps {
   accountListId: string;
   contactId: string;
-  onContactSelected: (
-    contactId: string,
-    openDetails?: boolean,
-    flows?: boolean,
-  ) => void;
 }
 
 export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   accountListId,
   contactId,
-  onContactSelected,
 }) => {
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/contacts/`,
+  });
+
   const { data, error, fetchMore } = useContactReferralTabQuery({
     variables: {
       accountListId: accountListId,
@@ -122,22 +119,26 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                 {data?.contact &&
                 data.contact.contactReferralsByMe.nodes.length > 0 ? (
                   data?.contact.contactReferralsByMe.nodes.map(
-                    ({ id, referredTo, createdAt }) => (
-                      <TableRow key={id}>
-                        <TableCell>
-                          <ReferralName
-                            onClick={() => onContactSelected(referredTo.id)}
-                          >
-                            {referredTo.name}
-                          </ReferralName>
-                        </TableCell>
-                        <TableCell>
-                          <Typography>
-                            {dateFormat(DateTime.fromISO(createdAt), locale)}
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    ),
+                    ({ id, referredTo, createdAt }) => {
+                      const contactUrl = getContactUrl(referredTo.id);
+
+                      return (
+                        <TableRow key={id}>
+                          <TableCell>
+                            <ReferralName>
+                              <NextLink href={contactUrl} passHref shallow>
+                                <Link>{referredTo.name}</Link>
+                              </NextLink>
+                            </ReferralName>
+                          </TableCell>
+                          <TableCell>
+                            <Typography>
+                              {dateFormat(DateTime.fromISO(createdAt), locale)}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    },
                   )
                 ) : (
                   <TableRow key="no_data">
