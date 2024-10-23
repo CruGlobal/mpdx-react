@@ -447,6 +447,8 @@ const TaskModalForm = ({
                       value={taskPhase}
                       contactPhase={phaseData?.id}
                       onChange={(phase) => {
+                        const activities =
+                          (phase && activitiesByPhase.get(phase)) || [];
                         handleTaskPhaseChange({
                           phase,
                           setFieldValue,
@@ -454,8 +456,10 @@ const TaskModalForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
+                          activityType,
+                          activities,
+                          activityRef,
                         });
-                        setTimeout(() => activityRef?.current?.focus(), 50);
                       }}
                       inputRef={firstFocusRef}
                       required
