@@ -50,6 +50,7 @@ export type HandleResultChangeProps = {
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;
   phaseData: Phase | null;
+  completedAction: ActivityTypeEnum | null | undefined;
 };
 
 export const handleTaskPhaseChange = ({
@@ -105,6 +106,7 @@ export const handleResultChange = ({
   setFieldValue,
   setResultSelected,
   phaseData,
+  completedAction,
 }: HandleResultChangeProps): void => {
   setFieldValue('displayResult', result);
   setFieldValue('result', result);
@@ -115,13 +117,19 @@ export const handleResultChange = ({
     result as DisplayResultEnum,
     ActivityTypeEnum.None,
   );
+  const defaultNextAction = findNextAction(completedAction, nextActions);
+  setFieldValue('nextAction', defaultNextAction);
+};
+
+const findNextAction = (completedAction, nextActions) => {
   const actionsWithoutNone = nextActions.filter(
     (action) => action !== ActivityTypeEnum.None,
   );
-  setFieldValue(
-    'nextAction',
-    actionsWithoutNone.length === 1 ? actionsWithoutNone[0] : undefined,
-  );
+  return completedAction && nextActions.includes(completedAction)
+    ? completedAction
+    : actionsWithoutNone.length === 1
+    ? actionsWithoutNone[0]
+    : undefined;
 };
 
 export const getDatabaseValueFromResult = (
