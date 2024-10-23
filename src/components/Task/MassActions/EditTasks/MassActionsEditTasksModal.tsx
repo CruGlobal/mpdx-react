@@ -179,7 +179,7 @@ export const MassActionsEditTasksModal: React.FC<
                       (taskPhase && activitiesByPhase.get(taskPhase)) || []
                     }
                     label={t('Action')}
-                    value={activityType || undefined}
+                    value={activityType || null}
                     onChange={(activityType) =>
                       setFieldValue('activityType', activityType)
                     }

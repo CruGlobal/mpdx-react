@@ -19,7 +19,7 @@ export interface ResultAutocompleteProps {
   setResultSelected: SetResultSelected;
   result?: ResultEnum | DisplayResultEnum | null;
   phaseData: Phase | null;
-  completedAction: ActivityTypeEnum | null | undefined;
+  completedAction: ActivityTypeEnum | null;
 }
 
 export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({

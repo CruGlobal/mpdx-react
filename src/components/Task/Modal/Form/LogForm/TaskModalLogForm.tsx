@@ -112,9 +112,9 @@ const TaskModalLogForm = ({
     DisplayResultEnum | ResultEnum | null
   >(defaultValues?.result || null);
 
-  const [actionSelected, setActionSelected] = useState<
-    ActivityTypeEnum | undefined
-  >(defaultValues?.activityType || undefined);
+  const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
+    defaultValues?.activityType || null,
+  );
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
@@ -370,10 +370,8 @@ const TaskModalLogForm = ({
                         (taskPhase && activitiesByPhase.get(taskPhase)) || []
                       }
                       label={t('Action')}
-                      value={activityType || undefined}
-                      onChange={(
-                        activityType: ActivityTypeEnum | undefined,
-                      ) => {
+                      value={activityType || null}
+                      onChange={(activityType: ActivityTypeEnum | null) => {
                         handleTaskActionChange({
                           activityType,
                           setFieldValue,
@@ -428,7 +426,7 @@ const TaskModalLogForm = ({
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
-                completedAction={activityType}
+                completedAction={activityType || null}
               />
               <SuggestedContactStatus
                 suggestedContactStatus={partnerStatus?.suggestedContactStatus}
@@ -451,7 +449,7 @@ const TaskModalLogForm = ({
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
-                    value={nextAction || undefined}
+                    value={nextAction || null}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
