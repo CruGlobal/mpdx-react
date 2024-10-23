@@ -71,8 +71,8 @@ import { possiblePartnerStatus } from '../possiblePartnerStatus';
 import { possibleResults } from '../possibleResults';
 
 const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().required().default(undefined),
-  activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
+  taskPhase: yup.mixed<PhaseEnum>().required(),
+  activityType: yup.mixed<ActivityTypeEnum>().required(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
   completedAt: nullableDateTime(),
@@ -141,8 +141,7 @@ const TaskModalLogForm = ({
   }, []);
 
   const initialTask: Attributes = useMemo(() => {
-    let taskPhase: PhaseEnum | undefined =
-      defaultValues?.taskPhase ?? undefined;
+    let taskPhase: PhaseEnum | null = defaultValues?.taskPhase ?? null;
     let taskSubject = defaultValues?.subject;
 
     if (defaultValues?.activityType && activityTypes) {
@@ -160,8 +159,9 @@ const TaskModalLogForm = ({
     }
 
     return {
-      taskPhase: taskPhase,
-      activityType: defaultValues?.activityType ?? undefined,
+      // yup wants the initial values to match the schema
+      taskPhase: taskPhase as PhaseEnum,
+      activityType: (defaultValues?.activityType ?? null) as ActivityTypeEnum,
       subject: taskSubject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
       completedAt: DateTime.local(),
@@ -194,7 +194,8 @@ const TaskModalLogForm = ({
       attributes.result = ResultEnum.Completed;
     }
     // Remove taskPhase from attributes as we don't save it on the DB
-    delete attributes.taskPhase;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { taskPhase, ...newAttributes } = attributes;
 
     const updatingContactStatus =
       changeContactStatus && !!suggestedPartnerStatus;
@@ -203,7 +204,7 @@ const TaskModalLogForm = ({
       variables: {
         accountListId,
         attributes: {
-          ...attributes,
+          ...newAttributes,
           completedAt: completedAt?.toISO(),
           comment: comment?.trim(),
         },
