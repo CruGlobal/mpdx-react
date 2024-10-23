@@ -15105,13 +15105,13 @@ __metadata:
 
 "graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::locator=mpdx-react%40workspace%3A.":
   version: 1.2.0
-  resolution: "graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=4de2a5&locator=mpdx-react%40workspace%3A."
+  resolution: "graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=c3eb0f&locator=mpdx-react%40workspace%3A."
   dependencies:
     fast-json-stable-stringify: ^2.1.0
     graphql: ^15.0.0
     graphql-tools: ^7.0.0
     seedrandom: ^3.0.5
-  checksum: 7e7c7e17197f4883e20cea45fa3aa8e2d7cc4c72e601fa9f09dc96db5c96f4cc1ecf062e40e4654b802ba27b781ed0b99216521c9603c8441d857b51fff0931f
+  checksum: 97e0b5135be64e17050ecf7afe7bf98458624a5f9185cfa4572631a3a768624601c483f4c9315c3bdff77ae295babac615a9b1c593ad9c2a3ab81a2f825e58e4
   languageName: node
   linkType: hard
 

@@ -1,8 +1,34 @@
 diff --git a/dist/mock.js b/dist/mock.js
-index c22049ff1640688f3ac5aa404e69765849aeb4de..46b494039c4a147ed6cdd0c80ea657370f2ebcbe 100644
+index c22049ff1640688f3ac5aa404e69765849aeb4de..5e220e06652b3c7f53092cfa657c97358caeef3e 100644
 --- a/dist/mock.js
 +++ b/dist/mock.js
-@@ -129,7 +129,7 @@ function assignResolveType(type) {
+@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.ergonomock = void 0;
+ var graphql_1 = require("graphql");
+ var random_1 = __importDefault(require("./utils/random"));
+-var getRandomElement_1 = __importDefault(require("./utils/getRandomElement"));
+ var forEachFieldInQuery_1 = __importDefault(require("./utils/forEachFieldInQuery"));
+ var defaultMockMap = new Map();
+ defaultMockMap.set("Int", function () { return random_1.default.integer(); });
+@@ -73,7 +72,7 @@ function ergonomock(inputSchema, query, options) {
+             if (fieldType instanceof graphql_1.GraphQLUnionType || fieldType instanceof graphql_1.GraphQLInterfaceType) {
+                 var implementationType = void 0;
+                 var possibleTypes = schema.getPossibleTypes(fieldType);
+-                implementationType = getRandomElement_1.default(possibleTypes);
++                implementationType = random_1.default.element(possibleTypes);
+                 return Object.assign({ __typename: implementationType }, mockResolverFunction(implementationType)(root, args, context, info));
+             }
+             if (resolverOverrides.has(fieldType.name)) {
+@@ -81,7 +80,7 @@ function ergonomock(inputSchema, query, options) {
+             }
+             // Default mock for enums
+             if (fieldType instanceof graphql_1.GraphQLEnumType) {
+-                return getRandomElement_1.default(fieldType.getValues()).value;
++                return random_1.default.element(fieldType.getValues()).value;
+             }
+             // Automock object types
+             if (graphql_1.isObjectType(fieldType)) {
+@@ -129,7 +128,7 @@ function assignResolveType(type) {
          // the default `resolveType` always returns null. We add a fallback
          // resolution that works with how unions and interface are mocked
          namedFieldType.resolveType = function (data, context, info) {
@@ -12,7 +38,7 @@ index c22049ff1640688f3ac5aa404e69765849aeb4de..46b494039c4a147ed6cdd0c80ea65737
      }
  }
 diff --git a/dist/utils/forEachFieldInQuery.js b/dist/utils/forEachFieldInQuery.js
-index 020f765a5b85f4f109de16ddae6466495d8498ca..bc72200f3b6ec427c9d9db322be6d163f46b71af 100644
+index 020f765a5b85f4f109de16ddae6466495d8498ca..435b14850c8d3294d9e2ef18d52f8491f7e6427b 100644
 --- a/dist/utils/forEachFieldInQuery.js
 +++ b/dist/utils/forEachFieldInQuery.js
 @@ -16,7 +16,7 @@ function forEachFieldInQuery(schema, document, fn) {
@@ -24,3 +50,18 @@ index 020f765a5b85f4f109de16ddae6466495d8498ca..bc72200f3b6ec427c9d9db322be6d163
                      if (fieldDef) {
                          fn(fieldDef, t.name, fieldName);
                      }
+diff --git a/dist/utils/random.js b/dist/utils/random.js
+index a0e33fbcdc0fa9192ccc42ab4ffd197552a2b002..7d96176df678b1dcf37fd8a2e8260f5c6066a5db 100644
+--- a/dist/utils/random.js
++++ b/dist/utils/random.js
+@@ -254,6 +254,10 @@ var random = {
+     seed: function (seed) {
+         rng = seedrandom_1.default(seed);
+     },
++    // random element from an array
++    element: function (array) {
++        return array[random.integer(array.length, 0)];
++    },
+     // max is exclusive
+     integer: function (max, min) {
+         if (max === void 0) { max = 100; }
