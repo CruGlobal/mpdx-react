@@ -53,13 +53,16 @@ export const Helpjuice: React.FC = () => {
  * It can only be used on pages with an <ApolloProvider>.
  */
 const ApolloBeacon: React.FC = () => {
-  const [dismissed, setDismissed] = useUserPreference({
+  const [dismissed, setDismissed, { loading }] = useUserPreference({
     key: 'beacon_dismissed',
     defaultValue: false,
   });
 
   return (
-    <DismissableBeacon dismissed={dismissed} setDismissed={setDismissed} />
+    <DismissableBeacon
+      dismissed={dismissed || loading}
+      setDismissed={setDismissed}
+    />
   );
 };
 
