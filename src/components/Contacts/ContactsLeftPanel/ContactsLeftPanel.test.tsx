@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -9,6 +9,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
@@ -33,7 +34,6 @@ jest.mock('notistack', () => ({
 
 const userOptions = [
   {
-    id: 'test-id',
     key: 'contacts_view',
     value: 'map',
   },
@@ -44,6 +44,7 @@ const mocks = {
       nodes: [
         {
           name: 'Contact 1',
+          status: StatusEnum.PartnerFinancial,
           primaryAddress: {
             geo: '10,20',
           },
@@ -76,7 +77,7 @@ describe('ContactsLeftPanel', () => {
       return null;
     };
 
-    const { getByText } = render(
+    const { findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<{ UserOption: UserOptionQuery }> mocks={mocks}>
@@ -91,9 +92,7 @@ describe('ContactsLeftPanel', () => {
       </ThemeProvider>,
     );
 
-    await waitFor(() => expect(getByText('Contact 1')).toBeInTheDocument());
-
-    userEvent.click(getByText('Contact 1'));
+    userEvent.click(await findByText('Contact 1'));
     expect(panTo).toHaveBeenCalledWith({ lat: 10, lng: 20 });
   });
 });
