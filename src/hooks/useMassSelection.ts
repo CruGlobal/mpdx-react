@@ -23,21 +23,26 @@ export const useMassSelection = (idsList: string[]): UseMassSelectionResult => {
   }, [idsList]);
 
   const toggleSelectionById = (id: string) => {
-    if (ids.includes(id)) {
-      setIds((previousIds) =>
-        previousIds.filter((selectedIds) => selectedIds !== id),
-      );
-    } else {
-      setIds((previousIds) => [...previousIds, id]);
-    }
+    setIds((previousIds) => {
+      if (previousIds.includes(id)) {
+        return previousIds.filter((selectedIds) => selectedIds !== id);
+      } else {
+        return [...previousIds, id];
+      }
+    });
   };
 
   const selectMultipleIds = (newIds: string[]) => {
-    setIds([...ids, ...newIds.filter((newId) => !ids.includes(newId))]);
+    setIds((previousIds) => [
+      ...previousIds,
+      ...newIds.filter((newId) => !ids.includes(newId)),
+    ]);
   };
 
   const deselectMultipleIds = (idsToRemove: string[]) => {
-    setIds(ids.filter((id) => !idsToRemove.includes(id)));
+    setIds((previousIds) =>
+      previousIds.filter((id) => !idsToRemove.includes(id)),
+    );
   };
 
   const deselectAll = () => {
