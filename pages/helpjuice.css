@@ -2,6 +2,16 @@
   --right-position: 80px;
 }
 
+/* Hide the life preserver SVG path when the widget is open and show our injected close path */
+#helpjuice-widget:has(#helpjuice-widget-expanded.hj-shown) svg .st0 {
+  display: none;
+}
+
+/* Hide our injected close path when the widget is closed */
+#helpjuice-widget:has(#helpjuice-widget-expanded:not(.hj-shown)) svg .close {
+  display: none;
+}
+
 #helpjuice-widget .article .footer {
   /* Hide the estimated reading time and last updated time in search results */
   display: none !important;

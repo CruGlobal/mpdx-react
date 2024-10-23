@@ -16,6 +16,26 @@ export const Helpjuice: React.FC = () => {
   const { data: session } = useSession();
   const href = useLocation();
 
+  // Add a white x that is shown using CSS when the panel is open
+  useEffect(() => {
+    const closeImage = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'path',
+    );
+    closeImage.classList.add('close');
+    closeImage.setAttributeNS(null, 'd', 'M20,20L88,88M88,20L20,88');
+    closeImage.setAttributeNS(null, 'stroke', 'white');
+    closeImage.setAttributeNS(null, 'stroke-linecap', 'round');
+    closeImage.setAttributeNS(null, 'stroke-width', '8');
+    closeImage.setAttributeNS(null, 'fill', 'none');
+
+    document
+      .querySelector('#helpjuice-widget #helpjuice-widget-trigger svg g')
+      ?.appendChild(closeImage);
+
+    return () => closeImage.remove();
+  });
+
   useEffect(() => {
     if (!process.env.HELPJUICE_ORIGIN) {
       return;

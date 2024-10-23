@@ -1,18 +1,13 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DismissableBeacon } from './DismissableBeacon';
+import { widgetHTML } from './widget.mock';
 
 const setDismissed = jest.fn();
 
 describe('DismissableBeacon', () => {
   beforeEach(() => {
-    document.body.innerHTML = `<div id="helpjuice-widget">
-  <a id="helpjuice-widget-trigger" />
-  <div id="helpjuice-widget-expanded" />
-    <div id="helpjuice-widget-content" />
-    <div id="helpjuice-widget-contact" />
-  </div>
-</div>`;
+    document.body.innerHTML = widgetHTML;
   });
 
   it('toggles visible class to widget', () => {

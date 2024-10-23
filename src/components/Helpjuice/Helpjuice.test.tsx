@@ -4,15 +4,21 @@ import { session } from '__tests__/fixtures/session';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { Helpjuice } from './Helpjuice';
+import { widgetHTML } from './widget.mock';
 
 describe('Helpjuice', () => {
   beforeEach(() => {
     process.env.HELPJUICE_ORIGIN = 'https://domain.helpjuice.com';
     process.env.HELPJUICE_KNOWLEDGE_BASE_URL =
       'https://domain.helpjuice.com/kb';
-    document.body.innerHTML =
-      '<a id="helpjuice-contact-link">Contact Us</a><a class="knowledge-base-link">Visit Knowledge Base</a>';
+    document.body.innerHTML = widgetHTML;
     location.href = 'https://example.com/';
+  });
+
+  it('adds close icon svg path', () => {
+    render(<Helpjuice />);
+
+    expect(document.querySelector('path.close')).toBeInTheDocument();
   });
 
   it('does nothing if the element is missing', () => {
