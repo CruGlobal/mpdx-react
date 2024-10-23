@@ -459,9 +459,9 @@ const TaskModalForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
-                          activityType,
                           activities,
                           activityRef,
+                          activityType,
                         });
                       }}
                       inputRef={firstFocusRef}
