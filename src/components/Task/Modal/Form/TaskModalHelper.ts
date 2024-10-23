@@ -64,9 +64,9 @@ export const handleTaskPhaseChange = ({
   setFieldValue('taskPhase', phase);
   setFieldValue('activityType', '');
   setFieldValue('subject', '');
-  setFieldValue('displayResult', undefined);
-  setFieldValue('result', undefined);
-  setFieldValue('nextAction', undefined);
+  setFieldValue('displayResult', null);
+  setFieldValue('result', null);
+  setFieldValue('nextAction', null);
   setResultSelected(null);
   setActionSelected(undefined);
   setPhaseId(phase);
