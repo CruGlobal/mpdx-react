@@ -6,43 +6,20 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  correctEmailsForExport,
+  getEmailNewsletterContactsMocks as getEmailsForExportingMocks,
+} from 'src/components/Dashboard/ThisWeek/NewsletterMenu/MenuItems/ExportEmail/ExportEmailMocks';
 import theme from 'src/theme';
 import { GetEmailsForExportingQuery } from './GetEmailsForExporting.generated';
 import { MassActionsExportEmailsModal } from './MassActionsExportEmailsModal';
 
 const mockEnqueue = jest.fn();
 const selectedIds: string[] = ['abc'];
-const accountListId = '123456789';
+const accountListId = 'accountListId';
 const handleClose = jest.fn();
 const mocks = {
-  GetEmailsForExporting: {
-    contacts: {
-      nodes: [
-        {
-          people: {
-            nodes: [
-              {
-                primaryEmailAddress: {
-                  email: 'testEmailOne@cru.org',
-                },
-              },
-            ],
-          },
-        },
-        {
-          people: {
-            nodes: [
-              {
-                primaryEmailAddress: {
-                  email: 'testEmailTwo@cru.org',
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
-  },
+  GetEmailsForExporting: getEmailsForExportingMocks,
 };
 
 jest.mock('notistack', () => ({
@@ -96,7 +73,7 @@ describe('MassActionsExportEmailsModal', () => {
     userEvent.click(queryAllByText('Copy All')[0]);
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'testEmailOne@cru.org,testEmailTwo@cru.org',
+        correctEmailsForExport,
       ),
     );
     // Export Outlook emails
@@ -114,7 +91,7 @@ describe('MassActionsExportEmailsModal', () => {
     userEvent.click(queryAllByText('Copy All')[1]);
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'testEmailOne@cru.org;testEmailTwo@cru.org',
+        correctEmailsForExport,
       ),
     );
     // Exit

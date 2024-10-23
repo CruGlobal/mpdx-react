@@ -57,14 +57,18 @@ const ExportEmail = ({
     pageInfo: data?.contacts.pageInfo,
   });
 
-  const emailList = useMemo(
-    () =>
-      data?.contacts?.nodes
-        .map((contact) => contact.primaryPerson?.primaryEmailAddress?.email)
-        .filter(Boolean)
-        .join(','),
-    [data],
-  );
+  const emailList = useMemo(() => {
+    if (!data) {
+      return '';
+    }
+    return data.contacts.nodes
+      .flatMap((contact) => contact.people.nodes)
+      .filter(
+        (person) => person.primaryEmailAddress && !person.optoutEnewsletter,
+      )
+      .map((person) => person.primaryEmailAddress?.email)
+      .join(',');
+  }, [data]);
 
   return (
     <>

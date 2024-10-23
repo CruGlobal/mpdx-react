@@ -12,6 +12,8 @@ query GetEmailsForExporting(
       id
       people(first: 25) {
         nodes {
+          id
+          optoutEnewsletter
           primaryEmailAddress {
             id
             email
