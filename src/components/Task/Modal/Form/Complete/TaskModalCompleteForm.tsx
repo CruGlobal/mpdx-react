@@ -357,6 +357,7 @@ const TaskModalCompleteForm = ({
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
+                completedAction={activityType}
               />
 
               <SuggestedContactStatus

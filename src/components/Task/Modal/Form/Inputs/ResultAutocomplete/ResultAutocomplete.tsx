@@ -1,6 +1,7 @@
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityTypeEnum,
   DisplayResultEnum,
   Phase,
   ResultEnum,
@@ -18,6 +19,7 @@ export interface ResultAutocompleteProps {
   setResultSelected: SetResultSelected;
   result?: ResultEnum | DisplayResultEnum | null;
   phaseData: Phase | null;
+  completedAction: ActivityTypeEnum | null | undefined;
 }
 
 export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
@@ -26,6 +28,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
   setResultSelected,
   result,
   phaseData,
+  completedAction,
 }) => {
   const { t } = useTranslation();
 
@@ -45,6 +48,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
             setFieldValue,
             setResultSelected,
             phaseData,
+            completedAction,
           });
         }}
       />

@@ -585,6 +585,7 @@ const TaskModalForm = ({
                   setFieldValue={setFieldValue}
                   setResultSelected={setResultSelected}
                   phaseData={phaseData}
+                  completedAction={activityType}
                 />
               )}
 
