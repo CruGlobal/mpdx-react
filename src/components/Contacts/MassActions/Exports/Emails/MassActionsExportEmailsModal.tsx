@@ -48,10 +48,14 @@ export const MassActionsExportEmailsModal: React.FC<
     },
   });
 
+  // Contact Query filters "optOut" removes any contacts that one of their people has opted out of the digital newsletter.
+  // So we have to filter out contacts that have opted out of the digital newsletter from the people nodes.
   const contactPrimaryEmails =
     contactData?.contacts.nodes
       .flatMap((contact) => contact.people.nodes)
-      .filter((person) => person.primaryEmailAddress)
+      .filter(
+        (person) => person.primaryEmailAddress && !person.optoutEnewsletter,
+      )
       .map((person) => person.primaryEmailAddress?.email) ?? [];
 
   const regularFormat = contactPrimaryEmails.join(',');
