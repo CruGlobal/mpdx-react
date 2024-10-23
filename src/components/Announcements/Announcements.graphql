@@ -1,17 +1,21 @@
 query Announcements {
   announcements {
-    actions {
-      id
-      label
-      action
-      style
-      args
-    }
-    id
-    displayMethod
-    body
-    title
-    style
-    imageUrl
+    ...Announcement
   }
+}
+
+fragment Announcement on Announcement {
+  actions {
+    id
+    label
+    action
+    style
+    args
+  }
+  id
+  displayMethod
+  body
+  title
+  style
+  imageUrl
 }

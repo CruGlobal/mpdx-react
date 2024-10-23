@@ -4,7 +4,7 @@ const defaultTheme = createTheme();
 
 // https://www.cru.org/brand/color/
 const cruColors = {
-  yellow: '#FFCF07',
+  yellow: '#F5BE19',
   grayDark: '#383F43',
   grayMedium: '#9C9FA1',
   grayLight: '#EBECEC',
