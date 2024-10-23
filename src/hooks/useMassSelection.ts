@@ -1,9 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
 
-export const useMassSelection = (
-  idsList: string[],
-): {
+export interface UseMassSelectionResult {
   ids: string[];
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -12,10 +10,17 @@ export const useMassSelection = (
   toggleSelectionById: (id: string) => void;
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
-} => {
+}
+
+export const useMassSelection = (idsList: string[]): UseMassSelectionResult => {
   const totalCount = idsList.length;
 
   const [ids, setIds] = useState<string[]>([]);
+
+  // When the idsList change, deselect any ids that were removed
+  useEffect(() => {
+    setIds((previousIds) => previousIds.filter((id) => idsList.includes(id)));
+  }, [idsList]);
 
   const toggleSelectionById = (id: string) => {
     if (ids.includes(id)) {
