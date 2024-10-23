@@ -37,7 +37,7 @@ const TaskType = styled(Typography)(({ theme }) => ({
 
 interface TaskActionPhaseProps {
   activityData: ActivityData | null | undefined;
-  activityType: ActivityTypeEnum | undefined | null;
+  activityType: ActivityTypeEnum | null | undefined;
 }
 
 export const TaskActionPhase: React.FC<TaskActionPhaseProps> = ({
@@ -55,9 +55,7 @@ export const TaskActionPhase: React.FC<TaskActionPhaseProps> = ({
         }}
       >
         <TaskPhase>{activityData?.phase ? activityData.phase : ''}</TaskPhase>
-        <TaskType>
-          {activityType ? getLocalizedTaskType(t, activityType) : ''}
-        </TaskType>
+        <TaskType>{getLocalizedTaskType(t, activityType)}</TaskType>
       </SubjectWrapInner>
     </SubjectWrapOuter>
   );
