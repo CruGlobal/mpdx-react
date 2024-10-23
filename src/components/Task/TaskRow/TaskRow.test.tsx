@@ -77,6 +77,9 @@ describe('TaskRow', () => {
         startAt,
         result: ResultEnum.None,
         completedAt: '2021-10-20',
+        contacts: {
+          nodes: [{}],
+        },
       },
     });
 
