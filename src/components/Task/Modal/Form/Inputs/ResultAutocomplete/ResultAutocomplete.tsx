@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
@@ -32,13 +33,24 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  useEffect(() => {
+    if (availableResults.length === 1) {
+      handleResultChange({
+        result: availableResults[0],
+        setFieldValue,
+        setResultSelected,
+        phaseData,
+      });
+    }
+  }, [availableResults]);
+
   return !!availableResults.length ? (
     <Grid item>
       <Autocomplete
         openOnFocus
         autoHighlight
         autoSelect
-        value={availableResults.length === 1 ? availableResults[0] : result}
+        value={result}
         options={availableResults}
         getOptionLabel={(result) => getLocalizedResultString(t, result)}
         renderInput={(params) => <TextField {...params} label={t('Result')} />}
