@@ -35,9 +35,9 @@ export type HandleTaskPhaseChangeProps = {
   setActionSelected: SetActionSelected;
   setPhaseId: SetPhaseId;
   setSelectedSuggestedTags: React.Dispatch<React.SetStateAction<string[]>>;
-  activityType: ActivityTypeEnum | undefined;
   activities: ActivityTypeEnum[];
   activityRef: React.RefObject<HTMLDivElement>;
+  activityType: ActivityTypeEnum | undefined;
 };
 
 export type HandleTaskActionChangeProps = {
@@ -63,9 +63,9 @@ export const handleTaskPhaseChange = ({
   setActionSelected,
   setPhaseId,
   setSelectedSuggestedTags,
-  activityType,
   activities,
   activityRef,
+  activityType,
 }: HandleTaskPhaseChangeProps): void => {
   setFieldValue('taskPhase', phase);
 
