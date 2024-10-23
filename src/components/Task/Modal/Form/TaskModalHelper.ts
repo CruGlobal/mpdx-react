@@ -35,6 +35,9 @@ export type HandleTaskPhaseChangeProps = {
   setActionSelected: SetActionSelected;
   setPhaseId: SetPhaseId;
   setSelectedSuggestedTags: React.Dispatch<React.SetStateAction<string[]>>;
+  activities: ActivityTypeEnum[];
+  activityRef: React.RefObject<HTMLDivElement>;
+  activityType: ActivityTypeEnum | undefined;
 };
 
 export type HandleTaskActionChangeProps = {
@@ -59,9 +62,17 @@ export const handleTaskPhaseChange = ({
   setActionSelected,
   setPhaseId,
   setSelectedSuggestedTags,
+  activities,
+  activityRef,
+  activityType,
 }: HandleTaskPhaseChangeProps): void => {
   setFieldValue('taskPhase', phase);
-  setFieldValue('activityType', '');
+
+  const activitySelection = activities.find((activity) =>
+    activityType?.includes(activity.replace(phase + '_', '')),
+  );
+
+  setFieldValue('activityType', activitySelection || undefined);
   setFieldValue('subject', '');
   setFieldValue('displayResult', undefined);
   setFieldValue('result', undefined);
@@ -70,6 +81,10 @@ export const handleTaskPhaseChange = ({
   setActionSelected(undefined);
   setPhaseId(phase);
   setSelectedSuggestedTags([]);
+
+  if (!activitySelection) {
+    setTimeout(() => activityRef?.current?.focus(), 50);
+  }
 };
 
 export const handleTaskActionChange = ({
