@@ -150,16 +150,16 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [activeFilters],
   );
 
-  const [contactsView, updateOptions, { loading: userOptionsLoading }] =
+  const [contactsView, saveContactsView, { loading: userOptionsLoading }] =
     useUserPreference({
       key: 'contacts_view',
       defaultValue: TableViewModeEnum.List,
     });
   useEffect(() => {
-    if (contactsView && !userOptionsLoading) {
+    if (contactsView) {
       setViewMode(contactsView);
     }
-  }, [contactsView, userOptionsLoading]);
+  }, [contactsView]);
 
   const contactsFilters = useMemo(() => {
     // Remove filters in the map view
@@ -260,8 +260,15 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     _: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
-    setViewMode(view as TableViewModeEnum);
-    updateOptions(view as TableViewModeEnum);
+    const newViewMode = view as TableViewModeEnum;
+    saveContactsView(newViewMode);
+    if (newViewMode === TableViewModeEnum.Map) {
+      // When switching to the map, make the filter only show the selected contacts, if any
+      setActiveFilters({ ids });
+    } else if (viewMode === TableViewModeEnum.Map) {
+      // When switching away from the map, reset the filter to show all contacts
+      setActiveFilters({});
+    }
   };
   //#endregion
 

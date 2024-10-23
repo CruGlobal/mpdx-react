@@ -7,14 +7,10 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
-import { useMassSelection } from '../../../hooks/useMassSelection';
 import theme from '../../../theme';
-import {
-  ListHeaderCheckBoxState,
-  TableViewModeEnum,
-} from '../../Shared/Header/ListHeader';
+import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import {
   ContactsContext,
   ContactsContextSavedFilters,
@@ -22,17 +18,7 @@ import {
 } from './ContactsContext';
 
 const accountListId = 'account-list-1';
-const isReady = true;
 const replace = jest.fn();
-
-jest.mock('src/hooks/useMassSelection');
-
-(useMassSelection as jest.Mock).mockReturnValue({
-  selectionType: ListHeaderCheckBoxState.Unchecked,
-  isRowChecked: jest.fn(),
-  toggleSelectAll: jest.fn(),
-  toggleSelectionById: jest.fn(),
-});
 
 const mockEnqueue = jest.fn();
 
@@ -47,12 +33,74 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const TestRender: React.FC = () => {
-  const { viewMode, handleViewModeChange, userOptionsLoading } = useContext(
-    ContactsContext,
-  ) as ContactsType;
+interface TestWrapper {
+  contactId?: string[];
+  contactView?: string;
+  savedFilter?: string;
+  children: JSX.Element;
+}
+
+const TestWrapper: React.FC<TestWrapper> = ({
+  contactId,
+  contactView = 'list',
+  savedFilter,
+  children,
+}) => {
   return (
-    <Box>
+    <ThemeProvider theme={theme}>
+      <TestRouter
+        router={{
+          query: { accountListId, contactId },
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          isReady: true,
+          replace,
+        }}
+      >
+        <GqlMockedProvider<{
+          GetIdsForMassSelection: GetIdsForMassSelectionQuery;
+          UserOption: UserOptionQuery;
+          ContactFilters: ContactFiltersQuery;
+        }>
+          mocks={{
+            GetIdsForMassSelection: {
+              contacts: {
+                nodes: [{ id: 'contact-1' }],
+              },
+            },
+            UserOption: {
+              userOption: {
+                key: 'contacts_view',
+                value: contactView,
+              },
+            },
+            ContactFilters: {
+              userOptions: [
+                {
+                  key: 'saved_contacts_filter_My_Cool_Filter',
+                  value: savedFilter ?? null,
+                },
+              ],
+            },
+          }}
+        >
+          <ContactsWrapper addViewMode>{children}</ContactsWrapper>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
+
+const InnerComponent: React.FC = () => {
+  const {
+    viewMode,
+    handleViewModeChange,
+    userOptionsLoading,
+    toggleSelectionById,
+    activeFilters,
+  } = useContext(ContactsContext) as ContactsType;
+
+  return (
+    <div>
       {!userOptionsLoading ? (
         <>
           <Typography>{viewMode}</Typography>
@@ -81,7 +129,11 @@ const TestRender: React.FC = () => {
       ) : (
         <>Loading</>
       )}
-    </Box>
+      <button onClick={() => toggleSelectionById('contact-1')}>
+        Select contact
+      </button>
+      <div data-testid="active-filters">{JSON.stringify(activeFilters)}</div>
+    </div>
   );
 };
 
@@ -100,33 +152,11 @@ const TestRenderContactsFilters: React.FC = () => {
 describe('ContactsPageContext', () => {
   it('has a contact id and switches from list to flows', async () => {
     const { getByText, findByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            query: { accountListId, contactId: ['list', 'abc'] },
-            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-            isReady,
-            replace,
-          }}
-        >
-          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
-            mocks={{
-              UserOption: {
-                userOption: {
-                  id: 'test-id',
-                  key: 'contacts_view',
-                  value: 'flows',
-                },
-              },
-            }}
-          >
-            <ContactsWrapper addViewMode>
-              <TestRender />
-            </ContactsWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestWrapper contactId={['list', 'abc']}>
+        <InnerComponent />
+      </TestWrapper>,
     );
+
     expect(getByText('Loading')).toBeInTheDocument();
     userEvent.click(await findByText('Flows Button'));
     expect(await findByText('flows')).toBeInTheDocument();
@@ -143,33 +173,11 @@ describe('ContactsPageContext', () => {
 
   it('has a contact id and switches twice', async () => {
     const { getByText, findByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            query: { accountListId, contactId: ['list', 'abc'] },
-            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-            isReady,
-            replace,
-          }}
-        >
-          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
-            mocks={{
-              UserOption: {
-                userOption: {
-                  id: 'test-id',
-                  key: 'contacts_view',
-                  value: 'flows',
-                },
-              },
-            }}
-          >
-            <ContactsWrapper addViewMode>
-              <TestRender />
-            </ContactsWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestWrapper contactId={['list', 'abc']} contactView="flows">
+        <InnerComponent />
+      </TestWrapper>,
     );
+
     expect(getByText('Loading')).toBeInTheDocument();
     userEvent.click(await findByText('Map Button'));
     expect(await findByText('map')).toBeInTheDocument();
@@ -198,33 +206,11 @@ describe('ContactsPageContext', () => {
 
   it('does not have a contact id and changes to map', async () => {
     const { getByText, findByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            query: { accountListId },
-            pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-            isReady,
-            replace,
-          }}
-        >
-          <GqlMockedProvider<{ UserOption: UserOptionQuery }>
-            mocks={{
-              UserOption: {
-                userOption: {
-                  id: 'test-id',
-                  key: 'contacts_view',
-                  value: 'list',
-                },
-              },
-            }}
-          >
-            <ContactsWrapper addViewMode>
-              <TestRender />
-            </ContactsWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestWrapper contactView="list">
+        <InnerComponent />
+      </TestWrapper>,
     );
+
     expect(getByText('Loading')).toBeInTheDocument();
     userEvent.click(await findByText('Map Button'));
     expect(await findByText('map')).toBeInTheDocument();
@@ -239,84 +225,41 @@ describe('ContactsPageContext', () => {
     );
   });
 
+  it('shows the selected contacts on the map', async () => {
+    const { findByRole, getByRole, getByTestId } = render(
+      <TestWrapper>
+        <InnerComponent />
+      </TestWrapper>,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Select contact' }));
+    userEvent.click(await findByRole('button', { name: 'Map Button' }));
+    expect(getByTestId('active-filters')).toHaveTextContent(
+      '{"ids":["contact-1"]}',
+    );
+
+    userEvent.click(getByRole('button', { name: 'List Button' }));
+    expect(getByTestId('active-filters')).toHaveTextContent('{}');
+  });
+
   it('Saved Filters with correct JSON', async () => {
-    const userOptions = [
-      {
-        id: '123',
-        key: 'saved_contacts_filter_My_Cool_Filter',
-        value: `{"any_tags":false,"account_list_id":"${accountListId}","params":{"status": "true"},"tags":null,"exclude_tags":null,"wildcard_search":""}`,
-      },
-    ];
+    const savedFilter = `{"any_tags":false,"account_list_id":"${accountListId}","params":{"status": "true"},"tags":null,"exclude_tags":null,"wildcard_search":""}`;
     const { findByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            query: { accountListId },
-            pathname: '/accountLists/[accountListId]/contacts',
-            isReady,
-          }}
-        >
-          <GqlMockedProvider<{
-            GetUserOptions: GetUserOptionsQuery;
-            ContactFilters: ContactFiltersQuery;
-          }>
-            mocks={{
-              GetUserOptions: {
-                userOptions,
-              },
-              ContactFilters: {
-                userOptions,
-              },
-            }}
-          >
-            <ContactsWrapper>
-              <TestRenderContactsFilters />
-            </ContactsWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestWrapper savedFilter={savedFilter}>
+        <TestRenderContactsFilters />
+      </TestWrapper>,
     );
 
     expect(await findByTestId('savedfilters-testid')).toBeInTheDocument();
   });
 
   it('Saved Filters with incorrect JSON', async () => {
-    const userOptions = [
-      {
-        id: '123',
-        key: 'saved_contacts_filter_My_Cool_Filter',
-        value: `{"any_tags":false,"account_list_id":"${accountListId}","params":{"status" error },"tags":null,"exclude_tags":null,"wildcard_search":""}`,
-      },
-    ];
+    const savedFilter = `{"any_tags":false,"account_list_id":"${accountListId}","params":{"status" error },"tags":null,"exclude_tags":null,"wildcard_search":""}`;
 
     const { queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            query: { accountListId },
-            pathname: '/accountLists/[accountListId]/contacts',
-            isReady,
-          }}
-        >
-          <GqlMockedProvider<{
-            GetUserOptions: GetUserOptionsQuery;
-            ContactFilters: ContactFiltersQuery;
-          }>
-            mocks={{
-              GetUserOptions: {
-                userOptions,
-              },
-              ContactFilters: {
-                userOptions,
-              },
-            }}
-          >
-            <ContactsWrapper>
-              <TestRenderContactsFilters />
-            </ContactsWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestWrapper savedFilter={savedFilter}>
+        <TestRenderContactsFilters />
+      </TestWrapper>,
     );
 
     await waitFor(() =>
