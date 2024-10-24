@@ -66,7 +66,7 @@ export const ContactsWrapper: React.FC<Props> = ({
     }
   });
 
-  const [activeFilters, setActiveFilters] = useState<
+  const [activeFiltersRaw, setActiveFilters] = useState<
     ContactFilterSetInput & TaskFilterSetInput
   >(JSON.parse(decodeURIComponent(getQueryParam(query, 'filters') ?? '{}')));
   const [starredFilter, setStarredFilter] = useState<
@@ -76,6 +76,15 @@ export const ContactsWrapper: React.FC<Props> = ({
     getQueryParam(query, 'searchTerm') ?? '',
   );
   const [filterPanelOpen, setFilterPanelOpen] = useState(true);
+
+  // Only allow the ids filter in map view, and remove the ids filter in other views
+  const activeFilters = useMemo(() => {
+    const { ids, ...otherFilters } = activeFiltersRaw;
+    if (viewMode === TableViewModeEnum.Map) {
+      return ids?.length ? { ids } : {};
+    }
+    return otherFilters;
+  }, [viewMode, activeFiltersRaw]);
 
   const getContactHrefObject: GetContactHrefObject = useCallback(
     (contactId) => {
@@ -94,10 +103,7 @@ export const ContactsWrapper: React.FC<Props> = ({
       newQuery.contactId = queryContactId;
 
       const sanitizedFilters = sanitizeFilters(activeFilters);
-      if (
-        viewMode !== TableViewModeEnum.Map &&
-        Object.keys(sanitizedFilters).length
-      ) {
+      if (Object.keys(sanitizedFilters).length) {
         newQuery.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
       }
 
