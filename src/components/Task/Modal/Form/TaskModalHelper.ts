@@ -25,7 +25,7 @@ export type SetResultSelected = React.Dispatch<
 >;
 
 type SetActionSelected = React.Dispatch<
-  React.SetStateAction<ActivityTypeEnum | undefined>
+  React.SetStateAction<ActivityTypeEnum | null>
 >;
 
 export type HandleTaskPhaseChangeProps = {
@@ -38,7 +38,7 @@ export type HandleTaskPhaseChangeProps = {
 };
 
 export type HandleTaskActionChangeProps = {
-  activityType: ActivityTypeEnum | undefined;
+  activityType: ActivityTypeEnum | null;
   setFieldValue: SetFieldValue;
   setActionSelected: SetActionSelected;
   constants: Constants;
@@ -50,6 +50,7 @@ export type HandleResultChangeProps = {
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;
   phaseData: Phase | null;
+  completedAction: ActivityTypeEnum | null | undefined;
 };
 
 export const handleTaskPhaseChange = ({
@@ -63,11 +64,11 @@ export const handleTaskPhaseChange = ({
   setFieldValue('taskPhase', phase);
   setFieldValue('activityType', '');
   setFieldValue('subject', '');
-  setFieldValue('displayResult', undefined);
-  setFieldValue('result', undefined);
-  setFieldValue('nextAction', undefined);
+  setFieldValue('displayResult', null);
+  setFieldValue('result', null);
+  setFieldValue('nextAction', null);
   setResultSelected(null);
-  setActionSelected(undefined);
+  setActionSelected(null);
   setPhaseId(phase);
   setSelectedSuggestedTags([]);
 };
@@ -80,7 +81,7 @@ export const handleTaskActionChange = ({
   setFieldTouched,
 }: HandleTaskActionChangeProps): void => {
   setFieldValue('activityType', activityType);
-  setActionSelected(activityType || undefined);
+  setActionSelected(activityType || null);
   const activity = constants?.activities?.find(
     (activity) => activity.id === activityType,
   );
@@ -105,6 +106,7 @@ export const handleResultChange = ({
   setFieldValue,
   setResultSelected,
   phaseData,
+  completedAction,
 }: HandleResultChangeProps): void => {
   setFieldValue('displayResult', result);
   setFieldValue('result', result);
@@ -115,19 +117,30 @@ export const handleResultChange = ({
     result as DisplayResultEnum,
     ActivityTypeEnum.None,
   );
+  const defaultNextAction = findNextAction(completedAction, nextActions);
+  setFieldValue('nextAction', defaultNextAction);
+};
+
+const findNextAction = (
+  completedAction: ActivityTypeEnum | null | undefined,
+  nextActions: ActivityTypeEnum[],
+): string | null => {
   const actionsWithoutNone = nextActions.filter(
     (action) => action !== ActivityTypeEnum.None,
   );
-  setFieldValue(
-    'nextAction',
-    actionsWithoutNone.length === 1 ? actionsWithoutNone[0] : undefined,
-  );
+  if (completedAction && nextActions.includes(completedAction)) {
+    return completedAction;
+  } else if (actionsWithoutNone.length === 1) {
+    return actionsWithoutNone[0];
+  } else {
+    return null;
+  }
 };
 
 export const getDatabaseValueFromResult = (
   phaseData: Phase | null,
   displayResult?: DisplayResultEnum | ResultEnum,
-  activityType?: ActivityTypeEnum | undefined,
+  activityType?: ActivityTypeEnum | null,
 ): ResultEnum => {
   if (!displayResult || !phaseData || !activityType) {
     switch (displayResult) {

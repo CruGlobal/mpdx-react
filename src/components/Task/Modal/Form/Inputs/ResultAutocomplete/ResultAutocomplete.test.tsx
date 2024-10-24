@@ -3,7 +3,11 @@ import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { Phase, ResultEnum } from 'src/graphql/types.generated';
+import {
+  ActivityTypeEnum,
+  Phase,
+  ResultEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { SetResultSelected, handleResultChange } from '../../TaskModalHelper';
 import {
@@ -41,6 +45,7 @@ const Components = ({ availableResults }: ComponentsProps) => (
         setFieldValue={setFieldValue}
         setResultSelected={setResultSelected as unknown as SetResultSelected}
         phaseData={phaseData}
+        completedAction={ActivityTypeEnum.FollowUpTextMessage}
       />
     </TestWrapper>
   </ThemeProvider>
@@ -82,6 +87,7 @@ describe('ResultSelect', () => {
       setFieldValue,
       setResultSelected,
       phaseData,
+      completedAction: ActivityTypeEnum.FollowUpTextMessage,
     });
   });
 });

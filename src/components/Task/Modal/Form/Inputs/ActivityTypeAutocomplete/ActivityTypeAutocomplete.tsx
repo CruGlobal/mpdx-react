@@ -9,8 +9,8 @@ import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 interface ActivityTypeProps {
   options: ActivityTypeEnum[];
   label: string;
-  value: ActivityTypeEnum | undefined;
-  onChange: (value: ActivityTypeEnum | undefined) => void;
+  value: ActivityTypeEnum | null;
+  onChange: (value: ActivityTypeEnum | null) => void;
   // Set to true to make None an acceptable value. Otherwise, None will be converted to undefined.
   preserveNone?: boolean;
   activityTypes?: Map<ActivityTypeEnum, ActivityData>;
@@ -78,8 +78,8 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
       onChange={(_, value) => {
         onChange(
           !preserveNone && value === ActivityTypeEnum.None
-            ? undefined
-            : value || undefined,
+            ? null
+            : value || null,
         );
       }}
       onBlur={onBlur}

@@ -71,15 +71,15 @@ import { possiblePartnerStatus } from '../possiblePartnerStatus';
 import { possibleResults } from '../possibleResults';
 
 const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().required().default(undefined),
-  activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
+  taskPhase: yup.mixed<PhaseEnum>().required(),
+  activityType: yup.mixed<ActivityTypeEnum>().required(),
   subject: yup.string().required(),
   contactIds: yup.array().of(yup.string()).default([]),
   completedAt: nullableDateTime(),
   userId: yup.string().nullable(),
   tagList: yup.array().of(yup.string()).default([]),
-  displayResult: yup.mixed<DisplayResultEnum>(),
-  result: yup.mixed<ResultEnum>(),
+  displayResult: yup.mixed<DisplayResultEnum>().nullable(),
+  result: yup.mixed<ResultEnum>().nullable(),
   changeContactStatus: yup.boolean(),
   nextAction: yup.mixed<ActivityTypeEnum>().nullable(),
   // These field schemas should ideally be string().defined(), but Formik thinks the form is invalid
@@ -112,9 +112,9 @@ const TaskModalLogForm = ({
     DisplayResultEnum | ResultEnum | null
   >(defaultValues?.result || null);
 
-  const [actionSelected, setActionSelected] = useState<
-    ActivityTypeEnum | undefined
-  >(defaultValues?.activityType || undefined);
+  const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
+    defaultValues?.activityType || null,
+  );
 
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
@@ -141,8 +141,7 @@ const TaskModalLogForm = ({
   }, []);
 
   const initialTask: Attributes = useMemo(() => {
-    let taskPhase: PhaseEnum | undefined =
-      defaultValues?.taskPhase ?? undefined;
+    let taskPhase: PhaseEnum | null = defaultValues?.taskPhase ?? null;
     let taskSubject = defaultValues?.subject;
 
     if (defaultValues?.activityType && activityTypes) {
@@ -160,17 +159,18 @@ const TaskModalLogForm = ({
     }
 
     return {
-      taskPhase: taskPhase,
-      activityType: defaultValues?.activityType ?? undefined,
+      // yup wants the initial values to match the schema
+      taskPhase: taskPhase as PhaseEnum,
+      activityType: (defaultValues?.activityType ?? null) as ActivityTypeEnum,
       subject: taskSubject ?? '',
       contactIds: defaultValues?.contactIds ?? [],
       completedAt: DateTime.local(),
       userId: defaultValues?.userId ?? session.data?.user.userID ?? null,
       tagList: defaultValues?.tagList ?? [],
-      displayResult: defaultValues?.displayResult ?? undefined,
-      result: defaultValues?.result ?? undefined,
+      displayResult: defaultValues?.displayResult ?? null,
+      result: defaultValues?.result ?? null,
       changeContactStatus: false,
-      nextAction: defaultValues?.nextAction ?? undefined,
+      nextAction: defaultValues?.nextAction ?? null,
       location: '',
       comment: '',
     };
@@ -194,7 +194,7 @@ const TaskModalLogForm = ({
       attributes.result = ResultEnum.Completed;
     }
     // Remove taskPhase from attributes as we don't save it on the DB
-    delete attributes.taskPhase;
+    const { taskPhase: _, ...newAttributes } = attributes;
 
     const updatingContactStatus =
       changeContactStatus && !!suggestedPartnerStatus;
@@ -203,7 +203,7 @@ const TaskModalLogForm = ({
       variables: {
         accountListId,
         attributes: {
-          ...attributes,
+          ...newAttributes,
           completedAt: completedAt?.toISO(),
           comment: comment?.trim(),
         },
@@ -370,10 +370,8 @@ const TaskModalLogForm = ({
                         (taskPhase && activitiesByPhase.get(taskPhase)) || []
                       }
                       label={t('Action')}
-                      value={activityType || undefined}
-                      onChange={(
-                        activityType: ActivityTypeEnum | undefined,
-                      ) => {
+                      value={activityType || null}
+                      onChange={(activityType: ActivityTypeEnum | null) => {
                         handleTaskActionChange({
                           activityType,
                           setFieldValue,
@@ -428,6 +426,7 @@ const TaskModalLogForm = ({
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
+                completedAction={activityType || null}
               />
               <SuggestedContactStatus
                 suggestedContactStatus={partnerStatus?.suggestedContactStatus}
@@ -450,7 +449,7 @@ const TaskModalLogForm = ({
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
-                    value={nextAction || undefined}
+                    value={nextAction || null}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }

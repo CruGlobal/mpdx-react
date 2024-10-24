@@ -46,7 +46,7 @@ describe('ActivityTypeAutocomplete', () => {
     expect(getAllByRole('option')[0]).toHaveTextContent('None');
   });
 
-  it('converts none values to undefined', async () => {
+  it('converts none values to null', async () => {
     const onChange = jest.fn();
 
     const { getByRole } = render(
@@ -61,7 +61,7 @@ describe('ActivityTypeAutocomplete', () => {
     const input = getByRole('combobox', { name: 'Type' });
     userEvent.click(input);
     await waitFor(() => userEvent.click(getByRole('option', { name: 'None' })));
-    expect(onChange).toHaveBeenCalledWith(undefined);
+    expect(onChange).toHaveBeenCalledWith(null);
   });
 
   it('preserves none values', () => {
@@ -108,7 +108,7 @@ describe('ActivityTypeAutocomplete', () => {
       <ActivityTypeAutocomplete
         options={[]}
         label="Type"
-        value={undefined}
+        value={null}
         onChange={onChange}
       />,
     );

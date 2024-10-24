@@ -89,22 +89,22 @@ const getTaskDetails = (
   activityTypes: Map<ActivityTypeEnum, ActivityData>,
   phaseTags: string[],
 ) => {
-  let taskPhase: PhaseEnum | undefined;
+  let taskPhase: PhaseEnum | null;
   let taskSubject: string | undefined;
   let filteredTags: ExtractSuggestedTags | undefined;
   let additionalTags: ExtractSuggestedTags['additionalTags'] | undefined;
   if (task) {
-    taskPhase = task?.taskPhase ?? undefined;
+    taskPhase = task?.taskPhase ?? null;
     if (!taskPhase) {
       taskPhase = task?.activityType
-        ? activityTypes.get(task.activityType)?.phaseId || undefined
-        : undefined;
+        ? activityTypes.get(task.activityType)?.phaseId || null
+        : null;
     }
     //go through tags and move some to selectedSuggestedTags and others to additionalTags
     filteredTags = extractSuggestedTags(task.tagList, phaseTags);
     additionalTags = filteredTags?.additionalTags;
   } else {
-    taskPhase = defaultValues?.taskPhase || undefined;
+    taskPhase = defaultValues?.taskPhase || null;
     taskSubject = defaultValues?.subject;
     if (defaultValues?.activityType && activityTypes) {
       const activityData = defaultValues.activityType
@@ -125,8 +125,8 @@ const getTaskDetails = (
 };
 
 const taskSchema = yup.object({
-  taskPhase: yup.mixed<PhaseEnum>().required().default(undefined),
-  activityType: yup.mixed<ActivityTypeEnum>().required().default(undefined),
+  taskPhase: yup.mixed<PhaseEnum>().required(),
+  activityType: yup.mixed<ActivityTypeEnum>().required(),
   subject: yup.string().required(),
   startAt: nullableDateTime(),
   completedAt: nullableDateTime(),
@@ -175,9 +175,9 @@ const TaskModalForm = ({
     DisplayResultEnum | ResultEnum | null
   >(task?.result || defaultValues?.result || null);
 
-  const [actionSelected, setActionSelected] = useState<
-    ActivityTypeEnum | undefined
-  >(task?.activityType || defaultValues?.activityType || undefined);
+  const [actionSelected, setActionSelected] = useState<ActivityTypeEnum | null>(
+    task?.activityType || defaultValues?.activityType || null,
+  );
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -227,8 +227,9 @@ const TaskModalForm = ({
     );
     if (task) {
       return {
-        taskPhase,
-        activityType: task.activityType ?? undefined,
+        // yup wants the initial values to match the schema
+        taskPhase: taskPhase as PhaseEnum,
+        activityType: (task.activityType ?? null) as ActivityTypeEnum,
         location: task.location ?? '',
         subject: task.subject ?? '',
         startAt: task.startAt ? DateTime.fromISO(task.startAt) : null,
@@ -249,8 +250,9 @@ const TaskModalForm = ({
       };
     } else {
       return {
-        taskPhase: taskPhase,
-        activityType: defaultValues?.activityType ?? undefined,
+        // yup wants the initial values to match the schema
+        taskPhase: taskPhase as PhaseEnum,
+        activityType: (defaultValues?.activityType ?? null) as ActivityTypeEnum,
         location: '',
         subject: taskSubject ?? '',
         startAt: DateTime.local(),
@@ -309,10 +311,11 @@ const TaskModalForm = ({
       );
     }
 
-    delete attributes.taskPhase;
+    // Remove taskPhase from attributes as we don't save it on the DB
+    const { taskPhase: _, ...newAttributes } = attributes;
 
     const sharedAttributes = {
-      ...attributes,
+      ...newAttributes,
       completedAt: completedAt?.toISO(),
       startAt: startAt?.toISO(),
     };
@@ -472,7 +475,7 @@ const TaskModalForm = ({
                           (taskPhase && activitiesByPhase.get(taskPhase)) || []
                         }
                         label={t('Action')}
-                        value={activityType}
+                        value={activityType || null}
                         onChange={(activityType) => {
                           handleTaskActionChange({
                             activityType,
@@ -585,6 +588,7 @@ const TaskModalForm = ({
                   setFieldValue={setFieldValue}
                   setResultSelected={setResultSelected}
                   phaseData={phaseData}
+                  completedAction={activityType || null}
                 />
               )}
 
@@ -601,7 +605,7 @@ const TaskModalForm = ({
                   <ActivityTypeAutocomplete
                     options={nextActions}
                     label={t('Next Action')}
-                    value={nextAction || undefined}
+                    value={nextAction || null}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
