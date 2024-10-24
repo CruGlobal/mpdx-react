@@ -4,6 +4,11 @@ fragment TaskRow on Task {
   startAt
   completedAt
   comments {
+    nodes {
+      id
+      body
+      updatedAt
+    }
     totalCount
   }
   contacts(first: 25) {

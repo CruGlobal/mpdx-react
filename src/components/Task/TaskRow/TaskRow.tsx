@@ -1,7 +1,9 @@
 import React from 'react';
+import LocalOffer from '@mui/icons-material/LocalOffer';
 import {
+  Avatar,
   Box,
-  Checkbox,
+  Chip,
   Hidden,
   Tooltip,
   Typography,
@@ -11,8 +13,8 @@ import { styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { StyledCheckbox } from 'src/components/Contacts/ContactRow/ContactRow';
 import { usePhaseData } from 'src/hooks/usePhaseData';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';
 import { TaskCompleteButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCompleteButton/TaskCompleteButton';
@@ -20,22 +22,10 @@ import { TaskDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactT
 import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/DeleteTaskIconButton/DeleteTaskIconButton';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskModalEnum } from '../Modal/TaskModal';
+import { CommentTooltipText } from './CommentTooltipText';
+import { TaskActionPhase } from './TaskActionPhase';
 import { TaskRowFragment } from './TaskRow.generated';
 import { TaskRowContactName } from './TaskRowContactName';
-
-const SubjectWrapOuter = styled(Box)(({ theme }) => ({
-  width: 'fit-content',
-  display: 'flex',
-  alignItems: 'center',
-  marginRight: theme.spacing(1),
-}));
-
-const SubjectWrapInner = styled(Box)(({}) => ({
-  display: 'flex',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
-}));
 
 const ContactText = styled(Typography)(({ theme }) => ({
   margin: '0px',
@@ -43,23 +33,15 @@ const ContactText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   fontSize: '14px',
   letterSpacing: '0.25',
-}));
-
-const TaskPhase = styled(Typography)(() => ({
-  fontSize: '14px',
-  letterSpacing: '0.25',
+  overflow: 'hidden',
   whiteSpace: 'nowrap',
-  fontWeight: 700,
-}));
-
-const TaskType = styled(Typography, {
-  shouldForwardProp: (prop) => prop !== 'condensed',
-})<{ condensed?: boolean }>(({ theme, condensed = false }) => ({
-  fontSize: '14px',
-  letterSpacing: '0.25',
-  whiteSpace: 'nowrap',
-  fontWeight: condensed ? 400 : 700,
-  marginRight: theme.spacing(0.5),
+  textOverflow: 'ellipsis',
+  flexGrow: 1,
+  display: 'inline',
+  '&:hover': {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+  },
 }));
 
 type OnContactClickFunction = (
@@ -75,8 +57,8 @@ interface TaskRowProps {
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
   getContactHrefObject?: GetContactHrefObject;
-  contactDetailsOpen?: boolean;
   removeSelectedIds?: (id: string[]) => void;
+  filterPanelOpen: boolean;
 }
 
 export const TaskRow: React.FC<TaskRowProps> = ({
@@ -87,8 +69,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   onTaskCheckToggle,
   useTopMargin,
   getContactHrefObject,
-  contactDetailsOpen,
   removeSelectedIds,
+  filterPanelOpen,
 }) => {
   const {
     activityType,
@@ -105,8 +87,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const activityData = activityType ? activityTypes.get(activityType) : null;
 
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const condensed = isSmallScreen || contactDetailsOpen;
+  const isLarge = useMediaQuery(theme.breakpoints.down('lg'));
+  const isMedium = useMediaQuery(theme.breakpoints.down('md'));
+  const condensed = (filterPanelOpen && isLarge) || isMedium;
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
     ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
@@ -157,6 +140,11 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const assigneeName = `${task?.user?.firstName ?? ''} ${
     task.user?.lastName ?? ''
   }`;
+  const tagListString = !!task.tagList.length
+    ? t('Tags: ') + task.tagList.join(', ')
+    : '';
+  const tagsToShow = 3;
+  const areMoreTags = tagsToShow < task.tagList.length;
 
   return (
     <TaskRowWrapper role="row" p={1}>
@@ -178,7 +166,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         >
           <Hidden xsDown>
             <Box padding="checkbox">
-              <Checkbox
+              <StyledCheckbox
                 checked={isChecked}
                 data-testid={`task-checkbox-${taskId}`}
                 color="secondary"
@@ -206,43 +194,29 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             }}
           >
             {(activityData?.phase || activityType) && (
-              <SubjectWrapOuter>
-                <SubjectWrapInner
-                  data-testid="phase-action-wrap"
-                  onClick={(e) => {
-                    handleSubjectPressed();
-                    e.stopPropagation();
-                  }}
-                  onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
-                  style={{
-                    minWidth: condensed ? '92px' : 'none',
-                    flexDirection: condensed ? 'column' : 'row',
-                  }}
-                >
-                  <TaskPhase>
-                    {activityData?.phase && condensed
-                      ? activityData.phase
-                      : activityData?.phase
-                      ? activityData.phase + ' - ' + '\u00A0'
-                      : ''}
-                  </TaskPhase>
-                  <TaskType condensed={condensed}>
-                    {activityType ? getLocalizedTaskType(t, activityType) : ''}
-                  </TaskType>
-                </SubjectWrapInner>
-              </SubjectWrapOuter>
+              <Box
+                onClick={(e) => {
+                  handleSubjectPressed();
+                  e.stopPropagation();
+                }}
+                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
+              >
+                <TaskActionPhase
+                  activityData={activityData}
+                  activityType={activityType}
+                />
+              </Box>
             )}
             <Box
               style={{
                 width: '100%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                display: 'flex',
-                flexDirection: condensed ? 'column' : 'row',
+                flexDirection: 'column',
               }}
             >
-              <SubjectWrapOuter>
-                <SubjectWrapInner
+              <Tooltip title={subject} placement="top-start">
+                <ContactText
                   data-testid="subject-wrap"
                   onClick={(e) => {
                     handleSubjectPressed();
@@ -250,11 +224,10 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   }}
                   onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
                 >
-                  <Tooltip title={subject} placement="top-start">
-                    <ContactText>{subject}</ContactText>
-                  </Tooltip>
-                </SubjectWrapInner>
-              </SubjectWrapOuter>
+                  {subject}
+                </ContactText>
+              </Tooltip>
+
               <Box
                 style={{
                   overflow: 'hidden',
@@ -279,37 +252,90 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <Hidden smDown>
-            <ContactText>{assigneeName}</ContactText>
-            <TaskDate isComplete={isComplete} taskDate={taskDate} />
-            <Box onClick={(e) => e.stopPropagation()}>
-              <TaskCommentsButton
-                isComplete={isComplete}
-                numberOfComments={comments?.totalCount}
-                onClick={handleCommentButtonPressed}
-                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
-              />
-            </Box>
+            {!!task?.tagList.length && (
+              <Tooltip
+                title={condensed || areMoreTags ? tagListString : null}
+                enterTouchDelay={0}
+                placement="top"
+                arrow
+              >
+                {condensed ? (
+                  <LocalOffer
+                    sx={{ color: theme.palette.secondary.dark, mx: 0.5 }}
+                  />
+                ) : (
+                  <Box>
+                    {task.tagList.slice(0, tagsToShow).map((task, idx) => (
+                      <Chip
+                        key={idx}
+                        label={task}
+                        size="small"
+                        sx={{ marginX: '2px' }}
+                      />
+                    ))}
+                    {areMoreTags && '...'}
+                  </Box>
+                )}
+              </Tooltip>
+            )}
+            {task?.user && (
+              <Tooltip
+                title={assigneeName}
+                placement="top"
+                arrow
+                enterTouchDelay={0}
+              >
+                <Avatar
+                  data-testid={`assigneeAvatar-${taskId}`}
+                  sx={{
+                    width: 30,
+                    height: 30,
+                    mx: 0.5,
+                  }}
+                >
+                  {(task?.user?.firstName?.[0] || '') +
+                    task?.user?.lastName?.[0] || ''}
+                </Avatar>
+              </Tooltip>
+            )}
           </Hidden>
-          <Hidden smUp>
-            <Box>
-              <TaskDate isComplete={isComplete} taskDate={taskDate} small />
-              <Box>
+          <Box
+            sx={{ display: 'flex', flexDirection: isMedium ? 'column' : 'row' }}
+          >
+            <TaskDate
+              isComplete={isComplete}
+              taskDate={taskDate}
+              small={isMedium}
+            />
+            <Tooltip
+              title={
+                comments.totalCount ? (
+                  <CommentTooltipText comments={comments.nodes} />
+                ) : null
+              }
+              placement="top"
+              arrow
+            >
+              <Box onClick={(e) => e.stopPropagation()}>
                 <TaskCommentsButton
                   isComplete={isComplete}
                   numberOfComments={comments?.totalCount}
                   onClick={handleCommentButtonPressed}
                   onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
-                  small
+                  small={isMedium}
+                  detailsPage={isMedium}
                 />
               </Box>
-            </Box>
-          </Hidden>
+            </Tooltip>
+          </Box>
+
           <Hidden smDown>
             <Box onClick={(e) => e.stopPropagation()}>
               <DeleteTaskIconButton
                 accountListId={accountListId}
                 taskId={taskId}
                 removeSelectedIds={removeSelectedIds}
+                small={condensed}
               />
             </Box>
             <Box onClick={(e) => e.stopPropagation()}>
