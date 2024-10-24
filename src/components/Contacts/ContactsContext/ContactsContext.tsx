@@ -161,18 +161,14 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     }
   }, [contactsView]);
 
-  const contactsFilters = useMemo(() => {
-    // Remove filters in the map view
-    const viewFilters =
-      viewMode === TableViewModeEnum.Map
-        ? { ids: sanitizedFilters.ids }
-        : sanitizedFilters;
-    return {
-      ...viewFilters,
+  const contactsFilters = useMemo(
+    () => ({
+      ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
-    };
-  }, [sanitizedFilters, viewMode, starredFilter, searchTerm]);
+    }),
+    [sanitizedFilters, starredFilter, searchTerm],
+  );
 
   const contactsQueryResult = useContactsQuery({
     variables: {
@@ -262,12 +258,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   ) => {
     const newViewMode = view as TableViewModeEnum;
     saveContactsView(newViewMode);
-    if (newViewMode === TableViewModeEnum.Map) {
+    if (newViewMode === TableViewModeEnum.Map && ids.length) {
       // When switching to the map, make the filter only show the selected contacts, if any
-      setActiveFilters({ ids });
-    } else if (viewMode === TableViewModeEnum.Map) {
-      // When switching away from the map, reset the filter to show all contacts
-      setActiveFilters({});
+      setActiveFilters({ ...activeFilters, ids });
     }
   };
   //#endregion
