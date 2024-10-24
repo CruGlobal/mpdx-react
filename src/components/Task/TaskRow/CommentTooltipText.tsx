@@ -15,10 +15,7 @@ export const CommentTooltipText: React.FC<CommentTooltipTextProps> = ({
   comments,
 }) => {
   const locale = useLocale();
-
-  const latestComment = !!comments.length
-    ? comments[comments.length - 1]
-    : null;
+  const latestComment = comments.at(-1) ?? null;
   return latestComment ? (
     <>
       <TooltipTypography>{latestComment.body}</TooltipTypography>

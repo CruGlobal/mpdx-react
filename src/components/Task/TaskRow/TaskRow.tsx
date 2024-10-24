@@ -299,8 +299,14 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               </Tooltip>
             )}
           </Hidden>
-          <Hidden mdDown>
-            <TaskDate isComplete={isComplete} taskDate={taskDate} />
+          <Box
+            sx={{ display: 'flex', flexDirection: isMedium ? 'column' : 'row' }}
+          >
+            <TaskDate
+              isComplete={isComplete}
+              taskDate={taskDate}
+              small={isMedium}
+            />
             <Tooltip
               title={
                 comments.totalCount ? (
@@ -316,37 +322,13 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   numberOfComments={comments?.totalCount}
                   onClick={handleCommentButtonPressed}
                   onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
+                  small={isMedium}
+                  detailsPage={isMedium}
                 />
               </Box>
             </Tooltip>
-          </Hidden>
+          </Box>
 
-          <Hidden mdUp>
-            <Box>
-              <TaskDate isComplete={isComplete} taskDate={taskDate} small />
-              <Tooltip
-                title={
-                  comments.totalCount ? (
-                    <CommentTooltipText comments={comments.nodes} />
-                  ) : null
-                }
-                placement="top"
-                arrow
-              >
-                <Box>
-                  <TaskCommentsButton
-                    isComplete={isComplete}
-                    numberOfComments={comments?.totalCount}
-                    onClick={handleCommentButtonPressed}
-                    onMouseEnter={() =>
-                      preloadTaskModal(TaskModalEnum.Comments)
-                    }
-                    small
-                  />
-                </Box>
-              </Tooltip>
-            </Box>
-          </Hidden>
           <Hidden smDown>
             <Box onClick={(e) => e.stopPropagation()}>
               <DeleteTaskIconButton
