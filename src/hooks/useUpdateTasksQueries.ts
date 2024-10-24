@@ -57,10 +57,7 @@ export const useUpdateTasksQueries = (): {
           GetTaskIdsForMassSelectionQueryVariables
         >({
           query: GetTaskIdsForMassSelectionDocument,
-          variables: {
-            ...variables,
-            first: observableQuery.getLastResult()?.data.tasks.nodes.length,
-          },
+          variables: variables,
         });
         if (!taskIds) {
           return;

@@ -186,18 +186,21 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   //#region Mass Actions
 
-  const contactCount = data?.contacts.totalCount ?? 0;
-  const { data: allContacts } = useGetIdsForMassSelectionQuery({
-    variables: {
-      accountListId,
-      first: contactCount,
-      contactsFilters,
-    },
-    skip: contactCount === 0,
-  });
+  const { data: allContacts, previousData: allContactsPrevious } =
+    useGetIdsForMassSelectionQuery({
+      variables: {
+        accountListId,
+        contactsFilters,
+      },
+    });
+  // When the next batch of contact ids is loading, use the previous batch of contact ids in the
+  // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
-    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
-    [allContacts],
+    () =>
+      (allContacts ?? allContactsPrevious)?.contacts.nodes.map(
+        (contact) => contact.id,
+      ) ?? [],
+    [allContacts, allContactsPrevious],
   );
 
   const {

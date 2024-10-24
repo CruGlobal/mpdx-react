@@ -1,12 +1,11 @@
 query GetIdsForMassSelection(
   $accountListId: ID!
-  $first: Int!
   $contactsFilters: ContactFilterSetInput
 ) {
   contacts(
     accountListId: $accountListId
-    first: $first
     contactsFilter: $contactsFilters
+    first: 20000 # Maximum allowed by the API
   ) {
     nodes {
       id
@@ -16,13 +15,12 @@ query GetIdsForMassSelection(
 
 query GetTaskIdsForMassSelection(
   $accountListId: ID!
-  $first: Int!
   $tasksFilter: TaskFilterSetInput
 ) {
   tasks(
     accountListId: $accountListId
-    first: $first
     tasksFilter: $tasksFilter
+    first: 1000 # Maximum allowed by the API
   ) {
     nodes {
       id
