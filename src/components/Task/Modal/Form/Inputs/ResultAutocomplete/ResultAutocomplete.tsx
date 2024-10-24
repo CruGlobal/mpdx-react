@@ -40,6 +40,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
         setFieldValue,
         setResultSelected,
         phaseData,
+        completedAction,
       });
     }
   }, [availableResults]);

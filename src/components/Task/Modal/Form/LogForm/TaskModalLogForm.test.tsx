@@ -177,7 +177,6 @@ describe('TaskModalLogForm', () => {
     expect(queryByLabelText('Comment')).not.toBeInTheDocument();
     expect(queryByLabelText('Tags')).not.toBeInTheDocument();
     expect(queryByLabelText('Assignee')).not.toBeInTheDocument();
-    expect(queryByLabelText('Next Action')).not.toBeInTheDocument();
     userEvent.click(getByLabelText('Show More'));
     expect(getByLabelText('Comment')).toBeInTheDocument();
     userEvent.type(getByLabelText('Comment'), 'test comment');
