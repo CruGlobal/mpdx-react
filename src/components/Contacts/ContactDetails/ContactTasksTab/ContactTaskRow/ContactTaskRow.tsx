@@ -204,6 +204,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
             }
             placement="top"
             arrow
+            enterTouchDelay={0}
           >
             {assigneeName ? (
               <Avatar

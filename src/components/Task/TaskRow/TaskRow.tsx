@@ -258,6 +258,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
             {!!task?.tagList.length && (
               <Tooltip
                 title={condensed || areMoreTags ? tagListString : null}
+                enterTouchDelay={0}
                 placement="top"
                 arrow
               >
@@ -281,7 +282,12 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               </Tooltip>
             )}
             {task?.user && (
-              <Tooltip title={assigneeName} placement="top" arrow>
+              <Tooltip
+                title={assigneeName}
+                placement="top"
+                arrow
+                enterTouchDelay={0}
+              >
                 <Avatar
                   data-testid={`assigneeAvatar-${taskId}`}
                   sx={{
