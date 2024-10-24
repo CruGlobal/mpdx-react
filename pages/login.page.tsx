@@ -37,6 +37,9 @@ const Login = ({
     }
   }, []);
 
+  const helpUrl =
+    process.env.HELPJUICE_KNOWLEDGE_BASE_URL || process.env.HELPJUICE_ORIGIN;
+
   return (
     <>
       <Head>
@@ -64,16 +67,11 @@ const Login = ({
         >
           {signInButtonText}
         </Button>
-        {(process.env.HELPJUICE_KNOWLEDGE_BASE_URL ||
-          process.env.HELPJUICE_ORIGIN) && (
+        {helpUrl && (
           <Button
             size="large"
             startIcon={<SubjectIcon />}
-            href={
-              process.env.HELPJUICE_KNOWLEDGE_BASE_URL ||
-              process.env.HELPJUICE_ORIGIN ||
-              ''
-            }
+            href={helpUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: '#fff' }}
