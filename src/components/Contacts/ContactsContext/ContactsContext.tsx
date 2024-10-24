@@ -22,6 +22,7 @@ import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
@@ -144,6 +145,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
 
+  const sanitizedFilters = useMemo(
+    () => sanitizeFilters(activeFilters),
+    [activeFilters],
+  );
+
   const [contactsView, saveContactsView, { loading: userOptionsLoading }] =
     useUserPreference({
       key: 'contacts_view',
@@ -157,11 +163,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...activeFilters,
+      ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
     }),
-    [activeFilters, starredFilter, searchTerm],
+    [sanitizedFilters, starredFilter, searchTerm],
   );
 
   const contactsQueryResult = useContactsQuery({
@@ -305,7 +311,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         mapData: mapData,
         panTo: panTo,
         activeFilters: activeFilters,
-        sanitizedFilters: activeFilters,
+        sanitizedFilters,
         setActiveFilters: setActiveFilters,
         starredFilter: starredFilter,
         setStarredFilter: setStarredFilter,
