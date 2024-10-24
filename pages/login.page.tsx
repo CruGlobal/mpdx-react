@@ -37,6 +37,9 @@ const Login = ({
     }
   }, []);
 
+  const helpUrl =
+    process.env.HELPJUICE_KNOWLEDGE_BASE_URL || process.env.HELPJUICE_ORIGIN;
+
   return (
     <>
       <Head>
@@ -64,16 +67,18 @@ const Login = ({
         >
           {signInButtonText}
         </Button>
-        <Button
-          size="large"
-          startIcon={<SubjectIcon />}
-          href="https://help.mpdx.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#fff' }}
-        >
-          Find help
-        </Button>
+        {helpUrl && (
+          <Button
+            size="large"
+            startIcon={<SubjectIcon />}
+            href={helpUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#fff' }}
+          >
+            Find help
+          </Button>
+        )}
         {isOkta && (
           <SignUpBox>
             <Typography>
