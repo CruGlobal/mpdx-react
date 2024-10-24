@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { JSXElementConstructor, ReactElement, useState } from 'react';
 import { Box } from '@mui/material';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
@@ -31,10 +32,15 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   showToolsHeader = true,
   children,
 }) => {
+  const { push } = useRouter();
   const { appName } = useGetAppSettings();
-  const { accountListId, selectedContactId, handleSelectContact } =
-    useToolsHelper();
+  const { accountListId, selectedContactId } = useToolsHelper();
   const [isToolDrawerOpen, setIsToolDrawerOpen] = useState<boolean>(false);
+
+  const handleCloseContact = () => {
+    const pathname = `/accountLists/${accountListId}/${pageUrl}/`;
+    push(pathname);
+  };
 
   return (
     <>
@@ -84,9 +90,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact(pageUrl, '')}
-                  />
+                  <DynamicContactsRightPanel onClose={handleCloseContact} />
                 </ContactsWrapper>
               ) : undefined
             }

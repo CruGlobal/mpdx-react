@@ -15,7 +15,6 @@ import {
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
@@ -115,17 +114,13 @@ export const emptyAddress: ContactAddressFragment = {
 
 interface Props {
   accountListId: string;
-  setContactFocus: SetContactFocus;
 }
 enum ModalEnum {
   New = 'New',
   Edit = 'Edit',
 }
 
-const FixMailingAddresses: React.FC<Props> = ({
-  accountListId,
-  setContactFocus,
-}: Props) => {
+const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const [showEditAddressModal, setShowEditAddressModal] = useState(false);
@@ -421,7 +416,6 @@ const FixMailingAddresses: React.FC<Props> = ({
                         openNewAddressModal={(address, contactId) =>
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
-                        setContactFocus={setContactFocus}
                         handleSingleConfirm={handleSingleConfirm}
                       />
                     ))}

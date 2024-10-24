@@ -3,7 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { StatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
@@ -15,11 +14,7 @@ const status = StatusEnum.PartnerFinancial;
 describe('ContactPartnershipStatus', () => {
   it('default', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
-      }>
-        mocks={{ LoadConstants: loadConstantsMockData }}
-      >
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <I18nextProvider i18n={i18n}>
             <ContactPartnershipStatus
@@ -45,11 +40,7 @@ describe('ContactPartnershipStatus', () => {
 
   it('render partner pray', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
-      }>
-        mocks={{ LoadConstants: loadConstantsMockData }}
-      >
+      <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <I18nextProvider i18n={i18n}>
             <ContactPartnershipStatus
@@ -77,11 +68,7 @@ describe('ContactPartnershipStatus', () => {
   describe('pledge amount', () => {
     it('renders pledge amount', () => {
       const { getByText } = render(
-        <GqlMockedProvider<{
-          LoadConstants: LoadConstantsQuery;
-        }>
-          mocks={{ LoadConstants: loadConstantsMockData }}
-        >
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <I18nextProvider i18n={i18n}>
               <ContactPartnershipStatus
@@ -102,11 +89,7 @@ describe('ContactPartnershipStatus', () => {
 
     it('does not render pledge amount when 0', () => {
       const { queryByText } = render(
-        <GqlMockedProvider<{
-          LoadConstants: LoadConstantsQuery;
-        }>
-          mocks={{ LoadConstants: loadConstantsMockData }}
-        >
+        <GqlMockedProvider>
           <ThemeProvider theme={theme}>
             <I18nextProvider i18n={i18n}>
               <ContactPartnershipStatus

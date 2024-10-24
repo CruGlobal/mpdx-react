@@ -1,6 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { levelOfEffortMocks } from '../coachingMocks';
 import { LevelOfEffort } from './LevelOfEffort';
@@ -13,7 +12,6 @@ describe('LevelOfEffort', () => {
       <GqlMockedProvider
         mocks={{
           ...levelOfEffortMocks,
-          LoadConstants: loadConstantsMockData,
         }}
       >
         <LevelOfEffort
@@ -117,7 +115,7 @@ describe('LevelOfEffort', () => {
     );
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[1][0].operation.variables).toMatchObject({
+      expect(mutationSpy.mock.calls[0][0].operation.variables).toMatchObject({
         range: '4w',
       }),
     );
@@ -134,7 +132,7 @@ describe('LevelOfEffort', () => {
     );
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[1][0].operation.variables).toMatchObject({
+      expect(mutationSpy.mock.calls[0][0].operation.variables).toMatchObject({
         range: '4m',
       }),
     );

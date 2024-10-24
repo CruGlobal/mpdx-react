@@ -6,8 +6,9 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { TypeEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { GetPersonDuplicatesQuery } from './GetPersonDuplicates.generated';
 import MergePeople from './MergePeople';
@@ -15,9 +16,9 @@ import { getPersonDuplicatesMocks } from './PersonDuplicatesMock';
 
 const accountListId = '123';
 
-const setContactFocus = jest.fn();
 const mockEnqueue = jest.fn();
 
+jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -47,21 +48,9 @@ const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <ContactsProvider
-            activeFilters={{}}
-            setActiveFilters={() => {}}
-            starredFilter={{}}
-            setStarredFilter={() => {}}
-            filterPanelOpen={false}
-            setFilterPanelOpen={() => {}}
-            contactId={[]}
-            searchTerm={''}
-          >
-            <MergePeople
-              accountListId={accountListId}
-              setContactFocus={setContactFocus}
-            />
-          </ContactsProvider>
+          <ContactsWrapper>
+            <MergePeople accountListId={accountListId} />
+          </ContactsWrapper>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
@@ -227,22 +216,17 @@ describe('Tools - MergePeople', () => {
     );
   });
 
-  describe('setContactFocus()', () => {
-    it('should open up contact details', async () => {
-      const mutationSpy = jest.fn();
-      const { findByText, queryByTestId } = render(
-        <MergePeopleWrapper mutationSpy={mutationSpy} />,
-      );
-      await waitFor(() =>
-        expect(queryByTestId('loading')).not.toBeInTheDocument(),
-      );
-      expect(setContactFocus).not.toHaveBeenCalled();
+  it('should render link with correct href', async () => {
+    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
 
-      const contactName = await findByText('Ellie Francisco');
+    const { findByRole } = render(<MergePeopleWrapper />);
 
-      expect(contactName).toBeInTheDocument();
-      userEvent.click(contactName);
-      expect(setContactFocus).toHaveBeenCalledWith('contact-2');
+    const contactName = await findByRole('link', {
+      name: 'Ellie Francisco',
     });
+    expect(contactName).toHaveAttribute(
+      'href',
+      `/accountLists/${accountListId}/tools/merge/people/contact-2`,
+    );
   });
 });

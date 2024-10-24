@@ -14,11 +14,11 @@ import { useTranslation } from 'react-i18next';
 import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { formatNumber } from '../../AccountSummary/AccountSummaryHelper';
 import {
   FinancialAccountContext,
   FinancialAccountType,
 } from '../../Context/FinancialAccountsContext';
+import { formatTransactionAmount } from '../AccountTransactionsHelper';
 import { FinancialAccountEntriesQuery } from '../financialAccountTransactions.generated';
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -223,7 +223,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
           }}
         >
           {currencyFormat(
-            formatNumber(row.expenseAmount),
+            formatTransactionAmount(row.expenseAmount, true),
             row.currency,
             locale,
           )}
@@ -240,7 +240,11 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
             fontWeight: isBalanceRow(row.id) ? 'bold' : 'inherit',
           }}
         >
-          {currencyFormat(formatNumber(row.incomeAmount), row.currency, locale)}
+          {currencyFormat(
+            formatTransactionAmount(row.incomeAmount),
+            row.currency,
+            locale,
+          )}
         </Typography>
       );
     }
@@ -321,6 +325,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
             amount={debits}
             currency={currency}
             locale={locale}
+            isDebit
           />
 
           <TotalTableRow
@@ -338,6 +343,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
 interface TotalTableRowProps {
   title: string;
   amount?: string | null;
+  isDebit?: boolean;
   currency?: string | null;
   locale?: string;
 }
@@ -345,6 +351,7 @@ interface TotalTableRowProps {
 const TotalTableRow: React.FC<TotalTableRowProps> = ({
   title,
   amount,
+  isDebit = false,
   currency,
   locale,
 }) => (
@@ -358,7 +365,11 @@ const TotalTableRow: React.FC<TotalTableRowProps> = ({
       {amount &&
         currency &&
         locale &&
-        currencyFormat(formatNumber(amount), currency, locale)}
+        currencyFormat(
+          formatTransactionAmount(amount, isDebit),
+          currency,
+          locale,
+        )}
     </TableCell>
   </TableRow>
 );

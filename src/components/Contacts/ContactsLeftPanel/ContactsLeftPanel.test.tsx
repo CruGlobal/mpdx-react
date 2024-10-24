@@ -5,13 +5,12 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
-import { GetUserOptionsQuery } from '../ContactFlow/GetUserOptions.generated';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
 
 const router = {
@@ -52,13 +51,12 @@ const mocks = {
       ],
     },
   },
-  GetUserOptions: {
-    userOptions,
+  UserOption: {
+    userOption: userOptions[0],
   },
   ContactFilters: {
     userOptions,
   },
-  LoadConstants: loadConstantsMockData,
 };
 
 describe('ContactsLeftPanel', () => {
@@ -81,9 +79,7 @@ describe('ContactsLeftPanel', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
-            mocks={mocks}
-          >
+          <GqlMockedProvider<{ UserOption: UserOptionQuery }> mocks={mocks}>
             <ContactsWrapper>
               <>
                 <Component />

@@ -72,9 +72,7 @@ export const SetupProvider: React.FC<SetupProviderProps> = ({ children }) => {
       return undefined;
     }
 
-    const setupPosition = data.userOptions.find(
-      (option) => option.key === 'setup_position',
-    )?.value;
+    const setupPosition = data.userOption?.value;
 
     // The user is on the setup tour if the setup position matches their current page
     return (

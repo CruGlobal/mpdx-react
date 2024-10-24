@@ -7,13 +7,8 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { FinancialAccountsWrapper } from 'pages/accountLists/[accountListId]/reports/financialAccounts/Wrapper';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import {
-  FinancialAccountContext,
-  FinancialAccountType,
-} from '../Context/FinancialAccountsContext';
 import {
   AccountSummary,
   AppendCategoryToCategoriesArray,
@@ -21,7 +16,6 @@ import {
 } from './AccountSummary';
 import {
   creditByCategories,
-  defaultFinancialAccount,
   defaultFinancialAccountSummary,
 } from './AccountSummaryMock';
 import { FinancialAccountSummaryQuery } from './financialAccountSummary.generated';
@@ -29,12 +23,13 @@ import { FinancialAccountSummaryQuery } from './financialAccountSummary.generate
 const accountListId = 'accountListId';
 const financialAccountId = 'financialAccountId';
 const router = {
-  query: { accountListId },
+  query: { accountListId, financialAccount: financialAccountId },
   isReady: true,
 };
 const startDate = '2024-01-01';
 const endDate = '2024-01-31';
 const mutationSpy = jest.fn();
+const handleNavListToggle = jest.fn();
 
 const Component = () => (
   <I18nextProvider i18n={i18n}>
@@ -50,22 +45,7 @@ const Component = () => (
               }}
               onCall={mutationSpy}
             >
-              <FinancialAccountsWrapper>
-                <FinancialAccountContext.Provider
-                  value={
-                    {
-                      accountListId,
-                      financialAccountId,
-                      financialAccountsQuery: {
-                        data: defaultFinancialAccount,
-                        loading: false,
-                      },
-                    } as unknown as FinancialAccountType
-                  }
-                >
-                  <AccountSummary />
-                </FinancialAccountContext.Provider>
-              </FinancialAccountsWrapper>
+              <AccountSummary handleNavListToggle={handleNavListToggle} />
             </GqlMockedProvider>
           </TestRouter>
         </ThemeProvider>

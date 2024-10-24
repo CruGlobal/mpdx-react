@@ -3,8 +3,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
+import { ResultEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
 import {
@@ -156,54 +157,19 @@ describe('ContactTaskRow', () => {
   });
 
   describe('activity type', () => {
-    it.each([
-      { activityType: ActivityTypeEnum.AppointmentInPerson, name: 'In Person' },
-      {
-        activityType: ActivityTypeEnum.InitiationPhoneCall,
-        name: 'Phone Call',
-      },
-      { activityType: ActivityTypeEnum.InitiationEmail, name: 'Email' },
-      {
-        activityType: ActivityTypeEnum.InitiationSocialMedia,
-        name: 'Social Media',
-      },
-      {
-        activityType: ActivityTypeEnum.PartnerCareDigitalNewsletter,
-        name: 'Digital Newsletter',
-      },
-      {
-        activityType: ActivityTypeEnum.PartnerCarePhysicalNewsletter,
-        name: 'Physical Newsletter',
-      },
-      {
-        activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
-        name: 'Prayer Request',
-      },
-      { activityType: ActivityTypeEnum.InitiationLetter, name: 'Letter' },
-      {
-        activityType: ActivityTypeEnum.InitiationSpecialGiftAppeal,
-        name: 'Special Gift Appeal',
-      },
-      { activityType: ActivityTypeEnum.PartnerCareInPerson, name: 'In Person' },
-      {
-        activityType: ActivityTypeEnum.FollowUpTextMessage,
-        name: 'Text Message',
-      },
-      {
-        activityType: ActivityTypeEnum.PartnerCareThank,
-        name: 'Thank You Note',
-      },
-      { activityType: ActivityTypeEnum.PartnerCareToDo, name: 'To Do' },
-    ])('displays $name', ({ activityType, name }) => {
-      const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
-        mocks: {
-          activityType,
-        },
-      });
+    it.each(loadConstantsMockData.constant.activities || [])(
+      'displays $value',
+      (activity) => {
+        const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+          mocks: {
+            activityType: activity?.id,
+          },
+        });
 
-      const { getByText } = render(<Components task={task} />);
+        const { getByText } = render(<Components task={task} />);
 
-      expect(getByText(name)).toBeVisible();
-    });
+        expect(getByText(activity?.value)).toBeVisible();
+      },
+    );
   });
 });

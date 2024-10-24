@@ -7,8 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { loadConstantsMockData as LoadConstants } from 'src/components/Constants/LoadConstantsMock';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
@@ -55,11 +53,7 @@ jest.mock('notistack', () => ({
 const TaskComponents = () => (
   <I18nextProvider i18n={i18n}>
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<{
-        LoadConstants: LoadConstantsQuery;
-      }>
-        mocks={{ LoadConstants }}
-      >
+      <GqlMockedProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <SnackbarProvider>
             <TasksMassActionsDropdown

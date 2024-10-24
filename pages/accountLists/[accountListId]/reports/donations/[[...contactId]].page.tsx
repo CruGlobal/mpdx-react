@@ -14,6 +14,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
@@ -30,16 +31,14 @@ const DonationsReportPage: React.FC = () => {
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
 
+  const { handleCloseContact } = useContactLinks({
+    url: `/accountLists/${accountListId}/reports/donations/`,
+  });
+
   const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
-  };
-
-  const handleSelectContact = (contactId: string) => {
-    router.push(
-      `/accountLists/${accountListId}/reports/donations/${contactId}`,
-    );
   };
 
   return (
@@ -71,16 +70,13 @@ const DonationsReportPage: React.FC = () => {
                 designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                onSelectContact={handleSelectContact}
                 title={t('Donations')}
               />
             }
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel
-                    onClose={() => handleSelectContact('')}
-                  />
+                  <DynamicContactsRightPanel onClose={handleCloseContact} />
                 </ContactsWrapper>
               ) : undefined
             }

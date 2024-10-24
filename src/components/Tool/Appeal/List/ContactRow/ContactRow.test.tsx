@@ -25,7 +25,9 @@ const router = {
   isReady: true,
 };
 
-const setContactFocus = jest.fn();
+const getContactUrl = jest.fn().mockReturnValue({
+  contactUrl: `/contacts/${defaultContact.id}`,
+});
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
@@ -48,7 +50,7 @@ const Components = ({
             value={
               {
                 appealId,
-                setContactFocus,
+                getContactUrl,
                 isRowChecked,
                 contactDetailsOpen,
                 toggleSelectionById,
@@ -85,30 +87,12 @@ describe('ContactsRow', () => {
     expect(checkbox).toBeChecked();
   });
 
-  it('should open contact on click', () => {
-    isRowChecked.mockImplementationOnce((id) => id === defaultContact.id);
-
+  it('should render contact as a link', () => {
     const { getByTestId } = render(<Components />);
 
-    expect(setContactFocus).not.toHaveBeenCalled();
-
-    const rowButton = getByTestId('rowButton');
-    userEvent.click(rowButton);
-
-    expect(setContactFocus).toHaveBeenCalledWith(defaultContact.id);
-  });
-
-  it('should render contact select event', () => {
-    isRowChecked.mockImplementationOnce((id) => id === defaultContact.id);
-
-    const { getByTestId } = render(<Components />);
-
-    expect(setContactFocus).not.toHaveBeenCalled();
-
-    const rowButton = getByTestId('rowButton');
-    userEvent.click(rowButton);
-
-    expect(setContactFocus).toHaveBeenCalledWith(defaultContact.id);
+    const contact = getByTestId('rowButton');
+    expect(contact).toBeInTheDocument();
+    expect(contact).toHaveAttribute('href', `/contacts/${defaultContact.id}`);
   });
 
   describe('Contact Row by status type', () => {

@@ -24,11 +24,6 @@ interface Props {
   accountListId: string;
   selectedFilters: ContactFilterSetInput;
   searchTerm?: string | string[];
-  onContactSelected: (
-    contactId: string,
-    openDetails: boolean,
-    flows: boolean,
-  ) => void;
 }
 
 export interface ContactFlowOption {
@@ -49,16 +44,15 @@ export const colorMap: { [key: string]: string } = {
 export const ContactFlow: React.FC<Props> = ({
   accountListId,
   selectedFilters,
-  onContactSelected,
   searchTerm,
 }: Props) => {
-  const { options: userFlowOptions, loading: loadingUserOptions } =
+  const [userFlowOptions, _, { loading: loadingUserOptions }] =
     useFlowOptions();
 
   const { t } = useTranslation();
+  const { getContactStatusesByPhase } = useContactPartnershipStatuses();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
-  const { contactStatuses } = useContactPartnershipStatuses();
 
   const flowOptions = useMemo(() => {
     if (loadingUserOptions) {
@@ -68,7 +62,7 @@ export const ContactFlow: React.FC<Props> = ({
       return userFlowOptions;
     }
 
-    return getDefaultFlowOptions(t, contactStatuses);
+    return getDefaultFlowOptions(t, getContactStatusesByPhase);
   }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();
@@ -202,7 +196,6 @@ export const ContactFlow: React.FC<Props> = ({
                 title={column.name}
                 selectedFilters={selectedFilters}
                 color={colorMap[column.color]}
-                onContactSelected={onContactSelected}
                 statuses={column.statuses}
                 changeContactStatus={changeContactStatus}
                 searchTerm={searchTerm}

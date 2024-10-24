@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -12,8 +13,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
@@ -29,7 +30,7 @@ export interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[];
   totals: MonthTotal[];
-  onSelectContact: (contactId: string) => void;
+  getContactUrl: (contactId: string) => string;
 }
 
 const NameTypography = styled(Typography, {
@@ -74,12 +75,12 @@ export const FourteenMonthReportTable: React.FC<
   orderedContacts,
   onRequestSort,
   salaryCurrency,
-  onSelectContact,
+  getContactUrl,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const totalAverage = useMemo(
     () =>
@@ -118,70 +119,74 @@ export const FourteenMonthReportTable: React.FC<
           onRequestSort={onRequestSort}
         />
         <TableBody>
-          {orderedContacts?.map((contact) => (
-            <TableRow
-              key={contact.id}
-              hover
-              data-testid="FourteenMonthReportTableRow"
-            >
-              <StyledTableCell>
-                <Box display="flex" flexDirection="column">
-                  <Box display="flex" alignItems="center">
-                    {!isExpanded && <StyledInfoIcon fontSize="small" />}
-                    <NameTypography variant="body1" expanded={isExpanded}>
-                      <Link
-                        onClick={() => onSelectContact(contact.id)}
-                        onMouseEnter={preloadContactsRightPanel}
-                        underline="hover"
-                      >
-                        {contact.name}
-                      </Link>
-                    </NameTypography>
+          {orderedContacts?.map((contact) => {
+            const contactUrl = getContactUrl(contact.id);
+            return (
+              <TableRow
+                key={contact.id}
+                hover
+                data-testid="FourteenMonthReportTableRow"
+              >
+                <StyledTableCell>
+                  <Box display="flex" flexDirection="column">
+                    <Box display="flex" alignItems="center">
+                      {!isExpanded && <StyledInfoIcon fontSize="small" />}
+                      <NameTypography variant="body1" expanded={isExpanded}>
+                        <NextLink
+                          href={contactUrl}
+                          passHref
+                          onMouseEnter={preloadContactsRightPanel}
+                        >
+                          <Link>{contact.name}</Link>
+                        </NextLink>
+                      </NameTypography>
+                    </Box>
+                    {isExpanded && (
+                      <Typography variant="body2" color="textSecondary">
+                        {contact.accountNumbers.join(', ')}
+                      </Typography>
+                    )}
                   </Box>
-                  {isExpanded && (
-                    <Typography variant="body2" color="textSecondary">
-                      {contact.accountNumbers.join(', ')}
-                    </Typography>
-                  )}
-                </Box>
-              </StyledTableCell>
-              {isExpanded && (
-                <>
-                  <StyledTableCell>
-                    {contact.status &&
-                      contactStatuses[contact.status.toUpperCase()]?.translated}
-                  </StyledTableCell>
-                  <StyledTableCell data-testid="pledgeAmount">
-                    {contact.pledgeAmount &&
-                      `${numberFormat(
-                        Math.round(contact.pledgeAmount),
-                        locale,
-                      )} ${contact.pledgeCurrency} ${
-                        apiConstants?.pledgeFrequency?.find(
-                          ({ key }) => key === contact.pledgeFrequency,
-                        )?.value ?? ''
-                      }`}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {numberFormat(Math.round(contact.average), locale)}
-                  </StyledTableCell>
-                  <StyledTableCell>
-                    {numberFormat(Math.round(contact.minimum), locale)}
-                  </StyledTableCell>
-                </>
-              )}
-              {contact.months.map((month) => (
-                <StyledTableCell key={month.month} align="center">
-                  {numberFormat(Math.round(month.total), locale)}
                 </StyledTableCell>
-              ))}
-              <StyledTableCell align="right">
-                <strong data-testid="totalGivenByContact">
-                  {numberFormat(Math.round(contact.total), locale)}
-                </strong>
-              </StyledTableCell>
-            </TableRow>
-          ))}
+                {isExpanded && (
+                  <>
+                    <StyledTableCell>
+                      {getLocalizedContactStatus(
+                        contact?.status?.toUpperCase(),
+                      )}
+                    </StyledTableCell>
+                    <StyledTableCell data-testid="pledgeAmount">
+                      {contact.pledgeAmount &&
+                        `${numberFormat(
+                          Math.round(contact.pledgeAmount),
+                          locale,
+                        )} ${contact.pledgeCurrency} ${
+                          apiConstants?.pledgeFrequency?.find(
+                            ({ key }) => key === contact.pledgeFrequency,
+                          )?.value ?? ''
+                        }`}
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {numberFormat(Math.round(contact.average), locale)}
+                    </StyledTableCell>
+                    <StyledTableCell>
+                      {numberFormat(Math.round(contact.minimum), locale)}
+                    </StyledTableCell>
+                  </>
+                )}
+                {contact.months.map((month) => (
+                  <StyledTableCell key={month.month} align="center">
+                    {numberFormat(Math.round(month.total), locale)}
+                  </StyledTableCell>
+                ))}
+                <StyledTableCell align="right">
+                  <strong data-testid="totalGivenByContact">
+                    {numberFormat(Math.round(contact.total), locale)}
+                  </strong>
+                </StyledTableCell>
+              </TableRow>
+            );
+          })}
           <StyledTotalsRow>
             <StyledTableCell>{t('Totals')}</StyledTableCell>
             {isExpanded && (

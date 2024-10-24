@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -18,12 +19,13 @@ import {
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
 import { SmallLoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { getLocalizedContactStatus } from 'src/utils/functions/getLocalizedContactStatus';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -85,7 +87,6 @@ interface Props {
     name: string,
     sendNewsletter: string,
   ) => Promise<void>;
-  setContactFocus: SetContactFocus;
 }
 
 const Contact = ({
@@ -93,13 +94,18 @@ const Contact = ({
   contactUpdates,
   setContactUpdates,
   handleSingleConfirm,
-  setContactFocus,
 }: Props): ReactElement => {
   const { t } = useTranslation();
   const [newsletter, setNewsletter] = useState(SendNewsletterEnum.None);
   const [updatingSingle, setUpdatingSingle] = useState(false);
   const { classes } = useStyles();
   const locale = useLocale();
+  const accountListId = useAccountListId();
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/tools/fix/sendNewsletter/`,
+  });
+  const contactUrl = getContactUrl(contact.id);
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const matches = useMediaQuery('(min-width:600px)');
   useEffect(() => {
@@ -143,21 +149,21 @@ const Contact = ({
     updateNewsletterValue(event.target.value as SendNewsletterEnum);
   };
 
-  const handleContactNameClick = () => {
-    setContactFocus(contact?.id);
-  };
-
   return (
     <Card className={classes.contactBasic}>
       <CardHeader
         avatar={
-          <Avatar
-            src={contact?.avatar}
-            style={{
-              width: theme.spacing(4),
-              height: theme.spacing(4),
-            }}
-          />
+          <NextLink href={contactUrl} passHref shallow>
+            <Link underline="hover">
+              <Avatar
+                src={contact?.avatar}
+                style={{
+                  width: theme.spacing(4),
+                  height: theme.spacing(4),
+                }}
+              />
+            </Link>
+          </NextLink>
         }
         action={
           <Button
@@ -182,15 +188,17 @@ const Contact = ({
           </Button>
         }
         title={
-          <Link underline="hover" onClick={handleContactNameClick}>
-            <Typography className={classes.inline} variant="subtitle1">
-              {contact?.name}
-            </Typography>
-          </Link>
+          <NextLink href={contactUrl} passHref shallow>
+            <Link underline="hover">
+              <Typography className={classes.inline} variant="subtitle1">
+                {contact?.name}
+              </Typography>
+            </Link>
+          </NextLink>
         }
         subheader={
           <Typography variant="body2">
-            {getLocalizedContactStatus(t, contact.status)}
+            {getLocalizedContactStatus(contact.status)}
           </Typography>
         }
       ></CardHeader>

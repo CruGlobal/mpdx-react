@@ -3,7 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { CsvImportViewStepEnum } from 'src/components/Tool/Import/Csv/CsvImportContext';
 import { get } from 'src/components/Tool/Import/Csv/csvImportService';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -11,18 +10,10 @@ import theme from 'src/theme';
 import CsvHome from './csv.page';
 
 jest.mock('src/hooks/useAccountListId');
-jest.mock('src/components/Constants/UseApiConstants');
 jest.mock('src/components/Tool/Import/Csv/csvImportService');
 
 const accountListId = 'accountListId';
 const csvFileId = 'csvFileId';
-
-const constants = {
-  sendAppeals: [
-    { id: true, value: 'Yes' },
-    { id: false, value: 'No' },
-  ],
-};
 
 const buildRouter = (tab) => {
   return {
@@ -49,7 +40,6 @@ const renderCsvHome = (router) =>
 describe('CSV wrapper page', () => {
   beforeEach(() => {
     (useAccountListId as jest.Mock).mockReturnValue(accountListId);
-    (useApiConstants as jest.Mock).mockReturnValue(constants);
     (get as jest.Mock).mockReturnValue(Promise.resolve({ id: 'from-get' }));
   });
 

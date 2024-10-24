@@ -5,10 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
+import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
@@ -80,18 +80,9 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       <TestRouter router={router}>
         <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
-            <ContactsProvider
-              activeFilters={{}}
-              setActiveFilters={() => {}}
-              starredFilter={{}}
-              setStarredFilter={() => {}}
-              filterPanelOpen={false}
-              setFilterPanelOpen={() => {}}
-              contactId={[]}
-              searchTerm={''}
-            >
+            <ContactsWrapper>
               <PartnerGivingAnalysisPage />
-            </ContactsProvider>
+            </ContactsWrapper>
           </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>
@@ -145,13 +136,13 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('changes the URL when a contact is selected', async () => {
-    const { findByText } = render(<TestingComponent />);
+    const { findByRole } = render(<TestingComponent />);
 
-    userEvent.click(await findByText('John Doe'));
+    expect(push).not.toHaveBeenCalled();
 
-    expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/partnerGivingAnalysis/contact-1',
-    );
+    userEvent.click(await findByRole('link', { name: 'John Doe' }));
+
+    expect(push).toHaveBeenCalled();
   });
 
   it('closes contact panel', async () => {

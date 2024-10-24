@@ -19,6 +19,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -56,6 +57,9 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
 
   const [activeFilters, setActiveFilters] =
     useState<ReportContactFilterSetInput>({});
+  const { handleCloseContact } = useContactLinks({
+    url: `/accountLists/${accountListId}/reports/partnerGivingAnalysis/`,
+  });
   const debouncedFilters = useDebouncedValue(activeFilters, 500);
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -86,12 +90,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     return [reportFilterGroup, ...groups];
   }, [filterData]);
 
-  const handleSelectContact = (contactId: string) => {
-    router.push(
-      `/accountLists/${accountListId}/reports/partnerGivingAnalysis/${contactId}`,
-    );
-  };
-
   const handleClearSearch = () => {
     reportRef.current?.clearSearchInput();
   };
@@ -119,15 +117,17 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
                 <Loading loading />
               ) : (
                 <ContactsProvider
-                  urlFilters={{}}
                   activeFilters={{}}
                   setActiveFilters={() => undefined}
                   starredFilter={{}}
                   setStarredFilter={() => undefined}
                   filterPanelOpen={false}
                   setFilterPanelOpen={() => undefined}
-                  contactId={[]}
+                  contactId={undefined}
+                  setContactId={() => undefined}
+                  getContactHrefObject={() => ({ pathname: '', query: {} })}
                   searchTerm={''}
+                  setSearchTerm={() => {}}
                 >
                   <DynamicFilterPanel
                     filters={filterGroups}
@@ -152,7 +152,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
               panelOpen={panelOpen}
               onFilterListToggle={handleFilterListToggle}
               onNavListToggle={handleNavListToggle}
-              onSelectContact={handleSelectContact}
               title={t('Partner Giving Analysis')}
               contactFilters={debouncedFilters}
               contactDetailsOpen={!!selectedContactId}
@@ -161,9 +160,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           rightPanel={
             selectedContactId ? (
               <ContactsWrapper>
-                <DynamicContactsRightPanel
-                  onClose={() => handleSelectContact('')}
-                />
+                <DynamicContactsRightPanel onClose={handleCloseContact} />
               </ContactsWrapper>
             ) : undefined
           }

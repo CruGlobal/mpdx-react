@@ -28,7 +28,7 @@ interface Props {
   onNavListToggle: () => void;
   title: string;
   currencyType: FourteenMonthReportCurrencyType;
-  onSelectContact: (contactId: string) => void;
+  getContactUrl: (contactId: string) => string;
 }
 
 export interface MonthTotal {
@@ -42,7 +42,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   currencyType,
   isNavListOpen,
   title,
-  onSelectContact,
+  getContactUrl,
   onNavListToggle,
 }) => {
   const [isExpanded, setExpanded] = useState<boolean>(false);
@@ -53,6 +53,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
+
+  const isPrint = useMediaQuery('print');
 
   const { data, error } = useFourteenMonthReportQuery({
     variables: {
@@ -117,12 +119,12 @@ export const FourteenMonthReport: React.FC<Props> = ({
       ) : error ? (
         <Notification type="error" message={error.toString()} />
       ) : currencyTables.length > 0 ? (
-        <Box display="flex" flexDirection="column" gap={4}>
+        <Box display="flex" flexDirection="column" gap={isPrint ? 1 : 4}>
           {currencyTables.map(({ currency, orderedContacts, totals }) => (
             <Table
               key={currency}
               isExpanded={isExpanded}
-              onSelectContact={onSelectContact}
+              getContactUrl={getContactUrl}
               onRequestSort={handleRequestSort}
               order={order}
               orderBy={orderBy}

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import {
   mdiArrowDownBold,
@@ -24,9 +25,10 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { SetContactFocus } from 'pages/accountLists/[accountListId]/tools/useToolsHelper';
-import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -134,7 +136,6 @@ interface ContactItemProps {
   selected: boolean;
   loser: boolean;
   t: TFunction;
-  setContactFocus: SetContactFocus;
 }
 const ContactItem: React.FC<ContactItemProps> = ({
   contact,
@@ -143,17 +144,25 @@ const ContactItem: React.FC<ContactItemProps> = ({
   loser,
   t,
   side,
-  setContactFocus,
 }) => {
-  const { contactStatuses } = useContactPartnershipStatuses();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const { classes } = useStyles();
   const locale = useLocale();
-  const handleContactNameClick = (contactId) => {
-    setContactFocus(contactId);
-  };
+  const accountListId = useAccountListId();
   const isPersonType = contact.__typename === 'Person';
   const isContactType = contact.__typename === 'Contact';
+
+  const url = isContactType
+    ? `/accountLists/${accountListId}/tools/merge/contacts/`
+    : `/accountLists/${accountListId}/tools/merge/people/`;
+
+  const { getContactUrl } = useContactLinks({ url });
+
+  const contactUrl = getContactUrl(
+    isPersonType ? contact.contactId : contact.id,
+  );
+
   return (
     <Card
       className={`
@@ -169,34 +178,38 @@ const ContactItem: React.FC<ContactItemProps> = ({
     >
       <CardHeader
         avatar={
-          <ContactAvatar
-            src={contact?.avatar || ''}
-            aria-label="Contact Avatar"
-          />
-        }
-        title={
-          <>
+          <NextLink href={contactUrl} passHref shallow>
             <Link
               underline="hover"
               onClick={(e) => {
                 e.stopPropagation();
-                handleContactNameClick(
-                  isPersonType
-                    ? contact.contactId
-                    : isContactType
-                    ? contact.id
-                    : null,
-                );
               }}
             >
-              <InlineTypography variant="subtitle1">
-                {isPersonType
-                  ? `${contact.firstName} ${contact.lastName}`
-                  : isContactType
-                  ? contact.name
-                  : null}
-              </InlineTypography>
-            </Link>{' '}
+              <ContactAvatar
+                src={contact?.avatar || ''}
+                aria-label="Contact Avatar"
+              />
+            </Link>
+          </NextLink>
+        }
+        title={
+          <>
+            <NextLink href={contactUrl} passHref shallow>
+              <Link
+                underline="hover"
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <InlineTypography variant="subtitle1">
+                  {isPersonType
+                    ? `${contact.firstName} ${contact.lastName}`
+                    : isContactType
+                    ? contact.name
+                    : null}
+                </InlineTypography>
+              </Link>
+            </NextLink>{' '}
             {selected && (
               <Typography variant="body2" className={classes.selected}>
                 {t('Use this one')}
@@ -207,7 +220,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
         subheader={
           isContactType && (
             <Typography variant="subtitle2">
-              {contact?.status && contactStatuses[contact?.status]?.translated}
+              {getLocalizedContactStatus(contact?.status)}
             </Typography>
           )
         }
@@ -291,7 +304,6 @@ interface Props {
     action: string,
   ) => void;
   updating: boolean;
-  setContactFocus: SetContactFocus;
   duplicateId: string;
 }
 
@@ -301,7 +313,6 @@ const ContactPair: React.FC<Props> = ({
   duplicateId,
   update,
   updating,
-  setContactFocus,
 }) => {
   const [selected, setSelected] = useState('none');
   const { t } = useTranslation();
@@ -354,7 +365,6 @@ const ContactPair: React.FC<Props> = ({
                   updateState={updateState}
                   selected={leftSelected}
                   loser={rightSelected}
-                  setContactFocus={setContactFocus}
                 />
                 <IconWrapper>
                   <Tooltip
@@ -408,7 +418,6 @@ const ContactPair: React.FC<Props> = ({
                   updateState={updateState}
                   selected={rightSelected}
                   loser={leftSelected}
-                  setContactFocus={setContactFocus}
                 />
               </Box>
             </Grid>

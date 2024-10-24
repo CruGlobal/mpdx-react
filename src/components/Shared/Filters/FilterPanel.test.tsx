@@ -6,7 +6,6 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import {
   ActivityTypeEnum,
@@ -89,15 +88,17 @@ describe('FilterPanel', () => {
     return (
       <TestRouter router={router}>
         <ContactsProvider
-          urlFilters={{}}
           activeFilters={{}}
-          setActiveFilters={() => {}}
+          setActiveFilters={jest.fn()}
           starredFilter={{}}
-          setStarredFilter={() => {}}
+          setStarredFilter={jest.fn()}
           filterPanelOpen={false}
-          setFilterPanelOpen={() => {}}
-          contactId={[]}
+          setFilterPanelOpen={jest.fn()}
+          contactId={undefined}
+          setContactId={jest.fn()}
+          getContactHrefObject={jest.fn()}
           searchTerm={'test'}
+          setSearchTerm={jest.fn()}
         >
           <FilterPanel
             filters={filters}
@@ -312,11 +313,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider
-                mocks={{
-                  LoadConstants: loadConstantsMockData,
-                }}
-              >
+              <GqlMockedProvider>
                 <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock, savedGraphQLContactMock]}
@@ -450,11 +447,7 @@ describe('FilterPanel', () => {
         render(
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <ThemeProvider theme={theme}>
-              <GqlMockedProvider
-                mocks={{
-                  LoadConstants: loadConstantsMockData,
-                }}
-              >
+              <GqlMockedProvider>
                 <ContactsProviderFilterWrapper
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMockTwo, savedGraphQLContactMock]}
