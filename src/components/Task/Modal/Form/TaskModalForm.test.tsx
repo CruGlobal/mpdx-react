@@ -505,5 +505,40 @@ describe('TaskModalForm', () => {
         getByText(/The contact's status has been updated/),
       ).toBeInTheDocument();
     });
+
+    it('Keeps valid actions when task phase changes', async () => {
+      const { getByRole, findByRole, getByLabelText } = render(
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <SnackbarProvider>
+              <GqlMockedProvider>
+                <TaskModalForm
+                  accountListId={accountListId}
+                  onClose={onClose}
+                  task={mockCompletedTask}
+                />
+              </GqlMockedProvider>
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </ThemeProvider>,
+      );
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      expect(
+        await findByRole('option', { name: 'Partner Care' }),
+      ).toBeInTheDocument();
+
+      expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
+        'In Person',
+      );
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
+
+      expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
+        'In Person',
+      );
+      await waitFor(() => {
+        expect(getByLabelText(/Task Name/i)).toHaveValue('Follow Up In Person');
+      });
+    });
   });
 });

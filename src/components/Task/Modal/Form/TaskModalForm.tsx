@@ -393,6 +393,10 @@ const TaskModalForm = ({
     [phaseData, resultSelected, actionSelected],
   );
 
+  const focusActivity = (): void => {
+    setTimeout(() => activityRef?.current?.focus(), 50);
+  };
+
   return (
     <Formik
       initialValues={initialTask}
@@ -450,6 +454,8 @@ const TaskModalForm = ({
                       value={taskPhase}
                       contactPhase={phaseData?.id}
                       onChange={(phase) => {
+                        const activities =
+                          (phase && activitiesByPhase.get(phase)) || [];
                         handleTaskPhaseChange({
                           phase,
                           setFieldValue,
@@ -457,8 +463,12 @@ const TaskModalForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
+                          activities,
+                          focusActivity,
+                          activityType,
+                          constants,
+                          setFieldTouched,
                         });
-                        setTimeout(() => activityRef?.current?.focus(), 50);
                       }}
                       inputRef={firstFocusRef}
                       required
