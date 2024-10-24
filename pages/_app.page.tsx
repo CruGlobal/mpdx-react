@@ -110,6 +110,7 @@ const App = ({
     <TaskModalProvider>
       <Layout>
         <SnackbarUtilsConfigurator />
+        <Helpjuice />
         <Box
           sx={(theme) => ({
             fontFamily: theme.typography.fontFamily,
@@ -202,7 +203,6 @@ const App = ({
                 </StyledEngineProvider>
               </I18nextProvider>
               <DataDog />
-              <Helpjuice />
             </SessionProvider>
             {process.env.ALERT_MESSAGE ? (
               <AlertBanner
