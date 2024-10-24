@@ -93,7 +93,7 @@ const TaskModalCompleteForm = ({
   const { t } = useTranslation();
   const { openTaskModal } = useTaskModal();
   const { enqueueSnackbar } = useSnackbar();
-  const activityType = task.activityType || undefined;
+  const activityType = task.activityType || null;
   const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
   const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
 
@@ -123,9 +123,7 @@ const TaskModalCompleteForm = ({
     ResultEnum | DisplayResultEnum | null
   >(task?.result || null);
 
-  const activityData = activityType
-    ? activityTypes.get(activityType)
-    : undefined;
+  const activityData = activityType ? activityTypes.get(activityType) : null;
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
   );
@@ -357,6 +355,7 @@ const TaskModalCompleteForm = ({
                 setFieldValue={setFieldValue}
                 setResultSelected={setResultSelected}
                 phaseData={phaseData}
+                completedAction={activityType || null}
               />
 
               <SuggestedContactStatus
@@ -374,7 +373,7 @@ const TaskModalCompleteForm = ({
                 <Grid item>
                   <ActivityTypeAutocomplete
                     options={nextActions}
-                    value={nextAction || undefined}
+                    value={nextAction || null}
                     label={t('Next Action')}
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)

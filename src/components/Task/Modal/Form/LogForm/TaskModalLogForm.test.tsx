@@ -428,9 +428,11 @@ describe('TaskModalLogForm', () => {
     userEvent.click(getByRole('combobox', { name: 'Result' }));
     userEvent.click(await findByRole('option', { name: 'No Response Yet' }));
 
-    expect(getByRole('combobox', { name: 'Next Action' })).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Next Action' })).toHaveValue(
+      'Phone Call',
+    );
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
-    userEvent.click(await findByRole('option', { name: 'Phone Call' }));
+    userEvent.click(await findByRole('option', { name: 'Email' }));
 
     await waitFor(() => {
       expect(getByText('Save')).not.toBeDisabled();
@@ -442,7 +444,7 @@ describe('TaskModalLogForm', () => {
     expect(openTaskModal).toHaveBeenCalledWith({
       view: TaskModalEnum.Add,
       defaultValues: {
-        activityType: ActivityTypeEnum.FollowUpPhoneCall,
+        activityType: ActivityTypeEnum.FollowUpEmail,
         contactIds: [],
         tagList: [],
         userId: 'user-1',
