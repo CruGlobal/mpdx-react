@@ -34,7 +34,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (availableResults.length === 1) {
+    if (availableResults.length === 1 && completedAction) {
       handleResultChange({
         result: availableResults[0],
         setFieldValue,
@@ -43,7 +43,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
         completedAction,
       });
     }
-  }, [availableResults]);
+  }, [completedAction]);
 
   return !!availableResults.length ? (
     <Grid item>
