@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
@@ -101,18 +101,20 @@ describe('TaskRow', () => {
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
   });
 
-  it('should render late', async () => {
+  it('should render late and without assignee', async () => {
     const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
       mocks: {
+        id: '123',
         startAt: lateStartAt,
         result: ResultEnum.None,
+        user: null,
         contacts: {
           nodes: [{}],
         },
       },
     });
 
-    const { findByText } = render(
+    const { findByText, queryByTestId } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <TaskRow
@@ -130,6 +132,10 @@ describe('TaskRow', () => {
     expect(await findByText(task.subject)).toBeVisible();
 
     expect(await findByText(task.contacts.nodes[0].name)).toBeVisible();
+
+    await waitFor(() => {
+      expect(queryByTestId('assigneeAvatar-123')).not.toBeInTheDocument();
+    });
   });
 
   it('should render with Assignee', async () => {
