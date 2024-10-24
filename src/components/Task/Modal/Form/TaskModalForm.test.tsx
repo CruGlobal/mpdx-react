@@ -507,7 +507,7 @@ describe('TaskModalForm', () => {
     });
 
     it('Keeps valid actions when task phase changes', async () => {
-      const { getByRole, findByRole } = render(
+      const { getByRole, findByRole, getByLabelText } = render(
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
@@ -531,11 +531,13 @@ describe('TaskModalForm', () => {
         'In Person',
       );
       userEvent.click(getByRole('combobox', { name: 'Task Type' }));
-      userEvent.click(await findByRole('option', { name: 'Partner Care' }));
+      userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
+
+      expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
+        'In Person',
+      );
       await waitFor(() => {
-        expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
-          'In Person',
-        );
+        expect(getByLabelText(/Task Name/i)).toHaveValue('Follow Up In Person');
       });
     });
   });
