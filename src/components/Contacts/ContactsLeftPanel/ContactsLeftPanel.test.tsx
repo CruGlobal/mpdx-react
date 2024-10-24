@@ -9,6 +9,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
@@ -44,6 +45,7 @@ const mocks = {
       nodes: [
         {
           name: 'Contact 1',
+          status: StatusEnum.PartnerFinancial,
           primaryAddress: {
             geo: '10,20',
           },
