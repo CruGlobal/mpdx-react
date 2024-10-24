@@ -75,7 +75,9 @@ describe('ContactTaskRow', () => {
     expect(await findByText(task.subject)).toBeVisible();
 
     expect(
-      await findByText(`${task.user?.firstName} ${task.user?.lastName}`),
+      await findByText(
+        `${task.user?.firstName?.[0]}${task.user?.lastName?.[0]}`,
+      ),
     ).toBeVisible();
 
     expect(queryByTestId('loadingRow')).toBeNull();
@@ -101,8 +103,34 @@ describe('ContactTaskRow', () => {
       mocks: {
         startAt,
         result: ResultEnum.None,
+        user: {
+          firstName: 'John',
+          lastName: 'Wayne',
+        },
       },
     });
+    const taskWithTags = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
+      mocks: {
+        id: '123',
+        startAt,
+        result: ResultEnum.None,
+        tagList: ['testTag'],
+        user: null,
+      },
+    });
+
+    it('renders the assignee avatar', async () => {
+      const { findByText } = render(<Components task={task} />);
+
+      expect(await findByText('JW')).toBeVisible();
+    });
+
+    it('renders the tag icon', async () => {
+      const { findByTestId } = render(<Components task={taskWithTags} />);
+
+      expect(await findByTestId('tagIcon-123')).toBeVisible();
+    });
+
     it('handles complete button click', async () => {
       const { findByText, getByRole } = render(<Components task={task} />);
 
@@ -166,7 +194,7 @@ describe('ContactTaskRow', () => {
 
         const { getByText } = render(<Components task={task} />);
 
-        expect(getByText(activity?.value)).toBeVisible();
+        expect(getByText(activity?.value.split(' - ')[1].trim())).toBeVisible();
       },
     );
   });

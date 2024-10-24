@@ -5,8 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { DeletedItemIcon } from '../../../../common/DeleteItemIcon/DeleteItemIcon';
 import { DeleteConfirmation } from '../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
 
-const DeleteButton = styled(IconButton)(({ theme }) => ({
-  margin: theme.spacing(1),
+const DeleteButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'small',
+})<{ small?: boolean }>(({ small, theme }) => ({
+  margin: small ? theme.spacing(0.5) : theme.spacing(1),
 }));
 
 interface DeleteTaskIconButtonProps {
@@ -14,6 +16,7 @@ interface DeleteTaskIconButtonProps {
   taskId: string;
   onDeleteConfirm?: () => void;
   removeSelectedIds?: (id: string[]) => void;
+  small?: boolean;
 }
 
 export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
@@ -21,6 +24,7 @@ export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
   taskId,
   onDeleteConfirm,
   removeSelectedIds,
+  small = false,
 }) => {
   const { t } = useTranslation();
 
@@ -31,6 +35,7 @@ export const DeleteTaskIconButton: React.FC<DeleteTaskIconButtonProps> = ({
       <DeleteButton
         onClick={() => setRemoveDialogOpen(true)}
         data-testid={`DeleteIconButton-${taskId}`}
+        small={small}
       >
         <DeletedItemIcon />
       </DeleteButton>

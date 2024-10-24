@@ -368,7 +368,7 @@ describe('TaskModalForm', () => {
             <TaskModalForm
               accountListId={accountListId}
               onClose={onClose}
-              task={mockTask}
+              task={null}
             />
           </GqlMockedProvider>
         </SnackbarProvider>
