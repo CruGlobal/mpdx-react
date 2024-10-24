@@ -10,6 +10,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import Login, { LoginProps, getServerSideProps } from './login.page';
 
+process.env.HELPJUICE_KNOWLEDGE_BASE_URL = 'help.mpdx.org';
 jest.mock('next-auth/react', () => ({
   getSession: jest.fn(),
   signIn: jest.fn(),
@@ -176,10 +177,7 @@ describe('Login - OKTA', () => {
         name: /find help/i,
       });
       await waitFor(() => {
-        expect(findHelpLink).toHaveAttribute(
-          'href',
-          process.env.HELPJUICE_KNOWLEDGE_BASE_URL,
-        );
+        expect(findHelpLink).toHaveAttribute('href', 'help.mpdx.org');
       });
     });
   });

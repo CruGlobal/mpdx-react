@@ -64,20 +64,23 @@ const Login = ({
         >
           {signInButtonText}
         </Button>
-        <Button
-          size="large"
-          startIcon={<SubjectIcon />}
-          href={
-            process.env.HELPJUICE_KNOWLEDGE_BASE_URL ||
-            process.env.HELPJUICE_ORIGIN ||
-            ''
-          }
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#fff' }}
-        >
-          Find help
-        </Button>
+        {(process.env.HELPJUICE_KNOWLEDGE_BASE_URL ||
+          process.env.HELPJUICE_ORIGIN) && (
+          <Button
+            size="large"
+            startIcon={<SubjectIcon />}
+            href={
+              process.env.HELPJUICE_KNOWLEDGE_BASE_URL ||
+              process.env.HELPJUICE_ORIGIN ||
+              ''
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#fff' }}
+          >
+            Find help
+          </Button>
+        )}
         {isOkta && (
           <SignUpBox>
             <Typography>
