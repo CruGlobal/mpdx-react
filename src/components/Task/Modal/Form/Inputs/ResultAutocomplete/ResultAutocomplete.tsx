@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
@@ -31,6 +32,18 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
   completedAction,
 }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (availableResults.length === 1 && completedAction) {
+      handleResultChange({
+        result: availableResults[0],
+        setFieldValue,
+        setResultSelected,
+        phaseData,
+        completedAction,
+      });
+    }
+  }, [completedAction]);
 
   return !!availableResults.length ? (
     <Grid item>

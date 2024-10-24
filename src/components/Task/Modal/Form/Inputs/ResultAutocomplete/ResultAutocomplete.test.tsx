@@ -90,4 +90,15 @@ describe('ResultSelect', () => {
       completedAction: ActivityTypeEnum.FollowUpTextMessage,
     });
   });
+  it('preselects a result when only one result is available', async () => {
+    render(<Components availableResults={[ResultEnum.Completed]} />);
+
+    expect(handleResultChange).toHaveBeenCalledWith({
+      result: ResultEnum.Completed,
+      setFieldValue,
+      setResultSelected,
+      phaseData,
+      completedAction: ActivityTypeEnum.FollowUpTextMessage,
+    });
+  });
 });

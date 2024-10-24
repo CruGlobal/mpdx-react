@@ -16,6 +16,21 @@ type Components = ({
   props,
 }: ComponentsProps) => JSX.Element;
 
+const options = [
+  'None',
+  'Phone Call',
+  'Email',
+  'Text Message',
+  'Social Media',
+  'In Person',
+  'Thank You Note',
+  'Digital Newsletter',
+  'Physical Newsletter',
+  'Prayer Request',
+  'Update Information',
+  'To Do',
+];
+
 // eslint-disable-next-line jest/no-export
 export const taskModalTests = (Components: Components) => {
   describe('Task Modal Results +Next Action', () => {
@@ -261,7 +276,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCareEmail,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual([]);
+      expect(nextActions).toEqual(options);
     });
 
     it('as correct options for PartnerCarePhysicalNewsletter', async () => {
@@ -269,7 +284,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCarePhysicalNewsletter,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual([]);
+      expect(nextActions).toEqual(options);
     });
 
     it('has correct options for NONE', async () => {
@@ -283,7 +298,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCarePrayerRequest,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual([]);
+      expect(nextActions).toEqual(options);
     });
 
     it('has correct options for PartnerCarePhoneCall', async () => {
@@ -291,7 +306,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCarePhoneCall,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual([]);
+      expect(nextActions).toEqual(options);
     });
 
     it('has correct options for InitiationLetter', async () => {
@@ -307,7 +322,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCareThank,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual([]);
+      expect(nextActions).toEqual(options);
     });
 
     it('has correct options for PartnerCareToDo', async () => {
@@ -315,7 +330,7 @@ export const taskModalTests = (Components: Components) => {
         ActivityTypeEnum.PartnerCareToDo,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual([]);
+      expect(nextActions).toEqual(options);
     });
   });
 };
