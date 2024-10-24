@@ -168,7 +168,7 @@ describe('ContactTaskRow', () => {
 
         const { getByText } = render(<Components task={task} />);
 
-        expect(getByText(activity?.value)).toBeVisible();
+        expect(getByText(activity?.value.split(' - ')[1].trim())).toBeVisible();
       },
     );
   });
