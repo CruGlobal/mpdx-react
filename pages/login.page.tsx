@@ -67,7 +67,11 @@ const Login = ({
         <Button
           size="large"
           startIcon={<SubjectIcon />}
-          href="https://help.mpdx.org"
+          href={
+            process.env.HELPJUICE_KNOWLEDGE_BASE_URL ||
+            process.env.HELPJUICE_ORIGIN ||
+            ''
+          }
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: '#fff' }}

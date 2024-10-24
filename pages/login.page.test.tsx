@@ -176,7 +176,10 @@ describe('Login - OKTA', () => {
         name: /find help/i,
       });
       await waitFor(() => {
-        expect(findHelpLink).toHaveAttribute('href', 'https://help.mpdx.org');
+        expect(findHelpLink).toHaveAttribute(
+          'href',
+          process.env.HELPJUICE_KNOWLEDGE_BASE_URL,
+        );
       });
     });
   });
