@@ -312,8 +312,7 @@ const TaskModalForm = ({
     }
 
     // Remove taskPhase from attributes as we don't save it on the DB
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { taskPhase, ...newAttributes } = attributes;
+    const { taskPhase: _, ...newAttributes } = attributes;
 
     const sharedAttributes = {
       ...newAttributes,
