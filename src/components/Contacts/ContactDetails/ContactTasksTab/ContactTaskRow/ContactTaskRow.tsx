@@ -13,6 +13,10 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { StyledCheckbox } from 'src/components/Contacts/ContactRow/ContactRow';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import {
+  CommentTooltipText,
+  TooltipTypography,
+} from 'src/components/Task/TaskRow/CommentTooltipText';
 import { TaskActionPhase } from 'src/components/Task/TaskRow/TaskActionPhase';
 import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
 import { StarredItemIcon } from 'src/components/common/StarredItemIcon/StarredItemIcon';
@@ -53,10 +57,6 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   display: '-webkit-box',
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
-}));
-
-const TooltipTypography = styled(Typography)(() => ({
-  fontSize: 11,
 }));
 
 const SubjectWrap = styled(Box)(({}) => ({
@@ -226,15 +226,25 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         )}
         <Box>
           <TaskDate isComplete={isComplete} taskDate={taskDate} small />
-          <Box>
-            <TaskCommentsButton
-              isComplete={isComplete}
-              numberOfComments={comments?.totalCount}
-              onClick={handleCommentButtonPressed}
-              onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
-              small
-            />
-          </Box>
+          <Tooltip
+            title={
+              comments?.totalCount ? (
+                <CommentTooltipText comments={comments.nodes} />
+              ) : null
+            }
+            placement="top"
+            arrow
+          >
+            <Box>
+              <TaskCommentsButton
+                isComplete={isComplete}
+                numberOfComments={comments?.totalCount}
+                onClick={handleCommentButtonPressed}
+                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
+                small
+              />
+            </Box>
+          </Tooltip>
         </Box>
 
         <DeleteTaskIconButton

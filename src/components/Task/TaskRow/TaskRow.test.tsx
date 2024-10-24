@@ -197,7 +197,7 @@ describe('TaskRow', () => {
           </ThemeProvider>
         </GqlMockedProvider>,
       );
-      expect(getAllByText(task.subject).length).toBe(2);
+      expect(getAllByText(task.subject).length).toBe(1);
       userEvent.click(getByRole('checkbox', { hidden: true }));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
@@ -224,7 +224,7 @@ describe('TaskRow', () => {
           </ThemeProvider>
         </GqlMockedProvider>,
       );
-      expect(getAllByText(task.subject).length).toBe(2);
+      expect(getAllByText(task.subject).length).toBe(1);
       userEvent.click(getByTestId('task-row'));
       expect(onTaskCheckSelected).toHaveBeenCalledWith(task.id);
     });
@@ -252,7 +252,7 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getAllByText(task.subject).length).toBe(2);
+      expect(getAllByText(task.subject).length).toBe(1);
       userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
       expect(openTaskModal).toHaveBeenCalledWith({
@@ -315,7 +315,7 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getAllByText(task.subject).length).toBe(2);
+      expect(getAllByText(task.subject).length).toBe(1);
 
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
       userEvent.click(getByRole('img', { hidden: true, name: 'Comment' }));
@@ -349,7 +349,7 @@ describe('TaskRow', () => {
         </GqlMockedProvider>,
       );
 
-      expect(getAllByText(task.subject).length).toBe(2);
+      expect(getAllByText(task.subject).length).toBe(1);
       userEvent.click(getByTestId('subject-wrap'));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,

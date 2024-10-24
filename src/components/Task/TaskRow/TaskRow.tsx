@@ -21,6 +21,7 @@ import { TaskDate } from '../../Contacts/ContactDetails/ContactTasksTab/ContactT
 import { DeleteTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/DeleteTaskIconButton/DeleteTaskIconButton';
 import { StarTaskIconButton } from '../../Contacts/ContactDetails/ContactTasksTab/StarTaskIconButton/StarTaskIconButton';
 import { TaskModalEnum } from '../Modal/TaskModal';
+import { CommentTooltipText } from './CommentTooltipText';
 import { TaskActionPhase } from './TaskActionPhase';
 import { TaskRowFragment } from './TaskRow.generated';
 
@@ -254,17 +255,17 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
           <Hidden smDown>
-            {!!task?.tagList.length &&
-              (condensed ? (
-                <Tooltip title={tagListString} placement="top" arrow>
-                  {<LocalOffer sx={{ color: theme.palette.secondary.dark }} />}
-                </Tooltip>
-              ) : (
-                <Tooltip
-                  title={areMoreTags ? tagListString : null}
-                  placement="top"
-                  arrow
-                >
+            {!!task?.tagList.length && (
+              <Tooltip
+                title={condensed || areMoreTags ? tagListString : null}
+                placement="top"
+                arrow
+              >
+                {condensed ? (
+                  <LocalOffer
+                    sx={{ color: theme.palette.secondary.dark, mx: 0.5 }}
+                  />
+                ) : (
                   <Box>
                     {task.tagList.slice(0, tagsToShow).map((task, idx) => (
                       <Chip
@@ -276,8 +277,9 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                     ))}
                     {areMoreTags && '...'}
                   </Box>
-                </Tooltip>
-              ))}
+                )}
+              </Tooltip>
+            )}
             {task?.user && (
               <Tooltip title={assigneeName} placement="top" arrow>
                 <Avatar
@@ -285,7 +287,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                   sx={{
                     width: 30,
                     height: 30,
-                    mx: 1,
+                    mx: 0.5,
                   }}
                 >
                   {(task?.user?.firstName?.[0] || '') +
@@ -296,28 +298,50 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Hidden>
           <Hidden mdDown>
             <TaskDate isComplete={isComplete} taskDate={taskDate} />
-            <Box onClick={(e) => e.stopPropagation()}>
-              <TaskCommentsButton
-                isComplete={isComplete}
-                numberOfComments={comments?.totalCount}
-                onClick={handleCommentButtonPressed}
-                onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
-              />
-            </Box>
-          </Hidden>
-
-          <Hidden mdUp>
-            <Box>
-              <TaskDate isComplete={isComplete} taskDate={taskDate} small />
-              <Box>
+            <Tooltip
+              title={
+                comments.totalCount ? (
+                  <CommentTooltipText comments={comments.nodes} />
+                ) : null
+              }
+              placement="top"
+              arrow
+            >
+              <Box onClick={(e) => e.stopPropagation()}>
                 <TaskCommentsButton
                   isComplete={isComplete}
                   numberOfComments={comments?.totalCount}
                   onClick={handleCommentButtonPressed}
                   onMouseEnter={() => preloadTaskModal(TaskModalEnum.Comments)}
-                  small
                 />
               </Box>
+            </Tooltip>
+          </Hidden>
+
+          <Hidden mdUp>
+            <Box>
+              <TaskDate isComplete={isComplete} taskDate={taskDate} small />
+              <Tooltip
+                title={
+                  comments.totalCount ? (
+                    <CommentTooltipText comments={comments.nodes} />
+                  ) : null
+                }
+                placement="top"
+                arrow
+              >
+                <Box>
+                  <TaskCommentsButton
+                    isComplete={isComplete}
+                    numberOfComments={comments?.totalCount}
+                    onClick={handleCommentButtonPressed}
+                    onMouseEnter={() =>
+                      preloadTaskModal(TaskModalEnum.Comments)
+                    }
+                    small
+                  />
+                </Box>
+              </Tooltip>
             </Box>
           </Hidden>
           <Hidden smDown>
