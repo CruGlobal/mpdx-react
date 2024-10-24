@@ -22,7 +22,6 @@ import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUserPreference } from 'src/hooks/useUserPreference';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
@@ -145,11 +144,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
 
-  const sanitizedFilters = useMemo(
-    () => sanitizeFilters(activeFilters),
-    [activeFilters],
-  );
-
   const [contactsView, saveContactsView, { loading: userOptionsLoading }] =
     useUserPreference({
       key: 'contacts_view',
@@ -161,18 +155,14 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     }
   }, [contactsView]);
 
-  const contactsFilters = useMemo(() => {
-    // Remove filters in the map view
-    const viewFilters =
-      viewMode === TableViewModeEnum.Map
-        ? { ids: sanitizedFilters.ids }
-        : sanitizedFilters;
-    return {
-      ...viewFilters,
+  const contactsFilters = useMemo(
+    () => ({
+      ...activeFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
-    };
-  }, [sanitizedFilters, viewMode, starredFilter, searchTerm]);
+    }),
+    [activeFilters, starredFilter, searchTerm],
+  );
 
   const contactsQueryResult = useContactsQuery({
     variables: {
@@ -261,10 +251,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     saveContactsView(newViewMode);
     if (newViewMode === TableViewModeEnum.Map) {
       // When switching to the map, make the filter only show the selected contacts, if any
-      setActiveFilters({ ids });
-    } else if (viewMode === TableViewModeEnum.Map) {
-      // When switching away from the map, reset the filter to show all contacts
-      setActiveFilters({});
+      setActiveFilters({ ...activeFilters, ids });
     }
   };
   //#endregion
@@ -318,7 +305,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         mapData: mapData,
         panTo: panTo,
         activeFilters: activeFilters,
-        sanitizedFilters,
+        sanitizedFilters: activeFilters,
         setActiveFilters: setActiveFilters,
         starredFilter: starredFilter,
         setStarredFilter: setStarredFilter,
