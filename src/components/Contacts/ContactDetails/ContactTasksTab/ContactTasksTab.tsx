@@ -137,17 +137,19 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
     [starredFilter, searchTerm],
   );
   const taskCount = data?.tasks.totalCount ?? 0;
-  const { data: allTasks } = useGetTaskIdsForMassSelectionQuery({
-    variables: {
-      accountListId,
-      first: taskCount,
-      tasksFilter,
-    },
-    skip: taskCount === 0,
-  });
+  const { data: allTasks, previousData: allTasksPrevious } =
+    useGetTaskIdsForMassSelectionQuery({
+      variables: {
+        accountListId,
+        tasksFilter,
+      },
+    });
+  // When the next batch of task ids is loading, use the previous batch of task ids in the
+  // meantime to avoid throwing out the selected task ids.
   const allTaskIds = useMemo(
-    () => allTasks?.tasks.nodes.map((task) => task.id) ?? [],
-    [allTasks],
+    () =>
+      (allTasks ?? allTasksPrevious)?.tasks.nodes.map((task) => task.id) ?? [],
+    [allTasks, allTasksPrevious],
   );
   //#region Mass Actions
   const {

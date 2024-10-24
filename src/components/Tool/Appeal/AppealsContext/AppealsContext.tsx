@@ -173,38 +173,45 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     },
     skip: !accountListId,
   });
-  const { data } = contactsQueryResult;
 
   //#region Mass Actions
 
-  const contactCount = data?.contacts.totalCount ?? 0;
-  const { data: allContacts } = useGetIdsForMassSelectionQuery({
-    variables: {
-      accountListId,
-      first: contactCount,
-      contactsFilters,
-    },
-    skip: contactCount === 0,
-  });
+  const { data: allContacts, previousData: allContactsPrevious } =
+    useGetIdsForMassSelectionQuery({
+      variables: {
+        accountListId,
+        contactsFilters,
+      },
+    });
   // In the flows view, we need the total count of all contacts in every column, but the API
   // filters out contacts excluded from an appeal. We have to load excluded contacts also and
   // manually merge them with the other contacts.
-  const { data: allExcludedContacts } = useGetIdsForMassSelectionQuery({
+  const {
+    data: allExcludedContacts,
+    previousData: allExcludedContactsPrevious,
+  } = useGetIdsForMassSelectionQuery({
     variables: {
       accountListId,
-      first: contactCount,
       contactsFilters: { ...contactsFilters, appealStatus: 'excluded' },
     },
     // Skip this query when there is an appealStatus filter from the list view
-    skip: contactCount === 0 || !!contactsFilters.appealStatus,
+    skip: !!contactsFilters.appealStatus,
   });
+  // When the next batch of contact ids is loading, use the previous batch of contact ids in the
+  // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
     () =>
       [
-        ...(allContacts?.contacts.nodes ?? []),
-        ...(allExcludedContacts?.contacts.nodes ?? []),
+        ...((allContacts ?? allContactsPrevious)?.contacts.nodes ?? []),
+        ...((allExcludedContacts ?? allExcludedContactsPrevious)?.contacts
+          .nodes ?? []),
       ].map((contact) => contact.id),
-    [allContacts, allExcludedContacts],
+    [
+      allContacts,
+      allContactsPrevious,
+      allExcludedContacts,
+      allExcludedContactsPrevious,
+    ],
   );
 
   const {
