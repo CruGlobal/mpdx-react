@@ -6,11 +6,7 @@ query Announcements {
 
 fragment Announcement on Announcement {
   actions {
-    id
-    label
-    action
-    style
-    args
+    ...Action
   }
   id
   displayMethod
@@ -18,4 +14,22 @@ fragment Announcement on Announcement {
   title
   style
   imageUrl
+}
+
+fragment Action on Action {
+  id
+  label
+  action
+  style
+  args
+}
+
+mutation AcknowledgeAnnouncement(
+  $input: AcknowledgeAnnouncementMutationInput!
+) {
+  acknowledgeAnnouncement(input: $input) {
+    announcement {
+      id
+    }
+  }
 }

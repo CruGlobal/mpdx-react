@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
 import { Close } from '@mui/icons-material';
-import { Button, Icon, IconButton, Typography } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import { DisplayMethodEnum } from 'pages/api/graphql-rest.page.generated';
-import { ActionStyleEnum, StyleEnum } from 'src/graphql/types.generated';
+import { StyleEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { AnnouncementFragment } from '../Announcements.generated';
+import {
+  ActionFragment,
+  AnnouncementFragment,
+} from '../Announcements.generated';
+import { BannerButton } from './AnnouncementBannerButton';
 
 const Banner = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -49,10 +53,6 @@ const ButtonContainer = styled(Box)(() => ({
   width: '45px',
 }));
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.cruGrayLight.main,
-}));
-
 const createAnnouncementStyles = (announcementStyle?: StyleEnum | null) => {
   const defaultStyles = {
     background: theme.palette.primary.main,
@@ -83,10 +83,12 @@ const createAnnouncementStyles = (announcementStyle?: StyleEnum | null) => {
 
 interface AnnouncementBannerProps {
   announcement: AnnouncementFragment;
+  handlePerformAction: (action?: ActionFragment) => void;
 }
 
 export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
   announcement,
+  handlePerformAction,
 }) => {
   const { t } = useTranslation();
 
@@ -125,7 +127,6 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
   const { background, textAndIconColor } = createAnnouncementStyles(
     announcement?.style,
   );
-
   return (
     <Banner
       sx={{
@@ -142,26 +143,23 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
           </Typography>
         </Box>
         <BannerItem>
-          {announcement.actions.map((action) =>
-            action.style === ActionStyleEnum.Icon ? (
-              <IconButton
-                sx={{ color: textAndIconColor, marginRight: 1 }}
-                key={action.id}
-              >
-                <Icon baseClassName="far" className={`fa-${action.label}`} />
-              </IconButton>
-            ) : (
-              <Button variant="contained" color="primary">
-                {action.label}
-              </Button>
-            ),
-          )}
+          {announcement.actions.map((action) => (
+            <BannerButton
+              key={action.id}
+              action={action}
+              handlePerformAction={handlePerformAction}
+              textAndIconColor={textAndIconColor}
+            />
+          ))}
         </BannerItem>
       </BannerDetails>
       <ButtonContainer>
-        <StyledIconButton sx={{ color: textAndIconColor }}>
+        <IconButton
+          sx={{ color: textAndIconColor }}
+          onClick={() => handlePerformAction()}
+        >
           <Close titleAccess={t('Hide announcement')} />
-        </StyledIconButton>
+        </IconButton>
       </ButtonContainer>
     </Banner>
   );
