@@ -71,15 +71,17 @@ export const FilterListItemMultiselect: React.FC<
           reverseFiltersMap.get(filter.filterKey) &&
           onReverseFilter && (
             <Tooltip title={t('Reverse Filter')}>
-              <IconButton
-                edge="end"
-                aria-label={t('Reverse Filter')}
-                color={reverseSelected ? 'error' : 'default'}
-                disabled={!selected}
-                onClick={onReverseFilter}
-              >
-                <SyncAltIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  edge="end"
+                  aria-label={t('Reverse Filter')}
+                  color={reverseSelected ? 'error' : 'default'}
+                  disabled={!selected}
+                  onClick={onReverseFilter}
+                >
+                  <SyncAltIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           )
         }
