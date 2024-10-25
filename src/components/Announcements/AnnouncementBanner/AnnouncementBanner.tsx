@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Close } from '@mui/icons-material';
 import { IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { StyleEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { AnnouncementAction } from '../AnnouncementAction/AnnouncementAction';
@@ -26,6 +27,11 @@ const Banner = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+  top: '-100px',
+  transition: 'top 1s ease-in-out 0s',
+  '&.show': {
+    top: navBarHeight,
+  },
 }));
 
 const BannerDetails = styled(Box)(() => ({
@@ -91,6 +97,16 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  useEffect(() => {
+    const bannerElement = document.getElementById('JS-announcement-banner');
+    if (bannerElement) {
+      // Force reflow to ensure the transition is applied
+      setTimeout(() => {
+        bannerElement.classList.add('show');
+      }, 0);
+    }
+  }, []);
+
   const { background, textAndIconColor } = createAnnouncementStyles(
     announcement?.style,
   );
@@ -99,6 +115,7 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
       sx={{
         background: background,
       }}
+      id="JS-announcement-banner"
     >
       <BannerDetails>
         <Box>
