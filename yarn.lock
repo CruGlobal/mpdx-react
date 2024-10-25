@@ -3317,22 +3317,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@googlemaps/js-api-loader@npm:1.14.3":
-  version: 1.14.3
-  resolution: "@googlemaps/js-api-loader@npm:1.14.3"
-  dependencies:
-    fast-deep-equal: ^3.1.3
-  checksum: 55ec4519c3bd99a489fc55715bfe5c12a617eff75101c16f237d2c8d56852f607bb74d50ca2204fe371d6b793741db57e4c487658f0d284a5d3bd2ecbcc2a15d
+"@googlemaps/js-api-loader@npm:1.16.8":
+  version: 1.16.8
+  resolution: "@googlemaps/js-api-loader@npm:1.16.8"
+  checksum: 2f5e2ced6b83fb72f32bcfd32c85558dba967580025a53d593e5a8bb15f63eb866e4f55b86aa7f5810e1616554c02100081a9a217d16d25766e57a128b39e825
   languageName: node
   linkType: hard
 
-"@googlemaps/markerclusterer@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@googlemaps/markerclusterer@npm:2.0.10"
+"@googlemaps/markerclusterer@npm:2.5.3":
+  version: 2.5.3
+  resolution: "@googlemaps/markerclusterer@npm:2.5.3"
   dependencies:
     fast-deep-equal: ^3.1.3
-    supercluster: ^7.1.3
-  checksum: 7a2480bc61491d1c8647c9de643ae84defd0154eefddff309de42029b3161d3c8906edc15a1e259ff30a265984e305de92aa93818c1b1f1d4c851fa09246ffc8
+    supercluster: ^8.0.1
+  checksum: aa74e9b59d302a0c7444c48818f017532172973dece223c9a3f9b5cdb8aeba7ea3dd87ee785420972d24e7738937e76373e8aae8a0cf10f045bf9869d1b6b9ee
   languageName: node
   linkType: hard
 
@@ -5967,34 +5965,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-google-maps/api@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "@react-google-maps/api@npm:2.13.1"
+"@react-google-maps/api@npm:^2.20.3":
+  version: 2.20.3
+  resolution: "@react-google-maps/api@npm:2.20.3"
   dependencies:
-    "@googlemaps/js-api-loader": 1.14.3
-    "@googlemaps/markerclusterer": 2.0.10
-    "@react-google-maps/infobox": 2.11.8
-    "@react-google-maps/marker-clusterer": 2.11.8
-    "@types/google.maps": 3.49.2
+    "@googlemaps/js-api-loader": 1.16.8
+    "@googlemaps/markerclusterer": 2.5.3
+    "@react-google-maps/infobox": 2.20.0
+    "@react-google-maps/marker-clusterer": 2.20.0
+    "@types/google.maps": 3.58.1
     invariant: 2.2.4
   peerDependencies:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
-  checksum: 35cf7b213cf1482163dbbcb29858529f9228ea4f992215e2fa7c877c28138d4483ab315bb7cd045bece83160ae3e74bc5c4137286b67aec92fd7932341b9110e
+  checksum: e6103790507d78c20a59130a4f8d65cba4c74fc5e1c300c6f5632cc14f4a8cbf4a83824b04f5e2b8fa012c87ec14c70d2077582ca634f864227166956b935b89
   languageName: node
   linkType: hard
 
-"@react-google-maps/infobox@npm:2.11.8":
-  version: 2.11.8
-  resolution: "@react-google-maps/infobox@npm:2.11.8"
-  checksum: 3567c0d19be01d1b3bc4f8d417b06eb74125cb094ae6b68cff47ba54c104114f0b4b86e06c20954ad30e979506457c2778b6bff4bb4068750fd7a1ea653767f4
+"@react-google-maps/infobox@npm:2.20.0":
+  version: 2.20.0
+  resolution: "@react-google-maps/infobox@npm:2.20.0"
+  checksum: 24ea91b0277b75d82f749ef33d70712e5da41e360b82c13c22c0c4ff10085613af023b3c8f3f347030fc0b397502bd1512ef9c4839dc3307f275ccd37644540b
   languageName: node
   linkType: hard
 
-"@react-google-maps/marker-clusterer@npm:2.11.8":
-  version: 2.11.8
-  resolution: "@react-google-maps/marker-clusterer@npm:2.11.8"
-  checksum: 09307e55a905ec3425820dc664cfb3c9f43b59d55a3dc567bb36d09227079dc331f7446cc6f4de6a2b13d3411d21f365e93a829586bad2b637afbe6e32d261e0
+"@react-google-maps/marker-clusterer@npm:2.20.0":
+  version: 2.20.0
+  resolution: "@react-google-maps/marker-clusterer@npm:2.20.0"
+  checksum: ee4aa21bf30db952690ec1031c29c0d4b5687dcc1d5b524f4f44b4a9a9bb91980b77f23fe25a67fe04de26d1c58e59e1d7e2d0ab4706b37a3ba60c674e7a7e32
   languageName: node
   linkType: hard
 
@@ -7426,10 +7424,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/google.maps@npm:3.49.2":
-  version: 3.49.2
-  resolution: "@types/google.maps@npm:3.49.2"
-  checksum: ca2cb7842dfbc10551b5a33a052bd1c90dab21c13d5632601d87bc908064516a3f90b0b7eb517ce1024ea98734e490e2a90028c5534c52a82ceffb2e1b241fc9
+"@types/google.maps@npm:3.58.1":
+  version: 3.58.1
+  resolution: "@types/google.maps@npm:3.58.1"
+  checksum: 7ad5bd9566ffa0396485c432368e45c43e3fe1ecc2b89324f257a49d9abbe03dfe046a771d82ae1808fa0fb6e04e6ffca870c7f2295fef73a6015a678b067364
   languageName: node
   linkType: hard
 
@@ -18055,10 +18053,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kdbush@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "kdbush@npm:3.0.0"
-  checksum: bc5fa433958e42664a8a92457e4f0d1db55b3b8e36956aac0102964adb2eab043bdbff156570dc8d867144ceff588fb7a1c6e099ba9be068cd1767a73e1ace92
+"kdbush@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "kdbush@npm:4.0.2"
+  checksum: 6782ef2cdaec9322376b9955a16b0163beda0cefa2f87da76e8970ade2572d8b63bec915347aaeac609484b0c6e84d7b591f229ef353b68b460238095bacde2d
   languageName: node
   linkType: hard
 
@@ -19445,7 +19443,7 @@ __metadata:
     "@next/eslint-plugin-next": ^12.3.1
     "@parcel/watcher": ^2.4.1
     "@react-dnd/invariant": ^2.0.0
-    "@react-google-maps/api": ^2.13.1
+    "@react-google-maps/api": ^2.20.3
     "@rollbar/react": ^0.11.1
     "@storybook/addon-actions": ^6.5.16
     "@storybook/addon-controls": ^6.5.16
@@ -24576,12 +24574,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supercluster@npm:^7.1.3":
-  version: 7.1.5
-  resolution: "supercluster@npm:7.1.5"
+"supercluster@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "supercluster@npm:8.0.1"
   dependencies:
-    kdbush: ^3.0.0
-  checksum: 69863238870093b96617135884721b6343746e14f396b2d67d6b55c52c362ec0516c5e386aa21815e75a9cef2054e831ac34023d0d8b600091d28cea0794f027
+    kdbush: ^4.0.2
+  checksum: 39d141f768a511efa53260252f9dab9a2ce0228b334e55482c8d3019e151932f05e1a9a0252d681737651b13c741c665542a6ddb40ec27de96159ea7ad41f7f4
   languageName: node
   linkType: hard
 
