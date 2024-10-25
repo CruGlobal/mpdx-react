@@ -8,16 +8,18 @@ const StyledButton = styled(Button)(({ theme }) => ({
   marginLeft: theme.spacing(1),
 }));
 
-interface BannerButtonProps {
+interface AnnouncementActionProps {
   action: ActionFragment;
   handlePerformAction: (action?: ActionFragment) => void;
   textAndIconColor: string;
+  isBanner?: boolean;
 }
 
-export const BannerButton: React.FC<BannerButtonProps> = ({
+export const AnnouncementAction: React.FC<AnnouncementActionProps> = ({
   action,
   handlePerformAction,
   textAndIconColor,
+  isBanner = false,
 }) => {
   const buttonProps: ButtonProps = useMemo(() => {
     const defaultButtonProps: ButtonProps = {
@@ -32,7 +34,7 @@ export const BannerButton: React.FC<BannerButtonProps> = ({
         };
       case ActionStyleEnum.Link:
         return {
-          sx: { color: textAndIconColor },
+          sx: isBanner ? { color: textAndIconColor } : {},
           variant: 'text',
         };
       case ActionStyleEnum.Success:
@@ -66,7 +68,7 @@ export const BannerButton: React.FC<BannerButtonProps> = ({
       default:
         return {
           ...defaultButtonProps,
-          sx: { color: textAndIconColor },
+          sx: isBanner ? { color: textAndIconColor } : {},
         };
     }
   }, [action.style, textAndIconColor]);

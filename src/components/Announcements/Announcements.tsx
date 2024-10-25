@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { getApolloContext } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { DisplayMethodEnum } from 'pages/api/graphql-rest.page.generated';
@@ -54,6 +60,34 @@ const Announcement: React.FC = () => {
     }
     return null;
   }, [data]);
+
+  // The `useEffect` hook ensures that the styles are only loaded when necessary
+  // and are cleaned up when the component is unmounted or the announcement changes.
+  useEffect(() => {
+    if (!announcement) {
+      return;
+    }
+    const hasBeenLoaded = document.querySelector(
+      'link[id="fontAwesomeStyles"]',
+    );
+    if (!hasBeenLoaded) {
+      const fontAwesomeStyles = document.createElement('link');
+      fontAwesomeStyles.rel = 'stylesheet';
+      fontAwesomeStyles.id = 'fontAwesomeStyles';
+      fontAwesomeStyles.href =
+        'https://use.fontawesome.com/releases/v5.14.0/css/all.css';
+      document.head.appendChild(fontAwesomeStyles);
+    }
+
+    return () => {
+      const fontAwesomeStyles = document.querySelector(
+        'link[id="fontAwesomeStyles"]',
+      );
+      if (fontAwesomeStyles) {
+        document.head.removeChild(fontAwesomeStyles);
+      }
+    };
+  }, [announcement]);
 
   const handleAcknowledge = async (
     announcementId: string,
@@ -130,7 +164,10 @@ const Announcement: React.FC = () => {
         />
       )}
       {announcement.displayMethod === DisplayMethodEnum.Modal && (
-        <DynamicAnnouncementModal announcement={announcement} />
+        <DynamicAnnouncementModal
+          announcement={announcement}
+          handlePerformAction={handlePerformAction}
+        />
       )}
       {showAppealModal && (
         <DynamicAddAppealModal

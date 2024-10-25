@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Close } from '@mui/icons-material';
 import { IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { DisplayMethodEnum } from 'pages/api/graphql-rest.page.generated';
 import { StyleEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { AnnouncementAction } from '../AnnouncementAction/AnnouncementAction';
 import {
   ActionFragment,
   AnnouncementFragment,
 } from '../Announcements.generated';
-import { BannerButton } from './AnnouncementBannerButton';
 
 const Banner = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -92,38 +91,6 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  // The `useEffect` hook is used to dynamically load FontAwesome styles when the announcement's display method is a banner.
-  // This ensures that the styles are only loaded when necessary and are cleaned up when the component is unmounted or the
-  // announcement changes.
-  useEffect(() => {
-    if (
-      !announcement ||
-      announcement.displayMethod !== DisplayMethodEnum.Banner
-    ) {
-      return;
-    }
-    const hasBeenLoaded = document.querySelector(
-      'link[id="fontAwesomeStyles"]',
-    );
-    if (!hasBeenLoaded) {
-      const fontAwesomeStyles = document.createElement('link');
-      fontAwesomeStyles.rel = 'stylesheet';
-      fontAwesomeStyles.id = 'fontAwesomeStyles';
-      fontAwesomeStyles.href =
-        'https://use.fontawesome.com/releases/v5.14.0/css/all.css';
-      document.head.appendChild(fontAwesomeStyles);
-    }
-
-    return () => {
-      const fontAwesomeStyles = document.querySelector(
-        'link[id="fontAwesomeStyles"]',
-      );
-      if (fontAwesomeStyles) {
-        document.head.removeChild(fontAwesomeStyles);
-      }
-    };
-  }, [announcement]);
-
   const { background, textAndIconColor } = createAnnouncementStyles(
     announcement?.style,
   );
@@ -144,11 +111,12 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
         </Box>
         <BannerItem>
           {announcement.actions.map((action) => (
-            <BannerButton
+            <AnnouncementAction
               key={action.id}
               action={action}
               handlePerformAction={handlePerformAction}
               textAndIconColor={textAndIconColor}
+              isBanner
             />
           ))}
         </BannerItem>
