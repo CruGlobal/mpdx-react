@@ -29,6 +29,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import theme from 'src/theme';
 import {
   TaskFilterTabsTypes,
@@ -114,7 +115,10 @@ const TasksPage: React.FC = () => {
     setContactId: setContactFocus,
   } = useTasksContactContext();
   const contactDetailsOpen = !!contactDetailsId;
-  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
+  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
+    key: 'tasks_filters_collapse',
+    defaultValue: false,
+  });
 
   //#region Filters
 
