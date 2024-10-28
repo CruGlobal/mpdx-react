@@ -115,9 +115,8 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('renders filters panel', async () => {
-    const { getByRole, findByRole } = render(<TestingComponent />);
+    const { findByRole } = render(<TestingComponent />);
 
-    userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
     expect(await findByRole('heading', { name: 'Filter' })).toBeInTheDocument();
   });
 
@@ -128,11 +127,11 @@ describe('partnerGivingAnalysis page', () => {
 
     const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
 
-    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
-    expect(leftPanel).toHaveStyle('transform: none');
-
     userEvent.click(await findByTestId('FilterPanelClose'));
     expect(leftPanel).toHaveStyle('transform: translate(-100%)');
+
+    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
+    expect(leftPanel).toHaveStyle('transform: none');
   });
 
   it('changes the URL when a contact is selected', async () => {
@@ -162,7 +161,6 @@ describe('partnerGivingAnalysis page', () => {
     );
     const searchBar = getByPlaceholderText('Search Contacts');
     userEvent.type(searchBar, 'John');
-    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
     userEvent.click(
       await findByRole('combobox', { name: 'Designation Account' }),
     );

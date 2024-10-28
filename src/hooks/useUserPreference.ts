@@ -42,11 +42,15 @@ export const useUserPreference = <T>({
     if (typeof defaultValue === 'string') {
       setValue((data.userOption.value ?? defaultValue) as T);
     } else {
-      setValue(
-        typeof data.userOption.value === 'string'
-          ? JSON.parse(data.userOption.value)
-          : defaultValue,
-      );
+      try {
+        setValue(
+          typeof data.userOption.value === 'string'
+            ? JSON.parse(data.userOption.value)
+            : defaultValue,
+        );
+      } catch {
+        setValue(defaultValue);
+      }
     }
   }, [data]);
 
