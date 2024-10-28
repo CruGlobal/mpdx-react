@@ -63,6 +63,14 @@ const ContactRowActions = styled(Box)(() => ({
   paddingRight: theme.spacing(2),
 }));
 
+export const handleClickWithCallback = (
+  event: React.MouseEvent<HTMLDivElement>,
+  callback: () => void,
+) => {
+  event.preventDefault();
+  callback();
+};
+
 interface Props {
   contact: AppealContactInfoFragment;
   appealStatus: AppealStatusEnum;
@@ -249,10 +257,9 @@ export const ContactRow: React.FC<Props> = ({
                     <IconButton
                       size={'small'}
                       component="div"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleCreatePledge();
-                      }}
+                      onClick={(event) =>
+                        handleClickWithCallback(event, handleCreatePledge)
+                      }
                       onMouseOver={preloadPledgeModal}
                     >
                       <AddIcon />
@@ -260,10 +267,12 @@ export const ContactRow: React.FC<Props> = ({
                     <IconButton
                       size={'small'}
                       component="div"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleRemoveContactFromAppeal();
-                      }}
+                      onClick={(event) =>
+                        handleClickWithCallback(
+                          event,
+                          handleRemoveContactFromAppeal,
+                        )
+                      }
                       onMouseOver={preloadDeleteAppealContactModal}
                     >
                       <DeleteIcon color="error" />
@@ -277,10 +286,9 @@ export const ContactRow: React.FC<Props> = ({
                     <IconButton
                       size={'small'}
                       component="div"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleEditContact();
-                      }}
+                      onClick={(event) =>
+                        handleClickWithCallback(event, handleEditContact)
+                      }
                       onMouseOver={preloadPledgeModal}
                     >
                       <EditIcon />
@@ -288,10 +296,9 @@ export const ContactRow: React.FC<Props> = ({
                     <IconButton
                       size={'small'}
                       component="div"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleRemovePledge();
-                      }}
+                      onClick={(event) =>
+                        handleClickWithCallback(event, handleRemovePledge)
+                      }
                       onMouseOver={preloadDeletePledgeModal}
                     >
                       <DeleteIcon color="error" />
@@ -302,10 +309,12 @@ export const ContactRow: React.FC<Props> = ({
                   <IconButton
                     size={'small'}
                     component="div"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleAddExcludedContactToAppeal();
-                    }}
+                    onClick={(event) =>
+                      handleClickWithCallback(
+                        event,
+                        handleAddExcludedContactToAppeal,
+                      )
+                    }
                     onMouseOver={preloadAddExcludedContactModal}
                   >
                     <AddIcon />
