@@ -35,6 +35,11 @@ export type HandleTaskPhaseChangeProps = {
   setActionSelected: SetActionSelected;
   setPhaseId: SetPhaseId;
   setSelectedSuggestedTags: React.Dispatch<React.SetStateAction<string[]>>;
+  activities: ActivityTypeEnum[];
+  focusActivity: () => void;
+  activityType: ActivityTypeEnum | undefined;
+  constants: Constants;
+  setFieldTouched: SetFieldTouched;
 };
 
 export type HandleTaskActionChangeProps = {
@@ -60,9 +65,17 @@ export const handleTaskPhaseChange = ({
   setActionSelected,
   setPhaseId,
   setSelectedSuggestedTags,
+  activities,
+  focusActivity,
+  activityType,
+  constants,
+  setFieldTouched,
 }: HandleTaskPhaseChangeProps): void => {
   setFieldValue('taskPhase', phase);
-  setFieldValue('activityType', '');
+  const activitySelection = activities.find((activity) =>
+    activityType?.includes(activity.replace(phase + '_', '')),
+  ) as ActivityTypeEnum;
+  setFieldValue('activityType', activitySelection || '');
   setFieldValue('subject', '');
   setFieldValue('displayResult', null);
   setFieldValue('result', null);
@@ -71,6 +84,10 @@ export const handleTaskPhaseChange = ({
   setActionSelected(null);
   setPhaseId(phase);
   setSelectedSuggestedTags([]);
+  setTaskName(constants, activitySelection, setFieldValue, setFieldTouched);
+  if (!activitySelection) {
+    focusActivity();
+  }
 };
 
 export const handleTaskActionChange = ({
@@ -82,23 +99,7 @@ export const handleTaskActionChange = ({
 }: HandleTaskActionChangeProps): void => {
   setFieldValue('activityType', activityType);
   setActionSelected(activityType || null);
-  const activity = constants?.activities?.find(
-    (activity) => activity.id === activityType,
-  );
-  if (activity) {
-    setFieldValue(
-      'subject',
-      activity?.name
-        ? activity.name
-            .split(' ')
-            .map((word) => {
-              return word[0].toUpperCase() + word.substring(1);
-            })
-            .join(' ')
-        : '',
-    );
-  }
-  setTimeout(() => setFieldTouched('activityType', true));
+  setTaskName(constants, activityType, setFieldValue, setFieldTouched);
 };
 
 export const handleResultChange = ({
@@ -188,4 +189,29 @@ export const extractSuggestedTags = (
     }
   });
   return { additionalTags, suggestedTags };
+};
+
+const setTaskName = (
+  constants: Constants,
+  activityType: ActivityTypeEnum | null,
+  setFieldValue: SetFieldValue,
+  setFieldTouched: SetFieldTouched,
+) => {
+  const activity = constants?.activities?.find(
+    (activity) => activity.id === activityType,
+  );
+  if (activity) {
+    setFieldValue(
+      'subject',
+      activity?.name
+        ? activity.name
+            .split(' ')
+            .map((word) => {
+              return word[0].toUpperCase() + word.substring(1);
+            })
+            .join(' ')
+        : '',
+    );
+  }
+  setTimeout(() => setFieldTouched('activityType', true));
 };

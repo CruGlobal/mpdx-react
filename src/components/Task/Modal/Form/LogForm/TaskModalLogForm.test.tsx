@@ -548,5 +548,67 @@ describe('TaskModalLogForm', () => {
         getByText(/The contact's status has been updated/),
       ).toBeInTheDocument();
     });
+
+    it('Keeps valid actions when task phase changes', async () => {
+      const { getByRole, findByRole, getByLabelText } = render(
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <SnackbarProvider>
+              <GqlMockedProvider>
+                <TaskModalLogForm
+                  accountListId={accountListId}
+                  onClose={jest.fn()}
+                />
+              </GqlMockedProvider>
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      userEvent.click(await findByRole('option', { name: 'Initiation' }));
+      expect(getByRole('combobox', { name: 'Task Type' })).toHaveValue(
+        'Initiation',
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Action' }));
+      userEvent.click(await findByRole('option', { name: 'Phone Call' }));
+      expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
+        'Phone Call',
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      userEvent.click(await findByRole('option', { name: 'Appointment' }));
+      expect(getByRole('combobox', { name: 'Task Type' })).toHaveValue(
+        'Appointment',
+      );
+      expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
+        'Phone Call',
+      );
+      await waitFor(() => {
+        expect(getByLabelText(/Task Name/i)).toHaveValue('Phone Appointment');
+      });
+
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
+      expect(getByRole('combobox', { name: 'Task Type' })).toHaveValue(
+        'Follow-Up',
+      );
+
+      expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+        'Phone Call To Follow Up',
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Task Type' }));
+      userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
+
+      expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
+        'Phone Call',
+      );
+
+      expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+        'Phone Call To Follow Up',
+      );
+    });
   });
 });
