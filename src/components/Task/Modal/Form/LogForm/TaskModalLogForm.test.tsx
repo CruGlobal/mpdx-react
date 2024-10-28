@@ -594,11 +594,10 @@ describe('TaskModalLogForm', () => {
       expect(getByRole('combobox', { name: 'Task Type' })).toHaveValue(
         'Follow-Up',
       );
-      await waitFor(() => {
-        expect(getByLabelText(/Task Name/i)).toHaveValue(
-          'Phone Call To Follow Up',
-        );
-      });
+
+      expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+        'Phone Call To Follow Up',
+      );
 
       userEvent.click(getByRole('combobox', { name: 'Task Type' }));
       userEvent.click(await findByRole('option', { name: 'Follow-Up' }));
@@ -606,11 +605,10 @@ describe('TaskModalLogForm', () => {
       expect(getByRole('combobox', { name: 'Action' })).toHaveValue(
         'Phone Call',
       );
-      await waitFor(() => {
-        expect(getByLabelText(/Task Name/i)).toHaveValue(
-          'Phone Call To Follow Up',
-        );
-      });
+
+      expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+        'Phone Call To Follow Up',
+      );
     });
   });
 });
