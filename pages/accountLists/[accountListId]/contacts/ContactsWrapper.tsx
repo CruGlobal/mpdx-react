@@ -8,6 +8,7 @@ import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { getQueryParam } from 'src/utils/queryParam';
 
@@ -76,7 +77,10 @@ export const ContactsWrapper: React.FC<Props> = ({
   const [searchTerm, setSearchTerm] = useState(
     getQueryParam(query, 'searchTerm') ?? '',
   );
-  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
+  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
+    key: 'contact_filters_collapse',
+    defaultValue: false,
+  });
 
   // Only allow the ids filter in map view, and remove the ids filter in other views
   const activeFilters = useMemo(() => {
