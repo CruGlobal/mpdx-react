@@ -39,7 +39,6 @@ import {
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import {
@@ -205,7 +204,8 @@ const Contact: React.FC<Props> = ({
   const constants = useApiConstants();
   const frequencyOptions = constants?.pledgeFrequency;
   const statusOptions = constants?.status;
-  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
+    useLocalizedConstants();
   const phases = constants?.phases;
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
@@ -332,7 +332,6 @@ const Contact: React.FC<Props> = ({
                               ? currencyFormat(amount, amountCurrency, locale)
                               : null}{' '}
                             {getLocalizedPledgeFrequency(
-                              t,
                               frequencyValue as PledgeFrequencyEnum,
                             )}
                           </Typography>
@@ -501,7 +500,7 @@ const Contact: React.FC<Props> = ({
                                       value={value}
                                       data-testid="pledgeFrequencyOptions"
                                     >
-                                      {getLocalizedPledgeFrequency(t, value)}
+                                      {getLocalizedPledgeFrequency(value)}
                                     </MenuItem>
                                   ),
                                 )}

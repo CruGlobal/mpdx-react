@@ -42,7 +42,6 @@ import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
@@ -123,7 +122,8 @@ export const EditPartnershipInfoModal: React.FC<
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
-  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
+    useLocalizedConstants();
 
   const phases = constants?.phases;
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
@@ -456,7 +456,7 @@ export const EditPartnershipInfoModal: React.FC<
                         <MenuItem value={''} disabled></MenuItem>
                         {Object.values(PledgeFrequencyEnum).map((value) => (
                           <MenuItem key={value} value={value}>
-                            {getLocalizedPledgeFrequency(t, value)}
+                            {getLocalizedPledgeFrequency(value)}
                           </MenuItem>
                         ))}
                       </SelectInteractive>

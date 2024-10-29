@@ -5,7 +5,6 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import type { CurrencyTable } from './FourteenMonthReport';
 
 export type CsvData = (string | number)[][];
@@ -23,7 +22,8 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
-  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
+    useLocalizedConstants();
 
   const csvData = useMemo(
     () =>
@@ -101,7 +101,7 @@ export const useCsvData = (currencyTables: CurrencyTable[]): CsvData => {
             getLocalizedContactStatus(contact.status?.toUpperCase()),
             contact.pledgeAmount ? Math.round(contact.pledgeAmount) : 0,
             contact.pledgeCurrency ?? '',
-            getLocalizedPledgeFrequency(t, pledgeFrequency),
+            getLocalizedPledgeFrequency(pledgeFrequency),
             pledgedMonthlyEquivalent,
             inHandMonthlyEquivalent !== '' && pledgedMonthlyEquivalent !== ''
               ? Math.min(pledgedMonthlyEquivalent, inHandMonthlyEquivalent)

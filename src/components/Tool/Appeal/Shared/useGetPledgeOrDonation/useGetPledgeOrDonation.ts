@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
-import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
 import { AppealStatusEnum } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { useLocale } from '../../../../../hooks/useLocale';
 
 type FormatPledgeOrDonationProps = {
@@ -15,7 +13,9 @@ type FormatPledgeOrDonationProps = {
   appealStatus: AppealStatusEnum;
   dateOrFrequency?: PledgeFrequencyEnum | string | null;
   locale: string;
-  t: TFunction;
+  getLocalizedPledgeFrequency: (
+    freqEnum: PledgeFrequencyEnum | null | undefined,
+  ) => string;
 };
 
 const formatPledgeOrDonation = ({
@@ -24,7 +24,7 @@ const formatPledgeOrDonation = ({
   appealStatus,
   dateOrFrequency,
   locale,
-  t,
+  getLocalizedPledgeFrequency,
 }: FormatPledgeOrDonationProps) => {
   const pledgeOrDonationAmount =
     amount && currency
@@ -48,7 +48,6 @@ const formatPledgeOrDonation = ({
     appealStatus === AppealStatusEnum.Excluded
       ? (dateOrFrequency &&
           getLocalizedPledgeFrequency(
-            t,
             dateOrFrequency as PledgeFrequencyEnum,
           )) ??
         ''
@@ -83,7 +82,7 @@ export const useGetPledgeOrDonation = (
   props: UseGetPledgeOrDonationProps,
 ): UseGetPledgeOrDonation => {
   const locale = useLocale();
-  const { t } = useTranslation();
+  const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   const { appealStatus, contact, appealId } = props;
 
   const defaultValues = {
@@ -112,7 +111,7 @@ export const useGetPledgeOrDonation = (
         appealStatus,
         dateOrFrequency: pledgeFrequency,
         locale,
-        t,
+        getLocalizedPledgeFrequency,
       });
 
       return {
@@ -150,7 +149,7 @@ export const useGetPledgeOrDonation = (
         appealStatus,
         dateOrFrequency: appealPledge.expectedDate,
         locale,
-        t,
+        getLocalizedPledgeFrequency,
       });
 
       return {
@@ -180,7 +179,7 @@ export const useGetPledgeOrDonation = (
           currency: appealPledge.amountCurrency,
           appealStatus,
           locale,
-          t,
+          getLocalizedPledgeFrequency,
         });
         amountAndFrequency.amount = amount;
         pledgeValues = appealPledge;

@@ -2,11 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import {
   ContactLateStatusEnum,
@@ -33,9 +31,9 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   loading,
   contact,
 }) => {
-  const { t } = useTranslation();
   const locale = useLocale();
-  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
+    useLocalizedConstants();
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -91,7 +89,6 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                               )
                             : contact.pledgeAmount
                         } ${`- ${getLocalizedPledgeFrequency(
-                          t,
                           contact.pledgeFrequency,
                         )}`}`}
                       </Typography>

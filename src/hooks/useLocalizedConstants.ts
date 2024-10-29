@@ -3,6 +3,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   ContactFilterStatusEnum,
   PhaseEnum,
+  PledgeFrequencyEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
 
@@ -35,8 +36,19 @@ export const useLocalizedConstants = () => {
     [constants],
   );
 
+  const getLocalizedPledgeFrequency = useCallback(
+    (freqEnum: PledgeFrequencyEnum | null | undefined): string => {
+      return (
+        constants?.pledgeFrequency?.find((freq) => freq.id === freqEnum)
+          ?.value || ''
+      );
+    },
+    [constants],
+  );
+
   return {
     getLocalizedContactStatus,
     getLocalizedPhase,
+    getLocalizedPledgeFrequency,
   };
 };

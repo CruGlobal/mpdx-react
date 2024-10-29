@@ -911,14 +911,49 @@ export const loadConstantsMockData: LoadConstantsQuery = {
     ],
     pledgeFrequency: [
       {
+        id: PledgeFrequencyEnum.Weekly,
+        key: '0.23076923076923',
+        value: 'Weekly',
+      },
+      {
+        id: PledgeFrequencyEnum.Every_2Weeks,
+        key: '0.46153846153846',
+        value: 'Every 2 Weeks',
+      },
+      {
+        id: PledgeFrequencyEnum.Monthly,
+        key: '1.0',
+        value: 'Monthly',
+      },
+      {
+        id: PledgeFrequencyEnum.Every_2Months,
+        key: '2.0',
+        value: 'Every 2 Months',
+      },
+      {
         id: PledgeFrequencyEnum.Quarterly,
         key: '3.0',
         value: 'Quarterly',
       },
       {
+        id: PledgeFrequencyEnum.Every_4Months,
+        key: '4.0',
+        value: 'Every 4 Months',
+      },
+      {
+        id: PledgeFrequencyEnum.Every_6Months,
+        key: '6.0',
+        value: 'Every 6 Months',
+      },
+      {
         id: PledgeFrequencyEnum.Annual,
         key: '12.0',
         value: 'Annual',
+      },
+      {
+        id: PledgeFrequencyEnum.Every_2Years,
+        key: '24.0',
+        value: 'Every 2 Years',
       },
     ],
     languages: [
