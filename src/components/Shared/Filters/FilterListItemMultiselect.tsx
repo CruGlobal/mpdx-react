@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { MultiselectFilterAutocomplete } from './MultiselectFilterAutocomplete';
 import { renameFilterNames, reverseFiltersMap } from './helpers';
 
@@ -37,6 +37,7 @@ export const FilterListItemMultiselect: React.FC<
     onUpdate(value);
   };
   const { statusArray } = useContactPartnershipStatuses();
+  const { getLocalizedPhase } = useLocalizedConstants();
 
   const isChecked = (value?: string | null) =>
     selected && selected.some((it) => it === value);
@@ -62,7 +63,7 @@ export const FilterListItemMultiselect: React.FC<
     statusArray.find((status) => status.id === selectedStatus)?.phase;
 
   const groupByPhase = (option: string) =>
-    getLocalizedPhase(t, getStatusPhaseId(option));
+    getLocalizedPhase(getStatusPhaseId(option));
 
   return (
     <div className="FilterListItemMultiselect-root">

@@ -9,6 +9,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { colorMap } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
@@ -45,10 +46,13 @@ const ContactFlowSetupPage: React.FC = () => {
     'Since all columns have been removed, resetting columns to their default values',
   );
   const [userOptions, updateOptions, { loading }] = useFlowOptions();
+  const phases = useApiConstants()?.phases;
 
   useEffect(() => {
     if (!userOptions.length) {
-      setFlowOptions(getDefaultFlowOptions(t, getContactStatusesByPhase));
+      setFlowOptions(
+        getDefaultFlowOptions(t, getContactStatusesByPhase, phases),
+      );
     } else {
       setFlowOptions(userOptions);
     }

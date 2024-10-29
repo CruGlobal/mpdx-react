@@ -30,7 +30,6 @@ import {
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../common/Modal/Modal';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
@@ -177,7 +176,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       </MenuItem>
                       {phases?.map((phase) => [
                         <ListSubheader key={phase?.id}>
-                          {getLocalizedPhase(t, phase?.id)}
+                          {phase?.name}
                         </ListSubheader>,
                         phase?.contactStatuses.map((status) => (
                           <MenuItem key={status} value={status}>

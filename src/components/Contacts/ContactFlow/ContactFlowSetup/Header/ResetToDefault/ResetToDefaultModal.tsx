@@ -13,6 +13,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   DefaultTypeEnum,
   getDefaultFlowOptions,
@@ -42,6 +43,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { getContactStatusesByPhase } = useContactPartnershipStatuses();
+  const phases = useApiConstants()?.phases;
   const { enqueueSnackbar } = useSnackbar();
   const [updating, setUpdating] = useState(false);
 
@@ -49,6 +51,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
     const defaultValues = getDefaultFlowOptions(
       t,
       getContactStatusesByPhase,
+      phases,
       values.resetToDefaultType as DefaultTypeEnum,
     );
 

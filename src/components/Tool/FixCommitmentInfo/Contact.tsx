@@ -38,7 +38,6 @@ import {
   getPledgeCurrencyOptions,
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import {
@@ -371,10 +370,10 @@ const Contact: React.FC<Props> = ({
                               }
                             >
                               {phases?.map((phase) => [
-                                <ListSubheader key={phase?.id}>
-                                  {getLocalizedPhase(t, phase?.id)}
+                                <ListSubheader key={phase.id}>
+                                  {phase.name}
                                 </ListSubheader>,
-                                phase?.contactStatuses.map((status) => (
+                                phase.contactStatuses.map((status) => (
                                   <MenuItem key={status} value={status}>
                                     {getLocalizedContactStatus(status)}
                                   </MenuItem>

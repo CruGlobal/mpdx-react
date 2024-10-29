@@ -579,7 +579,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
       {
         contactStatuses: [StatusEnum.CallForDecision],
         id: PhaseEnum.FollowUp,
-        name: 'Follow Up',
+        name: 'Follow-Up',
         results: {
           resultOptions: [
             {

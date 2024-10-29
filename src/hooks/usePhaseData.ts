@@ -7,7 +7,6 @@ import {
   Phase,
   PhaseEnum,
 } from 'src/graphql/types.generated';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export type SetPhaseId = (activity: PhaseEnum | null) => void;
@@ -129,7 +128,7 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
         activitiesMap.set(task, {
           name: getLocalizedTaskType(t, task),
           phaseId: phase.id,
-          phase: getLocalizedPhase(t, phase.id),
+          phase: phase.name,
           title: constants?.activities?.find((activity) => activity.id === task)
             ?.value,
         });

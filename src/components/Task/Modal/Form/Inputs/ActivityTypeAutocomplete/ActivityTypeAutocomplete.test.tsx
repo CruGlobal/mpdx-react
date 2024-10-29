@@ -3,7 +3,6 @@ import userEvent from '@testing-library/user-event';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
@@ -22,7 +21,7 @@ describe('ActivityTypeAutocomplete', () => {
       activitiesMap.set(task, {
         name: getLocalizedTaskType(i18n.t, task),
         phaseId: phase.id,
-        phase: getLocalizedPhase(i18n.t, phase.id),
+        phase: phase.name,
         title: loadConstantsMockData?.constant?.activities?.find(
           (activity) => activity.id === task,
         )?.value,

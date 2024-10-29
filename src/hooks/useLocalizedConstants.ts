@@ -28,7 +28,7 @@ export const useLocalizedConstants = () => {
   );
 
   const getLocalizedPhase = useCallback(
-    (phaseEnum: PhaseEnum | null | undefined): string => {
+    (phaseEnum: PhaseEnum | string | null | undefined): string => {
       return (
         constants?.phases?.find((phase) => phase.id === phaseEnum)?.name || ''
       );
@@ -37,7 +37,7 @@ export const useLocalizedConstants = () => {
   );
 
   const getLocalizedPledgeFrequency = useCallback(
-    (freqEnum: PledgeFrequencyEnum | null | undefined): string => {
+    (freqEnum: PledgeFrequencyEnum | string | null | undefined): string => {
       return (
         constants?.pledgeFrequency?.find((freq) => freq.id === freqEnum)
           ?.value || ''

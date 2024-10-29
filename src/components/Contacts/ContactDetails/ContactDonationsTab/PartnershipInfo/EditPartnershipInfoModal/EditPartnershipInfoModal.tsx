@@ -41,7 +41,6 @@ import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
@@ -315,7 +314,7 @@ export const EditPartnershipInfoModal: React.FC<
                       >
                         {phases?.map((phase) => [
                           <ListSubheader key={phase?.id}>
-                            {getLocalizedPhase(t, phase?.id)}
+                            {phase?.name}
                           </ListSubheader>,
                           phase?.contactStatuses.map((status) => (
                             <MenuItem key={status} value={status}>

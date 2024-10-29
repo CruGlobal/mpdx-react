@@ -6,6 +6,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PhaseEnum } from 'pages/api/graphql-rest.page.generated';
+import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ContactFilterSetInput, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
@@ -51,6 +52,7 @@ export const ContactFlow: React.FC<Props> = ({
 
   const { t } = useTranslation();
   const { getContactStatusesByPhase } = useContactPartnershipStatuses();
+  const phases = useApiConstants()?.phases;
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
@@ -62,7 +64,7 @@ export const ContactFlow: React.FC<Props> = ({
       return userFlowOptions;
     }
 
-    return getDefaultFlowOptions(t, getContactStatusesByPhase);
+    return getDefaultFlowOptions(t, getContactStatusesByPhase, phases);
   }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();
