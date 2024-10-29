@@ -18,6 +18,7 @@ const mutationSpy = jest.fn();
 interface WrapperProps {
   cached?: boolean;
   json?: boolean;
+  invalidJson?: boolean;
 }
 
 /**
@@ -26,7 +27,7 @@ interface WrapperProps {
  * The component returned from this function can be passed as the `wrapper` option to `renderHook`.
  **/
 const makeWrapper = (props: WrapperProps = {}) => {
-  const { cached = true, json = false } = props;
+  const { cached = true, json = false, invalidJson = false } = props;
 
   const cache = createCache();
   if (cached) {
@@ -52,7 +53,11 @@ const makeWrapper = (props: WrapperProps = {}) => {
         UserOption: {
           userOption: {
             key,
-            value: json ? '["initial"]' : 'initial',
+            value: json
+              ? invalidJson
+                ? 'malformed JSON'
+                : '["initial"]'
+              : 'initial',
           },
         },
         UpdateUserOption: {
@@ -151,5 +156,20 @@ describe('useUserPreference', () => {
       key,
       value: '["changed"]',
     });
+  });
+
+  it('uses the default value when json.parse errors', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useUserPreference({ key, defaultValue: [defaultValue] }),
+      {
+        wrapper: makeWrapper({ cached: true, json: true, invalidJson: true }),
+      },
+    );
+
+    expect(result.current[0]).toEqual(['cached']);
+
+    await waitForNextUpdate();
+
+    expect(result.current[0]).toEqual([defaultValue]);
   });
 });
