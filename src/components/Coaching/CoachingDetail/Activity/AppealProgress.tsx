@@ -86,7 +86,7 @@ export const AppealProgress: React.FC<AppealProgressProps> = ({
           </ReceivedText>
         </Tooltip>
         {' / '}
-        <Tooltip title={t('committed')} arrow>
+        <Tooltip title={t('Committed')} arrow>
           <CommittedText>
             {currencyFormat(committed, currency, locale)} (
             {percentageFormat(committedFraction, locale)})

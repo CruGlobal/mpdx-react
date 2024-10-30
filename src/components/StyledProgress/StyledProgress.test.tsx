@@ -25,4 +25,16 @@ describe('StyledProgress', () => {
     expect(queryByTestId('styledProgressPrimary')).toBeNull();
     expect(queryByTestId('styledProgressSecondary')).toBeNull();
   });
+
+  it('displays receivedBelow and committedBelow', () => {
+    const { getByText } = render(
+      <StyledProgress
+        receivedBelow={'receivedBelow'}
+        committedBelow={'committedBelow'}
+      />,
+    );
+    expect(getByText('receivedBelow')).toBeInTheDocument();
+    expect(getByText('/')).toBeInTheDocument();
+    expect(getByText('committedBelow')).toBeInTheDocument();
+  });
 });

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Box, Skeleton, Theme } from '@mui/material';
+import { Box, Skeleton, Theme, Tooltip, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from '../../lib/intlFormat';
@@ -13,6 +14,8 @@ const useStyles = makeStyles()((theme: Theme) => ({
     padding: '2px',
     position: 'relative',
     marginBottom: theme.spacing(2),
+    display: 'flex',
+    alignItems: 'center',
   },
   progress: {
     position: 'absolute',
@@ -35,20 +38,29 @@ const useStyles = makeStyles()((theme: Theme) => ({
   secondary: {
     border: '5px solid #FFCF07',
   },
+  inline: {
+    display: 'inline',
+  },
+  belowDetails: { position: 'absolute', right: '5px' },
 }));
 
 interface Props {
   loading?: boolean;
   primary?: number;
   secondary?: number;
+  receivedBelow?: string;
+  committedBelow?: string;
 }
 
 const StyledProgress = ({
   loading,
   primary = 0,
   secondary = 0,
+  receivedBelow = '',
+  committedBelow = '',
 }: Props): ReactElement => {
   const locale = useLocale();
+  const { t } = useTranslation();
   const { classes } = useStyles();
 
   return (
@@ -77,6 +89,47 @@ const StyledProgress = ({
           />
         </>
       )}
+      <Box className={classes.belowDetails}>
+        {receivedBelow && (
+          <Tooltip
+            title={t('Received Below Goal')}
+            arrow
+            PopperProps={{
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, -5],
+                  },
+                },
+              ],
+            }}
+          >
+            <Typography className={classes.inline}>{receivedBelow}</Typography>
+          </Tooltip>
+        )}
+        {committedBelow && receivedBelow && (
+          <Typography className={classes.inline}>{' / '}</Typography>
+        )}
+        {committedBelow && (
+          <Tooltip
+            title={t('Committed Below Goal')}
+            arrow
+            PopperProps={{
+              modifiers: [
+                {
+                  name: 'offset',
+                  options: {
+                    offset: [0, -5],
+                  },
+                },
+              ],
+            }}
+          >
+            <Typography className={classes.inline}>{committedBelow}</Typography>
+          </Tooltip>
+        )}
+      </Box>
     </Box>
   );
 };
