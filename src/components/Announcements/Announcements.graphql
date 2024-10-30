@@ -1,6 +1,8 @@
 query Announcements {
   announcements {
-    ...Announcement
+    nodes {
+      ...Announcement
+    }
   }
 }
 

@@ -27,7 +27,7 @@ export const AnnouncementAction: React.FC<AnnouncementActionProps> = ({
       variant: 'contained',
     };
     switch (action.style) {
-      case ActionStyleEnum.Reverse:
+      case ActionStyleEnum.ReverseAction:
         return {
           sx: { borderColor: textAndIconColor },
           variant: 'outlined',
@@ -80,8 +80,8 @@ export const AnnouncementAction: React.FC<AnnouncementActionProps> = ({
   return action.style === ActionStyleEnum.Icon ? (
     <IconButton
       sx={{ color: textAndIconColor, marginRight: 1 }}
-      key={action.id}
       onClick={handleClick}
+      aria-label={action.label}
     >
       <Icon baseClassName="far" className={`fa-${action.label}`} />
     </IconButton>

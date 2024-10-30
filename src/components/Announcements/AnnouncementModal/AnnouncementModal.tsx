@@ -60,7 +60,7 @@ export const AnnouncementModal: React.FC<AnnouncementModalProps> = ({
           justifyContent: 'space-between',
         }}
       >
-        <CancelButton onClick={handleClose}>{t('No')}</CancelButton>
+        <CancelButton onClick={handleClose}>{t('Close')}</CancelButton>
         <Box>
           {announcement.actions.map((action) => (
             <AnnouncementAction

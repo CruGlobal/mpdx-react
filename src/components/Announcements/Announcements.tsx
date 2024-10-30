@@ -55,8 +55,8 @@ const Announcement: React.FC = () => {
 
   // TODO replace this with the ability to only limit announcements to one item.
   const announcement = useMemo(() => {
-    if (data?.announcements) {
-      return data.announcements[0];
+    if (data?.announcements.nodes.length) {
+      return data.announcements.nodes[0];
     }
     return null;
   }, [data]);
@@ -151,24 +151,26 @@ const Announcement: React.FC = () => {
     [contactStatuses],
   );
 
-  if (hideAnnouncement || !announcement) {
+  if (!announcement) {
     return null;
   }
 
   return (
     <>
-      {announcement.displayMethod === DisplayMethodEnum.Banner && (
-        <DynamicAnnouncementBanner
-          announcement={announcement}
-          handlePerformAction={handlePerformAction}
-        />
-      )}
-      {announcement.displayMethod === DisplayMethodEnum.Modal && (
-        <DynamicAnnouncementModal
-          announcement={announcement}
-          handlePerformAction={handlePerformAction}
-        />
-      )}
+      {announcement.displayMethod === DisplayMethodEnum.Banner &&
+        !hideAnnouncement && (
+          <DynamicAnnouncementBanner
+            announcement={announcement}
+            handlePerformAction={handlePerformAction}
+          />
+        )}
+      {announcement.displayMethod === DisplayMethodEnum.Modal &&
+        !hideAnnouncement && (
+          <DynamicAnnouncementModal
+            announcement={announcement}
+            handlePerformAction={handlePerformAction}
+          />
+        )}
       {showAppealModal && (
         <DynamicAddAppealModal
           appealName={appealName}
