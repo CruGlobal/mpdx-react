@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Close } from '@mui/icons-material';
 import { IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -96,15 +96,13 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
   handlePerformAction,
 }) => {
   const { t } = useTranslation();
+  const [shouldAnimateBanner, setShouldAnimateBanner] = useState(false);
 
   useEffect(() => {
-    const bannerElement = document.getElementById('JS-announcement-banner');
-    if (bannerElement) {
-      // Force reflow to ensure the transition is applied
-      setTimeout(() => {
-        bannerElement.classList.add('show');
-      }, 0);
-    }
+    // Force reflow to ensure the transition is applied
+    setTimeout(() => {
+      setShouldAnimateBanner(true);
+    }, 0);
   }, []);
 
   const { background, textAndIconColor } = createAnnouncementStyles(
@@ -115,7 +113,7 @@ export const AnnouncementBanner: React.FC<AnnouncementBannerProps> = ({
       sx={{
         background: background,
       }}
-      id="JS-announcement-banner"
+      className={shouldAnimateBanner ? 'show' : ''}
     >
       <BannerDetails>
         <Box>

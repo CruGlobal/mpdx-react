@@ -70,6 +70,7 @@ const Announcement: React.FC = () => {
     const hasBeenLoaded = document.querySelector(
       'link[id="fontAwesomeStyles"]',
     );
+
     if (!hasBeenLoaded) {
       const fontAwesomeStyles = document.createElement('link');
       fontAwesomeStyles.rel = 'stylesheet';
@@ -77,16 +78,9 @@ const Announcement: React.FC = () => {
       fontAwesomeStyles.href =
         'https://use.fontawesome.com/releases/v5.14.0/css/all.css';
       document.head.appendChild(fontAwesomeStyles);
-    }
 
-    return () => {
-      const fontAwesomeStyles = document.querySelector(
-        'link[id="fontAwesomeStyles"]',
-      );
-      if (fontAwesomeStyles) {
-        document.head.removeChild(fontAwesomeStyles);
-      }
-    };
+      return () => fontAwesomeStyles.remove();
+    }
   }, [announcement]);
 
   const handleAcknowledge = async (
@@ -126,6 +120,7 @@ const Announcement: React.FC = () => {
             } else {
               dispatch(action?.args ?? 'undefined event');
             }
+            break;
         }
       }
 
