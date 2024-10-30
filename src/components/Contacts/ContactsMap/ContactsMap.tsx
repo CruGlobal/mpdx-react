@@ -68,6 +68,7 @@ export const ContactsMap: React.FC = ({}) => {
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+    version: 'alpha',
     libraries: useRef(['places' as const]).current,
   });
 
