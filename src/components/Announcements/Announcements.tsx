@@ -27,8 +27,6 @@ import {
   useAnnouncementsQuery,
 } from './Announcements.generated';
 
-const appealName = `${DateTime.local().year} ${i18n.t('End of Year Ask')}`;
-
 export const Announcements: React.FC = () => {
   // Use NoApolloBeacon on pages without an <ApolloProvider>
   const hasApolloClient = Boolean(useContext(getApolloContext()).client);
@@ -53,12 +51,8 @@ const Announcement: React.FC = () => {
   const { data } = useAnnouncementsQuery();
   const [acknowledgeAnnouncement] = useAcknowledgeAnnouncementMutation();
 
-  // TODO replace this with the ability to only limit announcements to one item.
   const announcement = useMemo(() => {
-    if (data?.announcements.nodes.length) {
-      return data.announcements.nodes[0];
-    }
-    return null;
+    return data?.announcements.nodes[0] ?? null;
   }, [data]);
 
   // The `useEffect` hook ensures that the styles are only loaded when necessary
@@ -131,6 +125,7 @@ const Announcement: React.FC = () => {
     [accountListId, announcement],
   );
 
+  const appealName = `${DateTime.local().year} ${i18n.t('End of Year Ask')}`;
   const appealStatuses = useMemo(
     () => [
       {

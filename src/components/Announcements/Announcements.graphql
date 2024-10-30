@@ -1,5 +1,5 @@
 query Announcements {
-  announcements {
+  announcements(first: 1) {
     nodes {
       ...Announcement
     }
