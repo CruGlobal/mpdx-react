@@ -83,7 +83,7 @@ export const AnnouncementAction: React.FC<AnnouncementActionProps> = ({
       onClick={handleClick}
       aria-label={action.label}
     >
-      <Icon baseClassName="far" className={`fa-${action.label}`} />
+      <Icon>{action.label}</Icon>
     </IconButton>
   ) : (
     <StyledButton {...buttonProps} onClick={handleClick}>

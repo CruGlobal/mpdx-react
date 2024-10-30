@@ -73,25 +73,25 @@ const TestComponent: React.FC<AnnouncementModalProps> = ({
 };
 
 describe('Announcements', () => {
-  it('should load and unload fontAwesomeStyles', async () => {
+  it('should load and unload MaterialIconsStyles', async () => {
     const { findByText, unmount } = render(<TestComponent />);
 
     expect(await findByText(defaultAnnouncement.title)).toBeInTheDocument();
 
     await waitFor(() => {
-      const fontAwesomeStyles = document.querySelector(
-        'link[id="fontAwesomeStyles"]',
+      const MaterialIconsStyles = document.querySelector(
+        'link[id="MaterialIconsStyles"]',
       );
-      expect(fontAwesomeStyles).toBeInTheDocument();
+      expect(MaterialIconsStyles).toBeInTheDocument();
     });
 
     unmount();
 
     await waitFor(() => {
-      const fontAwesomeStyles = document.querySelector(
-        'link[id="fontAwesomeStyles"]',
+      const MaterialIconsStyles = document.querySelector(
+        'link[id="MaterialIconsStyles"]',
       );
-      expect(fontAwesomeStyles).not.toBeInTheDocument();
+      expect(MaterialIconsStyles).not.toBeInTheDocument();
     });
   });
 

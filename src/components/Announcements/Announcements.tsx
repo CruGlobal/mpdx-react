@@ -62,18 +62,18 @@ const Announcement: React.FC = () => {
       return;
     }
     const hasBeenLoaded = document.querySelector(
-      'link[id="fontAwesomeStyles"]',
+      'link[id="MaterialIconsStyles"]',
     );
 
     if (!hasBeenLoaded) {
-      const fontAwesomeStyles = document.createElement('link');
-      fontAwesomeStyles.rel = 'stylesheet';
-      fontAwesomeStyles.id = 'fontAwesomeStyles';
-      fontAwesomeStyles.href =
-        'https://use.fontawesome.com/releases/v5.14.0/css/all.css';
-      document.head.appendChild(fontAwesomeStyles);
+      const MaterialIconsStyles = document.createElement('link');
+      MaterialIconsStyles.rel = 'stylesheet';
+      MaterialIconsStyles.id = 'MaterialIconsStyles';
+      MaterialIconsStyles.href =
+        'https://fonts.googleapis.com/icon?family=Material+Icons';
+      document.head.appendChild(MaterialIconsStyles);
 
-      return () => fontAwesomeStyles.remove();
+      return () => MaterialIconsStyles.remove();
     }
   }, [announcement]);
 
