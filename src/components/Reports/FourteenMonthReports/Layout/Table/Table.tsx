@@ -8,6 +8,7 @@ import {
   TableBody,
   TableContainer,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -140,6 +141,31 @@ export const FourteenMonthReportTable: React.FC<
                           <Link>{contact.name}</Link>
                         </NextLink>
                       </NameTypography>
+                      {(contact.lateBy30Days || contact.lateBy60Days) && (
+                        <Tooltip
+                          title={t('{{daysLate}}+ days late', {
+                            daysLate: contact.lateBy60Days ? '60' : '30',
+                          })}
+                          arrow
+                        >
+                          <Box
+                            sx={{
+                              bgcolor: contact.lateBy60Days ? 'red' : 'orange',
+                              width: 15,
+                              height: 15,
+                              borderRadius: '50%',
+                              flex: 'none',
+                              marginLeft: 'auto',
+                              '@media print': {
+                                display: 'none',
+                              },
+                            }}
+                            data-testid={`lateCircle${
+                              contact.lateBy60Days ? '60' : '30'
+                            }`}
+                          />
+                        </Tooltip>
+                      )}
                     </Box>
                     {isExpanded && (
                       <Typography variant="body2" color="textSecondary">
