@@ -252,12 +252,12 @@ describe('FourteenMonthReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    const fourteenMonthReportRow = getAllByTestId(
+    const fourteenMonthReportRows = getAllByTestId(
       'FourteenMonthReportTableRow',
     );
-    expect(fourteenMonthReportRow).toHaveLength(2);
-    expect(fourteenMonthReportRow[0]).toHaveTextContent('test name');
-    expect(fourteenMonthReportRow[1]).toHaveTextContent('name again');
+    expect(fourteenMonthReportRows).toHaveLength(2);
+    expect(fourteenMonthReportRows[0]).toHaveTextContent('test name');
+    expect(fourteenMonthReportRows[1]).toHaveTextContent('name again');
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
@@ -270,18 +270,16 @@ describe('FourteenMonthReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    const fourteenMonthReportRow = getAllByTestId(
+    const fourteenMonthReportRows = getAllByTestId(
       'FourteenMonthReportTableRow',
     );
     expect(
-      within(fourteenMonthReportRow[0]).getByTestId('lateCircle60'),
+      within(fourteenMonthReportRows[0]).getByTestId('lateCircle60'),
     ).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(
-        within(fourteenMonthReportRow[1]).queryByTestId('lateCircle30'),
-      ).not.toBeInTheDocument();
-    });
+    expect(
+      within(fourteenMonthReportRows[1]).queryByTestId('lateCircle30'),
+    ).not.toBeInTheDocument();
   });
 
   it('can make contact click event happen and pledge amount is correct', async () => {

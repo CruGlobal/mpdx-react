@@ -60,6 +60,20 @@ const StyledInfoIcon = styled(InfoIcon)({
   },
 });
 
+const CircleBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'lateBy60Days',
+})(({ lateBy60Days = false }: { lateBy60Days?: boolean }) => ({
+  backgroundColor: lateBy60Days ? 'red' : 'orange',
+  width: 15,
+  height: 15,
+  borderRadius: '50%',
+  flex: 'none',
+  marginLeft: 'auto',
+  '@media print': {
+    display: 'none',
+  },
+}));
+
 const StyledTotalsRow = styled(TableRow)({
   '.MuiTableCell-root': {
     fontWeight: 'bold',
@@ -148,18 +162,8 @@ export const FourteenMonthReportTable: React.FC<
                           })}
                           arrow
                         >
-                          <Box
-                            sx={{
-                              bgcolor: contact.lateBy60Days ? 'red' : 'orange',
-                              width: 15,
-                              height: 15,
-                              borderRadius: '50%',
-                              flex: 'none',
-                              marginLeft: 'auto',
-                              '@media print': {
-                                display: 'none',
-                              },
-                            }}
+                          <CircleBox
+                            lateBy60Days={contact.lateBy60Days}
                             data-testid={`lateCircle${
                               contact.lateBy60Days ? '60' : '30'
                             }`}
