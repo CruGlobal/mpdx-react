@@ -365,6 +365,55 @@ describe('TaskModalForm', () => {
     );
   });
 
+  it('defaults the subject to the defaultValues subject', () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <TaskModalForm
+              defaultValues={{
+                taskPhase: PhaseEnum.PartnerCare,
+                activityType: ActivityTypeEnum.PartnerCareTextMessage,
+                subject: 'Do something',
+              }}
+              accountListId={accountListId}
+              onClose={onClose}
+              task={null}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+      'Do something',
+    );
+  });
+
+  it('defaults the subject to the name based on phase and action', () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <TaskModalForm
+              defaultValues={{
+                taskPhase: PhaseEnum.PartnerCare,
+                activityType: ActivityTypeEnum.PartnerCareTextMessage,
+              }}
+              accountListId={accountListId}
+              onClose={onClose}
+              task={null}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+      'Text Message Partner For Cultivation',
+    );
+  });
+
   it('renders fields for completed task', async () => {
     const { getByRole, findByRole, queryByText } = render(
       <ThemeProvider theme={theme}>
