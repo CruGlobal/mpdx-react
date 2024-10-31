@@ -63,6 +63,7 @@ import {
 import {
   extractSuggestedTags,
   getDatabaseValueFromResult,
+  getDefaultTaskName,
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from '../TaskModalHelper';
@@ -245,9 +246,20 @@ const TaskModalLogForm = ({
     enqueueSnackbar(t('Task(s) logged successfully'), { variant: 'success' });
     onClose();
     if (attributes.nextAction) {
+      const defaultSubject = getDefaultTaskName(
+        attributes.activityType,
+        activityTypes,
+      );
+
       openTaskModal({
         view: TaskModalEnum.Add,
         defaultValues: {
+          // If the user changed the task subject from the default, use their customized task
+          // subject in the new task
+          subject:
+            attributes.subject === defaultSubject
+              ? undefined
+              : attributes.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: attributes.contactIds,

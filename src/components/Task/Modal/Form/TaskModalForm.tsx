@@ -248,7 +248,7 @@ const TaskModalForm = ({
         taskPhase: taskPhase as PhaseEnum,
         activityType: (defaultValues?.activityType ?? null) as ActivityTypeEnum,
         location: '',
-        subject: taskSubject ?? '',
+        subject: defaultValues?.subject ?? taskSubject ?? '',
         startAt: DateTime.local(),
         completedAt: null,
         displayResult: null,

@@ -55,6 +55,7 @@ import { useUpdateContactStatusMutation } from '../TaskModal.generated';
 import {
   extractSuggestedTags,
   getDatabaseValueFromResult,
+  getDefaultTaskName,
 } from '../TaskModalHelper';
 import { possibleNextActions } from '../possibleNextActions';
 import { possiblePartnerStatus } from '../possiblePartnerStatus';
@@ -219,9 +220,17 @@ const TaskModalCompleteForm = ({
     }
     onClose();
     if (attributes.nextAction) {
+      const defaultSubject = getDefaultTaskName(
+        task.activityType ?? null,
+        activityTypes,
+      );
+
       openTaskModal({
         view: TaskModalEnum.Add,
         defaultValues: {
+          // If the user changed the task subject from the default, use their customized task
+          // subject in the new task
+          subject: task.subject === defaultSubject ? undefined : task.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: task.contacts.nodes.map((contact) => contact.id),
