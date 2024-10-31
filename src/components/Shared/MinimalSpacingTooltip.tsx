@@ -1,24 +1,9 @@
-import React, { ReactNode } from 'react';
-import Tooltip from '@mui/material/Tooltip';
+import React from 'react';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 
-interface MinimalSpacingTooltipProps {
-  title: ReactNode;
-  placement?: 'top' | 'bottom' | 'left' | 'right';
-  arrow?: boolean;
-  children: ReactNode;
-}
-
-const MinimalSpacingTooltip: React.FC<MinimalSpacingTooltipProps> = ({
-  title,
-  placement = 'bottom',
-  arrow = false,
-  children,
-}) => {
+const MinimalSpacingTooltip: React.FC<TooltipProps> = (props) => {
   return (
     <Tooltip
-      title={title}
-      placement={placement}
-      arrow={arrow}
       PopperProps={{
         modifiers: [
           {
@@ -29,9 +14,8 @@ const MinimalSpacingTooltip: React.FC<MinimalSpacingTooltipProps> = ({
           },
         ],
       }}
-    >
-      <span>{children}</span>
-    </Tooltip>
+      {...props}
+    />
   );
 };
 
