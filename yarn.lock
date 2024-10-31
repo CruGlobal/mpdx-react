@@ -97,41 +97,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:~3.2.5 || ~3.3.0 || ~3.4.0 || ~3.5.0 || ~3.6.0":
-  version: 3.6.10
-  resolution: "@apollo/client@npm:3.6.10"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    "@wry/context": ^0.7.0
-    "@wry/equality": ^0.5.0
-    "@wry/trie": ^0.3.0
-    graphql-tag: ^2.12.6
-    hoist-non-react-statics: ^3.3.2
-    optimism: ^0.16.1
-    prop-types: ^15.7.2
-    symbol-observable: ^4.0.0
-    ts-invariant: ^0.10.3
-    tslib: ^2.3.0
-    zen-observable-ts: ^1.2.5
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    graphql-ws: ^5.5.5
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    subscriptions-transport-ws: ^0.9.0 || ^0.11.0
-  peerDependenciesMeta:
-    graphql-ws:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-    subscriptions-transport-ws:
-      optional: true
-  checksum: a928492ae4acffb2c6d2941a6c56da3a92c956020eda59a1d3c4928741dbc0d2946379e2eafdd0798bc737b4d720db2353bb316c8051d61fcdcf4f7e88f8e64d
-  languageName: node
-  linkType: hard
-
 "@apollo/federation-internals@npm:^2.1.3":
   version: 2.1.3
   resolution: "@apollo/federation-internals@npm:2.1.3"
@@ -4092,20 +4057,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:9.0.4, @graphql-tools/schema@npm:^9.0.4":
-  version: 9.0.4
-  resolution: "@graphql-tools/schema@npm:9.0.4"
-  dependencies:
-    "@graphql-tools/merge": 8.3.6
-    "@graphql-tools/utils": 8.12.0
-    tslib: ^2.4.0
-    value-or-promise: 1.0.11
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 0644ba225ff7fb03c6fb7f026b6a77a4ac5dd14fd10bb562ea0072bfe0258620fd4789b851b0b97007db8754d0b7d88a1061bb98bacc679b22e2eb7706e79e0e
-  languageName: node
-  linkType: hard
-
 "@graphql-tools/schema@npm:^10.0.0, @graphql-tools/schema@npm:^10.0.3":
   version: 10.0.3
   resolution: "@graphql-tools/schema@npm:10.0.3"
@@ -4131,6 +4082,20 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 91363cd4371e347af40ef66f7d903b5d4f5998bfaec9214768e6a795136ef6372f9f225e05e18daacd929e23695811f15e791c6cbe082bf5b5d03b16b1f874f8
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/schema@npm:^9.0.4":
+  version: 9.0.4
+  resolution: "@graphql-tools/schema@npm:9.0.4"
+  dependencies:
+    "@graphql-tools/merge": 8.3.6
+    "@graphql-tools/utils": 8.12.0
+    tslib: ^2.4.0
+    value-or-promise: 1.0.11
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 0644ba225ff7fb03c6fb7f026b6a77a4ac5dd14fd10bb562ea0072bfe0258620fd4789b851b0b97007db8754d0b7d88a1061bb98bacc679b22e2eb7706e79e0e
   languageName: node
   linkType: hard
 
@@ -15089,27 +15054,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ergonomock@npm:1.2.0":
-  version: 1.2.0
-  resolution: "graphql-ergonomock@npm:1.2.0"
+"graphql-ergonomock@npm:@cruglobal/graphql-ergonomock@^1.2.1":
+  version: 1.2.1
+  resolution: "@cruglobal/graphql-ergonomock@npm:1.2.1"
   dependencies:
     fast-json-stable-stringify: ^2.1.0
-    graphql: ^15.0.0
-    graphql-tools: ^7.0.0
+    graphql: ^16.9.0
     seedrandom: ^3.0.5
-  checksum: 9d06cfd24ec14a571c31aaa717060d111b1b7f734681e245f0339be92869086f6dfd0b15c60f8527c7705a57fa1d06bb203a0aabf9c9a624c31b7496b6a3a056
-  languageName: node
-  linkType: hard
-
-"graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::locator=mpdx-react%40workspace%3A.":
-  version: 1.2.0
-  resolution: "graphql-ergonomock@patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch::version=1.2.0&hash=4de2a5&locator=mpdx-react%40workspace%3A."
-  dependencies:
-    fast-json-stable-stringify: ^2.1.0
-    graphql: ^15.0.0
-    graphql-tools: ^7.0.0
-    seedrandom: ^3.0.5
-  checksum: 7e7c7e17197f4883e20cea45fa3aa8e2d7cc4c72e601fa9f09dc96db5c96f4cc1ecf062e40e4654b802ba27b781ed0b99216521c9603c8441d857b51fff0931f
+  checksum: 79bbf1a38a6b3ebeebc7bb6d1222934b85157f76559407cbabbcd6794eeece7ba6ca50a737f2959cec516b244c62eae3b36a617ac109c9ef3c75e14ca577f525
   languageName: node
   linkType: hard
 
@@ -15136,22 +15088,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-tools@npm:^8.3.6":
-  version: 8.3.6
-  resolution: "graphql-tools@npm:8.3.6"
-  dependencies:
-    "@apollo/client": ~3.2.5 || ~3.3.0 || ~3.4.0 || ~3.5.0 || ~3.6.0
-    "@graphql-tools/schema": 9.0.4
-    tslib: ^2.4.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  dependenciesMeta:
-    "@apollo/client":
-      optional: true
-  checksum: 26b774cf76aa3b5c2fe1267f3bd552f0a984ccfc7483033697ccac8c116a43b1d0959f4bcfc5d7d645a5524fec31d453af82a13dffdf0de36fa876a67fd1fb2d
-  languageName: node
-  linkType: hard
-
 "graphql-ws@npm:^5.14.0":
   version: 5.16.0
   resolution: "graphql-ws@npm:5.16.0"
@@ -15161,10 +15097,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.6.0":
-  version: 16.6.0
-  resolution: "graphql@npm:16.6.0"
-  checksum: bf1d9e3c1938ce3c1a81e909bd3ead1ae4707c577f91cff1ca2eca474bfbc7873d5d7b942e1e9777ff5a8304421dba57a4b76d7a29eb19de8711cb70e3c2415e
+"graphql@npm:^16.9.0":
+  version: 16.9.0
+  resolution: "graphql@npm:16.9.0"
+  checksum: 8cb3d54100e9227310383ce7f791ca48d12f15ed9f2021f23f8735f1121aafe4e5e611a853081dd935ce221724ea1ae4638faef5d2921fb1ad7c26b5f46611e9
   languageName: node
   linkType: hard
 
@@ -19489,8 +19425,8 @@ __metadata:
     framer-motion: ^7.3.6
     full-icu: ^1.5.0
     glob: ^8.0.3
-    graphql: ^16.6.0
-    graphql-ergonomock: ^1.2.0
+    graphql: ^16.9.0
+    graphql-ergonomock: "npm:@cruglobal/graphql-ergonomock@^1.2.1"
     graphql-tag: ^2.12.6
     husky: ^8.0.1
     i18next: ^21.9.2
