@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { ReactElement } from 'react';
 import {
   Box,
@@ -43,6 +44,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const { push } = useRouter();
 
   const onSubmit = async (attributes: ImpersonateUserFormType) => {
     try {
@@ -66,7 +68,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
             variant: 'success',
           },
         );
-        window.location.href = `/login`;
+        push('/login');
       } else {
         setupImpersonateJson.errors.forEach((error) => {
           enqueueSnackbar(error.detail, {
