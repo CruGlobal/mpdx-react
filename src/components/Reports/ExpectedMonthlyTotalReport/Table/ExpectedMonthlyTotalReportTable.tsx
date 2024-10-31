@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
@@ -17,6 +18,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -44,6 +46,10 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
   const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const [visible, setVisible] = useState(true);
+
+  const { getContactUrl } = useContactLinks({
+    url: `/accountLists/${accountListId}/reports/expectedMonthlyTotal/`,
+  });
 
   const showTotalPartners = () => {
     if (visible) {
@@ -112,12 +118,13 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     }}
                   >
                     <TableCell align="left">
-                      <Link
-                        href={`../../${accountListId}/contacts/${row.contactId}`}
-                        underline="hover"
+                      <NextLink
+                        href={getContactUrl(row.contactId ?? '')}
+                        passHref
+                        shallow
                       >
-                        {row.contactName}
-                      </Link>
+                        <Link>{row.contactName}</Link>
+                      </NextLink>
                     </TableCell>
                     <TableCell align="left">
                       {row.contactStatus &&
