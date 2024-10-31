@@ -96,8 +96,10 @@ const Announcement: React.FC = () => {
         switch (action.action) {
           case ActionEnum.Go:
             if (action.args) {
-              // TODO - Migrate the data on production, to convert to "Go" args to be to the new MPDX URL format
-              push(`/accountLists/${accountListId}/${action.args}`);
+              const args = action.args.startsWith('/')
+                ? action.args
+                : `/${action.args}`;
+              push(`/accountLists/${accountListId}${args}`);
             }
             break;
           case ActionEnum.AppealCreate:

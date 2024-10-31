@@ -50,13 +50,12 @@ const TestComponent: React.FC<AnnouncementActionProps> = ({
 describe('AnnouncementAction', () => {
   describe('Icon', () => {
     it('initial', () => {
-      const { getByRole, queryByText } = render(
+      const { getByRole } = render(
         <TestComponent actionStyle={ActionStyleEnum.Icon} />,
       );
 
-      expect(queryByText('Contacts')).not.toBeInTheDocument();
-
       const icon = getByRole('button', { name: 'Contacts' });
+      expect(icon.childNodes[0]).toHaveClass('material-icons');
       userEvent.click(icon);
       expect(handlePerformAction).toHaveBeenCalled();
     });
