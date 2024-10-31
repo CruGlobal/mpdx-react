@@ -72,14 +72,14 @@ export const AppealProgress: React.FC<AppealProgressProps> = ({
   return (
     <ProgressWrapper>
       <Amounts data-testid="AppealProgressAmounts">
-        <Tooltip title={t('given')} arrow>
+        <Tooltip title={t('Given')} arrow>
           <ProcessedText>
             {currencyFormat(processed, currency, locale)} (
             {percentageFormat(processedFraction, locale)})
           </ProcessedText>
         </Tooltip>
         {' / '}
-        <Tooltip title={t('received')} arrow>
+        <Tooltip title={t('Received')} arrow>
           <ReceivedText>
             {currencyFormat(received, currency, locale)} (
             {percentageFormat(receivedFraction, locale)})

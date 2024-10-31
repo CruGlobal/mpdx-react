@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
-import { Box, Skeleton, Theme, Tooltip, Typography } from '@mui/material';
+import { Box, Skeleton, Theme, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from '../../lib/intlFormat';
+import MinimalSpacingTooltip from '../Shared/MinimalSpacingTooltip';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   box: {
@@ -91,43 +92,17 @@ const StyledProgress = ({
       )}
       <Box className={classes.belowDetails}>
         {receivedBelow && (
-          <Tooltip
-            title={t('Received Below Goal')}
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
-            }}
-          >
+          <MinimalSpacingTooltip title={t('Received Below Goal')} arrow>
             <Typography className={classes.inline}>{receivedBelow}</Typography>
-          </Tooltip>
+          </MinimalSpacingTooltip>
         )}
         {committedBelow && receivedBelow && (
           <Typography className={classes.inline}>{' / '}</Typography>
         )}
         {committedBelow && (
-          <Tooltip
-            title={t('Committed Below Goal')}
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
-            }}
-          >
+          <MinimalSpacingTooltip title={t('Committed Below Goal')} arrow>
             <Typography className={classes.inline}>{committedBelow}</Typography>
-          </Tooltip>
+          </MinimalSpacingTooltip>
         )}
       </Box>
     </Box>

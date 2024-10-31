@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
-import { Box, Tooltip, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import MinimalSpacingTooltip from 'src/components/Shared/MinimalSpacingTooltip';
 import StyledProgress from 'src/components/StyledProgress';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
@@ -54,47 +55,19 @@ export const AppealProgress = ({
             : goalText}
         </Typography>
         <Typography>
-          <Tooltip
-            title={t('Received')}
-            placement="top"
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
-            }}
-          >
+          <MinimalSpacingTooltip title={t('Received')} placement="top" arrow>
             <Typography display="inline">
-              {currencyFormat(received, currency, locale)}(
+              {currencyFormat(received, currency, locale)} (
               {percentageFormat(received / goal, locale)})
             </Typography>
-          </Tooltip>
+          </MinimalSpacingTooltip>
           {' / '}
-          <Tooltip
-            title={t('Committed')}
-            placement="top"
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -5],
-                  },
-                },
-              ],
-            }}
-          >
+          <MinimalSpacingTooltip title={t('Committed')} placement="top" arrow>
             <Typography display="inline">
-              {currencyFormat(pledged, currency, locale)}(
+              {currencyFormat(pledged, currency, locale)} (
               {percentageFormat(pledged / goal, locale)})
             </Typography>
-          </Tooltip>
+          </MinimalSpacingTooltip>
         </Typography>
       </CoachingProgressLabelContainer>
       <StyledProgress
