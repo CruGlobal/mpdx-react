@@ -30,35 +30,32 @@ const makeClient = (apiToken: string) => {
     link: from([
       makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError }) => {
-        // Don't show sign out and display errors on the login page because the user won't be logged in
-        if (graphQLErrors && window.location.pathname !== '/login') {
-          graphQLErrors.forEach((graphQLError) => {
-            if (graphQLError.extensions.code === 'AUTHENTICATION_ERROR') {
-              signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
-                clearDataDogUser();
-                client.clearStore();
+        graphQLErrors?.forEach((graphQLError) => {
+          if (graphQLError.extensions.code === 'AUTHENTICATION_ERROR') {
+            signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
+              clearDataDogUser();
+              client.clearStore();
+            });
+          }
+          if (isAccountListNotFoundError(graphQLError)) {
+            client
+              .query<GetDefaultAccountQuery>({
+                query: GetDefaultAccountDocument,
+              })
+              .then((response) => {
+                // eslint-disable-next-line no-console
+                console.log('Incorrect accountListId provided. Redirecting.');
+                router.replace(
+                  replaceUrlAccountList(
+                    window.location.pathname,
+                    response.data.user.defaultAccountList,
+                  ),
+                );
               });
-            }
-            if (isAccountListNotFoundError(graphQLError)) {
-              client
-                .query<GetDefaultAccountQuery>({
-                  query: GetDefaultAccountDocument,
-                })
-                .then((response) => {
-                  // eslint-disable-next-line no-console
-                  console.log('Incorrect accountListId provided. Redirecting.');
-                  router.replace(
-                    replaceUrlAccountList(
-                      window.location.pathname,
-                      response.data.user.defaultAccountList,
-                    ),
-                  );
-                });
-            } else {
-              snackNotifications.error(graphQLError.message);
-            }
-          });
-        }
+          } else {
+            snackNotifications.error(graphQLError.message);
+          }
+        });
 
         if (networkError) {
           dispatch('mpdx-api-error');
