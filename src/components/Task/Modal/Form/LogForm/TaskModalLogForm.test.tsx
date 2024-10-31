@@ -8,7 +8,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
@@ -283,10 +282,7 @@ describe('TaskModalLogForm', () => {
     const { findByRole, getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
-          <GqlMockedProvider<{
-            AssigneeOptions: AssigneeOptionsQuery;
-            GetUser: GetUserQuery;
-          }>
+          <GqlMockedProvider<{ AssigneeOptions: AssigneeOptionsQuery }>
             mocks={{
               AssigneeOptions: {
                 accountListUsers: {
@@ -295,11 +291,6 @@ describe('TaskModalLogForm', () => {
                       user: { id: 'user-1', firstName: 'User', lastName: '1' },
                     },
                   ],
-                },
-              },
-              GetUser: {
-                user: {
-                  id: 'user-1',
                 },
               },
             }}

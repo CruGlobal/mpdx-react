@@ -10,7 +10,6 @@ import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
@@ -337,10 +336,7 @@ describe('TaskModalForm', () => {
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
-          <GqlMockedProvider<{
-            AssigneeOptions: AssigneeOptionsQuery;
-            GetUser: GetUserQuery;
-          }>
+          <GqlMockedProvider<{ AssigneeOptions: AssigneeOptionsQuery }>
             mocks={{
               AssigneeOptions: {
                 accountListUsers: {
@@ -349,11 +345,6 @@ describe('TaskModalForm', () => {
                       user: { id: 'user-1', firstName: 'User', lastName: '1' },
                     },
                   ],
-                },
-              },
-              GetUser: {
-                user: {
-                  id: 'user-1',
                 },
               },
             }}
