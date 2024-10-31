@@ -5,12 +5,15 @@ import userEvent from '@testing-library/user-event';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   ExpectedDonationRowFragment,
-  GetExpectedMonthlyTotalsDocument,
-  GetExpectedMonthlyTotalsQuery,
-  GetExpectedMonthlyTotalsQueryVariables,
+  ExpectedDonationRowFragmentDoc,
 } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import theme from '../../../../theme';
+import theme from 'src/theme';
 import { ExpectedMonthlyTotalReportTable } from './ExpectedMonthlyTotalReportTable';
+
+const mockDonation = (mocks?: Partial<ExpectedDonationRowFragment>) =>
+  gqlMock<ExpectedDonationRowFragment>(ExpectedDonationRowFragmentDoc, {
+    mocks,
+  });
 
 describe('ExpectedMonthlyTotalReportTable', () => {
   it('renders empty', async () => {
@@ -32,42 +35,27 @@ describe('ExpectedMonthlyTotalReportTable', () => {
   });
 
   it('renders donation table', async () => {
-    const data = gqlMock<
-      GetExpectedMonthlyTotalsQuery,
-      GetExpectedMonthlyTotalsQueryVariables
-    >(GetExpectedMonthlyTotalsDocument, {
-      variables: { accountListId: 'abc' },
-      mocks: {
-        expectedMonthlyTotalReport: {
-          received: {
-            donations: [
-              {
-                convertedCurrency: 'USD',
-                donationCurrency: 'CAD',
-                pledgeCurrency: 'CAD',
-                convertedAmount: 175,
-                donationAmount: 150.0,
-                pledgeAmount: 150.01,
-              },
-              {
-                convertedCurrency: 'USD',
-                donationCurrency: 'CAD',
-                pledgeCurrency: 'CAD',
-                convertedAmount: 176,
-                donationAmount: 156.0,
-                pledgeAmount: 156.01,
-              },
-            ],
-          },
-        },
-      },
+    const donation1 = mockDonation({
+      convertedCurrency: 'USD',
+      pledgeCurrency: 'CAD',
+      convertedAmount: 175,
+      donationAmount: 150.0,
+      pledgeAmount: 150.01,
     });
+    const donation2 = mockDonation({
+      convertedCurrency: 'USD',
+      pledgeCurrency: 'CAD',
+      convertedAmount: 176,
+      donationAmount: 156.0,
+      pledgeAmount: 156.01,
+    });
+
     const { queryAllByRole, getAllByTestId, getByText, getByTestId } = render(
       <ThemeProvider theme={theme}>
         <ExpectedMonthlyTotalReportTable
           accountListId={'abc'}
           title={'Donations So Far This Month'}
-          data={data.expectedMonthlyTotalReport.received.donations}
+          data={[donation1, donation2]}
           donations={true}
           total={0}
           currency={'USD'}
@@ -89,31 +77,14 @@ describe('ExpectedMonthlyTotalReportTable', () => {
   });
 
   it('renders non-donation table', async () => {
-    const data = gqlMock<
-      GetExpectedMonthlyTotalsQuery,
-      GetExpectedMonthlyTotalsQueryVariables
-    >(GetExpectedMonthlyTotalsDocument, {
-      variables: { accountListId: 'abc' },
-      mocks: {
-        expectedMonthlyTotalReport: {
-          likely: {
-            donations: [
-              {
-                convertedCurrency: 'CAD',
-                donationCurrency: 'CAD',
-                pledgeCurrency: 'CAD',
-              },
-            ],
-          },
-        },
-      },
-    });
+    const donation = mockDonation();
+
     const { queryAllByRole, queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <ExpectedMonthlyTotalReportTable
           accountListId={'abc'}
           title={'Likely Partners This Month'}
-          data={data.expectedMonthlyTotalReport.likely.donations}
+          data={[donation]}
           donations={false}
           total={0}
           currency={'USD'}
@@ -127,18 +98,9 @@ describe('ExpectedMonthlyTotalReportTable', () => {
   });
 
   it('links to contacts', async () => {
-    const data = gqlMock<
-      GetExpectedMonthlyTotalsQuery,
-      GetExpectedMonthlyTotalsQueryVariables
-    >(GetExpectedMonthlyTotalsDocument, {
-      variables: { accountListId: 'abc' },
-      mocks: {
-        expectedMonthlyTotalReport: {
-          likely: {
-            donations: [{ contactId: 'contact-1', contactName: 'John Doe' }],
-          },
-        },
-      },
+    const donation = mockDonation({
+      contactId: 'contact-1',
+      contactName: 'John Doe',
     });
 
     const { findByRole } = render(
@@ -146,7 +108,7 @@ describe('ExpectedMonthlyTotalReportTable', () => {
         <ExpectedMonthlyTotalReportTable
           accountListId={'abc'}
           title={'Likely Partners This Month'}
-          data={data.expectedMonthlyTotalReport.likely.donations}
+          data={[donation]}
           donations={false}
           total={0}
           currency={'USD'}
