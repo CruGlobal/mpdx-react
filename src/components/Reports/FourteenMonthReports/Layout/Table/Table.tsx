@@ -8,6 +8,7 @@ import {
   TableBody,
   TableContainer,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -58,6 +59,20 @@ const StyledInfoIcon = styled(InfoIcon)({
     display: 'none',
   },
 });
+
+const CircleBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'lateBy60Days',
+})(({ lateBy60Days = false }: { lateBy60Days?: boolean }) => ({
+  backgroundColor: lateBy60Days ? 'red' : 'orange',
+  width: 15,
+  height: 15,
+  borderRadius: '50%',
+  flex: 'none',
+  marginLeft: 'auto',
+  '@media print': {
+    display: 'none',
+  },
+}));
 
 const StyledTotalsRow = styled(TableRow)({
   '.MuiTableCell-root': {
@@ -140,6 +155,21 @@ export const FourteenMonthReportTable: React.FC<
                           <Link>{contact.name}</Link>
                         </NextLink>
                       </NameTypography>
+                      {(contact.lateBy30Days || contact.lateBy60Days) && (
+                        <Tooltip
+                          title={t('{{daysLate}}+ days late', {
+                            daysLate: contact.lateBy60Days ? '60' : '30',
+                          })}
+                          arrow
+                        >
+                          <CircleBox
+                            lateBy60Days={contact.lateBy60Days}
+                            data-testid={`lateCircle${
+                              contact.lateBy60Days ? '60' : '30'
+                            }`}
+                          />
+                        </Tooltip>
+                      )}
                     </Box>
                     {isExpanded && (
                       <Typography variant="body2" color="textSecondary">
