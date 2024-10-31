@@ -58,7 +58,7 @@
     "formidable": "^2.1.1",
     "formik": "^2.2.9",
     "framer-motion": "^7.3.6",
-    "graphql": "^16.6.0",
+    "graphql": "^16.9.0",
     "graphql-tag": "^2.12.6",
     "i18next": "^21.9.2",
     "i18next-browser-languagedetector": "^6.1.5",
@@ -144,7 +144,7 @@
     "eslint-plugin-react": "^7.31.8",
     "full-icu": "^1.5.0",
     "glob": "^8.0.3",
-    "graphql-ergonomock": "^1.2.0",
+    "graphql-ergonomock": "npm:@cruglobal/graphql-ergonomock@^1.2.1",
     "husky": "^8.0.1",
     "i18next-parser": "^6.6.0",
     "jest": "^29.0.3",
@@ -166,9 +166,6 @@
     "url-loader": "^4.1.1"
   },
   "resolutions": {
-    "graphql-ergonomock/graphql": "^16.6.0",
-    "graphql-ergonomock/graphql-tools": "^8.3.6",
-    "graphql-ergonomock@^1.2.0": "patch:graphql-ergonomock@npm%3A1.2.0#./.yarn/patches/graphql-ergonomock-npm-1.2.0-acffb03476.patch",
     "refractor/prismjs": "^1.28.0",
     "remark-parse/trim": "^0.0.3",
     "meow/trim-newlines": "^3.0.1",
