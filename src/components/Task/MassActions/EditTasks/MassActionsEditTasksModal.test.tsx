@@ -86,47 +86,80 @@ describe('MassActionsEditTasksModal', () => {
     );
     expect(getByText('Blank fields will not be affected!')).toBeInTheDocument();
   });
-});
+  it('shows correct Action field options based on the Task Type', async () => {
+    const handleClose = jest.fn();
+    const { queryByText, findByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <MassActionsEditTasksModal
+                accountListId={accountListId}
+                ids={['task-1', 'task-2']}
+                selectedIdCount={2}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+    const taskTypeField = await findByRole('combobox', { name: 'Task Type' });
+    const actionField = await findByRole('combobox', { name: 'Action' });
 
-it('shows correct Action field options based on the Task Type', async () => {
-  const handleClose = jest.fn();
-  const { queryByText, findByRole } = render(
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <GqlMockedProvider>
-            <MassActionsEditTasksModal
-              accountListId={accountListId}
-              ids={['task-1', 'task-2']}
-              selectedIdCount={2}
-              handleClose={handleClose}
-            />
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </ThemeProvider>
-    </LocalizationProvider>,
-  );
-  const taskTypeField = await findByRole('combobox', { name: 'Task Type' });
-  const actionField = await findByRole('combobox', { name: 'Action' });
+    expect(actionField).toBeDisabled();
 
-  expect(actionField).toBeDisabled();
+    userEvent.click(taskTypeField);
+    userEvent.click(await findByRole('option', { name: 'Appointment' }));
+    userEvent.click(actionField);
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
 
-  userEvent.click(taskTypeField);
-  userEvent.click(await findByRole('option', { name: 'Appointment' }));
-  userEvent.click(actionField);
-  userEvent.click(await findByRole('option', { name: 'In Person' }));
+    userEvent.click(taskTypeField);
+    userEvent.click(await findByRole('option', { name: 'Partner Care' }));
+    await waitFor(() => {
+      expect(queryByText('In Person')).not.toBeInTheDocument();
+    });
+    userEvent.click(actionField);
+    userEvent.click(await findByRole('option', { name: 'Digital Newsletter' }));
 
-  userEvent.click(taskTypeField);
-  userEvent.click(await findByRole('option', { name: 'Partner Care' }));
-  await waitFor(() => {
-    expect(queryByText('In Person')).not.toBeInTheDocument();
+    userEvent.clear(taskTypeField);
+    await waitFor(() => {
+      expect(queryByText('In Person')).not.toBeInTheDocument();
+    });
+    expect(actionField).toBeDisabled();
   });
-  userEvent.click(actionField);
-  userEvent.click(await findByRole('option', { name: 'Digital Newsletter' }));
 
-  userEvent.clear(taskTypeField);
-  await waitFor(() => {
-    expect(queryByText('In Person')).not.toBeInTheDocument();
+  it('requires task action when task phase is selected', async () => {
+    const handleClose = jest.fn();
+    const { getByText, findByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <MassActionsEditTasksModal
+                accountListId={accountListId}
+                ids={['task-1', 'task-2']}
+                selectedIdCount={2}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+    const taskTypeField = await findByRole('combobox', { name: 'Task Type' });
+    const actionField = await findByRole('combobox', { name: 'Action' });
+
+    userEvent.click(taskTypeField);
+    userEvent.click(await findByRole('option', { name: 'Appointment' }));
+
+    await waitFor(() => expect(getByText('Save')).toBeDisabled());
+
+    userEvent.click(taskTypeField);
+    userEvent.click(await findByRole('option', { name: 'Appointment' }));
+    userEvent.click(actionField);
+    userEvent.click(await findByRole('option', { name: 'In Person' }));
+
+    await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
   });
-  expect(actionField).toBeDisabled();
 });
