@@ -410,14 +410,11 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                             <MenuItem value={PledgeStatusEnum.NotReceived}>
                               {t('Committed')}
                             </MenuItem>
-                            {pledge?.status ===
-                              PledgeStatusEnum.ReceivedNotProcessed && (
-                              <MenuItem
-                                value={PledgeStatusEnum.ReceivedNotProcessed}
-                              >
-                                {t('Received')}
-                              </MenuItem>
-                            )}
+                            <MenuItem
+                              value={PledgeStatusEnum.ReceivedNotProcessed}
+                            >
+                              {t('Received')}
+                            </MenuItem>
                             {pledge?.status === PledgeStatusEnum.Processed && (
                               <MenuItem value={PledgeStatusEnum.Processed}>
                                 {t('Given')}
