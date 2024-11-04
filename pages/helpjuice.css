@@ -38,7 +38,9 @@
 
 #helpjuice-widget.bottomRight {
   right: 10px !important;
-  transition: right 0.3s ease;
+  @media not (prefers-reduced-motion) {
+    transition: right 0.3s ease;
+  }
 }
 
 #helpjuice-widget.bottomRight.visible,
