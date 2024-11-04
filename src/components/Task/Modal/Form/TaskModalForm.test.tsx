@@ -5,12 +5,11 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime, Settings } from 'luxon';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
@@ -90,12 +89,6 @@ describe('TaskModalForm', () => {
       id: 'userId',
     },
   };
-
-  beforeEach(() => {
-    // Create a stable time so that the "now" in the component will match "now" in the mocks
-    const now = Date.now();
-    Settings.now = () => now;
-  });
 
   it('Modal should close', async () => {
     const { getByText } = render(<Components />);
@@ -343,10 +336,7 @@ describe('TaskModalForm', () => {
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
-          <GqlMockedProvider<{
-            AssigneeOptions: AssigneeOptionsQuery;
-            GetUser: GetUserQuery;
-          }>
+          <GqlMockedProvider<{ AssigneeOptions: AssigneeOptionsQuery }>
             mocks={{
               AssigneeOptions: {
                 accountListUsers: {
@@ -355,11 +345,6 @@ describe('TaskModalForm', () => {
                       user: { id: 'user-1', firstName: 'User', lastName: '1' },
                     },
                   ],
-                },
-              },
-              GetUser: {
-                user: {
-                  id: 'user-1',
                 },
               },
             }}
@@ -377,6 +362,55 @@ describe('TaskModalForm', () => {
 
     await waitFor(() =>
       expect(getByRole('combobox', { name: 'Assignee' })).toHaveValue('User 1'),
+    );
+  });
+
+  it('defaults the subject to the defaultValues subject', () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <TaskModalForm
+              defaultValues={{
+                taskPhase: PhaseEnum.PartnerCare,
+                activityType: ActivityTypeEnum.PartnerCareTextMessage,
+                subject: 'Do something',
+              }}
+              accountListId={accountListId}
+              onClose={onClose}
+              task={null}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+      'Do something',
+    );
+  });
+
+  it('defaults the subject to the name based on phase and action', () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <TaskModalForm
+              defaultValues={{
+                taskPhase: PhaseEnum.PartnerCare,
+                activityType: ActivityTypeEnum.PartnerCareTextMessage,
+              }}
+              accountListId={accountListId}
+              onClose={onClose}
+              task={null}
+            />
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>,
+    );
+
+    expect(getByRole('textbox', { name: 'Subject' })).toHaveValue(
+      'Text Message Partner For Cultivation',
     );
   });
 

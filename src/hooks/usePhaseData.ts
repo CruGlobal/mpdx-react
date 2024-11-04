@@ -26,8 +26,15 @@ export type ActivityData = {
   name: string;
   phaseId: PhaseEnum;
   phase: string;
+  subject?: string;
   title?: string;
 };
+
+const capitalizeWords = (sentence: string): string =>
+  sentence
+    .split(' ')
+    .map((word) => word[0].toUpperCase() + word.substring(1))
+    .join(' ');
 
 const phaseFromActivity = (
   activity: PhaseEnum | null,
@@ -112,12 +119,14 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
   //   name: 'Special Gift Appeal',
   //   phase: 'Initiation',
   //   phaseId: 'INITIATION',
+  //   subject: 'Special Gift Appeal',
   //   title: 'Initiation - Special Gift Appeal',
   // },
   // FOLLOW_UP_TEXT_MESSAGE: {
   //   name: 'Text Message',
   //   phase: 'Follow-Up',
   //   phaseId: 'FOLLOW_UP',
+  //   subject: 'Text Message To Follow Up',
   //   title: 'Follow Up - Text Message',
   // },}
 
@@ -125,13 +134,16 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     const activitiesMap = new Map();
 
     constants?.phases?.forEach((phase) => {
-      phase?.tasks?.forEach((task) => {
-        activitiesMap.set(task, {
-          name: getLocalizedTaskType(t, task),
+      phase?.tasks?.forEach((activityType) => {
+        const activity = constants?.activities?.find(
+          (activity) => activity.id === activityType,
+        );
+        activitiesMap.set(activityType, {
+          name: getLocalizedTaskType(t, activityType),
           phaseId: phase.id,
           phase: getLocalizedPhase(t, phase.id),
-          title: constants?.activities?.find((activity) => activity.id === task)
-            ?.value,
+          subject: activity?.name && capitalizeWords(activity.name),
+          title: activity?.value,
         });
       });
     });
