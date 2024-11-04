@@ -5,6 +5,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
+import { buildURI } from 'react-csv/lib/core';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -24,6 +25,8 @@ import { defaultFinancialAccount } from '../Header/HeaderMocks';
 import { AccountTransactions } from './AccountTransactions';
 import { financialAccountEntriesMock } from './AccountTransactionsMocks';
 import { FinancialAccountEntriesQuery } from './financialAccountTransactions.generated';
+
+jest.mock('react-csv/lib/core');
 
 const accountListId = 'account-list-1';
 const financialAccountId = 'financialAccountId';
@@ -291,6 +294,9 @@ describe('Financial Account Transactions', () => {
     });
 
     it('should export CSV', async () => {
+      const mockBlobUrl = 'blob:';
+      buildURI.mockReturnValue(mockBlobUrl);
+
       const { getByRole } = render(<Components />);
 
       await waitFor(() => {
@@ -318,24 +324,12 @@ describe('Financial Account Transactions', () => {
         ['8/8/2024', 'description2', 'category1Name', '15008', ''],
         ['8/7/2024', 'description3', 'category2Name', '', '36.2'],
       ];
-
-      const csvContent =
-        'data:text/csv;charset=utf-8,' +
-        csvContentArray
-          .map((row) =>
-            row
-              .map((field) => `"${String(field).replace(/"/g, '""')}"`)
-              .join(','),
-          )
-          .join('\n');
+      expect(buildURI).toHaveBeenCalledWith(csvContentArray, true);
 
       await waitFor(() => {
         expect(createElementSpy).toHaveBeenCalledWith('a');
         expect(appendChildSpy).toHaveBeenCalled();
-        expect(setAttributeSpy).toHaveBeenCalledWith(
-          'href',
-          encodeURI(csvContent),
-        );
+        expect(setAttributeSpy).toHaveBeenCalledWith('href', mockBlobUrl);
         expect(clickSpy).toHaveBeenCalled();
         expect(removeChildSpy).toHaveBeenCalled();
       });

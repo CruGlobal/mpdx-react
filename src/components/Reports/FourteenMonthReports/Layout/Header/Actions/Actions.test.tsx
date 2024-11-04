@@ -31,7 +31,7 @@ describe('FourteenMonthReportActions', () => {
     userEvent.click(getByRole('button', { name: 'Print' }));
     expect(getByRole('link', { name: 'Export' })).toHaveAttribute(
       'href',
-      'data:text/csv;charset=utf-8,',
+      'data:text/csv;charset=utf-8,\uFEFF',
     );
   });
 
