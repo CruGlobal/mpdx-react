@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Box, Tab } from '@mui/material';
+import { Box, Tab, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -47,8 +47,11 @@ const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
 }));
 
-const TabPanelNoBottomPadding = styled(TabPanel)(({}) => ({
+const TabPanelNoBottomPadding = styled(TabPanel, {
+  shouldForwardProp: (prop) => prop !== 'isSmall',
+})<{ isSmall?: boolean }>(({ theme, isSmall = false }) => ({
   paddingBottom: '0px',
+  paddingInline: isSmall ? theme.spacing(0.5) : theme.spacing(2),
 }));
 
 const ContactTabsWrapper = styled(Box)(({}) => ({
@@ -95,6 +98,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
 }) => {
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
+  const isSmall = useMediaQuery('(max-width:500px)');
 
   const { accountListId, contactDetailsId: contactId } =
     contextType === ContactContextTypesEnum.Contacts
@@ -146,7 +150,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             />
           </ContactTabs>
         </ContactTabsWrapper>
-        <TabPanelNoBottomPadding value={TabKey.Tasks}>
+        <TabPanelNoBottomPadding value={TabKey.Tasks} isSmall={isSmall}>
           {contactId && accountListId && (
             <ContactTasksTab
               accountListId={accountListId}
