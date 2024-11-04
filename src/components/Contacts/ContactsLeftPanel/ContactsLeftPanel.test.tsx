@@ -1,17 +1,19 @@
-import { useContext, useEffect } from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
+import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { ContactsLeftPanel } from './ContactsLeftPanel';
 
 const router = {
@@ -47,8 +49,9 @@ const mocks = {
           status: StatusEnum.PartnerFinancial,
           primaryAddress: {
             geo: '10,20',
+            createdAt: '2021-01-01',
           },
-        },
+        } as ContactRowFragment,
       ],
     },
   },
@@ -60,32 +63,50 @@ const mocks = {
   },
 };
 
+const mapData = coordinatesFromContacts(
+  {
+    nodes: [...mocks.Contacts.contacts.nodes],
+    pageInfo: { endCursor: 'Mg', hasNextPage: false },
+    totalCount: 1,
+  },
+  'en-US',
+);
+
 describe('ContactsLeftPanel', () => {
   it('pans to the selected contact', async () => {
     const panTo = jest.fn();
     const setZoom = jest.fn();
-    const Component = () => {
-      const { mapRef } = useContext(ContactsContext) as ContactsType;
-
-      useEffect(() => {
-        mapRef.current = {
-          panTo,
-          setZoom,
-        } as unknown as google.maps.Map;
-      }, []);
-
-      return null;
-    };
 
     const { findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<{ UserOption: UserOptionQuery }> mocks={mocks}>
             <ContactsWrapper>
-              <>
-                <Component />
+              <ContactsContext.Provider
+                value={
+                  {
+                    filterData: undefined,
+                    filtersLoading: false,
+                    savedFilters: [],
+                    activeFilters: {},
+                    toggleFilterPanel: jest.fn(),
+                    setActiveFilters: jest.fn(),
+                    mapRef: {
+                      current: {
+                        panTo,
+                        setZoom,
+                      } as unknown as google.maps.Map,
+                    },
+                    mapData,
+                    panTo,
+                    selected: null,
+                    setSelected: jest.fn(),
+                    viewMode: TableViewModeEnum.Map,
+                  } as unknown as ContactsType
+                }
+              >
                 <ContactsLeftPanel />
-              </>
+              </ContactsContext.Provider>
             </ContactsWrapper>
           </GqlMockedProvider>
         </TestRouter>
