@@ -5,7 +5,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime, Settings } from 'luxon';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
@@ -90,12 +90,6 @@ describe('TaskModalForm', () => {
       id: 'userId',
     },
   };
-
-  beforeEach(() => {
-    // Create a stable time so that the "now" in the component will match "now" in the mocks
-    const now = Date.now();
-    Settings.now = () => now;
-  });
 
   it('Modal should close', async () => {
     const { getByText } = render(<Components />);

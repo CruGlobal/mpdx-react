@@ -121,7 +121,6 @@ const TaskModalLogForm = ({
   const {
     phaseData,
     setPhaseId,
-    constants,
     taskPhases,
     activityTypes,
     activitiesByPhase,
@@ -365,7 +364,7 @@ const TaskModalLogForm = ({
                           activities,
                           focusActivity,
                           activityType,
-                          constants,
+                          activityTypes,
                           setFieldTouched,
                         });
                       }}
@@ -388,7 +387,7 @@ const TaskModalLogForm = ({
                           setFieldValue,
                           setFieldTouched,
                           setActionSelected,
-                          constants,
+                          activityTypes,
                         });
                       }}
                       inputRef={activityRef}

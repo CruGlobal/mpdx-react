@@ -5,7 +5,7 @@ import {
   PhaseEnum,
   ResultEnum,
 } from 'src/graphql/types.generated';
-import { Constants, SetPhaseId } from 'src/hooks/usePhaseData';
+import { ActivityData, SetPhaseId } from 'src/hooks/usePhaseData';
 import { possibleNextActions } from './possibleNextActions';
 
 export type SetFieldValue = (
@@ -38,7 +38,7 @@ export type HandleTaskPhaseChangeProps = {
   activities: ActivityTypeEnum[];
   focusActivity: () => void;
   activityType: ActivityTypeEnum | undefined;
-  constants: Constants;
+  activityTypes: Map<ActivityTypeEnum, ActivityData>;
   setFieldTouched: SetFieldTouched;
 };
 
@@ -46,7 +46,7 @@ export type HandleTaskActionChangeProps = {
   activityType: ActivityTypeEnum | null;
   setFieldValue: SetFieldValue;
   setActionSelected: SetActionSelected;
-  constants: Constants;
+  activityTypes: Map<ActivityTypeEnum, ActivityData>;
   setFieldTouched: SetFieldTouched;
 };
 
@@ -68,7 +68,7 @@ export const handleTaskPhaseChange = ({
   activities,
   focusActivity,
   activityType,
-  constants,
+  activityTypes,
   setFieldTouched,
 }: HandleTaskPhaseChangeProps): void => {
   setFieldValue('taskPhase', phase);
@@ -84,7 +84,7 @@ export const handleTaskPhaseChange = ({
   setActionSelected(null);
   setPhaseId(phase);
   setSelectedSuggestedTags([]);
-  setTaskName(constants, activitySelection, setFieldValue, setFieldTouched);
+  setTaskName(activityTypes, activitySelection, setFieldValue, setFieldTouched);
   if (!activitySelection) {
     focusActivity();
   }
@@ -94,12 +94,12 @@ export const handleTaskActionChange = ({
   activityType,
   setFieldValue,
   setActionSelected,
-  constants,
+  activityTypes,
   setFieldTouched,
 }: HandleTaskActionChangeProps): void => {
   setFieldValue('activityType', activityType);
   setActionSelected(activityType || null);
-  setTaskName(constants, activityType, setFieldValue, setFieldTouched);
+  setTaskName(activityTypes, activityType, setFieldValue, setFieldTouched);
 };
 
 export const handleResultChange = ({
@@ -191,27 +191,23 @@ export const extractSuggestedTags = (
   return { additionalTags, suggestedTags };
 };
 
+export const getDefaultTaskName = (
+  activityType: ActivityTypeEnum | null,
+  activityTypes: Map<ActivityTypeEnum, ActivityData>,
+): string => {
+  const activity = activityType && activityTypes.get(activityType);
+  return activity?.subject ?? '';
+};
+
 const setTaskName = (
-  constants: Constants,
+  activityTypes: Map<ActivityTypeEnum, ActivityData>,
   activityType: ActivityTypeEnum | null,
   setFieldValue: SetFieldValue,
   setFieldTouched: SetFieldTouched,
 ) => {
-  const activity = constants?.activities?.find(
-    (activity) => activity.id === activityType,
-  );
-  if (activity) {
-    setFieldValue(
-      'subject',
-      activity?.name
-        ? activity.name
-            .split(' ')
-            .map((word) => {
-              return word[0].toUpperCase() + word.substring(1);
-            })
-            .join(' ')
-        : '',
-    );
+  const defaultTaskName = getDefaultTaskName(activityType, activityTypes);
+  if (defaultTaskName) {
+    setFieldValue('subject', defaultTaskName);
   }
   setTimeout(() => setFieldTouched('activityType', true));
 };

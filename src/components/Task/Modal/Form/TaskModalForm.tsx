@@ -76,6 +76,7 @@ import {
   ExtractSuggestedTags,
   extractSuggestedTags,
   getDatabaseValueFromResult,
+  getDefaultTaskName,
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from './TaskModalHelper';
@@ -89,32 +90,26 @@ const getTaskDetails = (
   activityTypes: Map<ActivityTypeEnum, ActivityData>,
   phaseTags: string[],
 ) => {
-  let taskPhase: PhaseEnum | null;
   let taskSubject: string | undefined;
   let filteredTags: ExtractSuggestedTags | undefined;
   let additionalTags: ExtractSuggestedTags['additionalTags'] | undefined;
+
+  const activityType =
+    (task ? task.activityType : defaultValues?.activityType) ?? null;
+  const initialTaskPhase = task ? task.taskPhase : defaultValues?.taskPhase;
+  // If the task/defaultValues has no phase specified, calculate the phase from the activity type,
+  // if present
+  const activityTypePhase =
+    activityType && activityTypes.get(activityType)?.phaseId;
+  const taskPhase = initialTaskPhase ?? activityTypePhase ?? null;
+
   if (task) {
-    taskPhase = task?.taskPhase ?? null;
-    if (!taskPhase) {
-      taskPhase = task?.activityType
-        ? activityTypes.get(task.activityType)?.phaseId || null
-        : null;
-    }
-    //go through tags and move some to selectedSuggestedTags and others to additionalTags
+    // go through tags and move some to selectedSuggestedTags and others to additionalTags
     filteredTags = extractSuggestedTags(task.tagList, phaseTags);
     additionalTags = filteredTags?.additionalTags;
   } else {
-    taskPhase = defaultValues?.taskPhase || null;
-    taskSubject = defaultValues?.subject;
-    if (defaultValues?.activityType && activityTypes) {
-      const activityData = defaultValues.activityType
-        ? activityTypes.get(defaultValues.activityType)
-        : undefined;
-      if (activityData) {
-        taskPhase = activityData.phaseId;
-        taskSubject = activityData.title;
-      }
-    }
+    taskSubject =
+      defaultValues?.subject ?? getDefaultTaskName(activityType, activityTypes);
   }
   return {
     taskPhase,
@@ -184,7 +179,6 @@ const TaskModalForm = ({
   const {
     phaseData,
     setPhaseId,
-    constants,
     taskPhases,
     activityTypes,
     activitiesByPhase,
@@ -466,7 +460,7 @@ const TaskModalForm = ({
                           activities,
                           focusActivity,
                           activityType,
-                          constants,
+                          activityTypes,
                           setFieldTouched,
                         });
                       }}
@@ -492,7 +486,7 @@ const TaskModalForm = ({
                             setFieldValue,
                             setFieldTouched,
                             setActionSelected,
-                            constants,
+                            activityTypes,
                           });
                         }}
                         inputRef={activityRef}
