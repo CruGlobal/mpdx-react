@@ -410,7 +410,7 @@ describe('PledgeModal', () => {
     );
   });
 
-  it('can not select the status given or received if the pledge does not have one of those statuses already', async () => {
+  it('can not select the status given if the pledge does not have the status "given"', async () => {
     const { getByRole, queryByRole } = render(
       <Components
         pledge={{
@@ -429,7 +429,7 @@ describe('PledgeModal', () => {
     userEvent.click(getByRole('combobox', { name: 'Status' }));
 
     expect(getByRole('option', { name: 'Committed' })).toBeInTheDocument();
-    expect(queryByRole('option', { name: 'Received' })).not.toBeInTheDocument();
+    expect(getByRole('option', { name: 'Received' })).toBeInTheDocument();
     expect(queryByRole('option', { name: 'Given' })).not.toBeInTheDocument();
   });
 });
