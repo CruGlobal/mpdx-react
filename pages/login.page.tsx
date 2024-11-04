@@ -11,6 +11,7 @@ import Welcome from 'src/components/Welcome';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { extractCookie } from 'src/lib/extractCookie';
 import i18n from 'src/lib/i18n';
+import { getQueryParam } from 'src/utils/queryParam';
 
 const SignUpBox = styled('div')(({ theme }) => ({
   marginBlock: theme.spacing(2),
@@ -124,10 +125,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       `mpdx-handoff.redirect-url=; HttpOnly; path=/; Max-Age=0`,
     );
   }
-  if (context.res && session && !impersonateCookie) {
+  if (session && !impersonateCookie) {
+    const queryRedirectUrl = getQueryParam(context.query, 'redirect');
     return {
       redirect: {
-        destination: redirectCookie ?? '/accountLists',
+        destination: redirectCookie ?? queryRedirectUrl ?? '/accountLists',
         permanent: false,
       },
     };

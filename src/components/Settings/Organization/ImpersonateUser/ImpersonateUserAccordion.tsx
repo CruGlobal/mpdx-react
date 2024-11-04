@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { ReactElement, useContext } from 'react';
 import {
   Box,
@@ -47,6 +48,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const { appName } = useGetAppSettings();
+  const { push } = useRouter();
 
   const { selectedOrganizationId } = useContext(
     OrganizationsContext,
@@ -81,7 +83,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
             variant: 'success',
           },
         );
-        window.location.href = `${process.env.SITE_URL}/login`;
+        push('/login');
       }
     } catch (err) {
       enqueueSnackbar(getErrorMessage(err), {

@@ -5,7 +5,6 @@ import { render } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { getSession } from 'next-auth/react';
 import { I18nextProvider } from 'react-i18next';
-import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
@@ -29,11 +28,12 @@ describe('AccountListsId page', () => {
     query: {
       accountListId: 'account-list-1',
     },
+    resolvedUrl: '/accountLists/account-list-1',
   } as unknown as GetServerSidePropsContext;
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
-      (getSession as jest.Mock).mockResolvedValue(null);
+      (getSession as jest.Mock).mockResolvedValueOnce(null);
 
       const { props, redirect } = (await getServerSideProps(
         context,
@@ -41,17 +41,13 @@ describe('AccountListsId page', () => {
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
-        destination: '/login',
+        destination: '/login?redirect=%2FaccountLists%2Faccount-list-1',
         permanent: false,
       });
     });
   });
 
   describe('NextAuth authorized', () => {
-    beforeEach(() => {
-      (getSession as jest.Mock).mockResolvedValue(session);
-    });
-
     it('redirects to the home page on GraphQL query error', async () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest

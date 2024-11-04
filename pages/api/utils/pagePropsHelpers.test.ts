@@ -4,6 +4,7 @@ import { session } from '__tests__/fixtures/session';
 import {
   enforceAdmin,
   loadSession,
+  loginRedirect,
   makeGetServerSideProps,
 } from './pagePropsHelpers';
 
@@ -11,7 +12,19 @@ jest.mock('next-auth/react');
 
 const context = {
   query: { accountListId: 'account-list-1' },
+  resolvedUrl: '/page?param=value',
 } as unknown as GetServerSidePropsContext;
+
+describe('loginRedirect', () => {
+  it('returns redirect with current URL', () => {
+    expect(loginRedirect(context)).toEqual({
+      redirect: {
+        destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
+        permanent: false,
+      },
+    });
+  });
+});
 
 describe('enforceAdmin', () => {
   it('does not return a redirect if the user is an admin', async () => {
@@ -50,7 +63,7 @@ describe('loadSession', () => {
 
     await expect(loadSession(context)).resolves.toMatchObject({
       redirect: {
-        destination: '/login',
+        destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
       },
     });
   });
@@ -67,7 +80,7 @@ describe('makeGetServerSideProps', () => {
 
     await expect(getServerSideProps(context)).resolves.toEqual({
       redirect: {
-        destination: '/login',
+        destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
         permanent: false,
       },
     });

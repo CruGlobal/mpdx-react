@@ -23,7 +23,9 @@ const router = {
   push,
 };
 
-const context = {} as unknown as GetServerSidePropsContext;
+const context = {
+  resolvedUrl: '/accountLists/account-list-1',
+} as unknown as GetServerSidePropsContext;
 
 const mutationSpy = jest.fn();
 
@@ -97,7 +99,7 @@ describe('getServerSideProps', () => {
 
     await expect(getServerSideProps(context)).resolves.toEqual({
       redirect: {
-        destination: '/login',
+        destination: '/login?redirect=%2FaccountLists%2Faccount-list-1',
         permanent: false,
       },
     });
