@@ -89,10 +89,12 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.down('lg'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
+  const isXs = useMediaQuery('(max-width:500px)');
   const condensed = (filterPanelOpen && isLarge) || isMedium;
 
   const TaskRowWrapper = styled(Box)(({ theme }) => ({
     ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+    minWidth: '300px',
   }));
 
   const ContactRowButton = styled(Box)(({}) => ({
@@ -155,7 +157,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         onClick={() => onTaskCheckToggle(taskId)}
       >
         <Box
-          style={{
+          sx={{
             width: '100%',
             display: 'flex',
             alignItems: 'center',
@@ -179,22 +181,25 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           <Box onClick={(e) => e.stopPropagation()}>
             <TaskCompleteButton
               isComplete={isComplete}
+              isXs={isXs}
               onClick={handleCompleteButtonPressed}
               onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
             />
           </Box>
 
           <Box
-            display="flex"
-            style={{
+            sx={{
+              display: 'flex',
               width: '100%',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              flexDirection: isXs ? 'column' : 'row',
             }}
           >
             {(activityData?.phase || activityType) && (
               <Box
+                sx={{ display: 'flex' }}
                 onClick={(e) => {
                   handleSubjectPressed();
                   e.stopPropagation();
@@ -204,14 +209,16 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 <TaskActionPhase
                   activityData={activityData}
                   activityType={activityType}
+                  isXs={isXs}
                 />
               </Box>
             )}
             <Box
-              style={{
+              sx={{
                 width: '100%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                display: 'flex',
                 flexDirection: 'column',
               }}
             >
@@ -229,7 +236,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               </Tooltip>
 
               <Box
-                style={{
+                sx={{
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
