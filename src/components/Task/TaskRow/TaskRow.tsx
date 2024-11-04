@@ -44,6 +44,13 @@ const ContactText = styled(Typography)(({ theme }) => ({
   },
 }));
 
+const TaskRowWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isChecked',
+})<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
+  ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  minWidth: '300px',
+}));
+
 type OnContactClickFunction = (
   event: React.MouseEvent<HTMLElement, MouseEvent>,
   contactId: string,
@@ -91,11 +98,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
   const isXs = useMediaQuery('(max-width:500px)');
   const condensed = (filterPanelOpen && isLarge) || isMedium;
-
-  const TaskRowWrapper = styled(Box)(({ theme }) => ({
-    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
-    minWidth: '300px',
-  }));
 
   const ContactRowButton = styled(Box)(({}) => ({
     height: '56px',
@@ -149,7 +151,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const areMoreTags = tagsToShow < task.tagList.length;
 
   return (
-    <TaskRowWrapper role="row" p={1}>
+    <TaskRowWrapper role="row" p={1} isChecked={isChecked}>
       <ContactRowButton
         display="flex"
         alignItems="center"
@@ -181,7 +183,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           <Box onClick={(e) => e.stopPropagation()}>
             <TaskCompleteButton
               isComplete={isComplete}
-              isXs={isXs}
               onClick={handleCompleteButtonPressed}
               onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
             />

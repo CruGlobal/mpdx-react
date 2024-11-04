@@ -59,21 +59,24 @@ const TaskDescription = styled(Typography)(({ theme }) => ({
   WebkitBoxOrient: 'vertical',
 }));
 
-const SubjectWrap = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isXs',
-})<{ isXs?: boolean }>(({ theme, isXs }) => ({
+const SubjectWrap = styled(Box)(({ theme }) => ({
   width: '100%',
   display: 'flex',
   height: '100%',
-  flexDirection: isXs ? 'column' : 'row',
-  alignItems: isXs ? 'flex-start' : 'center',
+  flexDirection: 'row',
+  alignItems: 'center',
   marginLeft: theme.spacing(0.5),
-  justifyContent: isXs ? 'center' : 'start',
+  justifyContent: 'start',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   '&:hover': {
     textDecoration: 'underline',
     cursor: 'pointer',
+  },
+  ['@media (max-width:500px)']: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
 }));
 
@@ -177,13 +180,11 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           isComplete={isComplete}
           onClick={handleCompleteButtonPressed}
           onMouseEnter={() => preloadTaskModal(TaskModalEnum.Complete)}
-          isXs={isXs}
         />
       </TaskItemWrap>
       <SubjectWrap
         onClick={handleSubjectPressed}
         onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
-        isXs={isXs}
       >
         <TaskActionPhase
           activityData={activityData}
