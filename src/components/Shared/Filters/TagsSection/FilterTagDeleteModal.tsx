@@ -7,7 +7,6 @@ import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/conta
 import { TaskFiltersDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
 import { DeleteButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDeleteTagMutation } from './Chip/DeleteTag.generated';
 
 interface FilterTagDeleteModalProps {
@@ -24,7 +23,6 @@ export const FilterTagDeleteModal: React.FC<FilterTagDeleteModalProps> = ({
   const { t } = useTranslation();
   const { route } = useRouter();
   const [deleteTag, { loading: deleting }] = useDeleteTagMutation();
-  const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
 
   const page = route.split('/')[3];
@@ -36,11 +34,7 @@ export const FilterTagDeleteModal: React.FC<FilterTagDeleteModalProps> = ({
         page,
       },
       refetchQueries: [
-        {
-          query:
-            page === 'contacts' ? ContactFiltersDocument : TaskFiltersDocument,
-          variables: { accountListId },
-        },
+        page === 'contacts' ? ContactFiltersDocument : TaskFiltersDocument,
       ],
       onCompleted: () => {
         enqueueSnackbar(t('Tag deleted!'), {
