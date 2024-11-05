@@ -1,9 +1,11 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import fetchMock from 'jest-fetch-mock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { fourteenMonthReportMock } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReportMock';
 import theme from 'src/theme';
 import SalaryCurrencyReportPage from './[[...contactId]].page';
 
@@ -25,39 +27,29 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
     push,
   };
 
-  const mocks = {
-    FourteenMonthReport: {
-      fourteenMonthReport: {
-        currencyGroups: [
-          {
-            contacts: [
-              {
-                id: 'contact-1',
-                name: 'John Doe',
-                lastDonationCurrency: 'USD',
-                pledgeCurrency: 'USD',
-              },
-            ],
-          },
-        ],
-      },
-    },
-  };
-
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider mocks={mocks}>
+      <GqlMockedProvider>
+        <TestRouter router={router}>
           <SnackbarProvider>
             <SalaryCurrencyReportPage />
           </SnackbarProvider>
-        </GqlMockedProvider>
-      </TestRouter>
+        </TestRouter>
+      </GqlMockedProvider>
     </ThemeProvider>
   );
 };
 
 describe('salaryCurrency page', () => {
+  fetchMock.enableMocks();
+  beforeEach(() => {
+    fetchMock.resetMocks();
+    fetchMock.mockResponses([
+      JSON.stringify(fourteenMonthReportMock),
+      { status: 200 },
+    ]);
+    process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
+  });
   it('renders', () => {
     const { getByRole } = render(<TestingComponent />);
 

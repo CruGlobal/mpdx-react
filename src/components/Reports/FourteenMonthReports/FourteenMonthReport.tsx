@@ -3,6 +3,7 @@ import { Box, CircularProgress, useMediaQuery } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { mapFourteenMonthReport } from 'pages/api/Schema/reports/fourteenMonth/datahandler';
 import { FourteenMonthReport as FourteenMonthReportQueryResponse } from 'pages/api/graphql-rest.page.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
@@ -14,7 +15,6 @@ import {
   FourteenMonthReportTableProps as TableProps,
 } from './Layout/Table/Table';
 import { calculateTotals, sortContacts } from './Layout/Table/helpers';
-import { mapFourteenMonthReport } from './handleFourteenMonthReportData';
 import { useCsvData } from './useCsvData';
 import type { Order } from '../Reports.type';
 import type { OrderBy } from './Layout/Table/TableHead/TableHead';
