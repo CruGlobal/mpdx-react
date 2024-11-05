@@ -51,6 +51,23 @@ const TaskRowWrapper = styled(Box, {
   minWidth: '300px',
 }));
 
+const ContactRowButton = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'useTopMargin',
+})<{ useTopMargin?: boolean }>(({ useTopMargin }) => ({
+  height: '56px',
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-evenly',
+  alignItems: 'center',
+  alignContent: 'center',
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  marginTop: useTopMargin ? '20px' : '0',
+}));
+
 type OnContactClickFunction = (
   event: React.MouseEvent<HTMLElement, MouseEvent>,
   contactId: string,
@@ -99,21 +116,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const isXs = useMediaQuery('(max-width:500px)');
   const condensed = (filterPanelOpen && isLarge) || isMedium;
 
-  const ContactRowButton = styled(Box)(({}) => ({
-    height: '56px',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    alignContent: 'center',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    marginTop: useTopMargin ? '20px' : '0',
-  }));
-
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const onContactClick: OnContactClickFunction = (event, contactId) => {
     event.preventDefault();
@@ -157,6 +159,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
         alignItems="center"
         data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
+        useTopMargin={useTopMargin}
       >
         <Box
           sx={{
