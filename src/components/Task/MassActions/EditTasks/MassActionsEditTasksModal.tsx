@@ -202,7 +202,6 @@ export const MassActionsEditTasksModal: React.FC<
                     // None and null are distinct values: null leaves the action unchanged and None changes the action to None
                     preserveNone
                     required={!!taskPhase}
-                    onBlur={handleBlur('activityType')}
                     touched={touched}
                     errors={errors}
                     inputRef={activityRef}
