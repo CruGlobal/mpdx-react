@@ -1378,5 +1378,6 @@ export default cors(async (req, res) => {
 export const config: PageConfig = {
   api: {
     bodyParser: false,
+    responseLimit: false,
   },
 };
