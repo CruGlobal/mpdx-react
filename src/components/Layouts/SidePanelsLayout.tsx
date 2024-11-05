@@ -5,9 +5,9 @@ import { CSSProperties } from '@mui/styles';
 
 interface ToolbarMixin extends CSSProperties {
   minHeight: number;
-  ['@media (min-width:600px)']: { minHeight: number };
-  ['@media (min-width:0px)']: {
-    ['@media (orientation: landscape)']: { minHeight: number };
+  '@media (min-width:600px)': { minHeight: number };
+  '@media (min-width:0px)': {
+    '@media (orientation: landscape)': { minHeight: number };
   };
 }
 
@@ -23,10 +23,10 @@ const FullHeightBox = styled(Box, {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
   return {
     height: `calc(100vh - ${toolbar.minHeight}px - ${headerHeight})`,
-    ['@media (min-width:0px) and (orientation: landscape)']: {
+    '@media (min-width:0px) and (orientation: landscape)': {
       height: `calc(100vh - ${toolbar['@media (min-width:0px)']['@media (orientation: landscape)'].minHeight}px - ${headerHeight})`,
     },
-    ['@media (min-width:600px)']: {
+    '@media (min-width:600px)': {
       height: `calc(100vh - ${toolbar['@media (min-width:600px)'].minHeight}px - ${headerHeight})`,
     },
     overflowY: isScrollable ? 'auto' : 'hidden',
@@ -74,10 +74,10 @@ const RightPanelWrapper = styled(FullHeightBox)(({ theme, headerHeight }) => {
     overflowY: 'scroll',
     background: theme.palette.common.white,
     top: `calc(${toolbar.minHeight}px + ${headerHeight})`,
-    ['@media (min-width:0px) and (orientation: landscape)']: {
+    '@media (min-width:0px) and (orientation: landscape)': {
       top: `calc(${toolbar['@media (min-width:0px)']['@media (orientation: landscape)'].minHeight}px + ${headerHeight})`,
     },
-    ['@media (min-width:600px)']: {
+    '@media (min-width:600px)': {
       top: `calc(${toolbar['@media (min-width:600px)'].minHeight}px + ${headerHeight})`,
       borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
     },

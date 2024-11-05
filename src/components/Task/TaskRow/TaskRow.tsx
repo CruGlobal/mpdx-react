@@ -44,6 +44,30 @@ const ContactText = styled(Typography)(({ theme }) => ({
   },
 }));
 
+const TaskRowWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isChecked',
+})<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
+  ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  minWidth: '300px',
+}));
+
+const ContactRowButton = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'useTopMargin',
+})<{ useTopMargin?: boolean }>(({ useTopMargin }) => ({
+  height: '56px',
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-evenly',
+  alignItems: 'center',
+  alignContent: 'center',
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  marginTop: useTopMargin ? '20px' : '0',
+}));
+
 type OnContactClickFunction = (
   event: React.MouseEvent<HTMLElement, MouseEvent>,
   contactId: string,
@@ -89,26 +113,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const theme = useTheme();
   const isLarge = useMediaQuery(theme.breakpoints.down('lg'));
   const isMedium = useMediaQuery(theme.breakpoints.down('md'));
+  const isXs = useMediaQuery('(max-width:500px)');
   const condensed = (filterPanelOpen && isLarge) || isMedium;
-
-  const TaskRowWrapper = styled(Box)(({ theme }) => ({
-    ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
-  }));
-
-  const ContactRowButton = styled(Box)(({}) => ({
-    height: '56px',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    alignContent: 'center',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    marginTop: useTopMargin ? '20px' : '0',
-  }));
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const onContactClick: OnContactClickFunction = (event, contactId) => {
@@ -147,15 +153,16 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const areMoreTags = tagsToShow < task.tagList.length;
 
   return (
-    <TaskRowWrapper role="row" p={1}>
+    <TaskRowWrapper role="row" p={1} isChecked={isChecked}>
       <ContactRowButton
         display="flex"
         alignItems="center"
         data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
+        useTopMargin={useTopMargin}
       >
         <Box
-          style={{
+          sx={{
             width: '100%',
             display: 'flex',
             alignItems: 'center',
@@ -185,16 +192,18 @@ export const TaskRow: React.FC<TaskRowProps> = ({
           </Box>
 
           <Box
-            display="flex"
-            style={{
+            sx={{
+              display: 'flex',
               width: '100%',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              flexDirection: isXs ? 'column' : 'row',
             }}
           >
             {(activityData?.phase || activityType) && (
               <Box
+                sx={{ display: 'flex' }}
                 onClick={(e) => {
                   handleSubjectPressed();
                   e.stopPropagation();
@@ -204,14 +213,16 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 <TaskActionPhase
                   activityData={activityData}
                   activityType={activityType}
+                  isXs={isXs}
                 />
               </Box>
             )}
             <Box
-              style={{
+              sx={{
                 width: '100%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                display: 'flex',
                 flexDirection: 'column',
               }}
             >
@@ -229,7 +240,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
               </Tooltip>
 
               <Box
-                style={{
+                sx={{
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}

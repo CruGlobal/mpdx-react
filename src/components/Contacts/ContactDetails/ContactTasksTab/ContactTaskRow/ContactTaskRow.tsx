@@ -7,6 +7,7 @@ import {
   Skeleton,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -52,24 +53,30 @@ const TaskItemWrap = styled(Box)(({ theme }) => ({
 const TaskDescription = styled(Typography)(({ theme }) => ({
   fontSize: 14,
   color: theme.palette.text.primary,
-  marginLeft: theme.spacing(0.5),
   overflow: 'hidden',
   display: '-webkit-box',
   WebkitLineClamp: 2,
   WebkitBoxOrient: 'vertical',
 }));
 
-const SubjectWrap = styled(Box)(({}) => ({
+const SubjectWrap = styled(Box)(({ theme }) => ({
   width: '100%',
   display: 'flex',
   height: '100%',
+  flexDirection: 'row',
   alignItems: 'center',
+  marginLeft: theme.spacing(0.5),
   justifyContent: 'start',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   '&:hover': {
     textDecoration: 'underline',
     cursor: 'pointer',
+  },
+  '@media (max-width:500px)': {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
 }));
 
@@ -157,6 +164,8 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
   const assigneeName = user ? `${user.firstName} ${user.lastName}` : '';
   const tagList = !!task.tagList.length ? task.tagList.join(', ') : '';
   const activityData = activityType ? activityTypes.get(activityType) : null;
+  const isXs = useMediaQuery('(max-width:500px)');
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   return !hasBeenDeleted ? (
     <TaskRowWrap isChecked={isChecked}>
@@ -180,6 +189,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         <TaskActionPhase
           activityData={activityData}
           activityType={activityType}
+          isXs={isXs}
         />
 
         <Tooltip title={subject} placement="top-start" arrow>
@@ -188,7 +198,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
       </SubjectWrap>
 
       <TaskItemWrap justifyContent="end" maxWidth={theme.spacing(45)}>
-        {(assigneeName || tagList) && (
+        {!isXs && (assigneeName || tagList) && (
           <Tooltip
             title={
               <>
@@ -248,17 +258,21 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
           </Tooltip>
         </Box>
 
-        <DeleteTaskIconButton
-          accountListId={accountListId}
-          taskId={task.id}
-          onDeleteConfirm={handleDeleteConfirm}
-          small
-        />
-        <StarTaskIconButton
-          accountListId={accountListId}
-          taskId={task.id}
-          isStarred={task.starred}
-        />
+        {!isSmall && (
+          <>
+            <DeleteTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              onDeleteConfirm={handleDeleteConfirm}
+              small
+            />
+            <StarTaskIconButton
+              accountListId={accountListId}
+              taskId={task.id}
+              isStarred={task.starred}
+            />
+          </>
+        )}
       </TaskItemWrap>
     </TaskRowWrap>
   ) : null;

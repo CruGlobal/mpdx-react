@@ -41,14 +41,14 @@ const BannerDetails = styled(Box)(() => ({
   width: '100%',
   gap: theme.spacing(2),
 
-  ['@media (max-width:500px)']: {
+  '@media (max-width:500px)': {
     flexWrap: 'wrap',
   },
 }));
 
 const BannerItem = styled(Box)(() => ({
   minWidth: '240px',
-  ['@media (max-width:500px)']: {
+  '@media (max-width:500px)': {
     textAlign: 'center',
     width: '100%',
   },
