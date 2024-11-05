@@ -90,6 +90,28 @@ describe('AddAddressModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
+  it('requires at least one field to be filled', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <AddAddressModal
+              accountListId={accountListId}
+              contactId={contactId}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    const saveButton = getByRole('button', { name: 'Save' });
+    await waitFor(() => expect(saveButton).toBeDisabled());
+
+    userEvent.type(getByRole('textbox', { name: 'City' }), 'City');
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+  });
+
   it('should create contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';

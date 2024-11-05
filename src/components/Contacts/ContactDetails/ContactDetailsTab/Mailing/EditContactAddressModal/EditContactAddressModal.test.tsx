@@ -115,6 +115,47 @@ describe('EditContactAddressModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
+  it('requires at least one field to be filled', async () => {
+    const { getByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <EditContactAddressModal
+              contactId={contactId}
+              accountListId={accountListId}
+              handleClose={handleClose}
+              address={{
+                city: '',
+                country: '',
+                historic: false,
+                id: 'address-1',
+                location: '',
+                metroArea: '',
+                postalCode: '',
+                primaryMailingAddress: false,
+                region: '',
+                source: 'MPDX',
+                state: '',
+                street: '123 Cool Street',
+                createdAt: '',
+                startDate: '',
+              }}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    const saveButton = getByRole('button', { name: 'Save' });
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+
+    userEvent.clear(getByRole('combobox', { name: 'Street' }));
+    await waitFor(() => expect(saveButton).toBeDisabled());
+
+    userEvent.type(getByRole('textbox', { name: 'City' }), 'City');
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+  });
+
   it('should edit contact address', async () => {
     const mutationSpy = jest.fn();
     const newStreet = '4321 Neat Street';
