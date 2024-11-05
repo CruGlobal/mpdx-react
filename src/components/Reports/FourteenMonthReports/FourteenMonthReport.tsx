@@ -87,7 +87,6 @@ export const FourteenMonthReport: React.FC<Props> = ({
               authorization: `Bearer ${apiToken}`,
               'Content-Type': 'application/vnd.api+json',
             },
-            method: 'GET',
           },
         );
 
