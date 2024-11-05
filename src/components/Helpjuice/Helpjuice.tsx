@@ -36,6 +36,36 @@ export const Helpjuice: React.FC = () => {
     return () => closeImage.remove();
   });
 
+  // When a user clicks on an article in the beacon, make the title link to the article in a new
+  // tab on Helpjuice
+  useEffect(() => {
+    const helpJuiceOrigin = process.env.HELPJUICE_ORIGIN;
+    const swiftyContainer = document.getElementsByClassName('hj-swifty')[0];
+    if (!helpJuiceOrigin || !(swiftyContainer instanceof HTMLElement)) {
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      const questionId = swiftyContainer.dataset.currentQuestionId;
+      const nameHeader = document.getElementById('article-content-name');
+      if (!questionId || !nameHeader) {
+        return;
+      }
+
+      // Turn the title into a link when the selected question id changes
+      const link = document.createElement('a');
+      link.setAttribute('href', `${helpJuiceOrigin}/${questionId}`);
+      link.setAttribute('target', '_blank');
+      link.textContent = nameHeader.textContent;
+      nameHeader.replaceChildren(link);
+    });
+    // Watch for changes to the selected question
+    observer.observe(swiftyContainer, {
+      attributeFilter: ['data-current-question-id'],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!process.env.HELPJUICE_ORIGIN) {
       return;
