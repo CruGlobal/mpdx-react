@@ -13,13 +13,13 @@ const AlertBox = styled(Alert)({
   top: '64px',
   width: '100%',
   zIndex: '10',
-  ['@media (max-width:1126px)']: {
+  '@media (max-width:1126px)': {
     top: '73px',
   },
-  ['@media (max-width:900px)']: {
+  '@media (max-width:900px)': {
     top: '65px',
   },
-  ['@media (max-width:600px)']: {
+  '@media (max-width:600px)': {
     top: '57px',
   },
 });

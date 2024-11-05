@@ -22,7 +22,7 @@ const ButtonWrap = styled(Button, {
     backgroundColor: theme.palette.mpdxGreen.main,
     color: theme.palette.common.white,
   },
-  ['@media (max-width:500px)']: {
+  '@media (max-width:500px)': {
     margin: theme.spacing(2, 1),
   },
 }));

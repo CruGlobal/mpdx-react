@@ -50,7 +50,7 @@ const ContactDetailsWrapper = styled(Box)(({}) => ({
 const TabPanelNoBottomPadding = styled(TabPanel)(({ theme }) => ({
   paddingBottom: '0px',
   paddingInline: theme.spacing(2),
-  ['@media (max-width:500px)']: {
+  '@media (max-width:500px)': {
     paddingInline: theme.spacing(0.5),
   },
 }));

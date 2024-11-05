@@ -73,7 +73,7 @@ const SubjectWrap = styled(Box)(({ theme }) => ({
     textDecoration: 'underline',
     cursor: 'pointer',
   },
-  ['@media (max-width:500px)']: {
+  '@media (max-width:500px)': {
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'center',
