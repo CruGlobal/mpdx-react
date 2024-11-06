@@ -44,7 +44,6 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   return (
     <Autocomplete<ActivityTypeEnum>
       openOnFocus
-      autoHighlight
       autoSelect
       value={value === null || typeof value === 'undefined' ? null : value}
       options={sortedOptions}

@@ -103,7 +103,7 @@ describe('TasksMassActionsDropdown', () => {
       queryByText,
       getByLabelText,
       getByRole,
-      findByLabelText,
+      findByRole,
     } = render(<TaskComponents />);
 
     expect(queryByText('Edit Tasks')).not.toBeInTheDocument();
@@ -120,7 +120,7 @@ describe('TasksMassActionsDropdown', () => {
         'Appointment',
       ),
     );
-    userEvent.click(await findByLabelText('Action'));
+    userEvent.click(await findByRole('combobox', { name: 'Action' }));
     userEvent.click(
       within(getByRole('listbox', { hidden: true, name: 'Action' })).getByText(
         'In Person',

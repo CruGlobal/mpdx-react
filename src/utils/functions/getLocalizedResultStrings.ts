@@ -37,7 +37,7 @@ export const getLocalizedResultString = (
       return t('No Response Yet');
 
     case DisplayResultEnum.AppointmentResultNotInterested:
-      return t('Does not want to meet');
+      return t('Not Interested');
 
     case DisplayResultEnum.InitiationResultCircleBack:
       return t("Can't meet right now - circle back");

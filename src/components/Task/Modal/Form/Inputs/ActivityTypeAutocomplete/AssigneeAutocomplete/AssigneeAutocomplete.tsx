@@ -25,7 +25,6 @@ export const AssigneeAutocomplete: React.FC<AssigneeAutocompleteProps> = ({
   return (
     <Autocomplete
       autoSelect
-      autoHighlight
       options={users.map(({ user }) => user.id)}
       getOptionLabel={(userId) => {
         const user = users.find(({ user }) => user.id === userId)?.user;

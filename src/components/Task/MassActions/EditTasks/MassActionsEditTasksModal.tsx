@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useRef } from 'react';
 import {
   Alert,
   Checkbox,
@@ -37,7 +37,13 @@ import { IncompleteWarning } from '../IncompleteWarning/IncompleteWarning';
 const massActionsEditTasksSchema = yup.object({
   subject: yup.string().nullable(),
   taskPhase: yup.mixed<PhaseEnum>().nullable(),
-  activityType: yup.mixed<ActivityTypeEnum>().nullable(),
+  activityType: yup
+    .mixed<ActivityTypeEnum>()
+    .nullable()
+    .when('taskPhase', {
+      is: (value: any) => !!value,
+      then: yup.mixed<ActivityTypeEnum>().required('Must select a Task Action'),
+    }),
   userId: yup.string().nullable(),
   startAt: nullableDateTime(),
   noDueDate: yup.boolean().required(),
@@ -62,8 +68,13 @@ export const MassActionsEditTasksModal: React.FC<
   const [createTaskComment] = useCreateTaskCommentMutation();
   const { update } = useUpdateTasksQueries();
   const { taskPhases, activitiesByPhase } = usePhaseData();
+  const activityRef = useRef<HTMLInputElement | null>(null);
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const focusActivity = (): void => {
+    setTimeout(() => activityRef?.current?.focus(), 50);
+  };
 
   const onSubmit = async (fields: Attributes) => {
     const { noDueDate, body } = fields;
@@ -142,9 +153,12 @@ export const MassActionsEditTasksModal: React.FC<
           },
           handleChange,
           handleSubmit,
+          handleBlur,
           setFieldValue,
           isSubmitting,
           isValid,
+          touched,
+          errors,
         }): ReactElement => (
           <form onSubmit={handleSubmit} noValidate data-testid="EditTasksModal">
             <DialogContent dividers>
@@ -170,7 +184,9 @@ export const MassActionsEditTasksModal: React.FC<
                     onChange={(phase) => {
                       setFieldValue('taskPhase', phase);
                       setFieldValue('activityType', '');
+                      focusActivity();
                     }}
+                    onBlur={handleBlur('taskPhase')}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -185,6 +201,10 @@ export const MassActionsEditTasksModal: React.FC<
                     }
                     // None and null are distinct values: null leaves the action unchanged and None changes the action to None
                     preserveNone
+                    required={!!taskPhase}
+                    touched={touched}
+                    errors={errors}
+                    inputRef={activityRef}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
