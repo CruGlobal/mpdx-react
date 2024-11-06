@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -37,7 +37,6 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   FilterGroup,
-  MultiselectFilter,
   ReportContactFilterSetInput,
   ResultEnum,
   TaskFilterSetInput,
@@ -590,11 +589,17 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     clearSelectedFilter();
   };
 
-  const tagsFilters =
-    (
-      filters.find((filter) => filter?.filters[0]?.filterKey === 'tags')
-        ?.filters[0] as MultiselectFilter
-    )?.options ?? [];
+  const tagsFilters = useMemo(() => {
+    const tags = filters.find(
+      (filter) => filter?.filters[0]?.filterKey === 'tags',
+    )?.filters[0];
+    if (tags?.__typename === 'MultiselectFilter' && tags.options) {
+      return [...tags.options].sort((tag1, tag2) =>
+        tag1.name.localeCompare(tag2.name),
+      );
+    }
+    return [];
+  }, [filter]);
   const noSelectedFilters =
     Object.keys(sanitizeFilters(selectedFilters)).length === 0;
 

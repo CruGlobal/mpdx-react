@@ -14,7 +14,10 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import {
+  ContactFiltersDocument,
+  ContactsDocument,
+} from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import {
   CancelButton,
@@ -100,6 +103,13 @@ export const MassActionsAddTagsModal: React.FC<
         id: contact.id,
         tagList: [...new Set([...tags, ...contact.tagList])],
       })) ?? [];
+
+    // If a tag is in the list that isn't in contactTagList, it is a new tag, which means we need to
+    // refetch the contact filters
+    const newTag = tags.some(
+      (tag) => !contactTagsList?.accountList.contactTagList.includes(tag),
+    );
+
     await contactsAddTags({
       variables: {
         accountListId,
@@ -110,6 +120,7 @@ export const MassActionsAddTagsModal: React.FC<
           query: ContactsDocument,
           variables: { accountListId },
         },
+        ...(newTag ? [ContactFiltersDocument] : []),
       ],
     });
     enqueueSnackbar(t('Tags added to contacts!'), {

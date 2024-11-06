@@ -5,6 +5,7 @@ import { Formik, FormikHelpers } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import {
   useGetContactTagListQuery,
@@ -112,12 +113,19 @@ export const ContactTags: React.FC<ContactTagsProps> = ({
       return;
     }
 
+    // If a tag is in the list that isn't in contactTagList, it is a new tag, which means we need to
+    // refetch the contact filters
+    const newTag = tagList.some(
+      (tag) => !contactTagsList?.accountList.contactTagList.includes(tag),
+    );
+
     const { data } = await updateContactTags({
       variables: {
         accountListId,
         contactId,
         tagList: [...contactTags, ...tagList],
       },
+      refetchQueries: newTag ? [ContactFiltersDocument] : [],
       optimisticResponse: {
         updateContact: {
           __typename: 'ContactUpdateMutationPayload',
