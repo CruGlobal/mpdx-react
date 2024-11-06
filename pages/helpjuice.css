@@ -1,4 +1,5 @@
 #helpjuice-widget {
+  bottom: 160px !important;
   --right-position: 80px;
 }
 
@@ -38,7 +39,9 @@
 
 #helpjuice-widget.bottomRight {
   right: 10px !important;
-  transition: right 0.3s ease;
+  @media not (prefers-reduced-motion) {
+    transition: right 0.3s ease;
+  }
 }
 
 #helpjuice-widget.bottomRight.visible,
@@ -47,14 +50,13 @@
 }
 
 /*
- * Expand the hover hitbox to be 20px above and below the button, extend to the right edge of the
- * screen and be 20px past the left edge of the button.
+ * Expand the hover hitbox to extend to the right edge of the screen and be 20px past the left edge
+ * of the button.
  */
 #helpjuice-widget.bottomRight::before {
   content: '';
   position: absolute;
-  height: calc(var(--right-position) + 40px);
-  top: -20px;
+  height: var(--right-position);
   right: calc(var(--right-position) * -1);
   left: -20px;
   z-index: -1;
