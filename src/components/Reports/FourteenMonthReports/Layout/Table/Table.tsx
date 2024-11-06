@@ -147,12 +147,10 @@ export const FourteenMonthReportTable: React.FC<
                     <Box display="flex" alignItems="center">
                       {!isExpanded && <StyledInfoIcon fontSize="small" />}
                       <NameTypography variant="body1" expanded={isExpanded}>
-                        <NextLink
-                          href={contactUrl}
-                          passHref
-                          onMouseEnter={preloadContactsRightPanel}
-                        >
-                          <Link>{contact.name}</Link>
+                        <NextLink href={contactUrl} passHref legacyBehavior>
+                          <Link onMouseEnter={preloadContactsRightPanel}>
+                            {contact.name}
+                          </Link>
                         </NextLink>
                       </NameTypography>
                       {(contact.lateBy30Days || contact.lateBy60Days) && (
