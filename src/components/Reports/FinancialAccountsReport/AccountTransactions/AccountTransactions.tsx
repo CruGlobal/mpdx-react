@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
+import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
@@ -115,10 +116,10 @@ export const AccountTransactions: React.FC = () => {
       t('Outflow'),
       t('Inflow'),
     ];
-    const convertDataToArray = data.financialAccountEntries.entries.reduce(
-      (array, entry) => {
+    const csvLines = data.financialAccountEntries.entries.reduce(
+      (csvLines, entry) => {
         return [
-          ...array,
+          ...csvLines,
           [
             entry.entryDate
               ? dateFormatShort(DateTime.fromISO(entry.entryDate), locale)
@@ -138,20 +139,11 @@ export const AccountTransactions: React.FC = () => {
     );
 
     // Convert Array to CSV format
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      convertDataToArray
-        .map((row) =>
-          row
-            .map((field) => `"${String(field).replace(/"/g, '""')}"`)
-            .join(','),
-        )
-        .join('\n');
+    const csvBlob = buildURI(csvLines, true);
 
     // Create a link and trigger download
-    const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
+    link.setAttribute('href', csvBlob);
     link.setAttribute('download', `${appName}-entries-export${dateRange}.csv`);
     document.body.appendChild(link);
     link.click();

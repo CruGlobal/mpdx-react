@@ -1,7 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
@@ -24,9 +27,10 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
+const contactUrl = `/accountLists/${accountListId}/tools/appeals/${appealId}/${defaultContact.id}`;
 
 const getContactUrl = jest.fn().mockReturnValue({
-  contactUrl: `/contacts/${defaultContact.id}`,
+  contactUrl,
 });
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
@@ -43,29 +47,33 @@ const Components = ({
   excludedContacts = [],
 }: ComponentsProps) => (
   <TestRouter router={router}>
-    <GqlMockedProvider>
-      <ThemeProvider theme={theme}>
-        <AppealsWrapper>
-          <AppealsContext.Provider
-            value={
-              {
-                appealId,
-                getContactUrl,
-                isRowChecked,
-                contactDetailsOpen,
-                toggleSelectionById,
-              } as unknown as AppealsType
-            }
-          >
-            <ContactRow
-              contact={contact}
-              appealStatus={appealStatus}
-              excludedContacts={excludedContacts}
-            />
-          </AppealsContext.Provider>
-        </AppealsWrapper>
-      </ThemeProvider>
-    </GqlMockedProvider>
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <ThemeProvider theme={theme}>
+            <AppealsWrapper>
+              <AppealsContext.Provider
+                value={
+                  {
+                    appealId,
+                    getContactUrl,
+                    isRowChecked,
+                    contactDetailsOpen,
+                    toggleSelectionById,
+                  } as unknown as AppealsType
+                }
+              >
+                <ContactRow
+                  contact={contact}
+                  appealStatus={appealStatus}
+                  excludedContacts={excludedContacts}
+                />
+              </AppealsContext.Provider>
+            </AppealsWrapper>
+          </ThemeProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </LocalizationProvider>
   </TestRouter>
 );
 
@@ -92,7 +100,17 @@ describe('ContactsRow', () => {
 
     const contact = getByTestId('rowButton');
     expect(contact).toBeInTheDocument();
-    expect(contact).toHaveAttribute('href', `/contacts/${defaultContact.id}`);
+    expect(contact).toHaveAttribute('href', contactUrl);
+  });
+
+  it('should open commitment modal', async () => {
+    const { getByTestId, findByRole } = render(<Components />);
+
+    const addCommitment = getByTestId('AddIcon');
+    userEvent.click(addCommitment);
+    expect(
+      await findByRole('heading', { name: 'Add Commitment' }),
+    ).toBeInTheDocument();
   });
 
   describe('Contact Row by status type', () => {

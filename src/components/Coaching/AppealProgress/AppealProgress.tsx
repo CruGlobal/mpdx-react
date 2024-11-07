@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import MinimalSpacingTooltip from 'src/components/Shared/MinimalSpacingTooltip';
 import StyledProgress from 'src/components/StyledProgress';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
@@ -33,6 +34,16 @@ export const AppealProgress = ({
   const locale = useLocale();
 
   const goalText = `${t('Monthly')} ${currencyFormat(goal, currency, locale)}`;
+  const receivedBelow = `${currencyFormat(
+    goal - received,
+    currency,
+    locale,
+  )} (${percentageFormat((goal - received) / goal, locale)})`;
+  const committedBelow = `${currencyFormat(
+    goal - pledged,
+    currency,
+    locale,
+  )} (${percentageFormat((goal - pledged) / goal, locale)})`;
   return (
     <>
       <CoachingProgressLabelContainer>
@@ -44,16 +55,27 @@ export const AppealProgress = ({
             : goalText}
         </Typography>
         <Typography>
-          {currencyFormat(received, currency, locale)}(
-          {percentageFormat(received / goal, locale)})/
-          {currencyFormat(pledged, currency, locale)}(
-          {percentageFormat(pledged / goal, locale)})
+          <MinimalSpacingTooltip title={t('Received')} placement="top" arrow>
+            <Typography display="inline">
+              {currencyFormat(received, currency, locale)} (
+              {percentageFormat(received / goal, locale)})
+            </Typography>
+          </MinimalSpacingTooltip>
+          {' / '}
+          <MinimalSpacingTooltip title={t('Committed')} placement="top" arrow>
+            <Typography display="inline">
+              {currencyFormat(pledged, currency, locale)} (
+              {percentageFormat(pledged / goal, locale)})
+            </Typography>
+          </MinimalSpacingTooltip>
         </Typography>
       </CoachingProgressLabelContainer>
       <StyledProgress
         loading={loading}
         primary={received / goal}
         secondary={pledged / goal}
+        receivedBelow={receivedBelow}
+        committedBelow={committedBelow}
       />
     </>
   );

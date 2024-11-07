@@ -4,6 +4,9 @@ import {
   FourteenMonthReportCurrencyType,
 } from '../../../graphql-rest.page.generated';
 
+// We have switched to call the REST API directly from the frontend
+// due to Next.js having issues when the size of the response is too large.
+
 export interface FourteenMonthReportResponse {
   id: string;
   type:

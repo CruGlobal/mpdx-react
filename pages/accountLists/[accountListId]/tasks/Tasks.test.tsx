@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
@@ -141,7 +142,10 @@ describe('tasks page', () => {
   it('should dispatch one analytics event per task', async () => {
     const { getAllByTestId, getByRole, findByRole } = render(
       <MocksProviders>
-        <GqlMockedProvider<{ Tasks: TasksQuery }>
+        <GqlMockedProvider<{
+          Tasks: TasksQuery;
+          GetTaskIdsForMassSelection: GetTaskIdsForMassSelectionQuery;
+        }>
           mocks={{
             Tasks: {
               tasks: {
@@ -152,6 +156,11 @@ describe('tasks page', () => {
                 ],
                 totalCount: 3,
                 pageInfo: { hasNextPage: false },
+              },
+            },
+            GetTaskIdsForMassSelection: {
+              tasks: {
+                nodes: [{ id: '1' }, { id: '2' }, { id: '3' }],
               },
             },
           }}

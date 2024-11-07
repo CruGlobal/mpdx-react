@@ -29,6 +29,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import theme from 'src/theme';
 import {
   TaskFilterTabsTypes,
@@ -114,7 +115,10 @@ const TasksPage: React.FC = () => {
     setContactId: setContactFocus,
   } = useTasksContactContext();
   const contactDetailsOpen = !!contactDetailsId;
-  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
+  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
+    key: 'tasks_filters_collapse',
+    defaultValue: false,
+  });
 
   //#region Filters
 
@@ -184,18 +188,19 @@ const TasksPage: React.FC = () => {
 
   //#region Mass Actions
 
-  const taskCount = data?.tasks.totalCount ?? 0;
-  const { data: allTasks } = useGetTaskIdsForMassSelectionQuery({
-    variables: {
-      accountListId,
-      first: taskCount,
-      tasksFilter,
-    },
-    skip: taskCount === 0,
-  });
+  const { data: allTasks, previousData: allTasksPrevious } =
+    useGetTaskIdsForMassSelectionQuery({
+      variables: {
+        accountListId,
+        tasksFilter,
+      },
+    });
+  // When the next batch of task ids is loading, use the previous batch of task ids in the
+  // meantime to avoid throwing out the selected task ids.
   const allTaskIds = useMemo(
-    () => allTasks?.tasks.nodes.map((task) => task.id) ?? [],
-    [allTasks],
+    () =>
+      (allTasks ?? allTasksPrevious)?.tasks.nodes.map((task) => task.id) ?? [],
+    [allTasks, allTasksPrevious],
   );
 
   const {

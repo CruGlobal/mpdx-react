@@ -14,7 +14,7 @@ export const RouterGuard: React.FC<Props> = ({ children = null }) => {
   const session = useSession({
     required: true,
     onUnauthenticated: () => {
-      push('/login');
+      push({ pathname: '/login', query: { redirect: window.location.href } });
     },
   });
 

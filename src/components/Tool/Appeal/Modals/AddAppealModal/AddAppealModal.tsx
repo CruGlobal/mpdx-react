@@ -17,10 +17,10 @@ import AddAppealForm, {
 
 interface AddAppealModalProps {
   appealName: string;
-  appealGoal: number;
+  appealGoal?: number;
   appealStatuses: FilterOption[];
-  appealExcludes: ContactExclusion[];
-  appealIncludes: object;
+  appealExcludes?: ContactExclusion[];
+  appealIncludes?: object;
   isEndOfYearAsk: boolean;
   handleClose: () => void;
 }

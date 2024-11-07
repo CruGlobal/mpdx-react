@@ -20,10 +20,12 @@ interface GetServerSidePropsReturn {
   redirect: unknown;
 }
 
-const accountListId = 'accountID1';
+const accountListId = 'account-list-1';
 
 describe('Account Lists page', () => {
-  const context = {} as GetServerSidePropsContext;
+  const context = {
+    resolvedUrl: '/accountLists/account-list-1',
+  } as GetServerSidePropsContext;
 
   describe('NextAuth unauthorized', () => {
     it('should redirect to login', async () => {
@@ -35,7 +37,7 @@ describe('Account Lists page', () => {
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
-        destination: '/login',
+        destination: '/login?redirect=%2FaccountLists%2Faccount-list-1',
         permanent: false,
       });
     });

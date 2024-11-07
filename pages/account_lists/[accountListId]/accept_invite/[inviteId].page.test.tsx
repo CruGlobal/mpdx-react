@@ -1,5 +1,4 @@
 import { GetServerSidePropsContext } from 'next';
-import { session } from '__tests__/fixtures/session';
 import { getServerSideProps } from './[inviteId].page';
 
 describe('Account Invite Link Redirect', () => {
@@ -24,9 +23,6 @@ describe('Account Invite Link Redirect', () => {
           '/acceptInvite?accountListId=test-account-list-id&accountInviteId=test-invite-id&inviteCode=test-code',
         permanent: true,
       },
-      props: {
-        session: session,
-      },
     });
   });
 
@@ -44,9 +40,6 @@ describe('Account Invite Link Redirect', () => {
       redirect: {
         destination: '/accountLists/_/',
         permanent: true,
-      },
-      props: {
-        session: session,
       },
     });
   });

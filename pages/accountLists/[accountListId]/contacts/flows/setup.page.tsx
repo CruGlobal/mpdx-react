@@ -28,7 +28,7 @@ import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
 
 const StickyBox = styled(Box)(() => ({
-  ['@media (min-width:900px)']: {
+  '@media (min-width:900px)': {
     position: 'sticky',
     right: 0,
     background: '#ffffff',

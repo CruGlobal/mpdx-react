@@ -1,0 +1,37 @@
+query Announcements {
+  announcements(first: 1) {
+    nodes {
+      ...Announcement
+    }
+  }
+}
+
+fragment Announcement on Announcement {
+  actions {
+    ...Action
+  }
+  id
+  displayMethod
+  body
+  title
+  style
+  imageUrl
+}
+
+fragment Action on Action {
+  id
+  label
+  action
+  style
+  args
+}
+
+mutation AcknowledgeAnnouncement(
+  $input: AcknowledgeAnnouncementMutationInput!
+) {
+  acknowledgeAnnouncement(input: $input) {
+    announcement {
+      id
+    }
+  }
+}

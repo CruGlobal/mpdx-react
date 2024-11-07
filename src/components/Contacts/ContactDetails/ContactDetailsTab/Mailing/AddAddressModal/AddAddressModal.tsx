@@ -22,7 +22,6 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { AddressCreateInput } from 'src/graphql/types.generated';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import Modal from '../../../../../common/Modal/Modal';
 import {
@@ -35,8 +34,8 @@ import {
 } from '../AddressLocation';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { AddressSchema, addressSchema } from '../addressSchema';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
-import { createAddressSchema } from './createAddressSchema';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -78,21 +77,24 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
 
   const onSubmit = async ({
     primaryMailingAddress,
+    street,
     ...attributes
-  }: Omit<AddressCreateInput, 'validValues'> & {
-    primaryMailingAddress: boolean;
-  }) => {
+  }: AddressSchema) => {
     const response = await createContactAddress({
       variables: {
         accountListId,
-        attributes,
+        attributes: {
+          contactId,
+          street: street ?? '',
+          ...attributes,
+        },
       },
       update: (cache, { data: createdAddressData }) => {
         if (handleUpdateCache) {
           handleUpdateCache(cache, {
             createAddress: {
               address: createdAddressData?.createAddress?.address,
-              contactId: attributes.contactId,
+              contactId,
             },
           });
         } else {
@@ -137,14 +139,13 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     enqueueSnackbar(t('Address added successfully'), {
       variant: 'success',
     });
-    await handleClose();
+    handleClose();
   };
 
   return (
     <Modal isOpen={true} title={t('Add Address')} handleClose={handleClose}>
       <Formik
         initialValues={{
-          contactId,
           city: '',
           country: '',
           historic: false,
@@ -156,7 +157,7 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           street: '',
           primaryMailingAddress: true,
         }}
-        validationSchema={createAddressSchema}
+        validationSchema={addressSchema}
         validateOnMount
         onSubmit={onSubmit}
       >
@@ -201,7 +202,6 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                         TextFieldProps={{
                           name: 'street',
                           label: t('Street'),
-                          required: true,
                           fullWidth: true,
                         }}
                       />

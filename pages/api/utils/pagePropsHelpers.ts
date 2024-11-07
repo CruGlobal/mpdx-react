@@ -10,6 +10,16 @@ interface PagePropsWithSession {
   session: Session;
 }
 
+// Return a redirect to the login page
+export const loginRedirect = (
+  context: GetServerSidePropsContext,
+): GetServerSidePropsResult<never> => ({
+  redirect: {
+    destination: `/login?redirect=${encodeURIComponent(context.resolvedUrl)}`,
+    permanent: false,
+  },
+});
+
 // Redirect back to the dashboard if the user isn't an admin
 export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   context,
@@ -36,13 +46,9 @@ export const loadSession: GetServerSideProps<PagePropsWithSession> = async (
 ) => {
   const session = await getSession(context);
   if (!session?.user.apiToken) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
+    return loginRedirect(context);
   }
+
   return {
     props: {
       session,
@@ -102,12 +108,7 @@ export const makeGetServerSideProps = <PageProps = Record<string, unknown>>(
     // Start by loading the session and redirecting to the login page if it is missing
     const session = await getSession(context);
     if (!session) {
-      return {
-        redirect: {
-          destination: '/login',
-          permanent: false,
-        },
-      };
+      return loginRedirect(context);
     }
 
     // Pass the session to the page's custom logic to generate the page props

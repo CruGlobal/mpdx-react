@@ -150,29 +150,25 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [activeFilters],
   );
 
-  const [contactsView, updateOptions, { loading: userOptionsLoading }] =
+  const [contactsView, saveContactsView, { loading: userOptionsLoading }] =
     useUserPreference({
       key: 'contacts_view',
       defaultValue: TableViewModeEnum.List,
     });
   useEffect(() => {
-    if (contactsView && !userOptionsLoading) {
+    if (contactsView) {
       setViewMode(contactsView);
     }
-  }, [contactsView, userOptionsLoading]);
+  }, [contactsView]);
 
-  const contactsFilters = useMemo(() => {
-    // Remove filters in the map view
-    const viewFilters =
-      viewMode === TableViewModeEnum.Map
-        ? { ids: sanitizedFilters.ids }
-        : sanitizedFilters;
-    return {
-      ...viewFilters,
+  const contactsFilters = useMemo(
+    () => ({
+      ...sanitizedFilters,
       ...starredFilter,
       wildcardSearch: searchTerm as string,
-    };
-  }, [sanitizedFilters, viewMode, starredFilter, searchTerm]);
+    }),
+    [sanitizedFilters, starredFilter, searchTerm],
+  );
 
   const contactsQueryResult = useContactsQuery({
     variables: {
@@ -186,18 +182,21 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   //#region Mass Actions
 
-  const contactCount = data?.contacts.totalCount ?? 0;
-  const { data: allContacts } = useGetIdsForMassSelectionQuery({
-    variables: {
-      accountListId,
-      first: contactCount,
-      contactsFilters,
-    },
-    skip: contactCount === 0,
-  });
+  const { data: allContacts, previousData: allContactsPrevious } =
+    useGetIdsForMassSelectionQuery({
+      variables: {
+        accountListId,
+        contactsFilters,
+      },
+    });
+  // When the next batch of contact ids is loading, use the previous batch of contact ids in the
+  // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
-    () => allContacts?.contacts.nodes.map((contact) => contact.id) ?? [],
-    [allContacts],
+    () =>
+      (allContacts ?? allContactsPrevious)?.contacts.nodes.map(
+        (contact) => contact.id,
+      ) ?? [],
+    [allContacts, allContactsPrevious],
   );
 
   const {
@@ -257,8 +256,12 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     _: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
-    setViewMode(view as TableViewModeEnum);
-    updateOptions(view as TableViewModeEnum);
+    const newViewMode = view as TableViewModeEnum;
+    saveContactsView(newViewMode);
+    if (newViewMode === TableViewModeEnum.Map && ids.length) {
+      // When switching to the map, make the filter only show the selected contacts, if any
+      setActiveFilters({ ...activeFilters, ids });
+    }
   };
   //#endregion
 

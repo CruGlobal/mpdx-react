@@ -1,11 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, CircularProgress, useMediaQuery } from '@mui/material';
 import { Theme } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { mapFourteenMonthReport } from 'pages/api/Schema/reports/fourteenMonth/datahandler';
+import { FourteenMonthReport as FourteenMonthReportQueryResponse } from 'pages/api/graphql-rest.page.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
-import { useFourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
 import {
   FourteenMonthReportTable as Table,
@@ -48,7 +51,14 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<OrderBy | null>(null);
+  const [fourteenMonthReport, setFourteenMonthReport] = useState<
+    FourteenMonthReportQueryResponse | undefined
+  >(undefined);
+  const [fourteenMonthReportError, setFourteenMonthReportError] =
+    useState<string>('');
+
   const { t } = useTranslation();
+  const { apiToken } = useRequiredSession();
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -56,25 +66,52 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
   const isPrint = useMediaQuery('print');
 
-  const { data, error } = useFourteenMonthReportQuery({
-    variables: {
-      accountListId,
-      designationAccountIds: designationAccounts?.length
-        ? designationAccounts
-        : null,
-      currencyType,
-    },
-  });
+  useEffect(() => {
+    (async () => {
+      try {
+        const designationAccountFilter = designationAccounts?.length
+          ? `&filter[designation_account_id]=${designationAccounts.join(',')}`
+          : '';
+        const requestUrl = `${
+          currencyType === 'salary'
+            ? 'salary_currency_donations'
+            : 'donor_currency_donations'
+        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
+          .minus({ months: 13 })
+          .toISODate()}...${DateTime.now().toISODate()}`;
+
+        const response = await fetch(
+          `${process.env.REST_API_URL}reports/${requestUrl}`,
+          {
+            headers: {
+              authorization: `Bearer ${apiToken}`,
+              'Content-Type': 'application/vnd.api+json',
+            },
+          },
+        );
+
+        const { data } = await response.json();
+
+        setFourteenMonthReport(mapFourteenMonthReport(data, currencyType));
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setFourteenMonthReportError(error.message);
+        } else {
+          setFourteenMonthReportError(String(error));
+        }
+      }
+    })();
+  }, [designationAccounts, currencyType]);
 
   // Generate a table for each currency group in the report
   const currencyTables = useMemo<CurrencyTable[]>(
     () =>
-      data?.fourteenMonthReport.currencyGroups.map((currencyGroup) => ({
+      fourteenMonthReport?.currencyGroups.map((currencyGroup) => ({
         currency: currencyGroup.currency,
         orderedContacts: sortContacts(currencyGroup.contacts, orderBy, order),
         totals: calculateTotals(currencyGroup.contacts),
       })) ?? [],
-    [data, orderBy, order],
+    [fourteenMonthReport, orderBy, order],
   );
 
   const handleExpandToggle = (): void => {
@@ -107,7 +144,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         onPrint={handlePrint}
         title={title}
       />
-      {!data && !error ? (
+      {!fourteenMonthReport && !fourteenMonthReportError ? (
         <Box
           display="flex"
           justifyContent="center"
@@ -116,8 +153,8 @@ export const FourteenMonthReport: React.FC<Props> = ({
         >
           <CircularProgress data-testid="LoadingFourteenMonthReport" />
         </Box>
-      ) : error ? (
-        <Notification type="error" message={error.toString()} />
+      ) : fourteenMonthReportError ? (
+        <Notification type="error" message={fourteenMonthReportError} />
       ) : currencyTables.length > 0 ? (
         <Box display="flex" flexDirection="column" gap={isPrint ? 1 : 4}>
           {currencyTables.map(({ currency, orderedContacts, totals }) => (

@@ -19,7 +19,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
 }));
 
 const ButtonWrap = styled(Box)(() => ({
-  ['@media (max-width: 380px)']: {
+  '@media (max-width: 380px)': {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'end',
@@ -36,7 +36,7 @@ const BackButton = styled(Button)(({ theme }) => ({
 const ResetButton = styled(Button)(({ theme }) => ({
   color: theme.palette.cruGrayDark.main,
   textTransform: 'none',
-  ['@media (min-width: 381px)']: {
+  '@media (min-width: 381px)': {
     marginRight: theme.spacing(3),
   },
 }));

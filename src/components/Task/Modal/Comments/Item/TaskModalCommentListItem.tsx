@@ -225,7 +225,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
   ) : (
     <>
       <Box borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}>
-        <Typography>{comment.body}</Typography>
+        <Typography whiteSpace="pre-line">{comment.body}</Typography>
       </Box>
       <Box width="100%" display="flex" justifyContent="space-between" mb={2}>
         <Details comment={comment} />

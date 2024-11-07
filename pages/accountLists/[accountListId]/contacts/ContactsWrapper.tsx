@@ -1,12 +1,14 @@
 import { ParsedUrlQuery } from 'node:querystring';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { omit } from 'lodash';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
+import { useUserPreference } from 'src/hooks/useUserPreference';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { getQueryParam } from 'src/utils/queryParam';
 
@@ -66,7 +68,7 @@ export const ContactsWrapper: React.FC<Props> = ({
     }
   });
 
-  const [activeFilters, setActiveFilters] = useState<
+  const [activeFiltersRaw, setActiveFilters] = useState<
     ContactFilterSetInput & TaskFilterSetInput
   >(JSON.parse(decodeURIComponent(getQueryParam(query, 'filters') ?? '{}')));
   const [starredFilter, setStarredFilter] = useState<
@@ -75,14 +77,26 @@ export const ContactsWrapper: React.FC<Props> = ({
   const [searchTerm, setSearchTerm] = useState(
     getQueryParam(query, 'searchTerm') ?? '',
   );
-  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
+  const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
+    key: 'contact_filters_collapse',
+    defaultValue: false,
+  });
+
+  // Only allow the ids filter in map view, and remove the ids filter in other views
+  const activeFilters = useMemo(() => {
+    if (viewMode === TableViewModeEnum.Map) {
+      return activeFiltersRaw;
+    } else {
+      return omit(activeFiltersRaw, 'ids');
+    }
+  }, [viewMode, activeFiltersRaw]);
 
   const getContactHrefObject: GetContactHrefObject = useCallback(
     (contactId) => {
       // Omit the filters and searchTerm from the previous query because we don't want them in the URL
       // if they are empty and Next.js will still add them to the URL query even if they are undefined.
       // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm
-      const { filters: _filters, searchTerm: _searchTerm, ...newQuery } = query;
+      const newQuery = omit(query, ['filters', 'searchTerm']);
 
       const queryContactId: string[] = [];
       if (addViewMode && viewMode !== TableViewModeEnum.List) {
@@ -94,10 +108,7 @@ export const ContactsWrapper: React.FC<Props> = ({
       newQuery.contactId = queryContactId;
 
       const sanitizedFilters = sanitizeFilters(activeFilters);
-      if (
-        viewMode !== TableViewModeEnum.Map &&
-        Object.keys(sanitizedFilters).length
-      ) {
+      if (Object.keys(sanitizedFilters).length) {
         newQuery.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
       }
 

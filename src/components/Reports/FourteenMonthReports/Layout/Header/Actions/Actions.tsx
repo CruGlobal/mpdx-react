@@ -34,7 +34,7 @@ export const FourteenMonthReportActions: React.FC<
   // This has to be a useEffect instead of a useMemo to prevent hydration errors because the
   // server isn't able to calculate a blob URL.
   useEffect(() => {
-    const csvBlob = buildURI(csvData);
+    const csvBlob = buildURI(csvData, true);
     setCsvBlob(csvBlob);
 
     return () => URL.revokeObjectURL(csvBlob);

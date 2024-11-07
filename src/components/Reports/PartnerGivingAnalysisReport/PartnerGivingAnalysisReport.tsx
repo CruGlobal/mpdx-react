@@ -88,26 +88,28 @@ export const PartnerGivingAnalysisReport = forwardRef<
       ? Object.keys(activeFilters).length > 0
       : false;
 
-    const { data, loading } = useGetPartnerGivingAnalysisReportQuery({
-      variables: {
-        input: {
-          accountListId,
-          // Page 1 is the first page for the API
-          page: page + 1,
-          pageSize: limit,
-          sortField: orderBy ?? '',
-          sortDirection:
-            order === 'asc'
-              ? SortDirection.Ascending
-              : SortDirection.Descending,
-          contactFilters,
+    const { data, previousData, loading } =
+      useGetPartnerGivingAnalysisReportQuery({
+        variables: {
+          input: {
+            accountListId,
+            // Page 1 is the first page for the API
+            page: page + 1,
+            pageSize: limit,
+            sortField: orderBy ?? '',
+            sortDirection:
+              order === 'asc'
+                ? SortDirection.Ascending
+                : SortDirection.Descending,
+            contactFilters,
+          },
         },
-      },
-    });
+      });
     const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
 
-    const contactCount = data?.partnerGivingAnalysisReport?.totalContacts ?? 0;
-    const { data: allContacts } =
+    const contactCount =
+      (data ?? previousData)?.partnerGivingAnalysisReport?.totalContacts ?? 0;
+    const { data: allContacts, previousData: allContactsPrevious } =
       useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
         variables: {
           input: {
@@ -121,12 +123,15 @@ export const PartnerGivingAnalysisReport = forwardRef<
         },
         skip: contactCount === 0,
       });
+    // When the next batch of contact ids is loading, use the previous batch of contact ids in the
+    // meantime to avoid throwing out the selected contact ids.
     const allContactIds = useMemo(
       () =>
-        allContacts?.partnerGivingAnalysisReport?.contacts.map(
-          (contact) => contact.id,
-        ) ?? [],
-      [allContacts],
+        (
+          allContacts ?? allContactsPrevious
+        )?.partnerGivingAnalysisReport?.contacts.map((contact) => contact.id) ??
+        [],
+      [allContacts, allContactsPrevious],
     );
 
     const {

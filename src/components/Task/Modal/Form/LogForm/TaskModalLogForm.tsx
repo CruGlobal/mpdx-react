@@ -63,6 +63,7 @@ import {
 import {
   extractSuggestedTags,
   getDatabaseValueFromResult,
+  getDefaultTaskName,
   handleTaskActionChange,
   handleTaskPhaseChange,
 } from '../TaskModalHelper';
@@ -121,7 +122,6 @@ const TaskModalLogForm = ({
   const {
     phaseData,
     setPhaseId,
-    constants,
     taskPhases,
     activityTypes,
     activitiesByPhase,
@@ -246,9 +246,20 @@ const TaskModalLogForm = ({
     enqueueSnackbar(t('Task(s) logged successfully'), { variant: 'success' });
     onClose();
     if (attributes.nextAction) {
+      const defaultSubject = getDefaultTaskName(
+        attributes.activityType,
+        activityTypes,
+      );
+
       openTaskModal({
         view: TaskModalEnum.Add,
         defaultValues: {
+          // If the user changed the task subject from the default, use their customized task
+          // subject in the new task
+          subject:
+            attributes.subject === defaultSubject
+              ? undefined
+              : attributes.subject,
           activityType: attributes.nextAction,
           // TODO: Use fragments to ensure all required fields are loaded
           contactIds: attributes.contactIds,
@@ -293,6 +304,11 @@ const TaskModalLogForm = ({
       phaseData?.results?.tags?.map((tag) => getValueFromIdValue(tag)) || [],
     [phaseData],
   );
+
+  const focusActivity = (): void => {
+    setTimeout(() => activityRef?.current?.focus(), 50);
+  };
+
   return (
     <Formik
       initialValues={initialTask}
@@ -348,6 +364,8 @@ const TaskModalLogForm = ({
                       contactPhase={phaseData?.id}
                       inputRef={firstFocusRef}
                       onChange={(phase) => {
+                        const activities =
+                          (phase && activitiesByPhase.get(phase)) || [];
                         handleTaskPhaseChange({
                           phase,
                           setFieldValue,
@@ -355,8 +373,12 @@ const TaskModalLogForm = ({
                           setActionSelected,
                           setPhaseId,
                           setSelectedSuggestedTags,
+                          activities,
+                          focusActivity,
+                          activityType,
+                          activityTypes,
+                          setFieldTouched,
                         });
-                        setTimeout(() => activityRef.current?.focus(), 50);
                       }}
                       required
                       onBlur={handleBlur('taskPhase')}
@@ -377,7 +399,7 @@ const TaskModalLogForm = ({
                           setFieldValue,
                           setFieldTouched,
                           setActionSelected,
-                          constants,
+                          activityTypes,
                         });
                       }}
                       inputRef={activityRef}

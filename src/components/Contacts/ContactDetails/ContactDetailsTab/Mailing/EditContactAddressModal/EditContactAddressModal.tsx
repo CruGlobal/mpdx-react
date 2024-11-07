@@ -26,7 +26,6 @@ import {
   DeleteButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { AddressUpdateInput } from 'src/graphql/types.generated';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { isEditableSource } from 'src/utils/sourceHelper';
 import Modal from '../../../../../common/Modal/Modal';
@@ -41,13 +40,13 @@ import {
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
+import { AddressSchema, addressSchema } from '../addressSchema';
 import {
   useDeleteContactAddressMutation,
   useDonationServicesEmailQuery,
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
 import { generateEmailBody } from './helpers';
-import { updateAddressSchema } from './updateAddressSchema';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -95,14 +94,17 @@ export const EditContactAddressModal: React.FC<
 
   const onSubmit = async ({
     primaryMailingAddress,
+    street,
     ...attributes
-  }: Omit<AddressUpdateInput, 'validValues'> & {
-    primaryMailingAddress: boolean;
-  }) => {
+  }: AddressSchema) => {
     await updateContactAddress({
       variables: {
         accountListId,
-        attributes,
+        attributes: {
+          id: address.id,
+          street: street ?? '',
+          ...attributes,
+        },
       },
     });
     // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
@@ -183,7 +185,6 @@ export const EditContactAddressModal: React.FC<
     <Modal isOpen={true} title={t('Edit Address')} handleClose={handleClose}>
       <Formik
         initialValues={{
-          id: address.id,
           city: address.city ?? '',
           country: address.country ?? '',
           historic: address.historic,
@@ -195,7 +196,7 @@ export const EditContactAddressModal: React.FC<
           street: address.street ?? '',
           primaryMailingAddress: address.primaryMailingAddress ?? false,
         }}
-        validationSchema={updateAddressSchema}
+        validationSchema={addressSchema}
         onSubmit={onSubmit}
       >
         {({
@@ -280,7 +281,6 @@ export const EditContactAddressModal: React.FC<
                         TextFieldProps={{
                           name: 'street',
                           label: t('Street'),
-                          required: true,
                           fullWidth: true,
                         }}
                         disabled={editingDisabled}

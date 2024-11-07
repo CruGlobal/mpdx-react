@@ -1,10 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { defaultFourteenMonthReport } from '../../FourteenMonthReportMock';
 import { FourteenMonthReportQuery } from '../../GetFourteenMonthReport.generated';
 import { FourteenMonthReportTable } from './Table';
 import { OrderBy } from './TableHead/TableHead';
@@ -18,166 +18,6 @@ const router = {
 };
 const onRequestSort = jest.fn();
 const getContactUrl = jest.fn().mockReturnValue('contact-url');
-
-const defaultFourteenMonthReport = {
-  fourteenMonthReport: {
-    currencyGroups: [
-      {
-        contacts: [
-          {
-            accountNumbers: ['11609'],
-            average: 258,
-            id: 'contact-1',
-            lateBy30Days: false,
-            lateBy60Days: false,
-            months: [
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2020-10-01',
-                total: 255,
-              },
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2020-11-01',
-                total: 255,
-              },
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2020-12-01',
-                total: 255,
-              },
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2021-1-01',
-                total: 255,
-              },
-            ],
-            minimum: 255,
-            name: 'test name',
-            pledgeAmount: null,
-            status: null,
-            total: 3366,
-          },
-          {
-            accountNumbers: ['11610'],
-            average: 258,
-            id: 'contact-2',
-            lateBy30Days: false,
-            lateBy60Days: false,
-            months: [
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2020-10-01',
-                total: 255,
-              },
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2020-11-01',
-                total: 255,
-              },
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2020-12-01',
-                total: 255,
-              },
-              {
-                donations: [
-                  {
-                    amount: 255,
-                    currency: 'CAD',
-                    date: '2020-06-04',
-                    paymentMethod: 'BANK_TRANS',
-                  },
-                ],
-                month: '2021-1-01',
-                total: 255,
-              },
-            ],
-            minimum: 255,
-            name: 'name again',
-            pledgeAmount: 15.65,
-            pledgeCurrency: 'USD',
-            status: null,
-            total: 3366,
-          },
-        ],
-        currency: 'cad',
-        totals: {
-          average: 1831,
-          minimum: 1583,
-          months: [
-            {
-              month: '2020-10-01',
-              total: 1836.32,
-            },
-            {
-              month: '2020-11-01',
-              total: 1486.99,
-            },
-            {
-              month: '2020-12-01',
-              total: 1836.32,
-            },
-            {
-              month: '2021-1-01',
-              total: 1836.32,
-            },
-          ],
-          year: 24613,
-        },
-      },
-    ],
-  },
-} as unknown as FourteenMonthReportQuery;
 
 const totals = [
   {
@@ -208,18 +48,16 @@ const Components: React.FC<ComponentsProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <GqlMockedProvider>
-        <FourteenMonthReportTable
-          isExpanded={true}
-          order="asc"
-          orderBy={orderBy}
-          orderedContacts={mocks.fourteenMonthReport.currencyGroups[0].contacts}
-          salaryCurrency={mocks.fourteenMonthReport.currencyGroups[0].currency}
-          onRequestSort={onRequestSort}
-          getContactUrl={getContactUrl}
-          totals={totals}
-        />
-      </GqlMockedProvider>
+      <FourteenMonthReportTable
+        isExpanded={true}
+        order="asc"
+        orderBy={orderBy}
+        orderedContacts={mocks.fourteenMonthReport.currencyGroups[0].contacts}
+        salaryCurrency={mocks.fourteenMonthReport.currencyGroups[0].currency}
+        onRequestSort={onRequestSort}
+        getContactUrl={getContactUrl}
+        totals={totals}
+      />
     </TestRouter>
   </ThemeProvider>
 );
@@ -252,13 +90,34 @@ describe('FourteenMonthReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    const fourteenMonthReportRow = getAllByTestId(
+    const fourteenMonthReportRows = getAllByTestId(
       'FourteenMonthReportTableRow',
     );
-    expect(fourteenMonthReportRow).toHaveLength(2);
-    expect(fourteenMonthReportRow[0]).toHaveTextContent('test name');
-    expect(fourteenMonthReportRow[1]).toHaveTextContent('name again');
+    expect(fourteenMonthReportRows).toHaveLength(2);
+    expect(fourteenMonthReportRows[0]).toHaveTextContent('test name');
+    expect(fourteenMonthReportRows[1]).toHaveTextContent('name again');
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
+  });
+
+  it('should should show the dot if a donation is late', async () => {
+    const { getAllByTestId, queryByTestId } = render(<Components />);
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    const fourteenMonthReportRows = getAllByTestId(
+      'FourteenMonthReportTableRow',
+    );
+    expect(
+      within(fourteenMonthReportRows[0]).getByTestId('lateCircle60'),
+    ).toBeInTheDocument();
+
+    expect(
+      within(fourteenMonthReportRows[1]).queryByTestId('lateCircle30'),
+    ).not.toBeInTheDocument();
   });
 
   it('can make contact click event happen and pledge amount is correct', async () => {

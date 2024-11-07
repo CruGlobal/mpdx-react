@@ -372,6 +372,7 @@ describe('TaskModalCompleteForm', () => {
       expect(openTaskModal).toHaveBeenCalledWith({
         view: TaskModalEnum.Add,
         defaultValues: {
+          subject: task.subject,
           activityType: ActivityTypeEnum.PartnerCareThank,
           contactIds: ['contact-1', 'contact-2'],
           userId: 'user-1',
@@ -411,6 +412,7 @@ describe('TaskModalCompleteForm', () => {
       expect(openTaskModal).toHaveBeenCalledWith({
         view: 'add',
         defaultValues: {
+          subject: task.subject,
           activityType: ActivityTypeEnum.PartnerCareThank,
           contactIds: ['contact-1'],
           userId: 'user-1',

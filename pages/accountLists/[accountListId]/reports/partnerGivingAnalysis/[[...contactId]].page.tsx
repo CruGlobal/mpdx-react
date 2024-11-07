@@ -41,7 +41,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
-  const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
+  const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
   const reportRef = useRef<PartnerGivingAnalysisReportRef>(null);
 
   const router = useRouter();

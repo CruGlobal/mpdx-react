@@ -54,8 +54,12 @@ const TopBar = ({
         >
           {accountListId && (
             <Hidden mdUp>
-              <IconButton color="inherit" onClick={onMobileNavOpen}>
-                <SvgIcon fontSize="small">
+              <IconButton
+                color="inherit"
+                onClick={onMobileNavOpen}
+                sx={{ marginRight: '10px' }}
+              >
+                <SvgIcon fontSize="medium">
                   <MenuIcon />
                 </SvgIcon>
               </IconButton>
