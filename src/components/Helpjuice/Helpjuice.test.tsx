@@ -1,4 +1,4 @@
-import { act, render, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -19,6 +19,27 @@ describe('Helpjuice', () => {
     render(<Helpjuice />);
 
     expect(document.querySelector('path.close')).toBeInTheDocument();
+  });
+
+  it('turns header into a link', async () => {
+    render(<Helpjuice />);
+
+    document
+      .getElementsByClassName('hj-swifty')[0]
+      .setAttribute('data-current-question-id', 'article-1');
+    expect(
+      await screen.findByRole('link', { name: 'Article Name' }),
+    ).toHaveAttribute('href', 'https://domain.helpjuice.com/article-1');
+
+    // Simulate clicking on another article, which will replace #article-content-name and change data-current-question-id
+    document.getElementById('article-content-name')!.textContent =
+      'Another Article Name';
+    document
+      .getElementsByClassName('hj-swifty')[0]
+      .setAttribute('data-current-question-id', 'article-2');
+    expect(
+      await screen.findByRole('link', { name: 'Another Article Name' }),
+    ).toHaveAttribute('href', 'https://domain.helpjuice.com/article-2');
   });
 
   it('does nothing if the element is missing', () => {
