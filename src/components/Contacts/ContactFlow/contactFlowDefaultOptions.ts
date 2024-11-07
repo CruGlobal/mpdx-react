@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { Phase, PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
+import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { ContactFlowOption } from './ContactFlow';
 
 export enum DefaultTypeEnum {
@@ -11,7 +11,7 @@ export enum DefaultTypeEnum {
 export const getDefaultFlowOptions = (
   t: TFunction,
   getContactStatusesByPhase: (phase: string | null) => StatusEnum[],
-  phases: Phase[] | undefined | null,
+  getLocalizedPhase: (phaseEnum: string | null | undefined) => string,
   type: DefaultTypeEnum = DefaultTypeEnum.Us,
 ): ContactFlowOption[] => {
   switch (type) {
@@ -61,49 +61,37 @@ export const getDefaultFlowOptions = (
       return [
         {
           id: uuidv4(),
-          name:
-            phases?.find((phase) => phase?.id === PhaseEnum.Connection)?.name ||
-            '',
+          name: getLocalizedPhase(PhaseEnum.Connection),
           statuses: getContactStatusesByPhase(PhaseEnum.Connection),
           color: 'color-warning',
         },
         {
           id: uuidv4(),
-          name:
-            phases?.find((phase) => phase?.id === PhaseEnum.Initiation)?.name ||
-            '',
+          name: getLocalizedPhase(PhaseEnum.Initiation),
           statuses: getContactStatusesByPhase(PhaseEnum.Initiation),
           color: 'color-info',
         },
         {
           id: uuidv4(),
-          name:
-            phases?.find((phase) => phase?.id === PhaseEnum.Appointment)
-              ?.name || '',
+          name: getLocalizedPhase(PhaseEnum.Appointment),
           statuses: getContactStatusesByPhase(PhaseEnum.Appointment),
           color: 'color-success',
         },
         {
           id: uuidv4(),
-          name:
-            phases?.find((phase) => phase?.id === PhaseEnum.FollowUp)?.name ||
-            '',
+          name: getLocalizedPhase(PhaseEnum.FollowUp),
           statuses: getContactStatusesByPhase(PhaseEnum.FollowUp),
           color: 'color-warning',
         },
         {
           id: uuidv4(),
-          name:
-            phases?.find((phase) => phase?.id === PhaseEnum.PartnerCare)
-              ?.name || '',
+          name: getLocalizedPhase(PhaseEnum.PartnerCare),
           statuses: getContactStatusesByPhase(PhaseEnum.PartnerCare),
           color: 'color-success',
         },
         {
           id: uuidv4(),
-          name:
-            phases?.find((phase) => phase?.id === PhaseEnum.Archive)?.name ||
-            '',
+          name: getLocalizedPhase(PhaseEnum.Archive),
           statuses: getContactStatusesByPhase(PhaseEnum.Archive),
           color: 'color-text',
         },

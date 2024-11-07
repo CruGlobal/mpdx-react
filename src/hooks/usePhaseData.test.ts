@@ -121,5 +121,35 @@ describe('usePhaseData', () => {
         title: 'Initiation - Social Media',
       },
     });
+
+    // activityTypes
+    expect(
+      Object.fromEntries(result.current.phasesMap.entries()),
+    ).toMatchObject({
+      INITIATION: {
+        phaseId: 'INITIATION',
+        translatedName: 'Initiation',
+      },
+      PARTNER_CARE: {
+        phaseId: 'PARTNER_CARE',
+        translatedName: 'Partner Care',
+      },
+      APPOINTMENT: {
+        phaseId: 'APPOINTMENT',
+        translatedName: 'Appointment',
+      },
+      FOLLOW_UP: {
+        phaseId: 'FOLLOW_UP',
+        translatedName: 'Follow-Up',
+      },
+      CONNECTION: {
+        phaseId: 'CONNECTION',
+        translatedName: 'Connection',
+      },
+      ARCHIVE: {
+        phaseId: 'ARCHIVE',
+        translatedName: 'Archive',
+      },
+    });
   });
 });

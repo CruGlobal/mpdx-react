@@ -6,9 +6,11 @@ import {
   PledgeFrequencyEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import { usePhaseData } from './usePhaseData';
 
 export const useLocalizedConstants = () => {
   const constants = useApiConstants();
+  const { phasesMap } = usePhaseData();
 
   const getLocalizedContactStatus = useCallback(
     (
@@ -29,9 +31,14 @@ export const useLocalizedConstants = () => {
 
   const getLocalizedPhase = useCallback(
     (phaseEnum: PhaseEnum | string | null | undefined): string => {
-      return (
-        constants?.phases?.find((phase) => phase.id === phaseEnum)?.name || ''
-      );
+      if (
+        phaseEnum === null ||
+        phaseEnum === undefined ||
+        !Object.values<string>(PhaseEnum).includes(phaseEnum)
+      ) {
+        return '';
+      }
+      return phasesMap.get(phaseEnum as PhaseEnum)?.translatedName || '';
     },
     [constants],
   );

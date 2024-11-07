@@ -18,6 +18,7 @@ type GetPhaseData = {
   constants: LoadConstantsQuery['constant'] | undefined;
   taskPhases: PhaseEnum[];
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
+  phasesMap: Map<PhaseEnum, PhaseMappedData>;
   activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>;
 };
 
@@ -26,6 +27,11 @@ export type ActivityData = {
   phaseId: PhaseEnum;
   phase: string;
   title?: string;
+};
+
+export type PhaseMappedData = {
+  phaseId: PhaseEnum;
+  translatedName: string;
 };
 
 const phaseFromActivity = (
@@ -138,6 +144,28 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     return activitiesMap;
   }, [constants]);
 
+  // phasesMap
+  // {INITIATION: {
+  //   phaseId: 'INITIATION',
+  //   translatedName: 'Initiation',
+  // },
+  // {PARTNER_CARE: {
+  //   phaseId: 'PARTNER_CARE',
+  //   translatedName: 'Partner Care',
+  // },
+  const phasesMap: Map<PhaseEnum, PhaseMappedData> = useMemo(() => {
+    const phaseMap = new Map();
+
+    constants?.phases?.forEach((phase) => {
+      phaseMap.set(phase.id, {
+        phaseId: phase.id,
+        translatedName: phase.name,
+      });
+    });
+
+    return phaseMap;
+  }, [constants]);
+
   // activitiesByPhase
   // {
   //   APPOINTMENT: [
@@ -162,6 +190,7 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     setPhaseId,
     constants,
     taskPhases,
+    phasesMap,
     activityTypes,
     activitiesByPhase,
   };
