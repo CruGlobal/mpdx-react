@@ -330,9 +330,7 @@ const Contact: React.FC<Props> = ({
                             {amount && amountCurrency
                               ? currencyFormat(amount, amountCurrency, locale)
                               : null}{' '}
-                            {getLocalizedPledgeFrequency(
-                              frequencyValue as PledgeFrequencyEnum,
-                            )}
+                            {getLocalizedPledgeFrequency(frequencyValue)}
                           </Typography>
                         </Box>
                       </Box>

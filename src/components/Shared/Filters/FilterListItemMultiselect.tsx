@@ -53,17 +53,19 @@ export const FilterListItemMultiselect: React.FC<
   const filterTitle = renameFilterNames(filter.title);
 
   // If it is a status filter, group the status options by phase
-  const isStatusFilter = useMemo(
-    () =>
-      filter.filterKey === 'status' || filter.filterKey === 'contact_status',
-    [filter.filterKey],
-  );
+  const isStatusFilter = useMemo(() => {
+    return (
+      filter.filterKey === 'status' || filter.filterKey === 'contact_status'
+    );
+  }, [filter.filterKey]);
 
-  const getStatusPhaseId = (selectedStatus: string) =>
-    statusArray.find((status) => status.id === selectedStatus)?.phase;
+  const getStatusPhaseId = (selectedStatus: string) => {
+    return statusArray.find((status) => status.id === selectedStatus)?.phase;
+  };
 
-  const groupByPhase = (option: string) =>
-    getLocalizedPhase(getStatusPhaseId(option));
+  const groupByPhase = (option: string) => {
+    return getLocalizedPhase(getStatusPhaseId(option));
+  };
 
   return (
     <div className="FilterListItemMultiselect-root">

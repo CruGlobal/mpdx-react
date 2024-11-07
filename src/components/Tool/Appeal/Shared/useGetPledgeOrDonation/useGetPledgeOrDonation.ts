@@ -13,9 +13,7 @@ type FormatPledgeOrDonationProps = {
   appealStatus: AppealStatusEnum;
   dateOrFrequency?: PledgeFrequencyEnum | string | null;
   locale: string;
-  getLocalizedPledgeFrequency: (
-    freqEnum: PledgeFrequencyEnum | null | undefined,
-  ) => string;
+  getLocalizedPledgeFrequency: (freqEnum: string | null | undefined) => string;
 };
 
 const formatPledgeOrDonation = ({
@@ -46,11 +44,7 @@ const formatPledgeOrDonation = ({
   const pledgeOrDonationDate =
     appealStatus === AppealStatusEnum.Asked ||
     appealStatus === AppealStatusEnum.Excluded
-      ? (dateOrFrequency &&
-          getLocalizedPledgeFrequency(
-            dateOrFrequency as PledgeFrequencyEnum,
-          )) ??
-        ''
+      ? (dateOrFrequency && getLocalizedPledgeFrequency(dateOrFrequency)) ?? ''
       : dateOrFrequency
       ? dateFormat(DateTime.fromISO(dateOrFrequency), locale)
       : '';
