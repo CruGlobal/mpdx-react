@@ -3,7 +3,10 @@ import { DateTime } from 'luxon';
 import { AppealStatusEnum } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { AppealContactInfoFragment } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
-import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import {
+  GetLocalizedPledgeFrequency,
+  useLocalizedConstants,
+} from 'src/hooks/useLocalizedConstants';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { useLocale } from '../../../../../hooks/useLocale';
 
@@ -13,7 +16,7 @@ type FormatPledgeOrDonationProps = {
   appealStatus: AppealStatusEnum;
   dateOrFrequency?: PledgeFrequencyEnum | string | null;
   locale: string;
-  getLocalizedPledgeFrequency: (freqEnum: string | null | undefined) => string;
+  getLocalizedPledgeFrequency: GetLocalizedPledgeFrequency;
 };
 
 const formatPledgeOrDonation = ({

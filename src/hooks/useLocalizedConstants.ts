@@ -8,6 +8,10 @@ import {
 } from 'src/graphql/types.generated';
 import { usePhaseData } from './usePhaseData';
 
+export type GetLocalizedPledgeFrequency = (
+  freqEnum: PledgeFrequencyEnum | string | null | undefined,
+) => string;
+
 export const useLocalizedConstants = () => {
   const constants = useApiConstants();
   const { phasesMap } = usePhaseData();
@@ -31,20 +35,13 @@ export const useLocalizedConstants = () => {
 
   const getLocalizedPhase = useCallback(
     (phaseEnum: PhaseEnum | string | null | undefined): string => {
-      if (
-        phaseEnum === null ||
-        phaseEnum === undefined ||
-        !Object.values<string>(PhaseEnum).includes(phaseEnum)
-      ) {
-        return '';
-      }
       return phasesMap.get(phaseEnum as PhaseEnum)?.translatedName || '';
     },
-    [constants],
+    [phasesMap],
   );
 
-  const getLocalizedPledgeFrequency = useCallback(
-    (freqEnum: PledgeFrequencyEnum | string | null | undefined): string => {
+  const getLocalizedPledgeFrequency: GetLocalizedPledgeFrequency = useCallback(
+    (freqEnum) => {
       return (
         constants?.pledgeFrequency?.find((freq) => freq.id === freqEnum)
           ?.value || ''
