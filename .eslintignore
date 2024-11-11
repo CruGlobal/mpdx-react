@@ -5,7 +5,3 @@ node_modules
 public
 dist
 *.generated.ts
-
-# Storybook cache
-/node_modules/.cache
-/storybook-static

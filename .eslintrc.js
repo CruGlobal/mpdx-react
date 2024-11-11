@@ -94,7 +94,7 @@ module.exports = {
       },
     },
     {
-      files: ['*.stories.tsx', '*.test.tsx', '__tests__/**.*'],
+      files: ['*.test.tsx', '__tests__/**.*'],
       rules: {
         'import/no-anonymous-default-export': 'off',
         '@typescript-eslint/no-empty-function': 'off',
