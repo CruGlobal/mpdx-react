@@ -5121,10 +5121,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulirish/trace_engine@npm:^0.0.12":
-  version: 0.0.12
-  resolution: "@paulirish/trace_engine@npm:0.0.12"
-  checksum: e0202158eb875c8ddb4464a073be77263dab00227f930b81fd1c3f4d926f3f3f7a0852c419a86c68bd0a36487d1d39e40f2edefe9f00facb895671e458bc15d5
+"@paulirish/trace_engine@npm:^0.0.19":
+  version: 0.0.19
+  resolution: "@paulirish/trace_engine@npm:0.0.19"
+  checksum: 1b4d194d2a5e3ca2efb7934408a339bb5d9ca5a4566aa53f02b02abfe81a70f90494e576f6737b1aa23350b3a122e929eb248f3b849fc9012e6d2e9103625f72
   languageName: node
   linkType: hard
 
@@ -7400,10 +7400,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:^4.8.1, axe-core@npm:^4.8.4":
+"axe-core@npm:^4.8.1":
   version: 4.9.0
   resolution: "axe-core@npm:4.9.0"
   checksum: cabaa07586a92510f4befc742744b548c30033dfda99dd439c21d736f51913d52022c8836180084b13f2098f06a01c716dc42d8e91599c43c9db25905ba5403f
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:^4.9.0":
+  version: 4.10.2
+  resolution: "axe-core@npm:4.10.2"
+  checksum: 2b9b1c93ea73ea9f206604e4e17bd771d2d835f077bde54517d73028b8865c69b209460e73d5b109968cbdb39ab3d28943efa5695189bd79e16421ce1706719e
   languageName: node
   linkType: hard
 
@@ -8810,10 +8817,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "cookie@npm:0.5.0"
-  checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
+"cookie@npm:^0.7.0":
+  version: 0.7.2
+  resolution: "cookie@npm:0.7.2"
+  checksum: 9bf8555e33530affd571ea37b615ccad9b9a34febbf2c950c86787088eb00a8973690833b0f8ebd6b69b753c62669ea60cec89178c1fb007bf0749abed74f93e
   languageName: node
   linkType: hard
 
@@ -13611,7 +13618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.11.4, jose@npm:^4.9.2":
+"jose@npm:^4.15.5, jose@npm:^4.9.2":
   version: 4.15.9
   resolution: "jose@npm:4.15.9"
   checksum: 41abe1c99baa3cf8a78ebbf93da8f8e50e417b7a26754c4afa21865d87527b8ac2baf66de2c5f6accc3f7d7158658dae7364043677236ea1d07895b040097f15
@@ -14150,12 +14157,12 @@ __metadata:
   linkType: hard
 
 "lighthouse@npm:^11.7.0":
-  version: 11.7.0
-  resolution: "lighthouse@npm:11.7.0"
+  version: 11.7.1
+  resolution: "lighthouse@npm:11.7.1"
   dependencies:
-    "@paulirish/trace_engine": ^0.0.12
+    "@paulirish/trace_engine": ^0.0.19
     "@sentry/node": ^6.17.4
-    axe-core: ^4.8.4
+    axe-core: ^4.9.0
     chrome-launcher: ^1.1.1
     configstore: ^5.0.1
     csp_evaluator: 1.1.1
@@ -14186,7 +14193,7 @@ __metadata:
     chrome-debug: core/scripts/manual-chrome-launcher.js
     lighthouse: cli/index.js
     smokehouse: cli/test/smokehouse/frontends/smokehouse-bin.js
-  checksum: d8a813d542f56024263c4013e6ac6c41f5fd20792cb059bddab3398eef5da8538c0709c0881ca1e27b442e9f5a1eee7dc261f94719217fdc8df9e2c07b877c84
+  checksum: 5b14697a6b793cc802e13fbcbebe4d952748a5c8bf7ef0782e079f802a9cf018aa3bdbca414dc5e69e7baac90d7c1b89ff2ccc425be4b04a2b217330d0fa0826
   languageName: node
   linkType: hard
 
@@ -15269,27 +15276,30 @@ __metadata:
   linkType: hard
 
 "next-auth@npm:^4.20.1":
-  version: 4.24.5
-  resolution: "next-auth@npm:4.24.5"
+  version: 4.24.10
+  resolution: "next-auth@npm:4.24.10"
   dependencies:
     "@babel/runtime": ^7.20.13
     "@panva/hkdf": ^1.0.2
-    cookie: ^0.5.0
-    jose: ^4.11.4
+    cookie: ^0.7.0
+    jose: ^4.15.5
     oauth: ^0.9.15
     openid-client: ^5.4.0
     preact: ^10.6.3
     preact-render-to-string: ^5.1.19
     uuid: ^8.3.2
   peerDependencies:
-    next: ^12.2.5 || ^13 || ^14
+    "@auth/core": 0.34.2
+    next: ^12.2.5 || ^13 || ^14 || ^15
     nodemailer: ^6.6.5
     react: ^17.0.2 || ^18
     react-dom: ^17.0.2 || ^18
   peerDependenciesMeta:
+    "@auth/core":
+      optional: true
     nodemailer:
       optional: true
-  checksum: 7cc49385123690ccb908f4552b75012717c4e45205a9fdc7cf48cd730dbcc7823a3e33e2a2073ecf1edae5c1980123f68678fd4af9198ea21ab0decb630cc71e
+  checksum: 032c61db91ad48e2ab030fcc1207e39df9a5233eacdda6ed21876eceee3282597f10b7fae11ec7e62fffd9d9bb8cfb03400e545e31a5fb4fedddd6915ec05da6
   languageName: node
   linkType: hard
 
