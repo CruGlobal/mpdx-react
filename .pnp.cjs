@@ -4519,7 +4519,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["string-env-interpolation", "npm:1.0.1"],\
             ["ts-log", "npm:2.2.4"],\
             ["tslib", "npm:2.4.0"],\
-            ["yaml", "npm:2.4.1"],\
+            ["yaml", "npm:2.6.0"],\
             ["yargs", "npm:17.5.1"]\
           ],\
           "packagePeers": [\
@@ -18526,7 +18526,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["object-inspect", "npm:1.12.2"],\
             ["pidtree", "npm:0.6.0"],\
             ["string-argv", "npm:0.3.1"],\
-            ["yaml", "npm:2.1.1"]\
+            ["yaml", "npm:2.6.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -26263,17 +26263,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:2.1.1", {\
-          "packageLocation": "./.yarn/cache/yaml-npm-2.1.1-e717f9b915-f48bb20991.zip/node_modules/yaml/",\
+        ["npm:2.6.0", {\
+          "packageLocation": "./.yarn/cache/yaml-npm-2.6.0-1c0bd2fcf8-e5e74fd75e.zip/node_modules/yaml/",\
           "packageDependencies": [\
-            ["yaml", "npm:2.1.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:2.4.1", {\
-          "packageLocation": "./.yarn/cache/yaml-npm-2.4.1-2717faf9eb-4c391d07a5.zip/node_modules/yaml/",\
-          "packageDependencies": [\
-            ["yaml", "npm:2.4.1"]\
+            ["yaml", "npm:2.6.0"]\
           ],\
           "linkType": "HARD"\
         }]\
