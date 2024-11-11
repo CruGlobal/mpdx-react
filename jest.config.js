@@ -40,7 +40,6 @@ const customJestConfig = {
     '!pages/api/**',
     '!**/*.generated.ts',
     '!**/*.mock.*',
-    '!**/*.stories.*',
     '!**/*.test.*',
     '!**/*Mock.ts',
   ],
