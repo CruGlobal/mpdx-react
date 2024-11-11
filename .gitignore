@@ -12,10 +12,6 @@
 # testing
 /coverage
 
-# Storybook cache
-/node_modules/.cache
-/storybook-static
-
 # next.js
 /.next
 
@@ -54,9 +50,6 @@ yarn-error.log*
 .eslintcache
 
 node_modules
-
-# Storybook
-build-storybook.log
 
 # Lighthouse
 .lighthouseci
