@@ -12,8 +12,7 @@ module.exports = {
   input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{jsx,tsx}'],
   verbose: true,
   sort: true,
-  nsSeparator: false,
   namespaceSeparator: false,
   keySeparator: false,
-  useKeysAsDefaultValue: true,
+  defaultValue: (locale, namespace, key) => key,
 };
