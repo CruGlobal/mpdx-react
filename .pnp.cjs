@@ -25977,17 +25977,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["jose", [\
-        ["npm:4.11.2", {\
-          "packageLocation": "./.yarn/cache/jose-npm-4.11.2-f3f8bb7bbb-bc9b2271c3.zip/node_modules/jose/",\
+        ["npm:4.15.9", {\
+          "packageLocation": "./.yarn/cache/jose-npm-4.15.9-a725b711d7-41abe1c99b.zip/node_modules/jose/",\
           "packageDependencies": [\
-            ["jose", "npm:4.11.2"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:4.13.1", {\
-          "packageLocation": "./.yarn/cache/jose-npm-4.13.1-ecad744417-89be959573.zip/node_modules/jose/",\
-          "packageDependencies": [\
-            ["jose", "npm:4.13.1"]\
+            ["jose", "npm:4.15.9"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -28404,7 +28397,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", null],\
             ["cookie", "npm:0.5.0"],\
-            ["jose", "npm:4.13.1"],\
+            ["jose", "npm:4.15.9"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:12.3.1"],\
             ["nodemailer", null],\
             ["oauth", "npm:0.9.15"],\
@@ -29144,7 +29137,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/openid-client-npm-5.4.0-13b7e14713-d198dbcaf0.zip/node_modules/openid-client/",\
           "packageDependencies": [\
             ["openid-client", "npm:5.4.0"],\
-            ["jose", "npm:4.11.2"],\
+            ["jose", "npm:4.15.9"],\
             ["lru-cache", "npm:6.0.0"],\
             ["object-hash", "npm:2.2.0"],\
             ["oidc-token-hash", "npm:5.0.1"]\
