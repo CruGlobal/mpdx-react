@@ -9355,7 +9355,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@graphql-typed-document-node/core", "virtual:bc99b96f0fa44ff66df334d122615311570797565c101108585b0b92e2494d2fed2cf8ba41ed928eae637e83e04b4b5643319fc12af526fe8ab7798b1c35dda0#npm:3.1.1"],\
             ["@types/graphql", null],\
             ["cross-inspect", "npm:1.0.0"],\
-            ["dset", "npm:3.1.2"],\
+            ["dset", "npm:3.1.4"],\
             ["graphql", "npm:16.9.0"],\
             ["tslib", "npm:2.4.0"]\
           ],\
@@ -20436,10 +20436,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["dset", [\
-        ["npm:3.1.2", {\
-          "packageLocation": "./.yarn/cache/dset-npm-3.1.2-c711fbe49b-4f8066f517.zip/node_modules/dset/",\
+        ["npm:3.1.4", {\
+          "packageLocation": "./.yarn/cache/dset-npm-3.1.4-f4959c71f7-9a7677e9ff.zip/node_modules/dset/",\
           "packageDependencies": [\
-            ["dset", "npm:3.1.2"]\
+            ["dset", "npm:3.1.4"]\
           ],\
           "linkType": "HARD"\
         }]\
