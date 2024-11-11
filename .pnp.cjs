@@ -17988,7 +17988,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["parse5", "npm:7.0.0"],\
             ["saxes", "npm:6.0.0"],\
             ["symbol-tree", "npm:3.2.4"],\
-            ["tough-cookie", "npm:4.1.2"],\
+            ["tough-cookie", "npm:4.1.4"],\
             ["w3c-hr-time", "npm:1.0.2"],\
             ["w3c-xmlserializer", "npm:3.0.0"],\
             ["webidl-conversions", "npm:7.0.0"],\
@@ -24458,10 +24458,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:4.1.2", {\
-          "packageLocation": "./.yarn/cache/tough-cookie-npm-4.1.2-09068826e1-a7359e9a3e.zip/node_modules/tough-cookie/",\
+        ["npm:4.1.4", {\
+          "packageLocation": "./.yarn/cache/tough-cookie-npm-4.1.4-8293cc8bd5-5815059f01.zip/node_modules/tough-cookie/",\
           "packageDependencies": [\
-            ["tough-cookie", "npm:4.1.2"],\
+            ["tough-cookie", "npm:4.1.4"],\
             ["psl", "npm:1.9.0"],\
             ["punycode", "npm:2.1.1"],\
             ["universalify", "npm:0.2.0"],\
