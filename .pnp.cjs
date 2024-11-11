@@ -142,7 +142,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.4"],\
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:9.3.0"],\
             ["ts-node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:10.9.1"],\
             ["tslib", "npm:2.4.0"],\
@@ -8067,7 +8067,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/rollbar", null],\
             ["prop-types", "npm:15.8.1"],\
             ["react", "npm:18.2.0"],\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.4"],\
             ["tiny-invariant", "npm:1.2.0"]\
           ],\
           "packagePeers": [\
@@ -17054,15 +17054,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["is_js", [\
-        ["npm:0.9.0", {\
-          "packageLocation": "./.yarn/cache/is_js-npm-0.9.0-f53531ad6e-bf7f0fc521.zip/node_modules/is_js/",\
-          "packageDependencies": [\
-            ["is_js", "npm:0.9.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["isarray", [\
         ["npm:1.0.0", {\
           "packageLocation": "./.yarn/cache/isarray-npm-1.0.0-db4f547720-f032df8e02.zip/node_modules/isarray/",\
@@ -19522,7 +19513,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["react-i18next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:11.18.6"],\
             ["react-virtuoso", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.19.0"],\
             ["recharts", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.3.2"],\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.4"],\
             ["ts-essentials", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:9.3.0"],\
             ["ts-node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:10.9.1"],\
             ["tslib", "npm:2.4.0"],\
@@ -22390,11 +22381,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["request-ip", [\
-        ["npm:2.0.2", {\
-          "packageLocation": "./.yarn/cache/request-ip-npm-2.0.2-12547589d2-42e66d1cac.zip/node_modules/request-ip/",\
+        ["npm:3.3.0", {\
+          "packageLocation": "./.yarn/cache/request-ip-npm-3.3.0-d0fb01a2ad-9ca26f8142.zip/node_modules/request-ip/",\
           "packageDependencies": [\
-            ["request-ip", "npm:2.0.2"],\
-            ["is_js", "npm:0.9.0"]\
+            ["request-ip", "npm:3.3.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -22669,17 +22659,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["rollbar", [\
-        ["npm:2.25.2", {\
-          "packageLocation": "./.yarn/cache/rollbar-npm-2.25.2-ec7b548f0b-34d1e097c9.zip/node_modules/rollbar/",\
+        ["npm:2.26.4", {\
+          "packageLocation": "./.yarn/cache/rollbar-npm-2.26.4-f7a42d02ca-ea0b24264a.zip/node_modules/rollbar/",\
           "packageDependencies": [\
-            ["rollbar", "npm:2.25.2"],\
+            ["rollbar", "npm:2.26.4"],\
             ["async", "npm:3.2.4"],\
             ["console-polyfill", "npm:0.3.0"],\
             ["decache", "npm:3.1.0"],\
             ["error-stack-parser", "npm:2.1.4"],\
             ["json-stringify-safe", "npm:5.0.1"],\
             ["lru-cache", "npm:2.2.4"],\
-            ["request-ip", "npm:2.0.2"],\
+            ["request-ip", "npm:3.3.0"],\
             ["source-map", "npm:0.5.7"]\
           ],\
           "linkType": "HARD"\
