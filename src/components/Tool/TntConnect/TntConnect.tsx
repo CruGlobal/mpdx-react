@@ -155,9 +155,9 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    const f = event.target.files?.[0];
-    if (f) {
-      updateTntFile(f);
+    const file = event.target.files?.[0];
+    if (file) {
+      updateTntFile(file);
     }
   };
 
@@ -168,6 +168,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
       }
     };
   }, [tntFile]);
+
   const updateTntFile = (file: File) => {
     const validationResult = validateTnt({ file, t });
     if (!validationResult.success) {
@@ -177,10 +178,6 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
       return;
     }
 
-    if (tntFile) {
-      // Release the previous file blob
-      URL.revokeObjectURL(tntFile.blobUrl);
-    }
     setTntFile({ file, blobUrl: URL.createObjectURL(file) });
   };
 
