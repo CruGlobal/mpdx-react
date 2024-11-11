@@ -1,8 +1,11 @@
+import { session } from '__tests__/fixtures/session';
 import { uploadTnt } from './uploadTntConnect';
+
+const apiToken = session.user.apiToken;
 
 describe('uploadTnt', () => {
   const fetch = jest.fn().mockResolvedValue({
-    json: () => Promise.resolve({ success: true }),
+    ok: true,
   });
   beforeEach(() => {
     window.fetch = fetch;
@@ -16,16 +19,14 @@ describe('uploadTnt', () => {
   const textFile = new File(['contents'], 'file.txt', {
     type: 'text/plain',
   });
-  const largeFile = new File([new ArrayBuffer(2_000_000)], 'large.xml', {
-    type: 'text/xml',
-  });
 
   const selectedTags = ['test', 'tag1'];
   const accountListId = '1234';
 
-  it('uploads the image', () => {
+  it('uploads the file', () => {
     return expect(
       uploadTnt({
+        apiToken,
         override: 'false',
         selectedTags,
         accountListId,
@@ -38,6 +39,7 @@ describe('uploadTnt', () => {
   it('rejects files that are not xml files', () => {
     return expect(
       uploadTnt({
+        apiToken,
         override: 'false',
         selectedTags,
         accountListId,
@@ -47,40 +49,29 @@ describe('uploadTnt', () => {
     ).rejects.toThrow('Cannot upload file: file must be a xml file');
   });
 
-  it('rejects files that are too large', () => {
-    return expect(
-      uploadTnt({
-        override: 'false',
-        selectedTags,
-        accountListId,
-        file: largeFile,
-        t,
-      }),
-    ).rejects.toThrow('Cannot upload file: file size cannot exceed 1MB');
-  });
-
-  it('handles server errors', () => {
+  it('handles network errors', () => {
     fetch.mockRejectedValue(new Error('Network error'));
 
     return expect(
       uploadTnt({
+        apiToken,
         override: 'false',
         selectedTags,
         accountListId,
         file,
         t,
       }),
-    ).rejects.toThrow('Cannot upload file: server error');
+    ).rejects.toThrow('Cannot upload file: network error');
   });
 
   it('handles success being false', () => {
-    const fetch = jest.fn().mockResolvedValue({
-      json: () => Promise.resolve({ success: false }),
+    fetch.mockResolvedValue({
+      ok: false,
     });
-    window.fetch = fetch;
 
     return expect(
       uploadTnt({
+        apiToken,
         override: 'false',
         selectedTags,
         accountListId,

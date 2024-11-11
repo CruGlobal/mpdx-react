@@ -29,6 +29,7 @@ import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpin
 import { ContactTagInput } from 'src/components/Tags/Tags';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import theme from 'src/theme';
 import { ToolsGridContainer } from '../styledComponents';
 import { uploadTnt, validateTnt } from './uploads/uploadTntConnect';
@@ -97,6 +98,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { apiToken } = useRequiredSession();
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tntFile, setTntFile] = useState<{
@@ -125,6 +127,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
     if (file) {
       try {
         await uploadTnt({
+          apiToken,
           override: attributes.override,
           selectedTags: attributes.selectedTags,
           file,
@@ -152,9 +155,9 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    const f = event.target.files?.[0];
-    if (f) {
-      updateTntFile(f);
+    const file = event.target.files?.[0];
+    if (file) {
+      updateTntFile(file);
     }
   };
 
@@ -165,6 +168,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
       }
     };
   }, [tntFile]);
+
   const updateTntFile = (file: File) => {
     const validationResult = validateTnt({ file, t });
     if (!validationResult.success) {
@@ -174,10 +178,6 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
       return;
     }
 
-    if (tntFile) {
-      // Release the previous file blob
-      URL.revokeObjectURL(tntFile.blobUrl);
-    }
     setTntFile({ file, blobUrl: URL.createObjectURL(file) });
   };
 
