@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import {
   ContactLateStatusEnum,
@@ -35,8 +34,8 @@ export const ContactPartnershipStatus: React.FC<
   pledgeReceived,
   status,
 }) => {
-  const { t } = useTranslation();
   const locale = useLocale();
+  const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   const lateStatusEnum: number | undefined = useMemo(() => {
     if (lateAt) {
       const diff = DateTime.now().diff(DateTime.fromISO(lateAt), 'days')?.days;
@@ -71,7 +70,7 @@ export const ContactPartnershipStatus: React.FC<
             {pledgeAmount && pledgeCurrency
               ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
               : pledgeAmount || ''}{' '}
-            {pledgeFrequency && getLocalizedPledgeFrequency(t, pledgeFrequency)}{' '}
+            {pledgeFrequency && getLocalizedPledgeFrequency(pledgeFrequency)}{' '}
             {status === ContactPartnershipStatusEnum.PartnerFinancial &&
               lateStatusEnum !== undefined && (
                 <ContactLateStatusLabel lateStatusEnum={lateStatusEnum} />

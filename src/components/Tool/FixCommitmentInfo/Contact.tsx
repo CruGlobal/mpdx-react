@@ -38,8 +38,6 @@ import {
   getPledgeCurrencyOptions,
 } from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
 import {
@@ -205,7 +203,8 @@ const Contact: React.FC<Props> = ({
   const constants = useApiConstants();
   const frequencyOptions = constants?.pledgeFrequency;
   const statusOptions = constants?.status;
-  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
+    useLocalizedConstants();
   const phases = constants?.phases;
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
@@ -331,10 +330,7 @@ const Contact: React.FC<Props> = ({
                             {amount && amountCurrency
                               ? currencyFormat(amount, amountCurrency, locale)
                               : null}{' '}
-                            {getLocalizedPledgeFrequency(
-                              t,
-                              frequencyValue as PledgeFrequencyEnum,
-                            )}
+                            {getLocalizedPledgeFrequency(frequencyValue)}
                           </Typography>
                         </Box>
                       </Box>
@@ -372,10 +368,10 @@ const Contact: React.FC<Props> = ({
                               }
                             >
                               {phases?.map((phase) => [
-                                <ListSubheader key={phase?.id}>
-                                  {getLocalizedPhase(t, phase?.id)}
+                                <ListSubheader key={phase.id}>
+                                  {phase.name}
                                 </ListSubheader>,
-                                phase?.contactStatuses.map((status) => (
+                                phase.contactStatuses.map((status) => (
                                   <MenuItem key={status} value={status}>
                                     {getLocalizedContactStatus(status)}
                                   </MenuItem>
@@ -501,7 +497,7 @@ const Contact: React.FC<Props> = ({
                                       value={value}
                                       data-testid="pledgeFrequencyOptions"
                                     >
-                                      {getLocalizedPledgeFrequency(t, value)}
+                                      {getLocalizedPledgeFrequency(value)}
                                     </MenuItem>
                                   ),
                                 )}

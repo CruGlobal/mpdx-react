@@ -9,6 +9,7 @@ import { PhaseEnum } from 'pages/api/graphql-rest.page.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { ContactFilterSetInput, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
 import theme from '../../../theme';
@@ -51,6 +52,7 @@ export const ContactFlow: React.FC<Props> = ({
 
   const { t } = useTranslation();
   const { getContactStatusesByPhase } = useContactPartnershipStatuses();
+  const { getLocalizedPhase } = useLocalizedConstants();
   const { enqueueSnackbar } = useSnackbar();
   const { openTaskModal } = useTaskModal();
 
@@ -62,7 +64,11 @@ export const ContactFlow: React.FC<Props> = ({
       return userFlowOptions;
     }
 
-    return getDefaultFlowOptions(t, getContactStatusesByPhase);
+    return getDefaultFlowOptions(
+      t,
+      getContactStatusesByPhase,
+      getLocalizedPhase,
+    );
   }, [userFlowOptions, loadingUserOptions]);
 
   const [updateContactOther] = useUpdateContactOtherMutation();

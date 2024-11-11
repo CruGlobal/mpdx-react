@@ -23,6 +23,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { ContactFlowOption } from '../../../ContactFlow';
 
 interface ResetToDefaultModalProps {
@@ -42,6 +43,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { getContactStatusesByPhase } = useContactPartnershipStatuses();
+  const { getLocalizedPhase } = useLocalizedConstants();
   const { enqueueSnackbar } = useSnackbar();
   const [updating, setUpdating] = useState(false);
 
@@ -49,6 +51,7 @@ export const ResetToDefaultModal: React.FC<ResetToDefaultModalProps> = ({
     const defaultValues = getDefaultFlowOptions(
       t,
       getContactStatusesByPhase,
+      getLocalizedPhase,
       values.resetToDefaultType as DefaultTypeEnum,
     );
 

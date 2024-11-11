@@ -8,7 +8,6 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import LoadConstantsMock from 'src/components/Constants/LoadConstantsMock';
 import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -18,7 +17,6 @@ import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutoc
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm, { TaskModalFormProps } from './TaskModalForm';
 import {
-  createTasksMutationMock,
   deleteTaskMutationMock,
   updateTaskMutationMock,
 } from './TaskModalForm.mock';
@@ -97,14 +95,16 @@ describe('TaskModalForm', () => {
   });
 
   it('Modal will not save if invalid data', async () => {
-    const { findByText, getByRole, findByRole } = render(
-      <Components mocks={[createTasksMutationMock(), LoadConstantsMock()]} />,
-    );
+    const { findByText, getByRole, findByRole } = render(<Components />);
     userEvent.click(getByRole('combobox', { name: 'Task Type' }));
     userEvent.click(await findByRole('option', { name: 'Appointment' }));
 
     userEvent.click(getByRole('combobox', { name: 'Action' }));
     userEvent.click(await findByRole('option', { name: 'In Person' }));
+
+    userEvent.clear(getByRole('textbox', { name: /subject/i }));
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
     expect(onClose).not.toHaveBeenCalled();
     expect(await findByText('Field is required')).toBeInTheDocument();
     await waitFor(() => expect(onClose).not.toHaveBeenCalled());
@@ -307,10 +307,7 @@ describe('TaskModalForm', () => {
 
   it('show the location field appropriately', async () => {
     const { getByRole, findByRole, queryByRole } = render(
-      <Components
-        mocks={[updateTaskMutationMock(), LoadConstantsMock()]}
-        mockTask={mockTask}
-      />,
+      <Components mocks={[updateTaskMutationMock()]} mockTask={mockTask} />,
     );
 
     expect(

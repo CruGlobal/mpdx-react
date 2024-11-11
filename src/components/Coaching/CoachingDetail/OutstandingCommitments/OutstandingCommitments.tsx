@@ -16,9 +16,9 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
 import {
@@ -55,6 +55,7 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { getLocalizedPledgeFrequency } = useLocalizedConstants();
 
   const {
     data: ownData,
@@ -173,10 +174,7 @@ export const OutstandingCommitments: React.FC<OutstandingCommitmentsProps> = ({
                     </AlignedTableCell>
                     <AlignedTableCell>
                       {contact.pledgeFrequency
-                        ? getLocalizedPledgeFrequency(
-                            t,
-                            contact.pledgeFrequency,
-                          )
+                        ? getLocalizedPledgeFrequency(contact.pledgeFrequency)
                         : t('N/A')}
                     </AlignedTableCell>
                     <AlignedTableCell

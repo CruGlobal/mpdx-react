@@ -24,6 +24,7 @@ import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
 
 const StickyBox = styled(Box)(() => ({
@@ -39,6 +40,7 @@ const ContactFlowSetupPage: React.FC = () => {
   const accountListId = useAccountListId();
   const { statusMap, getContactStatusesByPhase } =
     useContactPartnershipStatuses();
+  const { getLocalizedPhase } = useLocalizedConstants();
   const { enqueueSnackbar } = useSnackbar();
   const [flowOptions, setFlowOptions] = useState<FlowOption[]>([]);
   const resetColumnsMessage = t(
@@ -48,7 +50,9 @@ const ContactFlowSetupPage: React.FC = () => {
 
   useEffect(() => {
     if (!userOptions.length) {
-      setFlowOptions(getDefaultFlowOptions(t, getContactStatusesByPhase));
+      setFlowOptions(
+        getDefaultFlowOptions(t, getContactStatusesByPhase, getLocalizedPhase),
+      );
     } else {
       setFlowOptions(userOptions);
     }

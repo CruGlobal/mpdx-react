@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormat } from 'src/lib/intlFormat';
-import { getLocalizedPledgeFrequency } from 'src/utils/functions/getLocalizedPledgeFrequency';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
@@ -69,7 +68,8 @@ interface PartnershipInfoProp {
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
+    useLocalizedConstants();
 
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -100,7 +100,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
               contact?.pledgeCurrency,
               locale,
             )} - ${
-              getLocalizedPledgeFrequency(t, contact?.pledgeFrequency) ??
+              getLocalizedPledgeFrequency(contact?.pledgeFrequency) ??
               t('No Frequency Set')
             }`}
           </LabelsAndText>

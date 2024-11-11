@@ -3,7 +3,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { PhaseEnum } from 'src/graphql/types.generated';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 
 interface TaskPhaseProps {
   options: PhaseEnum[];
@@ -31,6 +31,7 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
   touched,
 }) => {
   const { t } = useTranslation();
+  const { getLocalizedPhase } = useLocalizedConstants();
 
   return (
     <Autocomplete<PhaseEnum>
@@ -39,7 +40,7 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
       autoSelect
       value={value || contactPhase}
       options={options}
-      getOptionLabel={(phase) => getLocalizedPhase(t, phase)}
+      getOptionLabel={(phase) => getLocalizedPhase(phase)}
       renderInput={(params) => (
         <TextField
           {...params}

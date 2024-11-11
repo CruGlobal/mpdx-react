@@ -115,7 +115,7 @@ describe('ContactFlow', () => {
       expect(queryByTestId('contactsFlowUntitledOne')).not.toBeInTheDocument(),
     );
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Connections' })).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'Connection' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Initiation' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Appointment' })).toBeInTheDocument();
       expect(getByRole('heading', { name: 'Follow-Up' })).toBeInTheDocument();

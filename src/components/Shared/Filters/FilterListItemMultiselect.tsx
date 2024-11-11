@@ -11,7 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import { getLocalizedPhase } from 'src/utils/functions/getLocalizedPhase';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { MultiselectFilterAutocomplete } from './MultiselectFilterAutocomplete';
 import { renameFilterNames, reverseFiltersMap } from './helpers';
 
@@ -37,6 +37,7 @@ export const FilterListItemMultiselect: React.FC<
     onUpdate(value);
   };
   const { statusArray } = useContactPartnershipStatuses();
+  const { getLocalizedPhase } = useLocalizedConstants();
 
   const isChecked = (value?: string | null) =>
     selected && selected.some((it) => it === value);
@@ -52,17 +53,19 @@ export const FilterListItemMultiselect: React.FC<
   const filterTitle = renameFilterNames(filter.title);
 
   // If it is a status filter, group the status options by phase
-  const isStatusFilter = useMemo(
-    () =>
-      filter.filterKey === 'status' || filter.filterKey === 'contact_status',
-    [filter.filterKey],
-  );
+  const isStatusFilter = useMemo(() => {
+    return (
+      filter.filterKey === 'status' || filter.filterKey === 'contact_status'
+    );
+  }, [filter.filterKey]);
 
-  const getStatusPhaseId = (selectedStatus: string) =>
-    statusArray.find((status) => status.id === selectedStatus)?.phase;
+  const getStatusPhaseId = (selectedStatus: string) => {
+    return statusArray.find((status) => status.id === selectedStatus)?.phase;
+  };
 
-  const groupByPhase = (option: string) =>
-    getLocalizedPhase(t, getStatusPhaseId(option));
+  const groupByPhase = (option: string) => {
+    return getLocalizedPhase(getStatusPhaseId(option));
+  };
 
   return (
     <div className="FilterListItemMultiselect-root">
