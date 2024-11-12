@@ -75,7 +75,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
       filterData?.accountList.partnerGivingAnalysisFilterGroups ?? [];
     const reportFilterGroup = {
       __typename: 'FilterGroup' as const,
-      name: 'Report Filters',
+      name: t('Report Filters'),
       featured: true,
       filters: sortBy(
         groups
@@ -88,7 +88,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
       ),
     };
     return [reportFilterGroup, ...groups];
-  }, [filterData]);
+  }, [filterData, t]);
 
   const handleClearSearch = () => {
     reportRef.current?.clearSearchInput();
