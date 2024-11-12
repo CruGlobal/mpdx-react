@@ -445,9 +445,7 @@ describe('TaskModalForm', () => {
     expect(getByRole('combobox', { name: 'Action' })).toHaveValue('In Person');
 
     userEvent.click(await findByRole('combobox', { name: 'Result' }));
-    userEvent.click(
-      getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-    );
+    userEvent.click(getByRole('option', { name: 'Cancelled' }));
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(getByRole('option', { name: 'Email' }));
@@ -481,7 +479,7 @@ describe('TaskModalForm', () => {
     );
 
     userEvent.click(await findByRole('combobox', { name: 'Result' }));
-    userEvent.click(await findByRole('option', { name: 'Follow up' }));
+    userEvent.click(await findByRole('option', { name: 'Follow Up' }));
 
     userEvent.click(getByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'In Person' }));

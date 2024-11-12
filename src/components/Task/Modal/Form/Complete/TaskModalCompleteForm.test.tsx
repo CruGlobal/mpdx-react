@@ -117,14 +117,12 @@ describe('TaskModalCompleteForm', () => {
       userEvent.click(resultDropdown);
 
       await waitFor(() => {
-        expect(
-          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-        ).toBeInTheDocument();
+        expect(getByRole('option', { name: 'Cancelled' })).toBeInTheDocument();
         expect(
           getByRole('option', { name: 'Not Interested' }),
         ).toBeInTheDocument();
         expect(
-          getByRole('option', { name: 'Partner-Financial' }),
+          getByRole('option', { name: 'Partner - Financial' }),
         ).toBeInTheDocument();
       });
     });
@@ -139,9 +137,7 @@ describe('TaskModalCompleteForm', () => {
       const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
 
-      userEvent.click(
-        await findByRole('option', { name: 'Cancelled-Need to reschedule' }),
-      );
+      userEvent.click(await findByRole('option', { name: 'Cancelled' }));
 
       await waitFor(() => {
         expect(
@@ -165,9 +161,7 @@ describe('TaskModalCompleteForm', () => {
       const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
       await waitFor(() => {
-        userEvent.click(
-          getByRole('option', { name: 'Cancelled-Need to reschedule' }),
-        );
+        userEvent.click(getByRole('option', { name: 'Cancelled' }));
       });
 
       expect(
@@ -193,7 +187,7 @@ describe('TaskModalCompleteForm', () => {
       userEvent.click(resultDropdown);
       await waitFor(() => {
         userEvent.click(
-          getByRole('option', { name: "Can't meet right now - circle back" }),
+          getByRole('option', { name: 'Can not meet right now - circle back' }),
         );
       });
 
@@ -232,7 +226,7 @@ describe('TaskModalCompleteForm', () => {
       const resultDropdown = await findByRole('combobox', { name: 'Result' });
       userEvent.click(resultDropdown);
       await waitFor(() => {
-        userEvent.click(getByRole('option', { name: 'Partner-Financial' }));
+        userEvent.click(getByRole('option', { name: 'Partner - Financial' }));
       });
 
       const nextActionDropdown = getByRole('combobox', { name: 'Next Action' });
@@ -252,7 +246,7 @@ describe('TaskModalCompleteForm', () => {
 
       userEvent.click(resultDropdown);
       await waitFor(() => {
-        userEvent.click(getByRole('option', { name: 'Follow up' }));
+        userEvent.click(getByRole('option', { name: 'Follow Up' }));
       });
 
       userEvent.click(nextActionDropdown);
@@ -298,7 +292,7 @@ describe('TaskModalCompleteForm', () => {
       ).not.toBeInTheDocument();
 
       userEvent.click(await findByRole('combobox', { name: 'Result' }));
-      userEvent.click(await findByRole('option', { name: 'Follow up' }));
+      userEvent.click(await findByRole('option', { name: 'Follow Up' }));
 
       expect(
         getByRole('combobox', { name: 'Next Action' }),
@@ -346,7 +340,7 @@ describe('TaskModalCompleteForm', () => {
       userEvent.click(getByRole('combobox', { name: 'Result' }));
     });
     await waitFor(() => {
-      userEvent.click(getByText('Partner-Special'));
+      userEvent.click(getByText('Partner - Special'));
       userEvent.click(getByRole('combobox', { name: 'Next Action' }));
       userEvent.click(getByRole('option', { name: 'Thank' }));
     });
@@ -395,7 +389,7 @@ describe('TaskModalCompleteForm', () => {
       />,
     );
     userEvent.click(await findByRole('combobox', { name: 'Result' }));
-    userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
+    userEvent.click(await findByRole('option', { name: 'Partner - Special' }));
     userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
     userEvent.click(await findByRole('option', { name: 'Thank' }));
 

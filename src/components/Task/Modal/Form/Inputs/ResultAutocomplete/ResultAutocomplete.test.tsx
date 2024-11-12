@@ -5,8 +5,8 @@ import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
 import {
   ActivityTypeEnum,
+  DisplayResultEnum,
   Phase,
-  ResultEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { SetResultSelected, handleResultChange } from '../../TaskModalHelper';
@@ -51,14 +51,7 @@ const Components = ({ availableResults }: ComponentsProps) => (
   </ThemeProvider>
 );
 
-const standardAvailableResults = [
-  ResultEnum.None,
-  ResultEnum.Attempted,
-  ResultEnum.AttemptedLeftMessage,
-  ResultEnum.Completed,
-  ResultEnum.Done,
-  ResultEnum.Received,
-];
+const standardAvailableResults = Object.values(DisplayResultEnum);
 
 describe('ResultSelect', () => {
   it('does not render when no availableResults', () => {
@@ -83,7 +76,7 @@ describe('ResultSelect', () => {
     userEvent.click(getByRole('option', { name: 'Completed' }));
 
     expect(handleResultChange).toHaveBeenCalledWith({
-      result: ResultEnum.Completed,
+      result: DisplayResultEnum.PartnerCareCompleted,
       setFieldValue,
       setResultSelected,
       phaseData,
@@ -91,10 +84,14 @@ describe('ResultSelect', () => {
     });
   });
   it('preselects a result when only one result is available', async () => {
-    render(<Components availableResults={[ResultEnum.Completed]} />);
+    render(
+      <Components
+        availableResults={[DisplayResultEnum.PartnerCareCompleted]}
+      />,
+    );
 
     expect(handleResultChange).toHaveBeenCalledWith({
-      result: ResultEnum.Completed,
+      result: DisplayResultEnum.PartnerCareCompleted,
       setFieldValue,
       setResultSelected,
       phaseData,

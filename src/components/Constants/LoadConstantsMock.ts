@@ -246,6 +246,72 @@ export const loadConstantsMockData: LoadConstantsQuery = {
         value: 'Partner Care - To Do',
       },
     ],
+    displayResults: [
+      {
+        id: 'INITIATION_RESULT_NO_RESPONSE',
+        value: 'No Response Yet',
+      },
+      {
+        id: 'INITIATION_RESULT_CIRCLE_BACK',
+        value: 'Can not meet right now - circle back',
+      },
+      {
+        id: 'INITIATION_RESULT_APPOINTMENT_SCHEDULED',
+        value: 'Appointment Scheduled',
+      },
+      {
+        id: 'INITIATION_RESULT_NOT_INTERESTED',
+        value: 'Not Interested',
+      },
+      {
+        id: 'FOLLOW_UP_RESULT_NO_RESPONSE',
+        value: 'No Response Yet',
+      },
+      {
+        id: 'FOLLOW_UP_RESULT_PARTNER_FINANCIAL',
+        value: 'Partner - Financial',
+      },
+      {
+        id: 'FOLLOW_UP_RESULT_PARTNER_SPECIAL',
+        value: 'Partner - Special',
+      },
+      {
+        id: 'FOLLOW_UP_RESULT_PARTNER_PRAY',
+        value: 'Partner - Pray',
+      },
+      {
+        id: 'FOLLOW_UP_RESULT_NOT_INTERESTED',
+        value: 'Not Interested',
+      },
+      {
+        id: 'APPOINTMENT_RESULT_CANCELLED',
+        value: 'Cancelled',
+      },
+      {
+        id: 'APPOINTMENT_RESULT_FOLLOW_UP',
+        value: 'Follow Up',
+      },
+      {
+        id: 'APPOINTMENT_RESULT_PARTNER_FINANCIAL',
+        value: 'Partner - Financial',
+      },
+      {
+        id: 'APPOINTMENT_RESULT_PARTNER_SPECIAL',
+        value: 'Partner - Special',
+      },
+      {
+        id: 'APPOINTMENT_RESULT_PARTNER_PRAY',
+        value: 'Partner - Pray',
+      },
+      {
+        id: 'APPOINTMENT_RESULT_NOT_INTERESTED',
+        value: 'Not Interested',
+      },
+      {
+        id: 'PARTNER_CARE_COMPLETED',
+        value: 'Completed',
+      },
+    ],
 
     phases: [
       {
@@ -301,6 +367,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.InitiationResultNoResponse,
+              value: 'No Response Yet',
               suggestedContactStatus: null,
               suggestedNextActions: [
                 ActivityTypeEnum.InitiationPhoneCall,
@@ -344,6 +411,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.InitiationResultCircleBack,
+              value: 'Can not meet right now - circle back',
               suggestedContactStatus: null,
               suggestedNextActions: [
                 ActivityTypeEnum.InitiationPhoneCall,
@@ -387,6 +455,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.InitiationResultAppointmentScheduled,
+              value: 'Appointment Scheduled',
               suggestedContactStatus: StatusEnum.AppointmentScheduled,
               suggestedNextActions: [
                 ActivityTypeEnum.AppointmentInPerson,
@@ -426,6 +495,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.InitiationResultNotInterested,
+              value: 'Not Interested',
               suggestedContactStatus: StatusEnum.NotInterested,
               suggestedNextActions: [],
             },
@@ -464,6 +534,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.AppointmentResultCancelled,
+              value: 'Cancelled',
               suggestedContactStatus: StatusEnum.ContactForAppointment,
               suggestedNextActions: [
                 ActivityTypeEnum.InitiationPhoneCall,
@@ -491,6 +562,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.AppointmentResultFollowUp,
+              value: 'Follow Up',
               suggestedContactStatus: StatusEnum.CallForDecision,
               suggestedNextActions: [
                 ActivityTypeEnum.FollowUpPhoneCall,
@@ -516,6 +588,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultPartnerFinancial,
+              value: 'Partner - Financial',
               suggestedContactStatus: StatusEnum.PartnerFinancial,
               suggestedNextActions: [ActivityTypeEnum.PartnerCareThank],
             },
@@ -535,6 +608,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultPartnerSpecial,
+              value: 'Partner - Special',
               suggestedContactStatus: StatusEnum.PartnerSpecial,
               suggestedNextActions: [ActivityTypeEnum.PartnerCareThank],
             },
@@ -554,6 +628,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultPartnerPray,
+              value: 'Partner - Pray',
               suggestedContactStatus: StatusEnum.PartnerPray,
               suggestedNextActions: [ActivityTypeEnum.PartnerCareThank],
             },
@@ -573,6 +648,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultNotInterested,
+              value: 'Not Interested',
               suggestedContactStatus: StatusEnum.NotInterested,
               suggestedNextActions: [],
             },
@@ -632,6 +708,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.InitiationResultNoResponse,
+              value: 'No Response Yet',
               suggestedContactStatus: null,
               suggestedNextActions: [
                 ActivityTypeEnum.FollowUpPhoneCall,
@@ -665,6 +742,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultPartnerFinancial,
+              value: 'Partner - Financial',
               suggestedContactStatus: StatusEnum.PartnerFinancial,
               suggestedNextActions: [ActivityTypeEnum.PartnerCareThank],
             },
@@ -692,6 +770,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultPartnerSpecial,
+              value: 'Partner - Special',
               suggestedContactStatus: StatusEnum.PartnerSpecial,
               suggestedNextActions: [ActivityTypeEnum.PartnerCareThank],
             },
@@ -719,6 +798,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultPartnerPray,
+              value: 'Partner - Pray',
               suggestedContactStatus: StatusEnum.PartnerPray,
               suggestedNextActions: [ActivityTypeEnum.PartnerCareThank],
             },
@@ -746,6 +826,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.FollowUpResultNotInterested,
+              value: 'Not Interested',
               suggestedContactStatus: StatusEnum.NotInterested,
               suggestedNextActions: [],
             },
@@ -839,6 +920,7 @@ export const loadConstantsMockData: LoadConstantsQuery = {
                 },
               ],
               name: DisplayResultEnum.PartnerCareCompleted,
+              value: 'Completed',
               suggestedContactStatus: null,
               suggestedNextActions: [
                 ActivityTypeEnum.PartnerCarePhoneCall,

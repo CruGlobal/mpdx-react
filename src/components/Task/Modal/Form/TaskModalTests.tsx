@@ -83,14 +83,14 @@ export const taskModalTests = (Components: Components) => {
     it('has correct options for AppointmentInPerson', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.AppointmentInPerson,
-        'Cancelled-Need to reschedule',
+        'Cancelled',
       );
       expect(results).toEqual([
-        'Cancelled-Need to reschedule',
-        'Follow up',
-        'Partner-Financial',
-        'Partner-Special',
-        'Partner-Pray',
+        'Cancelled',
+        'Follow Up',
+        'Partner - Financial',
+        'Partner - Special',
+        'Partner - Pray',
         'Not Interested',
       ]);
       expect(nextActions).toEqual([
@@ -108,14 +108,14 @@ export const taskModalTests = (Components: Components) => {
     it('has correct options for AppointmentVideoCall', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.AppointmentVideoCall,
-        'Follow up',
+        'Follow Up',
       );
       expect(results).toEqual([
-        'Cancelled-Need to reschedule',
-        'Follow up',
-        'Partner-Financial',
-        'Partner-Special',
-        'Partner-Pray',
+        'Cancelled',
+        'Follow Up',
+        'Partner - Financial',
+        'Partner - Special',
+        'Partner - Pray',
         'Not Interested',
       ]);
       expect(nextActions).toEqual([
@@ -135,7 +135,7 @@ export const taskModalTests = (Components: Components) => {
       );
       expect(results).toEqual([
         'No Response Yet',
-        "Can't meet right now - circle back",
+        'Can not meet right now - circle back',
         'Appointment Scheduled',
         'Not Interested',
       ]);
@@ -150,11 +150,11 @@ export const taskModalTests = (Components: Components) => {
     it('as correct options for InitiationEmail', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.InitiationEmail,
-        "Can't meet right now - circle back",
+        'Can not meet right now - circle back',
       );
       expect(results).toEqual([
         'No Response Yet',
-        "Can't meet right now - circle back",
+        'Can not meet right now - circle back',
         'Appointment Scheduled',
         'Not Interested',
       ]);
@@ -177,7 +177,7 @@ export const taskModalTests = (Components: Components) => {
       );
       expect(results).toEqual([
         'No Response Yet',
-        "Can't meet right now - circle back",
+        'Can not meet right now - circle back',
         'Appointment Scheduled',
         'Not Interested',
       ]);
@@ -200,7 +200,7 @@ export const taskModalTests = (Components: Components) => {
       );
       expect(results).toEqual([
         'No Response Yet',
-        "Can't meet right now - circle back",
+        'Can not meet right now - circle back',
         'Appointment Scheduled',
         'Not Interested',
       ]);
@@ -223,7 +223,7 @@ export const taskModalTests = (Components: Components) => {
       );
       expect(results).toEqual([
         'No Response Yet',
-        "Can't meet right now - circle back",
+        'Can not meet right now - circle back',
         'Appointment Scheduled',
         'Not Interested',
       ]);
@@ -238,13 +238,13 @@ export const taskModalTests = (Components: Components) => {
     it('has correct options for FollowUpSocialMedia', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.FollowUpSocialMedia,
-        'Partner-Pray',
+        'Partner - Pray',
       );
       expect(results).toEqual([
         'No Response Yet',
-        'Partner-Financial',
-        'Partner-Special',
-        'Partner-Pray',
+        'Partner - Financial',
+        'Partner - Special',
+        'Partner - Pray',
         'Not Interested',
       ]);
       expect(nextActions).toEqual(['None', 'Thank']);
@@ -253,13 +253,13 @@ export const taskModalTests = (Components: Components) => {
     it('has correct options for FollowUpTextMessage', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.FollowUpTextMessage,
-        'Partner-Financial',
+        'Partner - Financial',
       );
       expect(results).toEqual([
         'No Response Yet',
-        'Partner-Financial',
-        'Partner-Special',
-        'Partner-Pray',
+        'Partner - Financial',
+        'Partner - Special',
+        'Partner - Pray',
         'Not Interested',
       ]);
       expect(nextActions).toEqual(['None', 'Thank']);
