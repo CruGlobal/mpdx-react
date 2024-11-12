@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react-hooks';
 import {
+  DisplayResultEnum,
   PhaseEnum,
   PledgeFrequencyEnum,
   StatusEnum,
@@ -50,6 +51,22 @@ describe('useLocalizedConstants', () => {
     it('should return empty string for invalid inputs', () => {
       const { result } = renderHook(() => useLocalizedConstants());
       expect(result.current.getLocalizedPledgeFrequency('invalid')).toEqual('');
+    });
+  });
+
+  describe('getLocalizedResultString', () => {
+    it('should return correct string', () => {
+      const { result } = renderHook(() => useLocalizedConstants());
+      expect(
+        result.current.getLocalizedResultString(
+          DisplayResultEnum.AppointmentResultPartnerFinancial,
+        ),
+      ).toEqual('Partner - Financial');
+    });
+
+    it('should return empty string for invalid inputs', () => {
+      const { result } = renderHook(() => useLocalizedConstants());
+      expect(result.current.getLocalizedResultString('invalid')).toEqual('');
     });
   });
 });

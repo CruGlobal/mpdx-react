@@ -210,11 +210,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 }}
                 onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
               >
-                <TaskActionPhase
-                  activityData={activityData}
-                  activityType={activityType}
-                  isXs={isXs}
-                />
+                <TaskActionPhase activityData={activityData} isXs={isXs} />
               </Box>
             )}
             <Box

@@ -17,7 +17,6 @@ import { PhaseEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
@@ -40,7 +39,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { activitiesByPhase } = usePhaseData();
+  const { activitiesByPhase, activityTypes } = usePhaseData();
 
   const { data, loading } = useLevelOfEffortQuery({
     variables: {
@@ -181,7 +180,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                       'number' ? (
                       <TableRow>
                         <AlignedTableCell>
-                          {getLocalizedTaskType(t, activity)}
+                          {activityTypes.get(activity)?.translatedShortName}
                         </AlignedTableCell>
                         {periods.map((period) => (
                           <AlignedTableCell key={period?.startDate}>
@@ -220,7 +219,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                       'number' ? (
                       <TableRow>
                         <AlignedTableCell>
-                          {getLocalizedTaskType(t, activity)}
+                          {activityTypes.get(activity)?.translatedShortName}
                         </AlignedTableCell>
                         {periods.map((period) => (
                           <AlignedTableCell key={period?.startDate}>
@@ -254,7 +253,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                   return typeof averages[activityVariableName] === 'number' ? (
                     <TableRow>
                       <AlignedTableCell>
-                        {getLocalizedTaskType(t, activity)}
+                        {activityTypes.get(activity)?.translatedShortName}
                       </AlignedTableCell>
                       {periods.map((period) => (
                         <AlignedTableCell key={period?.startDate}>
@@ -293,7 +292,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                       'number' ? (
                       <TableRow>
                         <AlignedTableCell>
-                          {getLocalizedTaskType(t, activity)}
+                          {activityTypes.get(activity)?.translatedShortName}
                         </AlignedTableCell>
                         {periods.map((period) => (
                           <AlignedTableCell key={period?.startDate}>

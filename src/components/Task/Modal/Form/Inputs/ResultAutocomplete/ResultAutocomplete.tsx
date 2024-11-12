@@ -5,9 +5,8 @@ import {
   ActivityTypeEnum,
   DisplayResultEnum,
   Phase,
-  ResultEnum,
 } from 'src/graphql/types.generated';
-import { getLocalizedResultString } from 'src/utils/functions/getLocalizedResultStrings';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import {
   SetFieldValue,
   SetResultSelected,
@@ -15,10 +14,10 @@ import {
 } from '../../TaskModalHelper';
 
 export interface ResultAutocompleteProps {
-  availableResults: ResultEnum[] | DisplayResultEnum[];
+  availableResults: DisplayResultEnum[];
   setFieldValue: SetFieldValue;
   setResultSelected: SetResultSelected;
-  result?: ResultEnum | DisplayResultEnum | null;
+  result?: DisplayResultEnum | null;
   phaseData: Phase | null;
   completedAction: ActivityTypeEnum | null;
 }
@@ -32,6 +31,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
   completedAction,
 }) => {
   const { t } = useTranslation();
+  const { getLocalizedResultString } = useLocalizedConstants();
 
   useEffect(() => {
     if (availableResults.length === 1 && completedAction) {
@@ -53,7 +53,7 @@ export const ResultAutocomplete: React.FC<ResultAutocompleteProps> = ({
         autoSelect
         value={result}
         options={availableResults}
-        getOptionLabel={(result) => getLocalizedResultString(t, result)}
+        getOptionLabel={(result) => getLocalizedResultString(result)}
         renderInput={(params) => <TextField {...params} label={t('Result')} />}
         onChange={(_, value) => {
           handleResultChange({

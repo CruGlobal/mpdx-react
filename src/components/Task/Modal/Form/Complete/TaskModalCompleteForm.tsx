@@ -31,7 +31,6 @@ import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import {
   getPhaseByActivityType,
@@ -306,8 +305,7 @@ const TaskModalCompleteForm = ({
             <FormFieldsGridContainer>
               <Grid item>
                 <Typography style={{ fontWeight: 600 }} display="inline">
-                  {activityData ? activityData.phase + ' - ' : ''}
-                  {getLocalizedTaskType(t, activityType)}
+                  {activityData ? activityData.translatedFullName : ''}
                 </Typography>
               </Grid>
               <StyledGrid item>
@@ -387,7 +385,6 @@ const TaskModalCompleteForm = ({
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
-                    activityTypes={activityTypes}
                   />
                 </Grid>
               )}

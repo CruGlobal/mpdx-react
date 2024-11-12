@@ -151,7 +151,7 @@ const TaskModalLogForm = ({
       if (activityData) {
         setPhaseId(activityData.phaseId);
         taskPhase = activityData.phaseId;
-        taskSubject = activityData.title;
+        taskSubject = activityData.subject;
       }
     }
     if (defaultValues?.taskPhase) {
@@ -475,7 +475,6 @@ const TaskModalLogForm = ({
                     onChange={(nextAction) =>
                       setFieldValue('nextAction', nextAction)
                     }
-                    activityTypes={activityTypes}
                   />
                 </Grid>
               )}

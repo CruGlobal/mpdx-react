@@ -72,7 +72,7 @@ describe('LevelOfEffort', () => {
 
     const initiationSocialMediaRow = rows[6];
     expect(initiationSocialMediaRow.children[0]).toHaveTextContent(
-      'Social Media',
+      'Social Media Message',
     );
     expect(initiationSocialMediaRow.children[1]).toHaveTextContent('34');
     expect(initiationSocialMediaRow.children[2]).toHaveTextContent('14');
@@ -96,7 +96,7 @@ describe('LevelOfEffort', () => {
     expect(followUpTextRow.children[5]).toHaveTextContent('18');
 
     const thankRow = rows[21];
-    expect(thankRow.children[0]).toHaveTextContent('Thank You Note');
+    expect(thankRow.children[0]).toHaveTextContent('Thank');
     expect(thankRow.children[1]).toHaveTextContent('33');
     expect(thankRow.children[2]).toHaveTextContent('13');
     expect(thankRow.children[3]).toHaveTextContent('3');
