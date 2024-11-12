@@ -308,6 +308,13 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
         rowHeight={70}
         autoHeight
         getRowHeight={() => 'auto'}
+        localeText={{
+          MuiTablePagination: {
+            labelRowsPerPage: t('Rows per page:'),
+            labelDisplayedRows: ({ from, to, count }) =>
+              t('{{from}}-{{to}} of {{total}}', { from, to, total: count }),
+          },
+        }}
       />
       <TotalsTable aria-label={t('Donation Totals')}>
         <TableBody>

@@ -384,6 +384,13 @@ export const DonationTable: React.FC<DonationTableProps> = ({
             autoHeight
             disableSelectionOnClick
             disableVirtualization
+            localeText={{
+              MuiTablePagination: {
+                labelRowsPerPage: t('Rows per page:'),
+                labelDisplayedRows: ({ from, to, count }) =>
+                  t('{{from}}-{{to}} of {{total}}', { from, to, total: count }),
+              },
+            }}
           />
           {data.donations.pageInfo.hasNextPage ? (
             <Box mx={8} my={2}>

@@ -444,7 +444,7 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByText('11–20 of 120')).toBeInTheDocument();
+    expect(getByText('11-20 of 120')).toBeInTheDocument();
   });
 
   it('selects and unselects all', async () => {

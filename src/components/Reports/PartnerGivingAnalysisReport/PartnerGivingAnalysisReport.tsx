@@ -216,6 +216,10 @@ export const PartnerGivingAnalysisReport = forwardRef<
               page={page}
               rowsPerPage={limit}
               rowsPerPageOptions={[10, 25, 50]}
+              labelRowsPerPage={t('Rows per page:')}
+              labelDisplayedRows={({ from, to, count }) =>
+                t('{{from}}-{{to}} of {{total}}', { from, to, total: count })
+              }
               SelectProps={{
                 inputProps: {
                   'aria-label': t('rows per page'),
