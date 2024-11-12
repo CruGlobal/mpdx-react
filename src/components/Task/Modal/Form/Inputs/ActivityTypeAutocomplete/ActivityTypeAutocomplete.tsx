@@ -3,8 +3,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import { FormikErrors, FormikTouched } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import { ActivityData } from 'src/hooks/usePhaseData';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
+import { usePhaseData } from 'src/hooks/usePhaseData';
 
 interface ActivityTypeProps {
   options: ActivityTypeEnum[];
@@ -13,7 +12,6 @@ interface ActivityTypeProps {
   onChange: (value: ActivityTypeEnum | null) => void;
   // Set to true to make None an acceptable value. Otherwise, None will be converted to undefined.
   preserveNone?: boolean;
-  activityTypes?: Map<ActivityTypeEnum, ActivityData>;
   inputRef?: Ref<HTMLElement>;
   required?: boolean;
   onBlur?: FocusEventHandler<HTMLDivElement>;
@@ -27,7 +25,6 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   value,
   onChange,
   preserveNone = false,
-  activityTypes,
   inputRef,
   required,
   onBlur,
@@ -35,6 +32,7 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
   touched,
 }) => {
   const { t } = useTranslation();
+  const { activityTypes } = usePhaseData();
 
   const sortedOptions = useMemo(() => {
     // Sort none to the top
@@ -50,14 +48,10 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
       getOptionLabel={(activity) => {
         if (activity === ActivityTypeEnum.None) {
           return t('None');
-        } else if (activityTypes && sortedOptions.length > 15) {
-          return (
-            activityTypes.get(activity)?.phase +
-            ' - ' +
-            getLocalizedTaskType(t, activity)
-          );
+        } else if (sortedOptions.length > 15) {
+          return activityTypes?.get(activity)?.translatedFullName || '';
         } else {
-          return getLocalizedTaskType(t, activity);
+          return activityTypes?.get(activity)?.translatedShortName || '';
         }
       }}
       renderInput={(params) => (

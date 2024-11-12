@@ -4,6 +4,7 @@ query LoadConstants {
       id
       value
       name
+      action
     }
     languages {
       id
@@ -73,6 +74,7 @@ query LoadConstants {
             result
           }
           name
+          value
           suggestedContactStatus
           suggestedNextActions
         }

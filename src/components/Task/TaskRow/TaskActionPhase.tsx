@@ -1,9 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { ActivityData } from 'src/hooks/usePhaseData';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export const SubjectWrapOuter = styled(Box)(({ theme }) => ({
   width: 'fit-content',
@@ -47,16 +44,13 @@ const TaskType = styled(Typography)(({ theme }) => ({
 
 interface TaskActionPhaseProps {
   activityData: ActivityData | null | undefined;
-  activityType: ActivityTypeEnum | null | undefined;
   isXs?: boolean;
 }
 
 export const TaskActionPhase: React.FC<TaskActionPhaseProps> = ({
   activityData,
-  activityType,
   isXs = false,
 }) => {
-  const { t } = useTranslation();
   return (
     <SubjectWrapOuter>
       <SubjectWrapInner data-testid="phase-action-wrap">
@@ -66,7 +60,9 @@ export const TaskActionPhase: React.FC<TaskActionPhaseProps> = ({
           </TaskPhase>
         )}
         <TaskType>
-          {isXs ? activityData?.title : getLocalizedTaskType(t, activityType)}
+          {isXs
+            ? activityData?.translatedFullName
+            : activityData?.translatedShortName}
         </TaskType>
       </SubjectWrapInner>
     </SubjectWrapOuter>

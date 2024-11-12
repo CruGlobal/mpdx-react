@@ -186,11 +186,7 @@ export const ContactTaskRow: React.FC<ContactTaskRowProps> = ({
         onClick={handleSubjectPressed}
         onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
       >
-        <TaskActionPhase
-          activityData={activityData}
-          activityType={activityType}
-          isXs={isXs}
-        />
+        <TaskActionPhase activityData={activityData} isXs={isXs} />
 
         <Tooltip title={subject} placement="top-start" arrow>
           <TaskDescription>{subject}</TaskDescription>

@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { LoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
@@ -7,7 +6,6 @@ import {
   Phase,
   PhaseEnum,
 } from 'src/graphql/types.generated';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 
 export type SetPhaseId = (activity: PhaseEnum | null) => void;
 export type Constants = LoadConstantsQuery['constant'] | undefined;
@@ -23,11 +21,11 @@ type GetPhaseData = {
 };
 
 export type ActivityData = {
-  name: string;
+  translatedShortName?: string;
+  translatedFullName: string;
   phaseId: PhaseEnum;
   phase: string;
   subject?: string;
-  title?: string;
 };
 
 export type PhaseMappedData = {
@@ -41,30 +39,30 @@ const capitalizeWords = (sentence: string): string =>
     .map((word) => word[0].toUpperCase() + word.substring(1))
     .join(' ');
 
-const phaseFromActivity = (
-  activity: PhaseEnum | null,
+const getPhaseObject = (
+  selectedPhase: PhaseEnum | null,
   constants: LoadConstantsQuery['constant'] | undefined,
 ): Phase | null => {
   const phases = constants?.phases;
-  if (!activity || !phases) {
+  if (!selectedPhase || !phases) {
     return null;
   }
   return (
-    phases.find((phase) => phase.id.toLowerCase() === activity.toLowerCase()) ??
-    null
+    phases.find(
+      (phase) => phase.id.toLowerCase() === selectedPhase.toLowerCase(),
+    ) ?? null
   );
 };
 
 export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
   const constants = useApiConstants();
-  const { t } = useTranslation();
   const [phaseData, setPhaseData] = useState<Phase | null>(
-    phaseFromActivity(phaseEnum ?? null, constants),
+    getPhaseObject(phaseEnum ?? null, constants),
   );
 
   const setPhaseId = useCallback(
-    (activity: PhaseEnum | null) => {
-      setPhaseData(phaseFromActivity(activity, constants));
+    (selectedPhase: PhaseEnum | null) => {
+      setPhaseData(getPhaseObject(selectedPhase, constants));
     },
     [constants],
   );
@@ -121,18 +119,18 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
 
   // activityTypes
   // {INITIATION_SPECIAL_GIFT_APPEAL: {
-  //   name: 'Special Gift Appeal',
+  //   translatedShortName: 'Special Gift Appeal',
+  //   translatedFullName: 'Initiation - Special Gift Appeal',
   //   phase: 'Initiation',
   //   phaseId: 'INITIATION',
   //   subject: 'Special Gift Appeal',
-  //   title: 'Initiation - Special Gift Appeal',
   // },
   // FOLLOW_UP_TEXT_MESSAGE: {
-  //   name: 'Text Message',
+  //   translatedShortName: 'Text Message',
+  //   translatedFullName: 'Follow Up - Text Message',
   //   phase: 'Follow-Up',
   //   phaseId: 'FOLLOW_UP',
   //   subject: 'Text Message To Follow Up',
-  //   title: 'Follow Up - Text Message',
   // },}
 
   const activityTypes: Map<ActivityTypeEnum, ActivityData> = useMemo(() => {
@@ -144,11 +142,11 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
           (activity) => activity.id === activityType,
         );
         activitiesMap.set(activityType, {
-          name: getLocalizedTaskType(t, activityType),
+          translatedFullName: activity?.value,
+          translatedShortName: activity?.action,
           phaseId: phase.id,
           phase: phase.name,
           subject: activity?.name && capitalizeWords(activity.name),
-          title: activity?.value,
         });
       });
     });
