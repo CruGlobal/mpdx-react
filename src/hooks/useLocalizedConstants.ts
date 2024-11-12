@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   ContactFilterStatusEnum,
+  DisplayResultEnum,
   PhaseEnum,
   PledgeFrequencyEnum,
   StatusEnum,
@@ -50,9 +51,23 @@ export const useLocalizedConstants = () => {
     [constants],
   );
 
+  const getLocalizedResultString = useCallback(
+    (
+      displayResultEnum: DisplayResultEnum | string | null | undefined,
+    ): string => {
+      return (
+        constants?.displayResults?.find(
+          (result) => result.id === displayResultEnum,
+        )?.value || ''
+      );
+    },
+    [constants],
+  );
+
   return {
     getLocalizedContactStatus,
     getLocalizedPhase,
     getLocalizedPledgeFrequency,
+    getLocalizedResultString,
   };
 };

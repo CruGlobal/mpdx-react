@@ -6,6 +6,10 @@ query LoadConstants {
       name
       action
     }
+    displayResults {
+      id
+      value
+    }
     languages {
       id
       value

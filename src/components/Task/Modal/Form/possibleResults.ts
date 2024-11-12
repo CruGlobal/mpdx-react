@@ -1,12 +1,8 @@
-import {
-  DisplayResultEnum,
-  Phase,
-  ResultEnum,
-} from 'src/graphql/types.generated';
+import { DisplayResultEnum, Phase } from 'src/graphql/types.generated';
 
 export const possibleResults = (
   phaseData: Phase | null,
-): ResultEnum[] | DisplayResultEnum[] => {
+): DisplayResultEnum[] => {
   if (!phaseData) {
     return [];
   }
