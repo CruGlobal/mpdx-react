@@ -142,8 +142,8 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
           (activity) => activity.id === activityType,
         );
         activitiesMap.set(activityType, {
-          translatedFullName: activity?.value || '',
-          translatedShortName: activity?.action || '',
+          translatedFullName: activity?.value,
+          translatedShortName: activity?.action,
           phaseId: phase.id,
           phase: phase.name,
           subject: activity?.name && capitalizeWords(activity.name),
