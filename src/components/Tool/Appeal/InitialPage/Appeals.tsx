@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, Divider, Skeleton, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   GetAppealsDocument,
   useGetAppealsQuery,
@@ -91,7 +91,7 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
               <Skeleton height={140} key={`appeal-skeleton-${idx}`} />
             ))}
         </>
-      ) : data?.regularAppeals && data.regularAppeals.nodes.length ? (
+      ) : data?.regularAppeals.nodes.length ? (
         <>
           {data.regularAppeals.nodes.map((appeal) => (
             <Box key={appeal.name} mb={3}>
@@ -102,19 +102,22 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
       ) : (
         <NoAppeals />
       )}
-      {!loading && (
+      {data && (
         <Box display="flex" justifyContent="center">
           <Typography data-testid="TypographyShowing">
-            Showing{' '}
-            <strong>
-              {(data?.primaryAppeal ? data.primaryAppeal.nodes.length : 0) +
-                (data?.regularAppeals ? data.regularAppeals.nodes.length : 0)}
-            </strong>{' '}
-            of{' '}
-            <strong>
-              {(data?.primaryAppeal ? data.primaryAppeal.nodes.length : 0) +
-                (data?.regularAppeals ? data.regularAppeals.nodes.length : 0)}
-            </strong>
+            <Trans
+              defaults="Showing <bold>{{value}}</bold> of <bold>{{total}}</bold>"
+              shouldUnescape
+              values={{
+                value:
+                  data.primaryAppeal.nodes.length +
+                  data.regularAppeals.nodes.length,
+                total:
+                  data.primaryAppeal.totalCount +
+                  data.regularAppeals.totalCount,
+              }}
+              components={{ bold: <strong /> }}
+            />
           </Typography>
         </Box>
       )}

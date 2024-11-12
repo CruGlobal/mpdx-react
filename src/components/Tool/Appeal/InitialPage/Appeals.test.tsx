@@ -32,6 +32,7 @@ const mocks = {
   GetAppeals: {
     appeals: {
       nodes: [testAppeal],
+      totalCount: 1,
       pageInfo: {
         hasNextPage: false,
       },
@@ -70,7 +71,7 @@ describe('AppealsTest', () => {
   });
 
   it('should render an appeal', async () => {
-    const { getByText, findByText, getByTestId } = render(
+    const { getByText, findByText, findByTestId } = render(
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
@@ -84,10 +85,8 @@ describe('AppealsTest', () => {
 
     expect(await findByText('Primary Appeal')).toBeInTheDocument();
     expect(getByText('Appeals')).toBeInTheDocument();
-    await waitFor(() =>
-      expect(getByTestId('TypographyShowing').textContent).toEqual(
-        'Showing 2 of 2',
-      ),
+    expect(await findByTestId('TypographyShowing')).toHaveTextContent(
+      'Showing 2 of 2',
     );
   });
 
