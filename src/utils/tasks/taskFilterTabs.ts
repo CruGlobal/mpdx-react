@@ -1,3 +1,5 @@
+import { TFunction } from 'react-i18next';
+
 export type TaskFilterTabsTypes =
   | 'All'
   | 'Overdue'
@@ -9,18 +11,16 @@ export type TaskFilterTabsTypes =
 interface TaskFilterTabsObject {
   name: TaskFilterTabsTypes;
   uiName: string;
-  translated: boolean;
   activeFiltersOptions: {
     completed: boolean | null;
     dateRange: string | null;
   };
 }
 
-export const taskFiltersTabs: TaskFilterTabsObject[] = [
+export const getTaskFiltersTabs = (t: TFunction): TaskFilterTabsObject[] => [
   {
     name: 'All',
-    uiName: 'All Tasks',
-    translated: false,
+    uiName: t('All Tasks'),
     activeFiltersOptions: {
       completed: null,
       dateRange: null,
@@ -28,8 +28,7 @@ export const taskFiltersTabs: TaskFilterTabsObject[] = [
   },
   {
     name: 'Overdue',
-    uiName: 'Overdue',
-    translated: true,
+    uiName: t('Overdue'),
     activeFiltersOptions: {
       completed: false,
       dateRange: 'overdue',
@@ -37,8 +36,7 @@ export const taskFiltersTabs: TaskFilterTabsObject[] = [
   },
   {
     name: 'Completed',
-    uiName: 'Completed',
-    translated: true,
+    uiName: t('Completed'),
     activeFiltersOptions: {
       completed: true,
       dateRange: null,
@@ -46,8 +44,7 @@ export const taskFiltersTabs: TaskFilterTabsObject[] = [
   },
   {
     name: 'Today',
-    uiName: 'Today',
-    translated: true,
+    uiName: t('Today'),
     activeFiltersOptions: {
       completed: false,
       dateRange: 'today',
@@ -55,8 +52,7 @@ export const taskFiltersTabs: TaskFilterTabsObject[] = [
   },
   {
     name: 'Upcoming',
-    uiName: 'Upcoming',
-    translated: true,
+    uiName: t('Upcoming'),
     activeFiltersOptions: {
       completed: false,
       dateRange: 'upcoming',
@@ -64,8 +60,7 @@ export const taskFiltersTabs: TaskFilterTabsObject[] = [
   },
   {
     name: 'NoDueDate',
-    uiName: 'No Due Date',
-    translated: true,
+    uiName: t('No Due Date'),
     activeFiltersOptions: {
       completed: false,
       dateRange: 'no_date',
