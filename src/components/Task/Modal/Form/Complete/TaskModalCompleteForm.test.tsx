@@ -240,9 +240,7 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
-        expect(
-          getByRole('option', { name: 'Thank You Note' }),
-        ).toBeInTheDocument();
+        expect(getByRole('option', { name: 'Thank' })).toBeInTheDocument();
 
         expect(
           queryByRole('option', { name: 'In Person' }),
@@ -261,11 +259,11 @@ describe('TaskModalCompleteForm', () => {
 
       await waitFor(() => {
         expect(
-          queryByRole('option', { name: 'Thank You Note' }),
+          queryByRole('option', { name: 'Thank' }),
         ).not.toBeInTheDocument();
 
         expect(
-          getAllByRole('option', { name: 'Social Media' })[0],
+          getAllByRole('option', { name: 'Social Media Message' })[0],
         ).toBeInTheDocument();
 
         expect(getByRole('option', { name: 'Phone Call' })).toBeInTheDocument();
@@ -350,7 +348,7 @@ describe('TaskModalCompleteForm', () => {
     await waitFor(() => {
       userEvent.click(getByText('Partner-Special'));
       userEvent.click(getByRole('combobox', { name: 'Next Action' }));
-      userEvent.click(getByRole('option', { name: 'Thank You Note' }));
+      userEvent.click(getByRole('option', { name: 'Thank' }));
     });
 
     expect(getByText('Suggested Tags')).toBeInTheDocument();
@@ -399,7 +397,7 @@ describe('TaskModalCompleteForm', () => {
     userEvent.click(await findByRole('combobox', { name: 'Result' }));
     userEvent.click(await findByRole('option', { name: 'Partner-Special' }));
     userEvent.click(await findByRole('combobox', { name: 'Next Action' }));
-    userEvent.click(await findByRole('option', { name: 'Thank You Note' }));
+    userEvent.click(await findByRole('option', { name: 'Thank' }));
 
     userEvent.click(
       await findByRole('checkbox', {

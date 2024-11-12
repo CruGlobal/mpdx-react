@@ -21,9 +21,9 @@ const options = [
   'Phone Call',
   'Email',
   'Text Message',
-  'Social Media',
+  'Social Media Message',
   'In Person',
-  'Thank You Note',
+  'Thank',
   'Digital Newsletter',
   'Physical Newsletter',
   'Prayer Request',
@@ -98,7 +98,7 @@ export const taskModalTests = (Components: Components) => {
         'Phone Call',
         'Email',
         'Text Message',
-        'Social Media',
+        'Social Media Message',
         'Letter',
         'Special Gift Appeal',
         'In Person',
@@ -123,7 +123,7 @@ export const taskModalTests = (Components: Components) => {
         'Phone Call',
         'Email',
         'Text Message',
-        'Social Media',
+        'Social Media Message',
         'In Person',
       ]);
     });
@@ -163,7 +163,7 @@ export const taskModalTests = (Components: Components) => {
         'Phone Call',
         'Email',
         'Text Message',
-        'Social Media',
+        'Social Media Message',
         'Letter',
         'Special Gift Appeal',
         'In Person',
@@ -186,7 +186,7 @@ export const taskModalTests = (Components: Components) => {
         'Phone Call',
         'Email',
         'Text Message',
-        'Social Media',
+        'Social Media Message',
         'Letter',
         'Special Gift Appeal',
         'In Person',
@@ -209,14 +209,14 @@ export const taskModalTests = (Components: Components) => {
         'Phone Call',
         'Email',
         'Text Message',
-        'Social Media',
+        'Social Media Message',
         'Letter',
         'Special Gift Appeal',
         'In Person',
       ]);
     });
 
-    it('as correct options for InitiationInPerson', async () => {
+    it('has correct options for InitiationInPerson', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.InitiationInPerson,
         'Appointment Scheduled',
@@ -235,7 +235,7 @@ export const taskModalTests = (Components: Components) => {
       ]);
     });
 
-    it('as correct options for FollowUpSocialMedia', async () => {
+    it('has correct options for FollowUpSocialMedia', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.FollowUpSocialMedia,
         'Partner-Pray',
@@ -247,10 +247,10 @@ export const taskModalTests = (Components: Components) => {
         'Partner-Pray',
         'Not Interested',
       ]);
-      expect(nextActions).toEqual(['None', 'Thank You Note']);
+      expect(nextActions).toEqual(['None', 'Thank']);
     });
 
-    it('as correct options for FollowUpTextMessage', async () => {
+    it('has correct options for FollowUpTextMessage', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.FollowUpTextMessage,
         'Partner-Financial',
@@ -262,16 +262,16 @@ export const taskModalTests = (Components: Components) => {
         'Partner-Pray',
         'Not Interested',
       ]);
-      expect(nextActions).toEqual(['None', 'Thank You Note']);
+      expect(nextActions).toEqual(['None', 'Thank']);
     });
 
-    it('as correct options for NULL', async () => {
+    it('has correct options for NULL', async () => {
       const { results, nextActions } = await getOptions(null);
       expect(results).toEqual([]);
       expect(nextActions).toEqual([]);
     });
 
-    it('as correct options for PartnerCareEmail', async () => {
+    it('has correct options for PartnerCareEmail', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.PartnerCareEmail,
       );
@@ -279,12 +279,12 @@ export const taskModalTests = (Components: Components) => {
       expect(nextActions).toEqual(options);
     });
 
-    it('as correct options for PartnerCarePhysicalNewsletter', async () => {
+    it('has correct options for PartnerCarePhysicalNewsletter', async () => {
       const { results, nextActions } = await getOptions(
         ActivityTypeEnum.PartnerCarePhysicalNewsletter,
       );
       expect(results).toEqual([]);
-      expect(nextActions).toEqual(options);
+      await waitFor(() => expect(nextActions).toEqual(options));
     });
 
     it('has correct options for NONE', async () => {

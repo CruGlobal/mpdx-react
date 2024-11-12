@@ -323,7 +323,7 @@ describe('TaskModalForm', () => {
     expect(getByRole('textbox', { name: 'Location' })).toBeInTheDocument();
 
     userEvent.click(action);
-    userEvent.click(getByRole('option', { name: 'Social Media' }));
+    userEvent.click(getByRole('option', { name: 'Social Media Message' }));
     expect(
       queryByRole('textbox', { name: 'Location' }),
     ).not.toBeInTheDocument();

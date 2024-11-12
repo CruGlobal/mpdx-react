@@ -2,8 +2,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
-import { getLocalizedTaskType } from 'src/utils/functions/getLocalizedTaskType';
 import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
 describe('ActivityTypeAutocomplete', () => {
@@ -18,13 +16,15 @@ describe('ActivityTypeAutocomplete', () => {
 
   loadConstantsMockData?.constant.phases?.forEach((phase) => {
     phase?.tasks?.forEach((task) => {
+      const activity = loadConstantsMockData?.constant?.activities?.find(
+        (activity) => activity.id === task,
+      );
       activitiesMap.set(task, {
-        name: getLocalizedTaskType(i18n.t, task),
+        translatedFullName: activity?.value,
+        translatedShortName: activity?.action,
         phaseId: phase.id,
         phase: phase.name,
-        title: loadConstantsMockData?.constant?.activities?.find(
-          (activity) => activity.id === task,
-        )?.value,
+        subject: activity?.name,
       });
     });
   });
@@ -91,7 +91,6 @@ describe('ActivityTypeAutocomplete', () => {
         label="Type"
         value={ActivityTypeEnum.AppointmentPhoneCall}
         onChange={onChange}
-        activityTypes={activitiesMap}
       />,
     );
 
