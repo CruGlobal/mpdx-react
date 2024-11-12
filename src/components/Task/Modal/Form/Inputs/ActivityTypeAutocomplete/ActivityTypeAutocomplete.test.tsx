@@ -1,6 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { ActivityTypeAutocomplete } from './ActivityTypeAutocomplete';
 
@@ -11,23 +10,6 @@ describe('ActivityTypeAutocomplete', () => {
     ActivityTypeEnum.None,
   ];
   const allOptions = Object.values(ActivityTypeEnum);
-
-  const activitiesMap = new Map();
-
-  loadConstantsMockData?.constant.phases?.forEach((phase) => {
-    phase?.tasks?.forEach((task) => {
-      const activity = loadConstantsMockData?.constant?.activities?.find(
-        (activity) => activity.id === task,
-      );
-      activitiesMap.set(task, {
-        translatedFullName: activity?.value,
-        translatedShortName: activity?.action,
-        phaseId: phase.id,
-        phase: phase.name,
-        subject: activity?.name,
-      });
-    });
-  });
 
   it('puts the none option first', () => {
     const onChange = jest.fn();

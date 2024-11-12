@@ -171,9 +171,8 @@ const TasksDueThisWeek = ({
                               marginRight="5px"
                             >
                               {!!task.activityType &&
-                                (activityTypes.get(task.activityType)
-                                  ?.translatedFullName ||
-                                  '')}
+                                activityTypes.get(task.activityType)
+                                  ?.translatedFullName}
                             </Typography>
                             <Typography
                               component="span"

@@ -49,9 +49,9 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
         if (activity === ActivityTypeEnum.None) {
           return t('None');
         } else if (sortedOptions.length > 15) {
-          return activityTypes?.get(activity)?.translatedFullName || '';
+          return activityTypes.get(activity)?.translatedFullName || '';
         } else {
-          return activityTypes?.get(activity)?.translatedShortName || '';
+          return activityTypes.get(activity)?.translatedShortName || '';
         }
       }}
       renderInput={(params) => (

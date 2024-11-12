@@ -180,8 +180,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                       'number' ? (
                       <TableRow>
                         <AlignedTableCell>
-                          {activityTypes.get(activity)?.translatedShortName ||
-                            ''}
+                          {activityTypes.get(activity)?.translatedShortName}
                         </AlignedTableCell>
                         {periods.map((period) => (
                           <AlignedTableCell key={period?.startDate}>
@@ -220,8 +219,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                       'number' ? (
                       <TableRow>
                         <AlignedTableCell>
-                          {activityTypes.get(activity)?.translatedShortName ||
-                            ''}
+                          {activityTypes.get(activity)?.translatedShortName}
                         </AlignedTableCell>
                         {periods.map((period) => (
                           <AlignedTableCell key={period?.startDate}>
@@ -255,7 +253,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                   return typeof averages[activityVariableName] === 'number' ? (
                     <TableRow>
                       <AlignedTableCell>
-                        {activityTypes.get(activity)?.translatedShortName || ''}
+                        {activityTypes.get(activity)?.translatedShortName}
                       </AlignedTableCell>
                       {periods.map((period) => (
                         <AlignedTableCell key={period?.startDate}>
@@ -294,8 +292,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
                       'number' ? (
                       <TableRow>
                         <AlignedTableCell>
-                          {activityTypes.get(activity)?.translatedShortName ||
-                            ''}
+                          {activityTypes.get(activity)?.translatedShortName}
                         </AlignedTableCell>
                         {periods.map((period) => (
                           <AlignedTableCell key={period?.startDate}>

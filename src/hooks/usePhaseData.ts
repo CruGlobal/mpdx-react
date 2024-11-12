@@ -22,7 +22,7 @@ type GetPhaseData = {
 
 export type ActivityData = {
   translatedShortName?: string;
-  translatedFullName: string;
+  translatedFullName?: string;
   phaseId: PhaseEnum;
   phase: string;
   subject?: string;
@@ -133,8 +133,8 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
   //   subject: 'Text Message To Follow Up',
   // },}
 
-  const activityTypes: Map<ActivityTypeEnum, ActivityData> = useMemo(() => {
-    const activitiesMap = new Map();
+  const activityTypes = useMemo(() => {
+    const activitiesMap = new Map<ActivityTypeEnum, ActivityData>();
 
     constants?.phases?.forEach((phase) => {
       phase?.tasks?.forEach((activityType) => {
@@ -142,8 +142,8 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
           (activity) => activity.id === activityType,
         );
         activitiesMap.set(activityType, {
-          translatedFullName: activity?.value,
-          translatedShortName: activity?.action,
+          translatedFullName: activity?.value || '',
+          translatedShortName: activity?.action || '',
           phaseId: phase.id,
           phase: phase.name,
           subject: activity?.name && capitalizeWords(activity.name),
