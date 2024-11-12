@@ -237,14 +237,12 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
             component="div"
             color={theme.palette.cruGrayDark.main}
           >
-            {
-              <Trans
-                defaults="When you add a Google account to {{appName}}, Google will ask you what {{appName}} should be allowed to access. <bold>Please select ALL of the checkboxes.</bold><br/><br/>Otherwise, {{appName}} may not work properly."
-                shouldUnescape
-                values={{ appName }}
-                components={{ bold: <strong /> }}
-              />
-            }
+            <Trans
+              defaults="When you add a Google account to {{appName}}, Google will ask you what {{appName}} should be allowed to access. <bold>Please select ALL of the checkboxes.</bold><br/><br/>Otherwise, {{appName}} may not work properly."
+              shouldUnescape
+              values={{ appName }}
+              components={{ bold: <strong /> }}
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
