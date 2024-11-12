@@ -1,5 +1,6 @@
 import { Link, Typography } from '@mui/material';
 import { PhoneNumber } from 'src/graphql/types.generated';
+import { usePhoneLocations } from 'src/hooks/usePhoneLocations';
 import { CollapsibleList } from './CollapsibleList';
 import { ContactInfoText } from './StyledComponents';
 
@@ -7,14 +8,23 @@ interface PhoneProps {
   phone: Pick<PhoneNumber, 'number' | 'location'>;
 }
 
-const Phone: React.FC<PhoneProps> = ({ phone }) => (
-  <ContactInfoText data-testid="PhoneNumber">
-    <Link href={`tel:${phone.number}`} underline="hover">
-      {phone.number}
-    </Link>
-    {phone.location && <span> - {phone.location}</span>}
-  </ContactInfoText>
-);
+const Phone: React.FC<PhoneProps> = ({ phone }) => {
+  const locations = usePhoneLocations();
+
+  return (
+    <ContactInfoText data-testid="PhoneNumber">
+      <Link href={`tel:${phone.number}`} underline="hover">
+        {phone.number}
+      </Link>
+      {phone.location && (
+        <span>
+          {' - '}
+          {locations[phone.location.toLowerCase()] ?? phone.location}
+        </span>
+      )}
+    </ContactInfoText>
+  );
+};
 
 interface CollapsiblePhoneListProps {
   phones: Array<Partial<PhoneNumber>>;

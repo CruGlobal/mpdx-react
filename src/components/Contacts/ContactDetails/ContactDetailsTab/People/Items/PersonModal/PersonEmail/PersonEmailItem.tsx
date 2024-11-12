@@ -17,6 +17,7 @@ import {
   PersonEmailAddressInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { useEmailLocations } from 'src/hooks/useEmailLocations';
 import { isEditableSource } from 'src/utils/sourceHelper';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
@@ -67,6 +68,8 @@ export const PersonEmailItem: React.FC<Props> = ({
 
   const [isEmailPrimaryChecked, setIsEmailPrimaryChecked] =
     React.useState(false);
+
+  const locations = useEmailLocations();
 
   const source = sources?.find((email) => email.id === emailAddress.id)?.source;
 
@@ -134,17 +137,13 @@ export const PersonEmailItem: React.FC<Props> = ({
               fullWidth
             >
               <MenuItem selected value="">
-                None
+                {t('None')}
               </MenuItem>
-              <MenuItem value="work" aria-label={t('Work')}>
-                {t('Work')}
-              </MenuItem>
-              <MenuItem value="personal" aria-label={t('Personal')}>
-                {t('Personal')}
-              </MenuItem>
-              <MenuItem value="other" aria-label={t('Other')}>
-                {t('Other')}
-              </MenuItem>
+              {Object.entries(locations).map(([value, label]) => (
+                <MenuItem value={value} key={value}>
+                  {label}
+                </MenuItem>
+              ))}
             </EmailSelect>
           </FormControl>
         </Grid>
