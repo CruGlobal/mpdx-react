@@ -111,7 +111,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/formidable": "^2.0.6",
     "@types/google.maps": "^3.50.2",
-    "@types/jest": "^29.0.3",
+    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",
     "@types/luxon": "^3.4.2",
     "@types/node": "^18.7.18",
@@ -149,7 +149,7 @@
     "puppeteer": "^22.6.3",
     "ts-essentials": "^9.3.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.3",
+    "typescript": "~5.6.3",
     "url-loader": "^4.1.1",
     "webpack": "^5.96.1"
   },
@@ -164,5 +164,5 @@
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
   },
-  "packageManager": "yarn@3.3.0"
+  "packageManager": "yarn@3.8.6"
 }
