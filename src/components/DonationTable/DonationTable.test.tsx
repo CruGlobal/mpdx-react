@@ -51,7 +51,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 },
               },
               DonationTable: {
-                currency: 'CAD',
                 donations: {
                   nodes: isEmpty
                     ? []

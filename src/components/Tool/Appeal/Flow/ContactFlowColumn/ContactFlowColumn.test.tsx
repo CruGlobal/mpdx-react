@@ -75,7 +75,6 @@ const Components = ({
                       id: `${defaultContact.id}2`,
                     },
                   ],
-                  totalCount: 2,
                 },
               },
             }}

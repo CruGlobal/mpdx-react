@@ -26,10 +26,7 @@ const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
       subject: 'the quick brown fox jumps over the lazy dog',
       activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
       contacts: {
-        nodes: [
-          { hidden: true, name: 'Roger Smith' },
-          { hidden: true, name: 'Sarah Smith' },
-        ],
+        nodes: [{ name: 'Roger Smith' }, { name: 'Sarah Smith' }],
       },
       startAt: null,
       completedAt: null,
@@ -39,10 +36,7 @@ const prayerRequestTasks: GetThisWeekQuery['prayerRequestTasks'] = {
       subject: 'on the boat to see uncle johnny',
       activityType: ActivityTypeEnum.PartnerCarePrayerRequest,
       contacts: {
-        nodes: [
-          { hidden: true, name: 'Roger Parker' },
-          { hidden: true, name: 'Sarah Parker' },
-        ],
+        nodes: [{ name: 'Roger Parker' }, { name: 'Sarah Parker' }],
       },
       startAt: null,
       completedAt: null,
@@ -237,9 +231,7 @@ describe('PartnerCare', () => {
     expect(getByTestId('PartnerCareTabPrayer').textContent).toEqual(
       'Prayer (2,560)',
     );
-    userEvent.click(
-      queryAllByRole('button', { hidden: true, name: 'Complete' })[0],
-    );
+    userEvent.click(queryAllByRole('button', { name: 'Complete' })[0]);
     expect(openTaskModal).toHaveBeenCalledWith({
       taskId: 'task_1',
       showCompleteForm: true,
@@ -267,9 +259,7 @@ describe('PartnerCare', () => {
     expect(getByTestId('CelebrationItem-1').textContent).toEqual(
       'John DoeJan 1',
     );
-    userEvent.click(
-      queryAllByRole('button', { hidden: true, name: 'Complete' })[0],
-    );
+    userEvent.click(queryAllByRole('button', { name: 'Complete' })[0]);
     expect(openTaskModal).toHaveBeenCalledWith({
       view: TaskModalEnum.Add,
       defaultValues: {
@@ -297,9 +287,7 @@ describe('PartnerCare', () => {
       'John and Sarah, DoeOct 5',
     );
     expect(queryByTestId('CelebrationItem-3')).toBeInTheDocument();
-    userEvent.click(
-      queryAllByRole('button', { hidden: true, name: 'Complete' })[2],
-    );
+    userEvent.click(queryAllByRole('button', { name: 'Complete' })[2]);
     expect(openTaskModal).toHaveBeenCalledWith({
       view: TaskModalEnum.Add,
       defaultValues: {

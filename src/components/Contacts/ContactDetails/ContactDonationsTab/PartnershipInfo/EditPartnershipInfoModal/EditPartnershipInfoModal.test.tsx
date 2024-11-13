@@ -79,8 +79,6 @@ const newContactMock = gqlMock<ContactDonorAccountsFragment>(
       name: 'Test',
       primaryPerson: {
         id: '1',
-        firstName: 'test',
-        lastName: null,
       },
       people: {
         nodes: [

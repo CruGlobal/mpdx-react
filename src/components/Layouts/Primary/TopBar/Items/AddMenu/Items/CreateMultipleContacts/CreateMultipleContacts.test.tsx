@@ -108,7 +108,6 @@ describe('CreateMultipleContacts', () => {
                     createContact: {
                       contact: {
                         id: 'contact-1',
-                        status: status,
                       },
                     },
                   },
@@ -435,7 +434,6 @@ describe('CreateMultipleContacts', () => {
                     createContact: {
                       contact: {
                         id: 'contact-1',
-                        status: status,
                       },
                     },
                   },
@@ -515,7 +513,6 @@ describe('CreateMultipleContacts', () => {
                     createContact: {
                       contact: {
                         id: 'contact-1',
-                        status: status,
                       },
                     },
                   },

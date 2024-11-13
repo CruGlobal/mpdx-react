@@ -121,7 +121,7 @@ export const MassActionsTasksAddTagsModal: React.FC<
     <Modal title={t('Add Tags')} isOpen={true} handleClose={handleClose}>
       <Formik
         initialValues={{
-          tagList: [],
+          tagList: [] as string[],
         }}
         onSubmit={onSubmit}
         validationSchema={tagSchema}
