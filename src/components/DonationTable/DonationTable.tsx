@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { useLocale } from 'src/hooks/useLocale';
+import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import {
   DynamicEditDonationModal,
@@ -362,6 +363,8 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       },
     );
 
+  const localeText = useDataGridLocaleText();
+
   return (
     <>
       {data?.donations.nodes.length ? (
@@ -384,13 +387,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
             autoHeight
             disableSelectionOnClick
             disableVirtualization
-            localeText={{
-              MuiTablePagination: {
-                labelRowsPerPage: t('Rows per page:'),
-                labelDisplayedRows: ({ from, to, count }) =>
-                  t('{{from}}-{{to}} of {{total}}', { from, to, total: count }),
-              },
-            }}
+            localeText={localeText}
           />
           {data.donations.pageInfo.hasNextPage ? (
             <Box mx={8} my={2}>

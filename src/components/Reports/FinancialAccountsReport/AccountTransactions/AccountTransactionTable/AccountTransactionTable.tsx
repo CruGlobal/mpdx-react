@@ -13,6 +13,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import {
   FinancialAccountContext,
@@ -290,6 +291,8 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
     },
   ];
 
+  const localeText = useDataGridLocaleText();
+
   return (
     <>
       <StyledDataGrid
@@ -308,13 +311,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
         rowHeight={70}
         autoHeight
         getRowHeight={() => 'auto'}
-        localeText={{
-          MuiTablePagination: {
-            labelRowsPerPage: t('Rows per page:'),
-            labelDisplayedRows: ({ from, to, count }) =>
-              t('{{from}}-{{to}} of {{total}}', { from, to, total: count }),
-          },
-        }}
+        localeText={localeText}
       />
       <TotalsTable aria-label={t('Donation Totals')}>
         <TableBody>
