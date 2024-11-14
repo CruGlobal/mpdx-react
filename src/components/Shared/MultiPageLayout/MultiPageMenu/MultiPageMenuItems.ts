@@ -1,3 +1,5 @@
+import i18n from 'src/lib/i18n';
+
 export type NavItems = {
   id: string;
   title: string;
@@ -10,97 +12,97 @@ export type NavItems = {
 export const reportNavItems: NavItems[] = [
   {
     id: 'donations',
-    title: 'Donations',
+    title: i18n.t('Donations'),
   },
   {
     id: 'partnerCurrency',
-    title: '14 Month Partner Report',
-    subTitle: 'Partner Currency',
+    title: i18n.t('14 Month Partner Report'),
+    subTitle: i18n.t('Partner Currency'),
   },
   {
     id: 'salaryCurrency',
-    title: '14 Month Salary Report',
-    subTitle: 'Salary Currency',
+    title: i18n.t('14 Month Salary Report'),
+    subTitle: i18n.t('Salary Currency'),
   },
   {
     id: 'designationAccounts',
-    title: 'Designation Accounts',
+    title: i18n.t('Designation Accounts'),
   },
   {
     id: 'financialAccounts',
-    title: 'Responsibility Centers',
+    title: i18n.t('Responsibility Centers'),
   },
   {
     id: 'expectedMonthlyTotal',
-    title: 'Expected Monthly Total',
+    title: i18n.t('Expected Monthly Total'),
   },
   {
     id: 'partnerGivingAnalysis',
-    title: 'Partner Giving Analysis',
+    title: i18n.t('Partner Giving Analysis'),
   },
   {
     id: 'coaching',
-    title: 'Coaching',
+    title: i18n.t('Coaching'),
   },
 ];
 
 export const settingsNavItems: NavItems[] = [
   {
     id: 'preferences',
-    title: 'Preferences',
+    title: i18n.t('Preferences'),
   },
   {
     id: 'notifications',
-    title: 'Notifications',
+    title: i18n.t('Notifications'),
   },
   {
     id: 'integrations',
-    title: 'Connect Services',
+    title: i18n.t('Connect Services'),
   },
   {
     id: 'manageAccounts',
-    title: 'Manage Accounts',
+    title: i18n.t('Manage Accounts'),
   },
   {
     id: 'manageCoaches',
-    title: 'Manage Coaches',
+    title: i18n.t('Manage Coaches'),
   },
   {
     id: 'organizations',
-    title: 'Manage Organizations',
+    title: i18n.t('Manage Organizations'),
     grantedAccess: ['admin'],
     subItems: [
       {
         id: 'organizations',
-        title: 'Impersonate & Share',
+        title: i18n.t('Impersonate & Share'),
         grantedAccess: ['admin'],
       },
       {
         id: 'organizations/accountLists',
-        title: 'Account Lists',
+        title: i18n.t('Account Lists'),
         grantedAccess: ['admin'],
       },
       {
         id: 'organizations/contacts',
-        title: 'Contacts',
+        title: i18n.t('Contacts'),
         grantedAccess: ['admin'],
       },
     ],
   },
   {
     id: 'admin',
-    title: 'Admin Console',
+    title: i18n.t('Admin Console'),
     grantedAccess: ['admin', 'developer'],
   },
   {
     id: '/auth/user/admin',
-    title: 'Backend Admin',
+    title: i18n.t('Backend Admin'),
     oauth: true,
     grantedAccess: ['developer'],
   },
   {
     id: '/auth/user/sidekiq',
-    title: 'Sidekiq',
+    title: i18n.t('Sidekiq'),
     oauth: true,
     grantedAccess: ['developer'],
   },

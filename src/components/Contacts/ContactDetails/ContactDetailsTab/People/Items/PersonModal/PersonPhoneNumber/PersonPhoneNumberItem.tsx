@@ -17,6 +17,7 @@ import {
   PersonPhoneNumberInput,
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
+import { usePhoneLocations } from 'src/hooks/usePhoneLocations';
 import { isEditableSource } from 'src/utils/sourceHelper';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
@@ -66,6 +67,8 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const [isPrimaryChecked, setIsPrimaryChecked] = React.useState(false);
+
+  const locations = usePhoneLocations();
 
   const source = sources?.find(
     (number) => number.id === phoneNumber.id,
@@ -136,20 +139,13 @@ export const PersonPhoneNumberItem: React.FC<Props> = ({
               fullWidth
             >
               <MenuItem selected value="">
-                None
+                {t('None')}
               </MenuItem>
-              <MenuItem value="mobile" aria-label={t('Mobile')}>
-                {t('Mobile')}
-              </MenuItem>
-              <MenuItem value="home" aria-label={t('Home')}>
-                {t('Home')}
-              </MenuItem>
-              <MenuItem value="work" aria-label={t('Work')}>
-                {t('Work')}
-              </MenuItem>
-              <MenuItem value="other" aria-label={t('Other')}>
-                {t('Other')}
-              </MenuItem>
+              {Object.entries(locations).map(([value, label]) => (
+                <MenuItem value={value} key={value}>
+                  {label}
+                </MenuItem>
+              ))}
             </PhoneNumberSelect>
           </FormControl>
         </Grid>

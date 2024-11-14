@@ -33,7 +33,7 @@ import { useUserPreference } from 'src/hooks/useUserPreference';
 import theme from 'src/theme';
 import {
   TaskFilterTabsTypes,
-  taskFiltersTabs,
+  getTaskFiltersTabs,
 } from 'src/utils/tasks/taskFilterTabs';
 import {
   TaskFiltersQuery,
@@ -121,6 +121,8 @@ const TasksPage: React.FC = () => {
   });
 
   //#region Filters
+
+  const taskFiltersTabs = useMemo(() => getTaskFiltersTabs(t), [t]);
 
   const [taskType, setTaskType] = useState<TaskFilterTabsTypes>(
     taskFiltersTabs[0].name,
@@ -311,15 +313,15 @@ const TasksPage: React.FC = () => {
                         )})`,
                       }}
                     >
-                      {taskFiltersTabs.map((i) => (
+                      {taskFiltersTabs.map((tab) => (
                         <Button
                           variant={
-                            taskType === i.name ? 'contained' : 'outlined'
+                            taskType === tab.name ? 'contained' : 'outlined'
                           }
-                          onClick={() => setTaskTypeFilter(i.name)}
-                          key={`btn-${i.name}`}
+                          onClick={() => setTaskTypeFilter(tab.name)}
+                          key={`btn-${tab.name}`}
                         >
-                          {i.translated ? t(i.uiName) : i.uiName}
+                          {tab.uiName}
                         </Button>
                       ))}
                     </TaskCurrentHistoryButtonGroup>

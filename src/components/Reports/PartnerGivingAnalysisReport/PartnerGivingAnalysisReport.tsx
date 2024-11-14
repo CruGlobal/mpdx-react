@@ -21,6 +21,7 @@ import {
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { useMassSelection } from 'src/hooks/useMassSelection';
+import { useTablePaginationLocaleText } from 'src/hooks/useMuiLocaleText';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
@@ -142,6 +143,8 @@ export const PartnerGivingAnalysisReport = forwardRef<
       isRowChecked,
     } = useMassSelection(allContactIds);
 
+    const localeText = useTablePaginationLocaleText();
+
     const handleRequestSort = (
       event: React.MouseEvent<unknown>,
       property: string,
@@ -222,6 +225,7 @@ export const PartnerGivingAnalysisReport = forwardRef<
                 },
                 native: true,
               }}
+              {...localeText}
             />
           </>
         ) : (

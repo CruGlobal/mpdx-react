@@ -156,7 +156,7 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
                   required
                   id="reason"
                   name="reason"
-                  label={t('Reason / Helpscout Ticket Link')}
+                  label={t('Reason / HelpScout Ticket Link')}
                   type="reason"
                   value={reason}
                   disabled={isSubmitting}

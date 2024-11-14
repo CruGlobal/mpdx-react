@@ -1,5 +1,6 @@
 import { Link, Typography } from '@mui/material';
 import { EmailAddress } from 'src/graphql/types.generated';
+import { useEmailLocations } from 'src/hooks/useEmailLocations';
 import { CollapsibleList } from './CollapsibleList';
 import { ContactInfoText } from './StyledComponents';
 
@@ -7,14 +8,23 @@ interface EmailProps {
   email: Partial<EmailAddress>;
 }
 
-const Email: React.FC<EmailProps> = ({ email }) => (
-  <ContactInfoText data-testid="EmailAddress">
-    <Link href={`mailto:${email.email}`} underline="hover">
-      {email.email}
-    </Link>
-    {email.location && <span> - {email.location}</span>}
-  </ContactInfoText>
-);
+const Email: React.FC<EmailProps> = ({ email }) => {
+  const locations = useEmailLocations();
+
+  return (
+    <ContactInfoText data-testid="EmailAddress">
+      <Link href={`mailto:${email.email}`} underline="hover">
+        {email.email}
+      </Link>
+      {email.location && (
+        <span>
+          {' - '}
+          {locations[email.location.toLowerCase()] ?? email.location}
+        </span>
+      )}
+    </ContactInfoText>
+  );
+};
 
 interface CollapsibleEmailListProps {
   emails: Array<Partial<EmailAddress>>;
