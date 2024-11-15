@@ -75,6 +75,7 @@ export const createCache = () =>
       Query: {
         fields: {
           accountListPledges: paginationFieldPolicy,
+          appeals: paginationFieldPolicy,
           coachingAccountListPledges: paginationFieldPolicy,
           contacts: paginationFieldPolicy,
           donations: paginationFieldPolicy,
