@@ -82,7 +82,9 @@ const googleImportSchema = yup.object({
   tagsForAllList: yup.array().of(yup.string().required()).default([]),
   override: yup.string(),
   importByGroup: yup.string(),
-  groupTags: yup.object(),
+  // Override the inferred type of this field because yup does not yet have a record type where keys
+  // can be any string
+  groupTags: yup.object() as yup.ObjectSchema<Record<string, string[]>>,
   groups: yup.array().of(yup.string().required()).default([]),
 });
 
