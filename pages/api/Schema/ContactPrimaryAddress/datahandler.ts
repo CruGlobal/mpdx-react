@@ -8,7 +8,10 @@ const getAddressesResponseSchema = object({
     relationships: object({
       addresses: object({
         data: array().of(
-          object({ id: string().required(), type: string().required() }),
+          object({
+            id: string().required(),
+            type: string().required(),
+          }).required(),
         ),
       }).required(),
     }).required(),

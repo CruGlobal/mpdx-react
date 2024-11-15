@@ -83,7 +83,7 @@ const useStyles = makeStyles()(() => ({
 }));
 
 const tntSchema = yup.object({
-  selectedTags: yup.array().of(yup.string()).default([]),
+  selectedTags: yup.array().of(yup.string().required()).default([]),
   override: yup.string().required(),
 });
 

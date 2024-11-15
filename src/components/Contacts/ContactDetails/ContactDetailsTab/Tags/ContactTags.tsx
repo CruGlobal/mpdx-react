@@ -38,7 +38,7 @@ interface ContactTagsProps {
 }
 
 const tagSchema = yup.object({
-  tagList: yup.array().of(yup.string()).default([]),
+  tagList: yup.array().of(yup.string().required()).default([]),
 });
 
 export const ContactTags: React.FC<ContactTagsProps> = ({

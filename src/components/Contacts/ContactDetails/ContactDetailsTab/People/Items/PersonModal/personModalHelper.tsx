@@ -26,25 +26,27 @@ export const getPersonSchema = (
     title: yup.string().nullable(),
     suffix: yup.string().nullable(),
     phoneNumbers: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        number: yup.string().when('destroy', {
-          is: true,
-          then: yup.string().nullable(),
-          otherwise: yup
-            .string()
-            .required(t('This field is required'))
-            .nullable()
-            .test(
-              'is-phone-number',
-              t('This field is not a valid phone number'),
-              (val) => typeof val === 'string' && /\d/.test(val),
-            ),
-        }),
-        destroy: yup.boolean().default(false),
-        primary: yup.boolean().default(false),
-        historic: yup.boolean().default(false),
-      }),
+      yup
+        .object({
+          id: yup.string().nullable(),
+          number: yup.string().when('destroy', {
+            is: true,
+            then: yup.string().nullable(),
+            otherwise: yup
+              .string()
+              .required(t('This field is required'))
+              .nullable()
+              .test(
+                'is-phone-number',
+                t('This field is not a valid phone number'),
+                (val) => typeof val === 'string' && /\d/.test(val),
+              ),
+          }),
+          destroy: yup.boolean().default(false),
+          primary: yup.boolean().default(false),
+          historic: yup.boolean().default(false),
+        })
+        .required(),
     ),
     emailAddresses: yup.array().of(
       yup.object({
@@ -59,38 +61,48 @@ export const getPersonSchema = (
       }),
     ),
     facebookAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        username: yup.string().required(),
-      }),
+      yup
+        .object({
+          id: yup.string().nullable(),
+          destroy: yup.boolean().default(false),
+          username: yup.string().required(),
+        })
+        .required(),
     ),
     linkedinAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        publicUrl: yup.string().required(),
-      }),
+      yup
+        .object({
+          id: yup.string().nullable(),
+          destroy: yup.boolean().default(false),
+          publicUrl: yup.string().required(),
+        })
+        .required(),
     ),
     twitterAccounts: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        screenName: yup.string().required(),
-      }),
+      yup
+        .object({
+          id: yup.string().nullable(),
+          destroy: yup.boolean().default(false),
+          screenName: yup.string().required(),
+        })
+        .required(),
     ),
     websites: yup.array().of(
-      yup.object({
-        id: yup.string().nullable(),
-        destroy: yup.boolean().default(false),
-        url: yup.string().required(),
-      }),
+      yup
+        .object({
+          id: yup.string().nullable(),
+          destroy: yup.boolean().default(false),
+          url: yup.string().required(),
+        })
+        .required(),
     ),
     newSocials: yup.array().of(
-      yup.object({
-        value: yup.string().required(),
-        type: yup.string().required(),
-      }),
+      yup
+        .object({
+          value: yup.string().required(),
+          type: yup.string().required(),
+        })
+        .required(),
     ),
     optoutEnewsletter: yup.boolean().default(false),
     birthdayDay: yup.number().nullable(),

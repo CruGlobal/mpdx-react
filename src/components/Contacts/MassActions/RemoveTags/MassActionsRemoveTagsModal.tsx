@@ -51,7 +51,7 @@ const RemoveTagIcon = styled(Remove)(() => ({
 }));
 
 const tagSchema = yup.object({
-  tagList: yup.array().of(yup.string()).default([]).nullable(),
+  tagList: yup.array().of(yup.string().required()).default([]).nullable(),
 });
 
 export const MassActionsRemoveTagsModal: React.FC<

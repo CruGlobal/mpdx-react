@@ -86,29 +86,31 @@ interface ContactTable {
   contacts: ContactRow[];
 }
 
-const contactsSchema = yup.object().shape({
+const contactsSchema = yup.object({
   contacts: yup.array().of(
-    yup.object().shape({
-      firstName: yup.string(),
-      spouseName: yup.string(),
-      lastName: yup.string(),
-      address: yup.object({
-        city: yup.string(),
-        country: yup.string(),
-        location: yup.string(),
-        metroArea: yup.string(),
-        postalCode: yup.string(),
-        region: yup.string(),
-        state: yup.string(),
-        street: yup.string(),
-      }),
-      phone: yup.string(),
-      email: yup.string(),
-      status: yup
-        .mixed<StatusEnum | null>()
-        .oneOf([...Object.values(StatusEnum), null])
-        .nullable(),
-    }),
+    yup
+      .object({
+        firstName: yup.string(),
+        spouseName: yup.string(),
+        lastName: yup.string(),
+        address: yup.object({
+          city: yup.string(),
+          country: yup.string(),
+          location: yup.string(),
+          metroArea: yup.string(),
+          postalCode: yup.string(),
+          region: yup.string(),
+          state: yup.string(),
+          street: yup.string(),
+        }),
+        phone: yup.string(),
+        email: yup.string(),
+        status: yup
+          .mixed<StatusEnum>()
+          .oneOf(Object.values(StatusEnum))
+          .nullable(),
+      })
+      .required(),
   ),
 });
 

@@ -56,21 +56,26 @@ type NotificationPreference = Pick<
 const notificationSchema: yup.ObjectSchema<{
   notifications: NotificationPreference[];
 }> = yup.object({
-  notifications: yup.array(
-    yup.object({
-      app: yup.boolean().required(),
-      email: yup.boolean().required(),
-      task: yup.boolean().required(),
-      notificationType: yup.object({
-        id: yup.string().required(),
-        descriptionTemplate: yup.string().required(),
-        type: yup
-          .mixed<NotificationTypeTypeEnum>()
-          .oneOf(Object.values(NotificationTypeTypeEnum))
-          .required(),
-      }),
-    }),
-  ),
+  notifications: yup
+    .array()
+    .of(
+      yup
+        .object({
+          app: yup.boolean().required(),
+          email: yup.boolean().required(),
+          task: yup.boolean().required(),
+          notificationType: yup.object({
+            id: yup.string().required(),
+            descriptionTemplate: yup.string().required(),
+            type: yup
+              .mixed<NotificationTypeTypeEnum>()
+              .oneOf(Object.values(NotificationTypeTypeEnum))
+              .required(),
+          }),
+        })
+        .required(),
+    )
+    .required(),
 });
 
 interface NotificationsTableProps {
