@@ -92,13 +92,11 @@ const Appeals: React.FC<AppealsProps> = ({ accountListId }) => {
             ))}
         </>
       ) : data?.regularAppeals.nodes.length ? (
-        <>
-          {data.regularAppeals.nodes.map((appeal) => (
-            <Box key={appeal.name} mb={3}>
-              <Appeal appeal={appeal} changePrimary={handleChangePrimary} />
-            </Box>
-          ))}
-        </>
+        data.regularAppeals.nodes.map((appeal) => (
+          <Box key={appeal.id} mb={3}>
+            <Appeal appeal={appeal} changePrimary={handleChangePrimary} />
+          </Box>
+        ))
       ) : (
         <NoAppeals />
       )}
