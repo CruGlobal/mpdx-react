@@ -11711,14 +11711,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ergonomock@npm:@cruglobal/graphql-ergonomock@^1.2.1":
-  version: 1.2.1
-  resolution: "@cruglobal/graphql-ergonomock@npm:1.2.1"
+"graphql-ergonomock@npm:@cruglobal/graphql-ergonomock@^1.2.2":
+  version: 1.2.2
+  resolution: "@cruglobal/graphql-ergonomock@npm:1.2.2"
   dependencies:
     fast-json-stable-stringify: ^2.1.0
     graphql: ^16.9.0
     seedrandom: ^3.0.5
-  checksum: 79bbf1a38a6b3ebeebc7bb6d1222934b85157f76559407cbabbcd6794eeece7ba6ca50a737f2959cec516b244c62eae3b36a617ac109c9ef3c75e14ca577f525
+  checksum: 04c6a4d03dff7d718e6978c7c93fc506f9cf2f2eff0c905c5cbbab382dc5358e1d91ad651dc5f3a3bb691246ff3fa491d0b28ce48fa34c9a513310e8446409c8
   languageName: node
   linkType: hard
 
@@ -15110,7 +15110,7 @@ __metadata:
     full-icu: ^1.5.0
     glob: ^8.0.3
     graphql: ^16.9.0
-    graphql-ergonomock: "npm:@cruglobal/graphql-ergonomock@^1.2.1"
+    graphql-ergonomock: "npm:@cruglobal/graphql-ergonomock@^1.2.2"
     graphql-tag: ^2.12.6
     husky: ^8.0.1
     i18next: ^21.9.2

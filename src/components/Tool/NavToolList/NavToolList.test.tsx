@@ -19,12 +19,13 @@ const router = {
 
 const mocks = {
   GetToolNotifications: {
-    // graphql-ergonomock doesn't handle renamed fields, so we have to mock
-    // using the name of the field in the GraphQL schema, not the renamed field
-    contacts: { totalCount: 2 },
-    people: { totalCount: 4 },
-    contactDuplicates: { totalCount: 6 },
-    personDuplicates: { totalCount: 10 },
+    fixCommitmentInfo: { totalCount: 2 },
+    fixMailingAddresses: { totalCount: 2 },
+    fixSendNewsletter: { totalCount: 2 },
+    fixEmailAddresses: { totalCount: 4 },
+    fixPhoneNumbers: { totalCount: 4 },
+    mergeContacts: { totalCount: 6 },
+    mergePeople: { totalCount: 10 },
   },
 };
 
@@ -34,8 +35,6 @@ const TestComponent = () => (
       <GqlMockedProvider<{
         GetToolNotifications: GetToolNotificationsQuery;
       }>
-        // @ts-expect-error graphql-ergonomock does not handle renamed fields correctly, so
-        // the mock field name doesn't match the query field name
         mocks={mocks}
       >
         <NavToolList toggle={toggleMock} isOpen={true} />

@@ -30,7 +30,11 @@ const testAppeal = {
 
 const mocks = {
   GetAppeals: {
-    appeals: {
+    primaryAppeal: {
+      nodes: [testAppeal],
+      totalCount: 1,
+    },
+    regularAppeals: {
       nodes: [testAppeal],
       totalCount: 1,
       pageInfo: {
@@ -75,11 +79,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }>
-              // @ts-expect-error graphql-ergonomock does not handle renamed fields correctly, so
-              // the mock field name doesn't match the query field name
-              mocks={mocks}
-            >
+            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>
@@ -99,11 +99,7 @@ describe('AppealsTest', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestRouter router={router}>
-            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }>
-              // @ts-expect-error graphql-ergonomock does not handle renamed fields correctly, so
-              // the mock field name doesn't match the query field name
-              mocks={mocks}
-            >
+            <GqlMockedProvider<{ GetAppeals: GetAppealsQuery }> mocks={mocks}>
               <Appeals accountListId={accountListId} />
             </GqlMockedProvider>
           </TestRouter>
