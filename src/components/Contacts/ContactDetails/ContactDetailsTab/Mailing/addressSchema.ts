@@ -28,7 +28,7 @@ export const addressSchema = yup.object({
             address.street,
         ),
     ),
-  primaryMailingAddress: yup.boolean().nullable(false),
+  primaryMailingAddress: yup.boolean().defined(),
 });
 
 export type AddressSchema = yup.InferType<typeof addressSchema>;
