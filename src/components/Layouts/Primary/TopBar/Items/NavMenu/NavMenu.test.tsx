@@ -3,17 +3,24 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
+import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import theme from 'src/theme';
+import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
 
 const accountListId = 'test121';
 
 interface TestComponentProps {
   router?: Partial<NextRouter>;
-  mocks?: ApolloErgonoMockMap;
+  mocks?: ApolloErgonoMockMap &
+    DeepPartial<{
+      GetToolNotifications: GetToolNotificationsQuery;
+      LoadCoachingList: LoadCoachingListQuery;
+    }>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
@@ -192,18 +199,13 @@ describe('NavMenu', () => {
       <TestComponent
         mocks={{
           GetToolNotifications: {
-            contacts: {
-              totalCount: 0,
-            },
-            people: {
-              totalCount: 0,
-            },
-            contactDuplicates: {
-              totalCount: 0,
-            },
-            personDuplicates: {
-              totalCount: 0,
-            },
+            fixCommitmentInfo: { totalCount: 0 },
+            fixMailingAddresses: { totalCount: 0 },
+            fixSendNewsletter: { totalCount: 0 },
+            fixEmailAddresses: { totalCount: 0 },
+            fixPhoneNumbers: { totalCount: 0 },
+            mergeContacts: { totalCount: 0 },
+            mergePeople: { totalCount: 0 },
           },
         }}
       />,
@@ -227,18 +229,13 @@ describe('NavMenu', () => {
       <TestComponent
         mocks={{
           GetToolNotifications: {
-            contacts: {
-              totalCount: 1,
-            },
-            people: {
-              totalCount: 1,
-            },
-            contactDuplicates: {
-              totalCount: 1,
-            },
-            personDuplicates: {
-              totalCount: 1,
-            },
+            fixCommitmentInfo: { totalCount: 1 },
+            fixMailingAddresses: { totalCount: 1 },
+            fixSendNewsletter: { totalCount: 1 },
+            fixEmailAddresses: { totalCount: 1 },
+            fixPhoneNumbers: { totalCount: 1 },
+            mergeContacts: { totalCount: 1 },
+            mergePeople: { totalCount: 1 },
           },
         }}
       />,
@@ -263,18 +260,13 @@ describe('NavMenu', () => {
       <TestComponent
         mocks={{
           GetToolNotifications: {
-            contacts: {
-              totalCount: 30,
-            },
-            people: {
-              totalCount: 30,
-            },
-            contactDuplicates: {
-              totalCount: 130,
-            },
-            personDuplicates: {
-              totalCount: 30,
-            },
+            fixCommitmentInfo: { totalCount: 30 },
+            fixMailingAddresses: { totalCount: 30 },
+            fixSendNewsletter: { totalCount: 30 },
+            fixEmailAddresses: { totalCount: 30 },
+            fixPhoneNumbers: { totalCount: 30 },
+            mergeContacts: { totalCount: 130 },
+            mergePeople: { totalCount: 30 },
           },
         }}
       />,
