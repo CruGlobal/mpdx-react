@@ -19,7 +19,7 @@ export type OrganizationFormikSchema = {
   password: string | undefined;
 };
 
-export const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> =
+export const OrganizationSchema: yup.ObjectSchema<OrganizationFormikSchema> =
   yup.object({
     selectedOrganization: yup
       .object({

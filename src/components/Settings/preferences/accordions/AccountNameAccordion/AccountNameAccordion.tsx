@@ -11,7 +11,7 @@ import { AccountList } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
-const accountPreferencesSchema: yup.SchemaOf<Pick<AccountList, 'name'>> =
+const accountPreferencesSchema: yup.ObjectSchema<Pick<AccountList, 'name'>> =
   yup.object({
     name: yup.string().required(),
   });

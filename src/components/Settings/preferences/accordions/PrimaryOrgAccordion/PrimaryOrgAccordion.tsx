@@ -11,7 +11,7 @@ import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountList } from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
-const preferencesSchema: yup.SchemaOf<
+const preferencesSchema: yup.ObjectSchema<
   Pick<AccountList, 'salaryOrganizationId'>
 > = yup.object({
   salaryOrganizationId: yup.string().required(),

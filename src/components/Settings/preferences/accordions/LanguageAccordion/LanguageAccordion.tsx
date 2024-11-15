@@ -12,9 +12,10 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { formatLanguage, languages } from 'src/lib/data/languages';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
-const preferencesSchema: yup.SchemaOf<Pick<Preference, 'locale'>> = yup.object({
-  locale: yup.string().required(),
-});
+const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'locale'>> =
+  yup.object({
+    locale: yup.string().required(),
+  });
 
 interface LanguageAccordionProps {
   handleAccordionChange: (panel: string) => void;

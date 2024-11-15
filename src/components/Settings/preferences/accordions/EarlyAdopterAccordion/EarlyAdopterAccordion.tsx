@@ -11,7 +11,7 @@ import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
-const accountPreferencesSchema: yup.SchemaOf<
+const accountPreferencesSchema: yup.ObjectSchema<
   Pick<AccountListSettingsInput, 'tester'>
 > = yup.object({
   tester: yup.boolean().required(),

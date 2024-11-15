@@ -47,7 +47,7 @@ type FormikSchema = {
   accept: boolean;
 };
 
-const formikSchema: yup.SchemaOf<FormikSchema> = yup.object({
+const formikSchema: yup.ObjectSchema<FormikSchema> = yup.object({
   selectedAccountId: yup.string().required(),
   accept: yup.boolean().oneOf([true], 'Field must be checked').required(),
 });

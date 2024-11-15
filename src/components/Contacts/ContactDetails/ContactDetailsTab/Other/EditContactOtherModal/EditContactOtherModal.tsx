@@ -173,7 +173,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         dataFilteredByName?.contacts.nodes ||
         [];
 
-  const contactOtherSchema: yup.SchemaOf<
+  const contactOtherSchema: yup.ObjectSchema<
     Pick<
       ContactUpdateInput,
       | 'id'

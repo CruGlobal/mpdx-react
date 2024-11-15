@@ -9,7 +9,7 @@ import {
 import { NewSocial, Person } from './PersonModal';
 
 interface GetPersonSchemaReturnedValues {
-  personSchema: yup.SchemaOf<
+  personSchema: yup.ObjectSchema<
     Omit<PersonUpdateInput, 'familyRelationships' | 'id'>
   >;
   initialPerson: (PersonCreateInput | PersonUpdateInput) & NewSocial;

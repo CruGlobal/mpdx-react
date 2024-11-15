@@ -53,7 +53,7 @@ type NotificationPreference = Pick<
   >;
 };
 
-const notificationSchema: yup.SchemaOf<{
+const notificationSchema: yup.ObjectSchema<{
   notifications: NotificationPreference[];
 }> = yup.object({
   notifications: yup.array(

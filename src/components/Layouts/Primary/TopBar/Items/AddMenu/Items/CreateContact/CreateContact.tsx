@@ -59,7 +59,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-const contactSchema: yup.SchemaOf<Pick<ContactCreateInput, 'name'>> =
+const contactSchema: yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =
   yup.object({
     name: yup.string().required(),
   });
