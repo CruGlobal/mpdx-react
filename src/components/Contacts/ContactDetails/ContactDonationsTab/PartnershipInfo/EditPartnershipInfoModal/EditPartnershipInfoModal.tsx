@@ -87,10 +87,7 @@ const SelectInteractive = styled(Select, {
 
 const contactPartnershipSchema = yup.object({
   id: yup.string().required(),
-  status: yup
-    .mixed<StatusEnum | null>()
-    .oneOf([...Object.values(StatusEnum), null])
-    .nullable(),
+  status: yup.mixed<StatusEnum>().oneOf(Object.values(StatusEnum)).nullable(),
   pledgeAmount: yup.number().moreThan(-1).nullable(),
   pledgeStartDate: nullableDateTime(),
   pledgeReceived: yup.boolean().default(false).nullable(),
