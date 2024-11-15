@@ -41,8 +41,8 @@ const massActionsEditTasksSchema = yup.object({
     .mixed<ActivityTypeEnum>()
     .nullable()
     .when('taskPhase', {
-      is: (value: any) => !!value,
-      then: yup.mixed<ActivityTypeEnum>().required('Must select a Task Action'),
+      is: (value: PhaseEnum | null | undefined) => !!value,
+      then: (schema) => schema.required('Must select a Task Action'),
     }),
   userId: yup.string().nullable(),
   startAt: nullableDateTime(),
