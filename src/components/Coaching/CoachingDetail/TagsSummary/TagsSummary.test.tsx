@@ -1,13 +1,11 @@
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  QueryReportsTagHistoriesArgs,
-  ReportsTagHistoriesAssociationEnum,
-} from 'src/graphql/types.generated';
+import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { TagsSummary } from './TagsSummary';
+import { TagsSummaryQuery } from './TagsSummary.generated';
 
 const accountListId = 'account-list-1';
 
@@ -42,7 +40,7 @@ describe('TagsSummary', () => {
       it('renders empty', async () => {
         const { findByText } = render(
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{ TagsSummary: QueryReportsTagHistoriesArgs }>
+            <GqlMockedProvider<{ TagsSummary: TagsSummaryQuery }>
               mocks={{
                 TagsSummary: {
                   reportsTagHistories: {
@@ -72,7 +70,7 @@ describe('TagsSummary', () => {
       it('renders tags', async () => {
         const { getAllByRole, findByRole } = render(
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider<{ TagsSummary: QueryReportsTagHistoriesArgs }>
+            <GqlMockedProvider<{ TagsSummary: TagsSummaryQuery }>
               mocks={{
                 TagsSummary: {
                   reportsTagHistories: {

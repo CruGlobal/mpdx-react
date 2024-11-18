@@ -80,7 +80,6 @@ export const contactWithDonationsMock = {
           donorAccount: {
             __typename: 'DonorAccount',
             id: 'designation-1',
-            displayName: 'A, Caleb (999)',
             accountNumber: '999',
           },
         },

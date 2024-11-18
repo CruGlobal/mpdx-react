@@ -13,7 +13,7 @@ export const useDebouncedCallback = <Args extends unknown[], Return>(
   }, [callback]);
 
   const debouncedCallback = useMemo(
-    () => debounce((...args) => callbackRef.current(...args), delay),
+    () => debounce((...args: Args) => callbackRef.current(...args), delay),
     [delay],
   );
 

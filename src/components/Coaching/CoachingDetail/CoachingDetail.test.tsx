@@ -98,21 +98,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
             },
           },
           LoadCoachingNeeds: {
-            coachingAccountList: {
-              primaryAppeal: {
-                pledges: {
-                  nodes: [{ amountCurrency: 'USD' }],
-                },
-              },
+            coachingAccountListPledges: {
+              nodes: [{ amountCurrency: 'USD' }],
             },
           },
           LoadAccountListCoachingNeeds: {
-            accountList: {
-              primaryAppeal: {
-                pledges: {
-                  nodes: [{ amountCurrency: 'USD' }],
-                },
-              },
+            accountListPledges: {
+              nodes: [{ amountCurrency: 'USD' }],
             },
           },
           ...levelOfEffortMocks,

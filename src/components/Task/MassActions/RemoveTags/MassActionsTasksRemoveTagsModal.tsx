@@ -121,7 +121,7 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
     <Modal title={t('Remove Tags')} isOpen={true} handleClose={handleClose}>
       <Formik
         initialValues={{
-          tagList: [],
+          tagList: [] as string[],
         }}
         onSubmit={onSubmit}
         validationSchema={tagSchema}

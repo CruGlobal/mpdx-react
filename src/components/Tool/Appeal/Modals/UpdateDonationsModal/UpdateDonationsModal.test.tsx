@@ -117,7 +117,6 @@ const Components = ({
                       ? contactNoDonationsMock
                       : contactWithDonationsMock,
                     DonationTable: {
-                      currency: 'CAD',
                       donations: {
                         nodes: isEmpty
                           ? []
@@ -146,7 +145,6 @@ const Components = ({
                                     nodes: [
                                       {
                                         id: defaultContact.id,
-                                        displayName: defaultContact.name,
                                       },
                                     ],
                                   },
@@ -192,7 +190,6 @@ const Components = ({
                                     nodes: [
                                       {
                                         id: defaultContact.id,
-                                        displayName: defaultContact.name,
                                       },
                                     ],
                                   },

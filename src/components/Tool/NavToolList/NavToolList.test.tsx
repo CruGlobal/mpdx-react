@@ -34,6 +34,8 @@ const TestComponent = () => (
       <GqlMockedProvider<{
         GetToolNotifications: GetToolNotificationsQuery;
       }>
+        // @ts-expect-error graphql-ergonomock does not handle renamed fields correctly, so
+        // the mock field name doesn't match the query field name
         mocks={mocks}
       >
         <NavToolList toggle={toggleMock} isOpen={true} />
