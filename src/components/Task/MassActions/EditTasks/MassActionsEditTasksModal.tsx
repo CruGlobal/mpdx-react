@@ -11,7 +11,6 @@ import {
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
@@ -110,7 +109,7 @@ export const MassActionsEditTasksModal: React.FC<
             variables: {
               accountListId,
               taskId,
-              attributes: { id: uuidv4(), body },
+              attributes: { id: crypto.randomUUID(), body },
             },
           }),
         )
