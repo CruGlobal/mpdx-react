@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';
 import { getToken } from 'next-auth/jwt';
 import fetch, { File, FormData } from 'node-fetch';
-import { v4 as uuidv4 } from 'uuid';
 
 export const config = {
   api: {
@@ -59,7 +58,7 @@ const uploadPersonAvatar = async (
       return;
     }
 
-    const pictureId = uuidv4();
+    const pictureId = crypto.randomUUID();
     const file = new File(
       [await readFile(avatar.filepath)],
       avatar.originalFilename ?? 'avatar',

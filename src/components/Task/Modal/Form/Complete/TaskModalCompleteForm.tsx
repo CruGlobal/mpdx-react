@@ -14,7 +14,6 @@ import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 import {
   CancelButton,
@@ -177,7 +176,7 @@ const TaskModalCompleteForm = ({
           variables: {
             accountListId,
             taskId: task.id,
-            attributes: { id: uuidv4(), body },
+            attributes: { id: crypto.randomUUID(), body },
           },
         }),
       );
