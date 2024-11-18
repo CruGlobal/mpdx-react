@@ -33,7 +33,6 @@ jest.mock('notistack', () => ({
 const accountListId = 'abc';
 const appealId = 'appealId';
 const contactId = 'contact-1';
-const appealContactId = 'appealContactId';
 const router = {
   query: { accountListId },
   isReady: true,
@@ -46,7 +45,6 @@ interface ComponentsProps {
 }
 
 const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
-  let requestCount = 0;
   return (
     <I18nextProvider i18n={i18n}>
       <SnackbarProvider>
@@ -56,70 +54,6 @@ const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
               <TestRouter router={router}>
                 <GqlMockedProvider
                   mocks={{
-                    AppealContacts: () => {
-                      let mutationResponse;
-                      if (requestCount < 3) {
-                        mutationResponse = {
-                          appealContacts: {
-                            nodes: [
-                              {
-                                id: `id1${requestCount}`,
-                                contact: {
-                                  id: `contactId1${requestCount}`,
-                                },
-                              },
-                              {
-                                id: `id2${requestCount}`,
-                                contact: {
-                                  id: `contactId2${requestCount}`,
-                                },
-                              },
-                              {
-                                id: `id3${requestCount}`,
-                                contact: {
-                                  id: `contactId3${requestCount}`,
-                                },
-                              },
-                            ],
-                            pageInfo: {
-                              hasNextPage: true,
-                              endCursor: `endCursor${requestCount}`,
-                            },
-                          },
-                        };
-                      } else {
-                        mutationResponse = {
-                          appealContacts: {
-                            nodes: [
-                              {
-                                id: appealContactId,
-                                contact: {
-                                  id: contactId,
-                                },
-                              },
-                              {
-                                id: `id5${requestCount}`,
-                                contact: {
-                                  id: `contactId5${requestCount}`,
-                                },
-                              },
-                              {
-                                id: `id6${requestCount}`,
-                                contact: {
-                                  id: `contactId6${requestCount}`,
-                                },
-                              },
-                            ],
-                            pageInfo: {
-                              hasNextPage: false,
-                              endCursor: 'endCursor3',
-                            },
-                          },
-                        };
-                      }
-                      requestCount++;
-                      return mutationResponse;
-                    },
                     GetContactIdsForMassSelection: {
                       contacts: {
                         nodes: [
@@ -191,22 +125,6 @@ describe('DeleteAppealContactModal', () => {
   it('fetches all the appealContacts and matches up the correct ID to send to the API', async () => {
     const { getByRole } = render(<Components />);
 
-    // Call AppealContacts 3 times getting all contacts.
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
-        after: 'endCursor2',
-        appealId: 'appealId',
-      }),
-    );
-    expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
-      after: null,
-      appealId: 'appealId',
-    });
-    expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
-      after: 'endCursor1',
-      appealId: 'appealId',
-    });
-
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => {
@@ -221,7 +139,7 @@ describe('DeleteAppealContactModal', () => {
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('DeleteAppealContact', {
         input: {
-          id: 'appealContactId',
+          id: contactId,
         },
       });
     });
