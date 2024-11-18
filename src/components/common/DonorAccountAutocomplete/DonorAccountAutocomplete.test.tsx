@@ -13,9 +13,9 @@ const onChange = jest.fn();
 const mocks = {
   GetDonorAccounts: {
     accountListDonorAccounts: [
-      { id: 'donor-1', displayName: 'Donor 1' },
-      { id: 'donor-2', displayName: 'Donor 2' },
-      { id: 'donor-3', displayName: 'Donor 3' },
+      { id: 'donor-1', name: 'Donor 1' },
+      { id: 'donor-2', name: 'Donor 2' },
+      { id: 'donor-3', name: 'Donor 3' },
     ],
   },
 };

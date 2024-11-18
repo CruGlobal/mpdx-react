@@ -103,7 +103,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql", "npm:16.9.0"],\
             ["graphql-ergonomock", [\
               "@cruglobal/graphql-ergonomock",\
-              "npm:1.2.1"\
+              "npm:1.2.2"\
             ]],\
             ["graphql-tag", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],\
             ["husky", "npm:8.0.1"],\
@@ -3703,10 +3703,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@cruglobal/graphql-ergonomock", [\
-        ["npm:1.2.1", {\
-          "packageLocation": "./.yarn/cache/@cruglobal-graphql-ergonomock-npm-1.2.1-1ac201cd3f-79bbf1a38a.zip/node_modules/@cruglobal/graphql-ergonomock/",\
+        ["npm:1.2.2", {\
+          "packageLocation": "./.yarn/cache/@cruglobal-graphql-ergonomock-npm-1.2.2-405bbafe34-04c6a4d03d.zip/node_modules/@cruglobal/graphql-ergonomock/",\
           "packageDependencies": [\
-            ["@cruglobal/graphql-ergonomock", "npm:1.2.1"],\
+            ["@cruglobal/graphql-ergonomock", "npm:1.2.2"],\
             ["fast-json-stable-stringify", "npm:2.1.0"],\
             ["graphql", "npm:16.9.0"],\
             ["seedrandom", "npm:3.0.5"]\
@@ -19513,7 +19513,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["graphql", "npm:16.9.0"],\
             ["graphql-ergonomock", [\
               "@cruglobal/graphql-ergonomock",\
-              "npm:1.2.1"\
+              "npm:1.2.2"\
             ]],\
             ["graphql-tag", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.12.6"],\
             ["husky", "npm:8.0.1"],\

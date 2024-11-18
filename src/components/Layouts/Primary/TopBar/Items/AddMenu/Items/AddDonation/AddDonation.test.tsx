@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { GetDonorAccountsQuery } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete.generated';
 import theme from '../../../../../../../../theme';
 import { AddDonation } from './AddDonation';
 import { AddDonationMutation } from './AddDonation.generated';
@@ -58,7 +59,11 @@ describe('AddDonation', () => {
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
-            <GqlMockedProvider<{ AddDonation: AddDonationMutation }>
+            <GqlMockedProvider<{
+              AddDonation: AddDonationMutation;
+              GetDesignationAccounts: GetDesignationAccountsQuery;
+              GetDonorAccounts: GetDonorAccountsQuery;
+            }>
               onCall={mutationSpy}
               mocks={{
                 GetDonationModal: {
@@ -91,8 +96,7 @@ describe('AddDonation', () => {
                   accountListDonorAccounts: [
                     {
                       id: 'donor-acc-1',
-                      accountNumber: 'acct-01',
-                      displayName: 'Cool Donor Account',
+                      name: 'Cool Donor Account',
                     },
                   ],
                 },
