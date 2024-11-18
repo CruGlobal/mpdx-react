@@ -432,4 +432,47 @@ describe('PledgeModal', () => {
     expect(getByRole('option', { name: 'Received' })).toBeInTheDocument();
     expect(queryByRole('option', { name: 'Given' })).not.toBeInTheDocument();
   });
+
+  describe('Warning when switching status to Received', () => {
+    test.each([
+      {
+        testName: 'New Pledge should show warnings',
+        pledge: undefined,
+        expectToFindWarnings: true,
+      },
+      {
+        testName: 'Existing Pledge should show warnings',
+        pledge: {
+          ...defaultPledge,
+          status: PledgeStatusEnum.NotReceived,
+        },
+        expectToFindWarnings: true,
+      },
+      {
+        testName:
+          'Existing Pledge with status "Received" should not show warnings',
+        pledge: {
+          ...defaultPledge,
+          status: PledgeStatusEnum.ReceivedNotProcessed,
+        },
+        expectToFindWarnings: false,
+      },
+    ])('$testName', ({ pledge, expectToFindWarnings }) => {
+      const { getByRole, queryByTestId } = render(
+        <Components pledge={pledge} />,
+      );
+
+      userEvent.click(getByRole('combobox', { name: 'Status' }));
+      userEvent.click(getByRole('option', { name: 'Received' }));
+
+      const warning = queryByTestId('received-warnings');
+      if (expectToFindWarnings) {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(warning).toBeInTheDocument();
+      } else {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(warning).not.toBeInTheDocument();
+      }
+    });
+  });
 });

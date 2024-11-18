@@ -210,6 +210,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
         onSubmit={onSubmit}
       >
         {({
+          values: { status },
           setFieldValue,
           handleSubmit,
           isSubmitting,
@@ -427,6 +428,26 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                   </FormControl>
                 </Grid>
               </Grid>
+              {status === PledgeStatusEnum.ReceivedNotProcessed &&
+                initialValues.status !== status && (
+                  <Alert
+                    severity="warning"
+                    sx={{ marginTop: 2 }}
+                    data-testid="received-warnings"
+                  >
+                    <Typography>
+                      {t(
+                        'Do not move a contact into this column called "Received". Due to an outdated feature, contacts must first be moved to "Committed". If the gift has been recorded, you can then move the contact into the column called "Given".',
+                      )}
+                    </Typography>
+
+                    <Typography>
+                      {t(
+                        'In a few cases, the contact may automatically move backward from "Given" to "Received" if the processing is not complete. This behavior is due to the current system design, which we plan to update, but the work will take time and needs to be scheduled.',
+                      )}
+                    </Typography>
+                  </Alert>
+                )}
             </DialogContent>
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />
