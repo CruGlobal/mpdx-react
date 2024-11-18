@@ -8,6 +8,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -163,7 +164,29 @@ export const ContactFlowColumn: React.FC<Props> = ({
     <Card>
       <ContainerBox p={2} data-testid="column-header" color={color}>
         <Box width="80%">
-          <ColumnTitle variant="h6">{title}</ColumnTitle>
+          {appealStatus === AppealStatusEnum.ReceivedNotProcessed ? (
+            <Tooltip
+              title={
+                <>
+                  <Typography>
+                    {t(
+                      'Do not move a contact into this column called "Received". Due to an outdated feature, contacts must first be moved to "Committed". If the gift has been recorded, you can then move the contact into the column called "Given".',
+                    )}
+                  </Typography>
+
+                  <Typography>
+                    {t(
+                      'In a few cases, the contact may automatically move backward from "Given" to "Received" if the processing is not complete. This behavior is due to the current system design, which we plan to update, but the work will take time and needs to be scheduled.',
+                    )}
+                  </Typography>
+                </>
+              }
+            >
+              <ColumnTitle variant="h6">{title}</ColumnTitle>
+            </Tooltip>
+          ) : (
+            <ColumnTitle variant="h6">{title}</ColumnTitle>
+          )}
         </Box>
         <Box display="flex" alignItems="center">
           <Typography>{data?.contacts.totalCount || 0}</Typography>
