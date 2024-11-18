@@ -87,19 +87,6 @@ const config = {
     TERMS_OF_USE_URL: process.env.TERMS_OF_USE_URL,
     DD_ENV: process.env.DD_ENV ?? 'development',
   },
-  experimental: {
-    modularizeImports: {
-      lodash: {
-        transform: 'lodash/{{member}}',
-      },
-      '@mui/material': {
-        transform: '@mui/material/{{member}}',
-      },
-      '@mui/icons-material/?(((\\w*)?/?)*)': {
-        transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
-      },
-    },
-  },
   // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   productionBrowserSourceMaps: true,
@@ -133,10 +120,10 @@ const config = {
       },
     );
 
-    const fileLoaderRule = config.module.rules.find(
-      (rule) => rule.test && rule.test.test('.svg'),
+    const imageLoaderRule = config.module.rules.find(
+      (rule) => rule.loader === 'next-image-loader',
     );
-    fileLoaderRule.exclude = /\.svg$/;
+    imageLoaderRule.exclude = /\.svg$/;
 
     config.module.rules.push(
       {
