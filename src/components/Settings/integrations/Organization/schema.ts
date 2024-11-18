@@ -19,7 +19,7 @@ export type OrganizationFormikSchema = {
   password: string | undefined;
 };
 
-export const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> =
+export const OrganizationSchema: yup.ObjectSchema<OrganizationFormikSchema> =
   yup.object({
     selectedOrganization: yup
       .object({
@@ -31,26 +31,16 @@ export const OrganizationSchema: yup.SchemaOf<OrganizationFormikSchema> =
         disableNewUsers: yup.boolean().nullable(),
       })
       .required(),
-    username: yup
-      .string()
-      .when('selectedOrganization', (organization, schema) => {
-        if (
-          getOrganizationType(organization?.apiClass, organization?.oauth) ===
-          OrganizationTypesEnum.LOGIN
-        ) {
-          return schema.required('Must enter username');
-        }
-        return schema;
-      }),
-    password: yup
-      .string()
-      .when('selectedOrganization', (organization, schema) => {
-        if (
-          getOrganizationType(organization?.apiClass, organization?.oauth) ===
-          OrganizationTypesEnum.LOGIN
-        ) {
-          return schema.required('Must enter password');
-        }
-        return schema;
-      }),
+    username: yup.string().when('selectedOrganization', {
+      is: (organization: OrganizationFormikSchema['selectedOrganization']) =>
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN,
+      then: (schema) => schema.required('Must enter username'),
+    }),
+    password: yup.string().when('selectedOrganization', {
+      is: (organization: OrganizationFormikSchema['selectedOrganization']) =>
+        getOrganizationType(organization?.apiClass, organization?.oauth) ===
+        OrganizationTypesEnum.LOGIN,
+      then: (schema) => schema.required('Must enter password'),
+    }),
   });

@@ -68,7 +68,7 @@ export const OrganizationEditAccountModal: React.FC<
     return;
   };
 
-  const OrganizationSchema: yup.SchemaOf<
+  const OrganizationSchema: yup.ObjectSchema<
     Omit<OrganizationFormikSchema, 'selectedOrganization'>
   > = yup.object({
     username: yup.string().required(),

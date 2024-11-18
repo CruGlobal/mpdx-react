@@ -21,7 +21,7 @@ interface DefaultAccountAccordionProps {
   disabled?: boolean;
 }
 
-const preferencesSchema: yup.SchemaOf<Pick<User, 'defaultAccountList'>> =
+const preferencesSchema: yup.ObjectSchema<Pick<User, 'defaultAccountList'>> =
   yup.object({
     defaultAccountList: yup.string().required(),
   });

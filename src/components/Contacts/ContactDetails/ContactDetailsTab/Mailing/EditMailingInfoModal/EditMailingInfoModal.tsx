@@ -67,7 +67,7 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
   // Add additional language locales here, for multiline TextField support
   const multilineLocales = ['de'];
 
-  const mailingInfoSchema: yup.SchemaOf<
+  const mailingInfoSchema: yup.ObjectSchema<
     Pick<
       ContactUpdateInput,
       'id' | 'greeting' | 'envelopeGreeting' | 'sendNewsletter'

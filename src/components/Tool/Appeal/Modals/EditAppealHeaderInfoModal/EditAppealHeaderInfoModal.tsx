@@ -31,7 +31,7 @@ export type EditAppealFormikSchema = {
   amount: number;
 };
 
-const EditAppealSchema: yup.SchemaOf<EditAppealFormikSchema> = yup.object({
+const EditAppealSchema: yup.ObjectSchema<EditAppealFormikSchema> = yup.object({
   name: yup.string().required(i18n.t('Please enter a name')),
   amount: yup
     .number()

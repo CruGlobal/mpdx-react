@@ -26,7 +26,7 @@ interface AddContactFormikSchema {
   contactIds: string[];
 }
 
-const AddContactSchema: yup.SchemaOf<AddContactFormikSchema> = yup.object({
+const AddContactSchema: yup.ObjectSchema<AddContactFormikSchema> = yup.object({
   contactIds: yup.array().of(yup.string().required()).default([]),
 });
 

@@ -188,17 +188,21 @@ const appealFormSchema = yup.object({
       (value) => parseFloat(value as unknown as string) >= 0,
     ),
   statuses: yup.array().of(
-    yup.object({
-      name: yup.string(),
-      value: yup.string(),
-    }),
+    yup
+      .object({
+        name: yup.string(),
+        value: yup.string(),
+      })
+      .required(),
   ),
-  tags: yup.array().of(yup.string()),
+  tags: yup.array().of(yup.string().required()),
   exclusions: yup.array().of(
-    yup.object({
-      name: yup.string(),
-      value: yup.string(),
-    }),
+    yup
+      .object({
+        name: yup.string(),
+        value: yup.string(),
+      })
+      .required(),
   ),
 });
 type Attributes = yup.InferType<typeof appealFormSchema>;

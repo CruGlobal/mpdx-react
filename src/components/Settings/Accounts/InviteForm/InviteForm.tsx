@@ -32,7 +32,7 @@ type FormikSchema = {
   email: string;
 };
 
-const formikSchema: yup.SchemaOf<FormikSchema> = yup.object({
+const formikSchema: yup.ObjectSchema<FormikSchema> = yup.object({
   email: yup.string().email().required(),
 });
 

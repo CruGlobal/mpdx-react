@@ -10,7 +10,7 @@ import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
-const preferencesSchema: yup.SchemaOf<Pick<Preference, 'timeZone'>> =
+const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'timeZone'>> =
   yup.object({
     timeZone: yup.string().required(),
   });

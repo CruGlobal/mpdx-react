@@ -41,7 +41,7 @@ import {
 } from './MailchimpAccount.generated';
 import { DeleteMailchimpAccountModal } from './Modals/DeleteMailchimpModal';
 
-const mailchimpSchema: yup.SchemaOf<
+const mailchimpSchema: yup.ObjectSchema<
   Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
 > = yup.object({
   autoLogCampaigns: yup.boolean().required(),

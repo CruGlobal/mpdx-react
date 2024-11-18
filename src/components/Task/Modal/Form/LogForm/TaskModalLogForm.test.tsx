@@ -182,7 +182,9 @@ describe('TaskModalLogForm', () => {
     expect(getByLabelText('Tags')).toBeInTheDocument();
     expect(getByLabelText('Assignee')).toBeInTheDocument();
 
-    userEvent.click(getByText('Save'));
+    const saveButton = getByText('Save');
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+    userEvent.click(saveButton);
     await waitFor(() => expect(onClose).toHaveBeenCalled());
   }, 25000);
 

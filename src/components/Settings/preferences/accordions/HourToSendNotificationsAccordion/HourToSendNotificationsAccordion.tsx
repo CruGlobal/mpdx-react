@@ -12,7 +12,7 @@ import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
-const preferencesSchema: yup.SchemaOf<
+const preferencesSchema: yup.ObjectSchema<
   Pick<Preference, 'hourToSendNotifications'>
 > = yup.object({
   hourToSendNotifications: yup.number().default(null).nullable(),

@@ -81,7 +81,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 const taskSchema = yup.object({
   activityType: yup
-    .mixed()
+    .mixed<ActivityTypeEnum | 'BOTH'>()
     .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
     .defined(),
   completedAt: nullableDateTime(),

@@ -54,7 +54,7 @@ const AddTagIcon = styled(Add)(() => ({
 }));
 
 const tagSchema = yup.object({
-  tagList: yup.array().of(yup.string()).default([]).nullable(),
+  tagList: yup.array().of(yup.string().required()).default([]).nullable(),
 });
 
 export const MassActionsTasksAddTagsModal: React.FC<

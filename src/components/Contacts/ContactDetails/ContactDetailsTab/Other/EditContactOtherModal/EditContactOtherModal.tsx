@@ -173,7 +173,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         dataFilteredByName?.contacts.nodes ||
         [];
 
-  const contactOtherSchema: yup.SchemaOf<
+  const contactOtherSchema: yup.ObjectSchema<
     Pick<
       ContactUpdateInput,
       | 'id'
@@ -192,7 +192,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
     churchName: yup.string().nullable(),
     preferredContactMethod: yup
       .mixed<PreferredContactMethodEnum>()
-      .oneOf([...Object.values(PreferredContactMethodEnum), null])
+      .oneOf(Object.values(PreferredContactMethodEnum))
       .nullable(),
     locale: yup.string().nullable(),
     timezone: yup.string().nullable(),

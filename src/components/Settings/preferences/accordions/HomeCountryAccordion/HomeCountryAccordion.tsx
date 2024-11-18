@@ -10,7 +10,7 @@ import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
-const preferencesSchema: yup.SchemaOf<
+const preferencesSchema: yup.ObjectSchema<
   Pick<AccountListSettingsInput, 'homeCountry'>
 > = yup.object({
   homeCountry: yup.string(),

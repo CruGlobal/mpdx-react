@@ -12,7 +12,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
-const accountPreferencesSchema: yup.SchemaOf<
+const accountPreferencesSchema: yup.ObjectSchema<
   Pick<AccountListSettingsInput, 'monthlyGoal'>
 > = yup.object({
   monthlyGoal: yup.number().required(),

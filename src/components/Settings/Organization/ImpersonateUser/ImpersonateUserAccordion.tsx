@@ -33,12 +33,11 @@ type ImpersonateUserFormType = {
   reason: string;
 };
 
-const impersonateUserSchema: yup.SchemaOf<ImpersonateUserFormType> = yup.object(
-  {
+const impersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
+  yup.object({
     user: yup.string().email().required(),
     reason: yup.string().required(),
-  },
-);
+  });
 
 export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
