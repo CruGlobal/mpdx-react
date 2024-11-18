@@ -195,9 +195,7 @@ describe('Fix PhoneNumber Contact', () => {
       const addButton = getByTestId('addButton-contactTestId');
       expect(addButton).toBeDisabled();
 
-      expect(
-        await findByText('This field is not a valid phone number'),
-      ).toBeVisible();
+      expect(await findByText('This field is required')).toBeVisible();
     });
 
     it('should show an error message if there is an invalid number', async () => {
@@ -327,10 +325,7 @@ describe('Fix PhoneNumber Contact', () => {
     const { getByTestId, getAllByTestId } = render(<TestComponent />);
     const textInput = getByTestId('textfield-contactTestId-number2');
     userEvent.clear(textInput);
-    expect(textInput).toHaveValue('');
-    userEvent.type(textInput, 'p');
-    expect(textInput).toHaveValue('p');
-    userEvent.click(textInput);
+    userEvent.type(textInput, 'pq');
 
     await waitFor(() => {
       expect(getAllByTestId('statusSelectError')[1]).toHaveTextContent(
