@@ -32,6 +32,7 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   textAlign: 'left',
   padding: theme.spacing(0, 0.5, 0, 2),
   width: '100%',
+  color: 'initial',
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(0, 0.5),
   },
@@ -41,7 +42,7 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   '&.checked': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },
-}));
+})) as typeof ButtonBase;
 
 export const StyledCheckbox = styled(Checkbox)({
   '&:hover': {
@@ -80,103 +81,97 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const contactHrefObject = getContactHrefObject(contactId);
 
   return (
-    <NextLink
+    <ListItemButton
+      component={NextLink}
       href={contactHrefObject}
       scroll={false}
       prefetch={false}
       shallow
-      legacyBehavior
-      passHref
-      style={{ width: '100%', color: 'initial' }}
-      data-testid="contactRowLink"
+      focusRipple
+      onMouseEnter={preloadContactsRightPanel}
+      className={clsx({
+        'top-margin': useTopMargin,
+        checked: isChecked(contactId),
+      })}
+      data-testid="rowButton"
     >
-      <ListItemButton
-        focusRipple
-        onMouseEnter={preloadContactsRightPanel}
-        className={clsx({
-          'top-margin': useTopMargin,
-          checked: isChecked(contactId),
-        })}
-        data-testid="rowButton"
-      >
-        <Hidden xsDown>
-          <ListItemIcon>
-            <StyledCheckbox
-              checked={isChecked(contact.id)}
-              color="secondary"
-              onClick={(event) => event.stopPropagation()}
-              onChange={() => onContactCheckToggle(contact.id)}
-            />
-          </ListItemIcon>
-        </Hidden>
-        <Grid container alignItems="center">
-          <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
-            <ListItemText
-              primary={
-                <Typography component="span" variant="h6" noWrap>
-                  <Box
-                    component="span"
-                    sx={{
-                      display: 'block',
-                      alignItems: 'center',
-                      overflow: 'clip',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {name}
-                    <CelebrationIcons contact={contact} />
-                  </Box>
-                </Typography>
-              }
-              secondary={
-                primaryAddress && (
-                  <Hidden smDown>
-                    <Typography component="span" variant="body2">
-                      {[
-                        primaryAddress.street,
-                        `${primaryAddress.city}${primaryAddress.city && ','}`,
-                        primaryAddress.state,
-                        primaryAddress.postalCode,
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    </Typography>
-                  </Hidden>
-                )
-              }
-            />
-          </Grid>
-          <Grid item xs={2} md={6}>
-            <ContactPartnershipStatus
-              contactDetailsOpen={contactDetailsOpen}
-              lateAt={lateAt}
-              pledgeAmount={pledgeAmount}
-              pledgeCurrency={pledgeCurrency}
-              pledgeFrequency={pledgeFrequency}
-              pledgeReceived={pledgeReceived}
-              status={status}
-            />
-          </Grid>
+      <Hidden xsDown>
+        <ListItemIcon>
+          <StyledCheckbox
+            checked={isChecked(contact.id)}
+            color="secondary"
+            onClick={(event) => event.stopPropagation()}
+            onChange={() => onContactCheckToggle(contact.id)}
+          />
+        </ListItemIcon>
+      </Hidden>
+      <Grid container alignItems="center">
+        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+          <ListItemText
+            primary={
+              <Typography component="span" variant="h6" noWrap>
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'block',
+                    alignItems: 'center',
+                    overflow: 'clip',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {name}
+                  <CelebrationIcons contact={contact} />
+                </Box>
+              </Typography>
+            }
+            secondary={
+              primaryAddress && (
+                <Hidden smDown>
+                  <Typography component="span" variant="body2">
+                    {[
+                      primaryAddress.street,
+                      `${primaryAddress.city}${primaryAddress.city && ','}`,
+                      primaryAddress.state,
+                      primaryAddress.postalCode,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  </Typography>
+                </Hidden>
+              )
+            }
+          />
         </Grid>
-        <Hidden xsDown>
-          <Box onClick={(event) => event.stopPropagation()}>
-            <ContactUncompletedTasksCount
-              uncompletedTasksCount={uncompletedTasksCount}
-              contactId={contactId}
-            />
-          </Box>
-          <ListItemSecondaryAction
-            style={{ position: 'static', top: 0, transform: 'none' }}
-          >
-            <StarContactIconButton
-              accountListId={accountListId ?? ''}
-              contactId={contactId}
-              isStarred={starred || false}
-            />
-          </ListItemSecondaryAction>
-        </Hidden>
-      </ListItemButton>
-    </NextLink>
+        <Grid item xs={2} md={6}>
+          <ContactPartnershipStatus
+            contactDetailsOpen={contactDetailsOpen}
+            lateAt={lateAt}
+            pledgeAmount={pledgeAmount}
+            pledgeCurrency={pledgeCurrency}
+            pledgeFrequency={pledgeFrequency}
+            pledgeReceived={pledgeReceived}
+            status={status}
+          />
+        </Grid>
+      </Grid>
+      <Hidden xsDown>
+        <Box onClick={(event) => event.stopPropagation()}>
+          <ContactUncompletedTasksCount
+            uncompletedTasksCount={uncompletedTasksCount}
+            contactId={contactId}
+          />
+        </Box>
+        <ListItemSecondaryAction
+          style={{ position: 'static', top: 0, transform: 'none' }}
+        >
+          <StarContactIconButton
+            accountListId={accountListId ?? ''}
+            contactId={contactId}
+            isStarred={starred || false}
+          />
+        </ListItemSecondaryAction>
+      </Hidden>
+    </ListItemButton>
   );
 };

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { useState } from 'react';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { Box, Button, Typography } from '@mui/material';
@@ -7,7 +8,6 @@ import {
   DynamicAddDonation,
   preloadAddDonation,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
-import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -49,8 +49,8 @@ export const EmptyReport: React.FC<Props> = ({
       {subTitle && <Typography>{subTitle}</Typography>}
       <Box sx={{ padding: 1, display: 'flex', gap: 2 }}>
         <Button
-          component={NextLinkComposed}
-          to={`/accountLists/${accountListId}/settings/integrations`}
+          component={NextLink}
+          href={`/accountLists/${accountListId}/settings/integrations`}
           variant="contained"
         >
           {t('Connect Services')}

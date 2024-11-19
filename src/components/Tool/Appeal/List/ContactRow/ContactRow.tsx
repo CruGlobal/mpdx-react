@@ -51,10 +51,12 @@ import { useGetExcludedReasons } from '../../Shared/useGetExcludedReasons/useGet
 // src/components/Contacts/ContactRow/ContactRow.tsx
 
 const ListButton = styled(ListItemButton)(() => ({
+  width: '100%',
+  color: 'initial',
   '&:hover .contactRowActions': {
     opacity: 1,
   },
-}));
+})) as typeof ListItemButton;
 const ContactRowActions = styled(Box)(() => ({
   opacity: 0,
   transition: 'opacity 0.3s',
@@ -141,193 +143,187 @@ export const ContactRow: React.FC<Props> = ({
 
   return (
     <>
-      <NextLink
+      <ListButton
+        component={NextLink}
         href={contactUrl}
         scroll={false}
         prefetch={false}
         shallow
-        legacyBehavior
-        passHref
-        style={{ width: '100%', color: 'initial' }}
-        data-testid="contactRowLink"
+        focusRipple
+        onMouseEnter={preloadContactsRightPanel}
+        className={clsx({
+          'top-margin': useTopMargin,
+          checked: isChecked(contactId),
+        })}
+        data-testid="rowButton"
       >
-        <ListButton
-          focusRipple
-          onMouseEnter={preloadContactsRightPanel}
-          className={clsx({
-            'top-margin': useTopMargin,
-            checked: isChecked(contactId),
-          })}
-          data-testid="rowButton"
-        >
-          <Grid container alignItems="center">
-            <Grid
-              item
-              xs={isExcludedContact ? 5 : 6}
-              style={{ paddingRight: 16 }}
-              display={'flex'}
-            >
-              <Hidden xsDown>
-                <ListItemIcon>
-                  <StyledCheckbox
-                    checked={isChecked(contact.id)}
-                    color="secondary"
-                    onClick={(event) => event.stopPropagation()}
-                    onChange={() => onContactCheckToggle(contact.id)}
-                  />
-                </ListItemIcon>
-              </Hidden>
-              <ListItemText
-                primary={
-                  <Typography component="span" variant="h6" noWrap>
-                    <Box component="span" display="flex" alignItems="center">
-                      {name}
-                    </Box>
-                  </Typography>
-                }
-              />
-            </Grid>
-            {isExcludedContact && (
-              <Grid item xs={3} display={'flex'}>
-                <Box>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="center"
-                  >
-                    {reasons.map((reason, idx) => (
-                      <Typography
-                        key={`${contactId}-${reason}-${idx}`}
-                        component="span"
-                      >
-                        {reason}
-                      </Typography>
-                    ))}
+        <Grid container alignItems="center">
+          <Grid
+            item
+            xs={isExcludedContact ? 5 : 6}
+            style={{ paddingRight: 16 }}
+            display={'flex'}
+          >
+            <Hidden xsDown>
+              <ListItemIcon>
+                <StyledCheckbox
+                  checked={isChecked(contact.id)}
+                  color="secondary"
+                  onClick={(event) => event.stopPropagation()}
+                  onChange={() => onContactCheckToggle(contact.id)}
+                />
+              </ListItemIcon>
+            </Hidden>
+            <ListItemText
+              primary={
+                <Typography component="span" variant="h6" noWrap>
+                  <Box component="span" display="flex" alignItems="center">
+                    {name}
                   </Box>
-                </Box>
-              </Grid>
-            )}
-            <Grid
-              item
-              xs={isExcludedContact ? 4 : 6}
-              display={'flex'}
-              style={{ justifyContent: 'space-between' }}
-            >
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
-              >
+                </Typography>
+              }
+            />
+          </Grid>
+          {isExcludedContact && (
+            <Grid item xs={3} display={'flex'}>
+              <Box>
                 <Box
                   display="flex"
                   flexDirection="column"
                   justifyContent="center"
                 >
-                  {appealStatus !== AppealStatusEnum.Processed && (
-                    <Typography component="span">
-                      <AmountAndFrequency
-                        amountAndFrequency={amountAndFrequency}
-                        pledgeOverdue={pledgeOverdue}
-                      />
+                  {reasons.map((reason, idx) => (
+                    <Typography
+                      key={`${contactId}-${reason}-${idx}`}
+                      component="span"
+                    >
+                      {reason}
                     </Typography>
-                  )}
-
-                  {appealStatus === AppealStatusEnum.Processed && (
-                    <Typography component="span">
-                      <AmountAndFrequency
-                        amountAndFrequency={amountAndFrequency}
-                        pledgeOverdue={pledgeOverdue}
-                      />
-                      {totalPledgedDonations}
-                    </Typography>
-                  )}
+                  ))}
                 </Box>
               </Box>
-
-              <ContactRowActions
+            </Grid>
+          )}
+          <Grid
+            item
+            xs={isExcludedContact ? 4 : 6}
+            display={'flex'}
+            style={{ justifyContent: 'space-between' }}
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
+            >
+              <Box
                 display="flex"
-                alignItems="center"
-                style={{
-                  paddingRight: theme.spacing(2),
-                }}
-                className="contactRowActions"
+                flexDirection="column"
+                justifyContent="center"
               >
-                {appealStatus === AppealStatusEnum.Asked && (
-                  <>
-                    <IconButton
-                      size={'small'}
-                      component="div"
-                      onClick={(event) =>
-                        handleClickWithCallback(event, handleCreatePledge)
-                      }
-                      onMouseOver={preloadPledgeModal}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                    <IconButton
-                      size={'small'}
-                      component="div"
-                      onClick={(event) =>
-                        handleClickWithCallback(
-                          event,
-                          handleRemoveContactFromAppeal,
-                        )
-                      }
-                      onMouseOver={preloadDeleteAppealContactModal}
-                    >
-                      <DeleteIcon color="error" />
-                    </IconButton>
-                  </>
+                {appealStatus !== AppealStatusEnum.Processed && (
+                  <Typography component="span">
+                    <AmountAndFrequency
+                      amountAndFrequency={amountAndFrequency}
+                      pledgeOverdue={pledgeOverdue}
+                    />
+                  </Typography>
                 )}
-                {(appealStatus === AppealStatusEnum.NotReceived ||
-                  appealStatus === AppealStatusEnum.Processed ||
-                  appealStatus === AppealStatusEnum.ReceivedNotProcessed) && (
-                  <>
-                    <IconButton
-                      size={'small'}
-                      component="div"
-                      onClick={(event) =>
-                        handleClickWithCallback(event, handleEditContact)
-                      }
-                      onMouseOver={preloadPledgeModal}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size={'small'}
-                      component="div"
-                      onClick={(event) =>
-                        handleClickWithCallback(event, handleRemovePledge)
-                      }
-                      onMouseOver={preloadDeletePledgeModal}
-                    >
-                      <DeleteIcon color="error" />
-                    </IconButton>
-                  </>
+
+                {appealStatus === AppealStatusEnum.Processed && (
+                  <Typography component="span">
+                    <AmountAndFrequency
+                      amountAndFrequency={amountAndFrequency}
+                      pledgeOverdue={pledgeOverdue}
+                    />
+                    {totalPledgedDonations}
+                  </Typography>
                 )}
-                {appealStatus === AppealStatusEnum.Excluded && (
+              </Box>
+            </Box>
+
+            <ContactRowActions
+              display="flex"
+              alignItems="center"
+              style={{
+                paddingRight: theme.spacing(2),
+              }}
+              className="contactRowActions"
+            >
+              {appealStatus === AppealStatusEnum.Asked && (
+                <>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) =>
+                      handleClickWithCallback(event, handleCreatePledge)
+                    }
+                    onMouseOver={preloadPledgeModal}
+                  >
+                    <AddIcon />
+                  </IconButton>
                   <IconButton
                     size={'small'}
                     component="div"
                     onClick={(event) =>
                       handleClickWithCallback(
                         event,
-                        handleAddExcludedContactToAppeal,
+                        handleRemoveContactFromAppeal,
                       )
                     }
-                    onMouseOver={preloadAddExcludedContactModal}
+                    onMouseOver={preloadDeleteAppealContactModal}
                   >
-                    <AddIcon />
+                    <DeleteIcon color="error" />
                   </IconButton>
-                )}
-              </ContactRowActions>
-            </Grid>
+                </>
+              )}
+              {(appealStatus === AppealStatusEnum.NotReceived ||
+                appealStatus === AppealStatusEnum.Processed ||
+                appealStatus === AppealStatusEnum.ReceivedNotProcessed) && (
+                <>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) =>
+                      handleClickWithCallback(event, handleEditContact)
+                    }
+                    onMouseOver={preloadPledgeModal}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    size={'small'}
+                    component="div"
+                    onClick={(event) =>
+                      handleClickWithCallback(event, handleRemovePledge)
+                    }
+                    onMouseOver={preloadDeletePledgeModal}
+                  >
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </>
+              )}
+              {appealStatus === AppealStatusEnum.Excluded && (
+                <IconButton
+                  size={'small'}
+                  component="div"
+                  onClick={(event) =>
+                    handleClickWithCallback(
+                      event,
+                      handleAddExcludedContactToAppeal,
+                    )
+                  }
+                  onMouseOver={preloadAddExcludedContactModal}
+                >
+                  <AddIcon />
+                </IconButton>
+              )}
+            </ContactRowActions>
           </Grid>
-          <Hidden xsDown>
-            <Box></Box>
-          </Hidden>
-        </ListButton>
-      </NextLink>
+        </Grid>
+        <Hidden xsDown>
+          <Box></Box>
+        </Hidden>
+      </ListButton>
       {removeContactModalOpen && (
         <DynamicDeleteAppealContactModal
           contactId={contactId}
