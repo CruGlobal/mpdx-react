@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React, { ReactElement, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Brightness1Outlined from '@mui/icons-material/Brightness1Outlined';
@@ -361,19 +361,19 @@ const PartnerCare = ({
                     ))}
                   </CardList>
                   <CardActions>
-                    <Link
+                    <Button
+                      LinkComponent={NextLink}
                       href={`/accountLists/${accountListId}/tasks?filters={"activityType":["PRAYER_REQUEST"]}&completed=false`}
-                      passHref
+                      size="small"
+                      color="primary"
                     >
-                      <Button size="small" color="primary">
-                        {t('View All ({{totalCount}})', {
-                          totalCount: numberFormat(
-                            prayerRequestTasks.totalCount,
-                            locale,
-                          ),
-                        })}
-                      </Button>
-                    </Link>
+                      {t('View All ({{totalCount}})', {
+                        totalCount: numberFormat(
+                          prayerRequestTasks.totalCount,
+                          locale,
+                        ),
+                      })}
+                    </Button>
                   </CardActions>
                 </>
               )}

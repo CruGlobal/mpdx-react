@@ -11,6 +11,7 @@ import {
   Box,
   Dialog,
   IconButton,
+  Link,
   Popper,
   TextField,
   Typography,
@@ -35,12 +36,16 @@ const StyledDialog = styled(Dialog)(() => ({
   },
 }));
 
-const ClickableBox = styled(Box)(({ theme }) => ({
-  cursor: 'pointer',
+const AutocompleteOption = styled(Link)(({ theme }) => ({
+  color: 'inherit',
+  display: 'flex',
+  width: '100%',
+  padding: '6px 16px',
   '&:hover': {
+    textDecoration: 'none',
     backgroundColor: theme.palette.cruGrayLight.main,
   },
-}));
+})) as typeof Link;
 
 const SearchPopper = styled(Popper)(() => ({
   '& .MuiAutocomplete-option': {
@@ -276,41 +281,33 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
           renderOption={(props, option) => {
             if (option.link === 'createContact') {
               return (
-                <ClickableBox
-                  display="flex"
-                  width="100%"
-                  padding="6px 16px"
-                  onClick={handleCreateContact}
-                >
+                <AutocompleteOption onClick={handleCreateContact}>
                   <Box display="flex" marginRight={1}>
                     {option.icon}
                   </Box>
                   <Box display="flex" flexDirection="column">
                     <Typography>{option.name}</Typography>
                   </Box>
-                </ClickableBox>
+                </AutocompleteOption>
               );
             }
 
             return (
-              <NextLink href={option.link} passHref>
-                <ClickableBox
-                  display="flex"
-                  width="100%"
-                  padding="6px 16px"
-                  onClick={handleClose}
-                >
-                  <Box display="flex" marginRight={1}>
-                    {option.icon}
-                  </Box>
-                  <Box display="flex" flexDirection="column">
-                    <Typography>{option.name}</Typography>
-                    <Typography variant="subtitle2">
-                      {getLocalizedContactStatus(option.status)}
-                    </Typography>
-                  </Box>
-                </ClickableBox>
-              </NextLink>
+              <AutocompleteOption
+                component={NextLink}
+                href={option.link}
+                onClick={handleClose}
+              >
+                <Box display="flex" marginRight={1}>
+                  {option.icon}
+                </Box>
+                <Box display="flex" flexDirection="column">
+                  <Typography>{option.name}</Typography>
+                  <Typography variant="subtitle2">
+                    {getLocalizedContactStatus(option.status)}
+                  </Typography>
+                </Box>
+              </AutocompleteOption>
             );
           }}
           options={wildcardSearch !== '' ? options : []}

@@ -112,9 +112,9 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           </ContactOtherTextLabel>
           {referredBy && (
             <ReferralName variant="subtitle1">
-              <NextLink href={contactUrl} passHref shallow>
-                <Link>{referredBy.name}</Link>
-              </NextLink>
+              <Link component={NextLink} href={contactUrl} shallow>
+                {referredBy.name}
+              </Link>
             </ReferralName>
           )}
         </ContactOtherTextContainer>

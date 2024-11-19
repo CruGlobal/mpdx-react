@@ -10,25 +10,10 @@ describe('OauthLink', () => {
   });
 
   it('default', async () => {
-    const { getByRole } = render(
-      <OauthLink path="/contacts">
-        <a>Link</a>
-      </OauthLink>,
-    );
+    const { getByRole } = render(<OauthLink path="/contacts">Link</OauthLink>);
     expect(getByRole('link', { name: 'Link' })).toHaveAttribute(
       'href',
       `${oauthDomain}/contacts?access_token=apiToken`,
     );
-  });
-
-  it('enforces single child', async () => {
-    expect(() =>
-      render(
-        <OauthLink path="/contacts">
-          <a>Link</a>
-          <a>Link</a>
-        </OauthLink>,
-      ),
-    ).toThrow();
   });
 });

@@ -118,13 +118,13 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     }}
                   >
                     <TableCell align="left">
-                      <NextLink
+                      <Link
+                        component={NextLink}
                         href={getContactUrl(row.contactId ?? '')}
-                        passHref
                         shallow
                       >
-                        <Link>{row.contactName}</Link>
-                      </NextLink>
+                        {row.contactName}
+                      </Link>
                     </TableCell>
                     <TableCell align="left">
                       {row.contactStatus &&

@@ -6,12 +6,5 @@ export const LogoLink: React.FC = () => {
 
   const logo = <img src={process.env.NEXT_PUBLIC_MEDIA_LOGO} alt="logo" />;
 
-  return onSetupTour ? (
-    logo
-  ) : (
-    <NextLink href="/">
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <a>{logo}</a>
-    </NextLink>
-  );
+  return onSetupTour ? logo : <NextLink href="/">{logo}</NextLink>;
 };

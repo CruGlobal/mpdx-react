@@ -181,11 +181,9 @@ const Contact: React.FC<Props> = ({
     <Card className={classes.contactCard}>
       <ContactHeader
         avatar={
-          <NextLink href={contactUrl} passHref shallow>
-            <Link underline="hover">
-              <ContactAvatar src="" aria-label="Contact Avatar" />
-            </Link>
-          </NextLink>
+          <Link component={NextLink} href={contactUrl} shallow>
+            <ContactAvatar src="" aria-label="Contact Avatar" />
+          </Link>
         }
         action={
           <Button
@@ -198,13 +196,11 @@ const Contact: React.FC<Props> = ({
           </Button>
         }
         title={
-          <NextLink href={contactUrl} passHref shallow>
-            <Link underline="hover">
-              <Typography display="inline" variant="h6">
-                {name}
-              </Typography>
-            </Link>
-          </NextLink>
+          <Link component={NextLink} href={contactUrl} shallow>
+            <Typography display="inline" variant="h6">
+              {name}
+            </Typography>
+          </Link>
         }
         subheader={<Typography>{getLocalizedContactStatus(status)}</Typography>}
       />

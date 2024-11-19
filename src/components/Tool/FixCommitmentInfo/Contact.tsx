@@ -314,13 +314,14 @@ const Contact: React.FC<Props> = ({
                           aria-label="Contact Avatar"
                         />
                         <Box display="flex" flexDirection="column" ml={2}>
-                          <NextLink href={contactUrl} passHref shallow>
-                            <Link data-testid="contactSelect" underline="hover">
-                              <Typography variant="subtitle1">
-                                {name}
-                              </Typography>
-                            </Link>
-                          </NextLink>
+                          <Link
+                            component={NextLink}
+                            href={contactUrl}
+                            shallow
+                            data-testid="contactSelect"
+                          >
+                            <Typography variant="subtitle1">{name}</Typography>
+                          </Link>
                           <Typography variant="subtitle2">
                             {t('Current: {{status}}', {
                               status: getLocalizedContactStatus(currentStatus),

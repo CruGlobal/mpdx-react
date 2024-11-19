@@ -123,17 +123,17 @@ export const PartnerGivingAnalysisReportTable: FC<
                   />
                 </TableCell>
                 <TableCell>
-                  <NextLink href={contactUrl} passHref>
-                    <Link
-                      onMouseEnter={preloadContactsRightPanel}
-                      style={{
-                        whiteSpace: 'nowrap',
-                        marginRight: theme.spacing(0.5),
-                      }}
-                    >
-                      {contact.name}
-                    </Link>
-                  </NextLink>
+                  <Link
+                    component={NextLink}
+                    href={contactUrl}
+                    onMouseEnter={preloadContactsRightPanel}
+                    style={{
+                      whiteSpace: 'nowrap',
+                      marginRight: theme.spacing(0.5),
+                    }}
+                  >
+                    {contact.name}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {currencyFormat(

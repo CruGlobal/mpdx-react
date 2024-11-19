@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import Close from '@mui/icons-material/Close';
@@ -137,14 +137,14 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           onClose={() => {}}
           action={
             <>
-              <Link
+              <Button
+                LinkComponent={NextLink}
                 href={`/accountLists/${accountListId}/tools/merge/contacts?duplicateId=${duplicateContactId}`}
-                passHref
+                sx={{ m: 1 }}
+                variant="contained"
               >
-                <Button sx={{ m: 1 }} variant="contained" component="a">
-                  {t('See Match')}
-                </Button>
-              </Link>
+                {t('See Match')}
+              </Button>
               <IconButton
                 size="large"
                 aria-label={t('Dismiss Duplicate')}

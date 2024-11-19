@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -6,6 +6,7 @@ import {
   CardContent,
   Container,
   Grid,
+  Link,
   Theme,
   Typography,
 } from '@mui/material';
@@ -87,7 +88,12 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 return (
                   <Grid key={id} item xs={12} sm={4}>
                     <AnimatedCard elevation={3}>
-                      <Link href={`/accountLists/${id}`} passHref>
+                      <Link
+                        component={NextLink}
+                        href={`/accountLists/${id}`}
+                        underline="none"
+                        color="inherit"
+                      >
                         <CardActionArea>
                           <CardContent className={classes.cardContent}>
                             <Box flex={1}>

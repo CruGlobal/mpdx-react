@@ -140,41 +140,40 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
               ' ',
             )}
           >
-            <NextLink
+            <Link
+              component={NextLink}
               href={
                 appeal
                   ? `/accountLists/${accountListId}/tools/appeals/appeal/${appeal.id}`
                   : `/accountLists/${accountListId}/tools/appeals`
               }
-              passHref
+              className={classes.appealsHeader}
             >
-              <Link underline="hover" className={classes.appealsHeader}>
-                <Typography variant="h6" className={classes.titleContainer}>
-                  <Box className={classes.title}>
-                    <Box
-                      className={classes.titleContent}
-                      data-testid="AppealsBoxName"
-                    >
-                      {loading ? (
-                        <Skeleton variant="text" width="50%" />
-                      ) : (
-                        appeal?.name
-                      )}
-                    </Box>
-                    <Box data-testid="AppealsBoxAmount">
-                      {loading && <Skeleton variant="text" width={100} />}
-                      {!loading &&
-                        appeal?.amount &&
-                        currencyFormat(
-                          appeal.amount,
-                          appeal?.amountCurrency,
-                          locale,
-                        )}
-                    </Box>
+              <Typography variant="h6" className={classes.titleContainer}>
+                <Box className={classes.title}>
+                  <Box
+                    className={classes.titleContent}
+                    data-testid="AppealsBoxName"
+                  >
+                    {loading ? (
+                      <Skeleton variant="text" width="50%" />
+                    ) : (
+                      appeal?.name
+                    )}
                   </Box>
-                </Typography>
-              </Link>
-            </NextLink>
+                  <Box data-testid="AppealsBoxAmount">
+                    {loading && <Skeleton variant="text" width={100} />}
+                    {!loading &&
+                      appeal?.amount &&
+                      currencyFormat(
+                        appeal.amount,
+                        appeal?.amountCurrency,
+                        locale,
+                      )}
+                  </Box>
+                </Box>
+              </Typography>
+            </Link>
             <StyledProgress
               loading={loading}
               primary={pledgesAmountProcessedPercentage}
@@ -254,11 +253,14 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
             </Grid>
           </CardContent>
           <CardActions>
-            <NextLink href={`/accountLists/${accountListId}/tools`} passHref>
-              <Button size="small" color="primary">
-                {t('View All')}
-              </Button>
-            </NextLink>
+            <Button
+              LinkComponent={NextLink}
+              href={`/accountLists/${accountListId}/tools`}
+              size="small"
+              color="primary"
+            >
+              {t('View All')}
+            </Button>
           </CardActions>
         </motion.div>
       )}

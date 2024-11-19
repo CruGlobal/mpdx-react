@@ -166,7 +166,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
   return (
     <Card
       className={`
-    ${classes.contactBasic} 
+    ${classes.contactBasic}
     ${
       selected
         ? classes.selectedBox
@@ -178,38 +178,38 @@ const ContactItem: React.FC<ContactItemProps> = ({
     >
       <CardHeader
         avatar={
-          <NextLink href={contactUrl} passHref shallow>
+          <Link
+            component={NextLink}
+            href={contactUrl}
+            shallow
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <ContactAvatar
+              src={contact?.avatar || ''}
+              aria-label="Contact Avatar"
+            />
+          </Link>
+        }
+        title={
+          <>
             <Link
-              underline="hover"
+              component={NextLink}
+              href={contactUrl}
+              shallow
               onClick={(e) => {
                 e.stopPropagation();
               }}
             >
-              <ContactAvatar
-                src={contact?.avatar || ''}
-                aria-label="Contact Avatar"
-              />
+              <InlineTypography variant="subtitle1">
+                {isPersonType
+                  ? `${contact.firstName} ${contact.lastName}`
+                  : isContactType
+                  ? contact.name
+                  : null}
+              </InlineTypography>
             </Link>
-          </NextLink>
-        }
-        title={
-          <>
-            <NextLink href={contactUrl} passHref shallow>
-              <Link
-                underline="hover"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <InlineTypography variant="subtitle1">
-                  {isPersonType
-                    ? `${contact.firstName} ${contact.lastName}`
-                    : isContactType
-                    ? contact.name
-                    : null}
-                </InlineTypography>
-              </Link>
-            </NextLink>{' '}
             {selected && (
               <Typography variant="body2" className={classes.selected}>
                 {t('Use this one')}
@@ -229,7 +229,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
       <CardContent className={classes.minimalPadding}>
         {isContactType && contact.primaryAddress && (
           <Typography variant="body2">
-            {`${contact?.primaryAddress?.street} 
+            {`${contact?.primaryAddress?.street}
             ${contact?.primaryAddress?.city}, ${contact?.primaryAddress?.state} ${contact?.primaryAddress?.postalCode}`}
           </Typography>
         )}

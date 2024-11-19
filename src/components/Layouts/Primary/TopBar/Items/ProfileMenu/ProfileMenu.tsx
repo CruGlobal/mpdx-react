@@ -317,90 +317,87 @@ const ProfileMenu = (): ReactElement => {
           <div>
             <Divider />
 
-            <NextLink
+            <MenuItem
+              component={NextLink}
               href={`/accountLists/${accountListId}/settings/preferences`}
               shallow
-              passHref
+              onClick={handleProfileMenuClose}
             >
-              <MenuItem onClick={handleProfileMenuClose} component="a">
-                <ListItemText primary={t('Preferences')} />
-              </MenuItem>
-            </NextLink>
+              <ListItemText primary={t('Preferences')} />
+            </MenuItem>
 
-            <NextLink
+            <MenuItem
+              component={NextLink}
               href={`/accountLists/${accountListId}/settings/notifications`}
               shallow
-              passHref
+              onClick={handleProfileMenuClose}
             >
-              <MenuItem onClick={handleProfileMenuClose} component="a">
-                <ListItemText primary={t('Notifications')} />
-              </MenuItem>
-            </NextLink>
+              <ListItemText primary={t('Notifications')} />
+            </MenuItem>
 
-            <NextLink
+            <MenuItem
+              component={NextLink}
               href={`/accountLists/${accountListId}/settings/integrations`}
               shallow
-              passHref
+              onClick={handleProfileMenuClose}
             >
-              <MenuItem onClick={handleProfileMenuClose} component="a">
-                <ListItemText primary={t('Connect Services')} />
-              </MenuItem>
-            </NextLink>
+              <ListItemText primary={t('Connect Services')} />
+            </MenuItem>
 
-            <NextLink
+            <MenuItem
+              component={NextLink}
               href={`/accountLists/${accountListId}/settings/manageAccounts`}
               shallow
-              passHref
+              onClick={handleProfileMenuClose}
             >
-              <MenuItem onClick={handleProfileMenuClose} component="a">
-                <ListItemText primary={t('Manage Accounts')} />
-              </MenuItem>
-            </NextLink>
+              <ListItemText primary={t('Manage Accounts')} />
+            </MenuItem>
 
-            <NextLink
+            <MenuItem
+              component={NextLink}
               href={`/accountLists/${accountListId}/settings/manageCoaches`}
               shallow
-              passHref
+              onClick={handleProfileMenuClose}
             >
-              <MenuItem onClick={handleProfileMenuClose} component="a">
-                <ListItemText primary={t('Manage Coaches')} />
-              </MenuItem>
-            </NextLink>
+              <ListItemText primary={t('Manage Coaches')} />
+            </MenuItem>
 
             {(data?.user?.admin ||
               !!data?.user?.administrativeOrganizations?.nodes?.length) && (
-              <NextLink
+              <MenuItem
+                component={NextLink}
                 href={`/accountLists/${accountListId}/settings/organizations`}
-                passHref
+                onClick={handleProfileMenuClose}
               >
-                <MenuItem onClick={handleProfileMenuClose} component="a">
-                  <ListItemText primary={t('Manage Organizations')} />
-                </MenuItem>
-              </NextLink>
+                <ListItemText primary={t('Manage Organizations')} />
+              </MenuItem>
             )}
             {(data?.user?.admin || data?.user?.developer) && (
-              <NextLink
+              <MenuItem
+                component={NextLink}
                 href={`/accountLists/${accountListId}/settings/admin`}
-                passHref
+                onClick={handleProfileMenuClose}
               >
-                <MenuItem onClick={handleProfileMenuClose} component="a">
-                  <ListItemText primary={t('Admin Console')} />
-                </MenuItem>
-              </NextLink>
+                <ListItemText primary={t('Admin Console')} />
+              </MenuItem>
             )}
             {data?.user?.developer && (
-              <OauthLink path="/auth/user/admin">
-                <MenuItem onClick={handleProfileMenuClose} component="a">
-                  <ListItemText primary={t('Backend Admin')} />
-                </MenuItem>
-              </OauthLink>
+              <MenuItem
+                component={OauthLink}
+                path="/auth/user/admin"
+                onClick={handleProfileMenuClose}
+              >
+                <ListItemText primary={t('Backend Admin')} />
+              </MenuItem>
             )}
             {data?.user?.developer && (
-              <OauthLink path="/auth/user/sidekiq">
-                <MenuItem onClick={handleProfileMenuClose} component="a">
-                  <ListItemText primary={t('Sidekiq')} />
-                </MenuItem>
-              </OauthLink>
+              <MenuItem
+                component={OauthLink}
+                path="/auth/user/sidekiq"
+                onClick={handleProfileMenuClose}
+              >
+                <ListItemText primary={t('Sidekiq')} />
+              </MenuItem>
             )}
           </div>
         )}

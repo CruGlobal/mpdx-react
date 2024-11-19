@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Avatar,
@@ -7,6 +7,7 @@ import {
   Divider,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
   ListSubheader,
   Skeleton,
@@ -227,46 +228,43 @@ const NotificationMenuItem = ({
             )}
           </ListSubheader>
         )}
-      <Link
+      <ListItemButton
+        component={NextLink}
         href={`/accountLists/${accountListId}/contacts/${item.notification.contact.id}`}
+        shallow
+        alignItems="flex-start"
+        onClick={handleClick}
       >
-        <ListItem
-          alignItems="flex-start"
-          role="button"
-          button
-          onClick={handleClick}
-        >
-          <ListItemAvatar>
-            <Badge
-              color="secondary"
-              variant="dot"
-              overlap="circular"
-              invisible={item.read}
-              data-testid="NotificationMenuItemBadge"
-            >
-              <Avatar>{item.notification.contact.name[0]}</Avatar>
-            </Badge>
-          </ListItemAvatar>
-          <ListItemText
-            primary={item.notification.contact.name}
-            primaryTypographyProps={{ color: isInDrawer ? 'white' : 'initial' }}
-            secondary={
-              <>
-                <Typography component="span" variant="body2">
-                  {dateFormat(
-                    DateTime.fromISO(item.notification.occurredAt),
-                    locale,
-                  )}
-                </Typography>{' '}
-                —{' '}
-                <Typography component="span" variant="body2">
-                  {message}
-                </Typography>
-              </>
-            }
-          />
-        </ListItem>
-      </Link>
+        <ListItemAvatar>
+          <Badge
+            color="secondary"
+            variant="dot"
+            overlap="circular"
+            invisible={item.read}
+            data-testid="NotificationMenuItemBadge"
+          >
+            <Avatar>{item.notification.contact.name[0]}</Avatar>
+          </Badge>
+        </ListItemAvatar>
+        <ListItemText
+          primary={item.notification.contact.name}
+          primaryTypographyProps={{ color: isInDrawer ? 'white' : 'initial' }}
+          secondary={
+            <>
+              <Typography component="span" variant="body2">
+                {dateFormat(
+                  DateTime.fromISO(item.notification.occurredAt),
+                  locale,
+                )}
+              </Typography>{' '}
+              —{' '}
+              <Typography component="span" variant="body2">
+                {message}
+              </Typography>
+            </>
+          }
+        />
+      </ListItemButton>
       {!last && <Divider variant="inset" />}
     </Box>
   );

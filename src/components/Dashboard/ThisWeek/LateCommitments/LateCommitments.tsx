@@ -7,6 +7,7 @@ import {
   CardHeader,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Skeleton,
 } from '@mui/material';
@@ -133,24 +134,23 @@ const LateCommitments = ({
 
                   return (
                     daysLate && (
-                      <NextLink href={contactUrl} passHref shallow>
-                        <ListItem
-                          component="a"
-                          button
-                          data-testid={`LateCommitmentsListItemContact-${contact.id}`}
-                          key={contact.id}
-                        >
-                          <ListItemText
-                            primary={contact.name}
-                            secondary={t(
-                              'Their gift is {{daysLate}} day late._plural',
-                              {
-                                daysLate: numberFormat(daysLate, locale),
-                              },
-                            )}
-                          />
-                        </ListItem>
-                      </NextLink>
+                      <ListItemButton
+                        component={NextLink}
+                        href={contactUrl}
+                        shallow
+                        data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                        key={contact.id}
+                      >
+                        <ListItemText
+                          primary={contact.name}
+                          secondary={t(
+                            'Their gift is {{daysLate}} day late._plural',
+                            {
+                              daysLate: numberFormat(daysLate, locale),
+                            },
+                          )}
+                        />
+                      </ListItemButton>
                     )
                   );
                 })}

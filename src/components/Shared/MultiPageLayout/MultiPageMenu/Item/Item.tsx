@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import { Collapse, ListItem, ListItemText } from '@mui/material';
+import { Collapse, Link, ListItem, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -74,13 +74,14 @@ export const Item: React.FC<Props> = ({
     <>
       {item.oauth && <OauthLink path={item.id}>{children}</OauthLink>}
       {!item.oauth && (
-        <NextLink
+        <Link
+          component={NextLink}
           href={`/accountLists/${accountListId}/${navType}/${item.id}`}
           scroll={false}
-          passHref
+          underline="none"
         >
           {children}
-        </NextLink>
+        </Link>
       )}
       {item?.subItems?.length && (
         <Collapse

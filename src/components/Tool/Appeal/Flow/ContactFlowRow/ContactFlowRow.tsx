@@ -173,9 +173,9 @@ export const ContactFlowRow: React.FC<Props> = ({
                 size="small"
               />
               <Box display="flex" flexDirection="column" ml={1} draggable>
-                <NextLink href={contactUrl} passHref shallow>
-                  <ContactLink>{name}</ContactLink>
-                </NextLink>
+                <ContactLink component={NextLink} href={contactUrl}>
+                  {name}
+                </ContactLink>
                 <Typography variant="body2">
                   {getLocalizedContactStatus(contact.status)}
                 </Typography>

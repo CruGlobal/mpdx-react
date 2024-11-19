@@ -126,9 +126,13 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                         <TableRow key={id}>
                           <TableCell>
                             <ReferralName>
-                              <NextLink href={contactUrl} passHref shallow>
-                                <Link>{referredTo.name}</Link>
-                              </NextLink>
+                              <Link
+                                component={NextLink}
+                                href={contactUrl}
+                                shallow
+                              >
+                                {referredTo.name}
+                              </Link>
                             </ReferralName>
                           </TableCell>
                           <TableCell>

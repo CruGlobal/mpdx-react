@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -197,20 +197,17 @@ const TasksDueThisWeek = ({
                 ))}
               </List>
               <CardActions>
-                <Link
+                <Button
+                  LinkComponent={NextLink}
                   href={`/accountLists/${accountListId}/tasks?completed=false&startAt[max]=${DateTime.local().toISODate()}`}
-                  passHref
+                  size="small"
+                  color="primary"
+                  data-testid="TasksDueThisWeekButtonViewAll"
                 >
-                  <Button
-                    size="small"
-                    color="primary"
-                    data-testid="TasksDueThisWeekButtonViewAll"
-                  >
-                    {t('View All ({{totalCount}})', {
-                      totalCount: numberFormat(dueTasks.totalCount, locale),
-                    })}
-                  </Button>
-                </Link>
+                  {t('View All ({{totalCount}})', {
+                    totalCount: numberFormat(dueTasks.totalCount, locale),
+                  })}
+                </Button>
               </CardActions>
             </>
           )}

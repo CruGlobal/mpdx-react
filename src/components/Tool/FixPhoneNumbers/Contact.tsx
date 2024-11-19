@@ -275,26 +275,22 @@ const Contact: React.FC<Props> = ({
                 <Grid item xs={12}>
                   <ContactHeader
                     avatar={
-                      <NextLink href={contactUrl} passHref shallow>
-                        <Link underline="hover">
-                          <ContactAvatar
-                            src={person?.avatar || ''}
-                            aria-label="Contact Avatar"
-                          />
-                        </Link>
-                      </NextLink>
+                      <Link component={NextLink} href={contactUrl} shallow>
+                        <ContactAvatar
+                          src={person?.avatar || ''}
+                          aria-label="Contact Avatar"
+                        />
+                      </Link>
                     }
                     title={
-                      <NextLink href={contactUrl} passHref shallow>
-                        <Link underline="hover">
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ display: 'inline' }}
-                          >
-                            {name}
-                          </Typography>
-                        </Link>
-                      </NextLink>
+                      <Link component={NextLink} href={contactUrl} shallow>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ display: 'inline' }}
+                        >
+                          {name}
+                        </Typography>
+                      </Link>
                     }
                     action={
                       <Button

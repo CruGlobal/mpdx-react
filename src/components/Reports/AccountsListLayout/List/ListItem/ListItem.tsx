@@ -115,21 +115,21 @@ export const AccountListItem: FC<AccountListItemProps> = ({
                     </Typography>
                     {hasFinancial && (
                       <Box display="flex" gap={0.5}>
-                        <NextLink
+                        <Link
+                          component={NextLink}
                           href={`/accountLists/${accountListId}/reports/financialAccounts/${account.id}`}
-                          passHref
                           shallow
                         >
-                          <Link>{t('Summary')}</Link>
-                        </NextLink>
+                          {t('Summary')}
+                        </Link>
                         {' · '}
-                        <NextLink
+                        <Link
+                          component={NextLink}
                           href={`/accountLists/${accountListId}/reports/financialAccounts/${account.id}/entries`}
-                          passHref
                           shallow
                         >
-                          <Link>{t('Transactions')}</Link>
-                        </NextLink>
+                          {t('Transactions')}
+                        </Link>
                       </Box>
                     )}
                   </Box>

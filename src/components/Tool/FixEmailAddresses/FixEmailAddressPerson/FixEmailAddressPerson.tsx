@@ -243,15 +243,13 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                   <CardHeader
                     className={classes.contactHeader}
                     avatar={
-                      <NextLink href={contactUrl} passHref shallow>
-                        <Link underline="hover">
-                          <Avatar
-                            className={classes.contactAvatar}
-                            src={person?.avatar || ''}
-                            aria-label="Contact Avatar"
-                          />
-                        </Link>
-                      </NextLink>
+                      <Link component={NextLink} href={contactUrl} shallow>
+                        <Avatar
+                          className={classes.contactAvatar}
+                          src={person?.avatar || ''}
+                          aria-label="Contact Avatar"
+                        />
+                      </Link>
                     }
                     action={
                       <Button
@@ -274,13 +272,11 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                       </Button>
                     }
                     title={
-                      <NextLink href={contactUrl} passHref shallow>
-                        <Link underline="hover">
-                          <Typography variant="subtitle1" display="inline">
-                            {name}
-                          </Typography>
-                        </Link>
-                      </NextLink>
+                      <Link component={NextLink} href={contactUrl} shallow>
+                        <Typography variant="subtitle1" display="inline">
+                          {name}
+                        </Typography>
+                      </Link>
                     }
                   />
                 </Grid>

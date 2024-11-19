@@ -172,52 +172,48 @@ const NavMenu: React.FC = () => {
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}`} passHref>
-          <MenuItem
-            component="a"
-            tabIndex={0}
-            className={classes.menuItem}
-            aria-current={
-              pathname === '/accountLists/[accountListId]' ? 'page' : undefined
-            }
-          >
-            <ListItemText primary={t('Dashboard')} />
-          </MenuItem>
-        </NextLink>
+        <MenuItem
+          component={NextLink}
+          href={`/accountLists/${accountListId}`}
+          tabIndex={0}
+          className={classes.menuItem}
+          aria-current={
+            pathname === '/accountLists/[accountListId]' ? 'page' : undefined
+          }
+        >
+          <ListItemText primary={t('Dashboard')} />
+        </MenuItem>
       </Grid>
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/contacts`} passHref>
-          <MenuItem
-            component="a"
-            tabIndex={0}
-            className={classes.menuItem}
-            aria-current={
-              pathname ===
-              '/accountLists/[accountListId]/contacts/[[...contactId]]'
-                ? 'page'
-                : undefined
-            }
-          >
-            <ListItemText primary={t('Contacts')} />
-          </MenuItem>
-        </NextLink>
+        <MenuItem
+          component={NextLink}
+          href={`/accountLists/${accountListId}/contacts`}
+          tabIndex={0}
+          className={classes.menuItem}
+          aria-current={
+            pathname ===
+            '/accountLists/[accountListId]/contacts/[[...contactId]]'
+              ? 'page'
+              : undefined
+          }
+        >
+          <ListItemText primary={t('Contacts')} />
+        </MenuItem>
       </Grid>
       <Grid item className={classes.navListItem}>
-        <NextLink href={`/accountLists/${accountListId}/tasks`} passHref>
-          <MenuItem
-            component="a"
-            tabIndex={0}
-            className={classes.menuItem}
-            aria-current={
-              pathname ===
-              '/accountLists/[accountListId]/tasks/[[...contactId]]'
-                ? 'page'
-                : undefined
-            }
-          >
-            <ListItemText primary={t('Tasks')} />
-          </MenuItem>
-        </NextLink>
+        <MenuItem
+          component={NextLink}
+          href={`/accountLists/${accountListId}/tasks`}
+          tabIndex={0}
+          className={classes.menuItem}
+          aria-current={
+            pathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
+              ? 'page'
+              : undefined
+          }
+        >
+          <ListItemText primary={t('Tasks')} />
+        </MenuItem>
       </Grid>
       <Grid item className={classes.navListItem}>
         <MenuItem
@@ -261,26 +257,22 @@ const NavMenu: React.FC = () => {
                 <ClickAwayListener onClickAway={handleReportsMenuClose}>
                   <MenuList autoFocusItem={reportsMenuOpen} id="menu-list-grow">
                     {reportNavItems.map(({ id, title }) => (
-                      <NextLink
+                      <MenuItem
                         key={id}
+                        component={NextLink}
                         href={`/accountLists/${accountListId}/reports/${id}`}
-                        passHref
+                        onClick={handleReportsMenuClose}
+                        tabIndex={0}
+                        aria-current={
+                          pathname.startsWith(
+                            `/accountLists/[accountListId]/reports/${id}`,
+                          )
+                            ? 'page'
+                            : undefined
+                        }
                       >
-                        <MenuItem
-                          component="a"
-                          onClick={handleReportsMenuClose}
-                          tabIndex={0}
-                          aria-current={
-                            pathname.startsWith(
-                              `/accountLists/[accountListId]/reports/${id}`,
-                            )
-                              ? 'page'
-                              : undefined
-                          }
-                        >
-                          <ListItemText primary={t(title)} />
-                        </MenuItem>
-                      </NextLink>
+                        <ListItemText primary={t(title)} />
+                      </MenuItem>
                     ))}
                   </MenuList>
                 </ClickAwayListener>
@@ -347,62 +339,58 @@ const NavMenu: React.FC = () => {
                             ? toolData[tool.id]?.totalCount > 0
                             : false;
                           return (
-                            <NextLink
+                            <MenuItem
                               key={tool.id}
+                              component={NextLink}
                               href={`/accountLists/${accountListId}/tools/${tool.url}`}
-                              passHref
+                              tabIndex={0}
+                              onClick={handleToolsMenuClose}
+                              data-testid={`${tool.id}-${
+                                currentToolId === tool.id
+                              }`}
+                              aria-current={
+                                pathname.startsWith(
+                                  `/accountLists/[accountListId]/tools/${tool.url}`,
+                                )
+                                  ? 'page'
+                                  : undefined
+                              }
+                              className={clsx(
+                                classes.menuItem,
+                                needsAttention && classes.needsAttention,
+                              )}
                             >
-                              <MenuItem
-                                component="a"
-                                tabIndex={0}
-                                onClick={handleToolsMenuClose}
-                                data-testid={`${tool.id}-${
-                                  currentToolId === tool.id
-                                }`}
-                                aria-current={
-                                  pathname.startsWith(
-                                    `/accountLists/[accountListId]/tools/${tool.url}`,
-                                  )
-                                    ? 'page'
-                                    : undefined
-                                }
+                              <Icon
+                                path={tool.icon}
+                                size={1}
                                 className={clsx(
-                                  classes.menuItem,
-                                  needsAttention && classes.needsAttention,
+                                  classes.menuIcon,
+                                  needsAttention
+                                    ? classes.darkText
+                                    : classes.whiteText,
                                 )}
-                              >
-                                <Icon
-                                  path={tool.icon}
-                                  size={1}
-                                  className={clsx(
-                                    classes.menuIcon,
-                                    needsAttention
-                                      ? classes.darkText
-                                      : classes.whiteText,
-                                  )}
-                                />
-                                <ListItemText
-                                  className={clsx(
-                                    needsAttention
-                                      ? classes.darkText
-                                      : classes.whiteText,
-                                  )}
-                                  primary={t(tool.tool)}
-                                />
-                                {!loading && needsAttention && (
-                                  <Box
-                                    className={classes.notificationBox}
-                                    data-testid={`${tool.id}-notifications`}
-                                  >
-                                    <Typography>
-                                      {toolData[tool.id].totalCount < 100
-                                        ? toolData[tool.id].totalCount
-                                        : '99+'}
-                                    </Typography>
-                                  </Box>
+                              />
+                              <ListItemText
+                                className={clsx(
+                                  needsAttention
+                                    ? classes.darkText
+                                    : classes.whiteText,
                                 )}
-                              </MenuItem>
-                            </NextLink>
+                                primary={t(tool.tool)}
+                              />
+                              {!loading && needsAttention && (
+                                <Box
+                                  className={classes.notificationBox}
+                                  data-testid={`${tool.id}-notifications`}
+                                >
+                                  <Typography>
+                                    {toolData[tool.id].totalCount < 100
+                                      ? toolData[tool.id].totalCount
+                                      : '99+'}
+                                  </Typography>
+                                </Box>
+                              )}
+                            </MenuItem>
                           );
                         })}
                       </Box>
@@ -417,43 +405,41 @@ const NavMenu: React.FC = () => {
 
       {!!coachingAccounts?.totalCount && (
         <Grid item className={classes.navListItem}>
-          <NextLink href={`/accountLists/${accountListId}/coaching`} passHref>
-            <MenuItem
-              component="a"
-              tabIndex={0}
-              className={classes.menuItem}
-              aria-current={
-                pathname === '/accountLists/[accountListId]/coaching'
-                  ? 'page'
-                  : undefined
-              }
-            >
-              <ListItemText primary={t('Coaching')} />
-            </MenuItem>
-          </NextLink>
+          <MenuItem
+            component={NextLink}
+            href={`/accountLists/${accountListId}/coaching`}
+            tabIndex={0}
+            className={classes.menuItem}
+            aria-current={
+              pathname === '/accountLists/[accountListId]/coaching'
+                ? 'page'
+                : undefined
+            }
+          >
+            <ListItemText primary={t('Coaching')} />
+          </MenuItem>
         </Grid>
       )}
 
       {process.env.HELP_WHATS_NEW_URL && (
         <Grid item className={classes.navListItem}>
-          <NextLink href={process.env.HELP_WHATS_NEW_URL} passHref>
-            <MenuItem
-              component="a"
-              tabIndex={0}
-              className={classes.menuItem}
-              target="_blank"
-            >
-              {process.env.HELP_WHATS_NEW_IMAGE_URL && (
-                <img
-                  src={process.env.HELP_WHATS_NEW_IMAGE_URL}
-                  alt={t('Help logo')}
-                  height={24}
-                  style={{ marginRight: theme.spacing(1) }}
-                />
-              )}
-              <ListItemText primary={t("What's New")} />
-            </MenuItem>
-          </NextLink>
+          <MenuItem
+            component={NextLink}
+            href={process.env.HELP_WHATS_NEW_URL}
+            tabIndex={0}
+            className={classes.menuItem}
+            target="_blank"
+          >
+            {process.env.HELP_WHATS_NEW_IMAGE_URL && (
+              <img
+                src={process.env.HELP_WHATS_NEW_IMAGE_URL}
+                alt={t('Help logo')}
+                height={24}
+                style={{ marginRight: theme.spacing(1) }}
+              />
+            )}
+            <ListItemText primary={t("What's New")} />
+          </MenuItem>
         </Grid>
       )}
     </Grid>

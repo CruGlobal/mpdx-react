@@ -70,16 +70,16 @@ export const CoachingRow: React.FC<Props> = ({
         <Box display="flex">
           <Box flex={1}>
             <Typography variant="h6" display="inline">
-              <NextLink
+              <Link
+                component={NextLink}
                 href={{
                   pathname:
                     '/accountLists/[accountListId]/coaching/[coachingId]',
                   query: { accountListId: accountListId, coachingId: id },
                 }}
-                passHref
               >
-                <Link underline="hover">{name}</Link>
-              </NextLink>
+                {name}
+              </Link>
             </Typography>
             <Typography variant="subtitle1">{usersList}</Typography>
           </Box>

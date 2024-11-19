@@ -62,6 +62,7 @@ export const HeaderTopDetails: React.FC<HeaderTopDetailsProps> = ({
               href={`/accountLists/${accountListId}/reports/financialAccounts/`}
               passHref
               shallow
+              legacyBehavior
             >
               <Link>
                 <IconButton sx={{ marginRight: 2 }} color="primary">
@@ -94,21 +95,21 @@ export const HeaderTopDetails: React.FC<HeaderTopDetailsProps> = ({
                 </Typography>
                 {financialAccountId && (
                   <Box display="flex" gap={0.5}>
-                    <NextLink
+                    <Link
+                      component={NextLink}
                       href={`/accountLists/${accountListId}/reports/financialAccounts/${financialAccountId}`}
-                      passHref
                       shallow
                     >
-                      <Link underline="hover">{t('Summary')}</Link>
-                    </NextLink>
+                      {t('Summary')}
+                    </Link>
                     {' · '}
-                    <NextLink
+                    <Link
+                      component={NextLink}
                       href={`/accountLists/${accountListId}/reports/financialAccounts/${financialAccountId}/entries`}
-                      passHref
                       shallow
                     >
-                      <Link underline="hover">{t('Transactions')}</Link>
-                    </NextLink>
+                      {t('Transactions')}
+                    </Link>
                   </Box>
                 )}
               </Box>

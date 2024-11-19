@@ -9,7 +9,7 @@ import {
   Button,
   ButtonGroup,
   CardHeader,
-  Link as MuiLink,
+  Link,
   Skeleton,
   Typography,
 } from '@mui/material';
@@ -414,16 +414,17 @@ export const Activity: React.FC<ActivityProps> = ({
           <MoneyOutlined sx={{ fontSize: '6rem' }} />
           <SectionTitle>
             {accountListType === AccountListTypeEnum.Own ? (
-              <NextLink
+              <Link
+                component={NextLink}
                 href={
                   primaryAppeal
                     ? `/accountLists/${accountListId}/tools/appeals/appeal/${primaryAppeal.id}`
                     : `/accountLists/${accountListId}/tools/appeals`
                 }
-                passHref
+                underline="none"
               >
-                <MuiLink underline="none">{t('Primary Appeal')}</MuiLink>
-              </NextLink>
+                {t('Primary Appeal')}
+              </Link>
             ) : (
               t('Primary Appeal')
             )}
@@ -450,14 +451,13 @@ export const Activity: React.FC<ActivityProps> = ({
                     </StatsText>
                     <StatsColumnTitle>
                       {accountListType === AccountListTypeEnum.Own ? (
-                        <NextLink
+                        <Link
+                          component={NextLink}
                           href={`/accountLists/${accountListId}/tools/appeals/appeal/${primaryAppeal.id}`}
-                          passHref
+                          underline="none"
                         >
-                          <MuiLink underline="none">
-                            {primaryAppeal.name}
-                          </MuiLink>
-                        </NextLink>
+                          {primaryAppeal.name}
+                        </Link>
                       ) : (
                         primaryAppeal.name
                       )}
