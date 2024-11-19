@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { DonationsReportTable } from './DonationsReportTable';
@@ -11,15 +12,17 @@ describe('DonationsReportTable', () => {
   it('updates the time filter', () => {
     const setTime = jest.fn();
     const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={jest.fn()}>
-          <DonationsReportTable
-            accountListId={'abc'}
-            time={DateTime.now()}
-            setTime={setTime}
-          />
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider onCall={jest.fn()}>
+            <DonationsReportTable
+              accountListId={'abc'}
+              time={DateTime.now()}
+              setTime={setTime}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     userEvent.click(getByRole('button', { name: 'Previous Month' }));

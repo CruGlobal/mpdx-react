@@ -55,18 +55,20 @@ describe('ExpectedMonthlyTotalReport', () => {
   it('renders with data', async () => {
     const { getAllByTestId, queryByRole, queryAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
-        }>
-          mocks={mockedDonations}
-        >
-          <ExpectedMonthlyTotalReport
-            accountListId={'abc'}
-            isNavListOpen={true}
-            onNavListToggle={onNavListToggle}
-            title={title}
-          />
-        </GqlMockedProvider>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+          }>
+            mocks={mockedDonations}
+          >
+            <ExpectedMonthlyTotalReport
+              accountListId={'abc'}
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
       </ThemeProvider>,
     );
 

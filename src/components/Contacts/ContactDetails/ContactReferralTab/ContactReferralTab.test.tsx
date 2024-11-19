@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { ContactReferralTab } from './ContactReferralTab';
@@ -37,57 +38,61 @@ describe('ContactReferralTab', () => {
 
   it('test render', async () => {
     const { findByText } = render(
-      <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
-        mocks={{
-          ContactReferralTab: {
-            contact: {
-              id: 'contact-id',
-              name: 'name',
-              contactReferralsByMe: {
-                nodes: [],
+      <TestRouter>
+        <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
+          mocks={{
+            ContactReferralTab: {
+              contact: {
+                id: 'contact-id',
+                name: 'name',
+                contactReferralsByMe: {
+                  nodes: [],
+                },
               },
             },
-          },
-        }}
-      >
-        <ContactReferralTab
-          accountListId={accountListId}
-          contactId={contactId}
-        />
-      </GqlMockedProvider>,
+          }}
+        >
+          <ContactReferralTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </GqlMockedProvider>
+      </TestRouter>,
     );
     expect(await findByText('No Connections')).toBeVisible();
   });
 
   it('tests render with data and click event', async () => {
     const { findByRole } = render(
-      <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
-        mocks={{
-          ContactReferralTab: {
-            contact: {
-              id: 'contact-id',
-              name: 'name',
-              contactReferralsByMe: {
-                nodes: [
-                  {
-                    id: 'referral-id',
-                    createdAt: '2021-04-29T07:48:28+0000',
-                    referredTo: {
-                      id: 'contact-id-2',
-                      name: 'name-2',
+      <TestRouter>
+        <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
+          mocks={{
+            ContactReferralTab: {
+              contact: {
+                id: 'contact-id',
+                name: 'name',
+                contactReferralsByMe: {
+                  nodes: [
+                    {
+                      id: 'referral-id',
+                      createdAt: '2021-04-29T07:48:28+0000',
+                      referredTo: {
+                        id: 'contact-id-2',
+                        name: 'name-2',
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
-          },
-        }}
-      >
-        <ContactReferralTab
-          accountListId={accountListId}
-          contactId={contactId}
-        />
-      </GqlMockedProvider>,
+          }}
+        >
+          <ContactReferralTab
+            accountListId={accountListId}
+            contactId={contactId}
+          />
+        </GqlMockedProvider>
+      </TestRouter>,
     );
 
     const contactLink = await findByRole('link', { name: 'name-2' });

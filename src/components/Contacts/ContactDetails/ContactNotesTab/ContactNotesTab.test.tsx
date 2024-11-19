@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactNotesTab } from './ContactNotesTab';
@@ -22,13 +23,15 @@ jest.mock('notistack', () => ({
 describe('ContactNotesTab', () => {
   it('renders', () => {
     const { queryByPlaceholderText } = render(
-      <SnackbarProvider>
-        <GqlMockedProvider>
-          <ContactDetailProvider>
-            <ContactNotesTab accountListId="123" contactId="abc" />
-          </ContactDetailProvider>
-        </GqlMockedProvider>
-      </SnackbarProvider>,
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <ContactNotesTab accountListId="123" contactId="abc" />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>,
     );
     expect(queryByPlaceholderText('Add contact notes')).toBeVisible();
   });
@@ -37,13 +40,15 @@ describe('ContactNotesTab', () => {
     const mutationSpy = jest.fn();
     const note = 'cool new note!';
     const { queryByPlaceholderText, getByText } = render(
-      <SnackbarProvider>
-        <GqlMockedProvider onCall={mutationSpy}>
-          <ContactDetailProvider>
-            <ContactNotesTab accountListId="123" contactId="abc" />
-          </ContactDetailProvider>
-        </GqlMockedProvider>
-      </SnackbarProvider>,
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <ContactDetailProvider>
+              <ContactNotesTab accountListId="123" contactId="abc" />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>,
     );
     const input = queryByPlaceholderText('Add contact notes');
     expect(input).toBeVisible();

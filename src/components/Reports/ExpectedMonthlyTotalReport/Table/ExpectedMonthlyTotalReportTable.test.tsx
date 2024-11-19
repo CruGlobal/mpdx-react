@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   ExpectedDonationRowFragment,
@@ -19,16 +20,18 @@ describe('ExpectedMonthlyTotalReportTable', () => {
   it('renders empty', async () => {
     const empty: ExpectedDonationRowFragment[] = [];
     const { queryByRole } = render(
-      <ThemeProvider theme={theme}>
-        <ExpectedMonthlyTotalReportTable
-          accountListId={'abc'}
-          title={'Donations So Far This Month'}
-          data={empty}
-          donations={true}
-          total={0}
-          currency={'USD'}
-        />
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <ExpectedMonthlyTotalReportTable
+            accountListId={'abc'}
+            title={'Donations So Far This Month'}
+            data={empty}
+            donations={true}
+            total={0}
+            currency={'USD'}
+          />
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     expect(queryByRole('button')).not.toBeInTheDocument();
@@ -51,16 +54,18 @@ describe('ExpectedMonthlyTotalReportTable', () => {
     });
 
     const { queryAllByRole, getAllByTestId, getByText, getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <ExpectedMonthlyTotalReportTable
-          accountListId={'abc'}
-          title={'Donations So Far This Month'}
-          data={[donation1, donation2]}
-          donations={true}
-          total={0}
-          currency={'USD'}
-        />
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <ExpectedMonthlyTotalReportTable
+            accountListId={'abc'}
+            title={'Donations So Far This Month'}
+            data={[donation1, donation2]}
+            donations={true}
+            total={0}
+            currency={'USD'}
+          />
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     expect(queryAllByRole('button')[0]).toBeInTheDocument();
@@ -80,16 +85,18 @@ describe('ExpectedMonthlyTotalReportTable', () => {
     const donation = mockDonation();
 
     const { queryAllByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <ExpectedMonthlyTotalReportTable
-          accountListId={'abc'}
-          title={'Likely Partners This Month'}
-          data={[donation]}
-          donations={false}
-          total={0}
-          currency={'USD'}
-        />
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <ExpectedMonthlyTotalReportTable
+            accountListId={'abc'}
+            title={'Likely Partners This Month'}
+            data={[donation]}
+            donations={false}
+            total={0}
+            currency={'USD'}
+          />
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     expect(queryAllByRole('button')[0]).toBeInTheDocument();
@@ -104,16 +111,18 @@ describe('ExpectedMonthlyTotalReportTable', () => {
     });
 
     const { findByRole } = render(
-      <ThemeProvider theme={theme}>
-        <ExpectedMonthlyTotalReportTable
-          accountListId={'abc'}
-          title={'Likely Partners This Month'}
-          data={[donation]}
-          donations={false}
-          total={0}
-          currency={'USD'}
-        />
-      </ThemeProvider>,
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <ExpectedMonthlyTotalReportTable
+            accountListId={'abc'}
+            title={'Likely Partners This Month'}
+            data={[donation]}
+            donations={false}
+            total={0}
+            currency={'USD'}
+          />
+        </ThemeProvider>
+      </TestRouter>,
     );
 
     userEvent.click(await findByRole('button'));

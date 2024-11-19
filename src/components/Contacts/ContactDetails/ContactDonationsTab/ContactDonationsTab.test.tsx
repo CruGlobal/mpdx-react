@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { DateTime } from 'luxon';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
@@ -14,29 +15,31 @@ const contactId = 'contact-id-1';
 describe('ContactDonationsTab', () => {
   it('test renderer', async () => {
     const { findByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{ GetContactDonations: GetContactDonationsQuery }>
-          mocks={{
-            GetContactDonations: {
-              contact: {
-                nextAsk: DateTime.now().plus({ month: 5 }).toISO(),
-                pledgeStartDate: DateTime.now().minus({ month: 5 }).toISO(),
-                pledgeCurrency: 'USD',
-                lastDonation: {
-                  donationDate: DateTime.now().toISO(),
+      <TestRouter>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider<{ GetContactDonations: GetContactDonationsQuery }>
+            mocks={{
+              GetContactDonations: {
+                contact: {
+                  nextAsk: DateTime.now().plus({ month: 5 }).toISO(),
+                  pledgeStartDate: DateTime.now().minus({ month: 5 }).toISO(),
+                  pledgeCurrency: 'USD',
+                  lastDonation: {
+                    donationDate: DateTime.now().toISO(),
+                  },
                 },
               },
-            },
-          }}
-        >
-          <ContactDetailProvider>
-            <ContactDonationsTab
-              accountListId={accountListId}
-              contactId={contactId}
-            />
-          </ContactDetailProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>,
+            }}
+          >
+            <ContactDetailProvider>
+              <ContactDonationsTab
+                accountListId={accountListId}
+                contactId={contactId}
+              />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </TestRouter>,
     );
     expect(await findByRole('region')).toBeVisible();
   });

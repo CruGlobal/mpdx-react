@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactDetailProvider } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import theme from 'src/theme';
@@ -160,17 +161,19 @@ describe('TntConnect Import', () => {
     });
 
     const { getByTestId } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <TntConnect accountListId={accountListId} />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+      <TestRouter>
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <TntConnect accountListId={accountListId} />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>
+      </TestRouter>,
     );
 
     userEvent.upload(getByTestId('TntUpload'), file1);
@@ -186,17 +189,19 @@ describe('TntConnect Import', () => {
     );
 
     const { getByRole, getByTestId } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <TntConnect accountListId={accountListId} />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+      <TestRouter>
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <TntConnect accountListId={accountListId} />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>
+      </TestRouter>,
     );
 
     userEvent.upload(getByTestId('TntUpload'), file1);
@@ -212,17 +217,19 @@ describe('TntConnect Import', () => {
     (uploadTnt as jest.Mock).mockRejectedValue(500);
 
     const { getByTestId, getByRole } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactDetailProvider>
-                <TntConnect accountListId={accountListId} />
-              </ContactDetailProvider>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+      <TestRouter>
+        <SnackbarProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <ThemeProvider theme={theme}>
+              <GqlMockedProvider>
+                <ContactDetailProvider>
+                  <TntConnect accountListId={accountListId} />
+                </ContactDetailProvider>
+              </GqlMockedProvider>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </SnackbarProvider>
+      </TestRouter>,
     );
 
     userEvent.upload(getByTestId('TntUpload'), file1);
