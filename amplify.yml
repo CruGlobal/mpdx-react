@@ -12,7 +12,6 @@ frontend:
             echo "PREVIEW_URL=$PREVIEW_URL" >> .env;
           fi
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
-        - echo "NODE_ENV=$NODE_ENV" >> .env
         - yarn config set nodeLinker node-modules
         - yarn -v
         - yarn
