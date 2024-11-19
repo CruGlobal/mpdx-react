@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import { checkForInitialLoad, main } from './lighthouse-auth.mjs';
 
 describe('Lighthouse Pre-Login Steps', () => {
@@ -56,7 +56,7 @@ describe('Lighthouse Pre-Login Steps', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.mock('fs', () => ({ appendFile: jest.fn() }));
-    jest.spyOn(fs, 'appendFile').mockImplementation(() => {});
+    jest.spyOn(fs, 'appendFile').mockImplementation(async () => {});
   });
 
   describe('main', () => {
@@ -97,7 +97,11 @@ describe('Lighthouse Pre-Login Steps', () => {
         'http://localhost:3000/accountLists',
         'http://localhost:3000',
       );
-      expect(initialPage.$).toHaveBeenCalledTimes(2);
+      expect(initialPage.$).toHaveBeenCalledTimes(1);
+      expect(initialPage.waitForSelector).toHaveBeenCalledWith(
+        '#sign-in-button',
+        expect.anything(),
+      );
     });
 
     it('should not break if the sign in button is not found', async () => {
@@ -132,21 +136,19 @@ describe('Lighthouse Pre-Login Steps', () => {
     it('should not break if the sign in button is not found the second time', async () => {
       successfulTestMock();
 
-      initialPage.$.mockImplementationOnce((selector) => {
+      initialPage.$.mockImplementation((selector) => {
         if (selector === '#sign-in-button') {
           return Promise.resolve({
             click: jest.fn(),
           });
         }
         return Promise.resolve({});
-      }).mockImplementationOnce((selector) => {
-        if (selector === '#sign-in-button') {
-          return Promise.reject('could not find element');
-        }
-        return Promise.resolve({});
       });
 
       initialPage.waitForSelector.mockImplementation((selector) => {
+        if (selector === '#sign-in-button') {
+          return Promise.reject('could not find element');
+        }
         if (selector === '#okta-signin-username') {
           return Promise.reject('could not find element');
         }
