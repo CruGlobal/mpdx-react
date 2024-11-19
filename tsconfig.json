@@ -4,6 +4,7 @@
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "checkJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,12 +19,12 @@
     "jsx": "preserve"
   },
   "include": [
+    "app.d.ts",
     "next-env.d.ts",
     "__tests__/jest.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "app.d.ts",
-    ".env",
+    "next.config.js",
     "onesky/upload.js",
     "onesky/download.js"
   ],
