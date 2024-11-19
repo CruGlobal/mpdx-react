@@ -2,7 +2,6 @@ const bundleAnalyzer = require('@next/bundle-analyzer');
 const withPlugins = require('next-compose-plugins');
 const withOptimizedImages = require('next-optimized-images');
 const withPWA = require('next-pwa');
-require('dotenv').config();
 
 if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
