@@ -1,7 +1,9 @@
 import React from 'react';
 import { InMemoryCache } from '@apollo/client';
+import { MockedProvider } from '@apollo/client/testing';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
@@ -12,14 +14,10 @@ import {
 import acknowledgeUserNotificationMutationMock from './Item.mock';
 import NotificationMenuItem from '.';
 
-jest.mock('next/router', () => ({
-  useRouter: () => {
-    return {
-      query: { accountListId: 'abc' },
-      isReady: true,
-    };
-  },
-}));
+const router = {
+  query: { accountListId: 'abc' },
+  isReady: true,
+};
 
 describe('NotificationMenuItem', () => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
@@ -103,7 +101,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — No call logged in the past year',
     );
   });
@@ -116,7 +114,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a larger gift than their commitment amount',
     );
   });
@@ -129,7 +127,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a gift of A$10,000 which is greater than their commitment amount',
     );
   });
@@ -142,7 +140,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a gift where commitment frequency is set to semi-annual or greater',
     );
   });
@@ -155,7 +153,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a gift of A$10,000 where commitment frequency is set to semi-annual or greater',
     );
   });
@@ -170,7 +168,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — On your physical newsletter list but has no mailing address',
     );
   });
@@ -185,7 +183,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — On your digital newsletter list but has no people with a valid email address',
     );
   });
@@ -200,7 +198,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Added through your Give Site subscription form',
     );
   });
@@ -215,7 +213,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Added and merged',
     );
   });
@@ -230,7 +228,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Added but not merged',
     );
   });
@@ -245,7 +243,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Added with no duplicate found',
     );
   });
@@ -258,7 +256,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Recontinued giving',
     );
   });
@@ -273,7 +271,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Semi-annual or greater gift is expected one month from now',
     );
   });
@@ -286,7 +284,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a smaller gift than their commitment amount',
     );
   });
@@ -299,7 +297,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a gift of A$10,000 which is less than their commitment amount',
     );
   });
@@ -312,7 +310,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a special gift',
     );
   });
@@ -325,7 +323,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Gave a special gift of A$10,000',
     );
   });
@@ -338,7 +336,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Started giving',
     );
   });
@@ -351,7 +349,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Missed a gift',
     );
   });
@@ -366,7 +364,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — No thank you note logged in the past year',
     );
   });
@@ -381,7 +379,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Upcoming anniversary',
     );
   });
@@ -394,7 +392,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Upcoming birthday',
     );
   });
@@ -409,7 +407,7 @@ describe('NotificationMenuItem', () => {
         />
       </TestWrapper>,
     );
-    expect(getByRole('button').textContent).toEqual(
+    expect(getByRole('link').textContent).toEqual(
       'SSmith, RogerMay 25, 2020 — Custom notification description',
     );
   });
@@ -462,19 +460,21 @@ describe('NotificationMenuItem', () => {
       });
       const handleClick = jest.fn();
       const { getByRole } = render(
-        <TestWrapper
-          mocks={[acknowledgeUserNotificationMutationMock(id)]}
-          cache={cache}
-        >
-          <NotificationMenuItem
-            item={itemWithoutDonation(
-              NotificationTypeTypeEnum.CallPartnerOncePerYear,
-            )}
-            onClick={handleClick}
-          />
-        </TestWrapper>,
+        <TestRouter router={router}>
+          <MockedProvider
+            mocks={[acknowledgeUserNotificationMutationMock(id)]}
+            cache={cache}
+          >
+            <NotificationMenuItem
+              item={itemWithoutDonation(
+                NotificationTypeTypeEnum.CallPartnerOncePerYear,
+              )}
+              onClick={handleClick}
+            />
+          </MockedProvider>
+        </TestRouter>,
       );
-      userEvent.click(getByRole('button'));
+      userEvent.click(getByRole('link'));
       await waitFor(() => expect(handleClick).toHaveBeenCalled());
       expect(cache.writeQuery).toHaveBeenCalledWith({
         query: GetNotificationsDocument,
