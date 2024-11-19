@@ -1,4 +1,4 @@
-import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { RouterContext } from 'next/dist/shared/lib/router-context.shared-runtime';
 import Router, { Router as IRouter, NextRouter } from 'next/router';
 import React, { ReactElement, ReactNode } from 'react';
 
@@ -18,6 +18,7 @@ const TestRouter = ({ children, router = {} }: Props): ReactElement => {
     replace: async (): Promise<boolean> => true,
     reload: (): void => undefined,
     back: (): void => undefined,
+    forward: (): void => undefined,
     prefetch: async (): Promise<void> => undefined,
     beforePopState: (): void => undefined,
     isFallback: false,
