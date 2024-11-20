@@ -130,28 +130,29 @@ const LateCommitments = ({
                       'days',
                     ).days,
                   );
-                  const contactUrl = getContactUrl(contact.id);
+                  if (!daysLate) {
+                    return null;
+                  }
 
+                  const contactUrl = getContactUrl(contact.id);
                   return (
-                    daysLate && (
-                      <ListItemButton
-                        component={NextLink}
-                        href={contactUrl}
-                        shallow
-                        data-testid={`LateCommitmentsListItemContact-${contact.id}`}
-                        key={contact.id}
-                      >
-                        <ListItemText
-                          primary={contact.name}
-                          secondary={t(
-                            'Their gift is {{daysLate}} day late._plural',
-                            {
-                              daysLate: numberFormat(daysLate, locale),
-                            },
-                          )}
-                        />
-                      </ListItemButton>
-                    )
+                    <ListItemButton
+                      component={NextLink}
+                      href={contactUrl}
+                      shallow
+                      data-testid={`LateCommitmentsListItemContact-${contact.id}`}
+                      key={contact.id}
+                    >
+                      <ListItemText
+                        primary={contact.name}
+                        secondary={t(
+                          'Their gift is {{daysLate}} day late._plural',
+                          {
+                            daysLate: numberFormat(daysLate, locale),
+                          },
+                        )}
+                      />
+                    </ListItemButton>
                   );
                 })}
               </CardList>
