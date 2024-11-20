@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import React, { ReactElement, useState } from 'react';
 import {
   Button,
@@ -7,6 +7,7 @@ import {
   CardHeader,
   List,
   ListItem,
+  ListItemButton,
   ListItemSecondaryAction,
   ListItemText,
   Skeleton,
@@ -81,7 +82,6 @@ const ReferralsTab = ({
   const { classes } = useStyles();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { push } = useRouter();
 
   return (
     <>
@@ -126,16 +126,11 @@ const ReferralsTab = ({
               data-testid={`ReferralsTab${tab}List`}
             >
               {referrals.nodes.map((contact) => (
-                <ListItem
-                  component="a"
-                  button
-                  data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
+                <ListItemButton
                   key={contact.id}
-                  onClick={() =>
-                    push(
-                      `/accountLists/${accountListId}/contacts/list/${contact.id}`,
-                    )
-                  }
+                  component={NextLink}
+                  href={`/accountLists/${accountListId}/contacts/list/${contact.id}`}
+                  data-testid={`ReferralsTab${tab}ListItem-${contact.id}`}
                 >
                   <ListItemText
                     disableTypography={true}
@@ -143,7 +138,7 @@ const ReferralsTab = ({
                       <Typography variant="body1">{contact.name}</Typography>
                     }
                   />
-                </ListItem>
+                </ListItemButton>
               ))}
             </List>
             <CardActions>

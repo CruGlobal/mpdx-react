@@ -12,7 +12,7 @@ export const StyledList = styled(List)(({ theme }) => ({
 
 export const StyledServicesButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
-})) as typeof Button; // Type cast so that component="a" works
+})) as typeof Button; // Type cast so that `component` prop works
 
 export interface AccordionProps {
   handleAccordionChange: (panel: string) => void;
