@@ -37,9 +37,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   return (
     <>
       <Head>
-        <title>
-          {appName} | {pageTitle}
-        </title>
+        <title>{`${appName} | ${pageTitle}`}</title>
       </Head>
       <Box component="main">
         <SidePanelsLayout

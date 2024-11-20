@@ -15,9 +15,7 @@ const CoachingPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Coaching Accounts')}
-        </title>
+        <title>{`${appName} | ${t('Coaching Accounts')}`}</title>
       </Head>
       {accountListId ? (
         <CoachingList accountListId={accountListId} />

@@ -44,9 +44,7 @@ const DonationsReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Reports')} | {t('Donations')}
-        </title>
+        <title>{`${appName} | ${t('Reports')} | ${t('Donations')}`}</title>
       </Head>
       {accountListId ? (
         <DonationsReportPageWrapper>

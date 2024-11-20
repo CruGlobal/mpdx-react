@@ -98,7 +98,7 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     <>
       <Head>
         <title>
-          {appName} | {t('Reports')} | {t('Partner Giving Analysis')}
+          {`${appName} | ${t('Reports')} | ${t('Partner Giving Analysis')}`}
         </title>
       </Head>
       {accountListId ? (

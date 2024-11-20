@@ -39,9 +39,7 @@ const FinishPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Setup - Finish')}
-        </title>
+        <title>{`${appName} | ${t('Setup - Finish')}`}</title>
       </Head>
       <SetupPage
         title={

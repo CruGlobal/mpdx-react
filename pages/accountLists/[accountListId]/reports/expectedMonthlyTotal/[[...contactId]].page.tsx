@@ -45,7 +45,7 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
     <>
       <Head>
         <title>
-          {appName} | {t('Reports')} | {t('Expect Monthly Total')}
+          {`${appName} | ${t('Reports')} | ${t('Expect Monthly Total')}`}
         </title>
       </Head>
       {accountListId ? (

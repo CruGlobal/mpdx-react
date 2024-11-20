@@ -18,9 +18,7 @@ const CoachingReportPage = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Reports')} | {t('Coaching')}
-        </title>
+        <title>{`${appName} | ${t('Reports')} | ${t('Coaching')}`}</title>
       </Head>
       {accountListId ? (
         <CoachingDetail

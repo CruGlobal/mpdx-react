@@ -44,7 +44,7 @@ const Login = ({
   return (
     <>
       <Head>
-        <title>{appName} | Home</title>
+        <title>{`${appName} | Home`}</title>
       </Head>
       {immediateSignIn && <Loading loading={true} />}
       <Welcome

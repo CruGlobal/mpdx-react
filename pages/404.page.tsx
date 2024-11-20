@@ -25,7 +25,7 @@ const Custom404 = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>404 - Page Not Found | {appName}</title>
+        <title>{`404 - Page Not Found | ${appName}`}</title>
       </Head>
 
       <BoxWrapper boxShadow={3} data-testid="EmptyReport">

@@ -220,9 +220,7 @@ const TasksPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Tasks')}
-        </title>
+        <title>{`${appName} | ${t('Tasks')}`}</title>
       </Head>
       {accountListId ? (
         <WhiteBackground>

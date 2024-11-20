@@ -45,9 +45,7 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   return (
     <>
       <Head>
-        <title>
-          {appName} | {pageTitle}
-        </title>
+        <title>{`${appName} | ${pageTitle}`}</title>
       </Head>
       <Box component="main">
         {accountListId ? (

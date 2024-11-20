@@ -43,9 +43,7 @@ const PartnerCurrencyReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Reports - Partner')}
-        </title>
+        <title>{`${appName} | ${t('Reports - Partner')}`}</title>
       </Head>
       {accountListId ? (
         <PartnerCurrencyReportPageWrapper>

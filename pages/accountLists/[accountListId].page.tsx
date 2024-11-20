@@ -70,9 +70,7 @@ const AccountListIdPage = ({
   return (
     <>
       <Head>
-        <title>
-          {appName} | {data.accountList.name}
-        </title>
+        <title>{`${appName} | ${data.accountList.name}`}</title>
       </Head>
       <Dashboard data={data} accountListId={data.accountList.id} />
 

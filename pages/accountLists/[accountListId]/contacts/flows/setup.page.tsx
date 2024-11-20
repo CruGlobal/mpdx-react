@@ -158,9 +158,7 @@ const ContactFlowSetupPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Contact Flows')} | {t('Setup')}
-        </title>
+        <title>{`${appName} | ${t('Contact Flows')} | ${t('Setup')}`}</title>
       </Head>
       {accountListId ? (
         <DndProvider backend={HTML5Backend}>
