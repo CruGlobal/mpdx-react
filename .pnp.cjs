@@ -73,7 +73,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:29.5.14"],\
             ["@types/lodash", "npm:4.14.191"],\
             ["@types/luxon", "npm:3.4.2"],\
-            ["@types/node", "npm:18.7.18"],\
+            ["@types/node", "npm:18.19.64"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/testing-library__jest-dom", "npm:5.14.5"],\
             ["@types/uuid", "npm:9.0.1"],\
@@ -8839,10 +8839,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:18.7.18", {\
-          "packageLocation": "./.yarn/cache/@types-node-npm-18.7.18-5bcc3f839f-8aec61f0f9.zip/node_modules/@types/node/",\
+        ["npm:18.19.64", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-18.19.64-2bf88f0be4-e7680215b0.zip/node_modules/@types/node/",\
           "packageDependencies": [\
-            ["@types/node", "npm:18.7.18"]\
+            ["@types/node", "npm:18.19.64"],\
+            ["undici-types", "npm:5.26.5"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -19444,7 +19445,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:29.5.14"],\
             ["@types/lodash", "npm:4.14.191"],\
             ["@types/luxon", "npm:3.4.2"],\
-            ["@types/node", "npm:18.7.18"],\
+            ["@types/node", "npm:18.19.64"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/testing-library__jest-dom", "npm:5.14.5"],\
             ["@types/uuid", "npm:9.0.1"],\
@@ -21620,7 +21621,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@react-dnd/invariant", "npm:2.0.0"],\
             ["@react-dnd/shallowequal", "npm:2.0.0"],\
             ["@types/hoist-non-react-statics", null],\
-            ["@types/node", "npm:18.7.18"],\
+            ["@types/node", "npm:18.19.64"],\
             ["@types/react", "npm:18.0.21"],\
             ["dnd-core", "npm:14.0.1"],\
             ["fast-deep-equal", "npm:3.1.3"],\
@@ -24587,7 +24588,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tsconfig/node12", "npm:1.0.11"],\
             ["@tsconfig/node14", "npm:1.0.3"],\
             ["@tsconfig/node16", "npm:1.0.3"],\
-            ["@types/node", "npm:18.7.18"],\
+            ["@types/node", "npm:18.19.64"],\
             ["@types/swc__core", null],\
             ["@types/swc__wasm", null],\
             ["@types/typescript", null],\
@@ -24900,6 +24901,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/undici-npm-6.20.1-d65a390548-3bb1405b40.zip/node_modules/undici/",\
           "packageDependencies": [\
             ["undici", "npm:6.20.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["undici-types", [\
+        ["npm:5.26.5", {\
+          "packageLocation": "./.yarn/cache/undici-types-npm-5.26.5-de4f7c7bb9-3192ef6f3f.zip/node_modules/undici-types/",\
+          "packageDependencies": [\
+            ["undici-types", "npm:5.26.5"]\
           ],\
           "linkType": "HARD"\
         }]\

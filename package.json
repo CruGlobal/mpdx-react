@@ -113,7 +113,7 @@
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^18.7.18",
+    "@types/node": "^18.19.0",
     "@types/react": "^18.0.21",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@types/uuid": "^9.0.1",
