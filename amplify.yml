@@ -19,6 +19,7 @@ frontend:
         - yarn
         - yarn disable-telemetry
         - yarn gql
+        - yarn onesky:download
     build:
       commands:
         - yarn build:amplify
