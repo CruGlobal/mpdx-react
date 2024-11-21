@@ -362,8 +362,9 @@ const PartnerCare = ({
                   </CardList>
                   <CardActions>
                     <Button
-                      LinkComponent={NextLink}
-                      href={`/accountLists/${accountListId}/tasks?filters={"activityType":["PRAYER_REQUEST"]}&completed=false`}
+                      component={NextLink}
+                      href={`/accountLists/${accountListId}/tasks?filters={"activityType":["PARTNER_CARE_PRAYER_REQUEST"]}&completed=false`}
+                      shallow
                       size="small"
                       color="primary"
                     >
