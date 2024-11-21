@@ -28,7 +28,7 @@ const FinancialAccountSummaryPage: React.FC = () => {
     <>
       <Head>
         <title>
-          {appName} | {t('Summary Report - Responsibility Centers')}
+          {`${appName} | ${t('Summary Report - Responsibility Centers')}`}
         </title>
       </Head>
 

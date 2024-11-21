@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 
-import fs from 'fs';
+import fs from 'fs/promises';
 
 const MAX_TRIES = 13;
 
 /**
- * @param {puppeteer.Page} page
+ * @param {import('puppeteer').Page} page
  * @param {string} origin
  */
 async function login(page, origin) {
@@ -39,7 +39,9 @@ async function login(page, origin) {
   } catch (error) {
     // Sometimes the login to Okta fails for some reason and puts us back on the /login page of MPDx, so try again.
     try {
-      signInButton = await page.$('#sign-in-button', { timeout: 5000 });
+      signInButton = await page.waitForSelector('#sign-in-button', {
+        timeout: 5000,
+      });
 
       if (signInButton) {
         const redirectToOktaPromise = page.waitForNavigation();
@@ -143,7 +145,7 @@ async function storeResults(result) {
   });
   markdownResults += '</details>\n\n';
 
-  fs.appendFile(
+  await fs.appendFile(
     './lighthouse/lighthouse-results.md',
     markdownWarning + markdownResults,
   );

@@ -4,7 +4,6 @@ import { AccountListTypeEnum } from './CoachingDetail';
 
 interface LinkProps extends MuiLinkProps {
   accountListType: AccountListTypeEnum;
-  href: string;
 }
 
 /*
@@ -13,14 +12,13 @@ interface LinkProps extends MuiLinkProps {
  */
 export const CoachingLink: React.FC<LinkProps> = ({
   accountListType,
-  href,
   children,
   ...props
 }) =>
   accountListType === AccountListTypeEnum.Own ? (
-    <NextLink href={href} passHref>
-      <Link {...props}>{children}</Link>
-    </NextLink>
+    <Link component={NextLink} {...props}>
+      {children}
+    </Link>
   ) : (
     <span>{children}</span>
   );

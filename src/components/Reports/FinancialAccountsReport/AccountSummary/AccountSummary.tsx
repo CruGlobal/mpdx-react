@@ -262,9 +262,9 @@ export const AccountSummary: React.FC<AccountSummaryProps> = ({
                         key={`startDate-${idx}-${period?.startDate}`}
                         align="right"
                       >
-                        <NextLink href={url} passHref shallow>
-                          <Link>{period.startDateFormatted}</Link>
-                        </NextLink>
+                        <Link component={NextLink} href={url} shallow>
+                          {period.startDateFormatted}
+                        </Link>
                       </TableCell>
                     );
                   })}

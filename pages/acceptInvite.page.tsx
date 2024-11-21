@@ -140,9 +140,7 @@ const AcceptInvitePage = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Accept Invite')}
-        </title>
+        <title>{`${appName} | ${t('Accept Invite')}`}</title>
       </Head>
       <SetupPage title={t('Accepting Invite')}>
         <p>{t('You will be redirected soon...')}</p>

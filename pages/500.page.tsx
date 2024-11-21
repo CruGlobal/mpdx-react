@@ -25,7 +25,7 @@ const Custom500 = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>500 - Server-side Error Occurred | {appName}</title>
+        <title>{`500 - Server-side Error Occurred | ${appName}`}</title>
       </Head>
 
       <BoxWrapper boxShadow={3} data-testid="EmptyReport">

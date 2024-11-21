@@ -10,7 +10,7 @@ import { fourteenMonthReportRestMock } from './FourteenMonthReportMock';
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
-const getContactUrl = jest.fn().mockReturnValue('test-url');
+const getContactUrl = jest.fn().mockReturnValue('/test-url');
 const defaultProps = {
   accountListId,
   title,

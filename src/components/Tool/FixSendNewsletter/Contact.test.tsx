@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -28,16 +29,18 @@ const TestComponent = ({
     primaryAddress: primaryAddress,
   };
   return (
-    <ThemeProvider theme={theme}>
-      <Contact
-        contact={contact}
-        contactUpdates={[
-          { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
-        ]}
-        setContactUpdates={jest.fn()}
-        handleSingleConfirm={jest.fn()}
-      />
-    </ThemeProvider>
+    <TestRouter>
+      <ThemeProvider theme={theme}>
+        <Contact
+          contact={contact}
+          contactUpdates={[
+            { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
+          ]}
+          setContactUpdates={jest.fn()}
+          handleSingleConfirm={jest.fn()}
+        />
+      </ThemeProvider>
+    </TestRouter>
   );
 };
 

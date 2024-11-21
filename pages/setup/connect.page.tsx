@@ -15,9 +15,7 @@ const ConnectPage = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Setup - Get Connected')}
-        </title>
+        <title>{`${appName} | ${t('Setup - Get Connected')}`}</title>
       </Head>
       <Connect />
     </>

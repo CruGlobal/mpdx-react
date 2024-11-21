@@ -58,19 +58,15 @@ export const HeaderTopDetails: React.FC<HeaderTopDetailsProps> = ({
       <Grid item>
         <Box display="flex" alignItems="center">
           <GoBackAction>
-            <NextLink
+            <Link
+              component={NextLink}
               href={`/accountLists/${accountListId}/reports/financialAccounts/`}
-              passHref
               shallow
             >
-              <Link>
-                <IconButton sx={{ marginRight: 2 }} color="primary">
-                  <ChevronLeft
-                    titleAccess={t('Go Back to financial Accounts')}
-                  />
-                </IconButton>
-              </Link>
-            </NextLink>
+              <IconButton sx={{ marginRight: 2 }} color="primary">
+                <ChevronLeft titleAccess={t('Go Back to financial Accounts')} />
+              </IconButton>
+            </Link>
           </GoBackAction>
 
           <HeaderFilterAction>
@@ -94,21 +90,21 @@ export const HeaderTopDetails: React.FC<HeaderTopDetailsProps> = ({
                 </Typography>
                 {financialAccountId && (
                   <Box display="flex" gap={0.5}>
-                    <NextLink
+                    <Link
+                      component={NextLink}
                       href={`/accountLists/${accountListId}/reports/financialAccounts/${financialAccountId}`}
-                      passHref
                       shallow
                     >
-                      <Link underline="hover">{t('Summary')}</Link>
-                    </NextLink>
+                      {t('Summary')}
+                    </Link>
                     {' · '}
-                    <NextLink
+                    <Link
+                      component={NextLink}
                       href={`/accountLists/${accountListId}/reports/financialAccounts/${financialAccountId}/entries`}
-                      passHref
                       shallow
                     >
-                      <Link underline="hover">{t('Transactions')}</Link>
-                    </NextLink>
+                      {t('Transactions')}
+                    </Link>
                   </Box>
                 )}
               </Box>

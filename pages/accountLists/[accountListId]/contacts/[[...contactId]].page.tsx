@@ -33,12 +33,13 @@ const Contacts: React.FC = ({}) => {
     <>
       <Head>
         <title>
-          {appName} |{' '}
-          {viewMode === TableViewModeEnum.Flows
-            ? t('Contact Flows')
-            : viewMode === TableViewModeEnum.Map
-            ? t('Contacts Map')
-            : t('Contacts')}
+          {`${appName} | ${
+            viewMode === TableViewModeEnum.Flows
+              ? t('Contact Flows')
+              : viewMode === TableViewModeEnum.Map
+              ? t('Contacts Map')
+              : t('Contacts')
+          }`}
         </title>
       </Head>
       {accountListId ? (

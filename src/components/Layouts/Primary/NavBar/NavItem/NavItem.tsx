@@ -100,20 +100,18 @@ export const NavItem: FC<NavItemProps> = ({
 
   return (
     <LeafListItem disableGutters key={title} {...rest}>
-      <NextLink href={href} passHref>
-        <MenuItem component="a" style={style}>
-          {Icon && <Icon style={iconStyle} size="20" />}
-          {whatsNewLink && process.env.HELP_WHATS_NEW_IMAGE_URL && (
-            <img
-              src={process.env.HELP_WHATS_NEW_IMAGE_URL}
-              alt={t('Help logo')}
-              height={24}
-              style={{ marginRight: theme.spacing(1) }}
-            />
-          )}
-          <Title>{title}</Title>
-        </MenuItem>
-      </NextLink>
+      <MenuItem component={NextLink} href={href} style={style}>
+        {Icon && <Icon style={iconStyle} size="20" />}
+        {whatsNewLink && process.env.HELP_WHATS_NEW_IMAGE_URL && (
+          <img
+            src={process.env.HELP_WHATS_NEW_IMAGE_URL}
+            alt={t('Help logo')}
+            height={24}
+            style={{ marginRight: theme.spacing(1) }}
+          />
+        )}
+        <Title>{title}</Title>
+      </MenuItem>
     </LeafListItem>
   );
 };

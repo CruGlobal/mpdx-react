@@ -30,7 +30,7 @@ export const ContactLink = styled(Link)(() => ({
   '&:hover': {
     textDecoration: 'underline',
   },
-}));
+})) as typeof Link; // Type cast so that `component` prop works
 
 export const ContainerBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isDragging',
@@ -112,9 +112,9 @@ export const ContactFlowRow: React.FC<ContactFlowRowProps> = ({
         <Box display="flex" alignItems="center" width="100%">
           <StyledAvatar src={avatar || ''} />
           <Box display="flex" flexDirection="column" ml={2} draggable>
-            <NextLink href={contactHrefObject} passHref shallow>
-              <ContactLink>{name}</ContactLink>
-            </NextLink>
+            <ContactLink component={NextLink} href={contactHrefObject} shallow>
+              {name}
+            </ContactLink>
             <Typography>{getLocalizedContactStatus(status)}</Typography>
           </Box>
         </Box>

@@ -43,9 +43,7 @@ const StartPage = (): ReactElement => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Setup - Start')}
-        </title>
+        <title>{`${appName} | ${t('Setup - Start')}`}</title>
       </Head>
       <SetupPage title={t("It's time to get started")}>
         <p>

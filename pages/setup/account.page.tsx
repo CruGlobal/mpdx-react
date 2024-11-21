@@ -58,9 +58,7 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Setup - Default Account')}
-        </title>
+        <title>{`${appName} | ${t('Setup - Default Account')}`}</title>
       </Head>
       <SetupPage title={t('Set default account')}>
         {t(

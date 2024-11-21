@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useApolloClient } from '@apollo/client';
@@ -13,7 +14,6 @@ import {
   PrivacyPolicyLink,
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
-import { NextLinkComposed } from 'src/components/common/Links/NextLinkComposed';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
@@ -169,8 +169,8 @@ export const ProfileMenuPanel: React.FC = () => {
           {addProfileContent.map(({ text, path, onClick }, index) => (
             <LeafListItem key={index} disableGutters onClick={onClick}>
               <StyledButton
-                component={NextLinkComposed}
-                to={`/accountLists/${accountListId}${path}`}
+                LinkComponent={NextLink}
+                href={`/accountLists/${accountListId}${path}`}
               >
                 <Title>{t(text)}</Title>
               </StyledButton>
@@ -180,8 +180,8 @@ export const ProfileMenuPanel: React.FC = () => {
             !!data?.user?.administrativeOrganizations?.nodes?.length) && (
             <LeafListItem disableGutters>
               <StyledButton
-                component={NextLinkComposed}
-                to={`/accountLists/${accountListId}/settings/organizations`}
+                LinkComponent={NextLink}
+                href={`/accountLists/${accountListId}/settings/organizations`}
               >
                 <Title>{t('Manage Organizations')}</Title>
               </StyledButton>
@@ -190,8 +190,8 @@ export const ProfileMenuPanel: React.FC = () => {
           {(data?.user?.admin || data?.user?.developer) && (
             <LeafListItem disableGutters>
               <StyledButton
-                component={NextLinkComposed}
-                to={`/accountLists/${accountListId}/settings/admin`}
+                LinkComponent={NextLink}
+                href={`/accountLists/${accountListId}/settings/admin`}
               >
                 <Title>{t('Admin Console')}</Title>
               </StyledButton>

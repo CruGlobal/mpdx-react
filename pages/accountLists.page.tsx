@@ -24,9 +24,7 @@ const AccountListsPage = ({ data }: AccountListsPageProps): ReactElement => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Account Lists')}
-        </title>
+        <title>{`${appName} | ${t('Account Lists')}`}</title>
       </Head>
       <AccountLists data={data} />
     </>

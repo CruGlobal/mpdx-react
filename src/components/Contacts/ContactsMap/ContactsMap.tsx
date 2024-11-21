@@ -177,10 +177,10 @@ export const ContactsMap: React.FC = ({}) => {
                 {sourceToStr(t, selected.source ?? '')}
               </InlineTypography>
               <InlineTypography>{selected.date}</InlineTypography>
-              <Typography sx={{ cursor: 'pointer' }}>
-                <NextLink href={contactUrl} passHref shallow>
-                  <Link>{t('Show Contact')}</Link>
-                </NextLink>
+              <Typography>
+                <Link component={NextLink} href={contactUrl} shallow>
+                  {t('Show Contact')}
+                </Link>
               </Typography>
             </Box>
           </InfoWindowF>

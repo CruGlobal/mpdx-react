@@ -88,7 +88,7 @@ describe('AppealsMainPanelHeader', () => {
   it('renders default view', () => {
     const { getByRole } = render(<Components />);
 
-    expect(getByRole('button', { name: 'Appeals' })).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Appeals' })).toBeInTheDocument();
     expect(
       getByRole('button', { name: 'Toggle Filter Panel' }),
     ).toBeInTheDocument();

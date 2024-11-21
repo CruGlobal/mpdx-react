@@ -84,14 +84,14 @@ export const ContactsMainPanelHeader: React.FC = () => {
         <Hidden xsDown>
           <Box display="flex" alignItems="center">
             {viewMode === TableViewModeEnum.Flows && (
-              <NextLink
+              <ViewSettingsButton
+                LinkComponent={NextLink}
                 href={`/accountLists/${accountListId}/contacts/flows/setup`}
+                variant="outlined"
               >
-                <ViewSettingsButton variant="outlined">
-                  <Settings style={{ marginRight: 8 }} />
-                  {t('View Settings')}
-                </ViewSettingsButton>
-              </NextLink>
+                <Settings style={{ marginRight: 8 }} />
+                {t('View Settings')}
+              </ViewSettingsButton>
             )}
             <StyledToggleButtonGroup
               exclusive

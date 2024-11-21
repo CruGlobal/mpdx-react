@@ -153,17 +153,15 @@ const Contact = ({
     <Card className={classes.contactBasic}>
       <CardHeader
         avatar={
-          <NextLink href={contactUrl} passHref shallow>
-            <Link underline="hover">
-              <Avatar
-                src={contact?.avatar}
-                style={{
-                  width: theme.spacing(4),
-                  height: theme.spacing(4),
-                }}
-              />
-            </Link>
-          </NextLink>
+          <Link component={NextLink} href={contactUrl} shallow>
+            <Avatar
+              src={contact?.avatar}
+              style={{
+                width: theme.spacing(4),
+                height: theme.spacing(4),
+              }}
+            />
+          </Link>
         }
         action={
           <Button
@@ -184,17 +182,15 @@ const Contact = ({
                 className={classes.buttonIcon}
               />
             )}
-            Confirm
+            {t('Confirm')}
           </Button>
         }
         title={
-          <NextLink href={contactUrl} passHref shallow>
-            <Link underline="hover">
-              <Typography className={classes.inline} variant="subtitle1">
-                {contact?.name}
-              </Typography>
-            </Link>
-          </NextLink>
+          <Link component={NextLink} href={contactUrl} shallow>
+            <Typography className={classes.inline} variant="subtitle1">
+              {contact?.name}
+            </Typography>
+          </Link>
         }
         subheader={
           <Typography variant="body2">
@@ -227,7 +223,6 @@ const Contact = ({
                   )}
                 {contact.primaryPerson?.primaryEmailAddress?.email && (
                   <Link
-                    underline="hover"
                     href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
                   >
                     <Typography variant="body2">

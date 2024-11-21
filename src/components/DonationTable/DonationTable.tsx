@@ -203,9 +203,9 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     return (
       <Tooltip title={row.donorAccountName}>
         {contactUrl ? (
-          <NextLink href={contactUrl} passHref>
-            <Link>{row.donorAccountName}</Link>
-          </NextLink>
+          <Link component={NextLink} href={contactUrl}>
+            {row.donorAccountName}
+          </Link>
         ) : (
           <span>{row.donorAccountName}</span>
         )}

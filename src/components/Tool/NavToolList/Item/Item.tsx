@@ -1,7 +1,13 @@
 import NextLink from 'next/link';
 import React, { ReactElement } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import { Box, ListItem, ListItemText, Theme, Typography } from '@mui/material';
+import {
+  Box,
+  ListItemButton,
+  ListItemText,
+  Theme,
+  Typography,
+} from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -41,28 +47,28 @@ export const Item = ({
   const accountListId = useAccountListId();
 
   return (
-    <NextLink
+    <ListItemButton
+      component={NextLink}
       href={`/accountLists/${accountListId}/tools/${url}`}
       scroll={false}
+      selected={isSelected}
     >
-      <ListItem button selected={isSelected}>
-        <ListItemText
-          data-testid={`${toolId}-list-item`}
-          primaryTypographyProps={{
-            variant: 'subtitle1',
-            color: 'textPrimary',
-          }}
-          primary={title}
-        />
-        {!loading && !!totalCount && (
-          <Box className={classes.notificationBox}>
-            <Typography data-testid={`${toolId}-notifications`}>
-              {totalCount < 10 ? totalCount : '9+'}
-            </Typography>
-          </Box>
-        )}
-        <ArrowForwardIos fontSize="small" color="disabled" />
-      </ListItem>
-    </NextLink>
+      <ListItemText
+        data-testid={`${toolId}-list-item`}
+        primaryTypographyProps={{
+          variant: 'subtitle1',
+          color: 'textPrimary',
+        }}
+        primary={title}
+      />
+      {!loading && !!totalCount && (
+        <Box className={classes.notificationBox}>
+          <Typography data-testid={`${toolId}-notifications`}>
+            {totalCount < 10 ? totalCount : '9+'}
+          </Typography>
+        </Box>
+      )}
+      <ArrowForwardIos fontSize="small" color="disabled" />
+    </ListItemButton>
   );
 };

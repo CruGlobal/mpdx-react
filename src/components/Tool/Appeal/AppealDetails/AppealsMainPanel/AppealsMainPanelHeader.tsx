@@ -91,12 +91,14 @@ export const AppealsMainPanelHeader: React.FC = () => {
       leftButtonGroup={
         <Hidden xsDown>
           <Box display="flex" alignItems="center">
-            <NextLink href={`/accountLists/${accountListId}/tools/appeals/`}>
-              <ViewSettingsButton variant="outlined">
-                <BackIcon style={{ marginRight: 8 }} />
-                {t('Appeals')}
-              </ViewSettingsButton>
-            </NextLink>
+            <ViewSettingsButton
+              LinkComponent={NextLink}
+              href={`/accountLists/${accountListId}/tools/appeals/`}
+              variant="outlined"
+            >
+              <BackIcon style={{ marginRight: 8 }} />
+              {t('Appeals')}
+            </ViewSettingsButton>
           </Box>
         </Hidden>
       }

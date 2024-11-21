@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React, { ReactElement, useState } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -253,14 +253,14 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           </TableContainer>
         </CardContent>
         <CardActions sx={{ justifyContent: 'space-between' }}>
-          <Link
+          <Button
+            LinkComponent={NextLink}
             href={`/accountLists/${accountListId}/reports/coaching`}
-            passHref
+            size="small"
+            color="primary"
           >
-            <Button size="small" color="primary">
-              {t('View Activity Detail')}
-            </Button>
-          </Link>
+            {t('View Activity Detail')}
+          </Button>
           <Button
             size="small"
             color="primary"

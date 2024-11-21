@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
-import { Collapse, ListItem, ListItemText } from '@mui/material';
+import { Collapse, Link, ListItemButton, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -15,12 +15,7 @@ interface Props {
   navType: NavTypeEnum;
 }
 
-export const Item: React.FC<Props> = ({
-  item,
-  selectedId,
-  navType,
-  ...rest
-}) => {
+export const Item: React.FC<Props> = ({ item, selectedId, navType }) => {
   const accountListId = useAccountListId();
   const [openSubMenu, setOpenSubMenu] = useState(false);
   const { t } = useTranslation();
@@ -46,7 +41,7 @@ export const Item: React.FC<Props> = ({
   };
 
   const children = (
-    <ListItem component="a" button selected={isSelected} {...rest}>
+    <ListItemButton selected={isSelected}>
       <ListItemText
         primaryTypographyProps={{
           variant: 'subtitle1',
@@ -67,20 +62,21 @@ export const Item: React.FC<Props> = ({
             : {}
         }
       />
-    </ListItem>
+    </ListItemButton>
   );
 
   return (
     <>
       {item.oauth && <OauthLink path={item.id}>{children}</OauthLink>}
       {!item.oauth && (
-        <NextLink
+        <Link
+          component={NextLink}
           href={`/accountLists/${accountListId}/${navType}/${item.id}`}
           scroll={false}
-          passHref
+          underline="none"
         >
           {children}
-        </NextLink>
+        </Link>
       )}
       {item?.subItems?.length && (
         <Collapse

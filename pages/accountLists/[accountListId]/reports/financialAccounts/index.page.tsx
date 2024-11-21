@@ -27,9 +27,7 @@ const FinancialAccountsPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Reports - Responsibility Centers')}
-        </title>
+        <title>{`${appName} | ${t('Reports - Responsibility Centers')}`}</title>
       </Head>
 
       {accountListId ? (

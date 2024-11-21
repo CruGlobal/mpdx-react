@@ -33,12 +33,11 @@ export const AccountSummaryCategory: React.FC<CategoriesProps> = ({
     <TableRow key={category.id}>
       <StyledTableCell component="th" scope="row">
         <Typography variant="body1" width="250px">
-          <NextLink href={transactionsUrl} passHref shallow>
-            <Link>{category.name}</Link>
-          </NextLink>
+          <Link component={NextLink} href={transactionsUrl} shallow>
+            {category.name}
+          </Link>
         </Typography>
       </StyledTableCell>
-
       {category.months.map((month, idx) => {
         const url = createTransactionsUrl({
           accountListId,
@@ -50,9 +49,9 @@ export const AccountSummaryCategory: React.FC<CategoriesProps> = ({
 
         return (
           <StyledTableCell key={`${idx}-${month.amount}`} align="right">
-            <NextLink href={url} passHref shallow>
-              <Link>{numberFormat(month.amount, locale)}</Link>
-            </NextLink>
+            <Link component={NextLink} href={url} shallow>
+              {numberFormat(month.amount, locale)}
+            </Link>
           </StyledTableCell>
         );
       })}

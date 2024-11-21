@@ -37,9 +37,7 @@ const LogoutPage = ({}): ReactElement => {
   return (
     <>
       <Head>
-        <title>
-          {t('Logout')} | {appName}
-        </title>
+        <title>{`${t('Logout')} | ${appName}`}</title>
       </Head>
       <BoxWrapper boxShadow={3} data-testid="EmptyReport">
         <Box mb={2}>

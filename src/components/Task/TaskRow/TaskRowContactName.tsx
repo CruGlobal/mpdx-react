@@ -59,25 +59,22 @@ export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
   return (
     <>
       {contactHrefObject && (
-        <NextLink
+        <Link
+          key={contact.id}
+          component={NextLink}
           href={contactHrefObject}
           shallow
-          legacyBehavior
-          passHref
-          key={contact.id}
         >
-          <Link>
-            <Typography
-              {...props}
-              noWrap
-              display="inline"
-              onClick={handleOnContactClick}
-              className={classes.contactName}
-            >
-              {contactName}
-            </Typography>
-          </Link>
-        </NextLink>
+          <Typography
+            {...props}
+            noWrap
+            display="inline"
+            onClick={handleOnContactClick}
+            className={classes.contactName}
+          >
+            {contactName}
+          </Typography>
+        </Link>
       )}
       {!contactHrefObject && (
         <Typography

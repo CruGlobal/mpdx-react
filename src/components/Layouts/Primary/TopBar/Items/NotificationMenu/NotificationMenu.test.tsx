@@ -43,12 +43,12 @@ describe('NotificationMenu', () => {
       ).toBeInTheDocument(),
     );
     expect(
-      getByRole('button', {
+      getByRole('link', {
         name: 'S Smith, Roger May 26, 2020 — Upcoming anniversary',
       }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', {
+      getByRole('link', {
         name: 'R Robertson, Tara May 26, 2020 — Upcoming birthday',
       }),
     ).toBeInTheDocument();
