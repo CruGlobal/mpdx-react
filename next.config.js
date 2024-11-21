@@ -101,7 +101,6 @@ const config = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: true,
-  swcMinify: true,
   webpack: (config) => {
     config.experiments = {
       ...config.experiments,
