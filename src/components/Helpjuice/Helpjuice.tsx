@@ -82,6 +82,7 @@ export const Helpjuice: React.FC = () => {
       }
       url.searchParams.set('mpdxUrl', window.location.href);
       contactLink.href = url.toString();
+      contactLink.target = '_blank';
     }
 
     const knowledgeBaseLink = document.querySelector('a.knowledge-base-link');
