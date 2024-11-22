@@ -22,7 +22,7 @@ query GetTaskForTaskModal(
         status
       }
     }
-    comments @include(if: $includeComments) {
+    comments(first: 1) @include(if: $includeComments) {
       totalCount
     }
     user {
