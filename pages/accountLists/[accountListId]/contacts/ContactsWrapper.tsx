@@ -45,6 +45,7 @@ export const ContactsWrapper: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const { query, replace, pathname } = router;
+  const { accountListId } = query;
 
   // Extract the initial contact id from the URL
   const [contactId, setContactId] = useState<string | undefined>(() =>
@@ -92,7 +93,7 @@ export const ContactsWrapper: React.FC<Props> = ({
   }, [viewMode, activeFiltersRaw]);
 
   const getContactHrefObject: GetContactHrefObject = useCallback(
-    (contactId) => {
+    (contactId?: string) => {
       // Omit the filters and searchTerm from the previous query because we don't want them in the URL
       // if they are empty and Next.js will still add them to the URL query even if they are undefined.
       // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm
@@ -120,12 +121,12 @@ export const ContactsWrapper: React.FC<Props> = ({
         query: newQuery,
       };
     },
-    [viewMode, activeFilters, searchTerm, pathname],
+    [accountListId, viewMode, activeFilters, searchTerm, pathname],
   );
 
   const urlQuery = useMemo(() => {
     return getContactHrefObject(contactId).query;
-  }, [contactId, viewMode, activeFilters, searchTerm]);
+  }, [contactId, getContactHrefObject]);
 
   useEffect(() => {
     replace({

@@ -74,7 +74,7 @@ export const useTasksContactContext = (): ContactsContextProps => {
 
   const urlQuery = useMemo(() => {
     return getContactHrefObject(contactId).query;
-  }, [accountListId, contactId, activeFilters, searchTerm]);
+  }, [contactId, getContactHrefObject]);
 
   useEffect(() => {
     replace({
