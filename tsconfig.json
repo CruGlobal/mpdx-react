@@ -24,7 +24,7 @@
     "__tests__/jest.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "next.config.js",
+    "next.config.ts",
     "onesky/upload.js",
     "onesky/download.js"
   ],

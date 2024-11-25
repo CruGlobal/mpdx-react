@@ -1,7 +1,8 @@
-const bundleAnalyzer = require('@next/bundle-analyzer');
-const withPlugins = require('next-compose-plugins');
-const withOptimizedImages = require('next-optimized-images');
-const withPWA = require('next-pwa');
+import type { NextConfig } from 'next';
+import bundleAnalyzer from '@next/bundle-analyzer';
+import withPlugins from 'next-compose-plugins';
+import withOptimizedImages from 'next-optimized-images';
+import withPWA from 'next-pwa';
 
 if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
@@ -29,13 +30,8 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
-// Remove empty strings and missing values from the object
-const compact = (obj) =>
-  Object.fromEntries(Object.entries(obj).filter(([_key, value]) => !!value));
-
-/** @type {import('next').NextConfig} */
-const config = {
-  env: compact({
+const config: NextConfig = {
+  env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
     API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
@@ -90,7 +86,7 @@ const config = {
     PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL,
     TERMS_OF_USE_URL: process.env.TERMS_OF_USE_URL,
     DD_ENV: process.env.DD_ENV ?? 'development',
-  }),
+  },
   // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
   productionBrowserSourceMaps: true,
