@@ -43,7 +43,7 @@ describe('DesktopTimeField', () => {
     it('the formatted value', () => {
       const { getByRole } = render(<TestComponent />);
 
-      expect(getByRole('textbox')).toHaveValue('3:04\u202fAM');
+      expect(getByRole('textbox')).toHaveValue('3:04 AM');
     });
 
     it('clears when the new value is null', () => {
@@ -57,14 +57,14 @@ describe('DesktopTimeField', () => {
       const { getByRole, rerender } = render(<TestComponent />);
       rerender(<TestComponent value={DateTime.invalid('Invalid')} />);
 
-      expect(getByRole('textbox')).toHaveValue('3:04\u202fAM');
+      expect(getByRole('textbox')).toHaveValue('3:04 AM');
     });
 
     it('updates to the formatted new value', () => {
       const { getByRole, rerender } = render(<TestComponent />);
       rerender(<TestComponent value={DateTime.local(2024, 1, 2, 12, 4, 5)} />);
 
-      expect(getByRole('textbox')).toHaveValue('12:04\u202fPM');
+      expect(getByRole('textbox')).toHaveValue('12:04 PM');
     });
   });
 

@@ -1,6 +1,6 @@
 # MPDX
 
-This is a [Next.js 13](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). This application is not free to re-create from this source code (see [LICENSE](./LICENSE)). If you wish to host your own version of
+This is a [Next.js 14](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). This application is not free to re-create from this source code (see [LICENSE](./LICENSE)). If you wish to host your own version of
 this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org) to start the discussions.
 
 ## Environments
@@ -11,7 +11,7 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 
 ## Getting Started
 
-First, make sure that you have a suitable version of Node.js. This project uses node v18.13.0. To check your node version, run `node --version`. If you don't have node v18.13.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
+First, make sure that you have a suitable version of Node.js. This project uses node v18.19.0. To check your node version, run `node --version`. If you don't have node v18.19.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
 
 ```bash
 # Install asdf and the node plugin
@@ -27,7 +27,7 @@ echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ${ZDOTDIR:-~}/.zshrc
 # Install the version of node defined in this project's .tool-versions file
 asdf install nodejs
 
-# Check that the node version is now 18.13.0
+# Check that the node version is now 18.19.0
 node --version
 ```
 
