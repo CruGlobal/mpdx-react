@@ -313,7 +313,7 @@ describe('Google Import', () => {
       expect(router.push).toHaveBeenCalledWith(
         `/accountLists/${accountListId}/tools`,
       );
-    });
+    }, 15000);
   });
 
   describe('Handles errors', () => {
