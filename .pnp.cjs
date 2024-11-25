@@ -12695,7 +12695,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/cross-env-npm-7.0.3-96d81820f4-26f2f3ea2a.zip/node_modules/cross-env/",\
           "packageDependencies": [\
             ["cross-env", "npm:7.0.3"],\
-            ["cross-spawn", "npm:7.0.3"]\
+            ["cross-spawn", "npm:7.0.6"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -12737,10 +12737,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["cross-spawn", [\
-        ["npm:7.0.3", {\
-          "packageLocation": "./.yarn/cache/cross-spawn-npm-7.0.3-e4ff3e65b3-671cc7c728.zip/node_modules/cross-spawn/",\
+        ["npm:7.0.6", {\
+          "packageLocation": "./.yarn/cache/cross-spawn-npm-7.0.6-264bddf921-8d306efaca.zip/node_modules/cross-spawn/",\
           "packageDependencies": [\
-            ["cross-spawn", "npm:7.0.3"],\
+            ["cross-spawn", "npm:7.0.6"],\
             ["path-key", "npm:3.1.1"],\
             ["shebang-command", "npm:2.0.0"],\
             ["which", "npm:2.0.2"]\
@@ -14115,7 +14115,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@ungap/structured-clone", "npm:1.2.0"],\
             ["ajv", "npm:6.12.6"],\
             ["chalk", "npm:4.1.2"],\
-            ["cross-spawn", "npm:7.0.3"],\
+            ["cross-spawn", "npm:7.0.6"],\
             ["debug", "virtual:4758feee42453c0e31b0d2032a7b1362d6b06281699830d2da9a056f2cca72bd2c5cfdb74005fdf03a64876be8eaca2dd7b0fc2dc59d14318badf19cb22ba18e#npm:4.3.4"],\
             ["doctrine", "npm:3.0.0"],\
             ["escape-string-regexp", "npm:4.0.0"],\
@@ -14564,7 +14564,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/execa-npm-5.1.1-191347acf5-fba9022c8c.zip/node_modules/execa/",\
           "packageDependencies": [\
             ["execa", "npm:5.1.1"],\
-            ["cross-spawn", "npm:7.0.3"],\
+            ["cross-spawn", "npm:7.0.6"],\
             ["get-stream", "npm:6.0.1"],\
             ["human-signals", "npm:2.1.0"],\
             ["is-stream", "npm:2.0.1"],\
@@ -14580,7 +14580,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/execa-npm-6.1.0-be1d7f323b-1a4af79983.zip/node_modules/execa/",\
           "packageDependencies": [\
             ["execa", "npm:6.1.0"],\
-            ["cross-spawn", "npm:7.0.3"],\
+            ["cross-spawn", "npm:7.0.6"],\
             ["get-stream", "npm:6.0.1"],\
             ["human-signals", "npm:3.0.1"],\
             ["is-stream", "npm:3.0.0"],\
