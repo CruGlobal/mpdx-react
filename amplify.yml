@@ -3,8 +3,10 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 18.13
-        - nvm use 18.13
+        - NODE_VERSION=$(cat .tool-versions | grep '^nodejs' | sed 's/nodejs //')
+        - echo "Using Node.js version $NODE_VERSION"
+        - nvm install "$NODE_VERSION"
+        - node -v
         - |
           if [[ "${AWS_BRANCH}" != "main" && "${AWS_BRANCH}" != "staging" ]]; then
             PREVIEW_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com";

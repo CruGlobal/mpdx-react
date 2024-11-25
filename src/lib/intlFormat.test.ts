@@ -253,7 +253,7 @@ describe('intlFormat', () => {
         locale,
       );
 
-      expect(date.trim()).toBe('Jan 16, 2024, 6:34\u202fPM UTC');
+      expect(date.trim()).toBe('Jan 16, 2024, 6:34 PM UTC');
     });
 
     it('returns null if month is null', () => {

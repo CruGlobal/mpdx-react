@@ -51,7 +51,7 @@ describe('DateTimeFieldPair', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('textbox', { name: 'Date' })).toHaveValue('1/2/2024');
-    expect(getByRole('textbox', { name: 'Time' })).toHaveValue('3:04\u202fAM');
+    expect(getByRole('textbox', { name: 'Time' })).toHaveValue('3:04 AM');
   });
 
   it('changes the date to today when the date is cleared', () => {
