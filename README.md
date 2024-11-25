@@ -1,6 +1,6 @@
 # MPDX
 
-This is a [Next.js 14](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). This application is not free to re-create from this source code (see [LICENSE](./LICENSE)). If you wish to host your own version of
+This is a [Next.js 15](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). This application is not free to re-create from this source code (see [LICENSE](./LICENSE)). If you wish to host your own version of
 this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org) to start the discussions.
 
 ## Environments
