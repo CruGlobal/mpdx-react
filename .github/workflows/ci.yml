@@ -112,6 +112,8 @@ jobs:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+      - name: 🌐 Extract Translations
+        run: yarn extract
       - name: ⛅🔼 OneSky Upload
         env:
           ONESKY_API_KEY: ${{ secrets.ONESKY_API_KEY }}
