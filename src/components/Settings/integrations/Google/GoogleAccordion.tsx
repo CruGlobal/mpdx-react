@@ -125,12 +125,12 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
             </StyledFormLabel>
             <Typography>
               {t(`Google’s suite of tools are great at connecting you to your
-            Ministry Partners.`)}
+              Ministry Partners.`)}
             </Typography>
             <Typography mt={2}>
               {t(
                 `By synchronizing your Google services with {{appName}}, you will be able
-            to:`,
+              to:`,
                 { appName },
               )}
             </Typography>
@@ -150,8 +150,8 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
             <Typography>
               {t(
                 `Connect your Google account to begin, and then setup specific
-            settings for Google Calendar and Contacts. {{appName}} leaves you in
-            control of how each service stays in sync.`,
+              settings for Google Calendar and Contacts. {{appName}} leaves you in
+              control of how each service stays in sync.`,
                 { appName },
               )}
             </Typography>
@@ -188,8 +188,8 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
                   <Alert severity="warning" style={{ marginTop: '15px' }}>
                     {t(
                       `The link between {{appName}} and your Google account stopped working. Click "Refresh Google Account" to
-            re-enable it. After that, you'll need to manually re-enable any integrations that you had set
-            already.`,
+              re-enable it. After that, you'll need to manually re-enable any integrations that you had set
+              already.`,
                       { appName },
                     )}
                   </Alert>
