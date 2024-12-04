@@ -43,4 +43,12 @@ jobs:
           sign-commits: true
           commit-message: Run `yarn extract` and `yarn onesky:download`
           title: '[no-Jira] Update translations'
-          body: Update translations with the latest labels extracted from the components and downloaded from OneSky.
+          body: >
+            Update translations with the latest labels extracted from the components and downloaded from OneSky.\n\n
+            Due to GitHub Actions restrictions, our `on: pull_request` CI workflow will not run automatically because this PR was created by a bot.
+            To get it to run, a human will have to push a commit to the branch.\n\n
+            ```sh\n
+            $ git switch bot-update-translations\n
+            $ git commit --allow-empty --message "Bump CI"\n
+            $ git push\n
+            ```
