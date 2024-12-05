@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -37,7 +37,6 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
-  const [canDelete, setCanDelete] = useState(true);
 
   const { data } = useContactSourceQuery({
     variables: { accountListId, contactId },
@@ -45,7 +44,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   });
   const contactSources = data?.contact;
 
-  useEffect(() => {
+  const canDelete = useMemo(() => {
     if (!contactSources) {
       return;
     }
@@ -83,11 +82,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     const contactIsNotEditable =
       isContactNonEditable || isAddressNonEditable || isPersonNonEditable;
 
-    if (contactIsNotEditable) {
-      setCanDelete(false);
-    } else {
-      setCanDelete(true);
-    }
+    return !contactIsNotEditable;
   }, [contactSources]);
 
   return (
