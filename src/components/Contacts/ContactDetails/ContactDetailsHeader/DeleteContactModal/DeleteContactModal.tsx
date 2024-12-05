@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -13,6 +13,8 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { isEditableSource } from 'src/utils/sourceHelper';
+import { useContactSourceQuery } from './ContactSource.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -35,11 +37,59 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
+  const [canDelete, setCanDelete] = useState(true);
 
   const { data } = useContactSourceQuery({
     variables: { accountListId, contactId },
     skip: !open && !contactId,
   });
+  const contactSources = data?.contact;
+
+  useEffect(() => {
+    if (!contactSources) {
+      return;
+    }
+    // We ensure the contact was created on MPDX and that all the data is editable.
+    // If any data is not editable, this means it was created by a third party.
+    // Which will only recreate the data after deleting it on MPDX.
+    // To prevent this confusion, we do not allow a contact to be deleted if it has non editable data.
+
+    const isContactNonEditable = isEditableSource(contactSources.source ?? '');
+
+    const isAddressNonEditable = contactSources.addresses?.nodes.some(
+      (address) => !isEditableSource(address.source ?? ''),
+    );
+
+    const hasNonEditablePersonData = contactSources.people?.nodes?.map(
+      (people) => {
+        const foundNonEditableEmailAddress = people.emailAddresses.nodes.some(
+          (email) => !isEditableSource(email.source),
+        );
+        const foundNonEditablePhone = people.phoneNumbers.nodes.some(
+          (phone) => !isEditableSource(phone.source),
+        );
+        return {
+          foundNonEditableEmailAddress,
+          foundNonEditablePhone,
+        };
+      },
+    );
+    const isPersonNonEditable = hasNonEditablePersonData.some((person) => {
+      return (
+        person.foundNonEditableEmailAddress || person.foundNonEditablePhone
+      );
+    });
+
+    const contactIsNotEditable =
+      isContactNonEditable || isAddressNonEditable || isPersonNonEditable;
+
+    if (contactIsNotEditable) {
+      setCanDelete(false);
+    } else {
+      setCanDelete(true);
+    }
+  }, [contactSources]);
+
   return (
     <Modal
       isOpen={open}
