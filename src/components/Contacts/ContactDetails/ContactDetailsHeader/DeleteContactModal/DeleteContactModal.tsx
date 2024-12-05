@@ -54,7 +54,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     // Which will only recreate the data after deleting it on MPDX.
     // To prevent this confusion, we do not allow a contact to be deleted if it has non editable data.
 
-    const isContactNonEditable = isEditableSource(contactSources.source ?? '');
+    const isContactNonEditable = !isEditableSource(contactSources.source ?? '');
 
     const isAddressNonEditable = contactSources.addresses?.nodes.some(
       (address) => !isEditableSource(address.source ?? ''),
