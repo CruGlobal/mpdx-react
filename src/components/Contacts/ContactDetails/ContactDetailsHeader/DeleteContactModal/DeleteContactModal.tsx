@@ -99,7 +99,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
             )}
           {!canDelete &&
             t(
-              "This contact cannot be deleted because part or all of the contact's data is sourced from a third Party. Please email Donation Services to request that this contact be deleted, or you can hide this contact instead.",
+              "This contact cannot be deleted because part or all of the contact's data syncs with Donation Services. Please email Donation Services to request that this contact be deleted, or you can hide this contact instead.",
             )}
         </DialogContentText>
       </DialogContent>
