@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   CircularProgress,
   DialogActions,
@@ -37,7 +37,6 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
-  const [canDelete, setCanDelete] = useState(true);
 
   const { data } = useContactSourceQuery({
     variables: { accountListId, contactId },
@@ -45,22 +44,22 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   });
   const contactSources = data?.contact;
 
-  useEffect(() => {
+  const canDelete = useMemo(() => {
     if (!contactSources) {
-      return;
+      return true;
     }
     // We ensure the contact was created on MPDX and that all the data is editable.
     // If any data is not editable, this means it was created by a third party.
     // Which will only recreate the data after deleting it on MPDX.
     // To prevent this confusion, we do not allow a contact to be deleted if it has non editable data.
 
-    const isContactNonEditable = isEditableSource(contactSources.source ?? '');
+    const isContactNonEditable = !isEditableSource(contactSources.source ?? '');
 
     const isAddressNonEditable = contactSources.addresses?.nodes.some(
       (address) => !isEditableSource(address.source ?? ''),
     );
 
-    const hasNonEditablePersonData = contactSources.people?.nodes?.map(
+    const hasNonEditablePersonData = contactSources.people?.nodes?.some(
       (people) => {
         const foundNonEditableEmailAddress = people.emailAddresses.nodes.some(
           (email) => !isEditableSource(email.source),
@@ -68,26 +67,14 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         const foundNonEditablePhone = people.phoneNumbers.nodes.some(
           (phone) => !isEditableSource(phone.source),
         );
-        return {
-          foundNonEditableEmailAddress,
-          foundNonEditablePhone,
-        };
+        return foundNonEditableEmailAddress || foundNonEditablePhone;
       },
     );
-    const isPersonNonEditable = hasNonEditablePersonData.some((person) => {
-      return (
-        person.foundNonEditableEmailAddress || person.foundNonEditablePhone
-      );
-    });
 
     const contactIsNotEditable =
-      isContactNonEditable || isAddressNonEditable || isPersonNonEditable;
+      isContactNonEditable || isAddressNonEditable || hasNonEditablePersonData;
 
-    if (contactIsNotEditable) {
-      setCanDelete(false);
-    } else {
-      setCanDelete(true);
-    }
+    return !contactIsNotEditable;
   }, [contactSources]);
 
   return (
@@ -104,7 +91,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
             )}
           {!canDelete &&
             t(
-              "This contact cannot be deleted because part or all of the contact's data is sourced from a third Party. Please email Donation Services to request that this contact be deleted, or you can hide this contact instead.",
+              "This contact cannot be deleted because part or all of the contact's data syncs with Donation Services. Please email Donation Services to request that this contact be deleted, or you can hide this contact instead.",
             )}
         </DialogContentText>
       </DialogContent>

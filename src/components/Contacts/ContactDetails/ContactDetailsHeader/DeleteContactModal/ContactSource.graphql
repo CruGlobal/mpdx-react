@@ -4,18 +4,22 @@ query ContactSource($accountListId: ID!, $contactId: ID!) {
     source
     addresses {
       nodes {
+        id
         source
       }
     }
     people {
       nodes {
+        id
         emailAddresses {
           nodes {
+            id
             source
           }
         }
         phoneNumbers {
           nodes {
+            id
             source
           }
         }

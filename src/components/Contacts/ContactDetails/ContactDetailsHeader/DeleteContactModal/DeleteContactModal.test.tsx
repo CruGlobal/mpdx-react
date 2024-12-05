@@ -2,22 +2,24 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactSourceEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ContactSourceQuery } from './ContactSource.generated';
 import { DeleteContactModal } from './DeleteContactModal';
 
 const contactId = 'contact-id';
+const mutationSpy = jest.fn();
 const setOpen = jest.fn();
 const deleteContact = jest.fn();
 
 interface TestComponentProps {
   open?: boolean;
   deleting?: boolean;
-  contactSource?: string;
+  contactSource?: ContactSourceEnum;
   addressSources?: string[];
   emailSources?: string[];
   phoneSources?: string[];
@@ -26,7 +28,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   open = true,
   deleting = false,
-  contactSource = 'MPDX',
+  contactSource = ContactSourceEnum.Mpdx,
   addressSources = [],
   emailSources = [],
   phoneSources = [],
@@ -39,7 +41,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             ContactSource: ContactSourceQuery;
           }>
             mocks={{
-              GetContactDetailsHeader: {
+              ContactSource: {
                 contact: {
                   id: contactId,
                   source: contactSource,
@@ -56,11 +58,20 @@ const TestComponent: React.FC<TestComponentProps> = ({
                           nodes: phoneSources.map((source) => ({ source })),
                         },
                       },
+                      {
+                        emailAddresses: {
+                          nodes: emailSources.map((source) => ({ source })),
+                        },
+                        phoneNumbers: {
+                          nodes: phoneSources.map((source) => ({ source })),
+                        },
+                      },
                     ],
                   },
                 },
               },
             }}
+            onCall={mutationSpy}
           >
             <DeleteContactModal
               open={open}
@@ -85,8 +96,12 @@ describe('DeleteContactModal', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should be able to delete contact', () => {
+  it('should be able to delete contact', async () => {
     const { getByText, getByRole } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
+    });
 
     expect(
       getByText(/Are you sure you want to permanently delete this contact?/),
@@ -95,8 +110,12 @@ describe('DeleteContactModal', () => {
     expect(getByRole('button', { name: 'delete contact' })).toBeInTheDocument();
   });
 
-  it('should prevent user from deleting contact while currently deleting contact', () => {
+  it('should prevent user from deleting contact while currently deleting contact', async () => {
     const { getByRole } = render(<TestComponent deleting={true} />);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
+    });
 
     expect(getByRole('button', { name: 'delete contact' })).toBeDisabled();
   });
@@ -109,7 +128,7 @@ describe('DeleteContactModal', () => {
     const tests: TestProps[] = [
       {
         testName: 'disables deletion if contact created by third party',
-        props: { contactSource: 'Siebel' },
+        props: { contactSource: ContactSourceEnum.GiveSite },
       },
       {
         testName:
@@ -141,7 +160,7 @@ describe('DeleteContactModal', () => {
 
       expect(
         await findByText(
-          /This contact cannot be deleted because part or all of the contact's data is sourced from a third Party./,
+          /This contact cannot be deleted because part or all of the contact's data syncs with Donation Services/,
         ),
       ).toBeInTheDocument();
 
@@ -151,19 +170,21 @@ describe('DeleteContactModal', () => {
 
   describe('Enable deletion', () => {
     it('should show modal and be able to delete user', async () => {
-      const { findByText, getByRole } = render(
+      const { getByText, getByRole } = render(
         <TestComponent
-          contactSource={'MPDX'}
+          contactSource={ContactSourceEnum.Mpdx}
           addressSources={['MPDX', 'MPDX']}
           emailSources={['MPDX', 'MPDX']}
           phoneSources={['MPDX', 'MPDX']}
         />,
       );
 
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
+      });
+
       expect(
-        await findByText(
-          /Are you sure you want to permanently delete this contact?/,
-        ),
+        getByText(/Are you sure you want to permanently delete this contact?/),
       ).toBeInTheDocument();
 
       expect(
