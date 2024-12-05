@@ -12,6 +12,7 @@ import {
   DeleteButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -22,6 +23,7 @@ interface DeleteContactModalProps {
   setOpen: (open: boolean) => void;
   deleting: boolean;
   deleteContact: () => void;
+  contactId: string;
 }
 
 export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
@@ -29,8 +31,15 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   setOpen,
   deleting,
   deleteContact,
+  contactId,
 }) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId() ?? '';
+
+  const { data } = useContactSourceQuery({
+    variables: { accountListId, contactId },
+    skip: !open && !contactId,
+  });
   return (
     <Modal
       isOpen={open}

@@ -296,6 +296,7 @@ export const ContactDetailsMoreAcitions: React.FC<
           setOpen={setDeleteModalOpen}
           deleting={deleting}
           deleteContact={handleDeleteContact}
+          contactId={contactId}
         />
       )}
       {openHideModal && (
