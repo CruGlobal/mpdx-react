@@ -1,0 +1,25 @@
+query ContactSource($accountListId: ID!, $contactId: ID!) {
+  contact(accountListId: $accountListId, id: $contactId) {
+    id
+    source
+    addresses {
+      nodes {
+        source
+      }
+    }
+    people {
+      nodes {
+        emailAddresses {
+          nodes {
+            source
+          }
+        }
+        phoneNumbers {
+          nodes {
+            source
+          }
+        }
+      }
+    }
+  }
+}
