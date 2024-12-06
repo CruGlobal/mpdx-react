@@ -1,10 +1,6 @@
 import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import { AccountListTypeEnum } from '../CoachingDetail';
 import { MonthlyCommitment, MonthlyCommitmentProps } from './MonthlyCommitment';
 import { GetReportsPledgeHistoriesQuery } from './MonthlyCommitment.generated';
@@ -60,14 +56,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('MonthlyCommitment', () => {
-  beforeEach(() => {
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
-  });
-
   it('renders', async () => {
     const { findByTestId } = render(<TestComponent missingData />);
 

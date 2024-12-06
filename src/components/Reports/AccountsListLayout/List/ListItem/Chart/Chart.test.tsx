@@ -1,10 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
 import { AccountListItemChart as Chart } from './Chart';
 
@@ -19,13 +15,6 @@ const dataMock = [
 ];
 
 describe('AccountItemChart', () => {
-  beforeEach(() => {
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
-  });
   it('default', async () => {
     const { getByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
