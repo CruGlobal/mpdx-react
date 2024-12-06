@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
 import { makeStyles } from 'tss-react/mui';
+import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
@@ -35,23 +36,6 @@ import AnimatedCard from '../../AnimatedCard';
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
     textAlign: 'center',
-  },
-  lineKey: {
-    display: 'inline-block',
-    height: '5px',
-    width: '20px',
-    marginRight: '10px',
-    marginBottom: '4px',
-    borderRadius: '5px',
-  },
-  lineKeyGoal: {
-    backgroundColor: '#17AEBF',
-  },
-  lineKeyAverage: {
-    backgroundColor: '#9C9FA1',
-  },
-  lineKeyPledged: {
-    backgroundColor: '#FFCF07',
   },
   boxImg: {
     display: 'flex',
@@ -168,70 +152,49 @@ const DonationHistories = ({
                 <Grid container spacing={2} justifyContent="center">
                   {goal ? (
                     <>
-                      <Grid item>
-                        <Box
-                          className={[
-                            classes.lineKey,
-                            classes.lineKeyGoal,
-                          ].join(' ')}
+                      <Grid item data-testid="DonationHistoriesTypographyGoal">
+                        <LegendReferenceLine
+                          name={t('Goal')}
+                          value={currencyFormat(goal, currencyCode, locale)}
+                          color="#17AEBF"
                         />
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          data-testid="DonationHistoriesTypographyGoal"
-                        >
-                          <strong>{t('Goal')}</strong>{' '}
-                          {currencyFormat(goal, currencyCode, locale)}
-                        </Typography>
                       </Grid>
                       <Grid item>|</Grid>
                     </>
                   ) : null}
-                  <Grid item>
-                    <Box
-                      className={[classes.lineKey, classes.lineKeyAverage].join(
-                        ' ',
-                      )}
-                    />
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      data-testid="DonationHistoriesTypographyAverage"
-                    >
-                      <strong>{t('Average')}</strong>{' '}
-                      {loading || !reportsDonationHistories ? (
-                        <Skeleton
-                          variant="text"
-                          style={{ display: 'inline-block' }}
-                          width={90}
-                        />
-                      ) : (
-                        currencyFormat(
-                          reportsDonationHistories.averageIgnoreCurrent,
-                          currencyCode,
-                          locale,
+                  <Grid item data-testid="DonationHistoriesTypographyAverage">
+                    <LegendReferenceLine
+                      name={t('Average')}
+                      value={
+                        loading || !reportsDonationHistories ? (
+                          <Skeleton
+                            variant="text"
+                            style={{ display: 'inline-block' }}
+                            width={90}
+                          />
+                        ) : (
+                          currencyFormat(
+                            reportsDonationHistories.averageIgnoreCurrent,
+                            currencyCode,
+                            locale,
+                          )
                         )
-                      )}
-                    </Typography>
+                      }
+                      color="#9C9FA1"
+                    />
                   </Grid>
                   {pledged ? (
                     <>
                       <Grid item>|</Grid>
-                      <Grid item>
-                        <Box
-                          className={[
-                            classes.lineKey,
-                            classes.lineKeyPledged,
-                          ].join(' ')}
+                      <Grid
+                        item
+                        data-testid="DonationHistoriesTypographyPledged"
+                      >
+                        <LegendReferenceLine
+                          name={t('Committed')}
+                          value={currencyFormat(pledged, currencyCode, locale)}
+                          color="#FFCF07"
                         />
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          data-testid="DonationHistoriesTypographyPledged"
-                        >
-                          <strong>{t('Committed')}</strong>{' '}
-                          {currencyFormat(pledged, currencyCode, locale)}
-                        </Typography>
                       </Grid>
                     </>
                   ) : null}
