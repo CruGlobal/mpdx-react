@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { MachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
 import { MonthlyGoalAccordion } from './MonthlyGoalAccordion';
 
 jest.mock('next-auth/react');
@@ -33,17 +34,30 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
+  machineCalculatedGoal?: number;
   expandedPanel: string;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
+  machineCalculatedGoal,
   expandedPanel,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{
+          MachineCalculatedGoal: MachineCalculatedGoalQuery;
+        }>
+          mocks={{
+            MachineCalculatedGoal: {
+              healthIndicatorData: machineCalculatedGoal
+                ? [{ machineCalculatedGoal }]
+                : [],
+            },
+          }}
+          onCall={mutationSpy}
+        >
           <MonthlyGoalAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
@@ -133,5 +147,31 @@ describe('MonthlyGoalAccordion', () => {
         },
       ]);
     });
+  });
+
+  it('resets goal to calculated goal', async () => {
+    const { getByRole, findByText } = render(
+      <Components
+        monthlyGoal={1000}
+        machineCalculatedGoal={1500}
+        expandedPanel={label}
+      />,
+    );
+    const input = getByRole('spinbutton', { name: label });
+
+    expect(
+      await findByText(
+        'Based on the past year, NetSuite estimates that you need at least $1,500 of monthly support. You can use this amount or choose your own target monthly goal.',
+      ),
+    ).toBeInTheDocument();
+
+    const resetButton = getByRole('button', { name: /Reset/ });
+    userEvent.click(resetButton);
+    expect(input).toHaveValue(1500);
+    expect(resetButton).not.toBeInTheDocument();
+
+    userEvent.clear(input);
+    userEvent.type(input, '500');
+    expect(getByRole('button', { name: /Reset/ })).toBeInTheDocument();
   });
 });
