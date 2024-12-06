@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
 import { makeStyles } from 'tss-react/mui';
+import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
@@ -221,25 +222,7 @@ const DonationHistories = ({
             <>
               <Box display={{ xs: 'none', md: 'block' }} height={250}>
                 {loading ? (
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                    data-testid="DonationHistoriesGridLoading"
-                  >
-                    <Skeleton variant="rectangular" width={30} height={30} />
-                    <Skeleton variant="rectangular" width={30} height={50} />
-                    <Skeleton variant="rectangular" width={30} height={70} />
-                    <Skeleton variant="rectangular" width={30} height={90} />
-                    <Skeleton variant="rectangular" width={30} height={110} />
-                    <Skeleton variant="rectangular" width={30} height={130} />
-                    <Skeleton variant="rectangular" width={30} height={150} />
-                    <Skeleton variant="rectangular" width={30} height={170} />
-                    <Skeleton variant="rectangular" width={30} height={190} />
-                    <Skeleton variant="rectangular" width={30} height={210} />
-                    <Skeleton variant="rectangular" width={30} height={230} />
-                    <Skeleton variant="rectangular" width={30} height={250} />
-                  </Grid>
+                  <BarChartSkeleton bars={12} />
                 ) : (
                   <ResponsiveContainer minWidth={600}>
                     <BarChart
@@ -304,25 +287,8 @@ const DonationHistories = ({
                 )}
               </Box>
               <Box display={{ xs: 'block', md: 'none' }} height={150}>
-                {loading ? (
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                  >
-                    <Skeleton variant="rectangular" width={10} height={40} />
-                    <Skeleton variant="rectangular" width={10} height={50} />
-                    <Skeleton variant="rectangular" width={10} height={60} />
-                    <Skeleton variant="rectangular" width={10} height={70} />
-                    <Skeleton variant="rectangular" width={10} height={80} />
-                    <Skeleton variant="rectangular" width={10} height={90} />
-                    <Skeleton variant="rectangular" width={10} height={100} />
-                    <Skeleton variant="rectangular" width={10} height={110} />
-                    <Skeleton variant="rectangular" width={10} height={120} />
-                    <Skeleton variant="rectangular" width={10} height={130} />
-                    <Skeleton variant="rectangular" width={10} height={140} />
-                    <Skeleton variant="rectangular" width={10} height={150} />
-                  </Grid>
+                {!loading ? (
+                  <BarChartSkeleton bars={12} width={10} />
                 ) : (
                   <ResponsiveContainer>
                     <BarChart data={periods}>

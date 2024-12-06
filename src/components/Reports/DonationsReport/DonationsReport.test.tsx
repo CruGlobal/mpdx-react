@@ -129,9 +129,7 @@ describe('DonationsReport', () => {
     );
     expect(getByText(title)).toBeInTheDocument();
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
     expect(queryAllByRole('button')[1]).toBeInTheDocument();
   });
 
@@ -157,9 +155,7 @@ describe('DonationsReport', () => {
     expect(
       getByTestId('DonationHistoriesTypographyAverage'),
     ).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
     expect(await findByRole('cell', { name: 'John' })).toBeInTheDocument();
   });
 

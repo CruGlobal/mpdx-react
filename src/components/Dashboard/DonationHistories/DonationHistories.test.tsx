@@ -29,9 +29,7 @@ describe('DonationHistories', () => {
       </TestRouter>,
     );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
   });
 
   it('empty periods', () => {
@@ -59,9 +57,7 @@ describe('DonationHistories', () => {
       </TestRouter>,
     );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
   });
 
   it('loading', () => {
@@ -70,7 +66,7 @@ describe('DonationHistories', () => {
         <DonationHistories setTime={setTime} loading={true} />
       </TestRouter>,
     );
-    expect(getByTestId('DonationHistoriesGridLoading')).toBeInTheDocument();
+    expect(getByTestId('BarChartSkeleton')).toBeInTheDocument();
     expect(queryByTestId('DonationHistoriesBoxEmpty')).not.toBeInTheDocument();
   });
 
