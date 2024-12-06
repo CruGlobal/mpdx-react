@@ -6187,7 +6187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:8.17.0":
+"@typescript-eslint/parser@npm:^8.17.0":
   version: 8.17.0
   resolution: "@typescript-eslint/parser@npm:8.17.0"
   dependencies:
@@ -15159,7 +15159,7 @@ __metadata:
     "@types/testing-library__jest-dom": ^5.14.5
     "@types/uuid": ^9.0.1
     "@typescript-eslint/eslint-plugin": ^7.5.0
-    "@typescript-eslint/parser": 8.17.0
+    "@typescript-eslint/parser": ^8.17.0
     apollo-datasource-rest: ^3.7.0
     apollo-server-micro: ^3.11.0
     apollo3-cache-persist: ^0.14.1
