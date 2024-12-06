@@ -1,22 +1,38 @@
 import React, { ReactElement, useMemo } from 'react';
-import { TextField } from '@mui/material';
+import { Box, Button, TextField, Tooltip } from '@mui/material';
 import { Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
+import { useMachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<
   Pick<AccountListSettingsInput, 'monthlyGoal'>
 > = yup.object({
   monthlyGoal: yup.number().required(),
 });
+
+const formatMonthlyGoal = (
+  goal: number | null,
+  currency: string,
+  locale: string,
+): string => {
+  if (goal === null) {
+    return '';
+  }
+
+  if (currency && locale) {
+    return currencyFormat(goal, currency, locale);
+  }
+  return goal.toString();
+};
 
 interface MonthlyGoalAccordionProps {
   handleAccordionChange: (panel: string) => void;
@@ -43,13 +59,22 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   const locale = useLocale();
   const label = t('Monthly Goal');
 
-  const monthlyGoalString = useMemo(() => {
-    return monthlyGoal && locale && currency
-      ? currencyFormat(monthlyGoal, currency, locale)
-      : monthlyGoal
-      ? String(monthlyGoal)
-      : '';
-  }, [monthlyGoal, locale, currency]);
+  const { data } = useMachineCalculatedGoalQuery({
+    variables: {
+      accountListId,
+      month: DateTime.now().startOf('month').toISODate(),
+    },
+  });
+  const calculatedGoal = data?.healthIndicatorData[0]?.machineCalculatedGoal;
+  const formattedCalculatedGoal = useMemo(
+    () => formatMonthlyGoal(calculatedGoal ?? null, currency, locale),
+    [calculatedGoal, currency, locale],
+  );
+
+  const formattedMonthlyGoal = useMemo(
+    () => formatMonthlyGoal(monthlyGoal, currency, locale),
+    [monthlyGoal, currency, locale],
+  );
 
   const onSubmit = async (
     attributes: Pick<AccountListSettingsInput, 'monthlyGoal'>,
@@ -79,12 +104,21 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     handleSetupChange();
   };
 
+  const instructions = calculatedGoal
+    ? t(
+        'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can use this amount or choose your own target monthly goal.',
+        { goal: formattedCalculatedGoal },
+      )
+    : t(
+        'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
+      );
+
   return (
     <AccordionItem
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={monthlyGoalString}
+      value={formattedMonthlyGoal}
       fullWidth
       disabled={disabled}
     >
@@ -104,17 +138,10 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
           isSubmitting,
           isValid,
           handleChange,
+          setFieldValue,
         }): ReactElement => (
-          <FormWrapper
-            onSubmit={handleSubmit}
-            isValid={isValid}
-            isSubmitting={isSubmitting}
-          >
-            <FieldWrapper
-              helperText={t(
-                'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
-              )}
-            >
+          <form onSubmit={handleSubmit}>
+            <FieldWrapper helperText={instructions}>
               <TextField
                 value={monthlyGoal}
                 onChange={handleChange}
@@ -132,7 +159,35 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                 id="monthlyGoalInput"
               />
             </FieldWrapper>
-          </FormWrapper>
+            <Box display="flex" gap={2} mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={!isValid || isSubmitting}
+              >
+                {t('Save')}
+              </Button>
+              {calculatedGoal && monthlyGoal !== calculatedGoal && (
+                <Tooltip
+                  title={t(
+                    'Reset to NetSuite estimated goal of {{calculatedGoal}}',
+                    {
+                      calculatedGoal: formattedCalculatedGoal,
+                    },
+                  )}
+                >
+                  <Button
+                    variant="outlined"
+                    type="button"
+                    onClick={() => setFieldValue('monthlyGoal', calculatedGoal)}
+                  >
+                    {t('Reset to Calculated Goal')}
+                  </Button>
+                </Tooltip>
+              )}
+            </Box>
+          </form>
         )}
       </Formik>
     </AccordionItem>
