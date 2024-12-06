@@ -46,7 +46,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
 
   const canDelete = useMemo(() => {
     if (!contactSources) {
-      return;
+      return true;
     }
     // We ensure the contact was created on MPDX and that all the data is editable.
     // If any data is not editable, this means it was created by a third party.
@@ -59,7 +59,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
       (address) => !isEditableSource(address.source ?? ''),
     );
 
-    const hasNonEditablePersonData = contactSources.people?.nodes?.map(
+    const hasNonEditablePersonData = contactSources.people?.nodes?.some(
       (people) => {
         const foundNonEditableEmailAddress = people.emailAddresses.nodes.some(
           (email) => !isEditableSource(email.source),
@@ -67,20 +67,12 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         const foundNonEditablePhone = people.phoneNumbers.nodes.some(
           (phone) => !isEditableSource(phone.source),
         );
-        return {
-          foundNonEditableEmailAddress,
-          foundNonEditablePhone,
-        };
+        return foundNonEditableEmailAddress || foundNonEditablePhone;
       },
     );
-    const isPersonNonEditable = hasNonEditablePersonData.some((person) => {
-      return (
-        person.foundNonEditableEmailAddress || person.foundNonEditablePhone
-      );
-    });
 
     const contactIsNotEditable =
-      isContactNonEditable || isAddressNonEditable || isPersonNonEditable;
+      isContactNonEditable || isAddressNonEditable || hasNonEditablePersonData;
 
     return !contactIsNotEditable;
   }, [contactSources]);

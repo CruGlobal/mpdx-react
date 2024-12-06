@@ -58,6 +58,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
                           nodes: phoneSources.map((source) => ({ source })),
                         },
                       },
+                      {
+                        emailAddresses: {
+                          nodes: emailSources.map((source) => ({ source })),
+                        },
+                        phoneNumbers: {
+                          nodes: phoneSources.map((source) => ({ source })),
+                        },
+                      },
                     ],
                   },
                 },
@@ -152,7 +160,7 @@ describe('DeleteContactModal', () => {
 
       expect(
         await findByText(
-          /This contact cannot be deleted because part or all of the contact's data is sourced from a third Party./,
+          /This contact cannot be deleted because part or all of the contact's data syncs with Donation Services/,
         ),
       ).toBeInTheDocument();
 
