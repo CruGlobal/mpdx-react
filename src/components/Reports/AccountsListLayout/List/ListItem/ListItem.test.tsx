@@ -3,10 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
 import { Account, AccountListItem as ListItem } from './ListItem';
 
@@ -56,14 +52,6 @@ describe('AccountItem', () => {
   });
 
   describe('AccountItem Chart', () => {
-    beforeEach(() => {
-      beforeTestResizeObserver();
-    });
-
-    afterEach(() => {
-      afterTestResizeObserver();
-    });
-
     it('should render chart', async () => {
       const entryHistoriesMock = [
         {
