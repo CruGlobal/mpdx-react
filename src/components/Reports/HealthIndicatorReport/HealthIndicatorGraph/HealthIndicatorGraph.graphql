@@ -1,0 +1,11 @@
+query HealthIndicatorGraph($accountListId: ID!) {
+  healthIndicatorData(accountListId: $accountListId) {
+    id
+    indicationPeriodBegin
+    consistencyHi
+    depthHi
+    ownershipHi
+    successHi
+    overallHi
+  }
+}
