@@ -135,6 +135,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
           values: { monthlyGoal },
           errors,
           handleSubmit,
+          submitForm,
           isSubmitting,
           isValid,
           handleChange,
@@ -180,7 +181,10 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                   <Button
                     variant="outlined"
                     type="button"
-                    onClick={() => setFieldValue('monthlyGoal', calculatedGoal)}
+                    onClick={() => {
+                      setFieldValue('monthlyGoal', calculatedGoal);
+                      submitForm();
+                    }}
                   >
                     {t('Reset to Calculated Goal')}
                   </Button>

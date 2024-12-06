@@ -149,29 +149,60 @@ describe('MonthlyGoalAccordion', () => {
     });
   });
 
-  it('resets goal to calculated goal', async () => {
-    const { getByRole, findByText } = render(
-      <Components
-        monthlyGoal={1000}
-        machineCalculatedGoal={1500}
-        expandedPanel={label}
-      />,
-    );
-    const input = getByRole('spinbutton', { name: label });
+  describe('calculated goal', () => {
+    it('resets goal to calculated goal', async () => {
+      const { getByRole, findByText } = render(
+        <Components
+          monthlyGoal={1000}
+          machineCalculatedGoal={1500}
+          expandedPanel={label}
+        />,
+      );
+      const input = getByRole('spinbutton', { name: label });
 
-    expect(
-      await findByText(
-        'Based on the past year, NetSuite estimates that you need at least $1,500 of monthly support. You can use this amount or choose your own target monthly goal.',
-      ),
-    ).toBeInTheDocument();
+      expect(
+        await findByText(
+          'Based on the past year, NetSuite estimates that you need at least $1,500 of monthly support. You can use this amount or choose your own target monthly goal.',
+        ),
+      ).toBeInTheDocument();
 
-    const resetButton = getByRole('button', { name: /Reset/ });
-    userEvent.click(resetButton);
-    expect(input).toHaveValue(1500);
-    expect(resetButton).not.toBeInTheDocument();
+      const resetButton = getByRole('button', { name: /Reset/ });
+      userEvent.click(resetButton);
+      expect(input).toHaveValue(1500);
+      expect(resetButton).not.toBeInTheDocument();
 
-    userEvent.clear(input);
-    userEvent.type(input, '500');
-    expect(getByRole('button', { name: /Reset/ })).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: accountListId,
+            attributes: {
+              settings: {
+                monthlyGoal: 1500,
+              },
+            },
+          },
+        }),
+      );
+    });
+
+    it('hides reset button if goal matches calculated goal', async () => {
+      const { getByRole, findByText, queryByRole } = render(
+        <Components
+          monthlyGoal={1000}
+          machineCalculatedGoal={1000}
+          expandedPanel={label}
+        />,
+      );
+
+      expect(
+        await findByText(
+          'Based on the past year, NetSuite estimates that you need at least $1,000 of monthly support. You can use this amount or choose your own target monthly goal.',
+        ),
+      ).toBeInTheDocument();
+      expect(queryByRole('button', { name: /Reset/ })).not.toBeInTheDocument();
+
+      userEvent.type(getByRole('spinbutton', { name: label }), '0');
+      expect(getByRole('button', { name: /Reset/ })).toBeInTheDocument();
+    });
   });
 });
