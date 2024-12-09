@@ -69,6 +69,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   useEffect(() => {
     (async () => {
       try {
+        setFourteenMonthReportError('');
         const designationAccountFilter = designationAccounts?.length
           ? `&filter[designation_account_id]=${designationAccounts.join(',')}`
           : '';
@@ -101,7 +102,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         }
       }
     })();
-  }, [designationAccounts, currencyType]);
+  }, [accountListId, designationAccounts, currencyType]);
 
   // Generate a table for each currency group in the report
   const currencyTables = useMemo<CurrencyTable[]>(
