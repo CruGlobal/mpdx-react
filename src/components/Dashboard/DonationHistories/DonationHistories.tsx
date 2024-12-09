@@ -8,6 +8,7 @@ import {
   Skeleton,
   Theme,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -82,11 +83,17 @@ const DonationHistories = ({
   setTime,
 }: Props): ReactElement => {
   const { classes } = useStyles();
+  const { palette } = useTheme();
   const { push } = useRouter();
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
+  const fills = [
+    palette.cruYellow.main,
+    palette.graphBlue3.main,
+    palette.graphBlue2.main,
+    palette.graphBlue1.main,
+  ];
   const currencies: { dataKey: string; fill: string }[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
     const data: {
@@ -157,7 +164,7 @@ const DonationHistories = ({
                         <LegendReferenceLine
                           name={t('Goal')}
                           value={currencyFormat(goal, currencyCode, locale)}
-                          color="#17AEBF"
+                          color={palette.graphTeal.main}
                         />
                       </Grid>
                       <Grid item>|</Grid>
@@ -194,7 +201,7 @@ const DonationHistories = ({
                         <LegendReferenceLine
                           name={t('Committed')}
                           value={currencyFormat(pledged, currencyCode, locale)}
-                          color="#FFCF07"
+                          color={palette.cruYellow.main}
                         />
                       </Grid>
                     </>
@@ -238,19 +245,19 @@ const DonationHistories = ({
                       {goal && (
                         <ReferenceLine
                           y={goal}
-                          stroke="#17AEBF"
+                          stroke={palette.graphTeal.main}
                           strokeWidth={3}
                         />
                       )}
                       <ReferenceLine
                         y={reportsDonationHistories?.averageIgnoreCurrent}
-                        stroke="#9C9FA1"
+                        stroke={palette.cruGrayMedium.main}
                         strokeWidth={3}
                       />
                       {pledged && (
                         <ReferenceLine
                           y={pledged}
-                          stroke="#FFCF07"
+                          stroke={palette.cruYellow.main}
                           strokeWidth={3}
                         />
                       )}
@@ -294,7 +301,11 @@ const DonationHistories = ({
                     <BarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
-                      <Bar dataKey="total" fill="#007398" barSize={10} />
+                      <Bar
+                        dataKey="total"
+                        fill={palette.graphBlue1.main}
+                        barSize={10}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
