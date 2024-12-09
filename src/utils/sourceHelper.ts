@@ -26,7 +26,7 @@ export const sourceToStr = (
   }
 };
 
-export const editableSources = ['MPDX', 'TntImport'];
+export const editableSources = ['MPDX', 'TntImport', 'GoogleImport'];
 
 export const isEditableSource = (source: string | undefined): boolean => {
   // A source is editable if it is undefined or if it is in the list of editable sources.
