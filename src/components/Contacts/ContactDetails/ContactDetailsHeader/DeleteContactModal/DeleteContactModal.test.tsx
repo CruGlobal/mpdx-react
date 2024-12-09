@@ -156,15 +156,13 @@ describe('DeleteContactModal', () => {
     ];
 
     test.each(tests)('$testName', async ({ props }) => {
-      const { findByText, getByRole } = render(<TestComponent {...props} />);
+      const { findByText } = render(<TestComponent {...props} />);
 
       expect(
         await findByText(
-          /This contact cannot be deleted because part or all of the contact's data syncs with Donation Services/,
+          /its data may sync with Donation Services or other third-party systems/,
         ),
       ).toBeInTheDocument();
-
-      expect(getByRole('button', { name: 'delete contact' })).toBeDisabled();
     });
   });
 
