@@ -6,14 +6,14 @@ import { useHealthIndicatorGraphQuery } from './HealthIndicatorGraph.generated';
 
 export interface Period {
   month: string;
-  consistencyHi: number | null | undefined;
-  consistencyHiScaled: number | null | undefined;
-  depthHi: number | null | undefined;
-  depthHiScaled: number | null | undefined;
-  ownershipHi: number | null | undefined;
-  ownershipHiScaled: number | null | undefined;
-  successHi: number | null | undefined;
-  successHiScaled: number | null | undefined;
+  consistency: number | null | undefined;
+  consistencyScaled: number | null | undefined;
+  depth: number | null | undefined;
+  depthScaled: number | null | undefined;
+  ownership: number | null | undefined;
+  ownershipScaled: number | null | undefined;
+  success: number | null | undefined;
+  successScaled: number | null | undefined;
 }
 
 interface UseGraphDataResult {
@@ -45,8 +45,7 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
           .map((month) => month.overallHi)
           .filter(isNotNullish)
           .reduce(
-            (total, overallHi, _index, months) =>
-              total + overallHi / months.length,
+            (total, overall, _index, months) => total + overall / months.length,
             0,
           ),
       )
@@ -58,14 +57,14 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
         DateTime.fromISO(month.indicationPeriodBegin),
         locale,
       ),
-      consistencyHi: month.consistencyHi,
-      depthHi: month.depthHi,
-      ownershipHi: month.ownershipHi,
-      successHi: month.successHi,
-      consistencyHiScaled: scale(month.consistencyHi),
-      depthHiScaled: scale(month.depthHi),
-      ownershipHiScaled: scale(month.ownershipHi, 3),
-      successHiScaled: scale(month.successHi, 2),
+      consistency: month.consistencyHi,
+      depth: month.depthHi,
+      ownership: month.ownershipHi,
+      success: month.successHi,
+      consistencyScaled: scale(month.consistencyHi),
+      depthScaled: scale(month.depthHi),
+      ownershipScaled: scale(month.ownershipHi, 3),
+      successScaled: scale(month.successHi, 2),
     })) ?? null;
 
   return {

@@ -29,14 +29,14 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
   const { loading, average, periods } = useGraphData(accountListId);
 
   const stacks = [
-    { field: 'ownershipHi', label: t('Ownership'), color: '#FFCF07' },
-    { field: 'successHi', label: t('Success'), color: '#30F2F2' },
+    { field: 'ownership', label: t('Ownership'), color: '#FFCF07' },
+    { field: 'success', label: t('Success'), color: '#30F2F2' },
     {
-      field: 'consistencyHi',
+      field: 'consistency',
       label: t('Consistency'),
       color: '#1FC0D2',
     },
-    { field: 'depthHi', label: t('Depth'), color: '#007398' },
+    { field: 'depth', label: t('Depth'), color: '#007398' },
   ];
 
   if (periods?.length === 0) {
