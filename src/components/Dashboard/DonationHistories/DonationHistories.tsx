@@ -288,7 +288,7 @@ const DonationHistories = ({
               </Box>
               <Box display={{ xs: 'block', md: 'none' }} height={150}>
                 {!loading ? (
-                  <BarChartSkeleton bars={12} />
+                  <BarChartSkeleton bars={12} width={10} />
                 ) : (
                   <ResponsiveContainer>
                     <BarChart data={periods}>

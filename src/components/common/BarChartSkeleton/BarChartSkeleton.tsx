@@ -2,9 +2,13 @@ import { Grid, Skeleton } from '@mui/material';
 
 interface BarChartSkeletonProps {
   bars: number;
+  width?: number;
 }
 
-export const BarChartSkeleton: React.FC<BarChartSkeletonProps> = ({ bars }) => (
+export const BarChartSkeleton: React.FC<BarChartSkeletonProps> = ({
+  bars,
+  width = 30,
+}) => (
   <Grid
     container
     justifyContent="space-between"
@@ -16,7 +20,7 @@ export const BarChartSkeleton: React.FC<BarChartSkeletonProps> = ({ bars }) => (
       <Skeleton
         key={index}
         variant="rectangular"
-        width={30}
+        width={width}
         height={((100 / bars) * (index + 1)).toFixed() + '%'}
         data-testid="SkeletonBar"
       />
