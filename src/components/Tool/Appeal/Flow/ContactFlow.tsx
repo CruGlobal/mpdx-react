@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -46,31 +45,31 @@ export const colorMap: { [key: string]: string } = {
 
 const flowOptions: ContactFlowOption[] = [
   {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: i18n.t('Excluded'),
     status: AppealStatusEnum.Excluded,
     color: colorMap['color-danger'],
   },
   {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: i18n.t('Asked'),
     status: AppealStatusEnum.Asked,
     color: colorMap['color-text'],
   },
   {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: i18n.t('Committed'),
     status: AppealStatusEnum.NotReceived,
     color: colorMap['color-committed'],
   },
   {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: i18n.t('Received'),
     status: AppealStatusEnum.ReceivedNotProcessed,
     color: colorMap['color-received'],
   },
   {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name: i18n.t('Given'),
     status: AppealStatusEnum.Processed,
     color: colorMap['color-given'],
