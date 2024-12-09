@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@mui/material';
+import { Card, CardContent, CardHeader, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -25,18 +25,23 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
   accountListId,
 }) => {
   const { t } = useTranslation();
+  const { palette } = useTheme();
 
   const { loading, average, periods } = useGraphData(accountListId);
 
   const stacks = [
-    { field: 'ownership', label: t('Ownership'), color: '#FFCF07' },
-    { field: 'success', label: t('Success'), color: '#30F2F2' },
+    {
+      field: 'ownership',
+      label: t('Ownership'),
+      color: palette.cruYellow.main,
+    },
+    { field: 'success', label: t('Success'), color: palette.graphBlue1.main },
     {
       field: 'consistency',
       label: t('Consistency'),
-      color: '#1FC0D2',
+      color: palette.graphBlue2.main,
     },
-    { field: 'depth', label: t('Depth'), color: '#007398' },
+    { field: 'depth', label: t('Depth'), color: palette.graphBlue3.main },
   ];
 
   if (periods?.length === 0) {
@@ -64,7 +69,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
             <LegendReferenceLine
               name={t('Average')}
               value={average}
-              color="#17AEBF"
+              color={palette.graphTeal.main}
             />
           )
         }
@@ -91,7 +96,11 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
               }
             />
             {average !== null && (
-              <ReferenceLine y={average} stroke="#17AEBF" strokeWidth={3} />
+              <ReferenceLine
+                y={average}
+                stroke={palette.graphTeal.main}
+                strokeWidth={3}
+              />
             )}
             <XAxis tickLine={false} dataKey="month" />
             <YAxis
