@@ -61,6 +61,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
               primary={
                 currentStats?.overallHi ? currentStats.overallHi / 100 : 0
               }
+              barHeight={20}
             />
           </Box>
         </Box>
