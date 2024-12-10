@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import { HealthIndicatorWidget } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorWidget/HealthIndicatorWidget';
 import {
   ContactFilterPledgeReceivedEnum,
   StatusEnum,
@@ -103,146 +104,156 @@ const MonthlyGoal = ({
           </Typography>
         </AnimatedBox>
       </Box>
-      <AnimatedCard>
-        <CardContent>
-          <StyledProgress
-            loading={loading}
-            primary={receivedPercentage}
-            secondary={pledgedPercentage}
-          />
-          <Grid container spacing={2}>
-            <Hidden smDown>
-              <Grid sm={6} md={3} item>
-                <Typography component="div" color="textSecondary">
-                  <div
-                    className={[classes.indicator, classes.goal].join(' ')}
-                  />
-                  {t('Goal')}
-                </Typography>
-                <Typography
-                  variant="h5"
-                  data-testid="MonthlyGoalTypographyGoal"
-                >
-                  {loading ? (
-                    <Skeleton variant="text" />
-                  ) : (
-                    currencyFormat(goal, currencyCode, locale)
-                  )}
-                </Typography>
-              </Grid>
-            </Hidden>
-            <Grid xs={6} md={3} item>
-              <Typography component="div" color="textSecondary">
-                <div
-                  className={[classes.indicator, classes.received].join(' ')}
-                />
-                {t('Gifts Started')}
-              </Typography>
-              <Typography
-                variant="h5"
-                data-testid="MonthlyGoalTypographyReceivedPercentage"
-              >
-                {loading ? (
-                  <Skeleton variant="text" />
-                ) : isNaN(receivedPercentage) ? (
-                  '-'
-                ) : (
-                  percentageFormat(receivedPercentage, locale)
-                )}
-              </Typography>
-              <Typography
-                component="small"
-                data-testid="MonthlyGoalTypographyReceived"
-              >
-                {loading ? (
-                  <Skeleton variant="text" />
-                ) : (
-                  currencyFormat(received, currencyCode, locale)
-                )}
-              </Typography>
-            </Grid>
-            <Grid xs={6} md={3} item>
-              <Typography component="div" color="textSecondary">
-                <div
-                  className={[classes.indicator, classes.pledged].join(' ')}
-                />
-                {t('Commitments')}
-              </Typography>
-              <Typography
-                variant="h5"
-                data-testid="MonthlyGoalTypographyPledgedPercentage"
-              >
-                {loading ? (
-                  <Skeleton variant="text" />
-                ) : isNaN(pledgedPercentage) ? (
-                  '-'
-                ) : (
-                  percentageFormat(pledgedPercentage, locale)
-                )}
-              </Typography>
-              <Typography
-                component="small"
-                data-testid="MonthlyGoalTypographyPledged"
-              >
-                {loading ? (
-                  <Skeleton variant="text" />
-                ) : (
-                  currencyFormat(pledged, currencyCode, locale)
-                )}
-              </Typography>
-            </Grid>
-            <Hidden smDown>
-              {!isNaN(belowGoal) && belowGoal > 0 ? (
-                <Grid sm={6} md={3} item>
+      <Grid container spacing={2}>
+        <Grid sm={12} md={7} item>
+          <AnimatedCard>
+            <CardContent>
+              <StyledProgress
+                loading={loading}
+                primary={receivedPercentage}
+                secondary={pledgedPercentage}
+              />
+              <Grid container spacing={2}>
+                <Hidden smDown>
+                  <Grid sm={6} md={3} item>
+                    <Typography component="div" color="textSecondary">
+                      <div
+                        className={[classes.indicator, classes.goal].join(' ')}
+                      />
+                      {t('Goal')}
+                    </Typography>
+                    <Typography
+                      variant="h5"
+                      data-testid="MonthlyGoalTypographyGoal"
+                    >
+                      {loading ? (
+                        <Skeleton variant="text" />
+                      ) : (
+                        currencyFormat(goal, currencyCode, locale)
+                      )}
+                    </Typography>
+                  </Grid>
+                </Hidden>
+                <Grid xs={6} md={3} item>
                   <Typography component="div" color="textSecondary">
-                    {t('Below Goal')}
+                    <div
+                      className={[classes.indicator, classes.received].join(
+                        ' ',
+                      )}
+                    />
+                    {t('Gifts Started')}
                   </Typography>
                   <Typography
                     variant="h5"
-                    data-testid="MonthlyGoalTypographyBelowGoalPercentage"
-                  >
-                    {percentageFormat(belowGoalPercentage, locale)}
-                  </Typography>
-                  <Typography
-                    component="small"
-                    data-testid="MonthlyGoalTypographyBelowGoal"
-                  >
-                    {currencyFormat(belowGoal, currencyCode, locale)}
-                  </Typography>
-                </Grid>
-              ) : (
-                <Grid sm={6} md={3} item>
-                  <Typography component="div" color="textSecondary">
-                    {t('Above Goal')}
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    data-testid="MonthlyGoalTypographyAboveGoalPercentage"
+                    data-testid="MonthlyGoalTypographyReceivedPercentage"
                   >
                     {loading ? (
                       <Skeleton variant="text" />
-                    ) : isNaN(belowGoalPercentage) ? (
+                    ) : isNaN(receivedPercentage) ? (
                       '-'
                     ) : (
-                      percentageFormat(-belowGoalPercentage, locale)
+                      percentageFormat(receivedPercentage, locale)
                     )}
                   </Typography>
                   <Typography
                     component="small"
-                    data-testid="MonthlyGoalTypographyAboveGoal"
+                    data-testid="MonthlyGoalTypographyReceived"
                   >
                     {loading ? (
                       <Skeleton variant="text" />
                     ) : (
-                      currencyFormat(-belowGoal, currencyCode, locale)
+                      currencyFormat(received, currencyCode, locale)
                     )}
                   </Typography>
                 </Grid>
-              )}
-            </Hidden>
-          </Grid>
-        </CardContent>
-      </AnimatedCard>
+                <Grid xs={6} md={3} item>
+                  <Typography component="div" color="textSecondary">
+                    <div
+                      className={[classes.indicator, classes.pledged].join(' ')}
+                    />
+                    {t('Commitments')}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    data-testid="MonthlyGoalTypographyPledgedPercentage"
+                  >
+                    {loading ? (
+                      <Skeleton variant="text" />
+                    ) : isNaN(pledgedPercentage) ? (
+                      '-'
+                    ) : (
+                      percentageFormat(pledgedPercentage, locale)
+                    )}
+                  </Typography>
+                  <Typography
+                    component="small"
+                    data-testid="MonthlyGoalTypographyPledged"
+                  >
+                    {loading ? (
+                      <Skeleton variant="text" />
+                    ) : (
+                      currencyFormat(pledged, currencyCode, locale)
+                    )}
+                  </Typography>
+                </Grid>
+                <Hidden smDown>
+                  {!isNaN(belowGoal) && belowGoal > 0 ? (
+                    <Grid sm={6} md={3} item>
+                      <Typography component="div" color="textSecondary">
+                        {t('Below Goal')}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        data-testid="MonthlyGoalTypographyBelowGoalPercentage"
+                      >
+                        {percentageFormat(belowGoalPercentage, locale)}
+                      </Typography>
+                      <Typography
+                        component="small"
+                        data-testid="MonthlyGoalTypographyBelowGoal"
+                      >
+                        {currencyFormat(belowGoal, currencyCode, locale)}
+                      </Typography>
+                    </Grid>
+                  ) : (
+                    <Grid sm={6} md={3} item>
+                      <Typography component="div" color="textSecondary">
+                        {t('Above Goal')}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        data-testid="MonthlyGoalTypographyAboveGoalPercentage"
+                      >
+                        {loading ? (
+                          <Skeleton variant="text" />
+                        ) : isNaN(belowGoalPercentage) ? (
+                          '-'
+                        ) : (
+                          percentageFormat(-belowGoalPercentage, locale)
+                        )}
+                      </Typography>
+                      <Typography
+                        component="small"
+                        data-testid="MonthlyGoalTypographyAboveGoal"
+                      >
+                        {loading ? (
+                          <Skeleton variant="text" />
+                        ) : (
+                          currencyFormat(-belowGoal, currencyCode, locale)
+                        )}
+                      </Typography>
+                    </Grid>
+                  )}
+                </Hidden>
+              </Grid>
+            </CardContent>
+          </AnimatedCard>
+        </Grid>
+
+        <Grid sm={12} md={5} item>
+          <HealthIndicatorWidget accountListId={accountListId} />
+        </Grid>
+      </Grid>
     </>
   );
 };
