@@ -1,0 +1,10 @@
+query HealthIndicatorWidget($accountListId: ID!) {
+  healthIndicatorData(accountListId: $accountListId) {
+    id
+    overallHi
+    ownershipHi
+    consistencyHi
+    successHi
+    depthHi
+  }
+}
