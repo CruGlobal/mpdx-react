@@ -27,12 +27,10 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 interface DataInfo {
   canDelete: boolean;
-  uniqueSources: {
-    contact: string[];
-    address: string[];
-    email: string[];
-    phone: string[];
-  };
+  contactSource: string;
+  addressSources: string[];
+  emailSources: string[];
+  phoneSources: string[];
 }
 interface DeleteContactModalProps {
   open: boolean;
@@ -62,81 +60,53 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     if (!contactSources) {
       return {
         canDelete: true,
-        uniqueSources: {
-          contact: [],
-          address: [],
-          email: [],
-          phone: [],
-        },
+        contactSource: sourceToStr(t, 'MPDX'),
+        addressSources: [],
+        emailSources: [],
+        phoneSources: [],
       };
     }
+
     // We ensure the contact was created on MPDX and that all the data is editable.
     // If any data is not editable, this means it was created by a third party.
     // Which will only recreate the data after deleting it on MPDX.
     // To prevent this confusion, we do not allow a contact to be deleted if it has non editable data.
 
-    const isContactNonEditable = !isEditableSource(contactSources.source ?? '');
+    const addressSources = new Set<string>();
+    const emailSources = new Set<string>();
+    const phoneSources = new Set<string>();
 
-    const sources: Map<string, string[]> = new Map();
-    sources.set('contact', [contactSources.source ?? '']);
+    contactSources.addresses?.nodes.forEach((address) => {
+      if (!isEditableSource(address.source)) {
+        addressSources.add(address.source);
+      }
+    });
 
-    const isAddressNonEditable = contactSources.addresses?.nodes.reduce(
-      (acc, address) => {
-        sources.set('address', [
-          ...(sources.get('address') ?? []),
-          address.source,
-        ]);
-        return acc || !isEditableSource(address.source ?? '');
-      },
-      false,
-    );
-
-    const hasNonEditablePersonData = contactSources.people?.nodes?.reduce(
-      (acc, person) => {
-        const foundNonEditableEmailAddress = person.emailAddresses.nodes.reduce(
-          (emailAcc, email) => {
-            sources.set('email', [
-              ...(sources.get('email') ?? []),
-              email.source,
-            ]);
-            return emailAcc || !isEditableSource(email.source);
-          },
-          false,
-        );
-        const foundNonEditablePhone = person.phoneNumbers.nodes.reduce(
-          (phoneAcc, phone) => {
-            sources.set('phone', [
-              ...(sources.get('phone') ?? []),
-              phone.source,
-            ]);
-            return phoneAcc || !isEditableSource(phone.source);
-          },
-          false,
-        );
-        return acc || foundNonEditableEmailAddress || foundNonEditablePhone;
-      },
-      false,
-    );
-
-    const uniqueSources: DataInfo['uniqueSources'] = {
-      contact: [],
-      address: [],
-      email: [],
-      phone: [],
-      ...Object.fromEntries(
-        Array.from(sources, ([dataType, ArrOfSources]) => [
-          dataType,
-          [...new Set(ArrOfSources)].map((source) => sourceToStr(t, source)),
-        ]),
-      ),
-    };
-
-    const contactIsNotEditable =
-      isContactNonEditable || isAddressNonEditable || hasNonEditablePersonData;
+    contactSources.people?.nodes?.forEach((person) => {
+      person.emailAddresses.nodes.forEach((email) => {
+        if (!isEditableSource(email.source)) {
+          emailSources.add(email.source);
+        }
+      });
+      person.phoneNumbers.nodes.forEach((phone) => {
+        if (!isEditableSource(phone.source)) {
+          phoneSources.add(phone.source);
+        }
+      });
+    });
 
     return {
-      canDelete: !contactIsNotEditable,
-      uniqueSources,
+      canDelete:
+        isEditableSource(contactSources.source ?? '') &&
+        !addressSources.size &&
+        !emailSources.size &&
+        !phoneSources.size,
+      contactSource: sourceToStr(t, contactSources.source),
+      addressSources: [...addressSources].map((source) =>
+        sourceToStr(t, source),
+      ),
+      emailSources: [...emailSources].map((source) => sourceToStr(t, source)),
+      phoneSources: [...phoneSources].map((source) => sourceToStr(t, source)),
     };
   }, [contactSources]);
 
@@ -169,52 +139,50 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
             <br />
             <Typography variant="h6">{t('Data sources:')}</Typography>
             <List dense={true}>
-              {!!dataInfo.uniqueSources.contact.length && (
+              {!!dataInfo.contactSource && (
                 <ListItem>
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${t(
-                      'Contact: ',
-                    )} ${dataInfo.uniqueSources.contact.join(', ')}`}
+                    primary={`${t('Contact: ')} ${dataInfo.contactSource}`}
                   />
                 </ListItem>
               )}
 
-              {!!dataInfo.uniqueSources.address.length && (
+              {!!dataInfo.addressSources.length && (
                 <ListItem>
                   <ListItemIcon>
                     <Place />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${t(
-                      'Address: ',
-                    )} ${dataInfo.uniqueSources.address.join(', ')}`}
+                    primary={`${t('Address: ')} ${dataInfo.addressSources.join(
+                      ', ',
+                    )}`}
                   />
                 </ListItem>
               )}
-              {!!dataInfo.uniqueSources.email.length && (
+              {!!dataInfo.emailSources.length && (
                 <ListItem>
                   <ListItemIcon>
                     <Email />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${t(
-                      'Email: ',
-                    )} ${dataInfo.uniqueSources.email.join(', ')}`}
+                    primary={`${t('Email: ')} ${dataInfo.emailSources.join(
+                      ', ',
+                    )}`}
                   />
                 </ListItem>
               )}
-              {!!dataInfo.uniqueSources.phone.length && (
+              {!!dataInfo.phoneSources.length && (
                 <ListItem>
                   <ListItemIcon>
                     <Phone />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${t(
-                      'Phone: ',
-                    )} ${dataInfo.uniqueSources.phone.join(', ')}`}
+                    primary={`${t('Phone: ')} ${dataInfo.phoneSources.join(
+                      ', ',
+                    )}`}
                   />
                 </ListItem>
               )}
