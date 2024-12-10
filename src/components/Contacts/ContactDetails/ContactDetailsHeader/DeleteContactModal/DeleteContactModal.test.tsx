@@ -120,7 +120,7 @@ describe('DeleteContactModal', () => {
     expect(getByRole('button', { name: 'delete contact' })).toBeDisabled();
   });
 
-  describe('Disable deletion', () => {
+  describe('Show third party message', () => {
     interface TestProps {
       testName: string;
       props: TestComponentProps;
@@ -156,17 +156,21 @@ describe('DeleteContactModal', () => {
     ];
 
     test.each(tests)('$testName', async ({ props }) => {
-      const { findByText } = render(<TestComponent {...props} />);
+      const { findByText, getByRole } = render(<TestComponent {...props} />);
 
       expect(
         await findByText(
           /its data may sync with Donation Services or other third-party systems/,
         ),
       ).toBeInTheDocument();
+
+      expect(
+        getByRole('button', { name: 'delete contact' }),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('Enable deletion', () => {
+  describe('Show normal delete message', () => {
     it('should show modal and be able to delete user', async () => {
       const { getByText, getByRole } = render(
         <TestComponent

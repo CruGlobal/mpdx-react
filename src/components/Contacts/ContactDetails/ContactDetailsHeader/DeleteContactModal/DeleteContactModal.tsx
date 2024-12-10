@@ -26,7 +26,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 interface DataInfo {
-  canDelete: boolean;
+  canDeleteWithoutIssues: boolean;
   contactSource: string;
   addressSources: string[];
   emailSources: string[];
@@ -59,7 +59,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   const dataInfo: DataInfo = useMemo(() => {
     if (!contactSources) {
       return {
-        canDelete: true,
+        canDeleteWithoutIssues: true,
         contactSource: sourceToStr(t, 'MPDX'),
         addressSources: [],
         emailSources: [],
@@ -96,7 +96,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     });
 
     return {
-      canDelete:
+      canDeleteWithoutIssues:
         isEditableSource(contactSources.source ?? '') &&
         !addressSources.size &&
         !emailSources.size &&
@@ -117,7 +117,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
       handleClose={() => setOpen(false)}
     >
       <DialogContent dividers>
-        {dataInfo.canDelete ? (
+        {dataInfo.canDeleteWithoutIssues ? (
           <Typography>
             {t(
               `Are you sure you want to permanently delete this contact? Doing so will permanently delete this contacts information, as well as task history. This cannot be undone. If you wish to keep this information, you can try hiding this contact instead.`,
