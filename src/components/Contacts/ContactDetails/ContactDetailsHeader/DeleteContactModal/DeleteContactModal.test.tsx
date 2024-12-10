@@ -168,6 +168,28 @@ describe('DeleteContactModal', () => {
         getByRole('button', { name: 'delete contact' }),
       ).toBeInTheDocument();
     });
+
+    it('should show third party source for contact', async () => {
+      const { findByText } = render(
+        <TestComponent
+          contactSource={ContactSourceEnum.GiveSite}
+          addressSources={['Siebel', 'MPDX']}
+          emailSources={['Siebel', 'MPDX']}
+          phoneSources={['Siebel', 'MPDX']}
+        />,
+      );
+
+      expect(await findByText('Contact: GIVE_SITE')).toBeInTheDocument();
+      expect(
+        await findByText('Address: US Donation Services'),
+      ).toBeInTheDocument();
+      expect(
+        await findByText('Email: US Donation Services'),
+      ).toBeInTheDocument();
+      expect(
+        await findByText('Phone: US Donation Services'),
+      ).toBeInTheDocument();
+    });
   });
 
   describe('Show normal delete message', () => {
