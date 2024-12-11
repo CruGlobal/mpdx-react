@@ -46,7 +46,7 @@ const useStyles = makeStyles()((_theme: Theme) => ({
   },
 }));
 
-interface Props {
+export interface MonthlyGoalProps {
   accountListId: string;
   loading?: boolean;
   goal?: number;
@@ -64,7 +64,7 @@ const MonthlyGoal = ({
   pledged = 0,
   totalGiftsNotStarted,
   currencyCode = 'USD',
-}: Props): ReactElement => {
+}: MonthlyGoalProps): ReactElement => {
   const { t } = useTranslation();
   const { classes } = useStyles();
   const locale = useLocale();
@@ -77,11 +77,11 @@ const MonthlyGoal = ({
 
   const cssProps = {
     containerGrid: showHealthIndicator ? { spacing: 2 } : {},
-    MonthlyGoalGrid: showHealthIndicator
+    monthlyGoalGrid: showHealthIndicator
       ? { xs: 12, md: 6, lg: 7 }
       : { xs: 12 },
-    StatGrid: showHealthIndicator ? { xs: 6 } : { sm: 6, md: 3 },
-    HIGrid: showHealthIndicator ? { xs: 12, md: 6, lg: 5 } : { xs: 0 },
+    statGrid: showHealthIndicator ? { xs: 6 } : { sm: 6, md: 3 },
+    hIGrid: showHealthIndicator ? { xs: 12, md: 6, lg: 5 } : { xs: 0 },
   };
   return (
     <>
@@ -114,9 +114,9 @@ const MonthlyGoal = ({
           </Typography>
         </AnimatedBox>
       </Box>
-      <Grid container {...cssProps.containerGrid}>
-        <Grid {...cssProps.MonthlyGoalGrid} item>
-          <AnimatedCard>
+      <Grid container {...cssProps.containerGrid} data-testid="containerGrid">
+        <Grid {...cssProps.monthlyGoalGrid} item>
+          <AnimatedCard sx={{ height: '100%' }}>
             <CardContent>
               <StyledProgress
                 loading={loading}
@@ -125,7 +125,7 @@ const MonthlyGoal = ({
               />
               <Grid container spacing={{ sm: 1, md: 2 }}>
                 <Hidden smDown>
-                  <Grid {...cssProps.StatGrid} item>
+                  <Grid {...cssProps.statGrid} item data-testid="goalGrid">
                     <Typography component="div" color="textSecondary">
                       <div
                         className={[classes.indicator, classes.goal].join(' ')}
@@ -144,7 +144,7 @@ const MonthlyGoal = ({
                     </Typography>
                   </Grid>
                 </Hidden>
-                <Grid {...cssProps.StatGrid} item>
+                <Grid {...cssProps.statGrid} item>
                   <Typography component="div" color="textSecondary">
                     <div
                       className={[classes.indicator, classes.received].join(
@@ -176,7 +176,7 @@ const MonthlyGoal = ({
                     )}
                   </Typography>
                 </Grid>
-                <Grid {...cssProps.StatGrid} item>
+                <Grid {...cssProps.statGrid} item>
                   <Typography component="div" color="textSecondary">
                     <div
                       className={[classes.indicator, classes.pledged].join(' ')}
@@ -208,7 +208,7 @@ const MonthlyGoal = ({
                 </Grid>
                 <Hidden smDown>
                   {!isNaN(belowGoal) && belowGoal > 0 ? (
-                    <Grid {...cssProps.StatGrid} item>
+                    <Grid {...cssProps.statGrid} item>
                       <Typography component="div" color="textSecondary">
                         {t('Below Goal')}
                       </Typography>
@@ -226,7 +226,7 @@ const MonthlyGoal = ({
                       </Typography>
                     </Grid>
                   ) : (
-                    <Grid {...cssProps.StatGrid} item>
+                    <Grid {...cssProps.statGrid} item>
                       <Typography component="div" color="textSecondary">
                         {t('Above Goal')}
                       </Typography>
@@ -260,7 +260,7 @@ const MonthlyGoal = ({
           </AnimatedCard>
         </Grid>
 
-        <Grid {...cssProps.HIGrid} item>
+        <Grid {...cssProps.hIGrid} item>
           <HealthIndicatorWidget
             accountListId={accountListId}
             setShowHealthIndicator={setShowHealthIndicator}
