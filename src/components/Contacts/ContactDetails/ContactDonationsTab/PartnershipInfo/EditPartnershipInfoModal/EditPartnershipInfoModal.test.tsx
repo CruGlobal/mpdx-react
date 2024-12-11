@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import {
   LikelyToGiveEnum,
@@ -19,7 +20,21 @@ import {
 } from '../../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal';
 
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 const handleClose = jest.fn();
+const mockEnqueue = jest.fn();
+const mutationSpy = jest.fn();
+
 const contactMock = gqlMock<ContactDonorAccountsFragment>(
   ContactDonorAccountsFragmentDoc,
   {
@@ -98,85 +113,44 @@ const newContactMock = gqlMock<ContactDonorAccountsFragment>(
   },
 );
 
-jest.mock('next/router', () => ({
-  useRouter: () => {
-    return {
-      query: { accountListId: 'abc' },
-      isReady: true,
-    };
-  },
-}));
+interface ComponentsProps {
+  isNewContact?: boolean;
+}
 
-const mockEnqueue = jest.fn();
-
-jest.mock('notistack', () => ({
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  ...jest.requireActual('notistack'),
-  useSnackbar: () => {
-    return {
-      enqueueSnackbar: mockEnqueue,
-    };
-  },
-}));
+const Components = ({ isNewContact = false }: ComponentsProps) => (
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <TestRouter>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <EditPartnershipInfoModal
+              contact={isNewContact ? newContactMock : contactMock}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </TestRouter>
+  </LocalizationProvider>
+);
 
 describe('EditPartnershipInfoModal', () => {
   it('should render edit partnership info modal', async () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-    await waitFor(() =>
-      expect(getByText('Edit Partnership')).toBeInTheDocument(),
-    );
+    const { findByText } = render(<Components />);
+
+    expect(await findByText('Edit Partnership')).toBeInTheDocument();
   });
 
-  it('should handle closing modal | Close Button', async () => {
-    const { getByText, getByLabelText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+  it('should handle closing modal | Close Button', () => {
+    const { getByText, getByLabelText } = render(<Components />);
 
     expect(getByText('Edit Partnership')).toBeInTheDocument();
     userEvent.click(getByLabelText('Close'));
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('should handle closing modal | Cancel Button', async () => {
-    const { getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+  it('should handle closing modal | Cancel Button', () => {
+    const { getByText } = render(<Components />);
 
     expect(getByText('Edit Partnership')).toBeInTheDocument();
     userEvent.click(getByText('Cancel'));
@@ -185,18 +159,7 @@ describe('EditPartnershipInfoModal', () => {
 
   it('should save when only status is inputted', async () => {
     const { getByText, getByRole, findByRole } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={newContactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+      <Components isNewContact={true} />,
     );
     const statusInput = getByRole('combobox', { name: 'Status' });
 
@@ -219,20 +182,7 @@ describe('EditPartnershipInfoModal', () => {
 
   it('should handle editing status | Non-Financial', async () => {
     const { getByLabelText, getByText, getByRole, getByTestId, queryByText } =
-      render(
-        <SnackbarProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider>
-                <EditPartnershipInfoModal
-                  contact={contactMock}
-                  handleClose={handleClose}
-                />
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </LocalizationProvider>
-        </SnackbarProvider>,
-      );
+      render(<Components />);
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByRole('combobox', { name: 'Frequency' });
@@ -288,20 +238,7 @@ describe('EditPartnershipInfoModal', () => {
       findByText,
       getByTestId,
       queryByTestId,
-    } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+    } = render(<Components />);
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByRole('combobox', { name: 'Frequency' });
@@ -352,20 +289,7 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing status | Financial', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+    const { getByLabelText, getByText } = render(<Components />);
     const statusInput = getByLabelText('Status');
     const amountInput = getByLabelText('Amount');
     const frequencyInput = getByLabelText('Frequency');
@@ -397,20 +321,7 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing commitment received', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+    const { getByLabelText, getByText } = render(<Components />);
     const commitmentReceivedInput = getByLabelText('Commitment Received');
 
     expect(commitmentReceivedInput).not.toBeChecked();
@@ -432,20 +343,7 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing send appeals', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
+    const { getByLabelText, getByText } = render(<Components />);
     const sendAppealsInput = getByLabelText('Send Appeals');
 
     expect(sendAppealsInput).not.toBeChecked();
@@ -467,22 +365,9 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing currency', async () => {
-    const { getByLabelText, getByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-    await waitFor(() => expect(getByLabelText('Currency')).toBeInTheDocument());
-    const currencyInput = getByLabelText('Currency');
+    const { findByLabelText, getByText } = render(<Components />);
+
+    const currencyInput = await findByLabelText('Currency');
 
     userEvent.click(currencyInput);
     userEvent.click(getByText('Congolese Franc - CDF (CDF)'));
@@ -499,22 +384,7 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing Likely to give', async () => {
-    const mutationSpy = jest.fn();
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-    mutationSpy.mockClear();
+    const { getByRole } = render(<Components />);
 
     userEvent.click(getByRole('combobox', { name: 'Likely To Give' }));
     userEvent.click(getByRole('option', { name: 'Most Likely' }));
@@ -528,42 +398,24 @@ describe('EditPartnershipInfoModal', () => {
         },
       ),
     );
-    expect(mutationSpy.mock.lastCall).toMatchObject([
-      {
-        operation: {
-          operationName: 'UpdateContactPartnership',
-          variables: {
-            attributes: {
-              likelyToGive: 'MOST_LIKELY',
-            },
-          },
-        },
+
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+      attributes: {
+        likelyToGive: 'MOST_LIKELY',
       },
-    ]);
+    });
   });
 
   it('should handle editing start date', async () => {
-    const { getByLabelText, getByText, getAllByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+    const { getByLabelText, getByText, findByText, getAllByText } = render(
+      <Components />,
     );
     const datePickerButton = getByLabelText('Start Date');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);
     userEvent.click(day);
-    const okayButton = await waitFor(async () => getByText('OK'));
-    userEvent.click(okayButton);
+    userEvent.click(await findByText('OK'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
@@ -576,23 +428,24 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it('should handle editing newsletter', async () => {
-    const mutationSpy = jest.fn();
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+  it('should allow for user to remove the start date', async () => {
+    const { getByLabelText, getByText, findByText } = render(<Components />);
+    const datePickerButton = getByLabelText('Start Date');
+    userEvent.click(datePickerButton);
+    userEvent.click(await findByText('Clear'));
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+        attributes: {
+          pledgeStartDate: null,
+        },
+      }),
     );
-    mutationSpy.mockClear();
+  });
+
+  it('should handle editing newsletter', async () => {
+    const { getByRole } = render(<Components />);
 
     userEvent.click(getByRole('combobox', { name: 'Newsletter' }));
     userEvent.click(getByRole('option', { name: 'Physical' }));
@@ -606,39 +459,17 @@ describe('EditPartnershipInfoModal', () => {
         },
       ),
     );
-    expect(mutationSpy.mock.lastCall).toMatchObject([
-      {
-        operation: {
-          operationName: 'UpdateContactPartnership',
-          variables: {
-            attributes: {
-              sendNewsletter: 'PHYSICAL',
-            },
-          },
-        },
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+      attributes: {
+        sendNewsletter: 'PHYSICAL',
       },
-    ]);
+    });
   });
 
   it('should handle editing contact name and primary contact', async () => {
-    const mutationSpy = jest.fn();
     const newContactName = 'Guy, Cool and Neat';
     const newPrimaryContactName = `${newContactMock.people.nodes[1].firstName} ${newContactMock.people.nodes[1].lastName}`;
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
-    );
-    mutationSpy.mockClear();
+    const { getByRole } = render(<Components />);
 
     const contactTextBox = getByRole('textbox', {
       hidden: true,
@@ -671,27 +502,15 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing next ask date', async () => {
-    const { getByLabelText, getByText, getAllByText } = render(
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <EditPartnershipInfoModal
-                contact={contactMock}
-                handleClose={handleClose}
-              />
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>,
+    const { getByLabelText, getByText, findByText, getAllByText } = render(
+      <Components />,
     );
     const datePickerButton = getByLabelText('Next Increase Ask');
     userEvent.click(datePickerButton);
 
     const day = await waitFor(async () => getAllByText('30')[0]);
     userEvent.click(day);
-    const okayButton = await waitFor(async () => getByText('OK'));
-    userEvent.click(okayButton);
+    userEvent.click(await findByText('OK'));
     userEvent.click(getByText('Save'));
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
@@ -702,5 +521,21 @@ describe('EditPartnershipInfoModal', () => {
       ),
     );
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should allow user to remove next ask date', async () => {
+    const { getByLabelText, getByText, findByText } = render(<Components />);
+    const datePickerButton = getByLabelText('Next Increase Ask');
+    userEvent.click(datePickerButton);
+    userEvent.click(await findByText('Clear'));
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+        attributes: {
+          nextAsk: null,
+        },
+      }),
+    );
   });
 });
