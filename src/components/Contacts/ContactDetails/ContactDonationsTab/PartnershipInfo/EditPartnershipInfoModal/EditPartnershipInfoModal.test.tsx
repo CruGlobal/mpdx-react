@@ -428,6 +428,22 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
+  it('should allow for user to remove the start date', async () => {
+    const { getByLabelText, getByText, findByText } = render(<Components />);
+    const datePickerButton = getByLabelText('Start Date');
+    userEvent.click(datePickerButton);
+    userEvent.click(await findByText('Clear'));
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+        attributes: {
+          pledgeStartDate: null,
+        },
+      }),
+    );
+  });
+
   it('should handle editing newsletter', async () => {
     const { getByRole } = render(<Components />);
 
