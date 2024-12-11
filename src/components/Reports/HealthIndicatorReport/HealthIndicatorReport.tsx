@@ -1,14 +1,19 @@
 import React from 'react';
 import { Box, Container, Grid, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import MonthlyGoal from 'src/components/Dashboard/MonthlyGoal/MonthlyGoal';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { HealthIndicatorFormula } from './HealthIndicatorFormula/HealthIndicatorFormula';
 import { HealthIndicatorGraph } from './HealthIndicatorGraph/HealthIndicatorGraph';
 import { useMonthlyGoalQuery } from './MonthlyGoal.generated';
 
+const GraphTitle = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
 interface HealthIndicatorReportProps {
   accountListId: string;
   isNavListOpen: boolean;
@@ -53,8 +58,14 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="h6">{t('Health Indicator')}</Typography>
+            <GraphTitle variant="h5">{t('Health Indicator')}</GraphTitle>
             <HealthIndicatorGraph accountListId={accountListId} />
+          </Grid>
+
+          <Grid item xs={12}>
+            <GraphTitle variant="h5">{t('MPD Health Formula')}</GraphTitle>
+
+            <HealthIndicatorFormula />
           </Grid>
         </Grid>
       </Container>
