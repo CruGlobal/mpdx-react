@@ -1,7 +1,37 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
-import MonthlyGoal from './MonthlyGoal';
+import { HealthIndicatorWidgetQuery } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorWidget/HealthIndicatorWidget.generated';
+import MonthlyGoal, { MonthlyGoalProps } from './MonthlyGoal';
+
+const accountListId = 'account-list-1';
+const defaultProps = {
+  goal: 999.5,
+  received: 500,
+  pledged: 750,
+};
+const mutationSpy = jest.fn();
+interface ComponentsProps {
+  healthIndicatorData?: HealthIndicatorWidgetQuery['healthIndicatorData'];
+  monthlyGoalProps?: Omit<MonthlyGoalProps, 'accountListId'>;
+}
+
+const Components = ({
+  healthIndicatorData = [],
+  monthlyGoalProps,
+}: ComponentsProps) => (
+  <GqlMockedProvider<{ HealthIndicatorWidget: HealthIndicatorWidgetQuery }>
+    mocks={{
+      HealthIndicatorWidget: {
+        healthIndicatorData,
+      },
+    }}
+    onCall={mutationSpy}
+  >
+    <MonthlyGoal accountListId={accountListId} {...monthlyGoalProps} />
+  </GqlMockedProvider>
+);
 
 describe('MonthlyGoal', () => {
   beforeEach(() => {
@@ -9,9 +39,8 @@ describe('MonthlyGoal', () => {
   });
 
   it('default', () => {
-    const { getByTestId, queryByTestId } = render(
-      <MonthlyGoal accountListId="1111" />,
-    );
+    const { getByTestId, queryByTestId } = render(<Components />);
+
     expect(
       queryByTestId('MonthlyGoalTypographyGoalMobile'),
     ).not.toBeInTheDocument();
@@ -44,7 +73,7 @@ describe('MonthlyGoal', () => {
 
   it('loading', () => {
     const { getByTestId } = render(
-      <MonthlyGoal accountListId="1111" loading />,
+      <Components monthlyGoalProps={{ loading: true }} />,
     );
     expect(
       getByTestId('MonthlyGoalTypographyGoal').children[0].className,
@@ -74,12 +103,8 @@ describe('MonthlyGoal', () => {
 
   it('props', () => {
     const { getByTestId, queryByTestId } = render(
-      <MonthlyGoal
-        accountListId="1111"
-        goal={999.5}
-        received={500}
-        pledged={750}
-        currencyCode="EUR"
+      <Components
+        monthlyGoalProps={{ ...defaultProps, currencyCode: 'EUR' }}
       />,
     );
     expect(getByTestId('MonthlyGoalTypographyGoal').textContent).toEqual(
@@ -113,12 +138,13 @@ describe('MonthlyGoal', () => {
 
   it('props above goal', () => {
     const { getByTestId, queryByTestId } = render(
-      <MonthlyGoal
-        accountListId="1111"
-        goal={999.5}
-        received={5000}
-        pledged={7500}
-        currencyCode="EUR"
+      <Components
+        monthlyGoalProps={{
+          ...defaultProps,
+          received: 5000,
+          pledged: 7500,
+          currencyCode: 'EUR',
+        }}
       />,
     );
     expect(
@@ -147,9 +173,7 @@ describe('MonthlyGoal', () => {
     });
 
     it('default', () => {
-      const { getByTestId, queryByTestId } = render(
-        <MonthlyGoal accountListId="1111" />,
-      );
+      const { getByTestId, queryByTestId } = render(<Components />);
       expect(
         getByTestId('MonthlyGoalTypographyGoalMobile').textContent,
       ).toEqual('$0');
@@ -166,17 +190,55 @@ describe('MonthlyGoal', () => {
 
     it('props', () => {
       const { getByTestId } = render(
-        <MonthlyGoal
-          accountListId="1111"
-          goal={999.5}
-          received={500}
-          pledged={750}
-          currencyCode="EUR"
+        <Components
+          monthlyGoalProps={{ ...defaultProps, currencyCode: 'EUR' }}
         />,
       );
       expect(
         getByTestId('MonthlyGoalTypographyGoalMobile').textContent,
       ).toEqual('€999.50');
+    });
+  });
+
+  describe('HealthIndicatorWidget', () => {
+    it('should not show the health indicator and keep Grid styles', async () => {
+      const { getByTestId, queryByText } = render(
+        <Components monthlyGoalProps={{ ...defaultProps }} />,
+      );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicatorWidget');
+      });
+      expect(queryByText('MPD Health Indicator')).not.toBeInTheDocument();
+      expect(getByTestId('containerGrid')).not.toHaveClass(
+        'MuiGrid-spacing-xs-2',
+      );
+      expect(getByTestId('goalGrid')).not.toHaveClass('MuiGrid-grid-xs-6');
+    });
+
+    it('should show the health indicator and change Grid styles', async () => {
+      const { getByTestId, getByText } = render(
+        <Components
+          monthlyGoalProps={{ ...defaultProps }}
+          healthIndicatorData={[
+            {
+              id: '1',
+              overallHi: 90,
+              ownershipHi: 80,
+              consistencyHi: 70,
+              successHi: 60,
+              depthHi: 50,
+            },
+          ]}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicatorWidget');
+      });
+      expect(getByText('MPD Health Indicator')).toBeInTheDocument();
+      expect(getByTestId('containerGrid')).toHaveClass('MuiGrid-spacing-xs-2');
+      expect(getByTestId('goalGrid')).toHaveClass('MuiGrid-grid-xs-6');
     });
   });
 });

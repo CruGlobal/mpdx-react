@@ -7,15 +7,15 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  Skeleton,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import StyledProgress from 'src/components/StyledProgress';
-import { Maybe } from 'src/graphql/types.generated';
 import { useHealthIndicatorWidgetQuery } from './HealthIndicatorWidget.generated';
+import { WidgetStat } from './WidgetStat/WidgetStat';
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -28,13 +28,6 @@ const StyledBox = styled(Box)(() => ({
   gap: 2,
   justifyContent: 'space-between',
   alignItems: 'center',
-}));
-
-const WidgetStatGrid = styled(Grid)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(0.5),
-  marginBottom: theme.spacing(1.5),
 }));
 
 interface HealthIndicatorWidgetProps {
@@ -53,6 +46,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   const { data, loading } = useHealthIndicatorWidgetQuery({
     variables: {
       accountListId,
+      month: DateTime.now().startOf('month').toISODate(),
     },
   });
 
@@ -64,8 +58,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
     return null;
   }
 
-  const currentStats =
-    data?.healthIndicatorData[data?.healthIndicatorData.length - 1];
+  const currentStats = data?.healthIndicatorData[0];
 
   return (
     <AnimatedCard sx={{ height: '100%' }}>
@@ -103,21 +96,25 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
             loading={loading}
             stat={currentStats?.ownershipHi}
             statName={t('Ownership')}
+            toolTip={t('% of Self-raised Funds over Total Funds')}
           />
           <WidgetStat
             loading={loading}
             stat={currentStats?.consistencyHi}
             statName={t('Consistency')}
+            toolTip={t('% of months with positive account balance')}
           />
           <WidgetStat
             loading={loading}
             stat={currentStats?.successHi}
             statName={t('Success')}
+            toolTip={t('% of Self-raised Funds over Support Goal')}
           />
           <WidgetStat
             loading={loading}
             stat={currentStats?.depthHi}
             statName={t('Depth')}
+            toolTip={t('Trend of local partners')}
           />
         </Grid>
       </StyledCardContent>
@@ -134,24 +131,3 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
     </AnimatedCard>
   );
 };
-
-interface WidgetStatProps {
-  loading: boolean;
-  stat?: Maybe<number>;
-  statName: string;
-}
-
-const WidgetStat: React.FC<WidgetStatProps> = ({ loading, stat, statName }) => (
-  <WidgetStatGrid xs={6} item gap={0.5}>
-    {loading ? (
-      <Skeleton width={'100%'} height={'30px'} />
-    ) : (
-      <>
-        <Typography variant="h6">{stat}</Typography>
-        <Typography component="div" color="textSecondary">
-          {statName}
-        </Typography>
-      </>
-    )}
-  </WidgetStatGrid>
-);

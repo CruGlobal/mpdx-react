@@ -6,11 +6,11 @@ import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from '../../lib/intlFormat';
 import MinimalSpacingTooltip from '../Shared/MinimalSpacingTooltip';
 
-const ProcessBoxContainer = styled(Box, {
+const ProgressBoxContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'barHeight',
 })<{ barHeight: number }>(({ barHeight, theme }) => ({
   width: '100%',
-  height: barHeight + 8 + 'px',
+  height: barHeight + 8,
   border: '2px solid #999999',
   borderRadius: '50px',
   padding: '2px',
@@ -22,7 +22,7 @@ const ProcessBoxContainer = styled(Box, {
 
 const ProgressBar = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'barHeight' && prop !== 'isPrimary',
-})<{ barHeight: string; isPrimary: boolean }>(({ barHeight, isPrimary }) => ({
+})<{ barHeight: number; isPrimary: boolean }>(({ barHeight, isPrimary }) => ({
   position: 'absolute',
   left: '2px',
   height: barHeight,
@@ -39,7 +39,7 @@ const ProgressBar = styled(Box, {
 
 const StyledSkeleton = styled(Skeleton, {
   shouldForwardProp: (prop) => prop !== 'barHeight',
-})<{ barHeight: string }>(({ barHeight }) => ({
+})<{ barHeight: number }>(({ barHeight }) => ({
   borderRadius: barHeight,
   height: barHeight,
   transform: 'none',
@@ -74,29 +74,35 @@ const StyledProgress = ({
   const locale = useLocale();
   const { t } = useTranslation();
   return (
-    <ProcessBoxContainer barHeight={barHeight}>
+    <ProgressBoxContainer barHeight={barHeight}>
       {loading ? (
         <StyledSkeleton
           data-testid="styledProgressLoading"
-          barHeight={barHeight + 'px'}
+          barHeight={barHeight}
           animation="wave"
         />
       ) : (
         <>
           <ProgressBar
             style={{
-              width: percentageFormat(secondary, locale).replace('\xa0', ''),
+              width: `calc(${percentageFormat(secondary, locale).replace(
+                '\xa0',
+                '',
+              )} - 4px)`,
             }}
             isPrimary={false}
-            barHeight={barHeight + 'px'}
+            barHeight={barHeight}
             data-testid="styledProgressSecondary"
           />
           <ProgressBar
             style={{
-              width: percentageFormat(primary, locale).replace('\xa0', ''),
+              width: `calc(${percentageFormat(primary, locale).replace(
+                '\xa0',
+                '',
+              )} - 4px)`,
             }}
             isPrimary={true}
-            barHeight={barHeight + 'px'}
+            barHeight={barHeight}
             data-testid="styledProgressPrimary"
           />
         </>
@@ -116,7 +122,7 @@ const StyledProgress = ({
           </MinimalSpacingTooltip>
         )}
       </BelowDetailsBox>
-    </ProcessBoxContainer>
+    </ProgressBoxContainer>
   );
 };
 
