@@ -703,4 +703,35 @@ describe('EditPartnershipInfoModal', () => {
     );
     expect(handleClose).toHaveBeenCalled();
   });
+
+  it('should allow user to remove next ask date', async () => {
+    const mutationSpy = jest.fn();
+    const { getByLabelText, getByText, findByText } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <EditPartnershipInfoModal
+                contact={contactMock}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+    const datePickerButton = getByLabelText('Next Increase Ask');
+    userEvent.click(datePickerButton);
+    const clearButton = await findByText('Clear');
+    userEvent.click(clearButton);
+    userEvent.click(getByText('Save'));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+        attributes: {
+          nextAsk: null,
+        },
+      }),
+    );
+  });
 });

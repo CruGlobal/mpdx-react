@@ -138,7 +138,7 @@ export const EditPartnershipInfoModal: React.FC<
         attributes: {
           ...attributes,
           pledgeStartDate: attributes.pledgeStartDate?.toISODate(),
-          nextAsk: attributes.nextAsk?.toISODate(),
+          nextAsk: attributes.nextAsk?.toISODate() ?? null,
           primaryPersonId: attributes.primaryPersonId,
         },
       },
