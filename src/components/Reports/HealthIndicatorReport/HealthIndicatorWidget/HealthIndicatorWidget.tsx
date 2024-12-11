@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -39,10 +39,14 @@ const WidgetStatGrid = styled(Grid)(({ theme }) => ({
 
 interface HealthIndicatorWidgetProps {
   accountListId: string;
+  showHealthIndicator: boolean;
+  setShowHealthIndicator: Dispatch<SetStateAction<boolean>>;
 }
 
 export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   accountListId,
+  showHealthIndicator,
+  setShowHealthIndicator,
 }) => {
   const { t } = useTranslation();
 
@@ -51,6 +55,14 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
       accountListId,
     },
   });
+
+  useEffect(() => {
+    setShowHealthIndicator(!!data?.healthIndicatorData.length);
+  }, [data]);
+
+  if (!showHealthIndicator) {
+    return null;
+  }
 
   const currentStats =
     data?.healthIndicatorData[data?.healthIndicatorData.length - 1];
