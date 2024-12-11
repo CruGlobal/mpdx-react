@@ -6,38 +6,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { percentageFormat } from '../../lib/intlFormat';
 import MinimalSpacingTooltip from '../Shared/MinimalSpacingTooltip';
 
-const BelowDetailsBox = styled(Box)(() => ({
-  position: 'absolute',
-  right: '5px',
-}));
-
-const InlineTypography = styled(Typography)(() => ({
-  display: 'inline',
-}));
-
-const StyledSkeleton = styled(Skeleton)(() => ({
-  borderRadius: '20px',
-  height: '20px',
-  transform: 'none',
-}));
-
-const ProgressBar = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'barHeight' && prop !== 'isPrimary',
-})<{ barHeight: number; isPrimary: boolean }>(({ barHeight, isPrimary }) => ({
-  position: 'absolute',
-  left: '2px',
-  height: barHeight + 'px',
-  minWidth: barHeight + 'px',
-  maxWidth: '99.6%',
-  borderRadius: barHeight + 'px',
-  transition: 'width 1s ease-out',
-  width: '0%',
-  background: isPrimary
-    ? 'linear-gradient(180deg, #FFE67C 0%, #FFCF07 100%)'
-    : 'initial',
-  border: isPrimary ? 'none' : '5px solid #FFCF07',
-}));
-
 const ProcessBoxContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'barHeight',
 })<{ barHeight: number }>(({ barHeight, theme }) => ({
@@ -50,6 +18,40 @@ const ProcessBoxContainer = styled(Box, {
   marginBottom: theme.spacing(2),
   display: 'flex',
   alignItems: 'center',
+}));
+
+const ProgressBar = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'barHeight' && prop !== 'isPrimary',
+})<{ barHeight: string; isPrimary: boolean }>(({ barHeight, isPrimary }) => ({
+  position: 'absolute',
+  left: '2px',
+  height: barHeight,
+  minWidth: barHeight,
+  maxWidth: '99.6%',
+  borderRadius: barHeight,
+  transition: 'width 1s ease-out',
+  width: '0%',
+  background: isPrimary
+    ? 'linear-gradient(180deg, #FFE67C 0%, #FFCF07 100%)'
+    : 'initial',
+  border: isPrimary ? 'none' : '5px solid #FFCF07',
+}));
+
+const StyledSkeleton = styled(Skeleton, {
+  shouldForwardProp: (prop) => prop !== 'barHeight',
+})<{ barHeight: string }>(({ barHeight }) => ({
+  borderRadius: barHeight,
+  height: barHeight,
+  transform: 'none',
+}));
+
+const InlineTypography = styled(Typography)(() => ({
+  display: 'inline',
+}));
+
+const BelowDetailsBox = styled(Box)(() => ({
+  position: 'absolute',
+  right: '5px',
 }));
 
 interface Props {
@@ -74,7 +76,11 @@ const StyledProgress = ({
   return (
     <ProcessBoxContainer barHeight={barHeight}>
       {loading ? (
-        <StyledSkeleton data-testid="styledProgressLoading" animation="wave" />
+        <StyledSkeleton
+          data-testid="styledProgressLoading"
+          barHeight={barHeight + 'px'}
+          animation="wave"
+        />
       ) : (
         <>
           <ProgressBar
@@ -82,7 +88,7 @@ const StyledProgress = ({
               width: percentageFormat(secondary, locale).replace('\xa0', ''),
             }}
             isPrimary={false}
-            barHeight={barHeight}
+            barHeight={barHeight + 'px'}
             data-testid="styledProgressSecondary"
           />
           <ProgressBar
@@ -90,7 +96,7 @@ const StyledProgress = ({
               width: percentageFormat(primary, locale).replace('\xa0', ''),
             }}
             isPrimary={true}
-            barHeight={barHeight}
+            barHeight={barHeight + 'px'}
             data-testid="styledProgressPrimary"
           />
         </>
