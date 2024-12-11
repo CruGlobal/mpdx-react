@@ -105,7 +105,7 @@ const MonthlyGoal = ({
         </AnimatedBox>
       </Box>
       <Grid container spacing={2}>
-        <Grid sm={12} md={7} item>
+        <Grid xs={12} md={6} lg={7} item>
           <AnimatedCard>
             <CardContent>
               <StyledProgress
@@ -113,9 +113,9 @@ const MonthlyGoal = ({
                 primary={receivedPercentage}
                 secondary={pledgedPercentage}
               />
-              <Grid container spacing={2}>
+              <Grid container spacing={{ sm: 1, md: 2 }}>
                 <Hidden smDown>
-                  <Grid sm={6} md={3} item>
+                  <Grid xs={6} item>
                     <Typography component="div" color="textSecondary">
                       <div
                         className={[classes.indicator, classes.goal].join(' ')}
@@ -134,7 +134,7 @@ const MonthlyGoal = ({
                     </Typography>
                   </Grid>
                 </Hidden>
-                <Grid xs={6} md={3} item>
+                <Grid xs={6} item>
                   <Typography component="div" color="textSecondary">
                     <div
                       className={[classes.indicator, classes.received].join(
@@ -166,7 +166,7 @@ const MonthlyGoal = ({
                     )}
                   </Typography>
                 </Grid>
-                <Grid xs={6} md={3} item>
+                <Grid xs={6} item>
                   <Typography component="div" color="textSecondary">
                     <div
                       className={[classes.indicator, classes.pledged].join(' ')}
@@ -198,7 +198,7 @@ const MonthlyGoal = ({
                 </Grid>
                 <Hidden smDown>
                   {!isNaN(belowGoal) && belowGoal > 0 ? (
-                    <Grid sm={6} md={3} item>
+                    <Grid xs={6} item>
                       <Typography component="div" color="textSecondary">
                         {t('Below Goal')}
                       </Typography>
@@ -216,7 +216,7 @@ const MonthlyGoal = ({
                       </Typography>
                     </Grid>
                   ) : (
-                    <Grid sm={6} md={3} item>
+                    <Grid xs={6} item>
                       <Typography component="div" color="textSecondary">
                         {t('Above Goal')}
                       </Typography>
@@ -250,7 +250,7 @@ const MonthlyGoal = ({
           </AnimatedCard>
         </Grid>
 
-        <Grid sm={12} md={5} item>
+        <Grid xs={12} md={6} lg={5} item>
           <HealthIndicatorWidget accountListId={accountListId} />
         </Grid>
       </Grid>

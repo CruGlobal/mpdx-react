@@ -10,11 +10,32 @@ import {
   Skeleton,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import StyledProgress from 'src/components/StyledProgress';
 import { Maybe } from 'src/graphql/types.generated';
 import { useHealthIndicatorWidgetQuery } from './HealthIndicatorWidget.generated';
+
+const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  paddingBottom: 0,
+  height: 'calc(100% - 103px)',
+}));
+
+const StyledBox = styled(Box)(() => ({
+  display: 'flex',
+  gap: 2,
+  justifyContent: 'space-between',
+  alignItems: 'center',
+}));
+
+const WidgetStatGrid = styled(Grid)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(0.5),
+  marginBottom: theme.spacing(1.5),
+}));
 
 interface HealthIndicatorWidgetProps {
   accountListId: string;
@@ -35,25 +56,24 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
     data?.healthIndicatorData[data?.healthIndicatorData.length - 1];
 
   return (
-    <AnimatedCard>
+    <AnimatedCard sx={{ height: '100%' }}>
       <CardHeader
         title={t('MPD Health Indicator')}
         titleTypographyProps={{
           style: { fontSize: '1rem' },
         }}
       />
-      <CardContent>
-        <Box
-          display={'flex'}
-          gap={2}
-          justifyContent={'space-between'}
-          alignItems={'center'}
-        >
-          <Typography variant="h4" color={'primary'} width={'55px'}>
+      <StyledCardContent>
+        <StyledBox>
+          <Typography variant="h4" color="primary" width={'55px'}>
             {currentStats?.overallHi}
           </Typography>
           <Box width={'calc(100% - 55px)'}>
-            <Typography component="div" color="primary">
+            <Typography
+              component="div"
+              color="primary"
+              sx={{ marginBottom: 1 }}
+            >
               {t('Overall Health Indicator')}
             </Typography>
             <StyledProgress
@@ -64,7 +84,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
               barHeight={20}
             />
           </Box>
-        </Box>
+        </StyledBox>
 
         <Grid container>
           <WidgetStat
@@ -88,7 +108,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
             statName={t('Depth')}
           />
         </Grid>
-      </CardContent>
+      </StyledCardContent>
       <CardActions>
         <Button
           LinkComponent={NextLink}
@@ -110,7 +130,7 @@ interface WidgetStatProps {
 }
 
 const WidgetStat: React.FC<WidgetStatProps> = ({ loading, stat, statName }) => (
-  <Grid xs={6} item display={'flex'} alignItems={'center'} gap={0.5}>
+  <WidgetStatGrid xs={6} item gap={0.5}>
     {loading ? (
       <Skeleton width={'100%'} height={'30px'} />
     ) : (
@@ -121,5 +141,5 @@ const WidgetStat: React.FC<WidgetStatProps> = ({ loading, stat, statName }) => (
         </Typography>
       </>
     )}
-  </Grid>
+  </WidgetStatGrid>
 );
