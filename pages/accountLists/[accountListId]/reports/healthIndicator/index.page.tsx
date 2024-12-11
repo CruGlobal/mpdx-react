@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { loadSession } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { HealthIndicatorReport } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorReport';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import {
   MultiPageMenu,
@@ -35,7 +36,14 @@ const HealthIndicatorPage: React.FC = () => {
             isScrollBox={false}
             leftOpen={navListOpen}
             leftWidth="290px"
-            mainContent={<p>content</p>}
+            mainContent={
+              <HealthIndicatorReport
+                accountListId={accountListId}
+                isNavListOpen={navListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Overall Staff MPD Health')}
+              />
+            }
             leftPanel={
               <MultiPageMenu
                 isOpen={navListOpen}
