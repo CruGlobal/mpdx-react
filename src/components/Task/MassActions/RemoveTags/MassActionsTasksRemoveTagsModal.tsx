@@ -115,7 +115,9 @@ export const MassActionsTasksRemoveTagsModal: React.FC<
 
   const tagsData = tasksForTags?.tasks.nodes.map((task) => task.tagList) ?? [];
 
-  const contactsTagsList = [...new Set([...tagsData.flatMap((el) => el)])];
+  const contactsTagsList = [
+    ...new Set([...tagsData.flatMap((el) => el)]),
+  ].sort();
 
   return (
     <Modal title={t('Remove Tags')} isOpen={true} handleClose={handleClose}>
