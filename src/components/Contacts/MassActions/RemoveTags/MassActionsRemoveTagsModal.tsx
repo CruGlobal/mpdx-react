@@ -34,6 +34,7 @@ interface MassActionsRemoveTagsModalProps {
 const ExistingTagButton = styled(Button)(() => ({
   textTransform: 'none',
   width: 'fit-content',
+  justifyContent: 'left',
 }));
 
 const SelectedTagButton = styled(Button)(() => ({
