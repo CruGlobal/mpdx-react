@@ -12,7 +12,7 @@ import {
 } from 'src/components/Shared/Links/Links';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { formatLanguage, languages } from 'src/lib/data/languages';
-import { loadSession } from '../api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 
 // This is the first page of the tour, and it lets users choose their language. It is always shown.
 const StartPage = (): ReactElement => {
@@ -92,6 +92,6 @@ const StartPage = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default StartPage;

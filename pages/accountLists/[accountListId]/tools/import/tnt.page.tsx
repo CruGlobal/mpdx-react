@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
 import TntConnect from 'src/components/Tool/TntConnect/TntConnect';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -26,6 +26,6 @@ const TntConnectPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default TntConnectPage;

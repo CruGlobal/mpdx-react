@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import ToolsHome from 'src/components/Tool/Home/ToolsHome';
@@ -43,6 +43,6 @@ const ToolsPage = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default ToolsPage;

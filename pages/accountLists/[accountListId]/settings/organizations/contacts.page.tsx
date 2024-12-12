@@ -11,7 +11,7 @@ import {
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { Contacts } from 'src/components/Settings/Organization/Contacts/Contacts';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { SettingsWrapper } from '../Wrapper';
@@ -130,6 +130,6 @@ const OrganizationsContacts = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default OrganizationsContacts;

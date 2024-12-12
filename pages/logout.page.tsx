@@ -8,7 +8,7 @@ import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
-import { loadSession } from './api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -51,6 +51,6 @@ const LogoutPage = ({}): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default LogoutPage;

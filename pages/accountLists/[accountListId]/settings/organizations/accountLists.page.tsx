@@ -11,7 +11,7 @@ import {
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { SettingsWrapper } from '../Wrapper';
@@ -143,6 +143,6 @@ const AccountListsOrganizations = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default AccountListsOrganizations;
