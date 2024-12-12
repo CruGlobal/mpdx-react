@@ -65,7 +65,7 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
           <Grid item xs={12}>
             <GraphTitle variant="h5">{t('MPD Health Formula')}</GraphTitle>
 
-            <HealthIndicatorFormula />
+            <HealthIndicatorFormula accountListId={accountListId} />
           </Grid>
         </Grid>
       </Container>
