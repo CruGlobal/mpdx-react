@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
 import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
@@ -120,6 +120,6 @@ const Integrations: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default Integrations;

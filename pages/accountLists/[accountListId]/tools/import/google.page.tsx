@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import Loading from 'src/components/Loading';
 import GoogleImport from 'src/components/Tool/GoogleImport/GoogleImport';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -26,6 +26,6 @@ const GoogleImportPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default GoogleImportPage;
