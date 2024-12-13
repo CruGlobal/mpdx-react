@@ -1,5 +1,4 @@
 import { TFunction } from 'i18next';
-import { v4 as uuidv4 } from 'uuid';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { ContactFlowOption } from './ContactFlow';
 
@@ -18,13 +17,13 @@ export const getDefaultFlowOptions = (
     case DefaultTypeEnum.Global:
       return [
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: t('Contacts'),
           statuses: [StatusEnum.NeverContacted, StatusEnum.ResearchContactInfo],
           color: 'color-error',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: t('Call Backs'),
           statuses: [
             StatusEnum.CallForDecision,
@@ -33,13 +32,13 @@ export const getDefaultFlowOptions = (
           color: 'color-info',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: t('Appointments'),
           statuses: [StatusEnum.AppointmentScheduled],
           color: 'color-warning',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: t('Future Contacts'),
           statuses: [
             StatusEnum.PartnerPray,
@@ -51,7 +50,7 @@ export const getDefaultFlowOptions = (
           color: 'color-success',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: t('Maintaining'),
           statuses: [StatusEnum.CultivateRelationship],
           color: 'color-text',
@@ -60,37 +59,37 @@ export const getDefaultFlowOptions = (
     default:
       return [
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: getLocalizedPhase(PhaseEnum.Connection),
           statuses: getContactStatusesByPhase(PhaseEnum.Connection),
           color: 'color-warning',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: getLocalizedPhase(PhaseEnum.Initiation),
           statuses: getContactStatusesByPhase(PhaseEnum.Initiation),
           color: 'color-info',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: getLocalizedPhase(PhaseEnum.Appointment),
           statuses: getContactStatusesByPhase(PhaseEnum.Appointment),
           color: 'color-success',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: getLocalizedPhase(PhaseEnum.FollowUp),
           statuses: getContactStatusesByPhase(PhaseEnum.FollowUp),
           color: 'color-warning',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: getLocalizedPhase(PhaseEnum.PartnerCare),
           statuses: getContactStatusesByPhase(PhaseEnum.PartnerCare),
           color: 'color-success',
         },
         {
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           name: getLocalizedPhase(PhaseEnum.Archive),
           statuses: getContactStatusesByPhase(PhaseEnum.Archive),
           color: 'color-text',
