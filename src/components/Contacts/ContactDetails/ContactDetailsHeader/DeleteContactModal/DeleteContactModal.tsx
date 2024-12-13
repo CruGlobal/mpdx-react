@@ -194,7 +194,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
                 href={`mailto:${
                   process.env.DONATION_SERVICES_EMAIL
                 }?subject=Request+contact+deletion&body=${encodeURIComponent(
-                  `Dear Donation Services,\n\Please could you remove the following contacts: ${contactName} ` +
+                  `Dear Donation Services,\n\Please could you remove the following contact: ${contactName} ` +
                     '\n\nThanks,\n\n',
                 )}`}
                 underline="hover"
