@@ -86,7 +86,7 @@ const config: NextConfig = {
     PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL,
     TERMS_OF_USE_URL: process.env.TERMS_OF_USE_URL,
     DD_ENV: process.env.DD_ENV ?? 'development',
-    SERVICE_SUPPORT_EMAIL: process.env.SERVICE_SUPPORT_EMAIL ?? 'dsar@cru.org',
+    DATA_PRIVACY_EMAIL: process.env.DATA_PRIVACY_EMAIL ?? 'dsar@cru.org',
     DONATION_SERVICES_EMAIL:
       process.env.DONATION_SERVICES_EMAIL ?? 'donation.services@cru.org',
   },
