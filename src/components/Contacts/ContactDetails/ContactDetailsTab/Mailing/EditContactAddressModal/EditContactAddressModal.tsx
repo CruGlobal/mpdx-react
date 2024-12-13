@@ -241,7 +241,6 @@ export const EditContactAddressModal: React.FC<
                               }?subject=Donor+address+change&body=${encodeURIComponent(
                                 generateEmailBody(emailData, address),
                               )}`}
-                              underline="hover"
                               sx={{ fontWeight: 'bold' }}
                             >
                               {t('Email Donation Services here')}
