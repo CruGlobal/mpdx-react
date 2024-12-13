@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { loadSession } from './api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
 
 interface FetchAcceptInviteProps {
   apiToken: string;
@@ -149,6 +149,6 @@ const AcceptInvitePage = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default AcceptInvitePage;

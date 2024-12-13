@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { NotificationsTable } from 'src/components/Settings/notifications/NotificationsTable';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
@@ -78,6 +78,6 @@ const Notifications: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default Notifications;
