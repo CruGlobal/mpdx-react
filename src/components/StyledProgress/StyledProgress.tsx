@@ -2,8 +2,6 @@ import React, { ReactElement } from 'react';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { percentageFormat } from '../../lib/intlFormat';
 import MinimalSpacingTooltip from '../Shared/MinimalSpacingTooltip';
 
 const ProgressBoxContainer = styled(Box, {
@@ -63,6 +61,16 @@ interface Props {
   barHeight?: number;
 }
 
+export const formatPercentage = (value: number): string => {
+  if (value > 1) {
+    return `${value}%`; // Treat as a percentage
+  }
+  if (value >= 0) {
+    return `${value * 100}%`; // Convert 0.* and 1 to percentage
+  }
+  return '0%'; // Default to 0%
+};
+
 const StyledProgress = ({
   loading,
   primary = 0,
@@ -71,8 +79,8 @@ const StyledProgress = ({
   committedBelow = '',
   barHeight = 46,
 }: Props): ReactElement => {
-  const locale = useLocale();
   const { t } = useTranslation();
+
   return (
     <ProgressBoxContainer barHeight={barHeight}>
       {loading ? (
@@ -85,10 +93,7 @@ const StyledProgress = ({
         <>
           <ProgressBar
             style={{
-              width: `calc(${percentageFormat(secondary, locale).replace(
-                '\xa0',
-                '',
-              )} - 4px)`,
+              width: `calc(${formatPercentage(secondary)} - 4px)`,
             }}
             isPrimary={false}
             barHeight={barHeight}
@@ -96,10 +101,7 @@ const StyledProgress = ({
           />
           <ProgressBar
             style={{
-              width: `calc(${percentageFormat(primary, locale).replace(
-                '\xa0',
-                '',
-              )} - 4px)`,
+              width: `calc(${formatPercentage(primary)} - 4px)`,
             }}
             isPrimary={true}
             barHeight={barHeight}
