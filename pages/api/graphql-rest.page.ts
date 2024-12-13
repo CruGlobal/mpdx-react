@@ -993,10 +993,22 @@ class MpdxRestApi extends RESTDataSource {
     googleIntegrationId,
     googleIntegration,
   ) {
-    const attributes = {};
+    interface GoogleIntegrationAttributes {
+      overwrite?: boolean;
+      calendar_id?: string;
+      calendar_integrations?: string[];
+    }
+    const attributes: GoogleIntegrationAttributes = {};
     Object.keys(googleIntegration).map((key) => {
       attributes[camelToSnake(key)] = googleIntegration[key];
     });
+    if (attributes?.calendar_integrations) {
+      // Convert to lowercase since we convert them from lowercase to Uppercase
+      // when we fetch initially from  pages/api/Schema/Settings/Integrations/Google/parse.ts
+      attributes.calendar_integrations = attributes?.calendar_integrations.map(
+        (integration) => integration.toLowerCase(),
+      );
+    }
 
     const { data }: { data: GoogleIntegrationResponse } = await this.put(
       `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
