@@ -34,6 +34,7 @@ interface MassActionsRemoveTagsModalProps {
 const ExistingTagButton = styled(Button)(() => ({
   textTransform: 'none',
   width: 'fit-content',
+  justifyContent: 'left',
 }));
 
 const SelectedTagButton = styled(Button)(() => ({
@@ -107,7 +108,7 @@ export const MassActionsRemoveTagsModal: React.FC<
   const tagsData =
     contactsForTags?.contacts.nodes.map((contact) => contact.tagList) ?? [];
 
-  const contactsTagsList = [...new Set([...tagsData.flatMap((el) => el)])];
+  const contactsTagsList = Array.from(new Set(tagsData.flat())).sort();
 
   return (
     <Modal title={t('Remove Tags')} isOpen={true} handleClose={handleClose}>
