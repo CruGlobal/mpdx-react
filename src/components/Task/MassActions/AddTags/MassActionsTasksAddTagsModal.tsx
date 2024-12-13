@@ -47,6 +47,7 @@ const NewTagInstructions = styled(Typography)(() => ({
 const ExistingTagButton = styled(Button)(() => ({
   textTransform: 'none',
   width: 'fit-content',
+  justifyContent: 'left',
 }));
 
 const AddTagIcon = styled(Add)(() => ({
