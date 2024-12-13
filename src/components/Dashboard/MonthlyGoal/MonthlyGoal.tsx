@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -7,6 +7,7 @@ import {
   Hidden,
   Skeleton,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -69,6 +70,21 @@ const MonthlyGoal = ({
   const { classes } = useStyles();
   const locale = useLocale();
   const [showHealthIndicator, setShowHealthIndicator] = useState(false);
+  const [usingMachineCalculatedGoal, setUsingMachineCalculatedGoal] =
+    useState(false);
+
+  const toolTipText = useMemo(() => {
+    const formattedGoal = currencyFormat(goal, currencyCode, locale);
+    return usingMachineCalculatedGoal
+      ? t(
+          'Your current goal of {{goal}} is machine-calculated based on the past year of NetSuite data. You can adjust this goal in the settings preferences.',
+          { goal: formattedGoal },
+        )
+      : t(
+          'Your current goal of {{goal}} is staff-entered, based on the value set in your settings preferences.',
+          { goal: formattedGoal },
+        );
+  }, [usingMachineCalculatedGoal, goal, currencyCode, locale]);
 
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
@@ -126,22 +142,28 @@ const MonthlyGoal = ({
               <Grid container spacing={{ sm: 1, md: 2 }}>
                 <Hidden smDown>
                   <Grid {...cssProps.statGrid} item data-testid="goalGrid">
-                    <Typography component="div" color="textSecondary">
-                      <div
-                        className={[classes.indicator, classes.goal].join(' ')}
-                      />
-                      {t('Goal')}
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      data-testid="MonthlyGoalTypographyGoal"
-                    >
-                      {loading ? (
-                        <Skeleton variant="text" />
-                      ) : (
-                        currencyFormat(goal, currencyCode, locale)
-                      )}
-                    </Typography>
+                    <Tooltip title={toolTipText}>
+                      <Box>
+                        <Typography component="div" color="textSecondary">
+                          <div
+                            className={[classes.indicator, classes.goal].join(
+                              ' ',
+                            )}
+                          />
+                          {t('Goal')}
+                        </Typography>
+                        <Typography
+                          variant="h5"
+                          data-testid="MonthlyGoalTypographyGoal"
+                        >
+                          {loading ? (
+                            <Skeleton variant="text" />
+                          ) : (
+                            currencyFormat(goal, currencyCode, locale)
+                          )}
+                        </Typography>
+                      </Box>
+                    </Tooltip>
                   </Grid>
                 </Hidden>
                 <Grid {...cssProps.statGrid} item>
@@ -263,8 +285,10 @@ const MonthlyGoal = ({
         <Grid {...cssProps.hIGrid} item>
           <HealthIndicatorWidget
             accountListId={accountListId}
-            setShowHealthIndicator={setShowHealthIndicator}
+            goal={goal}
             showHealthIndicator={showHealthIndicator}
+            setShowHealthIndicator={setShowHealthIndicator}
+            setUsingMachineCalculatedGoal={setUsingMachineCalculatedGoal}
           />
         </Grid>
       </Grid>

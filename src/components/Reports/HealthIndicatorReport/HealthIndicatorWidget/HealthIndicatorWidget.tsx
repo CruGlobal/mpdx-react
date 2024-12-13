@@ -32,14 +32,18 @@ const StyledBox = styled(Box)(() => ({
 
 interface HealthIndicatorWidgetProps {
   accountListId: string;
+  goal: number;
   showHealthIndicator: boolean;
   setShowHealthIndicator: Dispatch<SetStateAction<boolean>>;
+  setUsingMachineCalculatedGoal: Dispatch<SetStateAction<boolean>>;
 }
 
 export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   accountListId,
+  goal,
   showHealthIndicator,
   setShowHealthIndicator,
+  setUsingMachineCalculatedGoal,
 }) => {
   const { t } = useTranslation();
 
@@ -52,7 +56,12 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
 
   useEffect(() => {
     setShowHealthIndicator(!!data?.healthIndicatorData.length);
-  }, [data]);
+    const machineCalculatedGoal =
+      data?.healthIndicatorData[0]?.machineCalculatedGoal;
+    setUsingMachineCalculatedGoal(
+      !!machineCalculatedGoal && goal === machineCalculatedGoal,
+    );
+  }, [data, goal]);
 
   if (!showHealthIndicator) {
     return null;

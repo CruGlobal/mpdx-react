@@ -5,6 +5,7 @@ import { HealthIndicatorWidgetQuery } from './HealthIndicatorWidget.generated';
 
 const accountListId = 'account-list-1';
 const setShowHealthIndicator = jest.fn();
+const setUsingMachineCalculatedGoal = jest.fn();
 const mutationSpy = jest.fn();
 
 const healthIndicatorScore = {
@@ -14,15 +15,18 @@ const healthIndicatorScore = {
   consistencyHi: 70,
   successHi: 60,
   depthHi: 50,
+  machineCalculatedGoal: 7000,
 };
 
 interface ComponentsProps {
   healthIndicatorData?: HealthIndicatorWidgetQuery['healthIndicatorData'];
   showHealthIndicator?: boolean;
+  goal?: number;
 }
 const Components = ({
   healthIndicatorData = [],
   showHealthIndicator = true,
+  goal = 7000,
 }: ComponentsProps) => (
   <GqlMockedProvider<{ HealthIndicatorWidget: HealthIndicatorWidgetQuery }>
     mocks={{
@@ -33,9 +37,11 @@ const Components = ({
     onCall={mutationSpy}
   >
     <HealthIndicatorWidget
-      showHealthIndicator={showHealthIndicator}
       accountListId={accountListId}
+      goal={goal}
+      showHealthIndicator={showHealthIndicator}
       setShowHealthIndicator={setShowHealthIndicator}
+      setUsingMachineCalculatedGoal={setUsingMachineCalculatedGoal}
     />
   </GqlMockedProvider>
 );
@@ -93,19 +99,37 @@ describe('HealthIndicatorWidget', () => {
     expect(getByText('Depth')).toBeInTheDocument();
   });
 
-  it('renders the most recent data', async () => {
-    const { findByText, getByText, queryByText } = render(
-      <Components
-        healthIndicatorData={[
-          healthIndicatorScore,
-          { ...healthIndicatorScore, id: '2', overallHi: 20 },
-        ]}
-      />,
-    );
+  describe('setUsingMachineCalculatedGoal', () => {
+    it('should set to TRUE as machine goal is defined and the same as the monthly goal', async () => {
+      const { findByText } = render(
+        <Components
+          healthIndicatorData={[healthIndicatorScore]}
+          goal={healthIndicatorScore.machineCalculatedGoal}
+        />,
+      );
 
-    expect(await findByText('20')).toBeInTheDocument();
-    expect(getByText('Overall Health Indicator')).toBeInTheDocument();
+      expect(await findByText('Ownership')).toBeInTheDocument();
+      expect(setUsingMachineCalculatedGoal).toHaveBeenCalledWith(true);
+    });
 
-    expect(queryByText('90')).not.toBeInTheDocument();
+    it('should set to FALSE as machine goal is different than the monthly goal', async () => {
+      const { findByText } = render(
+        <Components healthIndicatorData={[healthIndicatorScore]} goal={1000} />,
+      );
+
+      expect(await findByText('Ownership')).toBeInTheDocument();
+      expect(setUsingMachineCalculatedGoal).toHaveBeenCalledWith(false);
+    });
+    it('should set to FALSE as machine goal is not defined', async () => {
+      const { findByText } = render(
+        <Components
+          healthIndicatorData={[healthIndicatorScore]}
+          goal={undefined}
+        />,
+      );
+
+      expect(await findByText('Ownership')).toBeInTheDocument();
+      expect(setUsingMachineCalculatedGoal).toHaveBeenCalledWith(false);
+    });
   });
 });

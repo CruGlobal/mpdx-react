@@ -10,5 +10,6 @@ query HealthIndicatorWidget($accountListId: ID!, $month: ISO8601Date!) {
     consistencyHi
     successHi
     depthHi
+    machineCalculatedGoal
   }
 }
