@@ -4,6 +4,7 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -55,6 +56,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     skip: !open && !contactId,
   });
   const contactSources = data?.contact;
+  const contactName = data?.contact?.name;
 
   const dataInfo: DataInfo = useMemo(() => {
     if (!contactSources) {
@@ -136,7 +138,6 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
               )}
             </Typography>
             <br />
-            <br />
             <Typography variant="h6">{t('Data sources:')}</Typography>
             <List dense={true}>
               {!!dataInfo.contactSource && (
@@ -187,6 +188,21 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
                 </ListItem>
               )}
             </List>
+            <br />
+            <Typography>
+              <Link
+                href={`mailto:${
+                  process.env.DONATION_SERVICES_EMAIL
+                }?subject=Request+contact+deletion&body=${encodeURIComponent(
+                  `Dear Donation Services,\n\Please could you remove the following contact: ${contactName} ` +
+                    '\n\nThanks,\n\n',
+                )}`}
+                underline="hover"
+                sx={{ fontWeight: 'bold' }}
+              >
+                {t('Email Donation Services here')}
+              </Link>
+            </Typography>
           </>
         )}
       </DialogContent>
