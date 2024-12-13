@@ -20,7 +20,7 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
-import { useContactSourceQuery } from './ContactSource.generated';
+import { useContactQuery } from './ContactSource.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -51,15 +51,14 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
 
-  const { data } = useContactSourceQuery({
+  const { data } = useContactQuery({
     variables: { accountListId, contactId },
     skip: !open && !contactId,
   });
-  const contactSources = data?.contact;
-  const contactName = data?.contact?.name;
+  const contact = data?.contact;
 
   const dataInfo: DataInfo = useMemo(() => {
-    if (!contactSources) {
+    if (!contact) {
       return {
         canDeleteWithoutIssues: true,
         contactSource: sourceToStr(t, 'MPDX'),
@@ -78,13 +77,13 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     const emailSources = new Set<string>();
     const phoneSources = new Set<string>();
 
-    contactSources.addresses?.nodes.forEach((address) => {
+    contact.addresses?.nodes.forEach((address) => {
       if (!isEditableSource(address.source)) {
         addressSources.add(address.source);
       }
     });
 
-    contactSources.people?.nodes.forEach((person) => {
+    contact.people?.nodes.forEach((person) => {
       person.emailAddresses.nodes.forEach((email) => {
         if (!isEditableSource(email.source)) {
           emailSources.add(email.source);
@@ -99,18 +98,18 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
 
     return {
       canDeleteWithoutIssues:
-        isEditableSource(contactSources.source ?? undefined) &&
+        isEditableSource(contact.source ?? undefined) &&
         !addressSources.size &&
         !emailSources.size &&
         !phoneSources.size,
-      contactSource: sourceToStr(t, contactSources.source),
+      contactSource: sourceToStr(t, contact.source),
       addressSources: [...addressSources].map((source) =>
         sourceToStr(t, source),
       ),
       emailSources: [...emailSources].map((source) => sourceToStr(t, source)),
       phoneSources: [...phoneSources].map((source) => sourceToStr(t, source)),
     };
-  }, [contactSources]);
+  }, [contact]);
 
   return (
     <Modal
@@ -134,8 +133,23 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
             </Typography>
             <Typography fontWeight="bold">
               {t(
-                `For contacts originating from Donation Services or DonorHub, email Donation Services to request deletion.`,
+                `For contacts originating from Donation Services or DonorHub, `,
               )}
+              <Link
+                href={`mailto:${
+                  process.env.DONATION_SERVICES_EMAIL
+                }?subject=Request+contact+deletion&body=${encodeURIComponent(
+                  'Dear Donation Services,\nPlease could you remove the following contact:' +
+                    `\n\nContact name: ${contact?.name}` +
+                    `\nContact's partner numbers': ${contact?.donorAccountIds?.join(
+                      ', ',
+                    )}` +
+                    '\n\nThanks,\n\n',
+                )}`}
+                sx={{ fontWeight: 'bold' }}
+              >
+                {t('email Donation Services to request deletion.')}
+              </Link>
             </Typography>
             <br />
             <Typography variant="h6">{t('Data sources:')}</Typography>
@@ -188,21 +202,6 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
                 </ListItem>
               )}
             </List>
-            <br />
-            <Typography>
-              <Link
-                href={`mailto:${
-                  process.env.DONATION_SERVICES_EMAIL
-                }?subject=Request+contact+deletion&body=${encodeURIComponent(
-                  `Dear Donation Services,\n\Please could you remove the following contact: ${contactName} ` +
-                    '\n\nThanks,\n\n',
-                )}`}
-                underline="hover"
-                sx={{ fontWeight: 'bold' }}
-              >
-                {t('Email Donation Services here')}
-              </Link>
-            </Typography>
           </>
         )}
       </DialogContent>
