@@ -31,6 +31,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
             ["@apollo/server", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
+            ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
             ["@babel/core", "npm:7.26.0"],\
             ["@babel/node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.19.1"],\
             ["@brainly/onesky-utils", "npm:1.4.2"],\
@@ -915,6 +916,32 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@ardatan/sync-fetch", "npm:0.0.1"],\
             ["node-fetch", "virtual:bce711adff68a6cdf1561a45305ccbe56f7b2ce2f0cfd47cb36415e40898f689ab7e0e0a0b738617f4473953ed49e01b15d52d64826ea6cf70b1b898ac7b2fb6#npm:2.6.7"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@as-integrations/next", [\
+        ["npm:3.2.0", {\
+          "packageLocation": "./.yarn/cache/@as-integrations-next-npm-3.2.0-fcfd76b818-4c82029e64.zip/node_modules/@as-integrations/next/",\
+          "packageDependencies": [\
+            ["@as-integrations/next", "npm:3.2.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0", {\
+          "packageLocation": "./.yarn/__virtual__/@as-integrations-next-virtual-433050339d/0/cache/@as-integrations-next-npm-3.2.0-fcfd76b818-4c82029e64.zip/node_modules/@as-integrations/next/",\
+          "packageDependencies": [\
+            ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
+            ["@apollo/server", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],\
+            ["@types/apollo__server", null],\
+            ["@types/next", null],\
+            ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"]\
+          ],\
+          "packagePeers": [\
+            "@apollo/server",\
+            "@types/apollo__server",\
+            "@types/next",\
+            "next"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -19932,6 +19959,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
             ["@apollo/server", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
+            ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
             ["@babel/core", "npm:7.26.0"],\
             ["@babel/node", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.19.1"],\
             ["@brainly/onesky-utils", "npm:1.4.2"],\
