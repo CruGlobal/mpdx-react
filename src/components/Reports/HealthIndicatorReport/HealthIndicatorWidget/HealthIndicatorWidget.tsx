@@ -7,6 +7,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -78,27 +79,34 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
         }}
       />
       <StyledCardContent>
-        <StyledBox>
-          <Typography variant="h4" color="primary" width={'55px'}>
-            {currentStats?.overallHi}
-          </Typography>
-          <Box width={'calc(100% - 55px)'}>
-            <Typography
-              component="div"
-              color="primary"
-              sx={{ marginBottom: 1 }}
-            >
-              {t('Overall Health Indicator')}
+        <Tooltip
+          title={`${t('MPD Health')} = [(${t('Ownership')} * 3) + (${t(
+            'Success',
+          )} * 2) + (${t('Consistency')} * 1) + (${t('Depth')} * 1)] / 7`}
+          arrow
+        >
+          <StyledBox>
+            <Typography variant="h4" color="primary" width={'55px'}>
+              {currentStats?.overallHi}
             </Typography>
-            <StyledProgress
-              loading={loading}
-              primary={
-                currentStats?.overallHi ? currentStats.overallHi / 100 : 0
-              }
-              barHeight={20}
-            />
-          </Box>
-        </StyledBox>
+            <Box width={'calc(100% - 55px)'}>
+              <Typography
+                component="div"
+                color="primary"
+                sx={{ marginBottom: 1 }}
+              >
+                {t('Overall Health Indicator')}
+              </Typography>
+              <StyledProgress
+                loading={loading}
+                primary={
+                  currentStats?.overallHi ? currentStats.overallHi / 100 : 0
+                }
+                barHeight={20}
+              />
+            </Box>
+          </StyledBox>
+        </Tooltip>
 
         <Grid container>
           <WidgetStat
