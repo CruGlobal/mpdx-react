@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Box, Card, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -15,10 +15,12 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 interface HealthIndicatorFormulaProps {
   accountListId: string;
+  setNoHealthIndicatorData: Dispatch<SetStateAction<boolean>>;
 }
 
 export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
   accountListId,
+  setNoHealthIndicatorData,
 }) => {
   const { t } = useTranslation();
 
@@ -30,6 +32,11 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
   });
 
   const latestMpdHealthData = data?.healthIndicatorData[0];
+
+  if (!data?.healthIndicatorData?.length && !loading) {
+    setNoHealthIndicatorData(true);
+    return null;
+  }
 
   return (
     <Card sx={{ padding: 3 }}>

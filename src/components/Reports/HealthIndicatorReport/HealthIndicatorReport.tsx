@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -28,14 +28,12 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
+  const [noHealthIndicatorData, setNoHealthIndicatorData] = useState(false);
   const { data, loading } = useMonthlyGoalQuery({
     variables: {
       accountListId,
     },
   });
-
-  data?.accountList.monthlyGoal;
-
   return (
     <Box>
       <MultiPageHeader
@@ -45,29 +43,47 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Container>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <MonthlyGoal
-              accountListId={accountListId}
-              loading={loading}
-              goal={data?.accountList.monthlyGoal ?? undefined}
-              received={data?.accountList.receivedPledges}
-              pledged={data?.accountList.totalPledges}
-              totalGiftsNotStarted={data?.contacts.totalCount}
-              currencyCode={data?.accountList.currency}
-            />
+        {noHealthIndicatorData ? (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h5" mt={2}>
+                {t('No Health Indicator data available')}
+              </Typography>
+              <Typography variant="body1" mt={2}>
+                {t(
+                  'There is currently no Health Indicator data available for this account. Please switch to an account that is an MPD Global account. If you are unsure whether you have access to an MPD Global account or need assistance in switching accounts, please reach out to your coach or our support team for guidance.',
+                )}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <GraphTitle variant="h5">{t('Health Indicator')}</GraphTitle>
-            <HealthIndicatorGraph accountListId={accountListId} />
-          </Grid>
+        ) : (
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <MonthlyGoal
+                accountListId={accountListId}
+                loading={loading}
+                goal={data?.accountList.monthlyGoal ?? undefined}
+                received={data?.accountList.receivedPledges}
+                pledged={data?.accountList.totalPledges}
+                totalGiftsNotStarted={data?.contacts.totalCount}
+                currencyCode={data?.accountList.currency}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <GraphTitle variant="h5">{t('Health Indicator')}</GraphTitle>
+              <HealthIndicatorGraph accountListId={accountListId} />
+            </Grid>
 
-          <Grid item xs={12}>
-            <GraphTitle variant="h5">{t('MPD Health Formula')}</GraphTitle>
+            <Grid item xs={12}>
+              <GraphTitle variant="h5">{t('MPD Health Formula')}</GraphTitle>
 
-            <HealthIndicatorFormula accountListId={accountListId} />
+              <HealthIndicatorFormula
+                accountListId={accountListId}
+                setNoHealthIndicatorData={setNoHealthIndicatorData}
+              />
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Container>
     </Box>
   );
