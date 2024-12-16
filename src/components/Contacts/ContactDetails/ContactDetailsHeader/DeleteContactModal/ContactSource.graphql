@@ -2,7 +2,15 @@ query Contact($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
     name
-    donorAccountIds
+    contactDonorAccounts(first: 25) {
+      nodes {
+        id
+        donorAccount {
+          id
+          accountNumber
+        }
+      }
+    }
     source
     addresses {
       nodes {

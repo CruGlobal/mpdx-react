@@ -26,12 +26,31 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+interface CreateEmailLinkProps {
+  partnerAccountNumbers: string[];
+  contactName: string;
+}
+export const createEmailLink = ({
+  partnerAccountNumbers,
+  contactName,
+}: CreateEmailLinkProps) => {
+  return `mailto:${
+    process.env.DONATION_SERVICES_EMAIL
+  }?subject=Request+contact+deletion&body=${encodeURIComponent(
+    'Dear Donation Services,\nPlease could you remove the following contact:' +
+      `\n\nContact name: ${contactName}` +
+      `\nContact's partner numbers: ${partnerAccountNumbers.join(', ')}` +
+      '\n\nThanks,\n\n',
+  )}`;
+};
+
 interface DataInfo {
   canDeleteWithoutIssues: boolean;
   contactSource: string;
   addressSources: string[];
   emailSources: string[];
   phoneSources: string[];
+  emailLink: string;
 }
 interface DeleteContactModalProps {
   open: boolean;
@@ -65,6 +84,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         addressSources: [],
         emailSources: [],
         phoneSources: [],
+        emailLink: '',
       };
     }
 
@@ -95,6 +115,9 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         }
       });
     });
+    const partnerAccountNumbers = contact.contactDonorAccounts.nodes.map(
+      ({ donorAccount }) => donorAccount.accountNumber,
+    );
 
     return {
       canDeleteWithoutIssues:
@@ -108,6 +131,10 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
       ),
       emailSources: [...emailSources].map((source) => sourceToStr(t, source)),
       phoneSources: [...phoneSources].map((source) => sourceToStr(t, source)),
+      emailLink: createEmailLink({
+        partnerAccountNumbers,
+        contactName: contact.name,
+      }),
     };
   }, [contact]);
 
@@ -135,19 +162,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
               {t(
                 `For contacts originating from Donation Services or DonorHub, `,
               )}
-              <Link
-                href={`mailto:${
-                  process.env.DONATION_SERVICES_EMAIL
-                }?subject=Request+contact+deletion&body=${encodeURIComponent(
-                  'Dear Donation Services,\nPlease could you remove the following contact:' +
-                    `\n\nContact name: ${contact?.name}` +
-                    `\nContact's partner numbers': ${contact?.donorAccountIds?.join(
-                      ', ',
-                    )}` +
-                    '\n\nThanks,\n\n',
-                )}`}
-                sx={{ fontWeight: 'bold' }}
-              >
+              <Link href={dataInfo.emailLink} sx={{ fontWeight: 'bold' }}>
                 {t('email Donation Services to request deletion.')}
               </Link>
             </Typography>
