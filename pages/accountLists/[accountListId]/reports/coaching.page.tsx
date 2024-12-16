@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import {
   AccountListTypeEnum,
   CoachingDetail,
@@ -32,6 +32,6 @@ const CoachingReportPage = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default CoachingReportPage;

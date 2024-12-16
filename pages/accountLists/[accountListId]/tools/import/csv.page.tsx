@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import {
   CsvImportProvider,
   CsvImportViewStepEnum,
@@ -78,6 +78,6 @@ const CsvHome: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default CsvHome;

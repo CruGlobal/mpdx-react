@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import FixPhoneNumbers from 'src/components/Tool/FixPhoneNumbers/FixPhoneNumbers';
 import { ToolsWrapper } from '../../ToolsWrapper';
 import { useToolsHelper } from '../../useToolsHelper';
@@ -21,6 +21,6 @@ const FixPhoneNumbersPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default FixPhoneNumbersPage;

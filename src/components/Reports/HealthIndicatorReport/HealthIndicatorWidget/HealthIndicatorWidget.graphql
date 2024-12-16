@@ -1,0 +1,15 @@
+query HealthIndicatorWidget($accountListId: ID!, $month: ISO8601Date!) {
+  healthIndicatorData(
+    accountListId: $accountListId
+    beginDate: $month
+    endDate: $month
+  ) {
+    id
+    overallHi
+    ownershipHi
+    consistencyHi
+    successHi
+    depthHi
+    machineCalculatedGoal
+  }
+}

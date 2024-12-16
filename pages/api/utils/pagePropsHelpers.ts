@@ -5,6 +5,11 @@ import {
 } from 'next';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import makeSsrClient from 'src/lib/apollo/ssrClient';
+import {
+  GetDefaultAccountDocument,
+  GetDefaultAccountQuery,
+} from '../getDefaultAccount.generated';
 
 interface PagePropsWithSession {
   session: Session;
@@ -21,9 +26,9 @@ export const loginRedirect = (
 });
 
 // Redirect back to the dashboard if the user isn't an admin
-export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
+export const enforceAdmin = async (
   context,
-) => {
+): Promise<GetServerSideProps | GetServerSidePropsResult<unknown>> => {
   const session = await getSession(context);
   if (!session?.user.admin) {
     return {
@@ -33,6 +38,15 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
       },
     };
   }
+
+  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+    session,
+    context.req.url,
+  );
+  if (underscoreRedirect) {
+    return underscoreRedirect;
+  }
+
   return {
     props: {
       session,
@@ -41,12 +55,22 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
 };
 
 // Redirect back to login screen if user isn't logged in
-export const loadSession: GetServerSideProps<PagePropsWithSession> = async (
+export const ensureSessionAndAccountList = async (
   context,
-) => {
+): Promise<GetServerSideProps | GetServerSidePropsResult<unknown>> => {
   const session = await getSession(context);
   if (!session?.user.apiToken) {
-    return loginRedirect(context);
+    return {
+      ...loginRedirect(context),
+    };
+  }
+
+  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+    session,
+    context.req.url,
+  );
+  if (underscoreRedirect) {
+    return underscoreRedirect;
   }
 
   return {
@@ -54,6 +78,32 @@ export const loadSession: GetServerSideProps<PagePropsWithSession> = async (
       session,
     },
   };
+};
+
+export const handleUnderscoreAccountListRedirect = async (
+  session: Session,
+  url?: string,
+): Promise<GetServerSidePropsResult<unknown> | undefined> => {
+  if (url?.includes('/accountLists/_')) {
+    // Redirect to the default account list if the "_" is where the account list ID would be in the URL
+    // This is a common pattern in our app, so we handle it here to avoid repeating
+    const ssrClient = makeSsrClient(session.user.apiToken);
+    const { data } = await ssrClient.query<GetDefaultAccountQuery>({
+      query: GetDefaultAccountDocument,
+    });
+
+    if (data.user.defaultAccountList) {
+      return {
+        redirect: {
+          destination: url.replace(
+            '/accountLists/_',
+            `/accountLists/${data.user.defaultAccountList}`,
+          ),
+          permanent: false,
+        },
+      };
+    }
+  }
 };
 
 /**

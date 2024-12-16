@@ -5,7 +5,10 @@ import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from 'pages/api/getDefaultAccount.generated';
-import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
+import {
+  handleUnderscoreAccountListRedirect,
+  makeGetServerSideProps,
+} from 'pages/api/utils/pagePropsHelpers';
 import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import Dashboard from 'src/components/Dashboard';
 import {
@@ -81,6 +84,14 @@ const AccountListIdPage = ({
 
 export const getServerSideProps = makeGetServerSideProps(
   async (session, { query, req }) => {
+    const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+      session,
+      req.url,
+    );
+    if (underscoreRedirect) {
+      return underscoreRedirect;
+    }
+
     const ssrClient = makeSsrClient(session.user.apiToken);
 
     try {

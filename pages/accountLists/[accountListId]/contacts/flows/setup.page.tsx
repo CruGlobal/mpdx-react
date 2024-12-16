@@ -8,7 +8,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { colorMap } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
 import { UnusedStatusesColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/UnusedStatusesColumn';
@@ -228,6 +228,6 @@ const ContactFlowSetupPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default ContactFlowSetupPage;

@@ -3,7 +3,7 @@ import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Connect } from 'src/components/Setup/Connect';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { loadSession } from '../api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 
 // This is the second page of the setup tour. It lets users connect to
 // organizations. It will be shown if the user doesn't have any organization
@@ -22,6 +22,6 @@ const ConnectPage = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default ConnectPage;

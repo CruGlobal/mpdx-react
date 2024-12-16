@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadSession } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import FixSendNewsletter from 'src/components/Tool/FixSendNewsletter/FixSendNewsletter';
 import { ToolsWrapper } from '../../ToolsWrapper';
 import { useToolsHelper } from '../../useToolsHelper';
@@ -21,6 +21,6 @@ const FixSendNewsletterPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = loadSession;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default FixSendNewsletterPage;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { formatPercentage } from './StyledProgress';
 import StyledProgress from '.';
 
 describe('StyledProgress', () => {
@@ -36,5 +37,16 @@ describe('StyledProgress', () => {
     expect(getByText('receivedBelow')).toBeInTheDocument();
     expect(getByText('/')).toBeInTheDocument();
     expect(getByText('committedBelow')).toBeInTheDocument();
+  });
+
+  describe('formatPercentage()', () => {
+    it('should return the correct percentages', () => {
+      expect(formatPercentage(0)).toEqual('0%');
+      expect(formatPercentage(0.1)).toEqual('10%');
+      expect(formatPercentage(0.85)).toEqual('85%');
+      expect(formatPercentage(1)).toEqual('100%');
+      expect(formatPercentage(77)).toEqual('77%');
+      expect(formatPercentage(0.3)).toEqual('30%');
+    });
   });
 });
