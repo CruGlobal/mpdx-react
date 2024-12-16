@@ -5,10 +5,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
 import { AccountListTypeEnum, CoachingDetail } from './CoachingDetail';
 import { LevelOfEffortQuery } from './LevelOfEffort/LevelOfEffort.generated';
@@ -121,14 +117,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 const accountListId = 'account-list-1';
 describe('LoadCoachingDetail', () => {
-  beforeEach(() => {
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
-  });
-
   describe.each([
     { type: AccountListTypeEnum.Coaching, name: 'coaching' },
     { type: AccountListTypeEnum.Own, name: 'own' },
