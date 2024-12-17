@@ -1,0 +1,15 @@
+query MonthlyGoal($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    monthlyGoal
+    receivedPledges
+    totalPledges
+    currency
+  }
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { pledgeReceived: NOT_RECEIVED, status: PARTNER_FINANCIAL }
+  ) {
+    totalCount
+  }
+}

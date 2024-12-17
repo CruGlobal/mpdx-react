@@ -8,6 +8,7 @@ import {
   Skeleton,
   Theme,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,8 @@ import {
 } from 'recharts';
 import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
 import { makeStyles } from 'tss-react/mui';
+import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
+import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
@@ -35,23 +38,6 @@ import AnimatedCard from '../../AnimatedCard';
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
     textAlign: 'center',
-  },
-  lineKey: {
-    display: 'inline-block',
-    height: '5px',
-    width: '20px',
-    marginRight: '10px',
-    marginBottom: '4px',
-    borderRadius: '5px',
-  },
-  lineKeyGoal: {
-    backgroundColor: '#17AEBF',
-  },
-  lineKeyAverage: {
-    backgroundColor: '#9C9FA1',
-  },
-  lineKeyPledged: {
-    backgroundColor: '#FFCF07',
   },
   boxImg: {
     display: 'flex',
@@ -97,11 +83,17 @@ const DonationHistories = ({
   setTime,
 }: Props): ReactElement => {
   const { classes } = useStyles();
+  const { palette } = useTheme();
   const { push } = useRouter();
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
+  const fills = [
+    palette.cruYellow.main,
+    palette.graphBlue3.main,
+    palette.graphBlue2.main,
+    palette.graphBlue1.main,
+  ];
   const currencies: { dataKey: string; fill: string }[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
     const data: {
@@ -168,70 +160,49 @@ const DonationHistories = ({
                 <Grid container spacing={2} justifyContent="center">
                   {goal ? (
                     <>
-                      <Grid item>
-                        <Box
-                          className={[
-                            classes.lineKey,
-                            classes.lineKeyGoal,
-                          ].join(' ')}
+                      <Grid item data-testid="DonationHistoriesTypographyGoal">
+                        <LegendReferenceLine
+                          name={t('Goal')}
+                          value={currencyFormat(goal, currencyCode, locale)}
+                          color={palette.graphTeal.main}
                         />
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          data-testid="DonationHistoriesTypographyGoal"
-                        >
-                          <strong>{t('Goal')}</strong>{' '}
-                          {currencyFormat(goal, currencyCode, locale)}
-                        </Typography>
                       </Grid>
                       <Grid item>|</Grid>
                     </>
                   ) : null}
-                  <Grid item>
-                    <Box
-                      className={[classes.lineKey, classes.lineKeyAverage].join(
-                        ' ',
-                      )}
-                    />
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      data-testid="DonationHistoriesTypographyAverage"
-                    >
-                      <strong>{t('Average')}</strong>{' '}
-                      {loading || !reportsDonationHistories ? (
-                        <Skeleton
-                          variant="text"
-                          style={{ display: 'inline-block' }}
-                          width={90}
-                        />
-                      ) : (
-                        currencyFormat(
-                          reportsDonationHistories.averageIgnoreCurrent,
-                          currencyCode,
-                          locale,
+                  <Grid item data-testid="DonationHistoriesTypographyAverage">
+                    <LegendReferenceLine
+                      name={t('Average')}
+                      value={
+                        loading || !reportsDonationHistories ? (
+                          <Skeleton
+                            variant="text"
+                            style={{ display: 'inline-block' }}
+                            width={90}
+                          />
+                        ) : (
+                          currencyFormat(
+                            reportsDonationHistories.averageIgnoreCurrent,
+                            currencyCode,
+                            locale,
+                          )
                         )
-                      )}
-                    </Typography>
+                      }
+                      color="#9C9FA1"
+                    />
                   </Grid>
                   {pledged ? (
                     <>
                       <Grid item>|</Grid>
-                      <Grid item>
-                        <Box
-                          className={[
-                            classes.lineKey,
-                            classes.lineKeyPledged,
-                          ].join(' ')}
+                      <Grid
+                        item
+                        data-testid="DonationHistoriesTypographyPledged"
+                      >
+                        <LegendReferenceLine
+                          name={t('Committed')}
+                          value={currencyFormat(pledged, currencyCode, locale)}
+                          color={palette.cruYellow.main}
                         />
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          data-testid="DonationHistoriesTypographyPledged"
-                        >
-                          <strong>{t('Committed')}</strong>{' '}
-                          {currencyFormat(pledged, currencyCode, locale)}
-                        </Typography>
                       </Grid>
                     </>
                   ) : null}
@@ -258,25 +229,7 @@ const DonationHistories = ({
             <>
               <Box display={{ xs: 'none', md: 'block' }} height={250}>
                 {loading ? (
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                    data-testid="DonationHistoriesGridLoading"
-                  >
-                    <Skeleton variant="rectangular" width={30} height={30} />
-                    <Skeleton variant="rectangular" width={30} height={50} />
-                    <Skeleton variant="rectangular" width={30} height={70} />
-                    <Skeleton variant="rectangular" width={30} height={90} />
-                    <Skeleton variant="rectangular" width={30} height={110} />
-                    <Skeleton variant="rectangular" width={30} height={130} />
-                    <Skeleton variant="rectangular" width={30} height={150} />
-                    <Skeleton variant="rectangular" width={30} height={170} />
-                    <Skeleton variant="rectangular" width={30} height={190} />
-                    <Skeleton variant="rectangular" width={30} height={210} />
-                    <Skeleton variant="rectangular" width={30} height={230} />
-                    <Skeleton variant="rectangular" width={30} height={250} />
-                  </Grid>
+                  <BarChartSkeleton bars={12} />
                 ) : (
                   <ResponsiveContainer minWidth={600}>
                     <BarChart
@@ -292,19 +245,19 @@ const DonationHistories = ({
                       {goal && (
                         <ReferenceLine
                           y={goal}
-                          stroke="#17AEBF"
+                          stroke={palette.graphTeal.main}
                           strokeWidth={3}
                         />
                       )}
                       <ReferenceLine
                         y={reportsDonationHistories?.averageIgnoreCurrent}
-                        stroke="#9C9FA1"
+                        stroke={palette.cruGrayMedium.main}
                         strokeWidth={3}
                       />
                       {pledged && (
                         <ReferenceLine
                           y={pledged}
-                          stroke="#FFCF07"
+                          stroke={palette.cruYellow.main}
                           strokeWidth={3}
                         />
                       )}
@@ -341,31 +294,18 @@ const DonationHistories = ({
                 )}
               </Box>
               <Box display={{ xs: 'block', md: 'none' }} height={150}>
-                {loading ? (
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                  >
-                    <Skeleton variant="rectangular" width={10} height={40} />
-                    <Skeleton variant="rectangular" width={10} height={50} />
-                    <Skeleton variant="rectangular" width={10} height={60} />
-                    <Skeleton variant="rectangular" width={10} height={70} />
-                    <Skeleton variant="rectangular" width={10} height={80} />
-                    <Skeleton variant="rectangular" width={10} height={90} />
-                    <Skeleton variant="rectangular" width={10} height={100} />
-                    <Skeleton variant="rectangular" width={10} height={110} />
-                    <Skeleton variant="rectangular" width={10} height={120} />
-                    <Skeleton variant="rectangular" width={10} height={130} />
-                    <Skeleton variant="rectangular" width={10} height={140} />
-                    <Skeleton variant="rectangular" width={10} height={150} />
-                  </Grid>
+                {!loading ? (
+                  <BarChartSkeleton bars={12} width={10} />
                 ) : (
                   <ResponsiveContainer>
                     <BarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
-                      <Bar dataKey="total" fill="#007398" barSize={10} />
+                      <Bar
+                        dataKey="total"
+                        fill={palette.graphBlue1.main}
+                        barSize={10}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 )}

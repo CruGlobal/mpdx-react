@@ -47,15 +47,18 @@ export const dayMonthFormat = (
   }).format(DateTime.local().set({ month, day }).toJSDate());
 
 export const monthYearFormat = (
-  month: number,
-  year: number,
+  date: DateTime | null,
   locale: string,
   fullYear = true,
-): string =>
-  new Intl.DateTimeFormat(locale, {
+): string => {
+  if (date === null) {
+    return '';
+  }
+  return new Intl.DateTimeFormat(locale, {
     month: 'short',
     year: fullYear ? 'numeric' : '2-digit',
-  }).format(DateTime.local(year, month, 1).toJSDate());
+  }).format(date.toJSDate());
+};
 
 export const dateFormat = (date: DateTime | null, locale: string): string => {
   if (date === null) {
