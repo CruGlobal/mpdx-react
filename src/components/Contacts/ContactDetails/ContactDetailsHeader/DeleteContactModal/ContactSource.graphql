@@ -1,6 +1,16 @@
-query ContactSource($accountListId: ID!, $contactId: ID!) {
+query Contact($accountListId: ID!, $contactId: ID!) {
   contact(accountListId: $accountListId, id: $contactId) {
     id
+    name
+    contactDonorAccounts(first: 25) {
+      nodes {
+        id
+        donorAccount {
+          id
+          accountNumber
+        }
+      }
+    }
     source
     addresses {
       nodes {

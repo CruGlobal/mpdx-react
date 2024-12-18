@@ -86,6 +86,9 @@ const config: NextConfig = {
     PRIVACY_POLICY_URL: process.env.PRIVACY_POLICY_URL,
     TERMS_OF_USE_URL: process.env.TERMS_OF_USE_URL,
     DD_ENV: process.env.DD_ENV ?? 'development',
+    DATA_PRIVACY_EMAIL: process.env.DATA_PRIVACY_EMAIL ?? 'dsar@cru.org',
+    DONATION_SERVICES_EMAIL:
+      process.env.DONATION_SERVICES_EMAIL ?? 'donation.services@cru.org',
   },
   // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
