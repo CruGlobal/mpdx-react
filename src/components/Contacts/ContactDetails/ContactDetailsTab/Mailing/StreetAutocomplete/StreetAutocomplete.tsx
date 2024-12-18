@@ -169,6 +169,9 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
           typeof option === 'string' ? option : option.description
         }
         options={predictions}
+        // Disable filtering addresses by the input and rely on the Google Maps API to provide
+        // relevant address predictions
+        filterOptions={(options) => options}
         value={streetValue}
         onChange={(_event, newValue) => {
           if (typeof newValue === 'string') {
