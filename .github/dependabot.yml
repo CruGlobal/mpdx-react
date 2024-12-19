@@ -8,3 +8,5 @@ updates:
       - CruGlobal/web-engineering-js
     pull-request-branch-name:
       separator: '-'
+    # Disable version updates while still allowing security updates
+    open-pull-requests-limit: 0
