@@ -1,10 +1,8 @@
-import { NextApiRequest, PageConfig } from 'next';
-import {
-  RESTDataSource,
-  RequestOptions,
-  Response,
-} from 'apollo-datasource-rest';
-import { ApolloError, ApolloServer } from 'apollo-server-micro';
+import { NextApiRequest } from 'next';
+import { AugmentedRequest, RESTDataSource } from '@apollo/datasource-rest';
+import { ApolloServer } from '@apollo/server';
+import { startServerAndCreateNextHandler } from '@as-integrations/next';
+import { GraphQLError } from 'graphql';
 import { DateTime } from 'luxon';
 import Cors from 'micro-cors';
 import {
@@ -125,6 +123,7 @@ import {
   NumericRangeInput,
   ReportContactFilterSetInput,
 } from './graphql-rest.page.generated';
+import type { FetcherResponse } from '@apollo/utils.fetcher';
 
 const camelToSnake = (str: string): string => {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -135,14 +134,17 @@ const DeleteDataHandler = () => ({
 });
 
 class MpdxRestApi extends RESTDataSource {
-  constructor() {
+  authHeader: string;
+
+  constructor(authHeader: string) {
     super();
     this.baseURL = process.env.REST_API_URL;
+    this.authHeader = authHeader;
   }
 
-  willSendRequest(request: RequestOptions) {
-    request.headers.set('Authorization', this.context.authHeader);
-    request.headers.set('Content-Type', 'application/vnd.api+json');
+  willSendRequest(path: string, request: AugmentedRequest) {
+    request.headers['Authorization'] = this.authHeader;
+    request.headers['Content-Type'] = 'application/vnd.api+json';
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
@@ -168,9 +170,21 @@ class MpdxRestApi extends RESTDataSource {
     }
   }
 
-  protected async errorFromResponse(response: Response): Promise<ApolloError> {
-    const error = await super.errorFromResponse(response);
-    const restError = error.extensions.response.body.errors[0];
+  protected async errorFromResponse({
+    response,
+    parsedBody,
+  }: {
+    response: FetcherResponse;
+    parsedBody: unknown;
+  }): Promise<GraphQLError> {
+    const error = await super.errorFromResponse({ response, parsedBody });
+    const restError =
+      parsedBody &&
+      typeof parsedBody === 'object' &&
+      'errors' in parsedBody &&
+      Array.isArray(parsedBody.errors)
+        ? parsedBody.errors[0]
+        : null;
     if (restError?.detail) {
       // Populate the error message with the message detail from the API
       error.message = restError.detail;
@@ -199,15 +213,17 @@ class MpdxRestApi extends RESTDataSource {
     const pathAddition = mailing ? '/mailing' : '';
 
     const { data } = await this.post(`contacts/exports${pathAddition}`, {
-      data: {
-        attributes: {
-          params: {
-            filter,
-            type: labelType,
-            sort,
+      body: {
+        data: {
+          attributes: {
+            params: {
+              filter,
+              type: labelType,
+              sort,
+            },
           },
+          type: 'export_logs',
         },
-        type: 'export_logs',
       },
     });
 
@@ -218,15 +234,17 @@ class MpdxRestApi extends RESTDataSource {
     winnersAndLosers: MergeContactsInput['winnersAndLosers'],
   ) {
     const response = await this.post('contacts/merges/bulk', {
-      data: winnersAndLosers.map((contact) => ({
-        data: {
-          type: 'contacts',
-          attributes: {
-            loser_id: contact.loserId,
-            winner_id: contact.winnerId,
+      body: {
+        data: winnersAndLosers.map((contact) => ({
+          data: {
+            type: 'contacts',
+            attributes: {
+              loser_id: contact.loserId,
+              winner_id: contact.winnerId,
+            },
           },
-        },
-      })),
+        })),
+      },
     });
 
     // Return the id of the winners
@@ -237,15 +255,17 @@ class MpdxRestApi extends RESTDataSource {
     winnersAndLosers: MergePeopleBulkInput['winnersAndLosers'],
   ) {
     const response = await this.post('contacts/people/merges/bulk', {
-      data: winnersAndLosers.map((person) => ({
-        data: {
-          type: 'people',
-          attributes: {
-            loser_id: person.loserId,
-            winner_id: person.winnerId,
+      body: {
+        data: winnersAndLosers.map((person) => ({
+          data: {
+            type: 'people',
+            attributes: {
+              loser_id: person.loserId,
+              winner_id: person.winnerId,
+            },
           },
-        },
-      })),
+        })),
+      },
     });
     return response.map((person) => person.data.id);
   }
@@ -333,29 +353,31 @@ class MpdxRestApi extends RESTDataSource {
 
     // Create a new answer set
     const response = await this.post('coaching/answer_sets', {
-      data: {
-        type: 'coaching_answer_sets',
-        relationships: {
-          account_list: {
-            data: {
-              type: 'account_lists',
-              id: accountListId,
+      body: {
+        data: {
+          type: 'coaching_answer_sets',
+          relationships: {
+            account_list: {
+              data: {
+                type: 'account_lists',
+                id: accountListId,
+              },
             },
-          },
-          organization: {
-            data: {
-              type: 'organizations',
-              id: organizationId,
+            organization: {
+              data: {
+                type: 'organizations',
+                id: organizationId,
+              },
             },
           },
         },
-      },
-      include: 'answers,questions',
-      fields: {
-        coaching_answer_sets:
-          'created_at,updated_at,completed_at,answers,questions',
-        answers: 'response',
-        questions: 'position,prompt,response_options,required',
+        include: 'answers,questions',
+        fields: {
+          coaching_answer_sets:
+            'created_at,updated_at,completed_at,answers,questions',
+          answers: 'response',
+          questions: 'position,prompt,response_options,required',
+        },
       },
     });
     return getCoachingAnswerSet(response);
@@ -377,22 +399,24 @@ class MpdxRestApi extends RESTDataSource {
       include: 'question',
     };
     const res = answerId
-      ? await this.put(`coaching/answers/${answerId}`, body)
+      ? await this.put(`coaching/answers/${answerId}`, { body })
       : await this.post('coaching/answers', {
-          ...body,
-          data: {
-            ...body.data,
-            relationships: {
-              question: {
-                data: {
-                  type: 'coaching_questions',
-                  id: questionId,
+          body: {
+            ...body,
+            data: {
+              ...body.data,
+              relationships: {
+                question: {
+                  data: {
+                    type: 'coaching_questions',
+                    id: questionId,
+                  },
                 },
-              },
-              answer_set: {
-                data: {
-                  type: 'coaching_answer_sets',
-                  id: answerSetId,
+                answer_set: {
+                  data: {
+                    type: 'coaching_answer_sets',
+                    id: answerSetId,
+                  },
                 },
               },
             },
@@ -420,23 +444,25 @@ class MpdxRestApi extends RESTDataSource {
       }),
     );
     await this.put(`contacts/${contactId}`, {
-      included: addresses.map(({ id, primaryMailingAddress }) => ({
-        type: 'addresses',
-        id,
-        attributes: {
-          primary_mailing_address: primaryMailingAddress,
-        },
-      })),
-      data: {
-        type: 'contacts',
-        id: contactId,
-        attributes: { overwrite: true },
-        relationships: {
-          addresses: {
-            data: addresses.map(({ id }) => ({
-              type: 'addresses',
-              id,
-            })),
+      body: {
+        included: addresses.map(({ id, primaryMailingAddress }) => ({
+          type: 'addresses',
+          id,
+          attributes: {
+            primary_mailing_address: primaryMailingAddress,
+          },
+        })),
+        data: {
+          type: 'contacts',
+          id: contactId,
+          attributes: { overwrite: true },
+          relationships: {
+            addresses: {
+              data: addresses.map(({ id }) => ({
+                type: 'addresses',
+                id,
+              })),
+            },
           },
         },
       },
@@ -662,9 +688,8 @@ class MpdxRestApi extends RESTDataSource {
       };
     }
 
-    const analysisPromise = this.post(
-      'reports/partner_giving_analysis',
-      {
+    const analysisPromise = this.post('reports/partner_giving_analysis', {
+      body: {
         data: {
           type: 'partner_giving_analysis',
         },
@@ -677,16 +702,16 @@ class MpdxRestApi extends RESTDataSource {
         per_page: pageSize,
         sort: `${sortAscending ? '' : '-'}${camelToSnake(sortField)}`,
       },
-      {
-        headers: {
-          'Content-Type': 'application/vnd.api+json',
-          'X-HTTP-Method-Override': 'GET',
-        },
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        'X-HTTP-Method-Override': 'GET',
       },
-    );
+    });
     const countContactsPromise = this.get('contacts', {
-      'filter[account_list_id]': accountListId,
-      per_page: 0,
+      params: {
+        'filter[account_list_id]': accountListId,
+        per_page: '0',
+      },
     });
     const [analysisResponse, countContactsResponse] = await Promise.all([
       analysisPromise,
@@ -721,13 +746,15 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: DesignationAccountsResponse } = await this.put(
       `account_lists/${accountListId}/designation_accounts/${designationAccountId}`,
       {
-        data: {
-          attributes: {
-            active,
-            overwrite: true,
+        body: {
+          data: {
+            attributes: {
+              active,
+              overwrite: true,
+            },
+            id: designationAccountId,
+            type: 'designation_accounts',
           },
-          id: designationAccountId,
-          type: 'designation_accounts',
         },
       },
     );
@@ -742,13 +769,15 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: FinancialAccountResponse } = await this.put(
       `account_lists/${accountListId}/financial_accounts/${financialAccountId}`,
       {
-        data: {
-          attributes: {
-            active,
-            overwrite: true,
+        body: {
+          data: {
+            attributes: {
+              active,
+              overwrite: true,
+            },
+            id: financialAccountId,
+            type: 'financial_accounts',
           },
-          id: financialAccountId,
-          type: 'financial_accounts',
         },
       },
     );
@@ -832,10 +861,12 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: UpdateCommentResponse } = await this.put(
       `tasks/${taskId}/comments/${commentId}`,
       {
-        data: {
-          type: 'comments',
-          attributes: {
-            body,
+        body: {
+          data: {
+            type: 'comments',
+            attributes: {
+              body,
+            },
           },
         },
       },
@@ -869,26 +900,28 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: DestroyDonorAccountResponse } = await this.put(
       `contacts/${contactId}`,
       {
-        included: [
-          {
-            type: 'donor_accounts',
-            id: donorAccountId,
-            attributes: {
-              _destroy: '1',
+        body: {
+          included: [
+            {
+              type: 'donor_accounts',
+              id: donorAccountId,
+              attributes: {
+                _destroy: '1',
+              },
             },
-          },
-        ],
-        data: {
-          type: 'contacts',
-          id: contactId,
-          relationships: {
-            donor_accounts: {
-              data: [
-                {
-                  id: donorAccountId,
-                  type: 'donor_accounts',
-                },
-              ],
+          ],
+          data: {
+            type: 'contacts',
+            id: contactId,
+            relationships: {
+              donor_accounts: {
+                data: [
+                  {
+                    id: donorAccountId,
+                    type: 'donor_accounts',
+                  },
+                ],
+              },
             },
           },
         },
@@ -898,26 +931,21 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async deleteTags(tagName: string, page: string) {
-    const { data } = await this.delete(
-      `${page}/tags/bulk`,
-      {
-        '0[name]': tagName,
-      },
-      {
-        body: JSON.stringify({
-          data: [
-            {
-              data: {
-                type: 'tags',
-                attributes: {
-                  name: tagName,
-                },
+    const { data } = await this.delete(`${page}/tags/bulk`, {
+      params: { '0[name]': tagName },
+      body: {
+        data: [
+          {
+            data: {
+              type: 'tags',
+              attributes: {
+                name: tagName,
               },
             },
-          ],
-        }),
+          },
+        ],
       },
-    );
+    });
     return data;
   }
 
@@ -929,8 +957,10 @@ class MpdxRestApi extends RESTDataSource {
     const response: GoogleAccountsResponse[] = await this.get(
       'user/google_accounts',
       {
-        sort: 'created_at',
-        include: 'contact_groups',
+        params: {
+          sort: 'created_at',
+          include: 'contact_groups',
+        },
       },
     );
     return GoogleAccounts(response);
@@ -971,17 +1001,19 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: GoogleIntegrationResponse } = await this.post(
       `user/google_accounts/${googleAccountId}/google_integrations`,
       {
-        data: {
-          attributes,
-          relationships: {
-            account_list: {
-              data: {
-                type: 'account_lists',
-                id: accountListId,
+        body: {
+          data: {
+            attributes,
+            relationships: {
+              account_list: {
+                data: {
+                  type: 'account_lists',
+                  id: accountListId,
+                },
               },
             },
+            type: 'google_integrations',
           },
-          type: 'google_integrations',
         },
       },
     );
@@ -1013,10 +1045,12 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: GoogleIntegrationResponse } = await this.put(
       `user/google_accounts/${googleAccountId}/google_integrations/${googleIntegrationId}`,
       {
-        data: {
-          attributes,
-          id: googleIntegrationId,
-          type: 'google_integrations',
+        body: {
+          data: {
+            attributes,
+            id: googleIntegrationId,
+            type: 'google_integrations',
+          },
         },
       },
     );
@@ -1024,17 +1058,13 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async deleteGoogleAccount(accountId) {
-    await this.delete(
-      `user/google_accounts/${accountId}`,
-      {},
-      {
-        body: JSON.stringify({
-          data: {
-            type: 'google_accounts',
-          },
-        }),
+    await this.delete(`user/google_accounts/${accountId}`, {
+      body: {
+        data: {
+          type: 'google_accounts',
+        },
       },
-    );
+    });
     return DeleteDataHandler();
   }
 
@@ -1066,13 +1096,15 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: UpdateMailchimpAccountResponse } = await this.put(
       `account_lists/${accountListId}/mail_chimp_account`,
       {
-        data: {
-          attributes: {
-            overwrite: true,
-            ...attributes,
+        body: {
+          data: {
+            attributes: {
+              overwrite: true,
+              ...attributes,
+            },
+            id: mailchimpAccountId,
+            type: 'mail_chimp_accounts',
           },
-          id: mailchimpAccountId,
-          type: 'mail_chimp_accounts',
         },
       },
     );
@@ -1122,8 +1154,10 @@ class MpdxRestApi extends RESTDataSource {
 
   async sendToChalkline(accountListId) {
     await this.post(`account_lists/${accountListId}/chalkline_mail`, {
-      data: {
-        type: 'chalkline_mails',
+      body: {
+        data: {
+          type: 'chalkline_mails',
+        },
       },
     });
     return SendToChalkline();
@@ -1176,32 +1210,24 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async destroyOrganizationInvite(organizationId: string, inviteId: string) {
-    await this.delete(
-      `organizations/${organizationId}/invites/${inviteId}`,
-      {},
-      {
-        body: JSON.stringify({
-          data: {
-            type: 'organization_invites',
-          },
-        }),
+    await this.delete(`organizations/${organizationId}/invites/${inviteId}`, {
+      body: {
+        data: {
+          type: 'organization_invites',
+        },
       },
-    );
+    });
     return DeleteDataHandler();
   }
 
   async destroyOrganizationAdmin(organizationId: string, adminId: string) {
-    await this.delete(
-      `organizations/${organizationId}/admins/${adminId}`,
-      {},
-      {
-        body: JSON.stringify({
-          data: {
-            type: 'admins',
-          },
-        }),
+    await this.delete(`organizations/${organizationId}/admins/${adminId}`, {
+      body: {
+        data: {
+          type: 'admins',
+        },
       },
-    );
+    });
     return DeleteDataHandler();
   }
 
@@ -1212,12 +1238,14 @@ class MpdxRestApi extends RESTDataSource {
     const { data }: { data: OrganizationInvite } = await this.post(
       `organizations/${organizationId}/invites`,
       {
-        data: {
-          attributes: {
-            invite_user_as: 'admin',
-            recipient_email: recipientEmail,
+        body: {
+          data: {
+            attributes: {
+              invite_user_as: 'admin',
+              recipient_email: recipientEmail,
+            },
+            type: 'organization_invites',
           },
-          type: 'organization_invites',
         },
       },
     );
@@ -1256,17 +1284,13 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   async deleteOrganizationContact(contactId) {
-    await this.delete(
-      `organizations/contacts/${contactId}`,
-      {},
-      {
-        body: JSON.stringify({
-          data: {
-            type: 'contacts',
-          },
-        }),
+    await this.delete(`organizations/contacts/${contactId}`, {
+      body: {
+        data: {
+          type: 'contacts',
+        },
       },
-    );
+    });
     return DeleteDataHandler();
   }
 
@@ -1308,13 +1332,12 @@ class MpdxRestApi extends RESTDataSource {
   async adminDeleteOrganizationUser(accountListId: string, userId: string) {
     await this.delete(
       `organizations/account_lists/${accountListId}/account_list_users/${userId}`,
-      {},
       {
-        body: JSON.stringify({
+        body: {
           data: {
             type: 'account_list_users',
           },
-        }),
+        },
       },
     );
     return DeleteDataHandler();
@@ -1323,13 +1346,12 @@ class MpdxRestApi extends RESTDataSource {
   async adminDeleteOrganizationCoach(accountListId: string, coachId: string) {
     await this.delete(
       `organizations/account_lists/${accountListId}/account_list_coaches/${coachId}`,
-      {},
       {
-        body: JSON.stringify({
+        body: {
           data: {
             type: 'account_list_coaches',
           },
-        }),
+        },
       },
     );
     return DeleteDataHandler();
@@ -1338,13 +1360,12 @@ class MpdxRestApi extends RESTDataSource {
   async adminDeleteOrganizationInvite(accountListId: string, inviteId: string) {
     await this.delete(
       `organizations/account_lists/${accountListId}/invites/${inviteId}`,
-      {},
       {
-        body: JSON.stringify({
+        body: {
           data: {
             type: 'account_list_invites',
           },
-        }),
+        },
       },
     );
     return DeleteDataHandler();
@@ -1352,7 +1373,6 @@ class MpdxRestApi extends RESTDataSource {
 }
 
 export interface Context {
-  authHeader: string;
   dataSources: { mpdxRestApi: MpdxRestApi };
 }
 
@@ -1363,32 +1383,21 @@ const cors = Cors({
 
 const apolloServer = new ApolloServer({
   schema,
-  dataSources: () => {
-    return {
-      mpdxRestApi: new MpdxRestApi(),
-    };
-  },
-  context: ({ req }: { req: NextApiRequest }): Partial<Context> => {
-    return { authHeader: req.headers.authorization };
-  },
+  allowBatchedHttpRequests: true,
 });
 
-const startServer = apolloServer.start();
-
-export default cors(async (req, res) => {
+export default cors((req, res) => {
   if (req.method === 'OPTIONS') {
     res.end();
     return false;
   }
-  await startServer;
-  await apolloServer.createHandler({
-    path: '/api/graphql-rest',
+  startServerAndCreateNextHandler(apolloServer, {
+    context: async (req: NextApiRequest): Promise<Context> => {
+      return {
+        dataSources: {
+          mpdxRestApi: new MpdxRestApi(req.headers.authorization ?? ''),
+        },
+      };
+    },
   })(req, res);
 });
-
-// Apollo Server Micro takes care of body parsing
-export const config: PageConfig = {
-  api: {
-    bodyParser: false,
-  },
-};
