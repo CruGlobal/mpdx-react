@@ -78,6 +78,8 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `HELP_URL_SETUP_FIND_ORGANIZATION` - Link to an article explaining how to find an organization
 - `PRIVACY_POLICY_URL` - URL of the privacy policy
 - `TERMS_OF_USE_URL` - URL of the terms of use
+- `DATA_PRIVACY_EMAIL` - Email address for requesting data privacy actions, such as the removal of anonymized contact data across all systems.
+- `DONATION_SERVICES_EMAIL` - Email address for contacting Donation Services.
 
 #### Auth provider
 
