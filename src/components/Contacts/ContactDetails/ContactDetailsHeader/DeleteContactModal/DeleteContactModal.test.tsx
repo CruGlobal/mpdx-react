@@ -6,12 +6,16 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactSourceEnum } from 'src/graphql/types.generated';
+import {
+  ContactDonorAccountConnection,
+  ContactSourceEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactSourceQuery } from './ContactSource.generated';
-import { DeleteContactModal } from './DeleteContactModal';
+import { ContactQuery } from './ContactSource.generated';
+import { DeleteContactModal, createEmailLink } from './DeleteContactModal';
 
 const contactId = 'contact-id';
+const contactName = 'Test Contact';
 const mutationSpy = jest.fn();
 const setOpen = jest.fn();
 const deleteContact = jest.fn();
@@ -23,6 +27,7 @@ interface TestComponentProps {
   addressSources?: string[];
   emailSources?: string[];
   phoneSources?: string[];
+  accountNumbers?: string[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -32,19 +37,28 @@ const TestComponent: React.FC<TestComponentProps> = ({
   addressSources = [],
   emailSources = [],
   phoneSources = [],
+  accountNumbers = [],
 }) => (
   <SnackbarProvider>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter router={{ query: { accountListId: 'accountListId' } }}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<{
-            ContactSource: ContactSourceQuery;
+            Contact: ContactQuery;
           }>
             mocks={{
-              ContactSource: {
+              Contact: {
                 contact: {
                   id: contactId,
+                  name: contactName,
                   source: contactSource,
+                  contactDonorAccounts: {
+                    nodes: accountNumbers.map((accountNumber) => ({
+                      donorAccount: {
+                        accountNumber,
+                      },
+                    })),
+                  } as unknown as ContactDonorAccountConnection,
                   addresses: {
                     nodes: addressSources.map((source) => ({ source })),
                   },
@@ -100,7 +114,7 @@ describe('DeleteContactModal', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
+      expect(mutationSpy).toHaveGraphqlOperation('Contact');
     });
 
     expect(
@@ -114,7 +128,7 @@ describe('DeleteContactModal', () => {
     const { getByRole } = render(<TestComponent deleting={true} />);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
+      expect(mutationSpy).toHaveGraphqlOperation('Contact');
     });
 
     expect(getByRole('button', { name: 'delete contact' })).toBeDisabled();
@@ -190,6 +204,26 @@ describe('DeleteContactModal', () => {
         await findByText('Phone: US Donation Services'),
       ).toBeInTheDocument();
     });
+
+    it('should add the partner account numbers in the email link', async () => {
+      process.env.DONATION_SERVICES_EMAIL = 'email@cru.org';
+      const partnerAccountNumbers = ['12345', '67890'];
+      const { findByText } = render(
+        <TestComponent
+          contactSource={ContactSourceEnum.GiveSite}
+          addressSources={['Siebel', 'MPDX']}
+          emailSources={['Siebel', 'MPDX']}
+          phoneSources={['Siebel', 'MPDX']}
+          accountNumbers={partnerAccountNumbers}
+        />,
+      );
+
+      const donationServicesLink = await findByText(
+        'email Donation Services to request deletion.',
+      );
+      const emailLink = createEmailLink({ partnerAccountNumbers, contactName });
+      expect(donationServicesLink).toHaveAttribute('href', emailLink);
+    });
   });
 
   describe('Show normal delete message', () => {
@@ -204,7 +238,7 @@ describe('DeleteContactModal', () => {
       );
 
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
+        expect(mutationSpy).toHaveGraphqlOperation('Contact');
       });
 
       expect(
