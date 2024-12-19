@@ -106,6 +106,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/datasource-rest@npm:^6.4.1":
+  version: 6.4.1
+  resolution: "@apollo/datasource-rest@npm:6.4.1"
+  dependencies:
+    "@apollo/utils.fetcher": ^3.0.0
+    "@apollo/utils.keyvaluecache": ^3.1.0
+    "@apollo/utils.logger": ^3.0.0
+    "@apollo/utils.withrequired": ^3.0.0
+    "@types/http-cache-semantics": ^4.0.1
+    http-cache-semantics: ^4.1.1
+    lodash.clonedeep: ^4.5.0
+    lodash.isplainobject: ^4.0.6
+    node-fetch: ^2.6.7
+  peerDependencies:
+    graphql: ^16.5.0
+  checksum: 43ed9fc314dab1a89bcca18dc372e0f1239dd428a1bf37668c4afbbf08e16130e4013d9545c9c262ebffc4eacf56d50c577d3af32025dbc5756e7c320d32aed0
+  languageName: node
+  linkType: hard
+
 "@apollo/federation-internals@npm:^2.1.3":
   version: 2.1.3
   resolution: "@apollo/federation-internals@npm:2.1.3"
@@ -293,6 +312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/utils.fetcher@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "@apollo/utils.fetcher@npm:3.1.0"
+  checksum: 4d9d7d006717f189e8cf261552bce5f86dee131911fd176aa2476833096bf69281bda624df61216197c1a30b946aefb7c379c68f3edbc09228403d737b51904d
+  languageName: node
+  linkType: hard
+
 "@apollo/utils.isnodelike@npm:^2.0.0, @apollo/utils.isnodelike@npm:^2.0.1":
   version: 2.0.1
   resolution: "@apollo/utils.isnodelike@npm:2.0.1"
@@ -320,6 +346,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apollo/utils.keyvaluecache@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@apollo/utils.keyvaluecache@npm:3.1.0"
+  dependencies:
+    "@apollo/utils.logger": ^3.0.0
+    lru-cache: ^10.0.0
+  checksum: 53ec867ed0002ba06c1ce0b4877931a5437dbc5bfab9fd4bd8344cea5785529b809ff3b6eb5cd65439823dd5275eb8a252b01d80ed722d7cba9304aefe441fb6
+  languageName: node
+  linkType: hard
+
 "@apollo/utils.logger@npm:^1.0.0":
   version: 1.0.0
   resolution: "@apollo/utils.logger@npm:1.0.0"
@@ -331,6 +367,13 @@ __metadata:
   version: 2.0.1
   resolution: "@apollo/utils.logger@npm:2.0.1"
   checksum: f975c81fcc7e54669b975031349f292930dc4cc3dd6bdc58bc7fe2159e0398a7d18b28860ee324c23722b005848e258094a143d20f6989fde5837379240b0066
+  languageName: node
+  linkType: hard
+
+"@apollo/utils.logger@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.logger@npm:3.0.0"
+  checksum: e3bd3e55e7ff86410afa2620dd767073dcf017a8d1e5ab5484fe293a42d06c38e73b5dc5ada99dbb7b9ef2919f225214f7a7d3944a1665e72d84082837359c0b
   languageName: node
   linkType: hard
 
@@ -446,6 +489,13 @@ __metadata:
   version: 2.0.1
   resolution: "@apollo/utils.withrequired@npm:2.0.1"
   checksum: ddd3a72d0f13e6283128d1aae787b65f8ef0bf2f2cf351e143c479f0838679e72d82f42f653b6baadd33a092854fc9cb9dd8af4a45938ee25b718274cef408ee
+  languageName: node
+  linkType: hard
+
+"@apollo/utils.withrequired@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@apollo/utils.withrequired@npm:3.0.0"
+  checksum: 63fb7e93a64d24b0f02ef8a14f53ed16288a9481bfde401b679614d00b18ecc894bac8e36e9bff53d6955a031d2a080d4056914530bf32592a131eb63a4c7ed0
   languageName: node
   linkType: hard
 
@@ -6183,6 +6233,13 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: d076bb61f45d0fc42dee496ef8b1c2f8742e15d5e47e90e20d0243386e426c04d4efd408a48875ab432f7960b4ce3414db20ed0fbbfc7bcc89d84e574f6e045a
+  languageName: node
+  linkType: hard
+
+"@types/http-cache-semantics@npm:^4.0.1":
+  version: 4.0.4
+  resolution: "@types/http-cache-semantics@npm:4.0.4"
+  checksum: 7f4dd832e618bc1e271be49717d7b4066d77c2d4eed5b81198eb987e532bb3e1c7e02f45d77918185bad936f884b700c10cebe06305f50400f382ab75055f9e8
   languageName: node
   linkType: hard
 
@@ -12480,7 +12537,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-cache-semantics@npm:^4.1.0":
+"http-cache-semantics@npm:^4.1.0, http-cache-semantics@npm:^4.1.1":
   version: 4.1.1
   resolution: "http-cache-semantics@npm:4.1.1"
   checksum: 83ac0bc60b17a3a36f9953e7be55e5c8f41acc61b22583060e8dedc9dd5e3607c823a88d0926f9150e571f90946835c7fe150732801010845c72cd8bbff1a236
@@ -14823,10 +14880,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.clonedeep@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.clonedeep@npm:4.5.0"
+  checksum: 92c46f094b064e876a23c97f57f81fbffd5d760bf2d8a1c61d85db6d1e488c66b0384c943abee4f6af7debf5ad4e4282e74ff83177c9e63d8ff081a4837c3489
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: a3f527d22c548f43ae31c861ada88b2637eb48ac6aa3eb56e82d44917971b8aa96fbb37aa60efea674dc4ee8c42074f90f7b1f772e9db375435f6c83a19b3bc6
+  languageName: node
+  linkType: hard
+
+"lodash.isplainobject@npm:^4.0.6":
+  version: 4.0.6
+  resolution: "lodash.isplainobject@npm:4.0.6"
+  checksum: 29c6351f281e0d9a1d58f1a4c8f4400924b4c79f18dfc4613624d7d54784df07efaff97c1ff2659f3e085ecf4fff493300adc4837553104cef2634110b0d5337
   languageName: node
   linkType: hard
 
@@ -14920,6 +14991,13 @@ __metadata:
   dependencies:
     tslib: ^2.0.3
   checksum: 83a0a5f159ad7614bee8bf976b96275f3954335a84fad2696927f609ddae902802c4f3312d86668722e668bef41400254807e1d3a7f2e8c3eede79691aa1f010
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^10.0.0":
+  version: 10.4.3
+  resolution: "lru-cache@npm:10.4.3"
+  checksum: 6476138d2125387a6d20f100608c2583d415a4f64a0fecf30c9e2dda976614f09cad4baa0842447bd37dd459a7bd27f57d9d8f8ce558805abd487c583f3d774a
   languageName: node
   linkType: hard
 
@@ -15458,6 +15536,7 @@ __metadata:
   resolution: "mpdx-react@workspace:."
   dependencies:
     "@apollo/client": ^3.6.9
+    "@apollo/datasource-rest": ^6.4.1
     "@apollo/server": ^4.11.2
     "@apollo/subgraph": ^2.1.3
     "@as-integrations/next": ^3.2.0
