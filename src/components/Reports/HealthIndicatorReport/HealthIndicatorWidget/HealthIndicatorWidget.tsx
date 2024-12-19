@@ -34,6 +34,7 @@ const StyledBox = styled(Box)(() => ({
 interface HealthIndicatorWidgetProps {
   accountListId: string;
   goal: number;
+  onDashboard: boolean;
   showHealthIndicator: boolean;
   setShowHealthIndicator: Dispatch<SetStateAction<boolean>>;
   setUsingMachineCalculatedGoal: Dispatch<SetStateAction<boolean>>;
@@ -42,6 +43,7 @@ interface HealthIndicatorWidgetProps {
 export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   accountListId,
   goal,
+  onDashboard = true,
   showHealthIndicator,
   setShowHealthIndicator,
   setUsingMachineCalculatedGoal,
@@ -80,9 +82,10 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
       />
       <StyledCardContent>
         <Tooltip
-          title={`${t('MPD Health')} = [(${t('Ownership')} * 3) + (${t(
+          title={`${t('MPD Health')} = [(${t('Ownership')} x 3) + (${t(
             'Success',
-          )} * 2) + (${t('Consistency')} * 1) + (${t('Depth')} * 1)] / 7`}
+          )} x 2) + (
+            ${t('Consistency')} x 1) + (${t('Depth')} x 1)] / 7`}
           arrow
         >
           <StyledBox>
@@ -135,16 +138,18 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
           />
         </Grid>
       </StyledCardContent>
-      <CardActions>
-        <Button
-          LinkComponent={NextLink}
-          href={`/accountLists/${accountListId}/reports/healthIndicator`}
-          size="small"
-          color="primary"
-        >
-          {t('View Details')}
-        </Button>
-      </CardActions>
+      {onDashboard && (
+        <CardActions>
+          <Button
+            LinkComponent={NextLink}
+            href={`/accountLists/${accountListId}/reports/healthIndicator`}
+            size="small"
+            color="primary"
+          >
+            {t('View Details')}
+          </Button>
+        </CardActions>
+      )}
     </AnimatedCard>
   );
 };

@@ -67,6 +67,7 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
                 pledged={data?.accountList.totalPledges}
                 totalGiftsNotStarted={data?.contacts.totalCount}
                 currencyCode={data?.accountList.currency}
+                onDashboard={false}
               />
             </Grid>
             <Grid item xs={12}>

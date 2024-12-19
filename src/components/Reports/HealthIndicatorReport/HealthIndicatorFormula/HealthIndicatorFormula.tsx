@@ -46,9 +46,9 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
   }
 
   return (
-    <Card sx={{ padding: 3 }}>
+    <Card sx={{ padding: 3, mb: 5 }}>
       <Typography variant="h6" mb={2}>
-        {t('MPD Health')} = [({t('Ownership')} x 3) + ({t('Success')} * 2) + (
+        {t('MPD Health')} = [({t('Ownership')} x 3) + ({t('Success')} x 2) + (
         {t('Consistency')} x 1) + ({t('Depth')} x 1)] / 7
       </Typography>
       <Box pl={2}>
