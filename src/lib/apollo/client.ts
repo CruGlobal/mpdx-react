@@ -1,7 +1,6 @@
 import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
@@ -18,12 +17,6 @@ import { createCache } from './cache';
 import { batchLink, makeAuthLink } from './link';
 
 const cache = createCache();
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-  await persistCache({
-    cache,
-    storage: new LocalStorageWrapper(window.localStorage),
-  });
-}
 
 const makeClient = (apiToken: string) => {
   const client = new ApolloClient({

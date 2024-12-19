@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useEffect, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -13,6 +13,7 @@ import {
   LocalizationProvider as RawLocalizationProvider,
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
+import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -59,6 +60,13 @@ const GraphQLProviders: React.FC<{
 }> = ({ children = null }) => {
   const { apiToken } = useRequiredSession();
   const client = useMemo(() => makeClient(apiToken), [apiToken]);
+
+  useEffect(() => {
+    persistCache({
+      cache: client.cache,
+      storage: new LocalStorageWrapper(window.localStorage),
+    });
+  }, [client]);
 
   return (
     <ApolloProvider client={client}>
