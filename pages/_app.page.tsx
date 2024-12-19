@@ -97,6 +97,12 @@ const App = ({
       },
     },
     enabled: !!process.env.ROLLBAR_ACCESS_TOKEN,
+    checkIgnore: (_, args) => {
+      // Ignore React hydration warnings
+      return (
+        typeof args[0] === 'string' && args[0].includes('Minified React error')
+      );
+    },
   };
   const emotionCache = createEmotionCache({ key: 'css' });
 
