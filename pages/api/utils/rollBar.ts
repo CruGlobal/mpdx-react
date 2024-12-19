@@ -10,6 +10,12 @@ const rollbar = new Rollbar({
   captureUncaught: true,
   captureUnhandledRejections: true,
   enabled: isRollBarEnabled,
+  checkIgnore: (_, args) => {
+    // Ignore React hydration warnings
+    return (
+      typeof args[0] === 'string' && args[0].includes('Expected server HTML')
+    );
+  },
 });
 
 export const logErrorOnRollbar = (error: unknown, page: string) => {
