@@ -174,6 +174,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
           if (typeof newValue === 'string') {
             onStreetChange(newValue);
           } else {
+            onStreetChange(newValue.description);
             handlePlaceChosen(newValue);
           }
         }}
