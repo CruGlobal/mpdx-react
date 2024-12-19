@@ -22,11 +22,13 @@ interface ComponentsProps {
   healthIndicatorData?: HealthIndicatorWidgetQuery['healthIndicatorData'];
   showHealthIndicator?: boolean;
   goal?: number;
+  onDashboard?: boolean;
 }
 const Components = ({
   healthIndicatorData = [],
   showHealthIndicator = true,
   goal = 7000,
+  onDashboard = true,
 }: ComponentsProps) => (
   <GqlMockedProvider<{ HealthIndicatorWidget: HealthIndicatorWidgetQuery }>
     mocks={{
@@ -39,6 +41,7 @@ const Components = ({
     <HealthIndicatorWidget
       accountListId={accountListId}
       goal={goal}
+      onDashboard={onDashboard}
       showHealthIndicator={showHealthIndicator}
       setShowHealthIndicator={setShowHealthIndicator}
       setUsingMachineCalculatedGoal={setUsingMachineCalculatedGoal}
@@ -73,6 +76,36 @@ describe('HealthIndicatorWidget', () => {
       expect(mutationSpy).toHaveGraphqlOperation('HealthIndicatorWidget');
     });
     expect(setShowHealthIndicator).toHaveBeenCalledWith(true);
+  });
+
+  describe('On Dashboard', () => {
+    it('should show the view details button', async () => {
+      const { findByRole } = render(
+        <Components
+          healthIndicatorData={[healthIndicatorScore]}
+          onDashboard={true}
+        />,
+      );
+
+      expect(
+        await findByRole('link', { name: 'View Details' }),
+      ).toBeInTheDocument();
+    });
+
+    it('should not show view details button if not on dashboard', async () => {
+      const { findByText, queryByRole } = render(
+        <Components
+          healthIndicatorData={[healthIndicatorScore]}
+          onDashboard={false}
+        />,
+      );
+
+      expect(await findByText('Ownership')).toBeInTheDocument();
+
+      expect(
+        queryByRole('button', { name: 'View Details' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('renders the data correctly', async () => {
