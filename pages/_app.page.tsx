@@ -85,7 +85,7 @@ const App = ({
   const { session } = pageProps;
   const rollbarConfig: Rollbar.Configuration = {
     accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
-    environment: 'react_' + process.env.NODE_ENV,
+    environment: `react_${process.env.NODE_ENV}`,
     codeVersion: React.version,
     captureUncaught: true,
     captureUnhandledRejections: true,
@@ -96,8 +96,16 @@ const App = ({
         },
       },
     },
-    enabled: !!process.env.ROLLBAR_ACCESS_TOKEN,
+    enabled: Boolean(process.env.ROLLBAR_ACCESS_TOKEN),
+    checkIgnore: (_, args) =>
+      // Ignore React hydration warnings
+      [
+        'Minified React error #418',
+        'Minified React error #423',
+        'Minified React error #425',
+      ].some((error) => typeof args[0] === 'string' && args[0].includes(error)),
   };
+
   const emotionCache = createEmotionCache({ key: 'css' });
 
   if (!session && !nonAuthenticatedPages.has(router.pathname)) {
