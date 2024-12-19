@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { Box, Card, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -15,11 +15,13 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 interface HealthIndicatorFormulaProps {
   accountListId: string;
+  noHealthIndicatorData: boolean;
   setNoHealthIndicatorData: Dispatch<SetStateAction<boolean>>;
 }
 
 export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
   accountListId,
+  noHealthIndicatorData,
   setNoHealthIndicatorData,
 }) => {
   const { t } = useTranslation();
@@ -31,29 +33,34 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
     },
   });
 
+  useEffect(() => {
+    if (!data?.healthIndicatorData?.length && !loading) {
+      setNoHealthIndicatorData(true);
+    }
+  }, [data, loading]);
+
   const latestMpdHealthData = data?.healthIndicatorData[0];
 
-  if (!data?.healthIndicatorData?.length && !loading) {
-    setNoHealthIndicatorData(true);
+  if (noHealthIndicatorData) {
     return null;
   }
 
   return (
     <Card sx={{ padding: 3 }}>
       <Typography variant="h6" mb={2}>
-        {t('MPD Health')} = [({t('Ownership')} * 3) + ({t('Success')} * 2) + (
-        {t('Consistency')} * 1) + ({t('Depth')} * 1)] / 7
+        {t('MPD Health')} = [({t('Ownership')} x 3) + ({t('Success')} * 2) + (
+        {t('Consistency')} x 1) + ({t('Depth')} x 1)] / 7
       </Typography>
       <Box pl={2}>
         <FormulaItem
           name={t('Ownership')}
-          explanation={t('% of Self-raised Funds over Total Funds')}
+          explanation={t('% of Self-raised funds over total funds')}
           value={latestMpdHealthData?.ownershipHi ?? 0}
           isLoading={loading}
         />
         <FormulaItem
           name={t('Success')}
-          explanation={t('% of Self-raised Funds over Support Goal')}
+          explanation={t('% of Self-raised funds over support goal')}
           value={latestMpdHealthData?.successHi ?? 0}
           isLoading={loading}
         />
@@ -92,7 +99,7 @@ const FormulaItem: React.FC<FormulaItemProps> = ({
       <Skeleton width={'60px'} height={'42px'} />
     ) : (
       <Typography variant="h4" color="primary" fontWeight="bold" width={'60px'}>
-        {isLoading ? <Skeleton></Skeleton> : value}
+        {value}
       </Typography>
     )}
     <Box width={'calc(100% - 60px)'} display="flex" gap={0.7}>

@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
@@ -37,6 +38,17 @@ describe('MPD Health Indicator Page', () => {
   it('should show initial financial accounts page', async () => {
     const { findByText } = render(<Components />);
 
-    expect(await findByText('content')).toBeInTheDocument();
+    expect(await findByText('Overall Staff MPD Health')).toBeInTheDocument();
+  });
+
+  it('should open and close  menu', async () => {
+    const { findByRole, getByRole, queryByRole } = render(<Components />);
+
+    userEvent.click(
+      await findByRole('button', { name: 'Toggle Navigation Panel' }),
+    );
+    expect(getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+    userEvent.click(getByRole('img', { name: 'Close' }));
+    expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
   });
 });

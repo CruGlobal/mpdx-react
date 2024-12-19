@@ -13,7 +13,6 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
-import MonthlyGoal from 'src/components/Dashboard/MonthlyGoal/MonthlyGoal';
 import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { useGetDonationGraphQuery } from 'src/components/Reports/DonationsReport/GetDonationGraph.generated';
@@ -214,9 +213,6 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 }
                 currencyCode={accountListData?.currency}
               />
-
-              <MonthlyGoal accountListId={accountListId} />
-
               <MonthlyCommitment
                 coachingId={accountListId}
                 accountListType={accountListType}

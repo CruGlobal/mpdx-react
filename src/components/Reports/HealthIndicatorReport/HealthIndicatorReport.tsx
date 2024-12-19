@@ -79,6 +79,7 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
 
               <HealthIndicatorFormula
                 accountListId={accountListId}
+                noHealthIndicatorData={noHealthIndicatorData}
                 setNoHealthIndicatorData={setNoHealthIndicatorData}
               />
             </Grid>
