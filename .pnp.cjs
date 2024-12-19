@@ -29,6 +29,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
+            ["@apollo/datasource-rest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.4.1"],\
             ["@apollo/server", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
             ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
@@ -313,6 +314,37 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@apollo/datasource-rest", [\
+        ["npm:6.4.1", {\
+          "packageLocation": "./.yarn/cache/@apollo-datasource-rest-npm-6.4.1-099182eeb2-43ed9fc314.zip/node_modules/@apollo/datasource-rest/",\
+          "packageDependencies": [\
+            ["@apollo/datasource-rest", "npm:6.4.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.4.1", {\
+          "packageLocation": "./.yarn/__virtual__/@apollo-datasource-rest-virtual-de194801e4/0/cache/@apollo-datasource-rest-npm-6.4.1-099182eeb2-43ed9fc314.zip/node_modules/@apollo/datasource-rest/",\
+          "packageDependencies": [\
+            ["@apollo/datasource-rest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.4.1"],\
+            ["@apollo/utils.fetcher", "npm:3.1.0"],\
+            ["@apollo/utils.keyvaluecache", "npm:3.1.0"],\
+            ["@apollo/utils.logger", "npm:3.0.0"],\
+            ["@apollo/utils.withrequired", "npm:3.0.0"],\
+            ["@types/graphql", null],\
+            ["@types/http-cache-semantics", "npm:4.0.4"],\
+            ["graphql", "npm:16.9.0"],\
+            ["http-cache-semantics", "npm:4.1.1"],\
+            ["lodash.clonedeep", "npm:4.5.0"],\
+            ["lodash.isplainobject", "npm:4.0.6"],\
+            ["node-fetch", "virtual:bce711adff68a6cdf1561a45305ccbe56f7b2ce2f0cfd47cb36415e40898f689ab7e0e0a0b738617f4473953ed49e01b15d52d64826ea6cf70b1b898ac7b2fb6#npm:2.6.7"]\
+          ],\
+          "packagePeers": [\
+            "@types/graphql",\
+            "graphql"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@apollo/federation-internals", [\
         ["npm:2.1.3", {\
           "packageLocation": "./.yarn/cache/@apollo-federation-internals-npm-2.1.3-334e4b0620-a80a9f1e1b.zip/node_modules/@apollo/federation-internals/",\
@@ -564,6 +596,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@apollo/utils.fetcher", "npm:2.0.1"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@apollo-utils.fetcher-npm-3.1.0-8274a522b0-4d9d7d0067.zip/node_modules/@apollo/utils.fetcher/",\
+          "packageDependencies": [\
+            ["@apollo/utils.fetcher", "npm:3.1.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@apollo/utils.isnodelike", [\
@@ -593,6 +632,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lru-cache", "npm:7.18.3"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/@apollo-utils.keyvaluecache-npm-3.1.0-e6fe933ed1-53ec867ed0.zip/node_modules/@apollo/utils.keyvaluecache/",\
+          "packageDependencies": [\
+            ["@apollo/utils.keyvaluecache", "npm:3.1.0"],\
+            ["@apollo/utils.logger", "npm:3.0.0"],\
+            ["lru-cache", "npm:10.4.3"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@apollo/utils.logger", [\
@@ -607,6 +655,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@apollo-utils.logger-npm-2.0.1-689a30cab5-f975c81fcc.zip/node_modules/@apollo/utils.logger/",\
           "packageDependencies": [\
             ["@apollo/utils.logger", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.0.0", {\
+          "packageLocation": "./.yarn/cache/@apollo-utils.logger-npm-3.0.0-950f3c2094-e3bd3e55e7.zip/node_modules/@apollo/utils.logger/",\
+          "packageDependencies": [\
+            ["@apollo/utils.logger", "npm:3.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -840,6 +895,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@apollo-utils.withrequired-npm-2.0.1-27d706fe47-ddd3a72d0f.zip/node_modules/@apollo/utils.withrequired/",\
           "packageDependencies": [\
             ["@apollo/utils.withrequired", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.0.0", {\
+          "packageLocation": "./.yarn/cache/@apollo-utils.withrequired-npm-3.0.0-988216b530-63fb7e93a6.zip/node_modules/@apollo/utils.withrequired/",\
+          "packageDependencies": [\
+            ["@apollo/utils.withrequired", "npm:3.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -9088,6 +9150,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/hoist-non-react-statics", "npm:3.3.1"],\
             ["@types/react", "npm:18.0.17"],\
             ["hoist-non-react-statics", "npm:3.3.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/http-cache-semantics", [\
+        ["npm:4.0.4", {\
+          "packageLocation": "./.yarn/cache/@types-http-cache-semantics-npm-4.0.4-6d4f413ddd-7f4dd832e6.zip/node_modules/@types/http-cache-semantics/",\
+          "packageDependencies": [\
+            ["@types/http-cache-semantics", "npm:4.0.4"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -19316,6 +19387,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["lodash.isplainobject", [\
+        ["npm:4.0.6", {\
+          "packageLocation": "./.yarn/cache/lodash.isplainobject-npm-4.0.6-d73937742f-29c6351f28.zip/node_modules/lodash.isplainobject/",\
+          "packageDependencies": [\
+            ["lodash.isplainobject", "npm:4.0.6"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["lodash.isundefined", [\
         ["npm:3.0.1", {\
           "packageLocation": "./.yarn/cache/lodash.isundefined-npm-3.0.1-2d32487d33-52b4d99a47.zip/node_modules/lodash.isundefined/",\
@@ -19443,6 +19523,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["lru-cache", [\
+        ["npm:10.4.3", {\
+          "packageLocation": "./.yarn/cache/lru-cache-npm-10.4.3-30c10b861a-6476138d21.zip/node_modules/lru-cache/",\
+          "packageDependencies": [\
+            ["lru-cache", "npm:10.4.3"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:2.2.4", {\
           "packageLocation": "./.yarn/cache/lru-cache-npm-2.2.4-404a3821bb-359545b52e.zip/node_modules/lru-cache/",\
           "packageDependencies": [\
@@ -20033,6 +20120,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["mpdx-react", "workspace:."],\
             ["@apollo/client", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.7.1"],\
+            ["@apollo/datasource-rest", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:6.4.1"],\
             ["@apollo/server", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.11.2"],\
             ["@apollo/subgraph", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.1.3"],\
             ["@as-integrations/next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:3.2.0"],\
