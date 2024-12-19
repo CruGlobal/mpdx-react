@@ -69,20 +69,18 @@ const ProfileName = ({
       {!impersonating && (
         <IconButton onClick={onProfileMenuOpen} data-testid="profileMenuButton">
           <Box display="flex" alignItems="center" m={-1}>
-            <IconButton>
-              {loading || !avatar ? (
-                <StyledAccountIcon data-testid="AccountIconInTopBar" />
-              ) : (
-                <Avatar
-                  data-testid="AvatarInTopBar"
-                  src={avatar}
-                  sx={{
-                    width: 30,
-                    height: 30,
-                  }}
-                />
-              )}
-            </IconButton>
+            {loading || !avatar ? (
+              <StyledAccountIcon data-testid="AccountIconInTopBar" />
+            ) : (
+              <Avatar
+                data-testid="AvatarInTopBar"
+                src={avatar}
+                sx={{
+                  width: 30,
+                  height: 30,
+                }}
+              />
+            )}
             {children}
           </Box>
         </IconButton>
