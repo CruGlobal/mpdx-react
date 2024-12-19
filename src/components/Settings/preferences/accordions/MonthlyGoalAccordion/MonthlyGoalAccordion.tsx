@@ -47,7 +47,7 @@ interface MonthlyGoalAccordionProps {
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   handleAccordionChange,
   expandedPanel,
-  monthlyGoal,
+  monthlyGoal: initialMonthlyGoal,
   accountListId,
   currency,
   disabled,
@@ -72,8 +72,8 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   );
 
   const formattedMonthlyGoal = useMemo(
-    () => formatMonthlyGoal(monthlyGoal, currency, locale),
-    [monthlyGoal, currency, locale],
+    () => formatMonthlyGoal(initialMonthlyGoal, currency, locale),
+    [initialMonthlyGoal, currency, locale],
   );
 
   const onSubmit = async (
@@ -105,10 +105,15 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   };
 
   const instructions = calculatedGoal
-    ? t(
-        'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can use this amount or choose your own target monthly goal.',
-        { goal: formattedCalculatedGoal },
-      )
+    ? initialMonthlyGoal === null
+      ? t(
+          'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or leave it blank to use the estimate.',
+          { goal: formattedCalculatedGoal },
+        )
+      : t(
+          'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or reset it to the estimate.',
+          { goal: formattedCalculatedGoal },
+        )
     : t(
         'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
       );
@@ -124,7 +129,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     >
       <Formik
         initialValues={{
-          monthlyGoal: monthlyGoal,
+          monthlyGoal: initialMonthlyGoal,
         }}
         validationSchema={accountPreferencesSchema}
         onSubmit={onSubmit}
@@ -135,11 +140,9 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
           values: { monthlyGoal },
           errors,
           handleSubmit,
-          submitForm,
           isSubmitting,
           isValid,
           handleChange,
-          setFieldValue,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
             <FieldWrapper helperText={instructions}>
@@ -169,7 +172,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
               >
                 {t('Save')}
               </Button>
-              {calculatedGoal && monthlyGoal !== calculatedGoal && (
+              {calculatedGoal && initialMonthlyGoal !== null && (
                 <Tooltip
                   title={t(
                     'Reset to NetSuite estimated goal of {{calculatedGoal}}',
@@ -182,8 +185,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                     variant="outlined"
                     type="button"
                     onClick={() => {
-                      setFieldValue('monthlyGoal', calculatedGoal);
-                      submitForm();
+                      onSubmit({ monthlyGoal: null });
                     }}
                   >
                     {t('Reset to Calculated Goal')}

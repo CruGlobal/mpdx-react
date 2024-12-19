@@ -158,18 +158,15 @@ describe('MonthlyGoalAccordion', () => {
           expandedPanel={label}
         />,
       );
-      const input = getByRole('spinbutton', { name: label });
 
       expect(
         await findByText(
-          'Based on the past year, NetSuite estimates that you need at least $1,500 of monthly support. You can use this amount or choose your own target monthly goal.',
+          /Based on the past year, NetSuite estimates that you need at least \$1,500 of monthly support./,
         ),
       ).toBeInTheDocument();
 
       const resetButton = getByRole('button', { name: /Reset/ });
       userEvent.click(resetButton);
-      expect(input).toHaveValue(1500);
-      expect(resetButton).not.toBeInTheDocument();
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
@@ -177,7 +174,7 @@ describe('MonthlyGoalAccordion', () => {
             id: accountListId,
             attributes: {
               settings: {
-                monthlyGoal: 1500,
+                monthlyGoal: null,
               },
             },
           },
@@ -185,10 +182,10 @@ describe('MonthlyGoalAccordion', () => {
       );
     });
 
-    it('hides reset button if goal matches calculated goal', async () => {
-      const { getByRole, findByText, queryByRole } = render(
+    it('hides reset button if goal is null', async () => {
+      const { findByText, queryByRole } = render(
         <Components
-          monthlyGoal={1000}
+          monthlyGoal={null}
           machineCalculatedGoal={1000}
           expandedPanel={label}
         />,
@@ -196,13 +193,10 @@ describe('MonthlyGoalAccordion', () => {
 
       expect(
         await findByText(
-          'Based on the past year, NetSuite estimates that you need at least $1,000 of monthly support. You can use this amount or choose your own target monthly goal.',
+          /Based on the past year, NetSuite estimates that you need at least \$1,000 of monthly support./,
         ),
       ).toBeInTheDocument();
       expect(queryByRole('button', { name: /Reset/ })).not.toBeInTheDocument();
-
-      userEvent.type(getByRole('spinbutton', { name: label }), '0');
-      expect(getByRole('button', { name: /Reset/ })).toBeInTheDocument();
     });
   });
 });
