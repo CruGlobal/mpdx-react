@@ -22,7 +22,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE }}
           output-credentials: true
       - name: deploy PR preview
-        uses: CruGlobal/amplify-preview-actions@handle-existing-branches
+        uses: CruGlobal/amplify-preview-actions@sed-replace-all
         with:
           branch_name: ${{ github.head_ref }}
           amplify_command: deploy
