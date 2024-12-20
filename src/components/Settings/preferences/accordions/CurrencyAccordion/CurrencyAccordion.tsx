@@ -99,7 +99,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
           >
             <FieldWrapper
               helperText={t(
-                'This should be the place from which you are living and sending out physical communications. This will be used in exports for mailing address information.',
+                'This should be the currency that you receive your paychecks in. This will be used when converting donations in other currencies.',
               )}
             >
               <Autocomplete
