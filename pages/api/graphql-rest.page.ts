@@ -148,7 +148,6 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
-  // Taken from https://github.com/apollographql/apollo-server/blob/baf9b252dfab150ec828ef83345a7ceb2d34a6a3/packages/apollo-datasource-rest/src/RESTDataSource.ts#L110-L126
   protected parseBody(
     response: Response,
   ): Promise<Record<string, unknown> | string> {
@@ -703,7 +702,6 @@ class MpdxRestApi extends RESTDataSource {
         sort: `${sortAscending ? '' : '-'}${camelToSnake(sortField)}`,
       },
       headers: {
-        'Content-Type': 'application/vnd.api+json',
         'X-HTTP-Method-Override': 'GET',
       },
     });
@@ -1386,18 +1384,18 @@ const apolloServer = new ApolloServer({
   allowBatchedHttpRequests: true,
 });
 
-export default cors((req, res) => {
+const handler = startServerAndCreateNextHandler(apolloServer, {
+  context: async (req: NextApiRequest): Promise<Context> => ({
+    dataSources: {
+      mpdxRestApi: new MpdxRestApi(req.headers.authorization ?? ''),
+    },
+  }),
+});
+
+export default cors(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.end();
     return false;
   }
-  startServerAndCreateNextHandler(apolloServer, {
-    context: async (req: NextApiRequest): Promise<Context> => {
-      return {
-        dataSources: {
-          mpdxRestApi: new MpdxRestApi(req.headers.authorization ?? ''),
-        },
-      };
-    },
-  })(req, res);
+  await handler(req, res);
 });
