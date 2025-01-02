@@ -118,7 +118,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lint-staged", "npm:13.0.3"],\
             ["lodash", "npm:4.17.21"],\
             ["luxon", "npm:3.4.4"],\
-            ["micro", "npm:9.4.1"],\
             ["micro-cors", "npm:0.1.1"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"],\
             ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.10"],\
@@ -10286,15 +10285,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["arg", [\
-        ["npm:4.1.0", {\
-          "packageLocation": "./.yarn/cache/arg-npm-4.1.0-71ce2f9dcc-ea97513bf2.zip/node_modules/arg/",\
-          "packageDependencies": [\
-            ["arg", "npm:4.1.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["argparse", [\
         ["npm:1.0.10", {\
           "packageLocation": "./.yarn/cache/argparse-npm-1.0.10-528934e59d-7ca6e45583.zip/node_modules/argparse/",\
@@ -11345,13 +11335,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/bytes-npm-3.0.0-19be09472d-a2b386dd81.zip/node_modules/bytes/",\
           "packageDependencies": [\
             ["bytes", "npm:3.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:3.1.0", {\
-          "packageLocation": "./.yarn/cache/bytes-npm-3.1.0-19c5b15405-7c3b21c5d9.zip/node_modules/bytes/",\
-          "packageDependencies": [\
-            ["bytes", "npm:3.1.0"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -16030,18 +16013,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["http-errors", [\
-        ["npm:1.7.3", {\
-          "packageLocation": "./.yarn/cache/http-errors-npm-1.7.3-f6dc83b082-a59f359473.zip/node_modules/http-errors/",\
-          "packageDependencies": [\
-            ["http-errors", "npm:1.7.3"],\
-            ["depd", "npm:1.1.2"],\
-            ["inherits", "npm:2.0.4"],\
-            ["setprototypeof", "npm:1.1.1"],\
-            ["statuses", "npm:1.5.0"],\
-            ["toidentifier", "npm:1.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/http-errors-npm-2.0.0-3f1c503428-9b0a378266.zip/node_modules/http-errors/",\
           "packageDependencies": [\
@@ -19057,18 +19028,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["micro", [\
-        ["npm:9.4.1", {\
-          "packageLocation": "./.yarn/cache/micro-npm-9.4.1-1a61bc4d3f-92eae8a68b.zip/node_modules/micro/",\
-          "packageDependencies": [\
-            ["micro", "npm:9.4.1"],\
-            ["arg", "npm:4.1.0"],\
-            ["content-type", "npm:1.0.4"],\
-            ["raw-body", "npm:2.4.1"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["micro-cors", [\
         ["npm:0.1.1", {\
           "packageLocation": "./.yarn/cache/micro-cors-npm-0.1.1-ed2c9cf933-adf8a2b613.zip/node_modules/micro-cors/",\
@@ -19458,7 +19417,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lint-staged", "npm:13.0.3"],\
             ["lodash", "npm:4.17.21"],\
             ["luxon", "npm:3.4.4"],\
-            ["micro", "npm:9.4.1"],\
             ["micro-cors", "npm:0.1.1"],\
             ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"],\
             ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.10"],\
@@ -21413,17 +21371,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["raw-body", [\
-        ["npm:2.4.1", {\
-          "packageLocation": "./.yarn/cache/raw-body-npm-2.4.1-e6e30ccf94-d5e9179d2f.zip/node_modules/raw-body/",\
-          "packageDependencies": [\
-            ["raw-body", "npm:2.4.1"],\
-            ["bytes", "npm:3.1.0"],\
-            ["http-errors", "npm:1.7.3"],\
-            ["iconv-lite", "npm:0.4.24"],\
-            ["unpipe", "npm:1.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:2.5.2", {\
           "packageLocation": "./.yarn/cache/raw-body-npm-2.5.2-5cb9dfebc1-ba1583c8d8.zip/node_modules/raw-body/",\
           "packageDependencies": [\
@@ -22772,13 +22719,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["setprototypeof", [\
-        ["npm:1.1.1", {\
-          "packageLocation": "./.yarn/cache/setprototypeof-npm-1.1.1-706b6318ec-a8bee29c1c.zip/node_modules/setprototypeof/",\
-          "packageDependencies": [\
-            ["setprototypeof", "npm:1.1.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:1.2.0", {\
           "packageLocation": "./.yarn/cache/setprototypeof-npm-1.2.0-0fedbdcd3a-be18cbbf70.zip/node_modules/setprototypeof/",\
           "packageDependencies": [\
@@ -23321,13 +23261,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["statuses", [\
-        ["npm:1.5.0", {\
-          "packageLocation": "./.yarn/cache/statuses-npm-1.5.0-f88f91b2e9-c469b9519d.zip/node_modules/statuses/",\
-          "packageDependencies": [\
-            ["statuses", "npm:1.5.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:2.0.1", {\
           "packageLocation": "./.yarn/cache/statuses-npm-2.0.1-81d2b97fee-18c7623fdb.zip/node_modules/statuses/",\
           "packageDependencies": [\
@@ -24171,13 +24104,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["toidentifier", [\
-        ["npm:1.0.0", {\
-          "packageLocation": "./.yarn/cache/toidentifier-npm-1.0.0-5dad252f90-199e6bfca1.zip/node_modules/toidentifier/",\
-          "packageDependencies": [\
-            ["toidentifier", "npm:1.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:1.0.1", {\
           "packageLocation": "./.yarn/cache/toidentifier-npm-1.0.1-f759712599-952c29e2a8.zip/node_modules/toidentifier/",\
           "packageDependencies": [\
