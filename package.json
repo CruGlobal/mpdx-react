@@ -52,7 +52,6 @@
     "@react-google-maps/api": "^2.20.3",
     "@rollbar/react": "^0.11.1",
     "apollo-datasource-rest": "^3.7.0",
-    "apollo-server-micro": "^3.11.0",
     "apollo3-cache-persist": "^0.14.1",
     "clsx": "^1.2.1",
     "formidable": "^2.1.1",
