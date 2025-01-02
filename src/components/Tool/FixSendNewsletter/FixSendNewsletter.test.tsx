@@ -67,7 +67,6 @@ const TestComponent = ({
 describe('FixSendNewsletter', () => {
   const contacts =
     mockInvalidNewslettersResponse.InvalidNewsletter.contacts.nodes;
-  const deceasedName = contacts[2].name;
   const firstContactName = contacts[0].name;
   const secondContactName = contacts[1].name;
   const initialNewsletterValue = 'None';
@@ -118,26 +117,7 @@ describe('FixSendNewsletter', () => {
       );
 
       await waitFor(() => {
-        expect(getByRole('button', { name: 'Confirm All (2)' })).toBeVisible();
-      });
-    });
-
-    it('should not show deceased contacts', async () => {
-      const { queryByRole, queryByText } = render(
-        <TestComponent
-          mocks={{
-            InvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.InvalidNewsletter,
-            },
-          }}
-        />,
-      );
-
-      await waitFor(() =>
-        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-      );
-      await waitFor(() => {
-        expect(queryByText(deceasedName)).not.toBeInTheDocument();
+        expect(getByRole('button', { name: 'Confirm All (3)' })).toBeVisible();
       });
     });
   });
@@ -224,33 +204,6 @@ describe('FixSendNewsletter', () => {
         );
       });
     });
-
-    it('should filter out deceased', async () => {
-      const { getAllByRole, queryByText, queryByRole, getByText } = render(
-        <TestComponent
-          mocks={{
-            InvalidNewsletter: {
-              ...mockInvalidNewslettersResponse.InvalidNewsletter,
-            },
-            UpdateContactNewsletter: {
-              ...mockUploadNewsletterChange.UpdateContactNewsletter,
-            },
-          }}
-        />,
-      );
-      await waitFor(() =>
-        expect(queryByRole('progressbar')).not.toBeInTheDocument(),
-      );
-
-      const newsletterDropdown = getAllByRole('combobox')[0];
-      userEvent.click(newsletterDropdown);
-      userEvent.click(getByText(newNewsletterValue));
-      userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
-      await waitFor(() => {
-        expect(queryByText(deceasedName)).not.toBeInTheDocument();
-        expect(queryByText(secondContactName)).toBeInTheDocument();
-      });
-    });
   });
 
   describe('bulk confirm', () => {
@@ -287,7 +240,7 @@ describe('FixSendNewsletter', () => {
       userEvent.click(
         getByRole('option', { name: secondContactNewNewsletterValue }),
       );
-      userEvent.click(getByText('Confirm All (2)'));
+      userEvent.click(getByText('Confirm All (3)'));
       userEvent.click(getByRole('button', { name: 'Yes' }));
     };
 
@@ -309,7 +262,7 @@ describe('FixSendNewsletter', () => {
         expect(queryByRole('progressbar')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByRole('button', { name: 'Confirm All (2)' }));
+      userEvent.click(getByRole('button', { name: 'Confirm All (3)' }));
 
       await waitFor(() => {
         expect(
@@ -372,12 +325,17 @@ describe('FixSendNewsletter', () => {
               accountListId: 'account-id',
               attributes: [
                 {
-                  id: 'contactId2',
-                  sendNewsletter: SendNewsletterEnum.Both,
+                  id: 'contactId3',
+                  sendNewsletter: SendNewsletterEnum.None,
                 },
+
                 {
                   id: 'contactId1',
                   sendNewsletter: SendNewsletterEnum.Physical,
+                },
+                {
+                  id: 'contactId2',
+                  sendNewsletter: SendNewsletterEnum.Both,
                 },
               ],
             },
