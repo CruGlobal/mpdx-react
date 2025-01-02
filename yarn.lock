@@ -276,16 +276,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/utils.keyvaluecache@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@apollo/utils.keyvaluecache@npm:1.0.1"
-  dependencies:
-    "@apollo/utils.logger": ^1.0.0
-    lru-cache: ^7.10.1
-  checksum: 1a5dbd2eae0575905e25d471430d431d145b767ee6f5e8efe3ba64ed44208db131f437e36cf17df6623ae6de97a87c4c8691b4a274510b52ab49f6afe9627a3b
-  languageName: node
-  linkType: hard
-
 "@apollo/utils.keyvaluecache@npm:^2.1.0":
   version: 2.1.1
   resolution: "@apollo/utils.keyvaluecache@npm:2.1.1"
@@ -303,13 +293,6 @@ __metadata:
     "@apollo/utils.logger": ^3.0.0
     lru-cache: ^10.0.0
   checksum: 53ec867ed0002ba06c1ce0b4877931a5437dbc5bfab9fd4bd8344cea5785529b809ff3b6eb5cd65439823dd5275eb8a252b01d80ed722d7cba9304aefe441fb6
-  languageName: node
-  linkType: hard
-
-"@apollo/utils.logger@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@apollo/utils.logger@npm:1.0.0"
-  checksum: 9be2b269d6d1cf2235c7b49a5edbb36c87589facf79516521df66d0c782709b7301a1365693b6e15d77f482d231bbb0fea4c2ae42faac7068cc4e014ce338c68
   languageName: node
   linkType: hard
 
@@ -7167,49 +7150,6 @@ __metadata:
     normalize-path: ^3.0.0
     picomatch: ^2.0.4
   checksum: 3e044fd6d1d26545f235a9fe4d7a534e2029d8e59fa7fd9f2a6eb21230f6b5380ea1eaf55136e60cbf8e613544b3b766e7a6fa2102e2a3a117505466e3025dc2
-  languageName: node
-  linkType: hard
-
-"apollo-datasource-rest@npm:^3.7.0":
-  version: 3.7.0
-  resolution: "apollo-datasource-rest@npm:3.7.0"
-  dependencies:
-    "@apollo/utils.keyvaluecache": ^1.0.1
-    apollo-datasource: ^3.3.2
-    apollo-server-env: ^4.2.1
-    apollo-server-errors: ^3.3.1
-    http-cache-semantics: ^4.1.0
-  peerDependencies:
-    graphql: ^15.3.0 || ^16.0.0
-  checksum: 843e132fd024f15e556b05df00f98e50d7942efb7ed12b860fd528f898c2fa2186e1371f3e5fceb0e55b825c2684c3153a5c19a3724a4b2787d83a44df4193bd
-  languageName: node
-  linkType: hard
-
-"apollo-datasource@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "apollo-datasource@npm:3.3.2"
-  dependencies:
-    "@apollo/utils.keyvaluecache": ^1.0.1
-    apollo-server-env: ^4.2.1
-  checksum: 70244e792655b357213b92e9dd0e8ca553724857847c9bedb53a1dbf7a92fc0d8b05a60d77203d6c30331599b44c5d7cc5f4d94c934465fa05b146b681ed2293
-  languageName: node
-  linkType: hard
-
-"apollo-server-env@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "apollo-server-env@npm:4.2.1"
-  dependencies:
-    node-fetch: ^2.6.7
-  checksum: 039c7eeed82aff072237f9943629ab24b7c62b97535d756a31178f9e7352187951ee654a377d49d775d2ac221fe024914d9989257ca8a7e65c8e5f438c044f18
-  languageName: node
-  linkType: hard
-
-"apollo-server-errors@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "apollo-server-errors@npm:3.3.1"
-  peerDependencies:
-    graphql: ^15.3.0 || ^16.0.0
-  checksum: d09b66e7ac3e2cbc60774280d30118ac4d98f945b5cc1013bb81b9970aae49c0717a550e161fe978d69d7039ec053aeba495890f6eebf452532a2c5e94071a80
   languageName: node
   linkType: hard
 
@@ -15230,7 +15170,6 @@ __metadata:
     "@types/uuid": ^9.0.1
     "@typescript-eslint/eslint-plugin": ^7.5.0
     "@typescript-eslint/parser": ^8.17.0
-    apollo-datasource-rest: ^3.7.0
     apollo3-cache-persist: ^0.14.1
     clsx: ^1.2.1
     concurrently: ^8.2.2
