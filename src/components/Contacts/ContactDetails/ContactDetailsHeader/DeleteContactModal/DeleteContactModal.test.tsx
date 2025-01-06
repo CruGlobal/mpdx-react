@@ -11,7 +11,7 @@ import {
   ContactSourceEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactQuery } from './ContactSource.generated';
+import { ContactSourceQuery } from './ContactSource.generated';
 import { DeleteContactModal, createEmailLink } from './DeleteContactModal';
 
 const contactId = 'contact-id';
@@ -44,10 +44,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <TestRouter router={{ query: { accountListId: 'accountListId' } }}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider<{
-            Contact: ContactQuery;
+            Contact: ContactSourceQuery;
           }>
             mocks={{
-              Contact: {
+              ContactSource: {
                 contact: {
                   id: contactId,
                   name: contactName,
@@ -114,7 +114,7 @@ describe('DeleteContactModal', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('Contact');
+      expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
     });
 
     expect(
@@ -128,7 +128,7 @@ describe('DeleteContactModal', () => {
     const { getByRole } = render(<TestComponent deleting={true} />);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('Contact');
+      expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
     });
 
     expect(getByRole('button', { name: 'delete contact' })).toBeDisabled();
@@ -238,7 +238,7 @@ describe('DeleteContactModal', () => {
       );
 
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('Contact');
+        expect(mutationSpy).toHaveGraphqlOperation('ContactSource');
       });
 
       expect(
