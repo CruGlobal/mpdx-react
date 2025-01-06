@@ -66,9 +66,11 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     },
   });
   const calculatedGoal = data?.healthIndicatorData[0]?.machineCalculatedGoal;
+  const calculatedCurrency =
+    data?.healthIndicatorData[0]?.machineCalculatedGoalCurrency ?? currency;
   const formattedCalculatedGoal = useMemo(
-    () => formatMonthlyGoal(calculatedGoal ?? null, currency, locale),
-    [calculatedGoal, currency, locale],
+    () => formatMonthlyGoal(calculatedGoal ?? null, calculatedCurrency, locale),
+    [calculatedGoal, calculatedCurrency, locale],
   );
 
   const formattedMonthlyGoal = useMemo(

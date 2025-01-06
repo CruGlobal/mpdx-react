@@ -6,5 +6,6 @@ query MachineCalculatedGoal($accountListId: ID!, $month: ISO8601Date!) {
   ) {
     id
     machineCalculatedGoal
+    machineCalculatedGoalCurrency
   }
 }

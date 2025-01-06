@@ -35,12 +35,14 @@ const mutationSpy = jest.fn();
 interface ComponentsProps {
   monthlyGoal: number | null;
   machineCalculatedGoal?: number;
+  machineCalculatedGoalCurrency?: string;
   expandedPanel: string;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
   machineCalculatedGoal,
+  machineCalculatedGoalCurrency = null,
   expandedPanel,
 }) => (
   <SnackbarProvider>
@@ -52,7 +54,7 @@ const Components: React.FC<ComponentsProps> = ({
           mocks={{
             MachineCalculatedGoal: {
               healthIndicatorData: machineCalculatedGoal
-                ? [{ machineCalculatedGoal }]
+                ? [{ machineCalculatedGoal, machineCalculatedGoalCurrency }]
                 : [],
             },
           }}
@@ -155,13 +157,14 @@ describe('MonthlyGoalAccordion', () => {
         <Components
           monthlyGoal={1000}
           machineCalculatedGoal={1500}
+          machineCalculatedGoalCurrency="EUR"
           expandedPanel={label}
         />,
       );
 
       expect(
         await findByText(
-          /Based on the past year, NetSuite estimates that you need at least \$1,500 of monthly support./,
+          /Based on the past year, NetSuite estimates that you need at least €1,500 of monthly support./,
         ),
       ).toBeInTheDocument();
 
