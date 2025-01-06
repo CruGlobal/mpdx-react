@@ -20,7 +20,7 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
-import { useContactQuery } from './ContactSource.generated';
+import { useContactSourceQuery } from './ContactSource.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -37,7 +37,7 @@ export const createEmailLink = ({
   return `mailto:${
     process.env.DONATION_SERVICES_EMAIL
   }?subject=Request+contact+deletion&body=${encodeURIComponent(
-    'Dear Donation Services,\nPlease could you remove the following contact:' +
+    'Dear Donation Services,\n\nPlease could you remove the following contact:' +
       `\n\nContact name: ${contactName}` +
       `\nContact's partner numbers: ${partnerAccountNumbers.join(', ')}` +
       '\n\nThanks,\n\n',
@@ -70,7 +70,7 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
 
-  const { data } = useContactQuery({
+  const { data } = useContactSourceQuery({
     variables: { accountListId, contactId },
     skip: !open && !contactId,
   });
