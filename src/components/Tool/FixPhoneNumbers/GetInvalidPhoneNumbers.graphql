@@ -2,7 +2,11 @@ query GetInvalidPhoneNumbers($accountListId: ID!) {
   # TODO: Eventually needs pagination (Jira issue: MPDX-7642)
   people(
     accountListId: $accountListId
-    peopleFilter: { phoneNumberValid: false }
+    peopleFilter: {
+      phoneNumberValid: false
+      deceased: false
+      contactStatus: [ACTIVE]
+    }
     first: 50
   ) {
     totalCount
