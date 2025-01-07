@@ -115,9 +115,13 @@ const newContactMock = gqlMock<ContactDonorAccountsFragment>(
 
 interface ComponentsProps {
   isNewContact?: boolean;
+  showRelationshipCode?: boolean;
 }
 
-const Components = ({ isNewContact = false }: ComponentsProps) => (
+const Components = ({
+  isNewContact = false,
+  showRelationshipCode = false,
+}: ComponentsProps) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <TestRouter>
       <SnackbarProvider>
@@ -125,6 +129,7 @@ const Components = ({ isNewContact = false }: ComponentsProps) => (
           <GqlMockedProvider onCall={mutationSpy}>
             <EditPartnershipInfoModal
               contact={isNewContact ? newContactMock : contactMock}
+              showRelationshipCode={showRelationshipCode}
               handleClose={handleClose}
             />
           </GqlMockedProvider>
@@ -537,5 +542,53 @@ describe('EditPartnershipInfoModal', () => {
         },
       }),
     );
+  });
+
+  describe('Relationship code', () => {
+    it('should not render relationshipCode', async () => {
+      const { queryByRole } = render(<Components />);
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('UserOrganizationAccounts');
+      });
+
+      expect(
+        queryByRole('textbox', {
+          name: 'Relationship Code',
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should render relationshipCode', () => {
+      const { getByRole } = render(<Components showRelationshipCode />);
+
+      expect(
+        getByRole('textbox', {
+          name: 'Relationship Code',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    // Remove skip this when the UpdateContact mutation operation is updated to include the relationshipCode
+    it.skip('should update relationshipCode', async () => {
+      const { findByRole, getByText } = render(
+        <Components includeCruSwitzerland />,
+      );
+
+      const relationshipCode = await findByRole('textbox', {
+        name: 'Relationship Code',
+      });
+      userEvent.clear(relationshipCode);
+      userEvent.type(relationshipCode, '1234');
+      userEvent.click(getByText('Save'));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+          attributes: {
+            relationshipCode: '1234',
+          },
+        }),
+      );
+    });
   });
 });
