@@ -328,7 +328,6 @@ describe('FixSendNewsletter', () => {
                   id: 'contactId3',
                   sendNewsletter: SendNewsletterEnum.None,
                 },
-
                 {
                   id: 'contactId1',
                   sendNewsletter: SendNewsletterEnum.Physical,

@@ -156,7 +156,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                     defaults="<i>Showing <bold>{{numberOfContacts}}</bold> of <bold>{{totalCount}}</bold></i>"
                     shouldUnescape
                     values={{
-                      numberOfContactsShowing,
+                      numberOfContacts: numberOfContactsShowing,
                       totalCount,
                     }}
                     components={{ bold: <strong />, i: <i /> }}
