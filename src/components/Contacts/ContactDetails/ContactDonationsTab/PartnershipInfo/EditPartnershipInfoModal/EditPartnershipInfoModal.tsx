@@ -102,18 +102,20 @@ const contactPartnershipSchema = yup.object({
     .nullable(),
   pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
   likelyToGive: yup.mixed<LikelyToGiveEnum>().nullable(),
+  relationshipCode: yup.string().nullable(),
 });
 
 type Attributes = yup.InferType<typeof contactPartnershipSchema>;
 
 interface EditPartnershipInfoModalProps {
   contact: ContactDonorAccountsFragment;
+  showRelationshipCode: boolean;
   handleClose: () => void;
 }
 
 export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
-> = ({ contact, handleClose }) => {
+> = ({ contact, showRelationshipCode, handleClose }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
@@ -198,6 +200,7 @@ export const EditPartnershipInfoModal: React.FC<
           likelyToGive: contact.likelyToGive,
           name: contact.name,
           primaryPersonId: contact?.primaryPerson?.id ?? '',
+          relationshipCode: contact.relationshipCode ?? '',
         }}
         validationSchema={contactPartnershipSchema}
         onSubmit={onSubmit}
@@ -216,6 +219,7 @@ export const EditPartnershipInfoModal: React.FC<
             likelyToGive,
             name,
             primaryPersonId,
+            relationshipCode,
           },
           handleSubmit,
           handleChange,
@@ -543,7 +547,23 @@ export const EditPartnershipInfoModal: React.FC<
                     />
                   </ContactInputWrapper>
                 </Grid>
+                {showRelationshipCode && (
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <TextField
+                        name="relationshipCode"
+                        label={t('Relationship Code')}
+                        value={relationshipCode}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        inputProps={{ 'aria-label': t('Relationship Code') }}
+                        fullWidth
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                )}
               </Grid>
+
               <ContactInputWrapper>
                 <CheckboxLabel
                   control={
