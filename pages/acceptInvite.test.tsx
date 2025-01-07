@@ -175,7 +175,7 @@ describe('AcceptInvitePage', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Invalid invite URL. Try asking the the inviter to resend the invite.',
+        'Invalid invite URL. Try asking the inviter to resend the invite.',
         { variant: 'error' },
       );
     });

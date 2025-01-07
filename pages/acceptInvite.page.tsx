@@ -121,9 +121,7 @@ const AcceptInvitePage = (): ReactElement => {
       hasFetchedRef.current = true;
     } else {
       enqueueSnackbar(
-        t(
-          'Invalid invite URL. Try asking the the inviter to resend the invite.',
-        ),
+        t('Invalid invite URL. Try asking the inviter to resend the invite.'),
         {
           variant: 'error',
         },
