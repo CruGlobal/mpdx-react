@@ -4,10 +4,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import matchMediaMock from '__tests__/util/matchMediaMock';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
@@ -125,11 +121,6 @@ const data: GetDashboardQuery = {
 describe('Dashboard', () => {
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
   });
 
   it('default', async () => {

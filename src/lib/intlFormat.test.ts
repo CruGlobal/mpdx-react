@@ -116,18 +116,18 @@ describe('intlFormat', () => {
   });
 
   describe('monthYearFormat', () => {
+    const date = DateTime.local(2020, 6);
+
     it('formats day and month as date', () => {
-      expect(monthYearFormat(6, 2020, 'en-US')).toEqual('Jun 2020');
+      expect(monthYearFormat(date, 'en-US')).toEqual('Jun 2020');
     });
 
-    it('handles language', () => {
-      expect(monthYearFormat(6, 2020, 'fr')).toEqual('juin 2020');
+    it('handles null date', () => {
+      expect(monthYearFormat(null, 'en-US')).toEqual('');
     });
 
-    describe('different language', () => {
-      it('handles language', () => {
-        expect(monthYearFormat(6, 2020, 'fr')).toEqual('juin 2020');
-      });
+    it('handles different language', () => {
+      expect(monthYearFormat(date, 'fr')).toEqual('juin 2020');
     });
   });
 
