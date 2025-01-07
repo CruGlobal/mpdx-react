@@ -25,6 +25,7 @@ fragment ContactDonorAccounts on Contact {
   source
   likelyToGive
   name
+  relationshipCode
   primaryPerson {
     id
   }
