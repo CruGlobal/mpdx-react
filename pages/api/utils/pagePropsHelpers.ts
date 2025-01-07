@@ -2,6 +2,7 @@ import {
   GetServerSideProps,
   GetServerSidePropsContext,
   GetServerSidePropsResult,
+  Redirect,
 } from 'next';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
@@ -18,7 +19,7 @@ interface PagePropsWithSession {
 // Return a redirect to the login page
 export const loginRedirect = (
   context: GetServerSidePropsContext,
-): GetServerSidePropsResult<never> => ({
+): { redirect: Redirect } => ({
   redirect: {
     destination: `/login?redirect=${encodeURIComponent(context.resolvedUrl)}`,
     permanent: false,
@@ -26,9 +27,9 @@ export const loginRedirect = (
 });
 
 // Redirect back to the dashboard if the user isn't an admin
-export const enforceAdmin = async (
+export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   context,
-): Promise<GetServerSideProps | GetServerSidePropsResult<unknown>> => {
+) => {
   const session = await getSession(context);
   if (!session?.user.admin) {
     return {
@@ -41,7 +42,7 @@ export const enforceAdmin = async (
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
     session,
-    context.req.url,
+    context.resolvedUrl,
   );
   if (underscoreRedirect) {
     return underscoreRedirect;
@@ -55,19 +56,17 @@ export const enforceAdmin = async (
 };
 
 // Redirect back to login screen if user isn't logged in
-export const ensureSessionAndAccountList = async (
-  context,
-): Promise<GetServerSideProps | GetServerSidePropsResult<unknown>> => {
+export const ensureSessionAndAccountList: GetServerSideProps<
+  PagePropsWithSession
+> = async (context) => {
   const session = await getSession(context);
   if (!session?.user.apiToken) {
-    return {
-      ...loginRedirect(context),
-    };
+    return loginRedirect(context);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
     session,
-    context.req.url,
+    context.resolvedUrl,
   );
   if (underscoreRedirect) {
     return underscoreRedirect;
@@ -82,9 +81,9 @@ export const ensureSessionAndAccountList = async (
 
 export const handleUnderscoreAccountListRedirect = async (
   session: Session,
-  url?: string,
-): Promise<GetServerSidePropsResult<unknown> | undefined> => {
-  if (url?.includes('/accountLists/_')) {
+  url: string,
+): Promise<{ redirect: Redirect } | undefined> => {
+  if (url.startsWith('/accountLists/_')) {
     // Redirect to the default account list if the "_" is where the account list ID would be in the URL
     // This is a common pattern in our app, so we handle it here to avoid repeating
     const ssrClient = makeSsrClient(session.user.apiToken);

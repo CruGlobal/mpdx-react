@@ -24,7 +24,6 @@ interface GetServerSidePropsReturn {
 
 describe('AccountListsId page', () => {
   const context = {
-    req: {},
     query: {
       accountListId: 'account-list-1',
     },
@@ -52,7 +51,7 @@ describe('AccountListsId page', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({
         query: jest
           .fn()
-          .mockRejectedValueOnce(new Error('GraphQL Authentication error')),
+          .mockRejectedValue(new Error('GraphQL Authentication error')),
       });
 
       const { props, redirect } = (await getServerSideProps(
@@ -61,7 +60,7 @@ describe('AccountListsId page', () => {
 
       expect(props).toBeUndefined();
       expect(redirect).toEqual({
-        destination: '/',
+        destination: '/accountLists',
         permanent: false,
       });
     });
@@ -110,13 +109,13 @@ describe('AccountListsId page', () => {
     const restApiNotFoundErrorMessage = "Resource 'AccountList' is not valid";
 
     const makeContext = (
-      url: string = '/accountLists/[accountListId]/contacts',
+      resolvedUrl = '/accountLists/[accountListId]/contacts',
     ) => {
       return {
-        req: { url: url },
         query: {
           accountListId: 'account-list-1',
         },
+        resolvedUrl,
       } as unknown as GetServerSidePropsContext;
     };
 
