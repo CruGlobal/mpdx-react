@@ -16,7 +16,10 @@ import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
-import { useUserOrganizationAccountsQuery } from './PartnershipInfo.generated';
+import {
+  UserOrganizationAccountsQuery,
+  useUserOrganizationAccountsQuery,
+} from './PartnershipInfo.generated';
 
 export const SwitzerlandOrganizationName = 'Campus fuer Christus Switzerland';
 
@@ -68,6 +71,17 @@ interface PartnershipInfoProp {
   contact: ContactDonorAccountsFragment | null;
 }
 
+export const isApartOfSwitzerlandOrganization = (
+  userOrganizationAccounts?: UserOrganizationAccountsQuery['userOrganizationAccounts'],
+) => {
+  return (
+    userOrganizationAccounts?.some(
+      (organizationAccount) =>
+        organizationAccount.organization.name === SwitzerlandOrganizationName,
+    ) ?? false
+  );
+};
+
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -81,11 +95,7 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const userOrganizationAccounts = data?.userOrganizationAccounts;
 
   const showRelationshipCode = useMemo(
-    () =>
-      userOrganizationAccounts?.some(
-        (organizationAccount) =>
-          organizationAccount.organization.name === SwitzerlandOrganizationName,
-      ) ?? false,
+    () => isApartOfSwitzerlandOrganization(userOrganizationAccounts),
     [userOrganizationAccounts],
   );
 
@@ -269,7 +279,6 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
       {contact && editPartnershipModalOpen ? (
         <EditPartnershipInfoModal
           handleClose={() => setEditPartnershipModalOpen(false)}
-          showRelationshipCode={showRelationshipCode}
           contact={contact}
         />
       ) : null}

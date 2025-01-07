@@ -18,6 +18,11 @@ import {
   ContactDonorAccountsFragment,
   ContactDonorAccountsFragmentDoc,
 } from '../../ContactDonationsTab.generated';
+import { UserOrganizationAccountsQuery } from '../PartnershipInfo.generated';
+import {
+  organizationAccountsMock,
+  organizationAccountsWithCruSwitzerlandMock,
+} from '../PartnershipInfoMocks';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal';
 
 jest.mock('notistack', () => ({
@@ -115,21 +120,29 @@ const newContactMock = gqlMock<ContactDonorAccountsFragment>(
 
 interface ComponentsProps {
   isNewContact?: boolean;
-  showRelationshipCode?: boolean;
+  includeCruSwitzerland?: boolean;
 }
 
 const Components = ({
   isNewContact = false,
-  showRelationshipCode = false,
+  includeCruSwitzerland = false,
 }: ComponentsProps) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <TestRouter>
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            UserOrganizationAccounts: UserOrganizationAccountsQuery;
+          }>
+            mocks={{
+              UserOrganizationAccounts: includeCruSwitzerland
+                ? organizationAccountsWithCruSwitzerlandMock
+                : organizationAccountsMock,
+            }}
+            onCall={mutationSpy}
+          >
             <EditPartnershipInfoModal
               contact={isNewContact ? newContactMock : contactMock}
-              showRelationshipCode={showRelationshipCode}
               handleClose={handleClose}
             />
           </GqlMockedProvider>
@@ -559,11 +572,11 @@ describe('EditPartnershipInfoModal', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('should render relationshipCode', () => {
-      const { getByRole } = render(<Components showRelationshipCode />);
+    it('should render relationshipCode', async () => {
+      const { findByRole } = render(<Components includeCruSwitzerland />);
 
       expect(
-        getByRole('textbox', {
+        await findByRole('textbox', {
           name: 'Relationship Code',
         }),
       ).toBeInTheDocument();

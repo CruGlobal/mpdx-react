@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
   Alert,
@@ -46,6 +46,8 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
+import { isApartOfSwitzerlandOrganization } from '../PartnershipInfo';
+import { useUserOrganizationAccountsQuery } from '../PartnershipInfo.generated';
 import { useUpdateContactPartnershipMutation } from './EditPartnershipInfoModal.generated';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
@@ -109,17 +111,17 @@ type Attributes = yup.InferType<typeof contactPartnershipSchema>;
 
 interface EditPartnershipInfoModalProps {
   contact: ContactDonorAccountsFragment;
-  showRelationshipCode: boolean;
   handleClose: () => void;
 }
 
 export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
-> = ({ contact, showRelationshipCode, handleClose }) => {
+> = ({ contact, handleClose }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const { enqueueSnackbar } = useSnackbar();
   const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
     useLocalizedConstants();
 
@@ -127,18 +129,26 @@ export const EditPartnershipInfoModal: React.FC<
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
     useState(false);
 
-  const { enqueueSnackbar } = useSnackbar();
+  const { data } = useUserOrganizationAccountsQuery();
+  const userOrganizationAccounts = data?.userOrganizationAccounts;
+
+  const showRelationshipCode = useMemo(
+    () => isApartOfSwitzerlandOrganization(userOrganizationAccounts),
+    [userOrganizationAccounts],
+  );
 
   const [updateContactPartnership, { loading: updating }] =
     useUpdateContactPartnershipMutation();
   const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
+    // Remove and just use "attributes" when the UpdateContact mutation operation is updated to include the relationshipCode
+    const { relationshipCode: _, ...newAttributes } = attributes;
     await updateContactPartnership({
       variables: {
         accountListId: accountListId ?? '',
         attributes: {
-          ...attributes,
+          ...newAttributes,
           pledgeStartDate: attributes.pledgeStartDate?.toISODate() ?? null,
           nextAsk: attributes.nextAsk?.toISODate() ?? null,
           primaryPersonId: attributes.primaryPersonId,
