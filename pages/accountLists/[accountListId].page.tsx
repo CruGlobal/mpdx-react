@@ -83,10 +83,10 @@ const AccountListIdPage = ({
 };
 
 export const getServerSideProps = makeGetServerSideProps(
-  async (session, { query, req }) => {
+  async (session, { query, resolvedUrl }) => {
     const underscoreRedirect = await handleUnderscoreAccountListRedirect(
       session,
-      req.url,
+      resolvedUrl,
     );
     if (underscoreRedirect) {
       return underscoreRedirect;
@@ -132,7 +132,7 @@ export const getServerSideProps = makeGetServerSideProps(
         error.graphQLErrors.every(
           (error) => !isAccountListNotFoundError(error),
         );
-      if (!req.url || nonAccountListError) {
+      if (nonAccountListError) {
         return {
           redirect: {
             destination: '/',
@@ -149,7 +149,7 @@ export const getServerSideProps = makeGetServerSideProps(
         return {
           redirect: {
             destination: replaceUrlAccountList(
-              req.url,
+              resolvedUrl,
               data.user.defaultAccountList,
             ),
             permanent: false,

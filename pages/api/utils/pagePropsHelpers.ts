@@ -42,7 +42,7 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
     session,
-    context.req.url,
+    context.resolvedUrl,
   );
   if (underscoreRedirect) {
     return underscoreRedirect;
@@ -66,7 +66,7 @@ export const ensureSessionAndAccountList: GetServerSideProps<
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
     session,
-    context.req.url,
+    context.resolvedUrl,
   );
   if (underscoreRedirect) {
     return underscoreRedirect;
@@ -81,9 +81,9 @@ export const ensureSessionAndAccountList: GetServerSideProps<
 
 export const handleUnderscoreAccountListRedirect = async (
   session: Session,
-  url?: string,
+  url: string,
 ): Promise<{ redirect: Redirect } | undefined> => {
-  if (url?.startsWith('/accountLists/_')) {
+  if (url.startsWith('/accountLists/_')) {
     // Redirect to the default account list if the "_" is where the account list ID would be in the URL
     // This is a common pattern in our app, so we handle it here to avoid repeating
     const ssrClient = makeSsrClient(session.user.apiToken);
