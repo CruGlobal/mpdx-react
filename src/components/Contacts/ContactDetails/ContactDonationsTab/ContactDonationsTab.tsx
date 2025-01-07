@@ -2,7 +2,7 @@ import React from 'react';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Box, Skeleton, Tab } from '@mui/material';
+import { Box, Skeleton, Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next/';
 import { DonationTable } from 'src/components/DonationTable/DonationTable';
@@ -126,6 +126,10 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
             visibleColumnsStorageKey="contact-donations"
             hideDisplayName={true}
           />
+          <Typography variant="body2" sx={{ mt: 2, fontStyle: 'italic' }}>
+            {t(`On smaller screens, some columns may be hidden. Please scroll
+            horizontally to view all the data.`)}
+          </Typography>
         </StyledTabPanel>
         <StyledTabPanel value={DonationTabKey.PartnershipInfo}>
           {!data ? (
