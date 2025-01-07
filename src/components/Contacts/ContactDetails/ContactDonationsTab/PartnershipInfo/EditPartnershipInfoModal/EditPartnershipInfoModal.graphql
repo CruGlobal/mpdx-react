@@ -36,6 +36,7 @@ mutation UpdateContactPartnership(
         }
       }
       likelyToGive
+      relationshipCode
     }
   }
 }
