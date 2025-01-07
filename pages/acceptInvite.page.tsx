@@ -72,35 +72,16 @@ const AcceptInvitePage = (): ReactElement => {
         ? 'organization_invites'
         : 'account_list_invites';
 
-      try {
-        const apiToken = session.apiToken;
+      const apiToken = session.apiToken;
+      const response = await fetchAcceptInvite({
+        apiToken,
+        url,
+        inviteType,
+        id,
+        code,
+      });
 
-        const response = await fetchAcceptInvite({
-          apiToken,
-          url,
-          inviteType,
-          id,
-          code,
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        if (url.includes('organizations')) {
-          enqueueSnackbar(t('Accepted invite successfully.'), {
-            variant: 'success',
-          });
-
-          router.push(
-            dashboardLink + 'settings/integrations?selectedTab=organization',
-          );
-        } else {
-          enqueueSnackbar(t('Accepted invite successfully.'), {
-            variant: 'success',
-          });
-          router.push(dashboardLink);
-        }
-      } catch (err) {
+      if (!response.ok) {
         const inviter = url.includes('organizations')
           ? t('organization admin')
           : t('account holder');
@@ -113,6 +94,19 @@ const AcceptInvitePage = (): ReactElement => {
             variant: 'error',
           },
         );
+        return;
+      }
+
+      enqueueSnackbar(t('Accepted invite successfully.'), {
+        variant: 'success',
+      });
+
+      if (url.includes('organizations')) {
+        router.push(
+          dashboardLink + 'settings/integrations?selectedTab=organization',
+        );
+      } else {
+        router.push(dashboardLink);
       }
     };
 
