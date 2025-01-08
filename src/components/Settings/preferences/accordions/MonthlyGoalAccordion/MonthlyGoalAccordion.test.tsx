@@ -42,7 +42,7 @@ interface ComponentsProps {
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
   machineCalculatedGoal,
-  machineCalculatedGoalCurrency = null,
+  machineCalculatedGoalCurrency = 'USD',
   expandedPanel,
 }) => (
   <SnackbarProvider>

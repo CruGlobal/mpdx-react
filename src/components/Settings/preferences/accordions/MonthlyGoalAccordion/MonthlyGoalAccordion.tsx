@@ -21,14 +21,14 @@ const accountPreferencesSchema: yup.ObjectSchema<
 
 const formatMonthlyGoal = (
   goal: number | null,
-  currency: string,
+  currency: string | null,
   locale: string,
 ): string => {
   if (goal === null) {
     return '';
   }
 
-  if (currency && locale) {
+  if (currency) {
     return currencyFormat(goal, currency, locale);
   }
   return goal.toString();
@@ -39,7 +39,7 @@ interface MonthlyGoalAccordionProps {
   expandedPanel: string;
   monthlyGoal: number | null;
   accountListId: string;
-  currency: string;
+  currency: string | null;
   disabled?: boolean;
   handleSetupChange: () => Promise<void>;
 }
@@ -67,9 +67,14 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   });
   const calculatedGoal = data?.healthIndicatorData[0]?.machineCalculatedGoal;
   const calculatedCurrency =
-    data?.healthIndicatorData[0]?.machineCalculatedGoalCurrency ?? currency;
+    data?.healthIndicatorData[0]?.machineCalculatedGoalCurrency;
   const formattedCalculatedGoal = useMemo(
-    () => formatMonthlyGoal(calculatedGoal ?? null, calculatedCurrency, locale),
+    () =>
+      formatMonthlyGoal(
+        calculatedGoal ?? null,
+        calculatedCurrency ?? null,
+        locale,
+      ),
     [calculatedGoal, calculatedCurrency, locale],
   );
 
