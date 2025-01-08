@@ -1,9 +1,5 @@
-query MachineCalculatedGoal($accountListId: ID!, $month: ISO8601Date!) {
-  healthIndicatorData(
-    accountListId: $accountListId
-    beginDate: $month
-    endDate: $month
-  ) {
+query MachineCalculatedGoal($accountListId: ID!) {
+  healthIndicatorData(accountListId: $accountListId) {
     id
     machineCalculatedGoal
     machineCalculatedGoalCurrency

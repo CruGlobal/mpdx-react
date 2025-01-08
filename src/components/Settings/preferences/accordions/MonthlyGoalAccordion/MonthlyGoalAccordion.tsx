@@ -1,7 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { Box, Button, TextField, Tooltip } from '@mui/material';
 import { Formik } from 'formik';
-import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -62,12 +61,12 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   const { data } = useMachineCalculatedGoalQuery({
     variables: {
       accountListId,
-      month: DateTime.now().startOf('month').toISODate(),
     },
   });
-  const calculatedGoal = data?.healthIndicatorData[0]?.machineCalculatedGoal;
-  const calculatedCurrency =
-    data?.healthIndicatorData[0]?.machineCalculatedGoalCurrency;
+  const {
+    machineCalculatedGoal: calculatedGoal,
+    machineCalculatedGoalCurrency: calculatedCurrency,
+  } = data?.healthIndicatorData.at(-1) ?? {};
   const formattedCalculatedGoal = useMemo(
     () =>
       formatMonthlyGoal(
