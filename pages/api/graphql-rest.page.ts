@@ -177,6 +177,7 @@ class MpdxRestApi extends RESTDataSource {
     parsedBody: unknown;
   }): Promise<GraphQLError> {
     const error = await super.errorFromResponse({ response, parsedBody });
+    // parsedBody has the unknown type so we have to check that it is an object with the expected structure
     const restError =
       parsedBody &&
       typeof parsedBody === 'object' &&
