@@ -148,6 +148,7 @@ class MpdxRestApi extends RESTDataSource {
   }
 
   // Overridden to accept JSON API Content Type application/vnd.api+json
+  // Taken from: https://github.com/apollographql/datasource-rest/blob/main/src/RESTDataSource.ts#L303-L319
   protected parseBody(
     response: Response,
   ): Promise<Record<string, unknown> | string> {
