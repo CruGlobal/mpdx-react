@@ -110,19 +110,25 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     handleSetupChange();
   };
 
-  const instructions = calculatedGoal
-    ? initialMonthlyGoal === null
-      ? t(
-          'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or leave it blank to use the estimate.',
-          { goal: formattedCalculatedGoal },
-        )
-      : t(
-          'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or reset it to the estimate.',
-          { goal: formattedCalculatedGoal },
-        )
-    : t(
+  const getInstructions = () => {
+    if (typeof calculatedGoal !== 'number') {
+      return t(
         'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
       );
+    }
+
+    if (initialMonthlyGoal) {
+      return t(
+        'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or leave it blank to use the estimate.',
+        { goal: formattedCalculatedGoal },
+      );
+    } else {
+      return t(
+        'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or reset it to use the estimate.',
+        { goal: formattedCalculatedGoal },
+      );
+    }
+  };
 
   return (
     <AccordionItem
@@ -151,7 +157,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
           handleChange,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <FieldWrapper helperText={instructions}>
+            <FieldWrapper helperText={getInstructions()}>
               <TextField
                 value={monthlyGoal}
                 onChange={handleChange}
