@@ -170,6 +170,15 @@ class MpdxRestApi extends RESTDataSource {
     }
   }
 
+  // parsedBody has the unknown type so we have to check that it is an object with the expected structure
+  getRestError = (parsedBody: unknown) =>
+    parsedBody &&
+    typeof parsedBody === 'object' &&
+    'errors' in parsedBody &&
+    Array.isArray(parsedBody.errors)
+      ? parsedBody.errors[0]
+      : null;
+
   protected async errorFromResponse({
     response,
     parsedBody,
@@ -178,14 +187,8 @@ class MpdxRestApi extends RESTDataSource {
     parsedBody: unknown;
   }): Promise<GraphQLError> {
     const error = await super.errorFromResponse({ response, parsedBody });
-    // parsedBody has the unknown type so we have to check that it is an object with the expected structure
-    const restError =
-      parsedBody &&
-      typeof parsedBody === 'object' &&
-      'errors' in parsedBody &&
-      Array.isArray(parsedBody.errors)
-        ? parsedBody.errors[0]
-        : null;
+    const restError = this.getRestError(parsedBody);
+
     if (restError?.detail) {
       // Populate the error message with the message detail from the API
       error.message = restError.detail;
