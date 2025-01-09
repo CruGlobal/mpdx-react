@@ -48,6 +48,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                   pledged={data.accountList.totalPledges}
                   totalGiftsNotStarted={data.contacts.totalCount}
                   currencyCode={data.accountList.currency}
+                  onDashboard={true}
                 />
               </Grid>
               <Grid xs={12} sm={4} item>
