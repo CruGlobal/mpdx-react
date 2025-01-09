@@ -15,11 +15,13 @@ const StyledBox = styled(Box)(({ theme }) => ({
 interface HealthIndicatorFormulaProps {
   accountListId: string;
   noHealthIndicatorData: boolean;
+  setNoHealthIndicatorData: Dispatch<SetStateAction<boolean>>;
 }
 
 export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
   accountListId,
   noHealthIndicatorData,
+  setNoHealthIndicatorData,
 }) => {
   const { t } = useTranslation();
 
@@ -29,6 +31,11 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
     },
   });
 
+  useEffect(() => {
+    if (!data?.healthIndicatorData?.length && !loading) {
+      setNoHealthIndicatorData(true);
+    }
+  }, [data, loading]);
 
   const latestMpdHealthData = data?.healthIndicatorData.at(-1);
 
