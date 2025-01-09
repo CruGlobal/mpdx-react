@@ -1,9 +1,5 @@
-query HealthIndicatorWidget($accountListId: ID!, $month: ISO8601Date!) {
-  healthIndicatorData(
-    accountListId: $accountListId
-    beginDate: $month
-    endDate: $month
-  ) {
+query HealthIndicatorWidget($accountListId: ID!) {
+  healthIndicatorData(accountListId: $accountListId) {
     id
     overallHi
     ownershipHi

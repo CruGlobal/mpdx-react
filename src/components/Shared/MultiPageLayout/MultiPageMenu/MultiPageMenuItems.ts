@@ -44,6 +44,10 @@ export const reportNavItems: NavItems[] = [
     id: 'coaching',
     title: i18n.t('Coaching'),
   },
+  {
+    id: 'healthIndicator',
+    title: i18n.t('MPD Health'),
+  },
 ];
 
 export const settingsNavItems: NavItems[] = [

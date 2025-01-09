@@ -55,6 +55,7 @@ export interface MonthlyGoalProps {
   pledged?: number;
   totalGiftsNotStarted?: number;
   currencyCode?: string;
+  onDashboard?: boolean;
 }
 
 const MonthlyGoal = ({
@@ -65,6 +66,7 @@ const MonthlyGoal = ({
   pledged = 0,
   totalGiftsNotStarted,
   currencyCode = 'USD',
+  onDashboard = false,
 }: MonthlyGoalProps): ReactElement => {
   const { t } = useTranslation();
   const { classes } = useStyles();
@@ -286,6 +288,7 @@ const MonthlyGoal = ({
           <HealthIndicatorWidget
             accountListId={accountListId}
             goal={goal}
+            onDashboard={onDashboard}
             showHealthIndicator={showHealthIndicator}
             setShowHealthIndicator={setShowHealthIndicator}
             setUsingMachineCalculatedGoal={setUsingMachineCalculatedGoal}
