@@ -20,7 +20,7 @@ const preferencesSchema: yup.ObjectSchema<
 interface CurrencyAccordionProps {
   handleAccordionChange: (panel: string) => void;
   expandedPanel: string;
-  currency: string;
+  currency: string | null;
   accountListId: string;
   disabled?: boolean;
 }
@@ -73,7 +73,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={currency}
+      value={currency ?? ''}
       fullWidth
       disabled={disabled}
     >

@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { MachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
 import { MonthlyGoalAccordion } from './MonthlyGoalAccordion';
 
 jest.mock('next-auth/react');
@@ -33,17 +34,32 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
+  machineCalculatedGoal?: number;
+  machineCalculatedGoalCurrency?: string;
   expandedPanel: string;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
+  machineCalculatedGoal,
+  machineCalculatedGoalCurrency = 'USD',
   expandedPanel,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{
+          MachineCalculatedGoal: MachineCalculatedGoalQuery;
+        }>
+          mocks={{
+            MachineCalculatedGoal: {
+              healthIndicatorData: machineCalculatedGoal
+                ? [{ machineCalculatedGoal, machineCalculatedGoalCurrency }]
+                : [],
+            },
+          }}
+          onCall={mutationSpy}
+        >
           <MonthlyGoalAccordion
             handleAccordionChange={handleAccordionChange}
             expandedPanel={expandedPanel}
@@ -132,6 +148,58 @@ describe('MonthlyGoalAccordion', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('calculated goal', () => {
+    it('resets goal to calculated goal', async () => {
+      const { getByRole, findByText } = render(
+        <Components
+          monthlyGoal={1000}
+          machineCalculatedGoal={1500}
+          machineCalculatedGoalCurrency="EUR"
+          expandedPanel={label}
+        />,
+      );
+
+      expect(
+        await findByText(
+          /Based on the past year, NetSuite estimates that you need at least €1,500 of monthly support./,
+        ),
+      ).toBeInTheDocument();
+
+      const resetButton = getByRole('button', { name: /Reset/ });
+      userEvent.click(resetButton);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: accountListId,
+            attributes: {
+              settings: {
+                monthlyGoal: null,
+              },
+            },
+          },
+        }),
+      );
+    });
+
+    it('hides reset button if goal is null', async () => {
+      const { findByText, queryByRole } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          expandedPanel={label}
+        />,
+      );
+
+      expect(
+        await findByText(
+          /Based on the past year, NetSuite estimates that you need at least \$1,000 of monthly support./,
+        ),
+      ).toBeInTheDocument();
+      expect(queryByRole('button', { name: /Reset/ })).not.toBeInTheDocument();
     });
   });
 });
