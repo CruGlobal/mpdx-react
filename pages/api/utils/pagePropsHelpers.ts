@@ -21,7 +21,11 @@ export const loginRedirect = (
   context: GetServerSidePropsContext,
 ): { redirect: Redirect } => ({
   redirect: {
-    destination: `/login?redirect=${encodeURIComponent(context.resolvedUrl)}`,
+    destination: `/login${
+      context.resolvedUrl !== '/logout'
+        ? `?redirect=${encodeURIComponent(context.resolvedUrl)}`
+        : ''
+    }`,
     permanent: false,
   },
 });
