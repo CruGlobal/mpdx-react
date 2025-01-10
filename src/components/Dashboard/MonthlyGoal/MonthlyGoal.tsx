@@ -287,6 +287,7 @@ const MonthlyGoal = ({
         </Grid>
 
         <Grid {...cssProps.hIGrid} item>
+          <AnimatedCard sx={{ height: '100%' }}>
             <HealthIndicatorWidget
               accountListId={accountListId}
               goal={goal}
@@ -295,6 +296,7 @@ const MonthlyGoal = ({
               setShowHealthIndicator={setShowHealthIndicator}
               setMachineCalculatedGoal={setMachineCalculatedGoal}
             />
+          </AnimatedCard>
         </Grid>
       </Grid>
     </>
