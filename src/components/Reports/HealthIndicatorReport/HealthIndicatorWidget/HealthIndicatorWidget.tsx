@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React from 'react';
 import {
   Box,
   Button,
@@ -13,8 +13,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { HealthIndicatorQuery } from 'src/components/Dashboard/MonthlyGoal/HealthIndicator.generated';
 import StyledProgress from 'src/components/StyledProgress';
-import { useHealthIndicatorWidgetQuery } from './HealthIndicatorWidget.generated';
 import { WidgetStat } from './WidgetStat/WidgetStat';
 
 const StyledCardContent = styled(CardContent)(({ theme }) => ({
@@ -32,42 +32,18 @@ const StyledBox = styled(Box)(() => ({
 
 interface HealthIndicatorWidgetProps {
   accountListId: string;
-  goal: number;
   onDashboard: boolean;
-  showHealthIndicator: boolean;
-  setShowHealthIndicator: Dispatch<SetStateAction<boolean>>;
-  setUsingMachineCalculatedGoal: Dispatch<SetStateAction<boolean>>;
+  loading: boolean;
+  data: HealthIndicatorQuery['healthIndicatorData'][0];
 }
 
 export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   accountListId,
-  goal,
   onDashboard = true,
-  showHealthIndicator,
-  setShowHealthIndicator,
-  setUsingMachineCalculatedGoal,
+  loading,
+  data,
 }) => {
   const { t } = useTranslation();
-
-  const { data, loading } = useHealthIndicatorWidgetQuery({
-    variables: {
-      accountListId,
-    },
-  });
-
-  useEffect(() => {
-    setShowHealthIndicator(!!data?.healthIndicatorData.length);
-    const { machineCalculatedGoal } = data?.healthIndicatorData.at(-1) ?? {};
-    setUsingMachineCalculatedGoal(
-      !!machineCalculatedGoal && goal === machineCalculatedGoal,
-    );
-  }, [data, goal]);
-
-  if (!showHealthIndicator) {
-    return null;
-  }
-
-  const currentStats = data?.healthIndicatorData.at(-1);
 
   return (
     <AnimatedCard sx={{ height: '100%' }}>
@@ -87,7 +63,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
         >
           <StyledBox>
             <Typography variant="h4" color="primary" width={'55px'}>
-              {currentStats?.overallHi}
+              {data?.overallHi}
             </Typography>
             <Box width={'calc(100% - 55px)'}>
               <Typography
@@ -99,9 +75,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
               </Typography>
               <StyledProgress
                 loading={loading}
-                primary={
-                  currentStats?.overallHi ? currentStats.overallHi / 100 : 0
-                }
+                primary={data?.overallHi ? data.overallHi / 100 : 0}
                 barHeight={20}
               />
             </Box>
@@ -111,25 +85,25 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
         <Grid container>
           <WidgetStat
             loading={loading}
-            stat={currentStats?.ownershipHi}
+            stat={data?.ownershipHi}
             statName={t('Ownership')}
             toolTip={t('% of Self-raised Funds over Total Funds')}
           />
           <WidgetStat
             loading={loading}
-            stat={currentStats?.consistencyHi}
+            stat={data?.consistencyHi}
             statName={t('Consistency')}
             toolTip={t('% of months with positive account balance')}
           />
           <WidgetStat
             loading={loading}
-            stat={currentStats?.successHi}
+            stat={data?.successHi}
             statName={t('Success')}
             toolTip={t('% of Self-raised Funds over Support Goal')}
           />
           <WidgetStat
             loading={loading}
-            stat={currentStats?.depthHi}
+            stat={data?.depthHi}
             statName={t('Depth')}
             toolTip={t('Trend of local partners')}
           />
