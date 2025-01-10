@@ -1,4 +1,4 @@
-query HealthIndicatorWidget($accountListId: ID!) {
+query HealthIndicator($accountListId: ID!) {
   healthIndicatorData(accountListId: $accountListId) {
     id
     overallHi

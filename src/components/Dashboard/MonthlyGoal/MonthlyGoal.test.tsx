@@ -2,7 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
-import { HealthIndicatorWidgetQuery } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorWidget/HealthIndicatorWidget.generated';
+import { HealthIndicatorQuery } from './HealthIndicator.generated';
 import MonthlyGoal, { MonthlyGoalProps } from './MonthlyGoal';
 
 const accountListId = 'account-list-1';
@@ -11,9 +11,18 @@ const defaultProps = {
   received: 500,
   pledged: 750,
 };
+const healthIndicatorScore: HealthIndicatorQuery['healthIndicatorData'][0] = {
+  id: '1',
+  overallHi: 90,
+  ownershipHi: 80,
+  consistencyHi: 70,
+  successHi: 60,
+  depthHi: 50,
+  machineCalculatedGoal: 7000,
+};
 const mutationSpy = jest.fn();
 interface ComponentsProps {
-  healthIndicatorData?: HealthIndicatorWidgetQuery['healthIndicatorData'];
+  healthIndicatorData?: HealthIndicatorQuery['healthIndicatorData'];
   monthlyGoalProps?: Omit<MonthlyGoalProps, 'accountListId'>;
 }
 
@@ -21,9 +30,9 @@ const Components = ({
   healthIndicatorData = [],
   monthlyGoalProps,
 }: ComponentsProps) => (
-  <GqlMockedProvider<{ HealthIndicatorWidget: HealthIndicatorWidgetQuery }>
+  <GqlMockedProvider<{ HealthIndicator: HealthIndicatorQuery }>
     mocks={{
-      HealthIndicatorWidget: {
+      HealthIndicator: {
         healthIndicatorData,
       },
     }}
@@ -200,16 +209,26 @@ describe('MonthlyGoal', () => {
     });
   });
 
-  describe('HealthIndicatorWidget', () => {
-    it('should not show the health indicator and keep Grid styles', async () => {
-      const { getByTestId, queryByText } = render(
+  describe('HealthIndicator', () => {
+    it('does not render HI widget if no data', async () => {
+      const { queryByText } = render(
         <Components monthlyGoalProps={{ ...defaultProps }} />,
       );
 
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicatorWidget');
+        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicator');
       });
       expect(queryByText('MPD Health Indicator')).not.toBeInTheDocument();
+    });
+
+    it('does not change Grid styles if no data', async () => {
+      const { getByTestId } = render(
+        <Components monthlyGoalProps={{ ...defaultProps }} />,
+      );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicator');
+      });
       expect(getByTestId('containerGrid')).not.toHaveClass(
         'MuiGrid-spacing-xs-2',
       );
@@ -234,11 +253,85 @@ describe('MonthlyGoal', () => {
       );
 
       await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicatorWidget');
+        expect(mutationSpy).toHaveGraphqlOperation('HealthIndicator');
       });
       expect(getByText('MPD Health Indicator')).toBeInTheDocument();
       expect(getByTestId('containerGrid')).toHaveClass('MuiGrid-spacing-xs-2');
       expect(getByTestId('goalGrid')).toHaveClass('MuiGrid-grid-xs-6');
+    });
+  });
+
+  describe('Monthly Goal', () => {
+    it('should set the monthly goal to the user-entered goal if it exists', async () => {
+      const { findByRole } = render(
+        <Components
+          monthlyGoalProps={defaultProps}
+          healthIndicatorData={[
+            {
+              ...healthIndicatorScore,
+              machineCalculatedGoal: null,
+            },
+          ]}
+        />,
+      );
+
+      expect(
+        await findByRole('heading', {
+          name: /\$999.50/i,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('should set the monthly goal to the machine calculated goal', async () => {
+      const { findByRole, queryByRole } = render(
+        <Components
+          monthlyGoalProps={{ ...defaultProps, goal: undefined }}
+          healthIndicatorData={[healthIndicatorScore]}
+        />,
+      );
+
+      expect(
+        await findByRole('heading', {
+          name: /\$7,000/i,
+        }),
+      ).toBeInTheDocument();
+
+      expect(
+        queryByRole('heading', {
+          name: /\$999.50/i,
+        }),
+      ).not.toBeInTheDocument();
+    });
+    it('should set the monthly goal to 0 if both the machineCalculatedGoal and monthly goal are unset', async () => {
+      const { findByRole, queryByRole } = render(
+        <Components
+          monthlyGoalProps={{ ...defaultProps, goal: undefined }}
+          healthIndicatorData={[
+            {
+              ...healthIndicatorScore,
+              machineCalculatedGoal: null,
+            },
+          ]}
+        />,
+      );
+
+      expect(
+        await findByRole('heading', {
+          name: /\$0/i,
+        }),
+      ).toBeInTheDocument();
+
+      expect(
+        queryByRole('heading', {
+          name: /\$7,000/i,
+        }),
+      ).not.toBeInTheDocument();
+
+      expect(
+        queryByRole('heading', {
+          name: /\$999.50/i,
+        }),
+      ).not.toBeInTheDocument();
     });
   });
 });
