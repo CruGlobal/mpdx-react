@@ -72,26 +72,27 @@ const MonthlyGoal = ({
   const { classes } = useStyles();
   const locale = useLocale();
   const [showHealthIndicator, setShowHealthIndicator] = useState(false);
-  const [usingMachineCalculatedGoal, setUsingMachineCalculatedGoal] =
-    useState(false);
+  const [machineCalculatedGoal, setMachineCalculatedGoal] = useState<
+    number | null
+  >(null);
 
   const toolTipText = useMemo(() => {
-    const formattedGoal = currencyFormat(goal, currencyCode, locale);
-    return usingMachineCalculatedGoal
+    return machineCalculatedGoal
       ? t(
           'Your current goal of {{goal}} is machine-calculated based on the past year of NetSuite data. You can adjust this goal in the settings preferences.',
-          { goal: formattedGoal },
+          { goal: currencyFormat(machineCalculatedGoal, currencyCode, locale) },
         )
       : t(
           'Your current goal of {{goal}} is staff-entered, based on the value set in your settings preferences.',
-          { goal: formattedGoal },
+          { goal: currencyFormat(goal, currencyCode, locale) },
         );
-  }, [usingMachineCalculatedGoal, goal, currencyCode, locale]);
+  }, [machineCalculatedGoal, goal, currencyCode, locale]);
 
-  const receivedPercentage = received / goal;
-  const pledgedPercentage = pledged / goal;
-  const belowGoal = goal - pledged;
-  const belowGoalPercentage = belowGoal / goal;
+  const monthlyGoal = machineCalculatedGoal ?? goal;
+  const receivedPercentage = received / monthlyGoal;
+  const pledgedPercentage = pledged / monthlyGoal;
+  const belowGoal = monthlyGoal - pledged;
+  const belowGoalPercentage = belowGoal / monthlyGoal;
 
   const cssProps = {
     containerGrid: showHealthIndicator ? { spacing: 2 } : {},
@@ -125,7 +126,8 @@ const MonthlyGoal = ({
               </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
-                  {!loading && currencyFormat(goal, currencyCode, locale)}
+                  {!loading &&
+                    currencyFormat(monthlyGoal, currencyCode, locale)}
                 </Box>
               </Hidden>
             </Box>
@@ -161,7 +163,7 @@ const MonthlyGoal = ({
                           {loading ? (
                             <Skeleton variant="text" />
                           ) : (
-                            currencyFormat(goal, currencyCode, locale)
+                            currencyFormat(monthlyGoal, currencyCode, locale)
                           )}
                         </Typography>
                       </Box>
@@ -285,14 +287,14 @@ const MonthlyGoal = ({
         </Grid>
 
         <Grid {...cssProps.hIGrid} item>
-          <HealthIndicatorWidget
-            accountListId={accountListId}
-            goal={goal}
-            onDashboard={onDashboard}
-            showHealthIndicator={showHealthIndicator}
-            setShowHealthIndicator={setShowHealthIndicator}
-            setUsingMachineCalculatedGoal={setUsingMachineCalculatedGoal}
-          />
+            <HealthIndicatorWidget
+              accountListId={accountListId}
+              goal={goal}
+              onDashboard={onDashboard}
+              showHealthIndicator={showHealthIndicator}
+              setShowHealthIndicator={setShowHealthIndicator}
+              setMachineCalculatedGoal={setMachineCalculatedGoal}
+            />
         </Grid>
       </Grid>
     </>

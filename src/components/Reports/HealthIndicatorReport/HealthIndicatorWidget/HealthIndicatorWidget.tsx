@@ -36,7 +36,7 @@ interface HealthIndicatorWidgetProps {
   onDashboard: boolean;
   showHealthIndicator: boolean;
   setShowHealthIndicator: Dispatch<SetStateAction<boolean>>;
-  setUsingMachineCalculatedGoal: Dispatch<SetStateAction<boolean>>;
+  setMachineCalculatedGoal: Dispatch<SetStateAction<number | null>>;
 }
 
 export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
@@ -45,7 +45,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   onDashboard = true,
   showHealthIndicator,
   setShowHealthIndicator,
-  setUsingMachineCalculatedGoal,
+  setMachineCalculatedGoal,
 }) => {
   const { t } = useTranslation();
 
@@ -58,8 +58,8 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
   useEffect(() => {
     setShowHealthIndicator(!!data?.healthIndicatorData.length);
     const { machineCalculatedGoal } = data?.healthIndicatorData.at(-1) ?? {};
-    setUsingMachineCalculatedGoal(
-      !!machineCalculatedGoal && goal === machineCalculatedGoal,
+    setMachineCalculatedGoal(
+      machineCalculatedGoal && !goal ? machineCalculatedGoal : null,
     );
   }, [data, goal]);
 

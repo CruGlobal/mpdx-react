@@ -5,7 +5,7 @@ import { HealthIndicatorWidgetQuery } from './HealthIndicatorWidget.generated';
 
 const accountListId = 'account-list-1';
 const setShowHealthIndicator = jest.fn();
-const setUsingMachineCalculatedGoal = jest.fn();
+const setMachineCalculatedGoal = jest.fn();
 const mutationSpy = jest.fn();
 
 const healthIndicatorScore = {
@@ -44,7 +44,7 @@ const Components = ({
       onDashboard={onDashboard}
       showHealthIndicator={showHealthIndicator}
       setShowHealthIndicator={setShowHealthIndicator}
-      setUsingMachineCalculatedGoal={setUsingMachineCalculatedGoal}
+      setMachineCalculatedGoal={setMachineCalculatedGoal}
     />
   </GqlMockedProvider>
 );
@@ -132,8 +132,8 @@ describe('HealthIndicatorWidget', () => {
     expect(getByText('Depth')).toBeInTheDocument();
   });
 
-  describe('setUsingMachineCalculatedGoal', () => {
-    it('should set to TRUE as machine goal is defined and the same as the monthly goal', async () => {
+  describe('setMachineCalculatedGoal', () => {
+    it('should set to NULL if the user has entered a monthly goal', async () => {
       const { findByText } = render(
         <Components
           healthIndicatorData={[healthIndicatorScore]}
@@ -142,27 +142,32 @@ describe('HealthIndicatorWidget', () => {
       );
 
       expect(await findByText('Ownership')).toBeInTheDocument();
-      expect(setUsingMachineCalculatedGoal).toHaveBeenCalledWith(true);
+      expect(setMachineCalculatedGoal).toHaveBeenCalledWith(null);
     });
 
-    it('should set to FALSE as machine goal is different than the monthly goal', async () => {
+    it('should set to 7000 if the monthly goal is not set', async () => {
       const { findByText } = render(
-        <Components healthIndicatorData={[healthIndicatorScore]} goal={1000} />,
+        <Components healthIndicatorData={[healthIndicatorScore]} goal={0} />,
       );
 
       expect(await findByText('Ownership')).toBeInTheDocument();
-      expect(setUsingMachineCalculatedGoal).toHaveBeenCalledWith(false);
+      expect(setMachineCalculatedGoal).toHaveBeenCalledWith(7000);
     });
-    it('should set to FALSE as machine goal is not defined', async () => {
+    it('should set to NULL if both the machineCalculatedGoal and monthly goal are not set', async () => {
       const { findByText } = render(
         <Components
-          healthIndicatorData={[healthIndicatorScore]}
+          healthIndicatorData={[
+            {
+              ...healthIndicatorScore,
+              machineCalculatedGoal: null,
+            },
+          ]}
           goal={undefined}
         />,
       );
 
       expect(await findByText('Ownership')).toBeInTheDocument();
-      expect(setUsingMachineCalculatedGoal).toHaveBeenCalledWith(false);
+      expect(setMachineCalculatedGoal).toHaveBeenCalledWith(null);
     });
   });
 });
