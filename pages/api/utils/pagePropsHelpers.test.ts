@@ -27,6 +27,15 @@ describe('pagePropsHelpers', () => {
         },
       });
     });
+
+    it("doesn't redirect to logout", () => {
+      expect(loginRedirect({ ...context, resolvedUrl: '/logout' })).toEqual({
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        },
+      });
+    });
   });
 
   describe('enforceAdmin', () => {
