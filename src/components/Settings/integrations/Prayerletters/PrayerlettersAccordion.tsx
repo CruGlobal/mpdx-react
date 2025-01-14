@@ -95,7 +95,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
       disabled={disabled}
       image={
         <img
-          src="/images/settings-preferences-intergrations-prayerletters.svg"
+          src="/images/settings-preferences-integrations-prayerletters.svg"
           alt={accordionName}
         />
       }
