@@ -142,13 +142,11 @@ export const EditPartnershipInfoModal: React.FC<
   const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
-    // Remove and just use "attributes" when the UpdateContact mutation operation is updated to include the relationshipCode
-    const { relationshipCode: _, ...newAttributes } = attributes;
     await updateContactPartnership({
       variables: {
         accountListId: accountListId ?? '',
         attributes: {
-          ...newAttributes,
+          ...attributes,
           pledgeStartDate: attributes.pledgeStartDate?.toISODate() ?? null,
           nextAsk: attributes.nextAsk?.toISODate() ?? null,
           primaryPersonId: attributes.primaryPersonId,
