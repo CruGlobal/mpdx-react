@@ -1,6 +1,8 @@
-query GetKeyAccounts {
+query OktaAccounts {
   user {
+    id
     keyAccounts {
+      id
       email
     }
   }
