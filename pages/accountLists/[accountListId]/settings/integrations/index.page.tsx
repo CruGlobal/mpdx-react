@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { ChalklineAccordion } from 'src/components/Settings/integrations/Chalkline/ChalklineAccordion';
 import { GoogleAccordion } from 'src/components/Settings/integrations/Google/GoogleAccordion';
-import { TheKeyAccordion } from 'src/components/Settings/integrations/Key/TheKeyAccordion';
 import { MailchimpAccordion } from 'src/components/Settings/integrations/Mailchimp/MailchimpAccordion';
+import { OktaAccordion } from 'src/components/Settings/integrations/Okta/OktaAccordion';
 import { OrganizationAccordion } from 'src/components/Settings/integrations/Organization/OrganizationAccordion';
 import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
@@ -83,7 +83,7 @@ const Integrations: React.FC = () => {
         </StickyBox>
       )}
       <AccordionGroup title="">
-        <TheKeyAccordion
+        <OktaAccordion
           handleAccordionChange={handleAccordionChange}
           expandedPanel={expandedPanel}
           disabled={onSetupTour}
