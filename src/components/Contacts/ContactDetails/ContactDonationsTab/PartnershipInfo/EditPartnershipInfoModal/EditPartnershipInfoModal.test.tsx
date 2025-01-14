@@ -582,8 +582,7 @@ describe('EditPartnershipInfoModal', () => {
       ).toBeInTheDocument();
     });
 
-    // Remove skip this when the UpdateContact mutation operation is updated to include the relationshipCode
-    it.skip('should update relationshipCode', async () => {
+    it('should update relationshipCode', async () => {
       const { findByRole, getByText } = render(
         <Components includeCruSwitzerland />,
       );
