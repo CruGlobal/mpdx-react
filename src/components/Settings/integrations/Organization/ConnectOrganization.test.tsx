@@ -210,7 +210,7 @@ describe('Connect Organization', () => {
 
   it('should select Ministry Organization and be unable to add it.', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole } = render(
+    const { findByText, getByText, findByRole, getByRole } = render(
       <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
@@ -228,49 +228,47 @@ describe('Connect Organization', () => {
     );
 
     userEvent.click(getByRole('combobox'));
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'ministryName' })).toBeInTheDocument(),
-    );
-    userEvent.click(getByRole('option', { name: 'ministryName' }));
+    userEvent.click(await findByRole('option', { name: 'ministryName' }));
 
-    await waitFor(() => {
-      expect(
-        getByText('You must log into {{appName}} with your ministry email'),
-      ).toBeInTheDocument();
-      expect(getByText('Add Account')).toBeDisabled();
-    });
+    expect(
+      await findByText(
+        'You must log into {{appName}} with your ministry email',
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Add Account')).toBeDisabled();
+    expect(
+      getByRole('link', {
+        name: /contact your donation services team to request access\./i,
+      }),
+    ).toBeInTheDocument();
   });
 
   it('should select Login Organization and add it.', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole, getByTestId } = render(
-      <Components>
-        <GqlMockedProvider<{
-          GetOrganizations: GetOrganizationsQuery;
-        }>
-          mocks={{
-            getOrganizations: {
-              organizations: GetOrganizationsMock,
-            },
-          }}
-          onCall={mutationSpy}
-        >
-          <ConnectOrganization onDone={onDone} />
-        </GqlMockedProvider>
-      </Components>,
-    );
+    const { findByText, getByText, findByRole, getByRole, getByTestId } =
+      render(
+        <Components>
+          <GqlMockedProvider<{
+            GetOrganizations: GetOrganizationsQuery;
+          }>
+            mocks={{
+              getOrganizations: {
+                organizations: GetOrganizationsMock,
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <ConnectOrganization onDone={onDone} />
+          </GqlMockedProvider>
+        </Components>,
+      );
 
     userEvent.click(getByRole('combobox'));
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'loginName' })).toBeInTheDocument(),
-    );
-    userEvent.click(getByRole('option', { name: 'loginName' }));
+    userEvent.click(await findByRole('option', { name: 'loginName' }));
 
-    await waitFor(() => {
-      expect(getByText('Username')).toBeInTheDocument();
-      expect(getByText('Password')).toBeInTheDocument();
-      expect(getByText('Add Account')).toBeDisabled();
-    });
+    expect(await findByText('Username')).toBeInTheDocument();
+    expect(getByText('Password')).toBeInTheDocument();
+    expect(getByText('Add Account')).toBeDisabled();
 
     userEvent.type(
       getByRole('textbox', {
@@ -278,7 +276,7 @@ describe('Connect Organization', () => {
       }),
       'MyUsername',
     );
-    await waitFor(() => expect(getByText('Add Account')).toBeDisabled());
+    expect(await findByText('Add Account')).toBeDisabled();
     userEvent.type(getByTestId('passwordInput'), 'MyPassword');
 
     await waitFor(() => expect(getByText('Add Account')).not.toBeDisabled());
@@ -304,7 +302,7 @@ describe('Connect Organization', () => {
 
   it('should select OAuth Organization and add it.', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, getByRole } = render(
+    const { findByText, getByText, findByRole, getByRole } = render(
       <Components>
         <GqlMockedProvider<{
           GetOrganizations: GetOrganizationsQuery;
@@ -322,18 +320,15 @@ describe('Connect Organization', () => {
     );
 
     userEvent.click(getByRole('combobox'));
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'oAuthName' })).toBeInTheDocument(),
-    );
-    userEvent.click(getByRole('option', { name: 'oAuthName' }));
+    userEvent.click(await findByRole('option', { name: 'oAuthName' }));
 
+    expect(
+      await findByText(
+        "You will be taken to your organization's donation services system to grant {{appName}} permission to access your donation data.",
+      ),
+    ).toBeInTheDocument();
+    expect(getByText('Connect')).toBeInTheDocument();
     await waitFor(() => {
-      expect(
-        getByText(
-          "You will be taken to your organization's donation services system to grant {{appName}} permission to access your donation data.",
-        ),
-      ).toBeInTheDocument();
-      expect(getByText('Connect')).toBeInTheDocument();
       expect(getByText('Connect')).not.toBeDisabled();
     });
 

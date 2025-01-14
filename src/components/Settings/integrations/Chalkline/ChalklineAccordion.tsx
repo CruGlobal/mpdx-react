@@ -58,7 +58,7 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
       disabled={disabled}
       image={
         <img
-          src="/images/settings-preferences-intergrations-chalkline.png"
+          src="/images/settings-preferences-integrations-chalkline.png"
           alt={accordionName}
         />
       }

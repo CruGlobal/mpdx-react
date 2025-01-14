@@ -172,7 +172,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
       disabled={disabled}
       image={
         <img
-          src="/images/settings-preferences-intergrations-mailchimp.svg"
+          src="/images/settings-preferences-integrations-mailchimp.svg"
           alt="MailChimp"
         />
       }

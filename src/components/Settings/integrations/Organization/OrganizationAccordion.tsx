@@ -182,7 +182,7 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
       disabled={disabled}
       image={
         <img
-          src="/images/settings-preferences-intergrations-organizations.png"
+          src="/images/settings-preferences-integrations-organizations.png"
           alt="Organization"
           style={{
             maxWidth: '80px',

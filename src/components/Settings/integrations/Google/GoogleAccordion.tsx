@@ -109,7 +109,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
         disabled={disabled}
         image={
           <img
-            src="/images/settings-preferences-intergrations-google.png"
+            src="/images/settings-preferences-integrations-google.png"
             alt="Google"
             style={{
               maxWidth: '80px',
