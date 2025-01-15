@@ -39,6 +39,7 @@ const CoachingLoading = styled(Skeleton)(() => ({
 export const CoachingList: React.FC<CoachingListProps> = ({
   accountListId,
 }) => {
+  // This needs to become a infinite scroll query
   const { data, loading } = useLoadCoachingListQuery();
   const { t } = useTranslation();
 
