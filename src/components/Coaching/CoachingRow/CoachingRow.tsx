@@ -17,7 +17,7 @@ interface Props {
   accountListId: string;
 }
 
-const CoachingRowWrapper = styled(Box)(({ theme }) => ({
+export const CoachingRowWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
   maxWidth: '950px',
   margin: 'auto',

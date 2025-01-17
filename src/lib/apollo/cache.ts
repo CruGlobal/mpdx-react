@@ -77,6 +77,7 @@ export const createCache = () =>
           accountListPledges: paginationFieldPolicy,
           appeals: paginationFieldPolicy,
           coachingAccountListPledges: paginationFieldPolicy,
+          coachingAccountLists: paginationFieldPolicy,
           contacts: paginationFieldPolicy,
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
