@@ -45,17 +45,14 @@ interface Periods {
 }
 
 /**
- * Converts the "amount" string to a number.
- * If the value is 0 or isExpense is true, it returns the value as is.
- * Otherwise, it removes the '-' character if present, or prepends it if absent.
+ * If the amount is null, undefined, or zero, it returns the formatted number 0.
+ * If the amount is negative, it removes the negative sign and formats the number.
+ * If the amount is positive, it prepends a negative sign and formats the number.
+ * The server sends positive numbers that should be read as negative, and vice versa.
  */
-const formatAmount = (amount?: string | null, isExpense?: boolean): number => {
-  if (!amount) {
-    return 0;
-  }
-
-  if (amount === '0' || isExpense) {
-    return formatNumber(amount, false);
+const formatAmount = (amount?: string | null): number => {
+  if (!amount || Number(amount) === 0) {
+    return formatNumber(0, false);
   }
   const formattedAmount =
     amount?.[0] === '-' ? amount.substring(1) : `-${amount}`;
@@ -68,7 +65,6 @@ export interface AppendCategoryToCategoriesArray {
   startDate: string;
   endDate: string;
   index: number;
-  isExpenses?: boolean;
 }
 
 export const appendCategoryToCategoriesArray = ({
@@ -77,12 +73,11 @@ export const appendCategoryToCategoriesArray = ({
   startDate,
   endDate,
   index,
-  isExpenses = false,
 }: AppendCategoryToCategoriesArray) => {
   categories.forEach((category) => {
     const id = category?.category?.id ?? '';
     const name = category?.category?.name ?? category?.category?.code ?? '';
-    const amount = formatAmount(category?.amount, isExpenses);
+    const amount = formatAmount(category?.amount);
     if (index === 0) {
       categoryArray.push({
         id,
@@ -149,16 +144,16 @@ export const AccountSummary: React.FC<AccountSummaryProps> = ({
       }
 
       // Credits
-      credits.push(formatNumber(item.credits));
+      credits.push(formatAmount(item.credits));
 
-      // Closing Balances
-      openingBalances.push(formatNumber(item.openingBalance));
+      // Opening Balances
+      openingBalances.push(formatAmount(item.openingBalance));
 
       // Debits
       debits.push(formatNumber(item.debits));
 
       // Closing Balances
-      closingBalances.push(formatNumber(item.closingBalance));
+      closingBalances.push(formatAmount(item.closingBalance));
 
       // Surplus
       const difference = formatAmount(item.difference);
@@ -196,7 +191,6 @@ export const AccountSummary: React.FC<AccountSummaryProps> = ({
         startDate: item?.startDate ?? '',
         endDate: item?.endDate ?? '',
         index: idx,
-        isExpenses: true,
       });
     });
 
