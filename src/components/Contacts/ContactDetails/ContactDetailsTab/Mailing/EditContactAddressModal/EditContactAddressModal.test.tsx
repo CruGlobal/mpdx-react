@@ -257,7 +257,7 @@ describe('EditContactAddressModal', () => {
     userEvent.click(
       getByRole('option', { name: '100 Lake Hart Dr, Orlando, FL 32832, USA' }),
     );
-    expect(addressAutocomplete).toHaveValue('A/100 Lake Hart Drive');
+    expect(addressAutocomplete).toHaveValue('100 Lake Hart Drive A');
     expect(getByRole('textbox', { name: 'City' })).toHaveValue('Orlando');
     expect(getByRole('textbox', { name: 'State' })).toHaveValue('FL');
     expect(getByRole('textbox', { name: 'Zip' })).toHaveValue('32832');
