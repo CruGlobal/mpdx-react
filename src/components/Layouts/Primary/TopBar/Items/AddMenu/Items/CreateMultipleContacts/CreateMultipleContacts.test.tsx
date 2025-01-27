@@ -401,7 +401,7 @@ describe('CreateMultipleContacts', () => {
           name: '100 Lake Hart Dr, Orlando, FL 32832, USA',
         }),
       );
-      expect(addressAutocomplete).toHaveValue('A/100 Lake Hart Drive');
+      expect(addressAutocomplete).toHaveValue('100 Lake Hart Drive A');
       userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
@@ -410,7 +410,7 @@ describe('CreateMultipleContacts', () => {
         expect(mutationSpy).toHaveGraphqlOperation('CreateContactAddress', {
           accountListId,
           attributes: {
-            street: 'A/100 Lake Hart Drive',
+            street: '100 Lake Hart Drive A',
             city: 'Orlando',
             region: 'Orange County',
             metroArea: 'Orlando',

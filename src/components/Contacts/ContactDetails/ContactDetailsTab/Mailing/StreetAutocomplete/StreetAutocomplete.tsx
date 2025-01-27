@@ -36,11 +36,13 @@ export const parsePlace = (
     metroArea: '',
   };
 
+  // Unit, apartment, or suite number
+  let subpremise = '';
   place.address_components?.forEach((addressComponent) => {
     const { long_name: longName, short_name: shortName } = addressComponent;
     switch (addressComponent.types[0]) {
       case 'subpremise':
-        updatedFields.street += longName + '/';
+        subpremise = longName;
         break;
       case 'street_number':
         updatedFields.street += longName + ' ';
@@ -68,6 +70,25 @@ export const parsePlace = (
         break;
     }
   });
+
+  // TODO - Replace this manual formatting with a library that can handle all edge cases
+  // We should use Google Places API to format the address.
+  if (subpremise) {
+    if (
+      updatedFields.country === 'United States' ||
+      updatedFields.country === 'Singapore'
+    ) {
+      // Adding subpremise to the end of street as this is preferred by USPS and other mail carriers
+      // Singapore prefers subpremise to be at the end of the street with a "#" prefix
+      updatedFields.street +=
+        updatedFields.country === 'United States'
+          ? ` ${subpremise}`
+          : ` #${subpremise}`;
+    } else {
+      // Adding subpremise to the end of street as this is preferred by USPS and other mail carriers
+      updatedFields.street = `${subpremise}/${updatedFields.street}`;
+    }
+  }
 
   return updatedFields;
 };
