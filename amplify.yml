@@ -9,7 +9,8 @@ frontend:
         - node -v
         - |
           if [[ "${AWS_BRANCH}" != "main" && "${AWS_BRANCH}" != "staging" ]]; then
-            PREVIEW_URL="https://${AWS_BRANCH}.${AWS_APP_ID}.amplifyapp.com";
+            SUBDOMAIN="$(echo $AWS_BRANCH | sed 's/[^a-zA-Z0-9-]/-/g')"
+            PREVIEW_URL="https://${SUBDOMAIN}.${AWS_APP_ID}.amplifyapp.com";
             NEXTAUTH_URL=$PREVIEW_URL;
             echo "PREVIEW_URL=$PREVIEW_URL" >> .env;
           fi
