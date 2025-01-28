@@ -8372,7 +8372,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["@surma/rollup-plugin-off-main-thread", [\
         ["npm:2.2.3", {\
-          "packageLocation": "./.yarn/cache/@surma-rollup-plugin-off-main-thread-npm-2.2.3-1f57d3eded-2c02134944.zip/node_modules/@surma/rollup-plugin-off-main-thread/",\
+          "packageLocation": "./.yarn/unplugged/@surma-rollup-plugin-off-main-thread-npm-2.2.3-1f57d3eded/node_modules/@surma/rollup-plugin-off-main-thread/",\
           "packageDependencies": [\
             ["@surma/rollup-plugin-off-main-thread", "npm:2.2.3"],\
             ["ejs", "npm:3.1.10"],\
@@ -11631,7 +11631,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["parse5", "npm:7.2.1"],\
             ["parse5-htmlparser2-tree-adapter", "npm:7.0.0"],\
             ["parse5-parser-stream", "npm:7.1.2"],\
-            ["undici", "npm:6.20.1"],\
+            ["undici", "npm:6.21.1"],\
             ["whatwg-mimetype", "npm:4.0.0"]\
           ],\
           "linkType": "HARD"\
@@ -24543,10 +24543,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["undici", [\
-        ["npm:6.20.1", {\
-          "packageLocation": "./.yarn/cache/undici-npm-6.20.1-d65a390548-3bb1405b40.zip/node_modules/undici/",\
+        ["npm:6.21.1", {\
+          "packageLocation": "./.yarn/cache/undici-npm-6.21.1-0f7fc2c179-2efc52f772.zip/node_modules/undici/",\
           "packageDependencies": [\
-            ["undici", "npm:6.20.1"]\
+            ["undici", "npm:6.21.1"]\
           ],\
           "linkType": "HARD"\
         }]\
