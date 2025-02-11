@@ -58,7 +58,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface Props {
+export interface DonationHistoriesProps {
   loading?: boolean;
   reportsDonationHistories?: {
     periods: {
@@ -81,7 +81,7 @@ const DonationHistories = ({
   pledged,
   currencyCode = 'USD',
   setTime,
-}: Props): ReactElement => {
+}: DonationHistoriesProps): ReactElement => {
   const { classes } = useStyles();
   const { palette } = useTheme();
   const { push } = useRouter();
@@ -294,7 +294,7 @@ const DonationHistories = ({
                 )}
               </Box>
               <Box display={{ xs: 'block', md: 'none' }} height={150}>
-                {!loading ? (
+                {loading ? (
                   <BarChartSkeleton bars={12} width={10} />
                 ) : (
                   <ResponsiveContainer>

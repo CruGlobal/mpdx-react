@@ -7,8 +7,12 @@ describe('StyledProgress', () => {
   it('has correct defaults', () => {
     const { getByTestId, queryByTestId } = render(<StyledProgress />);
     expect(queryByTestId('styledProgressLoading')).toBeNull();
-    expect(getByTestId('styledProgressPrimary')).toHaveStyle('width: 0%;');
-    expect(getByTestId('styledProgressSecondary')).toHaveStyle('width: 0%;');
+    expect(getByTestId('styledProgressPrimary')).toHaveStyle(
+      'width: calc(0% - 4px);',
+    );
+    expect(getByTestId('styledProgressSecondary')).toHaveStyle(
+      'width: calc(0% - 4px);',
+    );
   });
 
   it('has correct overrides', () => {
@@ -16,8 +20,12 @@ describe('StyledProgress', () => {
       <StyledProgress primary={0.5} secondary={0.75} />,
     );
     expect(queryByTestId('styledProgressLoading')).toBeNull();
-    expect(getByTestId('styledProgressPrimary')).toHaveStyle('width: 50%;');
-    expect(getByTestId('styledProgressSecondary')).toHaveStyle('width: 75%;');
+    expect(getByTestId('styledProgressPrimary')).toHaveStyle(
+      'width: calc(50% - 4px);',
+    );
+    expect(getByTestId('styledProgressSecondary')).toHaveStyle(
+      'width: calc(75% - 4px);',
+    );
   });
 
   it('allows loading', () => {
