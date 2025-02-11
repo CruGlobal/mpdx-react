@@ -11,6 +11,11 @@ query GetAccountLists {
       receivedPledges
       totalPledges
       currency
+      healthIndicatorData {
+        id
+        machineCalculatedGoal
+        machineCalculatedGoalCurrency
+      }
     }
   }
 }
