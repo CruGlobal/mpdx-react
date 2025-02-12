@@ -52,13 +52,13 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
       <Box pl={2}>
         <FormulaItem
           name={t('Ownership')}
-          explanation={t('% of Self-raised funds over total funds')}
+          explanation={t('% of self-raised funds over total funds')}
           value={latestMpdHealthData?.ownershipHi ?? 0}
           isLoading={loading}
         />
         <FormulaItem
           name={t('Success')}
-          explanation={t('% of Self-raised funds over support goal')}
+          explanation={t('% of self-raised funds over support goal')}
           value={latestMpdHealthData?.successHi ?? 0}
           isLoading={loading}
         />
