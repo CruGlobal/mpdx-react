@@ -125,7 +125,7 @@ describe('GoogleAccordion', () => {
 
       expect(getByText(/continue/i)).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dgoogle&access_token=apiToken`,
       );
     });
   });
@@ -224,7 +224,7 @@ describe('GoogleAccordion', () => {
 
         expect(getByText(/continue/i)).toHaveAttribute(
           'href',
-          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dgoogle&access_token=apiToken`,
         );
       });
     });

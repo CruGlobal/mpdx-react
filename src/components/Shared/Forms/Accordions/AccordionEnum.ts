@@ -13,13 +13,14 @@ export enum CoachAccordion {
   ManageCoachesAccess = 'ManageCoachesAccess',
 }
 
+// These must match the values passed to WebRouter#integration_preferences_url in mpdx_api
 export enum IntegrationAccordion {
-  Chalkline = 'Chalkline',
-  Google = 'Google',
-  Mailchimp = 'Mailchimp',
-  Okta = 'Okta',
-  Organization = 'Organization',
-  Prayerletters = 'Prayerletters',
+  Chalkline = 'chalkline',
+  Google = 'google',
+  Mailchimp = 'mailchimp',
+  Okta = 'okta',
+  Organization = 'organization',
+  Prayerletters = 'prayerletters.com',
 }
 
 export enum OrganizationAccordion {

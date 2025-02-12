@@ -33,6 +33,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { ContactTagInput } from 'src/components/Tags/Tags';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import Modal from 'src/components/common/Modal/Modal';
@@ -226,7 +227,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                   tool="googleImport"
                   button={
                     <Button
-                      href={`/accountLists/${accountListId}/settings/integrations?selectedTab=google`}
+                      href={`/accountLists/${accountListId}/settings/integrations?selectedTab=${IntegrationAccordion.Google}`}
                       variant="contained"
                     >
                       {t('Connect Google Account')}
@@ -298,7 +299,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                             }
                             action={
                               <Button
-                                href={`/accountLists/${accountListId}/settings/integrations?selectedTab=google`}
+                                href={`/accountLists/${accountListId}/settings/integrations?selectedTab==${IntegrationAccordion.Google}`}
                                 size="small"
                                 variant="contained"
                               >
