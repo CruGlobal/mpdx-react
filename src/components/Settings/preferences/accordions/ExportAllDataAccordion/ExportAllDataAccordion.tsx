@@ -66,7 +66,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
         setConfirmation(true);
       },
       onError: () => {
-        enqueueSnackbar(t('And error occured.'), {
+        enqueueSnackbar(t('An error occurred.'), {
           variant: 'error',
         });
       },
