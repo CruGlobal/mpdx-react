@@ -14,6 +14,7 @@ import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDat
 import { useLocale } from 'src/hooks/useLocale';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const numberOrNullTransform = (_: unknown, val: unknown) =>
@@ -30,9 +31,7 @@ const accountPreferencesSchema = yup.object({
 
 type Attributes = yup.InferType<typeof accountPreferencesSchema>;
 
-interface MpdInfoAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface MpdInfoAccordionProps extends AccordionProps<PreferenceAccordion> {
   activeMpdMonthlyGoal: number | null;
   activeMpdStartAt: string | null;
   activeMpdFinishAt: string | null;

@@ -9,6 +9,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'timeZone'>> =
@@ -16,9 +17,7 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'timeZone'>> =
     timeZone: yup.string().required(),
   });
 
-interface TimeZoneAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface TimeZoneAccordionProps extends AccordionProps<PreferenceAccordion> {
   timeZone: string;
   timeZones: Array<Record<string, string>>;
   disabled?: boolean;

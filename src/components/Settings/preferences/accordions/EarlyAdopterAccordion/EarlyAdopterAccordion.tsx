@@ -10,6 +10,7 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<
@@ -18,9 +19,8 @@ const accountPreferencesSchema: yup.ObjectSchema<
   tester: yup.boolean().required(),
 });
 
-interface EarlyAdopterAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface EarlyAdopterAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   tester: boolean;
   accountListId: string;
   disabled?: boolean;

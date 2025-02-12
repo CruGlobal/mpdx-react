@@ -10,6 +10,7 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountList } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<Pick<AccountList, 'name'>> =
@@ -17,9 +18,8 @@ const accountPreferencesSchema: yup.ObjectSchema<Pick<AccountList, 'name'>> =
     name: yup.string().required(),
   });
 
-interface AccountNameAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface AccountNameAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   accountListId: string;
   name: string;
   disabled?: boolean;

@@ -18,12 +18,12 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateTimeFormat } from 'src/lib/intlFormat';
+import { AccordionProps } from '../../../accordionHelper';
 import { useExportDataMutation } from '../../GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 
-interface ExportAllDataAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface ExportAllDataAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   exportedAt?: string;
   accountListId: string;
   data?: GetPersonalPreferencesQuery | undefined;

@@ -11,6 +11,7 @@ import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<
@@ -19,9 +20,8 @@ const accountPreferencesSchema: yup.ObjectSchema<
   monthlyGoal: yup.number().required(),
 });
 
-interface MonthlyGoalAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface MonthlyGoalAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   monthlyGoal: number | null;
   accountListId: string;
   currency: string;

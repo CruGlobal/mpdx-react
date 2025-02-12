@@ -10,6 +10,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'localeDisplay'>> =
@@ -17,9 +18,7 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'localeDisplay'>> =
     localeDisplay: yup.string().required(),
   });
 
-interface LocaleAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface LocaleAccordionProps extends AccordionProps<PreferenceAccordion> {
   localeDisplay: string;
   disabled?: boolean;
   handleSetupChange: () => Promise<void>;

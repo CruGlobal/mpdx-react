@@ -10,12 +10,12 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { User } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.generated';
 
-interface DefaultAccountAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface DefaultAccountAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   data: GetPersonalPreferencesQuery | undefined;
   accountListId: string;
   defaultAccountList: string;

@@ -11,6 +11,7 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<
@@ -19,9 +20,8 @@ const preferencesSchema: yup.ObjectSchema<
   hourToSendNotifications: yup.number().default(null).nullable(),
 });
 
-interface HourToSendNotificationsAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface HourToSendNotificationsAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   hourToSendNotifications: number | null;
   disabled?: boolean;
 }

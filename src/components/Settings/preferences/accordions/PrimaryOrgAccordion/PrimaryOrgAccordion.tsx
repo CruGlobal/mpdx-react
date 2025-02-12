@@ -10,6 +10,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountList } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<
@@ -18,9 +19,7 @@ const preferencesSchema: yup.ObjectSchema<
   salaryOrganizationId: yup.string().required(),
 });
 
-interface PrimaryOrgAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface PrimaryOrgAccordionProps extends AccordionProps<PreferenceAccordion> {
   organizations: GetUsersOrganizationsAccountsQuery | undefined;
   salaryOrganizationId: string;
   accountListId: string;

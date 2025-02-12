@@ -9,6 +9,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<
@@ -17,9 +18,8 @@ const preferencesSchema: yup.ObjectSchema<
   homeCountry: yup.string(),
 });
 
-interface HomeCountryAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface HomeCountryAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   homeCountry: string;
   accountListId: string;
   countries: { name: string; code: string }[];

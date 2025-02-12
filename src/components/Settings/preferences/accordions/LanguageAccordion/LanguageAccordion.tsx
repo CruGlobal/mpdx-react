@@ -11,6 +11,7 @@ import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { formatLanguage, languages } from 'src/lib/data/languages';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'locale'>> =
@@ -18,9 +19,7 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'locale'>> =
     locale: yup.string().required(),
   });
 
-interface LanguageAccordionProps {
-  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
-  expandedAccordion: PreferenceAccordion | null;
+interface LanguageAccordionProps extends AccordionProps<PreferenceAccordion> {
   locale: string;
   disabled?: boolean;
 }
