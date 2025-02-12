@@ -135,7 +135,9 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedPanel={expandedPanel}
       label={label}
-      value={formattedMonthlyGoal || formattedCalculatedGoal}
+      value={
+        formattedMonthlyGoal || `${formattedCalculatedGoal} (${t('estimated')})`
+      }
       fullWidth
       disabled={disabled}
     >

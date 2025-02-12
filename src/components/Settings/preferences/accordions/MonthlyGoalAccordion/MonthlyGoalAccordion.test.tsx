@@ -100,7 +100,7 @@ describe('MonthlyGoalAccordion', () => {
       />,
     );
 
-    expect(await findByText('€1,000')).toBeInTheDocument();
+    expect(await findByText('€1,000 (estimated)')).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
   });
 
