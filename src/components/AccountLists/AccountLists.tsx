@@ -82,24 +82,25 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 currency: preferencesCurrency,
                 healthIndicatorData,
               }) => {
-                const monthlyGoal =
-                  preferencesGoal ?? healthIndicatorData?.machineCalculatedGoal;
-                const currency =
-                  typeof preferencesGoal === 'number'
-                    ? preferencesCurrency
-                    : healthIndicatorData?.machineCalculatedGoalCurrency;
+                const hasPreferencesGoal = typeof preferencesGoal === 'number';
+                const monthlyGoal = hasPreferencesGoal
+                  ? preferencesGoal
+                  : healthIndicatorData?.machineCalculatedGoal;
+                const currency = hasPreferencesGoal
+                  ? preferencesCurrency
+                  : healthIndicatorData?.machineCalculatedGoalCurrency;
 
                 // If the currency comes from the machine calculated goal and is different from the
                 // user's currency preference, we can't calculate the received or total percentages
                 // because the numbers are in different currencies
-                const receivedPercentage =
-                  currency === preferencesCurrency && monthlyGoal
-                    ? receivedPledges / monthlyGoal
-                    : NaN;
-                const totalPercentage =
-                  currency === preferencesCurrency && monthlyGoal
-                    ? totalPledges / monthlyGoal
-                    : NaN;
+                const hasValidGoal =
+                  currency === preferencesCurrency && !!monthlyGoal;
+                const receivedPercentage = hasValidGoal
+                  ? receivedPledges / monthlyGoal
+                  : NaN;
+                const totalPercentage = hasValidGoal
+                  ? totalPledges / monthlyGoal
+                  : NaN;
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
