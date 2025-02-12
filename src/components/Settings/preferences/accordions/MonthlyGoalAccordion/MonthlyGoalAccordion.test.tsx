@@ -80,6 +80,7 @@ describe('MonthlyGoalAccordion', () => {
   afterEach(() => {
     mutationSpy.mockClear();
   });
+
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components monthlyGoal={100} expandedPanel="" />,
@@ -88,6 +89,21 @@ describe('MonthlyGoalAccordion', () => {
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
   });
+
+  it('should render accordion closed with calculated goal', async () => {
+    const { findByText, queryByRole } = render(
+      <Components
+        monthlyGoal={null}
+        machineCalculatedGoal={1000}
+        machineCalculatedGoalCurrency="EUR"
+        expandedPanel=""
+      />,
+    );
+
+    expect(await findByText('€1,000 (estimated)')).toBeInTheDocument();
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
   it('should render accordion open and textfield should have a value', () => {
     const { getByRole } = render(
       <Components monthlyGoal={20000} expandedPanel={label} />,
