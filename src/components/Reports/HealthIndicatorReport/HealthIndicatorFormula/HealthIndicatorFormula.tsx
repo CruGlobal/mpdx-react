@@ -1,15 +1,37 @@
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
-import { Box, Card, Skeleton, Typography } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Card,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { ConsistencyExplanation } from './ConsistencyExplanation';
+import { DepthExplanation } from './DepthExplanation';
 import { useHealthIndicatorFormulaQuery } from './HealthIndicatorFormula.generated';
+import { OwnershipExplanation } from './OwnershipExplanation';
+import { SuccessExplanation } from './SuccessExplanation';
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledSummary = styled(AccordionSummary)({
+  '.MuiAccordionSummary-content': {
+    display: 'flex',
+    gap: '0.5ch',
+    alignItems: 'center',
+  },
+});
+
+const StyledDetails = styled(AccordionDetails)(({ theme }) => ({
   display: 'flex',
-  gap: 2,
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: theme.spacing(2),
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+
+  ul: {
+    marginLeft: theme.spacing(2),
+  },
 }));
 
 interface HealthIndicatorFormulaProps {
@@ -52,25 +74,29 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
       <Box pl={2}>
         <FormulaItem
           name={t('Ownership')}
-          explanation={t('% of self-raised funds over total funds')}
+          description={t('% of self-raised funds over total funds')}
+          explanation={<OwnershipExplanation />}
           value={latestMpdHealthData?.ownershipHi ?? 0}
           isLoading={loading}
         />
         <FormulaItem
           name={t('Success')}
-          explanation={t('% of self-raised funds over support goal')}
+          description={t('% of self-raised funds over support goal')}
+          explanation={<SuccessExplanation />}
           value={latestMpdHealthData?.successHi ?? 0}
           isLoading={loading}
         />
         <FormulaItem
           name={t('Consistency')}
-          explanation={t('% of months with positive account balance')}
+          description={t('% of months with positive account balance')}
           value={latestMpdHealthData?.consistencyHi ?? 0}
+          explanation={<ConsistencyExplanation />}
           isLoading={loading}
         />
         <FormulaItem
           name={t('Depth')}
-          explanation={t('Trend of local partners')}
+          description={t('Trend of local partners')}
+          explanation={<DepthExplanation />}
           value={latestMpdHealthData?.depthHi ?? 0}
           isLoading={loading}
         />
@@ -81,28 +107,31 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
 
 interface FormulaItemProps {
   name: string;
-  explanation: string;
+  description: string;
+  explanation?: React.ReactNode;
   value: number;
   isLoading: boolean;
 }
 
 const FormulaItem: React.FC<FormulaItemProps> = ({
   name,
+  description,
   explanation,
   value,
   isLoading,
 }) => (
-  <StyledBox>
-    {isLoading ? (
-      <Skeleton width={'60px'} height={'42px'} />
-    ) : (
-      <Typography variant="h4" color="primary" fontWeight="bold" width={'60px'}>
-        {value}
-      </Typography>
-    )}
-    <Box width={'calc(100% - 60px)'} display="flex" gap={0.7}>
-      <Typography fontWeight="bold">{name} = </Typography>
-      <Typography>{explanation}</Typography>
-    </Box>
-  </StyledBox>
+  <Accordion>
+    <StyledSummary>
+      {isLoading ? (
+        <Skeleton width={60} height={42} />
+      ) : (
+        <Typography variant="h4" color="primary" fontWeight="bold" width={60}>
+          {value}
+        </Typography>
+      )}
+      <Typography fontWeight="bold">{name} =</Typography>
+      <Typography>{description}</Typography>
+    </StyledSummary>
+    <StyledDetails>{explanation}</StyledDetails>
+  </Accordion>
 );
