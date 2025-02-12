@@ -58,13 +58,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
                 />
               </Grid>
               <Grid xs={12} item>
-                <DonationHistories
-                  goal={data.accountList.monthlyGoal ?? undefined}
-                  pledged={data.accountList.totalPledges}
-                  reportsDonationHistories={data.reportsDonationHistories}
-                  healthIndicatorData={data.healthIndicatorData}
-                  currencyCode={data.accountList.currency}
-                />
+                <DonationHistories data={data} />
               </Grid>
               <Grid xs={12} item>
                 <ThisWeek accountListId={accountListId} />

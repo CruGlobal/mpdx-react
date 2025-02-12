@@ -3,7 +3,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { DonationHistoriesProps } from './DonationHistories';
+import {
+  DonationHistoriesData,
+  DonationHistoriesProps,
+} from './DonationHistories';
 import DonationHistories from '.';
 
 const setTime = jest.fn();
@@ -26,66 +29,79 @@ const TestComponent: React.FC<DonationHistoriesProps> = (props) => (
 
 describe('DonationHistories', () => {
   it('default', () => {
-    const { getByTestId, queryByTestId } = render(<TestComponent />);
+    const { getByTestId, queryByTestId } = render(
+      <TestComponent data={undefined} />,
+    );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
     expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
   });
 
   it('empty periods', () => {
-    const reportsDonationHistories = {
-      periods: [
-        {
-          convertedTotal: 0,
-          startDate: '1-1-2019',
-          totals: [{ currency: 'USD', convertedAmount: 0 }],
-        },
-        {
-          convertedTotal: 0,
-          startDate: '1-2-2019',
-          totals: [{ currency: 'NZD', convertedAmount: 0 }],
-        },
-      ],
-      averageIgnoreCurrent: 0,
+    const data: DonationHistoriesData = {
+      accountList: {
+        currency: 'USD',
+        totalPledges: 1000,
+      },
+      reportsDonationHistories: {
+        periods: [
+          {
+            convertedTotal: 0,
+            startDate: '1-1-2019',
+            totals: [{ currency: 'USD', convertedAmount: 0 }],
+          },
+          {
+            convertedTotal: 0,
+            startDate: '1-2-2019',
+            totals: [{ currency: 'NZD', convertedAmount: 0 }],
+          },
+        ],
+        averageIgnoreCurrent: 0,
+      },
+      healthIndicatorData: [],
     };
 
     const { getByTestId, queryByTestId } = render(
-      <TestComponent reportsDonationHistories={reportsDonationHistories} />,
+      <TestComponent data={data} />,
     );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
     expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
   });
 
   it('loading', () => {
-    const { getAllByTestId, queryByTestId } = render(<TestComponent loading />);
+    const { getAllByTestId, queryByTestId } = render(
+      <TestComponent data={undefined} loading />,
+    );
     expect(getAllByTestId('BarChartSkeleton')).toHaveLength(2);
     expect(queryByTestId('DonationHistoriesBoxEmpty')).not.toBeInTheDocument();
   });
 
   describe('populated periods', () => {
     it('shows references', () => {
-      const reportsDonationHistories = {
-        periods: [
-          {
-            convertedTotal: 50,
-            startDate: '1-1-2019',
-            totals: [{ currency: 'USD', convertedAmount: 50 }],
-          },
-          {
-            convertedTotal: 60,
-            startDate: '1-2-2019',
-            totals: [{ currency: 'NZD', convertedAmount: 60 }],
-          },
-        ],
-        averageIgnoreCurrent: 1000,
+      const data: DonationHistoriesData = {
+        accountList: {
+          currency: 'USD',
+          monthlyGoal: 100,
+          totalPledges: 2500,
+        },
+        reportsDonationHistories: {
+          periods: [
+            {
+              convertedTotal: 50,
+              startDate: '1-1-2019',
+              totals: [{ currency: 'USD', convertedAmount: 50 }],
+            },
+            {
+              convertedTotal: 60,
+              startDate: '1-2-2019',
+              totals: [{ currency: 'NZD', convertedAmount: 60 }],
+            },
+          ],
+          averageIgnoreCurrent: 1000,
+        },
+        healthIndicatorData: [],
       };
 
-      const { getByTestId } = render(
-        <TestComponent
-          reportsDonationHistories={reportsDonationHistories}
-          goal={100}
-          pledged={2500}
-        />,
-      );
+      const { getByTestId } = render(<TestComponent data={data} />);
       expect(
         getByTestId('DonationHistoriesTypographyGoal').textContent,
       ).toEqual('Goal $100');

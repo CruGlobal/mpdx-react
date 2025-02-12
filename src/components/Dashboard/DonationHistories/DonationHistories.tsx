@@ -30,12 +30,14 @@ import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalCh
 import { makeStyles } from 'tss-react/mui';
 import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
+import * as Types from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedBox from '../../AnimatedBox';
 import AnimatedCard from '../../AnimatedCard';
+import { calculateGraphData } from './graphData';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
@@ -60,33 +62,38 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
+export interface DonationHistoriesData {
+  accountList: Pick<
+    Types.AccountList,
+    'currency' | 'monthlyGoal' | 'totalPledges'
+  >;
+  reportsDonationHistories: Pick<
+    Types.DonationHistories,
+    'averageIgnoreCurrent'
+  > & {
+    periods: Array<
+      Pick<Types.DonationHistoriesPeriod, 'startDate' | 'convertedTotal'> & {
+        totals: Array<Pick<Types.Total, 'currency' | 'convertedAmount'>>;
+      }
+    >;
+  };
+  healthIndicatorData: Array<
+    Pick<
+      Types.HealthIndicatorData,
+      'indicationPeriodBegin' | 'staffEnteredGoal'
+    >
+  >;
+}
+
 export interface DonationHistoriesProps {
   loading?: boolean;
-  reportsDonationHistories?: {
-    periods: {
-      convertedTotal: number;
-      startDate: string;
-      totals: { currency: string; convertedAmount: number }[];
-    }[];
-    averageIgnoreCurrent: number;
-  };
-  healthIndicatorData?: Array<{
-    indicationPeriodBegin: string;
-    staffEnteredGoal?: number | null | undefined;
-  }>;
-  currencyCode?: string;
-  goal?: number;
-  pledged?: number;
+  data: DonationHistoriesData | undefined;
   setTime?: (time: DateTime) => void;
 }
 
 const DonationHistories = ({
   loading,
-  reportsDonationHistories,
-  healthIndicatorData,
-  goal,
-  pledged,
-  currencyCode = 'USD',
+  data,
   setTime,
 }: DonationHistoriesProps): ReactElement => {
   const { classes } = useStyles();
@@ -96,56 +103,25 @@ const DonationHistories = ({
   const locale = useLocale();
   const accountListId = useAccountListId();
   const fills = [
-    palette.cruYellow.main,
-    palette.graphBlue3.main,
-    palette.graphBlue2.main,
     palette.graphBlue1.main,
+    palette.graphBlue2.main,
+    palette.graphBlue3.main,
+    palette.cruYellow.main,
   ];
-  const currencies: { name: string; fill: string }[] = [];
-  const currentMonth = DateTime.now().startOf('month').toISODate();
-  const periods = reportsDonationHistories?.periods?.map((period) => {
-    // Use the goal from preferences for the last period, i.e. the current month
-    // For all other months, use the snapshot of the goal preference from the health indicator data
-    const periodGoal =
-      period.startDate === currentMonth
-        ? goal
-        : healthIndicatorData?.find(
-            (item) => item.indicationPeriodBegin === period.startDate,
-          )?.staffEnteredGoal;
 
-    const data: {
-      currencies: Record<string, number>;
-      startDate: string;
-      total: number;
-      goal: number | null;
-      period: DateTime;
-    } = {
-      currencies: {},
-      startDate: DateTime.fromISO(period.startDate)
-        .toJSDate()
-        .toLocaleDateString(locale, { month: 'short', year: '2-digit' }),
-      total: period.convertedTotal,
-      goal: periodGoal ?? null,
-      period: DateTime.fromISO(period.startDate),
-    };
-    period.totals.forEach((total) => {
-      if (!currencies.find((currency) => total.currency === currency.name)) {
-        currencies.push({ name: total.currency, fill: fills.pop() ?? '' });
-      }
-      data.currencies[total.currency] = total.convertedAmount;
-    });
-    return data;
-  });
-  const empty =
-    !loading &&
-    (periods === undefined ||
-      periods.reduce((result, { total }) => result + total, 0) === 0);
-  const domainMax = Math.max(
-    ...(periods?.map((period) => period.total) || []),
-    goal ?? 0,
-    pledged ?? 0,
-    reportsDonationHistories?.averageIgnoreCurrent ?? 0,
-  );
+  const {
+    monthlyGoal: goal,
+    totalPledges: pledged,
+    currency,
+  } = data?.accountList ?? {};
+
+  const {
+    periods,
+    currencies,
+    empty: periodsEmpty,
+    domainMax,
+  } = calculateGraphData({ locale, data: data, currencyColors: fills });
+  const empty = !loading && periodsEmpty;
 
   const handleClick: CategoricalChartFunc = (period) => {
     if (!period?.activePayload) {
@@ -183,7 +159,7 @@ const DonationHistories = ({
                       <Grid item data-testid="DonationHistoriesTypographyGoal">
                         <LegendReferenceLine
                           name={t('Goal')}
-                          value={currencyFormat(goal, currencyCode, locale)}
+                          value={currencyFormat(goal, currency, locale)}
                           color={palette.graphTeal.main}
                         />
                       </Grid>
@@ -194,7 +170,7 @@ const DonationHistories = ({
                     <LegendReferenceLine
                       name={t('Average')}
                       value={
-                        loading || !reportsDonationHistories ? (
+                        loading || !data?.reportsDonationHistories ? (
                           <Skeleton
                             variant="text"
                             style={{ display: 'inline-block' }}
@@ -202,8 +178,8 @@ const DonationHistories = ({
                           />
                         ) : (
                           currencyFormat(
-                            reportsDonationHistories.averageIgnoreCurrent,
-                            currencyCode,
+                            data.reportsDonationHistories.averageIgnoreCurrent,
+                            currency,
                             locale,
                           )
                         )
@@ -220,7 +196,7 @@ const DonationHistories = ({
                       >
                         <LegendReferenceLine
                           name={t('Committed')}
-                          value={currencyFormat(pledged, currencyCode, locale)}
+                          value={currencyFormat(pledged, currency, locale)}
                           color={palette.cruYellow.main}
                         />
                       </Grid>
@@ -262,9 +238,9 @@ const DonationHistories = ({
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
-                      {!healthIndicatorData?.length ? (
+                      {!data?.healthIndicatorData?.length ? (
                         <ReferenceLine
-                          y={goal}
+                          y={goal ?? undefined}
                           stroke={palette.graphTeal.main}
                           strokeWidth={3}
                         />
@@ -278,7 +254,7 @@ const DonationHistories = ({
                         />
                       )}
                       <ReferenceLine
-                        y={reportsDonationHistories?.averageIgnoreCurrent}
+                        y={data?.reportsDonationHistories?.averageIgnoreCurrent}
                         stroke={palette.cruGrayMedium.main}
                         strokeWidth={3}
                       />
@@ -301,8 +277,8 @@ const DonationHistories = ({
                             offset={0}
                             angle={-90}
                           >
-                            {t('Amount ({{ currencyCode }})', {
-                              currencyCode,
+                            {t('Amount ({{ currency }})', {
+                              currency,
                             })}
                           </Text>
                         }

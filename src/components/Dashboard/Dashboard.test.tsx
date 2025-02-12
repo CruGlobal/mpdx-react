@@ -29,6 +29,7 @@ beforeEach(() => {
 
 const data: GetDashboardQuery = {
   user: {
+    id: 'user-1',
     firstName: 'Roger',
   },
   accountList: {
@@ -116,6 +117,7 @@ const data: GetDashboardQuery = {
     ],
     averageIgnoreCurrent: 750,
   },
+  healthIndicatorData: [],
 };
 
 describe('Dashboard', () => {

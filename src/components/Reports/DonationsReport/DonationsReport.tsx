@@ -70,15 +70,7 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Container>
-        <DonationHistories
-          loading={loading}
-          goal={data?.accountList.monthlyGoal ?? undefined}
-          pledged={data?.accountList.totalPledges}
-          reportsDonationHistories={data?.reportsDonationHistories}
-          healthIndicatorData={data?.healthIndicatorData}
-          currencyCode={data?.accountList.currency}
-          setTime={setTime}
-        />
+        <DonationHistories loading={loading} data={data} setTime={setTime} />
         <DonationsReportTable
           accountListId={accountListId}
           designationAccounts={designationAccounts}
