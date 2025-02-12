@@ -11,6 +11,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import DonationHistories from 'src/components/Dashboard/DonationHistories';
 import { useGetTaskAnalyticsQuery } from 'src/components/Dashboard/ThisWeek/NewsletterMenu/NewsletterMenu.generated';
@@ -105,9 +106,15 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
       ? ownData?.accountList
       : coachingData?.coachingAccountList;
 
+  const periodBegin = DateTime.now()
+    .startOf('month')
+    .minus({ years: 1 })
+    .toISODate();
+
   const { data: ownDonationGraphData } = useGetDonationGraphQuery({
     variables: {
       accountListId,
+      periodBegin,
     },
     skip: accountListType !== AccountListTypeEnum.Own,
   });
@@ -115,6 +122,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   const { data: coachingDonationGraphData } = useGetCoachingDonationGraphQuery({
     variables: {
       coachingAccountListId: accountListId,
+      periodBegin,
     },
     skip: accountListType !== AccountListTypeEnum.Coaching,
   });
@@ -211,6 +219,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
                 reportsDonationHistories={
                   donationGraphData?.reportsDonationHistories
                 }
+                healthIndicatorData={donationGraphData?.healthIndicatorData}
                 currencyCode={accountListData?.currency}
               />
               <MonthlyCommitment

@@ -16,7 +16,9 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  ComposedChart,
   Legend,
+  Line,
   ReferenceLine,
   ResponsiveContainer,
   Text,
@@ -68,6 +70,10 @@ export interface DonationHistoriesProps {
     }[];
     averageIgnoreCurrent: number;
   };
+  healthIndicatorData?: Array<{
+    indicationPeriodBegin: string;
+    staffEnteredGoal?: number | null | undefined;
+  }>;
   currencyCode?: string;
   goal?: number;
   pledged?: number;
@@ -77,6 +83,7 @@ export interface DonationHistoriesProps {
 const DonationHistories = ({
   loading,
   reportsDonationHistories,
+  healthIndicatorData,
   goal,
   pledged,
   currencyCode = 'USD',
@@ -94,25 +101,38 @@ const DonationHistories = ({
     palette.graphBlue2.main,
     palette.graphBlue1.main,
   ];
-  const currencies: { dataKey: string; fill: string }[] = [];
+  const currencies: { name: string; fill: string }[] = [];
+  const currentMonth = DateTime.now().startOf('month').toISODate();
   const periods = reportsDonationHistories?.periods?.map((period) => {
+    // Use the goal from preferences for the last period, i.e. the current month
+    // For all other months, use the snapshot of the goal preference from the health indicator data
+    const periodGoal =
+      period.startDate === currentMonth
+        ? goal
+        : healthIndicatorData?.find(
+            (item) => item.indicationPeriodBegin === period.startDate,
+          )?.staffEnteredGoal;
+
     const data: {
-      [key: string]: string | number | DateTime;
+      currencies: Record<string, number>;
       startDate: string;
       total: number;
+      goal: number | null;
       period: DateTime;
     } = {
+      currencies: {},
       startDate: DateTime.fromISO(period.startDate)
         .toJSDate()
         .toLocaleDateString(locale, { month: 'short', year: '2-digit' }),
       total: period.convertedTotal,
+      goal: periodGoal ?? null,
       period: DateTime.fromISO(period.startDate),
     };
     period.totals.forEach((total) => {
-      if (!currencies.find((currency) => total.currency === currency.dataKey)) {
-        currencies.push({ dataKey: total.currency, fill: fills.pop() ?? '' });
+      if (!currencies.find((currency) => total.currency === currency.name)) {
+        currencies.push({ name: total.currency, fill: fills.pop() ?? '' });
       }
-      data[total.currency] = total.convertedAmount;
+      data.currencies[total.currency] = total.convertedAmount;
     });
     return data;
   });
@@ -232,7 +252,7 @@ const DonationHistories = ({
                   <BarChartSkeleton bars={12} />
                 ) : (
                   <ResponsiveContainer minWidth={600}>
-                    <BarChart
+                    <ComposedChart
                       data={periods}
                       margin={{
                         left: 20,
@@ -242,9 +262,17 @@ const DonationHistories = ({
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
-                      {goal && (
+                      {!healthIndicatorData?.length ? (
                         <ReferenceLine
                           y={goal}
+                          stroke={palette.graphTeal.main}
+                          strokeWidth={3}
+                        />
+                      ) : (
+                        <Line
+                          dataKey="goal"
+                          name={t('Goal')}
+                          connectNulls
                           stroke={palette.graphTeal.main}
                           strokeWidth={3}
                         />
@@ -282,14 +310,15 @@ const DonationHistories = ({
                       <Tooltip />
                       {currencies.map((currency) => (
                         <Bar
-                          key={currency.dataKey}
-                          dataKey={currency.dataKey}
+                          key={currency.name}
+                          dataKey={`currencies.${currency.name}`}
+                          name={currency.name}
                           stackId="a"
                           fill={currency.fill}
                           barSize={30}
                         />
                       ))}
-                    </BarChart>
+                    </ComposedChart>
                   </ResponsiveContainer>
                 )}
               </Box>
