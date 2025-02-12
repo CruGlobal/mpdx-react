@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Alert, Box, Button, Skeleton, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -16,7 +17,7 @@ import {
 
 export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   disabled,
 }) => {
   const { t } = useTranslation();
@@ -39,7 +40,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
         accountListId: accountListId ?? '',
       },
     },
-    skip: expandedPanel !== accordionName,
+    skip: expandedAccordion !== IntegrationAccordion.Prayerletters,
   });
 
   const prayerlettersAccount = data?.prayerlettersAccount
@@ -88,8 +89,9 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={IntegrationAccordion.Prayerletters}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
       disabled={disabled}

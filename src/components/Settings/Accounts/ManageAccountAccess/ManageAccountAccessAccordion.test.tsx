@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { GetAccountsSharingWithQuery } from './ManageAccountAccess.generated';
 import { ManageAccountAccessAccordion } from './ManageAccountAccessAccordion';
@@ -47,7 +48,7 @@ describe('ManageAccountAccessAccordion', () => {
         <GqlMockedProvider>
           <ManageAccountAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -62,7 +63,7 @@ describe('ManageAccountAccessAccordion', () => {
         <GqlMockedProvider>
           <ManageAccountAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Account Access'}
+            expandedAccordion={AccountAccordion.ManageAccountAccess}
           />
         </GqlMockedProvider>
       </Components>,
@@ -107,7 +108,7 @@ describe('ManageAccountAccessAccordion', () => {
         >
           <ManageAccountAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Account Access'}
+            expandedAccordion={AccountAccordion.ManageAccountAccess}
           />
         </GqlMockedProvider>
       </Components>,

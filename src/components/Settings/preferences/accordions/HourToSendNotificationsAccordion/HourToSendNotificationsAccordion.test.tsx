@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { HourToSendNotificationsAccordion } from './HourToSendNotificationsAccordion';
 
@@ -32,12 +33,12 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   hourToSendNotifications: number | null;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   hourToSendNotifications,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -45,7 +46,7 @@ const Components: React.FC<ComponentsProps> = ({
         <GqlMockedProvider onCall={mutationSpy}>
           <HourToSendNotificationsAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             hourToSendNotifications={hourToSendNotifications}
           />
         </GqlMockedProvider>
@@ -62,7 +63,7 @@ describe('HourToSendNotificationsAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components hourToSendNotifications={0} expandedPanel="" />,
+      <Components hourToSendNotifications={0} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -71,7 +72,10 @@ describe('HourToSendNotificationsAccordion', () => {
 
   it('should always have the save button enabled. null will set to Immediately', async () => {
     const { getByRole, getByText } = render(
-      <Components hourToSendNotifications={null} expandedPanel={label} />,
+      <Components
+        hourToSendNotifications={null}
+        expandedAccordion={PreferenceAccordion.HourToSendNotifications}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -84,7 +88,10 @@ describe('HourToSendNotificationsAccordion', () => {
 
   it('changes and saves the input', async () => {
     const { getByRole, getByText } = render(
-      <Components hourToSendNotifications={null} expandedPanel={label} />,
+      <Components
+        hourToSendNotifications={null}
+        expandedAccordion={PreferenceAccordion.HourToSendNotifications}
+      />,
     );
     const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });

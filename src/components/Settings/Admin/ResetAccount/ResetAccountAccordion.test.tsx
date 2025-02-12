@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { ResetAccountAccordion } from './ResetAccountAccordion';
 
@@ -46,7 +47,7 @@ describe('ResetAccountAccordion', () => {
         <GqlMockedProvider>
           <ResetAccountAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -61,7 +62,7 @@ describe('ResetAccountAccordion', () => {
         <GqlMockedProvider onCall={mutationSpy}>
           <ResetAccountAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Reset Account'}
+            expandedAccordion={AdminAccordion.ResetAccount}
           />
         </GqlMockedProvider>
       </Components>,
@@ -115,7 +116,7 @@ describe('ResetAccountAccordion', () => {
         <GqlMockedProvider onCall={mutationSpy}>
           <ResetAccountAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Reset Account'}
+            expandedAccordion={AdminAccordion.ResetAccount}
           />
         </GqlMockedProvider>
       </Components>,

@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
@@ -18,8 +19,8 @@ const preferencesSchema: yup.ObjectSchema<
 });
 
 interface PrimaryOrgAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
+  expandedAccordion: PreferenceAccordion | null;
   organizations: GetUsersOrganizationsAccountsQuery | undefined;
   salaryOrganizationId: string;
   accountListId: string;
@@ -28,7 +29,7 @@ interface PrimaryOrgAccordionProps {
 
 export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   organizations,
   salaryOrganizationId,
   accountListId,
@@ -64,7 +65,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -76,8 +77,9 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.PrimaryOrg}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedOrgName}
       fullWidth

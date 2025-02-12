@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { PrimaryOrgAccordion } from './PrimaryOrgAccordion';
 
@@ -61,12 +62,12 @@ const mockData = {
 
 interface ComponentsProps {
   salaryOrganizationId: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   salaryOrganizationId,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -74,7 +75,7 @@ const Components: React.FC<ComponentsProps> = ({
         <GqlMockedProvider onCall={mutationSpy}>
           <PrimaryOrgAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             salaryOrganizationId={salaryOrganizationId}
             organizations={mockData}
             accountListId={accountListId}
@@ -95,7 +96,7 @@ describe('PrimaryOrgAccordion', () => {
     const { getByText, queryByRole } = render(
       <Components
         salaryOrganizationId={'0673b517-4f4d-4c47-965e-0757a198a8a4'}
-        expandedPanel=""
+        expandedAccordion={null}
       />,
     );
 
@@ -107,7 +108,10 @@ describe('PrimaryOrgAccordion', () => {
     const value = ''; //value is required
 
     const { getByRole } = render(
-      <Components salaryOrganizationId={value} expandedPanel={label} />,
+      <Components
+        salaryOrganizationId={value}
+        expandedAccordion={PreferenceAccordion.PrimaryOrg}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -121,7 +125,7 @@ describe('PrimaryOrgAccordion', () => {
     const { getByRole, getByText } = render(
       <Components
         salaryOrganizationId={'7ab3ec4b-7108-40bf-a998-ce813d10c821'}
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.PrimaryOrg}
       />,
     );
     const button = getByRole('button', { name: 'Save' });

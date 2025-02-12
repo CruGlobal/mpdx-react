@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
@@ -19,8 +20,8 @@ const preferencesSchema: yup.ObjectSchema<
 });
 
 interface HourToSendNotificationsAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
+  expandedAccordion: PreferenceAccordion | null;
   hourToSendNotifications: number | null;
   disabled?: boolean;
 }
@@ -29,7 +30,7 @@ export const HourToSendNotificationsAccordion: React.FC<
   HourToSendNotificationsAccordionProps
 > = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   hourToSendNotifications,
   disabled,
 }) => {
@@ -66,7 +67,7 @@ export const HourToSendNotificationsAccordion: React.FC<
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -78,8 +79,9 @@ export const HourToSendNotificationsAccordion: React.FC<
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.HourToSendNotifications}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedHour || ''}
       fullWidth

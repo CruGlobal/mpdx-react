@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
@@ -17,8 +18,8 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'localeDisplay'>> =
   });
 
 interface LocaleAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
+  expandedAccordion: PreferenceAccordion | null;
   localeDisplay: string;
   disabled?: boolean;
   handleSetupChange: () => Promise<void>;
@@ -26,7 +27,7 @@ interface LocaleAccordionProps {
 
 export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   localeDisplay,
   disabled,
   handleSetupChange,
@@ -67,7 +68,7 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -80,8 +81,9 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.Locale}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedLocale || ''}
       fullWidth

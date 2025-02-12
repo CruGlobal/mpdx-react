@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { HelperPositionEnum } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
@@ -30,8 +31,8 @@ const accountPreferencesSchema = yup.object({
 type Attributes = yup.InferType<typeof accountPreferencesSchema>;
 
 interface MpdInfoAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
+  expandedAccordion: PreferenceAccordion | null;
   activeMpdMonthlyGoal: number | null;
   activeMpdStartAt: string | null;
   activeMpdFinishAt: string | null;
@@ -42,7 +43,7 @@ interface MpdInfoAccordionProps {
 
 export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   activeMpdMonthlyGoal,
   activeMpdStartAt,
   activeMpdFinishAt,
@@ -74,7 +75,7 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -108,8 +109,9 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.MpdInfo}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={goalDateString}
       fullWidth

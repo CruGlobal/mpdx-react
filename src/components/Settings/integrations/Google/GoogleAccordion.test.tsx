@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { GoogleAccordion } from './GoogleAccordion';
 import { GoogleAccountsQuery } from './GoogleAccounts.generated';
@@ -58,7 +59,7 @@ describe('GoogleAccordion', () => {
         <GqlMockedProvider>
           <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -75,7 +76,7 @@ describe('GoogleAccordion', () => {
         <GqlMockedProvider>
           <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Google'}
+            expandedAccordion={IntegrationAccordion.Google}
           />
         </GqlMockedProvider>
       </Components>,
@@ -103,7 +104,7 @@ describe('GoogleAccordion', () => {
           >
             <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Google'}
+              expandedAccordion={IntegrationAccordion.Google}
             />
           </GqlMockedProvider>
         </Components>,
@@ -151,7 +152,7 @@ describe('GoogleAccordion', () => {
           >
             <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Google'}
+              expandedAccordion={IntegrationAccordion.Google}
             />
           </GqlMockedProvider>
         </Components>,
@@ -207,7 +208,7 @@ describe('GoogleAccordion', () => {
           >
             <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Google'}
+              expandedAccordion={IntegrationAccordion.Google}
             />
           </GqlMockedProvider>
         </Components>,

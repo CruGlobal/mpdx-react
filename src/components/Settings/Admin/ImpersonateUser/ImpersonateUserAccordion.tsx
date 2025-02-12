@@ -12,6 +12,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
@@ -35,10 +36,9 @@ const ImpersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
     reason: yup.string().required(),
   });
 
-export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const ImpersonateUserAccordion: React.FC<
+  AccordionProps<AdminAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
@@ -84,8 +84,9 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={AdminAccordion.ImpersonateUser}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
     >

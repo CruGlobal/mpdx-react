@@ -5,6 +5,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { ManageAccountAccessAccordion } from 'src/components/Settings/Accounts/ManageAccountAccess/ManageAccountAccessAccordion';
 import { MergeAccountsAccordion } from 'src/components/Settings/Accounts/MergeAccounts/MergeAccountsAccordion';
 import { MergeSpouseAccountsAccordion } from 'src/components/Settings/Accounts/MergeSpouseAccounts/MergeSpouseAccountsAccordion';
+import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { SettingsWrapper } from './Wrapper';
 
@@ -13,16 +14,12 @@ export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
 const ManageAccounts = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
-  const [expandedPanel, setExpandedPanel] = useState(
-    typeof query.selectedTab === 'string'
-      ? query.selectedTab
-      : 'Manage Account Access',
-  );
-
-  const handleAccordionChange = (panel: string) => {
-    const panelLowercase = panel.toLowerCase();
-    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
-  };
+  const [expandedAccordion, setExpandedAccordion] =
+    useState<AccountAccordion | null>(
+      typeof query.selectedTab === 'string'
+        ? (query.selectedTab as AccountAccordion)
+        : AccountAccordion.ManageAccountAccess,
+    );
 
   return (
     <SettingsWrapper
@@ -32,18 +29,18 @@ const ManageAccounts = (): ReactElement => {
     >
       <AccordionGroup title="">
         <ManageAccountAccessAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
         />
 
         <MergeAccountsAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
         />
 
         <MergeSpouseAccountsAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
         />
       </AccordionGroup>
     </SettingsWrapper>

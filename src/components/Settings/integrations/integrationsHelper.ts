@@ -1,5 +1,6 @@
 import { Button, List, ListItemText } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 
 export const StyledListItem = styled(ListItemText)(() => ({
   display: 'list-item',
@@ -15,7 +16,7 @@ export const StyledServicesButton = styled(Button)(({ theme }) => ({
 })) as typeof Button; // Type cast so that `component` prop works
 
 export interface AccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: IntegrationAccordion | null) => void;
+  expandedAccordion: IntegrationAccordion | null;
   disabled?: boolean;
 }

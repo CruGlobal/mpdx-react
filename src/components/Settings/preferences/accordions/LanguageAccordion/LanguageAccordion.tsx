@@ -4,6 +4,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
@@ -18,15 +19,15 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'locale'>> =
   });
 
 interface LanguageAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
+  expandedAccordion: PreferenceAccordion | null;
   locale: string;
   disabled?: boolean;
 }
 
 export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   locale,
   disabled,
 }) => {
@@ -56,6 +57,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -67,8 +69,9 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.Language}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedLanguage}
       fullWidth

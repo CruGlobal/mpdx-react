@@ -12,6 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -21,8 +22,8 @@ import { useExportDataMutation } from '../../GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 
 interface ExportAllDataAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+  handleAccordionChange: (accordion: PreferenceAccordion | null) => void;
+  expandedAccordion: PreferenceAccordion | null;
   exportedAt?: string;
   accountListId: string;
   data?: GetPersonalPreferencesQuery | undefined;
@@ -31,7 +32,7 @@ interface ExportAllDataAccordionProps {
 
 export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   exportedAt,
   accountListId,
   disabled,
@@ -78,8 +79,9 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.ExportAllData}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={''}
       fullWidth
