@@ -72,8 +72,11 @@ export const calculateGraphData = ({
     (periods ?? []).reduce((result, { total }) => result + total, 0) === 0;
 
   const domainMax = Math.max(
-    ...(periods ?? [])?.map((period) => period.total),
-    goal ?? 0,
+    ...(periods ?? [])?.flatMap((period) => [
+      period.total,
+      // Include the goal if it is present
+      ...(period.goal === null ? [] : [period.goal]),
+    ]),
     pledged ?? 0,
     reportsDonationHistories?.averageIgnoreCurrent ?? 0,
   );
