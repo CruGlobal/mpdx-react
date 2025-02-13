@@ -19,6 +19,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
@@ -59,7 +60,7 @@ const StyledButton = styled(Button)(() => ({
 
 export const MailchimpAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   disabled,
 }) => {
   const { t } = useTranslation();
@@ -165,14 +166,15 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={IntegrationAccordion.Mailchimp}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={t('MailChimp')}
       value={''}
       disabled={disabled}
       image={
         <img
-          src="/images/settings-preferences-intergrations-mailchimp.svg"
+          src="/images/settings-preferences-integrations-mailchimp.svg"
           alt="MailChimp"
         />
       }

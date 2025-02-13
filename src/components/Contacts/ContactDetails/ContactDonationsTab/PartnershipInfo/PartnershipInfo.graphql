@@ -1,0 +1,9 @@
+query UserOrganizationAccounts {
+  userOrganizationAccounts {
+    id
+    organization {
+      id
+      name
+    }
+  }
+}

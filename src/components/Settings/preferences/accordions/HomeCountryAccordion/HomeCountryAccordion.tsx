@@ -4,10 +4,12 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<
@@ -16,9 +18,8 @@ const preferencesSchema: yup.ObjectSchema<
   homeCountry: yup.string(),
 });
 
-interface HomeCountryAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface HomeCountryAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   homeCountry: string;
   accountListId: string;
   countries: { name: string; code: string }[];
@@ -28,7 +29,7 @@ interface HomeCountryAccordionProps {
 
 export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   homeCountry,
   accountListId,
   countries,
@@ -65,7 +66,7 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -78,8 +79,9 @@ export const HomeCountryAccordion: React.FC<HomeCountryAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.HomeCountry}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedCountry}
       fullWidth

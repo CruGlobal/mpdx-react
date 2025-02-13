@@ -78,6 +78,8 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `HELP_URL_SETUP_FIND_ORGANIZATION` - Link to an article explaining how to find an organization
 - `PRIVACY_POLICY_URL` - URL of the privacy policy
 - `TERMS_OF_USE_URL` - URL of the terms of use
+- `DATA_PRIVACY_EMAIL` - Email address for requesting data privacy actions, such as the removal of anonymized contact data across all systems.
+- `DONATION_SERVICES_EMAIL` - Email address for contacting Donation Services.
 
 #### Auth provider
 
@@ -114,7 +116,7 @@ If you need them, request a developer to send you the values to these env variab
 
 ## Directory Structure
 
-This project uses the Next.js 3 Pages Router, which you can learn more about [here](https://nextjs.org/docs/pages). Next.js provides a file-based router, so the directory structure the filenames of pages in the `pages/` directory determines their URL. For example, `pages/accountLists/[accountListId]/reports/expectedMonthlyTotal.page.tsx` will handle URLs like `/accountLists/01234567-89ab-cdef-0123-456789abcdef/reports/expectedMonthlyTotal`. The page is rendered on the server as HTML so that the user can see the content and not a blank page while React and the page's components load. Once the JavaScript loads and the page "hydrates", the page will be interactive. You can learn more about hydration in React [here](https://react.dev/reference/react-dom/client/hydrateRoot).
+This project uses the Next.js Pages Router, which you can learn more about [here](https://nextjs.org/docs/pages). Next.js provides a file-based router, so the directory structure the filenames of pages in the `pages/` directory determines their URL. For example, `pages/accountLists/[accountListId]/reports/expectedMonthlyTotal.page.tsx` will handle URLs like `/accountLists/01234567-89ab-cdef-0123-456789abcdef/reports/expectedMonthlyTotal`. The page is rendered on the server as HTML so that the user can see the content and not a blank page while React and the page's components load. Once the JavaScript loads and the page "hydrates", the page will be interactive. You can learn more about hydration in React [here](https://react.dev/reference/react-dom/client/hydrateRoot).
 
 `pages/_app.page.tsx` is a wrapper for all pages and contains setup for various React context providers that the application uses.
 

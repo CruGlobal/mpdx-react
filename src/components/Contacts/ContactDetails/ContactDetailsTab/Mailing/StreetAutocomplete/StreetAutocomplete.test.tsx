@@ -95,7 +95,7 @@ describe('StreetAutocomplete', () => {
       postalCode: '32832',
       region: 'Orange County',
       state: 'FL',
-      street: 'A/100 Lake Hart Drive',
+      street: '100 Lake Hart Drive A',
     });
   });
 
@@ -136,12 +136,40 @@ describe('StreetAutocomplete', () => {
   describe('parsePlace', () => {
     it('parses places', () => {
       expect(parsePlace(place)).toEqual({
-        street: 'A/100 Lake Hart Drive',
+        street: '100 Lake Hart Drive A',
         city: 'Orlando',
         region: 'Orange County',
         metroArea: 'Orlando',
         state: 'FL',
         country: 'United States',
+        postalCode: '32832',
+      });
+    });
+
+    it('parses Singapore places', () => {
+      place.address_components[7].long_name = 'Singapore';
+      place.address_components[7].short_name = 'SG';
+      expect(parsePlace(place)).toEqual({
+        street: '100 Lake Hart Drive #A',
+        city: 'Orlando',
+        region: 'Orange County',
+        metroArea: 'Orlando',
+        state: 'FL',
+        country: 'Singapore',
+        postalCode: '32832',
+      });
+    });
+
+    it('parses CA/UK or other countries', () => {
+      place.address_components[7].long_name = 'Canada';
+      place.address_components[7].short_name = 'CA';
+      expect(parsePlace(place)).toEqual({
+        street: 'A/100 Lake Hart Drive',
+        city: 'Orlando',
+        region: 'Orange County',
+        metroArea: 'Orlando',
+        state: 'FL',
+        country: 'Canada',
         postalCode: '32832',
       });
     });

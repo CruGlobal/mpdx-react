@@ -26,6 +26,7 @@ import { PrimaryOrgAccordion } from 'src/components/Settings/preferences/accordi
 import { TimeZoneAccordion } from 'src/components/Settings/preferences/accordions/TimeZoneAccordion/TimeZoneAccordion';
 import { ProfileInfo } from 'src/components/Settings/preferences/info/ProfileInfo';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -47,11 +48,18 @@ const Preferences: React.FC = () => {
   const { onSetupTour } = useSetupContext();
   const session = useRequiredSession();
 
-  const setupAccordions = ['locale', 'monthly goal', 'home country'];
+  const setupAccordions = [
+    PreferenceAccordion.Locale,
+    PreferenceAccordion.MonthlyGoal,
+    PreferenceAccordion.HomeCountry,
+  ];
   const [setup, setSetup] = useState(0);
-  const [expandedPanel, setExpandedPanel] = useState(
-    typeof query.selectedTab === 'string' ? query.selectedTab : '',
-  );
+  const [expandedAccordion, setExpandedAccordion] =
+    useState<PreferenceAccordion | null>(
+      typeof query.selectedTab === 'string'
+        ? (query.selectedTab as PreferenceAccordion)
+        : null,
+    );
   const countries = getCountries();
   const timeZones = useGetTimezones();
 
@@ -100,14 +108,9 @@ const Preferences: React.FC = () => {
 
   useEffect(() => {
     if (onSetupTour) {
-      setExpandedPanel(setupAccordions[0]);
+      setExpandedAccordion(setupAccordions[0]);
     }
   }, [onSetupTour]);
-
-  const handleAccordionChange = (panel: string) => {
-    const panelLowercase = panel.toLowerCase();
-    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
-  };
 
   const resetWelcomeTour = async () => {
     setSetupPosition('start');
@@ -125,7 +128,7 @@ const Preferences: React.FC = () => {
       push(`/accountLists/${accountListId}/settings/notifications`);
     } else {
       setSetup(nextNav);
-      setExpandedPanel(setupAccordions[nextNav]);
+      setExpandedAccordion(setupAccordions[nextNav]);
     }
   };
 
@@ -174,14 +177,14 @@ const Preferences: React.FC = () => {
         {!personalPreferencesLoading && (
           <>
             <LanguageAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               locale={personalPreferencesData?.user?.preferences?.locale || ''}
               disabled={onSetupTour}
             />
             <LocaleAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               localeDisplay={
                 personalPreferencesData?.user?.preferences?.localeDisplay || ''
               }
@@ -189,8 +192,8 @@ const Preferences: React.FC = () => {
               handleSetupChange={handleSetupChange}
             />
             <DefaultAccountAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               data={personalPreferencesData}
               accountListId={accountListId}
               defaultAccountList={
@@ -199,8 +202,8 @@ const Preferences: React.FC = () => {
               disabled={onSetupTour}
             />
             <TimeZoneAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               timeZone={
                 personalPreferencesData?.user?.preferences?.timeZone || ''
               }
@@ -208,8 +211,8 @@ const Preferences: React.FC = () => {
               disabled={onSetupTour}
             />
             <HourToSendNotificationsAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               hourToSendNotifications={
                 personalPreferencesData?.user?.preferences
                   ?.hourToSendNotifications || null
@@ -232,15 +235,15 @@ const Preferences: React.FC = () => {
         {!accountPreferencesLoading && (
           <>
             <AccountNameAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               name={accountPreferencesData?.accountList?.name || ''}
               accountListId={accountListId}
               disabled={onSetupTour}
             />
             <MonthlyGoalAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               monthlyGoal={
                 accountPreferencesData?.accountList?.settings?.monthlyGoal ||
                 null
@@ -253,8 +256,8 @@ const Preferences: React.FC = () => {
               handleSetupChange={handleSetupChange}
             />
             <HomeCountryAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               homeCountry={
                 accountPreferencesData?.accountList?.settings?.homeCountry || ''
               }
@@ -264,8 +267,8 @@ const Preferences: React.FC = () => {
               handleSetupChange={handleSetupChange}
             />
             <CurrencyAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || null
               }
@@ -276,8 +279,8 @@ const Preferences: React.FC = () => {
               userOrganizationAccountsData?.userOrganizationAccounts?.length >
                 1 && (
                 <PrimaryOrgAccordion
-                  handleAccordionChange={handleAccordionChange}
-                  expandedPanel={expandedPanel}
+                  handleAccordionChange={setExpandedAccordion}
+                  expandedAccordion={expandedAccordion}
                   organizations={userOrganizationAccountsData}
                   salaryOrganizationId={
                     accountPreferencesData?.accountList?.salaryOrganizationId ||
@@ -288,8 +291,8 @@ const Preferences: React.FC = () => {
                 />
               )}
             <EarlyAdopterAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               tester={
                 accountPreferencesData?.accountList?.settings?.tester || false
               }
@@ -297,8 +300,8 @@ const Preferences: React.FC = () => {
               disabled={onSetupTour}
             />
             <MpdInfoAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              handleAccordionChange={setExpandedAccordion}
+              expandedAccordion={expandedAccordion}
               activeMpdStartAt={
                 accountPreferencesData?.accountList?.activeMpdStartAt || ''
               }
@@ -317,8 +320,8 @@ const Preferences: React.FC = () => {
             />
             {canUserExportData?.canUserExportData.allowed && (
               <ExportAllDataAccordion
-                handleAccordionChange={handleAccordionChange}
-                expandedPanel={expandedPanel}
+                handleAccordionChange={setExpandedAccordion}
+                expandedAccordion={expandedAccordion}
                 exportedAt={
                   canUserExportData?.canUserExportData.exportedAt || undefined
                 }

@@ -4,6 +4,7 @@ import {
   CircularProgress,
   DialogActions,
   DialogContent,
+  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -25,12 +26,31 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
+interface CreateEmailLinkProps {
+  partnerAccountNumbers: string[];
+  contactName: string;
+}
+export const createEmailLink = ({
+  partnerAccountNumbers,
+  contactName,
+}: CreateEmailLinkProps) => {
+  return `mailto:${
+    process.env.DONATION_SERVICES_EMAIL
+  }?subject=Request+contact+deletion&body=${encodeURIComponent(
+    'Dear Donation Services,\n\nPlease could you remove the following contact:' +
+      `\n\nContact name: ${contactName}` +
+      `\nContact's partner numbers: ${partnerAccountNumbers.join(', ')}` +
+      '\n\nThanks,\n\n',
+  )}`;
+};
+
 interface DataInfo {
   canDeleteWithoutIssues: boolean;
   contactSource: string;
   addressSources: string[];
   emailSources: string[];
   phoneSources: string[];
+  emailLink: string;
 }
 interface DeleteContactModalProps {
   open: boolean;
@@ -54,16 +74,17 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     variables: { accountListId, contactId },
     skip: !open && !contactId,
   });
-  const contactSources = data?.contact;
+  const contact = data?.contact;
 
   const dataInfo: DataInfo = useMemo(() => {
-    if (!contactSources) {
+    if (!contact) {
       return {
         canDeleteWithoutIssues: true,
         contactSource: sourceToStr(t, 'MPDX'),
         addressSources: [],
         emailSources: [],
         phoneSources: [],
+        emailLink: '',
       };
     }
 
@@ -76,13 +97,13 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
     const emailSources = new Set<string>();
     const phoneSources = new Set<string>();
 
-    contactSources.addresses?.nodes.forEach((address) => {
+    contact.addresses?.nodes.forEach((address) => {
       if (!isEditableSource(address.source)) {
         addressSources.add(address.source);
       }
     });
 
-    contactSources.people?.nodes.forEach((person) => {
+    contact.people?.nodes.forEach((person) => {
       person.emailAddresses.nodes.forEach((email) => {
         if (!isEditableSource(email.source)) {
           emailSources.add(email.source);
@@ -94,21 +115,28 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         }
       });
     });
+    const partnerAccountNumbers = contact.contactDonorAccounts.nodes.map(
+      ({ donorAccount }) => donorAccount.accountNumber,
+    );
 
     return {
       canDeleteWithoutIssues:
-        isEditableSource(contactSources.source ?? undefined) &&
+        isEditableSource(contact.source ?? undefined) &&
         !addressSources.size &&
         !emailSources.size &&
         !phoneSources.size,
-      contactSource: sourceToStr(t, contactSources.source),
+      contactSource: sourceToStr(t, contact.source),
       addressSources: [...addressSources].map((source) =>
         sourceToStr(t, source),
       ),
       emailSources: [...emailSources].map((source) => sourceToStr(t, source)),
       phoneSources: [...phoneSources].map((source) => sourceToStr(t, source)),
+      emailLink: createEmailLink({
+        partnerAccountNumbers,
+        contactName: contact.name,
+      }),
     };
-  }, [contactSources]);
+  }, [contact]);
 
   return (
     <Modal
@@ -132,10 +160,12 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
             </Typography>
             <Typography fontWeight="bold">
               {t(
-                `For contacts originating from Donation Services or DonorHub, email Donation Services to request deletion.`,
+                `For contacts originating from Donation Services or DonorHub, `,
               )}
+              <Link href={dataInfo.emailLink} sx={{ fontWeight: 'bold' }}>
+                {t('email Donation Services to request deletion.')}
+              </Link>
             </Typography>
-            <br />
             <br />
             <Typography variant="h6">{t('Data sources:')}</Typography>
             <List dense={true}>

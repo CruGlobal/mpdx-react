@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
   Alert,
@@ -46,6 +46,8 @@ import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
+import { isApartOfSwitzerlandOrganization } from '../PartnershipInfo';
+import { useUserOrganizationAccountsQuery } from '../PartnershipInfo.generated';
 import { useUpdateContactPartnershipMutation } from './EditPartnershipInfoModal.generated';
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
@@ -102,6 +104,7 @@ const contactPartnershipSchema = yup.object({
     .nullable(),
   pledgeFrequency: yup.mixed<PledgeFrequencyEnum>().nullable(),
   likelyToGive: yup.mixed<LikelyToGiveEnum>().nullable(),
+  relationshipCode: yup.string().nullable(),
 });
 
 type Attributes = yup.InferType<typeof contactPartnershipSchema>;
@@ -118,6 +121,7 @@ export const EditPartnershipInfoModal: React.FC<
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
+  const { enqueueSnackbar } = useSnackbar();
   const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
     useLocalizedConstants();
 
@@ -125,7 +129,13 @@ export const EditPartnershipInfoModal: React.FC<
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
     useState(false);
 
-  const { enqueueSnackbar } = useSnackbar();
+  const { data } = useUserOrganizationAccountsQuery();
+  const userOrganizationAccounts = data?.userOrganizationAccounts;
+
+  const showRelationshipCode = useMemo(
+    () => isApartOfSwitzerlandOrganization(userOrganizationAccounts),
+    [userOrganizationAccounts],
+  );
 
   const [updateContactPartnership, { loading: updating }] =
     useUpdateContactPartnershipMutation();
@@ -198,6 +208,7 @@ export const EditPartnershipInfoModal: React.FC<
           likelyToGive: contact.likelyToGive,
           name: contact.name,
           primaryPersonId: contact?.primaryPerson?.id ?? '',
+          relationshipCode: contact.relationshipCode ?? '',
         }}
         validationSchema={contactPartnershipSchema}
         onSubmit={onSubmit}
@@ -216,6 +227,7 @@ export const EditPartnershipInfoModal: React.FC<
             likelyToGive,
             name,
             primaryPersonId,
+            relationshipCode,
           },
           handleSubmit,
           handleChange,
@@ -543,7 +555,23 @@ export const EditPartnershipInfoModal: React.FC<
                     />
                   </ContactInputWrapper>
                 </Grid>
+                {showRelationshipCode && (
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <TextField
+                        name="relationshipCode"
+                        label={t('Relationship Code')}
+                        value={relationshipCode}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        inputProps={{ 'aria-label': t('Relationship Code') }}
+                        fullWidth
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                )}
               </Grid>
+
               <ContactInputWrapper>
                 <CheckboxLabel
                   control={

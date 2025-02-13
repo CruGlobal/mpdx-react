@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { enforceAdmin } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Admin/ImpersonateUser/ImpersonateUserAccordion';
 import { ResetAccountAccordion } from 'src/components/Settings/Admin/ResetAccount/ResetAccountAccordion';
+import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { SettingsWrapper } from './Wrapper';
 
@@ -12,16 +13,12 @@ export const suggestedArticles = 'HS_SETTINGS_SERVICES_SUGGESTIONS';
 const Admin = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
-  const [expandedPanel, setExpandedPanel] = useState(
-    typeof query.selectedTab === 'string'
-      ? query.selectedTab
-      : 'Impersonate User',
-  );
-
-  const handleAccordionChange = (panel: string) => {
-    const panelLowercase = panel.toLowerCase();
-    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
-  };
+  const [expandedAccordion, setExpandedAccordion] =
+    useState<AdminAccordion | null>(
+      typeof query.selectedTab === 'string'
+        ? (query.selectedTab as AdminAccordion)
+        : AdminAccordion.ImpersonateUser,
+    );
 
   return (
     <SettingsWrapper
@@ -31,13 +28,13 @@ const Admin = (): ReactElement => {
     >
       <AccordionGroup title="">
         <ImpersonateUserAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
         />
 
         <ResetAccountAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
         />
       </AccordionGroup>
     </SettingsWrapper>

@@ -18,6 +18,11 @@ import {
   ContactDonorAccountsFragment,
   ContactDonorAccountsFragmentDoc,
 } from '../../ContactDonationsTab.generated';
+import { UserOrganizationAccountsQuery } from '../PartnershipInfo.generated';
+import {
+  organizationAccountsMock,
+  organizationAccountsWithCruSwitzerlandMock,
+} from '../PartnershipInfoMocks';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal';
 
 jest.mock('notistack', () => ({
@@ -115,14 +120,27 @@ const newContactMock = gqlMock<ContactDonorAccountsFragment>(
 
 interface ComponentsProps {
   isNewContact?: boolean;
+  includeCruSwitzerland?: boolean;
 }
 
-const Components = ({ isNewContact = false }: ComponentsProps) => (
+const Components = ({
+  isNewContact = false,
+  includeCruSwitzerland = false,
+}: ComponentsProps) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <TestRouter>
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            UserOrganizationAccounts: UserOrganizationAccountsQuery;
+          }>
+            mocks={{
+              UserOrganizationAccounts: includeCruSwitzerland
+                ? organizationAccountsWithCruSwitzerlandMock
+                : organizationAccountsMock,
+            }}
+            onCall={mutationSpy}
+          >
             <EditPartnershipInfoModal
               contact={isNewContact ? newContactMock : contactMock}
               handleClose={handleClose}
@@ -537,5 +555,52 @@ describe('EditPartnershipInfoModal', () => {
         },
       }),
     );
+  });
+
+  describe('Relationship code', () => {
+    it('should not render relationshipCode', async () => {
+      const { queryByRole } = render(<Components />);
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('UserOrganizationAccounts');
+      });
+
+      expect(
+        queryByRole('textbox', {
+          name: 'Relationship Code',
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should render relationshipCode', async () => {
+      const { findByRole } = render(<Components includeCruSwitzerland />);
+
+      expect(
+        await findByRole('textbox', {
+          name: 'Relationship Code',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('should update relationshipCode', async () => {
+      const { findByRole, getByText } = render(
+        <Components includeCruSwitzerland />,
+      );
+
+      const relationshipCode = await findByRole('textbox', {
+        name: 'Relationship Code',
+      });
+      userEvent.clear(relationshipCode);
+      userEvent.type(relationshipCode, '1234');
+      userEvent.click(getByText('Save'));
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateContactPartnership', {
+          attributes: {
+            relationshipCode: '1234',
+          },
+        }),
+      );
+    });
   });
 });

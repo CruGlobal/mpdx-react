@@ -4,6 +4,7 @@ import React, { ReactElement, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
@@ -52,6 +53,51 @@ const AcceptInvitePage = (): ReactElement => {
   // Since we don't have the user's accountListId, use an invalid accountListId so the page redirects on it's own.
   const dashboardLink = '/accountLists/_/';
 
+  const acceptInvite = async (id: string, code: string, url: string) => {
+    const inviteType = url.includes('organizations')
+      ? 'organization_invites'
+      : 'account_list_invites';
+
+    const apiToken = session.apiToken;
+    const response = await fetchAcceptInvite({
+      apiToken,
+      url,
+      inviteType,
+      id,
+      code,
+    });
+
+    if (!response.ok) {
+      const inviter = url.includes('organizations')
+        ? t('organization admin')
+        : t('account holder');
+      enqueueSnackbar(
+        t(
+          'Unable to accept invite. Try asking the {{inviter}} to resend the invite.',
+          { inviter },
+        ),
+        {
+          variant: 'error',
+        },
+      );
+      return;
+    }
+
+    enqueueSnackbar(t('Accepted invite successfully.'), {
+      variant: 'success',
+    });
+
+    if (url.includes('organizations')) {
+      router.push(
+        dashboardLink +
+          'settings/integrations?selectedTab=' +
+          IntegrationAccordion.Organization,
+      );
+    } else {
+      router.push(dashboardLink);
+    }
+  };
+
   useEffect(() => {
     if (!router.isReady || hasFetchedRef.current) {
       return;
@@ -67,54 +113,6 @@ const AcceptInvitePage = (): ReactElement => {
       typeof query.inviteCode === 'string' ? query.inviteCode : undefined;
 
     const inviterAccountListId = router.query.accountListId || undefined;
-    const acceptInvite = async (id: string, code: string, url: string) => {
-      const inviteType = url.includes('organizations')
-        ? 'organization_invites'
-        : 'account_list_invites';
-
-      try {
-        const apiToken = session.apiToken;
-
-        const response = await fetchAcceptInvite({
-          apiToken,
-          url,
-          inviteType,
-          id,
-          code,
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        if (url.includes('organizations')) {
-          enqueueSnackbar(t('Accepted invite successfully.'), {
-            variant: 'success',
-          });
-
-          router.push(
-            dashboardLink + 'settings/integrations?selectedTab=organization',
-          );
-        } else {
-          enqueueSnackbar(t('Accepted invite successfully.'), {
-            variant: 'success',
-          });
-          router.push(dashboardLink);
-        }
-      } catch (err) {
-        const inviter = url.includes('organizations')
-          ? t('organization admin')
-          : t('account holder');
-        enqueueSnackbar(
-          t(
-            'Unable to accept invite. Try asking the {{inviter}} to resend the invite.',
-            { inviter },
-          ),
-          {
-            variant: 'error',
-          },
-        );
-      }
-    };
 
     if (accountInviteId && inviteCode && inviterAccountListId) {
       const url = `account_lists/${inviterAccountListId}/invites/${accountInviteId}/accept`;
@@ -126,9 +124,7 @@ const AcceptInvitePage = (): ReactElement => {
       hasFetchedRef.current = true;
     } else {
       enqueueSnackbar(
-        t(
-          'Invalid invite URL. Try asking the the inviter to resend the invite.',
-        ),
+        t('Invalid invite URL. Try asking the inviter to resend the invite.'),
         {
           variant: 'error',
         },

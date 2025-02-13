@@ -1,7 +1,11 @@
 query GetInvalidEmailAddresses($accountListId: ID!, $after: String) {
   people(
     accountListId: $accountListId
-    peopleFilter: { emailAddressValid: false }
+    peopleFilter: {
+      emailAddressValid: false
+      deceased: false
+      contactStatus: [ACTIVE]
+    }
     after: $after
   ) {
     nodes {

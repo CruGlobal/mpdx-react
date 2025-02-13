@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import Clear from '@mui/icons-material/Clear';
 import CreateIcon from '@mui/icons-material/Create';
@@ -16,6 +16,12 @@ import { currencyFormat } from '../../../../../lib/intlFormat';
 import { HandshakeIcon } from '../../ContactDetailsHeader/ContactHeaderSection/HandshakeIcon';
 import { ContactDonorAccountsFragment } from '../ContactDonationsTab.generated';
 import { EditPartnershipInfoModal } from './EditPartnershipInfoModal/EditPartnershipInfoModal';
+import {
+  UserOrganizationAccountsQuery,
+  useUserOrganizationAccountsQuery,
+} from './PartnershipInfo.generated';
+
+export const SwitzerlandOrganizationName = 'Campus fuer Christus Switzerland';
 
 const IconAndTextContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(0, 4),
@@ -65,6 +71,17 @@ interface PartnershipInfoProp {
   contact: ContactDonorAccountsFragment | null;
 }
 
+export const isApartOfSwitzerlandOrganization = (
+  userOrganizationAccounts?: UserOrganizationAccountsQuery['userOrganizationAccounts'],
+) => {
+  return (
+    userOrganizationAccounts?.some(
+      (organizationAccount) =>
+        organizationAccount.organization.name === SwitzerlandOrganizationName,
+    ) ?? false
+  );
+};
+
 export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -73,6 +90,14 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
 
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
+
+  const { data } = useUserOrganizationAccountsQuery();
+  const userOrganizationAccounts = data?.userOrganizationAccounts;
+
+  const showRelationshipCode = useMemo(
+    () => isApartOfSwitzerlandOrganization(userOrganizationAccounts),
+    [userOrganizationAccounts],
+  );
 
   return (
     <PartnershipInfoContainer>
@@ -196,6 +221,21 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
           )}
         </LabelsAndText>
       </IconAndTextContainerCenter>
+
+      {showRelationshipCode && (
+        <IconAndTextContainerCenter>
+          <IconContainer>
+            <ClearIcon />
+          </IconContainer>
+          <LabelsAndText variant="subtitle1" color="textSecondary">
+            {t('Relationship Code')}
+          </LabelsAndText>
+          <LabelsAndText variant="subtitle1">
+            {contact?.relationshipCode}
+          </LabelsAndText>
+        </IconAndTextContainerCenter>
+      )}
+
       <IconAndTextContainerCenter>
         <IconContainer>
           <ClearIcon />

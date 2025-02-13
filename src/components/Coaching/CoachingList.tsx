@@ -3,12 +3,15 @@ import { Spa } from '@mui/icons-material';
 import { Box, Divider, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { CoachingRow } from './CoachingRow/CoachingRow';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { CoachingRow, CoachingRowWrapper } from './CoachingRow/CoachingRow';
 import { useLoadCoachingListQuery } from './LoadCoachingList.generated';
 
-interface CoachingListProps {
-  accountListId: string;
-}
+const LoadingCoach: React.FC = () => (
+  <CoachingRowWrapper>
+    <CoachingLoading role="listitem" data-testid="loading-coaches" />
+  </CoachingRowWrapper>
+);
 
 const CoachingListWrapper = styled(Box)(({ theme }) => ({
   width: '100%',
@@ -32,17 +35,26 @@ const CoachingListTitle = styled(Typography)(({ theme }) => ({
 }));
 
 const CoachingLoading = styled(Skeleton)(() => ({
-  width: '75%',
-  height: '50px',
+  height: '100px',
 }));
 
+interface CoachingListProps {
+  accountListId: string;
+}
 export const CoachingList: React.FC<CoachingListProps> = ({
   accountListId,
 }) => {
-  const { data, loading } = useLoadCoachingListQuery();
+  // This needs to become a infinite scroll query
+  const { data, fetchMore, error } = useLoadCoachingListQuery();
   const { t } = useTranslation();
 
   const coachingAccounts = data?.coachingAccountLists;
+
+  useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: coachingAccounts?.pageInfo,
+  });
 
   return (
     <CoachingListWrapper>
@@ -54,11 +66,11 @@ export const CoachingList: React.FC<CoachingListProps> = ({
       </CoachingTitleWrapper>
       <Divider />
       <Box>
-        {loading ? (
+        {!data && !error ? (
           <>
-            <CoachingLoading role="listitem" />
-            <CoachingLoading role="listitem" />
-            <CoachingLoading role="listitem" />
+            <LoadingCoach />
+            <LoadingCoach />
+            <LoadingCoach />
           </>
         ) : (
           coachingAccounts?.nodes.map((coachingAccount, _index) => {

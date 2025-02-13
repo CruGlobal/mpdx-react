@@ -13,7 +13,6 @@ jest.mock('next-auth/react');
 jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 const context = {
-  req: {},
   query: { accountListId: 'account-list-1' },
   resolvedUrl: '/page?param=value',
 } as unknown as GetServerSidePropsContext;
@@ -24,6 +23,15 @@ describe('pagePropsHelpers', () => {
       expect(loginRedirect(context)).toEqual({
         redirect: {
           destination: '/login?redirect=%2Fpage%3Fparam%3Dvalue',
+          permanent: false,
+        },
+      });
+    });
+
+    it("doesn't redirect to logout", () => {
+      expect(loginRedirect({ ...context, resolvedUrl: '/logout' })).toEqual({
+        redirect: {
+          destination: '/login',
           permanent: false,
         },
       });
@@ -78,9 +86,9 @@ describe('pagePropsHelpers', () => {
 
     describe('redirects to the default account list if the URL contains "_"', () => {
       const context = {
-        req: { url: '/accountLists/_/contacts' },
-        resolvedUrl: '/filters?param=value',
+        resolvedUrl: '/accountLists/_/contacts',
       } as unknown as GetServerSidePropsContext;
+
       beforeEach(() => {
         const user = { apiToken: 'token' };
         (getSession as jest.Mock).mockResolvedValue({ user });
@@ -109,7 +117,7 @@ describe('pagePropsHelpers', () => {
       it('redirects to dashboard with default account list"', async () => {
         await expect(
           ensureSessionAndAccountList({
-            req: { url: '/accountLists/_' },
+            resolvedUrl: '/accountLists/_',
           } as unknown as GetServerSidePropsContext),
         ).resolves.toMatchObject({
           redirect: {

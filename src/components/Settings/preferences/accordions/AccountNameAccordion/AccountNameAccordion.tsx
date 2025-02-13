@@ -4,11 +4,13 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountList } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<Pick<AccountList, 'name'>> =
@@ -16,9 +18,8 @@ const accountPreferencesSchema: yup.ObjectSchema<Pick<AccountList, 'name'>> =
     name: yup.string().required(),
   });
 
-interface AccountNameAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface AccountNameAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   accountListId: string;
   name: string;
   disabled?: boolean;
@@ -26,7 +27,7 @@ interface AccountNameAccordionProps {
 
 export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   name,
   accountListId,
   disabled,
@@ -52,7 +53,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -64,8 +65,9 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.AccountName}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={name}
       fullWidth

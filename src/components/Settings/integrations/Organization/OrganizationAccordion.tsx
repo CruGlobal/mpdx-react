@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -80,7 +81,7 @@ export const getOrganizationType = (
 
 export const OrganizationAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   disabled,
 }) => {
   const { t } = useTranslation();
@@ -175,14 +176,15 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={IntegrationAccordion.Organization}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={t('Organization')}
       value={''}
       disabled={disabled}
       image={
         <img
-          src="/images/settings-preferences-intergrations-organizations.png"
+          src="/images/settings-preferences-integrations-organizations.png"
           alt="Organization"
           style={{
             maxWidth: '80px',

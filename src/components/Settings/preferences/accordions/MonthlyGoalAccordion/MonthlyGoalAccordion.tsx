@@ -4,11 +4,13 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import { useMachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
 
@@ -33,9 +35,8 @@ const formatMonthlyGoal = (
   return goal.toString();
 };
 
-interface MonthlyGoalAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface MonthlyGoalAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   monthlyGoal: number | null;
   accountListId: string;
   currency: string | null;
@@ -45,7 +46,7 @@ interface MonthlyGoalAccordionProps {
 
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   monthlyGoal: initialMonthlyGoal,
   accountListId,
   currency,
@@ -99,7 +100,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -132,8 +133,9 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.MonthlyGoal}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={
         formattedMonthlyGoal || `${formattedCalculatedGoal} (${t('estimated')})`

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { ImpersonateUserAccordion } from './ImpersonateUserAccordion';
 
@@ -31,18 +32,18 @@ jest.mock('notistack', () => ({
 const handleAccordionChange = jest.fn();
 
 interface ComponentsProps {
-  expandedPanel: string;
+  expandedAccordion: AdminAccordion | null;
   mutationSpy?: () => void;
 }
 
-const Components = ({ mutationSpy, expandedPanel }: ComponentsProps) => (
+const Components = ({ mutationSpy, expandedAccordion }: ComponentsProps) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
           />
         </GqlMockedProvider>
       </ThemeProvider>
@@ -74,7 +75,7 @@ describe('ImpersonateUserAccordion', () => {
       const { getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
-          expandedPanel={'Impersonate User'}
+          expandedAccordion={AdminAccordion.ImpersonateUser}
         />,
       );
 
@@ -115,7 +116,7 @@ describe('ImpersonateUserAccordion', () => {
       const { getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
-          expandedPanel={'Impersonate User'}
+          expandedAccordion={AdminAccordion.ImpersonateUser}
         />,
       );
 
@@ -154,7 +155,7 @@ describe('ImpersonateUserAccordion', () => {
       const { getByText, getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
-          expandedPanel={'Impersonate User'}
+          expandedAccordion={AdminAccordion.ImpersonateUser}
         />,
       );
 
@@ -186,7 +187,7 @@ describe('ImpersonateUserAccordion', () => {
     });
 
     it('should render Accordion closed', async () => {
-      const { getAllByText } = render(<Components expandedPanel={''} />);
+      const { getAllByText } = render(<Components expandedAccordion={null} />);
       expect(getAllByText('Impersonate User').length).toEqual(1);
     });
 
@@ -196,7 +197,7 @@ describe('ImpersonateUserAccordion', () => {
       const { getAllByText, getAllByRole, getByRole } = render(
         <Components
           mutationSpy={mutationSpy}
-          expandedPanel={'Impersonate User'}
+          expandedAccordion={AdminAccordion.ImpersonateUser}
         />,
       );
       expect(getAllByText('Impersonate User').length).toEqual(3);

@@ -12,17 +12,18 @@ import { useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateTimeFormat } from 'src/lib/intlFormat';
+import { AccordionProps } from '../../../accordionHelper';
 import { useExportDataMutation } from '../../GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 
-interface ExportAllDataAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface ExportAllDataAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   exportedAt?: string;
   accountListId: string;
   data?: GetPersonalPreferencesQuery | undefined;
@@ -31,7 +32,7 @@ interface ExportAllDataAccordionProps {
 
 export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   exportedAt,
   accountListId,
   disabled,
@@ -65,7 +66,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
         setConfirmation(true);
       },
       onError: () => {
-        enqueueSnackbar(t('And error occured.'), {
+        enqueueSnackbar(t('An error occurred.'), {
           variant: 'error',
         });
       },
@@ -78,8 +79,9 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.ExportAllData}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={''}
       fullWidth

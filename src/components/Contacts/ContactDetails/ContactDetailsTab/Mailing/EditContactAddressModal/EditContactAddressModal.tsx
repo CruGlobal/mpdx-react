@@ -236,10 +236,11 @@ export const EditContactAddressModal: React.FC<
                         {emailData && (
                           <p>
                             <Link
-                              href={`mailto:donation.services@cru.org?subject=Donor+address+change&body=${encodeURIComponent(
+                              href={`mailto:${
+                                process.env.DONATION_SERVICES_EMAIL
+                              }?subject=Donor+address+change&body=${encodeURIComponent(
                                 generateEmailBody(emailData, address),
                               )}`}
-                              underline="hover"
                               sx={{ fontWeight: 'bold' }}
                             >
                               {t('Email Donation Services here')}

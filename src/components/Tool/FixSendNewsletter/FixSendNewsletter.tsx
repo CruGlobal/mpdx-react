@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
@@ -55,18 +55,9 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
     variables: { accountListId },
   });
   const totalCount = data?.contacts.totalCount;
-  let numberOfContacts = data?.contacts.nodes?.length ?? 0;
+  const contactsToFix = data?.contacts.nodes;
+  const numberOfContactsShowing = contactsToFix?.length ?? 0;
 
-  const contactsToFix = useMemo(
-    () =>
-      data?.contacts?.nodes.filter(
-        (contact) => !contact?.primaryPerson?.deceased,
-      ),
-    [data],
-  );
-  if (contactsToFix) {
-    numberOfContacts = contactsToFix?.length;
-  }
   const [updateNewsletter, { loading: updating }] =
     useUpdateContactNewsletterMutation();
   const [contactUpdates, setContactUpdates] = useState<ContactUpdateData[]>([]);
@@ -156,7 +147,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
             </Typography>
           </Box>
         </Grid>
-        {!loading && data && !!numberOfContacts ? (
+        {!loading && data && !!numberOfContactsShowing ? (
           <>
             <StickyButtonHeaderBox mb={0}>
               <Box>
@@ -165,7 +156,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                     defaults="<i>Showing <bold>{{numberOfContacts}}</bold> of <bold>{{totalCount}}</bold></i>"
                     shouldUnescape
                     values={{
-                      numberOfContacts,
+                      numberOfContacts: numberOfContactsShowing,
                       totalCount,
                     }}
                     components={{ bold: <strong />, i: <i /> }}
@@ -177,14 +168,14 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
                 <Button
                   variant="contained"
                   onClick={() => setShowBulkConfirmModal(true)}
-                  disabled={updating || !numberOfContacts}
+                  disabled={updating || !numberOfContactsShowing}
                   sx={{ mr: 2 }}
                 >
                   {
                     <Trans
                       defaults="Confirm All ({{value}})"
                       values={{
-                        value: numberOfContacts,
+                        value: numberOfContactsShowing,
                       }}
                     />
                   }

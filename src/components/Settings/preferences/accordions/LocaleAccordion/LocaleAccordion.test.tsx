@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { LocaleAccordion } from './LocaleAccordion';
 
@@ -33,12 +34,12 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   localeDisplay: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   localeDisplay,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -46,7 +47,7 @@ const Components: React.FC<ComponentsProps> = ({
         <GqlMockedProvider onCall={mutationSpy}>
           <LocaleAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             localeDisplay={localeDisplay}
             handleSetupChange={handleSetupChange}
           />
@@ -64,7 +65,7 @@ describe('LocaleAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components localeDisplay={'en-GB'} expandedPanel="" />,
+      <Components localeDisplay={'en-GB'} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -75,7 +76,10 @@ describe('LocaleAccordion', () => {
     const value = ''; //value is required
 
     const { getByRole } = render(
-      <Components localeDisplay={value} expandedPanel={label} />,
+      <Components
+        localeDisplay={value}
+        expandedAccordion={PreferenceAccordion.Locale}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -87,7 +91,10 @@ describe('LocaleAccordion', () => {
 
   it('Changes and saves the input', async () => {
     const { getByRole, getByText } = render(
-      <Components localeDisplay={'es-419'} expandedPanel={label} />,
+      <Components
+        localeDisplay={'es-419'}
+        expandedAccordion={PreferenceAccordion.Locale}
+      />,
     );
     const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });

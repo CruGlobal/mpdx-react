@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { UpdateAccountPreferencesDocument } from '../UpdateAccountPreferences.generated';
 import { AccountNameAccordion } from './AccountNameAccordion';
@@ -34,17 +35,17 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   name: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
-const Components: React.FC<ComponentsProps> = ({ name, expandedPanel }) => (
+const Components: React.FC<ComponentsProps> = ({ name, expandedAccordion }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <AccountNameAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             name={name}
             accountListId={accountListId}
           />
@@ -69,7 +70,7 @@ describe('AccountNameAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components name={"Pedro Perez's Account"} expandedPanel="" />,
+      <Components name={"Pedro Perez's Account"} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -80,7 +81,10 @@ describe('AccountNameAccordion', () => {
     const name = ''; //name is required
 
     const { getByRole, getByText } = render(
-      <Components name={name} expandedPanel={label} />,
+      <Components
+        name={name}
+        expandedAccordion={PreferenceAccordion.AccountName}
+      />,
     );
 
     const input = getByRole('textbox');
@@ -95,7 +99,10 @@ describe('AccountNameAccordion', () => {
 
   it('Changes and saves the input', async () => {
     const { getByRole } = render(
-      <Components name={"Pedro Perez's Account"} expandedPanel={label} />,
+      <Components
+        name={"Pedro Perez's Account"}
+        expandedAccordion={PreferenceAccordion.AccountName}
+      />,
     );
     const input = getByRole('textbox');
     const button = getByRole('button', { name: 'Save' });
@@ -135,7 +142,7 @@ describe('AccountNameAccordion', () => {
             <MockedProvider mocks={[errorMock]}>
               <AccountNameAccordion
                 handleAccordionChange={handleAccordionChange}
-                expandedPanel={label}
+                expandedAccordion={PreferenceAccordion.AccountName}
                 name={'Test Account'}
                 accountListId={accountListId}
               />

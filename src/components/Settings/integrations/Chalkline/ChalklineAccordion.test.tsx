@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { ChalklineAccordion } from './ChalklineAccordion';
 
@@ -47,7 +48,7 @@ describe('PrayerlettersAccount', () => {
         <GqlMockedProvider>
           <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -64,7 +65,7 @@ describe('PrayerlettersAccount', () => {
         <GqlMockedProvider>
           <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Chalk Line'}
+            expandedAccordion={IntegrationAccordion.Chalkline}
           />
         </GqlMockedProvider>
       </Components>,
@@ -84,7 +85,7 @@ describe('PrayerlettersAccount', () => {
         <GqlMockedProvider onCall={mutationSpy}>
           <ChalklineAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Chalk Line'}
+            expandedAccordion={IntegrationAccordion.Chalkline}
           />
         </GqlMockedProvider>
       </Components>,

@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { UpdatePersonalPreferencesDocument } from '../UpdatePersonalPreferences.generated';
 import { LanguageAccordion } from './LanguageAccordion';
@@ -34,17 +35,20 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   locale: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
-const Components: React.FC<ComponentsProps> = ({ locale, expandedPanel }) => (
+const Components: React.FC<ComponentsProps> = ({
+  locale,
+  expandedAccordion,
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <LanguageAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             locale={locale}
           />
         </GqlMockedProvider>
@@ -68,7 +72,7 @@ describe('LanguageAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components locale={'de'} expandedPanel="" />,
+      <Components locale={'de'} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -79,7 +83,10 @@ describe('LanguageAccordion', () => {
     const value = ''; //value is required
 
     const { getByRole } = render(
-      <Components locale={value} expandedPanel={label} />,
+      <Components
+        locale={value}
+        expandedAccordion={PreferenceAccordion.Language}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -91,7 +98,10 @@ describe('LanguageAccordion', () => {
 
   it('should change and save the language', async () => {
     const { getByText, getByRole } = render(
-      <Components locale={'en-us'} expandedPanel={label} />,
+      <Components
+        locale={'en-us'}
+        expandedAccordion={PreferenceAccordion.Language}
+      />,
     );
 
     const input = getByRole('combobox');
@@ -130,7 +140,7 @@ describe('LanguageAccordion', () => {
             <MockedProvider mocks={[errorMock]}>
               <LanguageAccordion
                 handleAccordionChange={handleAccordionChange}
-                expandedPanel={label}
+                expandedAccordion={PreferenceAccordion.Language}
                 locale={'en-US'}
               />
             </MockedProvider>

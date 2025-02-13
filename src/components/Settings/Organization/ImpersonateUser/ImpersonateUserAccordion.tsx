@@ -16,6 +16,7 @@ import {
   OrganizationsContext,
   OrganizationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/organizations.page';
+import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
@@ -39,10 +40,9 @@ const impersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
     reason: yup.string().required(),
   });
 
-export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const ImpersonateUserAccordion: React.FC<
+  AccordionProps<OrganizationAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
@@ -93,8 +93,9 @@ export const ImpersonateUserAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={OrganizationAccordion.ImpersonateUser}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
     >

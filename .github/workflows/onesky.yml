@@ -46,8 +46,7 @@ jobs:
           body: |
             Update translations with the latest labels extracted from the components and downloaded from OneSky.
 
-            Due to GitHub Actions restrictions, our `on: pull_request` CI workflow will not run automatically because this PR was created by a bot.
-            To get it to run, a human will have to push a commit to the branch.
+            Due to GitHub Actions restrictions, our `on: pull_request` CI workflow will not run automatically because this PR was created by a bot. To get it to run, a human will have to push a commit to the branch.
 
             ```sh
             $ git switch bot-update-translations

@@ -1,4 +1,10 @@
-import React, { ReactElement, ReactNode, useState } from 'react';
+import React, {
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { useApolloClient } from '@apollo/client';
 import {
   Autocomplete,
@@ -69,8 +75,11 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
   const client = useApolloClient();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();
+  const [selectedOrg, setSelectedOrg] = useState('');
+
   const [createOrganizationAccount] = useCreateOrganizationAccountMutation();
   const { data: organizations, loading } = useGetOrganizationsQuery();
+
   const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();
 
   const onSubmit = async (attributes: Partial<OrganizationFormikSchema>) => {
@@ -127,6 +136,22 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
     onDone();
   };
 
+  const donationServicesEmailLink = useMemo(
+    () =>
+      `mailto:${
+        process.env.DONATION_SERVICES_EMAIL
+      }?subject=Request+access+to+ministry+organization&body=${encodeURIComponent(
+        'Dear Donation Services,\n\nI hope this message finds you well. I would like to request that my MPDX account be linked to the following organization:' +
+          `\n\nOrganization name: ${selectedOrg}` +
+          '\n\nThank you for your assistance,\n\n',
+      )}`,
+    [selectedOrg],
+  );
+
+  const focusOnOrganization = useCallback((ref) => {
+    ref?.focus();
+  }, []);
+
   return (
     <Formik
       initialValues={{
@@ -157,6 +182,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                 setOrganizationType(
                   getOrganizationType(value?.apiClass, value?.oauth),
                 );
+                setSelectedOrg(value?.name ?? '');
                 setFieldValue('selectedOrganization', value);
               }}
               options={
@@ -171,7 +197,11 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
               }
               fullWidth
               renderInput={(params) => (
-                <TextField {...params} label={t('Organization')} />
+                <TextField
+                  {...params}
+                  label={t('Organization')}
+                  inputRef={focusOnOrganization}
+                />
               )}
             />
             {!selectedOrganization &&
@@ -204,19 +234,6 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                     }}
                   >
                     <li>
-                      {t('First you need to ')}
-                      <Link
-                        href="https://thekey.me/cas/logout"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {t(
-                          'click here to log out of your personal Key account',
-                        )}
-                      </Link>
-                    </li>
-                    <li>
-                      {t('Next, ')}
                       <Link
                         onClick={() => {
                           signOut({ callbackUrl: 'signOut' }).then(() => {
@@ -225,20 +242,25 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                           });
                         }}
                       >
-                        {t('click here to log out of {{appName}}', {
+                        {t('Click here to log out of {{appName}}', {
                           appName,
                         })}
                       </Link>
                       {t(
-                        ' so you can log back in with your official key account.',
+                        ' so you can log back in with your official ministry email.',
                       )}
                     </li>
                   </ol>
                 </StyledTypography>
-                <StyledTypography>
+                <StyledTypography fontStyle="italic">
                   {t(
-                    "If you are already logged in using your ministry account, you'll need to contact your donation services team to request access.",
+                    "If you are already logged in using your ministry account, you'll need to ",
                   )}
+                  <Link href={donationServicesEmailLink}>
+                    {t(
+                      'contact your donation services team to request access.',
+                    )}
+                  </Link>{' '}
                   {t(
                     "Once this is done you'll need to wait 24 hours for {{appName}} to sync your data.",
                     { appName },

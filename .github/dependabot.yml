@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    reviewers:
+      - CruGlobal/web-engineering-js
+    # Disable version updates while still allowing security updates
+    open-pull-requests-limit: 0
