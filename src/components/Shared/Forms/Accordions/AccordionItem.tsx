@@ -1,40 +1,22 @@
 import React, { useMemo } from 'react';
 import { ExpandMore } from '@mui/icons-material';
 import {
-  Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { GroupedAccordion } from './GroupedAccordion';
 
-export const accordionShared = {
-  '&:before': {
-    content: 'none',
-  },
-  '& .MuiAccordionSummary-root.Mui-expanded': {
-    minHeight: 'unset',
-  },
-};
-
-const StyledAccordion = styled(Accordion)(({ theme }) => ({
-  overflow: 'hidden',
+const StyledAccordion = styled(GroupedAccordion)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
-  '&:not(:last-child)': {
-    borderBottom: 0,
-  },
-  '&.MuiAccordion-rounded.Mui-disabled': {
-    color: theme.palette.cruGrayDark,
+  '&.Mui-disabled': {
     backgroundColor: 'white',
   },
-  ...accordionShared,
 }));
 
 const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
-  '&.Mui-expanded': {
-    backgroundColor: theme.palette.mpdxYellow.main,
-  },
   '& .MuiAccordionSummary-content': {
     [theme.breakpoints.only('xs')]: {
       flexDirection: 'column',

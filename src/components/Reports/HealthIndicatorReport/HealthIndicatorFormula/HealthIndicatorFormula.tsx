@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-  Accordion,
   AccordionDetails,
   AccordionSummary,
   Card,
@@ -10,6 +9,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { GroupedAccordion } from 'src/components/Shared/Forms/Accordions/GroupedAccordion';
 import { ConsistencyExplanation } from './ConsistencyExplanation';
 import { DepthExplanation } from './DepthExplanation';
 import { useHealthIndicatorFormulaQuery } from './HealthIndicatorFormula.generated';
@@ -118,14 +118,7 @@ const FormulaItem: React.FC<FormulaItemProps> = ({
   value,
   isLoading,
 }) => (
-  <Accordion
-    sx={(theme) => ({
-      '&:not(:last-child)': {
-        borderBottom: 0,
-      },
-      border: `1px solid ${theme.palette.divider}`,
-    })}
-  >
+  <GroupedAccordion disableGutters>
     <StyledSummary expandIcon={<ExpandMoreIcon />}>
       {isLoading ? (
         <Skeleton width={60} height={42} />
@@ -138,5 +131,5 @@ const FormulaItem: React.FC<FormulaItemProps> = ({
       <Typography>{description}</Typography>
     </StyledSummary>
     <StyledDetails>{explanation}</StyledDetails>
-  </Accordion>
+  </GroupedAccordion>
 );
