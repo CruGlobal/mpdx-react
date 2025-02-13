@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { MergeSpouseAccountsAccordion } from './MergeSpouseAccountsAccordion';
 
@@ -45,7 +46,7 @@ describe('MergeSpouseAccountsAccordion', () => {
         <GqlMockedProvider>
           <MergeSpouseAccountsAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -58,7 +59,7 @@ describe('MergeSpouseAccountsAccordion', () => {
         <GqlMockedProvider>
           <MergeSpouseAccountsAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Merge Spouse Accounts'}
+            expandedAccordion={AccountAccordion.MergeSpouseAccounts}
           />
         </GqlMockedProvider>
       </Components>,

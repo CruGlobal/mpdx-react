@@ -1,5 +1,6 @@
 import { Box, Skeleton, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccordionProps } from '../integrationsHelper';
@@ -7,7 +8,7 @@ import { useOktaAccountsQuery } from './OktaAccounts.generated';
 
 export const OktaAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   disabled,
 }) => {
   const { t } = useTranslation();
@@ -15,8 +16,9 @@ export const OktaAccordion: React.FC<AccordionProps> = ({
   const oktaAccounts = data?.user?.keyAccounts;
   return (
     <AccordionItem
+      accordion={IntegrationAccordion.Okta}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={t('Okta')}
       value={''}
       disabled={disabled}

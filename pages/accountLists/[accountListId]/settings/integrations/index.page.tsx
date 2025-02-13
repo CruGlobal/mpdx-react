@@ -11,6 +11,7 @@ import { OrganizationAccordion } from 'src/components/Settings/integrations/Orga
 import { PrayerlettersAccordion } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccordion';
 import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -21,15 +22,21 @@ import { SettingsWrapper } from '../Wrapper';
 const Integrations: React.FC = () => {
   const { t } = useTranslation();
   const { push, query } = useRouter();
-  const [expandedPanel, setExpandedPanel] = useState(
-    (query?.selectedTab as string | undefined) || '',
+  const [expandedAccordion, setExpandedAccordion] = useState(
+    typeof query.selectedTab === 'string'
+      ? (query.selectedTab as IntegrationAccordion)
+      : null,
   );
   const accountListId = useAccountListId() || '';
   const { appName } = useGetAppSettings();
   const { onSetupTour } = useSetupContext();
   const [setup, setSetup] = useState(0);
 
-  const setupAccordions = ['google', 'mailchimp', 'prayerletters.com'];
+  const setupAccordions = [
+    IntegrationAccordion.Google,
+    IntegrationAccordion.Mailchimp,
+    IntegrationAccordion.Prayerletters,
+  ];
 
   const [_, setSetupPosition] = useUserPreference({
     key: 'setup_position',
@@ -47,18 +54,13 @@ const Integrations: React.FC = () => {
       push(`/accountLists/${accountListId}/setup/finish`);
     } else {
       setSetup(nextNav);
-      setExpandedPanel(setupAccordions[nextNav]);
+      setExpandedAccordion(setupAccordions[nextNav]);
     }
-  };
-
-  const handleAccordionChange = (panel: string) => {
-    const panelLowercase = panel.toLowerCase();
-    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
   };
 
   useEffect(() => {
     if (onSetupTour) {
-      setExpandedPanel(setupAccordions[0]);
+      setExpandedAccordion(setupAccordions[0]);
     }
   }, [onSetupTour]);
 
@@ -84,35 +86,35 @@ const Integrations: React.FC = () => {
       )}
       <AccordionGroup title="">
         <OktaAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
           disabled={onSetupTour}
         />
         <OrganizationAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
           disabled={onSetupTour}
         />
       </AccordionGroup>
       <AccordionGroup title={t('External Services')}>
         <GoogleAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
           disabled={onSetupTour && setup !== 0}
         />
         <MailchimpAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
           disabled={onSetupTour && setup !== 1}
         />
         <PrayerlettersAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
           disabled={onSetupTour && setup !== 2}
         />
         <ChalklineAccordion
-          handleAccordionChange={handleAccordionChange}
-          expandedPanel={expandedPanel}
+          handleAccordionChange={setExpandedAccordion}
+          expandedAccordion={expandedAccordion}
           disabled={onSetupTour}
         />
       </AccordionGroup>

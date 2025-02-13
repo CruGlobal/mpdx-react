@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { UpdatePersonalPreferencesDocument } from '../UpdatePersonalPreferences.generated';
 import { CurrencyAccordion } from './CurrencyAccordion';
@@ -34,17 +35,20 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   currency: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
-const Components: React.FC<ComponentsProps> = ({ currency, expandedPanel }) => (
+const Components: React.FC<ComponentsProps> = ({
+  currency,
+  expandedAccordion,
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <CurrencyAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             currency={currency}
             accountListId={accountListId}
           />
@@ -69,7 +73,7 @@ describe('CurrencyAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components currency={'USD'} expandedPanel="" />,
+      <Components currency={'USD'} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -80,7 +84,10 @@ describe('CurrencyAccordion', () => {
     const value = ''; //value is required
 
     const { getByRole } = render(
-      <Components currency={value} expandedPanel={label} />,
+      <Components
+        currency={value}
+        expandedAccordion={PreferenceAccordion.Currency}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -92,7 +99,10 @@ describe('CurrencyAccordion', () => {
 
   it('Changes and saves the input', async () => {
     const { getByRole, getByText } = render(
-      <Components currency={'USD'} expandedPanel={label} />,
+      <Components
+        currency={'USD'}
+        expandedAccordion={PreferenceAccordion.Currency}
+      />,
     );
     const input = getByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
@@ -136,7 +146,7 @@ describe('CurrencyAccordion', () => {
             <MockedProvider mocks={[errorMock]}>
               <CurrencyAccordion
                 handleAccordionChange={handleAccordionChange}
-                expandedPanel={label}
+                expandedAccordion={PreferenceAccordion.Currency}
                 currency={'USD'}
                 accountListId={accountListId}
               />

@@ -4,11 +4,13 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<
@@ -17,9 +19,8 @@ const accountPreferencesSchema: yup.ObjectSchema<
   tester: yup.boolean().required(),
 });
 
-interface EarlyAdopterAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface EarlyAdopterAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   tester: boolean;
   accountListId: string;
   disabled?: boolean;
@@ -27,7 +28,7 @@ interface EarlyAdopterAccordionProps {
 
 export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   tester,
   accountListId,
   disabled,
@@ -55,7 +56,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -67,8 +68,9 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.EarlyAdopter}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={tester ? t('Yes') : t('No')}
       fullWidth

@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import * as Types from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { MailchimpAccordion } from './MailchimpAccordion';
@@ -79,7 +80,7 @@ describe('MailchimpAccount', () => {
         <GqlMockedProvider>
           <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -96,7 +97,7 @@ describe('MailchimpAccount', () => {
         <GqlMockedProvider>
           <MailchimpAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Mailchimp'}
+            expandedAccordion={IntegrationAccordion.Mailchimp}
           />
         </GqlMockedProvider>
       </Components>,
@@ -124,7 +125,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -165,7 +166,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -208,7 +209,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -243,7 +244,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -310,7 +311,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -377,7 +378,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -413,7 +414,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,
@@ -470,7 +471,7 @@ describe('MailchimpAccount', () => {
           >
             <MailchimpAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Mailchimp'}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
             />
           </GqlMockedProvider>
         </Components>,

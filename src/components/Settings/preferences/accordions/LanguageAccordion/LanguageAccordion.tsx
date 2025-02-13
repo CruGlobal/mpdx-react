@@ -4,12 +4,14 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { formatLanguage, languages } from 'src/lib/data/languages';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'locale'>> =
@@ -17,16 +19,14 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'locale'>> =
     locale: yup.string().required(),
   });
 
-interface LanguageAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface LanguageAccordionProps extends AccordionProps<PreferenceAccordion> {
   locale: string;
   disabled?: boolean;
 }
 
 export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   locale,
   disabled,
 }) => {
@@ -56,6 +56,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -67,8 +68,9 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.Language}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedLanguage}
       fullWidth
