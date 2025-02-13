@@ -4,7 +4,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Card,
   Skeleton,
   Typography,
@@ -72,36 +71,34 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
         {t('MPD Health')} = [({t('Ownership')} x 3) + ({t('Success')} x 2) + (
         {t('Consistency')} x 1) + ({t('Depth')} x 1)] / 7
       </Typography>
-      <Box pl={2}>
-        <FormulaItem
-          name={t('Ownership')}
-          description={t('% of self-raised funds over total funds')}
-          explanation={<OwnershipExplanation />}
-          value={latestMpdHealthData?.ownershipHi ?? 0}
-          isLoading={loading && !data}
-        />
-        <FormulaItem
-          name={t('Success')}
-          description={t('% of self-raised funds over support goal')}
-          explanation={<SuccessExplanation />}
-          value={latestMpdHealthData?.successHi ?? 0}
-          isLoading={loading && !data}
-        />
-        <FormulaItem
-          name={t('Consistency')}
-          description={t('% of months with positive account balance')}
-          value={latestMpdHealthData?.consistencyHi ?? 0}
-          explanation={<ConsistencyExplanation />}
-          isLoading={loading && !data}
-        />
-        <FormulaItem
-          name={t('Depth')}
-          description={t('Trend of local partners')}
-          explanation={<DepthExplanation />}
-          value={latestMpdHealthData?.depthHi ?? 0}
-          isLoading={loading && !data}
-        />
-      </Box>
+      <FormulaItem
+        name={t('Ownership')}
+        description={t('% of self-raised funds over total funds')}
+        explanation={<OwnershipExplanation />}
+        value={latestMpdHealthData?.ownershipHi ?? 0}
+        isLoading={loading && !data}
+      />
+      <FormulaItem
+        name={t('Success')}
+        description={t('% of self-raised funds over support goal')}
+        explanation={<SuccessExplanation />}
+        value={latestMpdHealthData?.successHi ?? 0}
+        isLoading={loading && !data}
+      />
+      <FormulaItem
+        name={t('Consistency')}
+        description={t('% of months with positive account balance')}
+        value={latestMpdHealthData?.consistencyHi ?? 0}
+        explanation={<ConsistencyExplanation />}
+        isLoading={loading && !data}
+      />
+      <FormulaItem
+        name={t('Depth')}
+        description={t('Trend of local partners')}
+        explanation={<DepthExplanation />}
+        value={latestMpdHealthData?.depthHi ?? 0}
+        isLoading={loading && !data}
+      />
     </Card>
   );
 };
@@ -121,7 +118,14 @@ const FormulaItem: React.FC<FormulaItemProps> = ({
   value,
   isLoading,
 }) => (
-  <Accordion>
+  <Accordion
+    sx={(theme) => ({
+      '&:not(:last-child)': {
+        borderBottom: 0,
+      },
+      border: `1px solid ${theme.palette.divider}`,
+    })}
+  >
     <StyledSummary expandIcon={<ExpandMoreIcon />}>
       {isLoading ? (
         <Skeleton width={60} height={42} />
