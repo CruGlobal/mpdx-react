@@ -4,10 +4,12 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { Preference } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'timeZone'>> =
@@ -15,9 +17,7 @@ const preferencesSchema: yup.ObjectSchema<Pick<Preference, 'timeZone'>> =
     timeZone: yup.string().required(),
   });
 
-interface TimeZoneAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface TimeZoneAccordionProps extends AccordionProps<PreferenceAccordion> {
   timeZone: string;
   timeZones: Array<Record<string, string>>;
   disabled?: boolean;
@@ -25,7 +25,7 @@ interface TimeZoneAccordionProps {
 
 export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   timeZone,
   timeZones,
   disabled,
@@ -57,7 +57,7 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -69,8 +69,9 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.TimeZone}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedTimeZone}
       fullWidth

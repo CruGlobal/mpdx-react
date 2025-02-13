@@ -4,6 +4,7 @@ import React, { ReactElement, useEffect, useRef } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
@@ -88,7 +89,9 @@ const AcceptInvitePage = (): ReactElement => {
 
     if (url.includes('organizations')) {
       router.push(
-        dashboardLink + 'settings/integrations?selectedTab=organization',
+        dashboardLink +
+          'settings/integrations?selectedTab=' +
+          IntegrationAccordion.Organization,
       );
     } else {
       router.push(dashboardLink);

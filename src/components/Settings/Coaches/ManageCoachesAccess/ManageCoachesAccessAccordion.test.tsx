@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { CoachAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { GetAccountListCoachesQuery } from './ManageAccountAccess.generated';
 import { ManageCoachesAccessAccordion } from './ManageCoachesAccessAccordion';
@@ -47,7 +48,7 @@ describe('ManageCoachesAccessAccordion', () => {
         <GqlMockedProvider>
           <ManageCoachesAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -62,7 +63,7 @@ describe('ManageCoachesAccessAccordion', () => {
         <GqlMockedProvider>
           <ManageCoachesAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Account Coaching Access'}
+            expandedAccordion={CoachAccordion.ManageCoachesAccess}
           />
         </GqlMockedProvider>
       </Components>,
@@ -96,7 +97,7 @@ describe('ManageCoachesAccessAccordion', () => {
         >
           <ManageCoachesAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Account Coaching Access'}
+            expandedAccordion={CoachAccordion.ManageCoachesAccess}
           />
         </GqlMockedProvider>
       </Components>,

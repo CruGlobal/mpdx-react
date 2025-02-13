@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { GoogleAccordion } from './GoogleAccordion';
 import { GoogleAccountsQuery } from './GoogleAccounts.generated';
@@ -58,7 +59,7 @@ describe('GoogleAccordion', () => {
         <GqlMockedProvider>
           <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -75,7 +76,7 @@ describe('GoogleAccordion', () => {
         <GqlMockedProvider>
           <GoogleAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Google'}
+            expandedAccordion={IntegrationAccordion.Google}
           />
         </GqlMockedProvider>
       </Components>,
@@ -103,7 +104,7 @@ describe('GoogleAccordion', () => {
           >
             <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Google'}
+              expandedAccordion={IntegrationAccordion.Google}
             />
           </GqlMockedProvider>
         </Components>,
@@ -124,7 +125,7 @@ describe('GoogleAccordion', () => {
 
       expect(getByText(/continue/i)).toHaveAttribute(
         'href',
-        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+        `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dgoogle&access_token=apiToken`,
       );
     });
   });
@@ -151,7 +152,7 @@ describe('GoogleAccordion', () => {
           >
             <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Google'}
+              expandedAccordion={IntegrationAccordion.Google}
             />
           </GqlMockedProvider>
         </Components>,
@@ -207,7 +208,7 @@ describe('GoogleAccordion', () => {
           >
             <GoogleAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Google'}
+              expandedAccordion={IntegrationAccordion.Google}
             />
           </GqlMockedProvider>
         </Components>,
@@ -223,7 +224,7 @@ describe('GoogleAccordion', () => {
 
         expect(getByText(/continue/i)).toHaveAttribute(
           'href',
-          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3DGoogle&access_token=apiToken`,
+          `https://auth.mpdx.org/auth/user/google?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dgoogle&access_token=apiToken`,
         );
       });
     });

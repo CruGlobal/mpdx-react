@@ -4,12 +4,14 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const accountPreferencesSchema: yup.ObjectSchema<
@@ -18,9 +20,8 @@ const accountPreferencesSchema: yup.ObjectSchema<
   monthlyGoal: yup.number().required(),
 });
 
-interface MonthlyGoalAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface MonthlyGoalAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   monthlyGoal: number | null;
   accountListId: string;
   currency: string;
@@ -30,7 +31,7 @@ interface MonthlyGoalAccordionProps {
 
 export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   monthlyGoal,
   accountListId,
   currency,
@@ -68,7 +69,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -81,8 +82,9 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.MonthlyGoal}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={monthlyGoalString}
       fullWidth

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ExpandMore } from '@mui/icons-material';
 import {
   Accordion,
@@ -117,9 +117,10 @@ const AccordionLeftDetailsImage = styled(Box)(({ theme }) => ({
   },
 }));
 
-interface AccordionItemProps {
-  onAccordionChange: (label: string) => void;
-  expandedPanel: string;
+interface AccordionItemProps<AccordionEnum> {
+  accordion: AccordionEnum;
+  onAccordionChange: (accordion: AccordionEnum | null) => void;
+  expandedAccordion: AccordionEnum | null;
   label: string;
   value: string;
   children?: React.ReactNode;
@@ -128,24 +129,23 @@ interface AccordionItemProps {
   disabled?: boolean;
 }
 
-export const AccordionItem: React.FC<AccordionItemProps> = ({
+export const AccordionItem = <AccordionEnum,>({
+  accordion,
   onAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   label,
   value,
   children,
   fullWidth = false,
   image,
   disabled,
-}) => {
-  const expanded = useMemo(
-    () => expandedPanel?.toLowerCase() === label.toLowerCase(),
-    [expandedPanel, label],
-  );
+}: AccordionItemProps<AccordionEnum>) => {
+  const expanded = expandedAccordion === accordion;
+
   return (
     <StyledAccordion
-      onChange={() => onAccordionChange(label)}
-      expanded={expanded}
+      onChange={(_, expanded) => onAccordionChange(expanded ? accordion : null)}
+      expanded={expandedAccordion === accordion}
       disableGutters
       disabled={disabled}
     >

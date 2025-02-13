@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { CoachAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
@@ -15,10 +16,9 @@ import {
   useGetAccountListCoachesQuery,
 } from './ManageAccountAccess.generated';
 
-export const ManageCoachesAccessAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const ManageCoachesAccessAccordion: React.FC<
+  AccordionProps<CoachAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const accordionName = t('Manage Account Coaching Access');
   const { enqueueSnackbar } = useSnackbar();
@@ -68,8 +68,9 @@ export const ManageCoachesAccessAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={CoachAccordion.ManageCoachesAccess}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
       fullWidth={true}

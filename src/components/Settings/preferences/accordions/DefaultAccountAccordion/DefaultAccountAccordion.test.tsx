@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { DefaultAccountAccordion } from './DefaultAccountAccordion';
 
@@ -62,12 +63,12 @@ const mockData = {
 
 interface ComponentsProps {
   defaultAccountList: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   defaultAccountList,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -75,7 +76,7 @@ const Components: React.FC<ComponentsProps> = ({
         <GqlMockedProvider onCall={mutationSpy}>
           <DefaultAccountAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             data={mockData}
             accountListId={accountListId}
             defaultAccountList={defaultAccountList}
@@ -96,7 +97,7 @@ describe('Default Account Accordion', () => {
     const { getByText, queryByRole } = render(
       <Components
         defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
-        expandedPanel=""
+        expandedAccordion={null}
       />,
     );
     const input = queryByRole('combobox');
@@ -109,7 +110,10 @@ describe('Default Account Accordion', () => {
     const value = ''; //value is required
 
     const { getByRole } = render(
-      <Components defaultAccountList={value} expandedPanel={label} />,
+      <Components
+        defaultAccountList={value}
+        expandedAccordion={PreferenceAccordion.DefaultAccount}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -123,7 +127,7 @@ describe('Default Account Accordion', () => {
     const { getByRole, getByText } = render(
       <Components
         defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.DefaultAccount}
       />,
     );
     const input = getByRole('combobox');

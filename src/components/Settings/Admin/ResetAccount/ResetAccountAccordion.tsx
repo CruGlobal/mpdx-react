@@ -11,6 +11,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
@@ -35,10 +36,9 @@ const ImpersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
     reason: yup.string(),
   });
 
-export const ResetAccountAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const ResetAccountAccordion: React.FC<
+  AccordionProps<AdminAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const accordionName = t('Reset Account');
   const { enqueueSnackbar } = useSnackbar();
@@ -74,8 +74,9 @@ export const ResetAccountAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={AdminAccordion.ResetAccount}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
     >

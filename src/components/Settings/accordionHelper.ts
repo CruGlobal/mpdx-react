@@ -1,4 +1,4 @@
-export interface AccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+export interface AccordionProps<AccordionEnum> {
+  handleAccordionChange: (accordion: AccordionEnum | null) => void;
+  expandedAccordion: AccordionEnum | null;
 }

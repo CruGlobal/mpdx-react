@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { MonthlyGoalAccordion } from './MonthlyGoalAccordion';
 
@@ -33,12 +34,12 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -46,7 +47,7 @@ const Components: React.FC<ComponentsProps> = ({
         <GqlMockedProvider onCall={mutationSpy}>
           <MonthlyGoalAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             monthlyGoal={monthlyGoal}
             currency={'USD'}
             accountListId={accountListId}
@@ -66,7 +67,7 @@ describe('MonthlyGoalAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components monthlyGoal={100} expandedPanel="" />,
+      <Components monthlyGoal={100} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -74,7 +75,10 @@ describe('MonthlyGoalAccordion', () => {
   });
   it('should render accordion open and textfield should have a value', () => {
     const { getByRole } = render(
-      <Components monthlyGoal={20000} expandedPanel={label} />,
+      <Components
+        monthlyGoal={20000}
+        expandedAccordion={PreferenceAccordion.MonthlyGoal}
+      />,
     );
 
     const input = getByRole('spinbutton', { name: label });
@@ -89,7 +93,10 @@ describe('MonthlyGoalAccordion', () => {
     const value = null; //value is required
 
     const { getByRole, getByText } = render(
-      <Components monthlyGoal={value} expandedPanel={label} />,
+      <Components
+        monthlyGoal={value}
+        expandedAccordion={PreferenceAccordion.MonthlyGoal}
+      />,
     );
 
     const input = getByRole('spinbutton', { name: label });
@@ -104,7 +111,10 @@ describe('MonthlyGoalAccordion', () => {
 
   it('Changes and saves the input', async () => {
     const { getByRole } = render(
-      <Components monthlyGoal={1000} expandedPanel={label} />,
+      <Components
+        monthlyGoal={1000}
+        expandedAccordion={PreferenceAccordion.MonthlyGoal}
+      />,
     );
     const input = getByRole('spinbutton', { name: label });
     const button = getByRole('button', { name: 'Save' });

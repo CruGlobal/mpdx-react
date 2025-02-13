@@ -6,6 +6,7 @@ import { cloneDeep } from 'lodash';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import * as Types from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { OrganizationAccordion } from './OrganizationAccordion';
@@ -100,7 +101,7 @@ describe('OrganizationAccordion', () => {
         <GqlMockedProvider>
           <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -117,7 +118,7 @@ describe('OrganizationAccordion', () => {
         <GqlMockedProvider>
           <OrganizationAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Organization'}
+            expandedAccordion={IntegrationAccordion.Organization}
           />
         </GqlMockedProvider>
       </Components>,
@@ -147,7 +148,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,
@@ -180,7 +181,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,
@@ -226,7 +227,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,
@@ -274,7 +275,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,
@@ -309,7 +310,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,
@@ -350,7 +351,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,
@@ -401,7 +402,7 @@ describe('OrganizationAccordion', () => {
           >
             <OrganizationAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'Organization'}
+              expandedAccordion={IntegrationAccordion.Organization}
             />
           </GqlMockedProvider>
         </Components>,

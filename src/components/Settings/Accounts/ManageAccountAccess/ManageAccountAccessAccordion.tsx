@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
@@ -15,10 +16,9 @@ import {
   useGetAccountsSharingWithQuery,
 } from './ManageAccountAccess.generated';
 
-export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const ManageAccountAccessAccordion: React.FC<
+  AccordionProps<AccountAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const accordionName = t('Manage Account Access');
   const { enqueueSnackbar } = useSnackbar();
@@ -76,8 +76,9 @@ export const ManageAccountAccessAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={AccountAccordion.ManageAccountAccess}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
       fullWidth={true}

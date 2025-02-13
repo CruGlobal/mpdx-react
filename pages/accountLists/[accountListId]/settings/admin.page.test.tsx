@@ -1,19 +1,14 @@
-import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
-import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import Admin from './admin.page';
 
-jest.mock('next-auth/react');
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
-}));
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -25,19 +20,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
-};
+interface ComponentsProps {
+  selectedTab?: string;
+}
 
-const Components = () => (
+const Components: React.FC<ComponentsProps> = ({ selectedTab }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={{ query: { selectedTab } }}>
       <GqlMockedProvider>
         <I18nextProvider i18n={i18n}>
           <SnackbarProvider>
@@ -50,14 +39,6 @@ const Components = () => (
 );
 
 describe('Admin', () => {
-  beforeEach(() => {
-    (getSession as jest.Mock).mockResolvedValue(session);
-    (useRouter as jest.Mock).mockReturnValue({
-      query: {},
-      isReady: true,
-    });
-  });
-
   it('should keep impersonate user accordion close', async () => {
     const { getAllByText } = render(<Components />);
     await waitFor(() => {
@@ -67,13 +48,9 @@ describe('Admin', () => {
   });
 
   it('should open impersonate user accordion', async () => {
-    (useRouter as jest.Mock).mockReturnValue({
-      query: {
-        selectedTab: 'Reset Account',
-      },
-      isReady: true,
-    });
-    const { getAllByText } = render(<Components />);
+    const { getAllByText } = render(
+      <Components selectedTab={AdminAccordion.ResetAccount} />,
+    );
     await waitFor(() => {
       expect(getAllByText('Impersonate User').length).toEqual(1);
       expect(getAllByText('Reset Account').length).toEqual(3);

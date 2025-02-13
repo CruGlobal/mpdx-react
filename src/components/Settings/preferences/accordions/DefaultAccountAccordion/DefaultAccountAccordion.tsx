@@ -4,17 +4,18 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { User } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { AccordionProps } from '../../../accordionHelper';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.generated';
 
-interface DefaultAccountAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface DefaultAccountAccordionProps
+  extends AccordionProps<PreferenceAccordion> {
   data: GetPersonalPreferencesQuery | undefined;
   accountListId: string;
   defaultAccountList: string;
@@ -30,7 +31,7 @@ export const DefaultAccountAccordion: React.FC<
   DefaultAccountAccordionProps
 > = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   data,
   defaultAccountList,
   disabled,
@@ -61,7 +62,7 @@ export const DefaultAccountAccordion: React.FC<
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -73,8 +74,9 @@ export const DefaultAccountAccordion: React.FC<
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.DefaultAccount}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={selectedAccount}
       fullWidth

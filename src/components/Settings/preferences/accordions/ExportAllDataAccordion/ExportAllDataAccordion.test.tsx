@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { ExportDataMutation } from '../../GetAccountPreferences.generated';
 import { ExportAllDataAccordion } from './ExportAllDataAccordion';
@@ -33,12 +34,12 @@ const handleAccordionChange = jest.fn();
 const mutationSpy = jest.fn();
 
 interface ComponentsProps {
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
   exportedAt?: string;
 }
 
 const Components: React.FC<ComponentsProps> = ({
-  expandedPanel,
+  expandedAccordion,
   exportedAt,
 }) => (
   <SnackbarProvider>
@@ -56,7 +57,7 @@ const Components: React.FC<ComponentsProps> = ({
         >
           <ExportAllDataAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             exportedAt={exportedAt || ''}
             accountListId={accountListId}
           />
@@ -75,7 +76,9 @@ describe('Export All Data Accordion', () => {
     mutationSpy.mockClear();
   });
   it('should render accordion closed', () => {
-    const { getByText, queryByText } = render(<Components expandedPanel="" />);
+    const { getByText, queryByText } = render(
+      <Components expandedAccordion={null} />,
+    );
 
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByText(descriptionText)).not.toBeInTheDocument();
@@ -83,7 +86,7 @@ describe('Export All Data Accordion', () => {
   it('should render accordion open and show the last exported date', async () => {
     const { getByText, queryByRole } = render(
       <Components
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.ExportAllData}
         exportedAt={DateTime.local(2024, 1, 16, 18, 34, 12).toISO() ?? ''}
       />,
     );
@@ -94,7 +97,7 @@ describe('Export All Data Accordion', () => {
 
   it('should default the submit button to disabled unless the box is checked', async () => {
     const { getAllByRole, queryByRole } = render(
-      <Components expandedPanel={label} />,
+      <Components expandedAccordion={PreferenceAccordion.ExportAllData} />,
     );
     const button = getAllByRole('button', {
       name: 'Export All Data',
@@ -112,7 +115,7 @@ describe('Export All Data Accordion', () => {
   });
   it('should enable the submit button and call the mutation', async () => {
     const { getByRole, getAllByRole, queryByRole, getByText } = render(
-      <Components expandedPanel={label} />,
+      <Components expandedAccordion={PreferenceAccordion.ExportAllData} />,
     );
     const input = getByRole('checkbox');
     const button = getAllByRole('button', { name: 'Export All Data' })[1];

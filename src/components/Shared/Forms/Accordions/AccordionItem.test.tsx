@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { AccordionItem } from './AccordionItem';
 
-const expandedPanel = 'expandedPanel';
+const expandedAccordion = 'expandedAccordion';
 
 describe('AccordionItem', () => {
   const onAccordionChange = jest.fn();
@@ -15,8 +15,9 @@ describe('AccordionItem', () => {
     const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
-          expandedPanel=""
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
+          expandedAccordion={null}
           onAccordionChange={onAccordionChange}
           value="ValueText"
         >
@@ -31,8 +32,9 @@ describe('AccordionItem', () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
-          expandedPanel=""
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
+          expandedAccordion={null}
           onAccordionChange={onAccordionChange}
           value=""
         >
@@ -48,8 +50,9 @@ describe('AccordionItem', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
-          expandedPanel=""
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
+          expandedAccordion={null}
           onAccordionChange={onAccordionChange}
           value="ValueText"
         >
@@ -58,16 +61,17 @@ describe('AccordionItem', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('expandedPanel')).toBeInTheDocument();
+    expect(getByText('expandedAccordion')).toBeInTheDocument();
   });
 
   it('Should render value', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
           value={'AccordionValue'}
-          expandedPanel=""
+          expandedAccordion={null}
           onAccordionChange={onAccordionChange}
         >
           Children
@@ -82,9 +86,10 @@ describe('AccordionItem', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
           value={'AccordionValue'}
-          expandedPanel={expandedPanel}
+          expandedAccordion={expandedAccordion}
           onAccordionChange={onAccordionChange}
         >
           Children
@@ -99,9 +104,10 @@ describe('AccordionItem', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
           value={'AccordionValue'}
-          expandedPanel={expandedPanel}
+          expandedAccordion={expandedAccordion}
           fullWidth={true}
           onAccordionChange={onAccordionChange}
         >
@@ -117,9 +123,10 @@ describe('AccordionItem', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
           value={'AccordionValue'}
-          expandedPanel={expandedPanel}
+          expandedAccordion={expandedAccordion}
           fullWidth={true}
           image={'image.png'}
           onAccordionChange={onAccordionChange}
@@ -136,9 +143,10 @@ describe('AccordionItem', () => {
     const { getByTestId } = render(
       <ThemeProvider theme={theme}>
         <AccordionItem
-          label={'expandedPanel'}
+          accordion={expandedAccordion}
+          label={'expandedAccordion'}
           value={'AccordionValue'}
-          expandedPanel={expandedPanel}
+          expandedAccordion={expandedAccordion}
           onAccordionChange={onAccordionChange}
         >
           Children

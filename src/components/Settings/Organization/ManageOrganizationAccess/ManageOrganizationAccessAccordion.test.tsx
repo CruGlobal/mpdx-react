@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations.page';
+import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import {
   CreateOrganizationInviteMutation,
@@ -98,7 +99,7 @@ describe('ManageOrganizationAccessAccordion', () => {
         <GqlMockedProvider>
           <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -128,7 +129,7 @@ describe('ManageOrganizationAccessAccordion', () => {
         >
           <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Organization Access'}
+            expandedAccordion={OrganizationAccordion.ManageOrganizationAccess}
           />
         </GqlMockedProvider>
       </Components>,
@@ -162,7 +163,7 @@ describe('ManageOrganizationAccessAccordion', () => {
         >
           <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Organization Access'}
+            expandedAccordion={OrganizationAccordion.ManageOrganizationAccess}
           />
         </GqlMockedProvider>
       </Components>,
@@ -208,7 +209,7 @@ describe('ManageOrganizationAccessAccordion', () => {
         >
           <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Organization Access'}
+            expandedAccordion={OrganizationAccordion.ManageOrganizationAccess}
           />
         </GqlMockedProvider>
       </Components>,
@@ -268,7 +269,7 @@ describe('ManageOrganizationAccessAccordion', () => {
         >
           <ManageOrganizationAccessAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Manage Organization Access'}
+            expandedAccordion={OrganizationAccordion.ManageOrganizationAccess}
           />
         </GqlMockedProvider>
       </Components>,

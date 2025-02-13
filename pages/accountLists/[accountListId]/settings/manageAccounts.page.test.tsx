@@ -1,17 +1,14 @@
-import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import ManageAccounts from './manageAccounts.page';
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
-}));
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -23,9 +20,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const Components = () => (
+interface ComponentsProps {
+  selectedTab?: string;
+}
+
+const Components: React.FC<ComponentsProps> = ({ selectedTab }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={{ query: { selectedTab } }}>
       <GqlMockedProvider>
         <I18nextProvider i18n={i18n}>
           <SnackbarProvider>
@@ -38,13 +39,6 @@ const Components = () => (
 );
 
 describe('ManageAccounts', () => {
-  beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({
-      query: {},
-      isReady: true,
-    });
-  });
-
   it('should open `Manage Account Access` accordion', async () => {
     const { getAllByText } = render(<Components />);
     await waitFor(() => {
@@ -53,13 +47,9 @@ describe('ManageAccounts', () => {
   });
 
   it('should open `Merge Your Accounts` accordion', async () => {
-    (useRouter as jest.Mock).mockReturnValue({
-      query: {
-        selectedTab: 'Merge Your Accounts',
-      },
-      isReady: true,
-    });
-    const { getAllByText } = render(<Components />);
+    const { getAllByText } = render(
+      <Components selectedTab={AccountAccordion.MergeAccounts} />,
+    );
     await waitFor(() => {
       expect(getAllByText('Manage Account Access').length).toEqual(1);
       expect(getAllByText('Merge Your Accounts').length).toEqual(2);

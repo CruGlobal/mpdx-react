@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
@@ -12,7 +13,7 @@ import { useSendToChalklineMutation } from './SendToChalkline.generated';
 
 export const ChalklineAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   disabled,
 }) => {
   const { t } = useTranslation();
@@ -51,8 +52,9 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={IntegrationAccordion.Chalkline}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
       disabled={disabled}

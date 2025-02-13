@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import theme from 'src/theme';
 import { EarlyAdopterAccordion } from './EarlyAdopterAccordion';
@@ -33,9 +34,12 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   tester: boolean;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
-const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
+const Components: React.FC<ComponentsProps> = ({
+  tester,
+  expandedAccordion,
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
@@ -43,7 +47,7 @@ const Components: React.FC<ComponentsProps> = ({ tester, expandedPanel }) => (
           <UserPreferenceContext.Provider value={{ locale: 'en-US' }}>
             <EarlyAdopterAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              expandedAccordion={expandedAccordion}
               tester={tester}
               accountListId={accountListId}
             />
@@ -62,7 +66,7 @@ describe('EarlyAdopterAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components tester={true} expandedPanel="" />,
+      <Components tester={true} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -70,7 +74,10 @@ describe('EarlyAdopterAccordion', () => {
   });
   it('should render accordion open', async () => {
     const { getByRole } = render(
-      <Components tester={true} expandedPanel={label} />,
+      <Components
+        tester={true}
+        expandedAccordion={PreferenceAccordion.EarlyAdopter}
+      />,
     );
 
     expect(getByRole('checkbox')).toBeInTheDocument();
@@ -78,7 +85,10 @@ describe('EarlyAdopterAccordion', () => {
 
   it('should always have the save button enabled', async () => {
     const { getByRole } = render(
-      <Components tester={true} expandedPanel={label} />,
+      <Components
+        tester={true}
+        expandedAccordion={PreferenceAccordion.EarlyAdopter}
+      />,
     );
     const input = getByRole('checkbox');
     const button = getByRole('button', { name: 'Save' });
@@ -96,7 +106,10 @@ describe('EarlyAdopterAccordion', () => {
 
   it('Changes and saves the input', async () => {
     const { getByRole } = render(
-      <Components tester={false} expandedPanel={label} />,
+      <Components
+        tester={false}
+        expandedAccordion={PreferenceAccordion.EarlyAdopter}
+      />,
     );
     const button = getByRole('button', { name: 'Save' });
     userEvent.click(getByRole('checkbox'));
@@ -127,7 +140,10 @@ describe('EarlyAdopterAccordion', () => {
   describe('onSubmit()', () => {
     it('sets early adopter to true', async () => {
       const { getByRole } = render(
-        <Components tester={false} expandedPanel={label} />,
+        <Components
+          tester={false}
+          expandedAccordion={PreferenceAccordion.EarlyAdopter}
+        />,
       );
       const button = getByRole('button', { name: 'Save' });
       userEvent.click(getByRole('checkbox'));
@@ -142,7 +158,10 @@ describe('EarlyAdopterAccordion', () => {
 
     it('sets early adopter to false', async () => {
       const { getByRole } = render(
-        <Components tester={true} expandedPanel={label} />,
+        <Components
+          tester={true}
+          expandedAccordion={PreferenceAccordion.EarlyAdopter}
+        />,
       );
       const button = getByRole('button', { name: 'Save' });
       userEvent.click(getByRole('checkbox'));

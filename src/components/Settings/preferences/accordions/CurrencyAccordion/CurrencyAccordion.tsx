@@ -5,10 +5,12 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
+import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
 const preferencesSchema: yup.ObjectSchema<
@@ -17,9 +19,7 @@ const preferencesSchema: yup.ObjectSchema<
   currency: yup.string().required(),
 });
 
-interface CurrencyAccordionProps {
-  handleAccordionChange: (panel: string) => void;
-  expandedPanel: string;
+interface CurrencyAccordionProps extends AccordionProps<PreferenceAccordion> {
   currency: string;
   accountListId: string;
   disabled?: boolean;
@@ -27,7 +27,7 @@ interface CurrencyAccordionProps {
 
 export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   currency,
   accountListId,
   disabled,
@@ -58,7 +58,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
         enqueueSnackbar(t('Saved successfully.'), {
           variant: 'success',
         });
-        handleAccordionChange(label);
+        handleAccordionChange(null);
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -70,8 +70,9 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={PreferenceAccordion.Currency}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={label}
       value={currency}
       fullWidth

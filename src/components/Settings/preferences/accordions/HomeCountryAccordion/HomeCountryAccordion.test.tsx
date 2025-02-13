@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { UpdatePersonalPreferencesDocument } from '../UpdatePersonalPreferences.generated';
 import { HomeCountryAccordion } from './HomeCountryAccordion';
@@ -40,12 +41,12 @@ const countries = [
 
 interface ComponentsProps {
   homeCountry: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   homeCountry,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -53,7 +54,7 @@ const Components: React.FC<ComponentsProps> = ({
         <GqlMockedProvider onCall={mutationSpy}>
           <HomeCountryAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             homeCountry={homeCountry}
             accountListId={accountListId}
             countries={countries}
@@ -80,7 +81,7 @@ describe('HomeCountryAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components homeCountry={'US'} expandedPanel="" />,
+      <Components homeCountry={'US'} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -91,7 +92,10 @@ describe('HomeCountryAccordion', () => {
     const value = ''; //value is not required
 
     const { getByRole } = render(
-      <Components homeCountry={value} expandedPanel={label} />,
+      <Components
+        homeCountry={value}
+        expandedAccordion={PreferenceAccordion.HomeCountry}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -103,7 +107,10 @@ describe('HomeCountryAccordion', () => {
 
   it('Changes and saves the input', async () => {
     const { getByRole, getByText } = render(
-      <Components homeCountry={'US'} expandedPanel={label} />,
+      <Components
+        homeCountry={'US'}
+        expandedAccordion={PreferenceAccordion.HomeCountry}
+      />,
     );
     const button = getByRole('button', { name: 'Save' });
     const input = getByRole('combobox');
@@ -144,7 +151,7 @@ describe('HomeCountryAccordion', () => {
             <MockedProvider mocks={[errorMock]}>
               <HomeCountryAccordion
                 handleAccordionChange={handleAccordionChange}
-                expandedPanel={label}
+                expandedAccordion={PreferenceAccordion.HomeCountry}
                 homeCountry={'USA'}
                 accountListId={accountListId}
                 countries={countries}

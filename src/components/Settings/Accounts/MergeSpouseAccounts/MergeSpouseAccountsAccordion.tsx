@@ -1,6 +1,7 @@
 import { Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
@@ -14,18 +15,18 @@ const DividerWithPadding = styled(Divider)(() => ({
   marginBottom: '20px',
 }));
 
-export const MergeSpouseAccountsAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const MergeSpouseAccountsAccordion: React.FC<
+  AccordionProps<AccountAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accordionName = t('Merge Spouse Accounts');
 
   return (
     <AccordionItem
+      accordion={AccountAccordion.MergeSpouseAccounts}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
       fullWidth={true}

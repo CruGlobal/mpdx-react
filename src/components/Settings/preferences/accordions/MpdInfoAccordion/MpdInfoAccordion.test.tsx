@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { MpdInfoAccordion } from './MpdInfoAccordion';
 
@@ -36,14 +37,14 @@ interface ComponentsProps {
   activeMpdMonthlyGoal: number | null;
   activeMpdFinishAt: string | null;
   activeMpdStartAt: string | null;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   activeMpdMonthlyGoal,
   activeMpdStartAt,
   activeMpdFinishAt,
-  expandedPanel,
+  expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -52,7 +53,7 @@ const Components: React.FC<ComponentsProps> = ({
           <GqlMockedProvider onCall={mutationSpy}>
             <MpdInfoAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={expandedPanel}
+              expandedAccordion={expandedAccordion}
               activeMpdMonthlyGoal={activeMpdMonthlyGoal}
               activeMpdFinishAt={activeMpdFinishAt}
               activeMpdStartAt={activeMpdStartAt}
@@ -78,7 +79,7 @@ describe('MpdInfoAccordion', () => {
         activeMpdStartAt={null}
         activeMpdFinishAt={null}
         activeMpdMonthlyGoal={100}
-        expandedPanel=""
+        expandedAccordion={null}
       />,
     );
 
@@ -91,7 +92,7 @@ describe('MpdInfoAccordion', () => {
         activeMpdStartAt={'2024-01-16'}
         activeMpdFinishAt={'2024-03-16'}
         activeMpdMonthlyGoal={20000}
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.MpdInfo}
       />,
     );
 
@@ -114,7 +115,7 @@ describe('MpdInfoAccordion', () => {
         activeMpdStartAt={null}
         activeMpdFinishAt={null}
         activeMpdMonthlyGoal={null}
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.MpdInfo}
       />,
     );
 
@@ -131,7 +132,7 @@ describe('MpdInfoAccordion', () => {
         activeMpdStartAt={'2011-02-22'}
         activeMpdFinishAt={'2011-12-01'}
         activeMpdMonthlyGoal={1000}
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.MpdInfo}
       />,
     );
     const inputStart = getAllByRole('textbox')[0];

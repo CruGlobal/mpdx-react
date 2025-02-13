@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
 import { TimeZoneAccordion } from './TimeZoneAccordion';
 
@@ -44,17 +45,20 @@ const timeZones = [
 
 interface ComponentsProps {
   timeZone: string;
-  expandedPanel: string;
+  expandedAccordion: PreferenceAccordion | null;
 }
 
-const Components: React.FC<ComponentsProps> = ({ timeZone, expandedPanel }) => (
+const Components: React.FC<ComponentsProps> = ({
+  timeZone,
+  expandedAccordion,
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <TimeZoneAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            expandedAccordion={expandedAccordion}
             timeZone={timeZone}
             timeZones={timeZones}
           />
@@ -70,7 +74,7 @@ describe('TimeZoneAccordion', () => {
   });
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
-      <Components timeZone={'USD'} expandedPanel="" />,
+      <Components timeZone={'USD'} expandedAccordion={null} />,
     );
 
     expect(getByText(label)).toBeInTheDocument();
@@ -81,7 +85,10 @@ describe('TimeZoneAccordion', () => {
     const value = ''; //value is required
 
     const { getByRole } = render(
-      <Components timeZone={value} expandedPanel={label} />,
+      <Components
+        timeZone={value}
+        expandedAccordion={PreferenceAccordion.TimeZone}
+      />,
     );
 
     const button = getByRole('button', { name: 'Save' });
@@ -95,7 +102,7 @@ describe('TimeZoneAccordion', () => {
     const { getByRole, getByText } = render(
       <Components
         timeZone={'Eastern Time (US & Canada)'}
-        expandedPanel={label}
+        expandedAccordion={PreferenceAccordion.TimeZone}
       />,
     );
     const input = getByRole('combobox');

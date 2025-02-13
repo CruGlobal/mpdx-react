@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
+import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { SettingsWrapper } from './Wrapper';
 import {
@@ -43,11 +44,12 @@ const HeaderAndDropdown = styled(Box)(() => ({
 const Organizations = (): ReactElement => {
   const { t } = useTranslation();
   const { query } = useRouter();
-  const [expandedPanel, setExpandedPanel] = useState(
-    typeof query.selectedTab === 'string'
-      ? query.selectedTab
-      : 'Impersonate User',
-  );
+  const [expandedAccordion, setExpandedAccordion] =
+    useState<OrganizationAccordion | null>(
+      typeof query.selectedTab === 'string'
+        ? (query.selectedTab as OrganizationAccordion)
+        : OrganizationAccordion.ImpersonateUser,
+    );
 
   const [selectedOrganization, setSelectedOrganization] = useState<
     SettingsOrganizationFragment | null | undefined
@@ -59,11 +61,6 @@ const Organizations = (): ReactElement => {
   useEffect(() => {
     setSelectedOrganization(organizations?.[0]);
   }, [organizations]);
-
-  const handleAccordionChange = (panel: string) => {
-    const panelLowercase = panel.toLowerCase();
-    setExpandedPanel(expandedPanel === panelLowercase ? '' : panelLowercase);
-  };
 
   return (
     <OrganizationsContextProvider
@@ -125,13 +122,13 @@ const Organizations = (): ReactElement => {
         )}
         <AccordionGroup title={t('External Services')}>
           <ImpersonateUserAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            handleAccordionChange={setExpandedAccordion}
+            expandedAccordion={expandedAccordion}
           />
 
           <ManageOrganizationAccessAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedPanel={expandedPanel}
+            handleAccordionChange={setExpandedAccordion}
+            expandedAccordion={expandedAccordion}
           />
         </AccordionGroup>
       </SettingsWrapper>

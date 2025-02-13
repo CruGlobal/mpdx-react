@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { OrganizationsContextProvider } from 'pages/accountLists/[accountListId]/settings/organizations.page';
+import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from '../../../../theme';
 import { ImpersonateUserAccordion } from './ImpersonateUserAccordion';
 
@@ -59,7 +60,7 @@ describe('ImpersonateUserAccordion', () => {
         <GqlMockedProvider>
           <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -74,7 +75,7 @@ describe('ImpersonateUserAccordion', () => {
         <GqlMockedProvider onCall={mutationSpy}>
           <ImpersonateUserAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'Impersonate User'}
+            expandedAccordion={OrganizationAccordion.ImpersonateUser}
           />
         </GqlMockedProvider>
       </Components>,

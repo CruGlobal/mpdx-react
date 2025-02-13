@@ -22,6 +22,7 @@ import {
   OrganizationsContext,
   OrganizationsContextType,
 } from 'pages/accountLists/[accountListId]/settings/organizations.page';
+import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
@@ -66,10 +67,9 @@ const impersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
     username: yup.string().email().required(),
   });
 
-export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
-  handleAccordionChange,
-  expandedPanel,
-}) => {
+export const ManageOrganizationAccessAccordion: React.FC<
+  AccordionProps<OrganizationAccordion>
+> = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
   const accordionName = t('Manage Organization Access');
   const { enqueueSnackbar } = useSnackbar();
@@ -245,8 +245,9 @@ export const ManageOrganizationAccessAccordion: React.FC<AccordionProps> = ({
 
   return (
     <AccordionItem
+      accordion={OrganizationAccordion.ManageOrganizationAccess}
       onAccordionChange={handleAccordionChange}
-      expandedPanel={expandedPanel}
+      expandedAccordion={expandedAccordion}
       label={accordionName}
       value={''}
     >

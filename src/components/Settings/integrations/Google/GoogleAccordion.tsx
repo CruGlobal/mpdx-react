@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import Modal from 'src/components/common/Modal/Modal';
@@ -73,7 +74,7 @@ export type GoogleAccountAttributesSlimmed = Pick<
 
 export const GoogleAccordion: React.FC<AccordionProps> = ({
   handleAccordionChange,
-  expandedPanel,
+  expandedAccordion,
   disabled,
 }) => {
   const accountListId = useAccountListId();
@@ -85,7 +86,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
     GoogleAccountAttributesSlimmed | undefined
   >();
   const { data, loading } = useGoogleAccountsQuery({
-    skip: !expandedPanel,
+    skip: !expandedAccordion,
   });
   const googleAccounts = data?.googleAccounts;
   const { appName } = useGetAppSettings();
@@ -102,8 +103,9 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
   return (
     <>
       <AccordionItem
+        accordion={IntegrationAccordion.Google}
         onAccordionChange={handleAccordionChange}
-        expandedPanel={expandedPanel}
+        expandedAccordion={expandedAccordion}
         label={t('Google')}
         value={''}
         disabled={disabled}
@@ -118,7 +120,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
         }
       >
         {loading && <Skeleton height="90px" />}
-        {!loading && !googleAccounts?.length && !!expandedPanel && (
+        {!loading && !googleAccounts?.length && !!expandedAccordion && (
           <>
             <StyledFormLabel>
               {t('Google Integration Overview')}

@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import * as Types from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PrayerlettersAccordion } from './PrayerlettersAccordion';
@@ -54,7 +55,7 @@ describe('PrayerlettersAccount', () => {
         <GqlMockedProvider>
           <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={''}
+            expandedAccordion={null}
           />
         </GqlMockedProvider>
       </Components>,
@@ -71,7 +72,7 @@ describe('PrayerlettersAccount', () => {
         <GqlMockedProvider>
           <PrayerlettersAccordion
             handleAccordionChange={handleAccordionChange}
-            expandedPanel={'prayerletters.com'}
+            expandedAccordion={IntegrationAccordion.Prayerletters}
           />
         </GqlMockedProvider>
       </Components>,
@@ -97,7 +98,7 @@ describe('PrayerlettersAccount', () => {
           >
             <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'prayerletters.com'}
+              expandedAccordion={IntegrationAccordion.Prayerletters}
             />
           </GqlMockedProvider>
         </Components>,
@@ -138,7 +139,7 @@ describe('PrayerlettersAccount', () => {
           >
             <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'prayerletters.com'}
+              expandedAccordion={IntegrationAccordion.Prayerletters}
             />
           </GqlMockedProvider>
         </Components>,
@@ -207,7 +208,7 @@ describe('PrayerlettersAccount', () => {
           >
             <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'prayerletters.com'}
+              expandedAccordion={IntegrationAccordion.Prayerletters}
             />
           </GqlMockedProvider>
         </Components>,
@@ -272,7 +273,7 @@ describe('PrayerlettersAccount', () => {
           >
             <PrayerlettersAccordion
               handleAccordionChange={handleAccordionChange}
-              expandedPanel={'prayerletters.com'}
+              expandedAccordion={IntegrationAccordion.Prayerletters}
             />
           </GqlMockedProvider>
         </Components>,
