@@ -78,28 +78,28 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
           description={t('% of self-raised funds over total funds')}
           explanation={<OwnershipExplanation />}
           value={latestMpdHealthData?.ownershipHi ?? 0}
-          isLoading={loading}
+          isLoading={loading && !data}
         />
         <FormulaItem
           name={t('Success')}
           description={t('% of self-raised funds over support goal')}
           explanation={<SuccessExplanation />}
           value={latestMpdHealthData?.successHi ?? 0}
-          isLoading={loading}
+          isLoading={loading && !data}
         />
         <FormulaItem
           name={t('Consistency')}
           description={t('% of months with positive account balance')}
           value={latestMpdHealthData?.consistencyHi ?? 0}
           explanation={<ConsistencyExplanation />}
-          isLoading={loading}
+          isLoading={loading && !data}
         />
         <FormulaItem
           name={t('Depth')}
           description={t('Trend of local partners')}
           explanation={<DepthExplanation />}
           value={latestMpdHealthData?.depthHi ?? 0}
-          isLoading={loading}
+          isLoading={loading && !data}
         />
       </Box>
     </Card>
