@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -121,7 +122,7 @@ const FormulaItem: React.FC<FormulaItemProps> = ({
   isLoading,
 }) => (
   <Accordion>
-    <StyledSummary>
+    <StyledSummary expandIcon={<ExpandMoreIcon />}>
       {isLoading ? (
         <Skeleton width={60} height={42} />
       ) : (
