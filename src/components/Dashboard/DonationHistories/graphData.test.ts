@@ -78,6 +78,73 @@ describe('calculateGraphData', () => {
         },
       ]);
     });
+
+    it('uses the machine calculated goal with the staff entered goal is missing', () => {
+      const data = gqlMock<
+        GetDonationGraphQuery,
+        GetDonationGraphQueryVariables
+      >(GetDonationGraphDocument, {
+        mocks: {
+          accountList: {
+            currency: 'USD',
+            monthlyGoal: null,
+          },
+          reportsDonationHistories: {
+            periods: [
+              { startDate: '2020-07-01' },
+              { startDate: '2020-08-01' },
+              { startDate: '2020-09-01' },
+              { startDate: '2020-10-01' },
+              { startDate: '2020-11-01' },
+              { startDate: '2020-12-01' },
+            ],
+          },
+          healthIndicatorData: [
+            {
+              indicationPeriodBegin: '2020-08-01',
+              staffEnteredGoal: null,
+              machineCalculatedGoal: null,
+            },
+            {
+              indicationPeriodBegin: '2020-09-01',
+              staffEnteredGoal: null,
+              machineCalculatedGoal: 100,
+              machineCalculatedGoalCurrency: 'EUR',
+            },
+            {
+              indicationPeriodBegin: '2020-10-01',
+              staffEnteredGoal: null,
+              machineCalculatedGoal: 100,
+              machineCalculatedGoalCurrency: 'USD',
+            },
+            {
+              indicationPeriodBegin: '2020-11-01',
+              staffEnteredGoal: 200,
+              machineCalculatedGoal: 100,
+              machineCalculatedGoalCurrency: 'USD',
+            },
+            {
+              indicationPeriodBegin: '2020-12-01',
+              staffEnteredGoal: 200,
+              machineCalculatedGoal: 100,
+              machineCalculatedGoalCurrency: 'USD',
+            },
+          ],
+        },
+        variables,
+      });
+
+      expect(
+        calculateGraphData({ ...graphOptions, data }).periods,
+      ).toMatchObject([
+        { goal: null, startDate: 'Jul 20' }, // no health indicator period
+        { goal: null, startDate: 'Aug 20' }, // no staff-entered or estimated goal
+        { goal: null, startDate: 'Sep 20' }, // ignoring estimated goal because currency doesn't match
+        { goal: 100, startDate: 'Oct 20' }, // using estimated goal because no staff-entered goal available
+        { goal: 200, startDate: 'Nov 20' }, // using staff-entered goal
+        { goal: 100, startDate: 'Dec 20' }, // using estimated goal because no preference set
+      ]);
+    });
   });
 
   describe('empty', () => {

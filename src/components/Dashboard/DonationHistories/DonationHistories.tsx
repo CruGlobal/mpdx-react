@@ -78,7 +78,10 @@ export interface DonationHistoriesData {
   healthIndicatorData: Array<
     Pick<
       Types.HealthIndicatorData,
-      'indicationPeriodBegin' | 'staffEnteredGoal'
+      | 'indicationPeriodBegin'
+      | 'machineCalculatedGoal'
+      | 'machineCalculatedGoalCurrency'
+      | 'staffEnteredGoal'
     >
   >;
 }
