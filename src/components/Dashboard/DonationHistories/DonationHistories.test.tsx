@@ -9,8 +9,6 @@ import {
 } from './DonationHistories';
 import DonationHistories from '.';
 
-const setTime = jest.fn();
-
 const push = jest.fn();
 
 const router = {
@@ -22,7 +20,7 @@ const router = {
 const TestComponent: React.FC<DonationHistoriesProps> = (props) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <DonationHistories setTime={setTime} {...props} />,
+      <DonationHistories {...props} />,
     </TestRouter>
   </ThemeProvider>
 );

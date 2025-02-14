@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -31,7 +30,6 @@ import { makeStyles } from 'tss-react/mui';
 import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
 import * as Types from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { currencyFormat } from '../../../lib/intlFormat';
@@ -88,20 +86,18 @@ export interface DonationHistoriesData {
 export interface DonationHistoriesProps {
   loading?: boolean;
   data: DonationHistoriesData | undefined;
-  setTime?: (time: DateTime) => void;
+  onPeriodClick?: (period: DateTime) => void;
 }
 
 const DonationHistories = ({
   loading,
   data,
-  setTime,
+  onPeriodClick,
 }: DonationHistoriesProps): ReactElement => {
   const { classes } = useStyles();
   const { palette } = useTheme();
-  const { push } = useRouter();
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
   const fills = [
     palette.graphBlue1.main,
     palette.graphBlue2.main,
@@ -123,21 +119,13 @@ const DonationHistories = ({
   } = calculateGraphData({ locale, data: data, currencyColors: fills });
   const empty = !loading && periodsEmpty;
 
-  const handleClick: CategoricalChartFunc = (period) => {
-    if (!period?.activePayload) {
+  const handleClick: CategoricalChartFunc = (state) => {
+    if (!state?.activePayload) {
       // The click was inside the chart but wasn't on a period
       return;
     }
-    if (setTime) {
-      setTime(period.activePayload[0].payload.period);
-    } else {
-      push({
-        pathname: `/accountLists/${accountListId}/reports/donations`,
-        query: {
-          month: period.activePayload[0].payload.period.toISO(),
-        },
-      });
-    }
+
+    onPeriodClick?.(state.activePayload[0].payload.period);
   };
 
   return (

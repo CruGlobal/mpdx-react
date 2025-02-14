@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import {
@@ -86,6 +87,7 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
   accountListType,
 }) => {
   const { t } = useTranslation();
+  const { push } = useRouter();
 
   const { data: ownData, loading: ownLoading } =
     useLoadAccountListCoachingDetailQuery({
@@ -156,6 +158,17 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
     }
   }, [sidebarDrawer]);
 
+  const handlePeriodClick = (period: DateTime) => {
+    if (accountListType === AccountListTypeEnum.Own) {
+      push({
+        pathname: `/accountLists/${accountListId}/reports/donations`,
+        query: {
+          month: period.toISODate(),
+        },
+      });
+    }
+  };
+
   const sidebar = (
     <CoachingSidebar
       period={period}
@@ -212,7 +225,11 @@ export const CoachingDetail: React.FC<CoachingDetailProps> = ({
             </CoachingMainTitleContainer>
             <Divider />
             <CoachingItemContainer>
-              <DonationHistories loading={loading} data={donationGraphData} />
+              <DonationHistories
+                loading={loading}
+                data={donationGraphData}
+                onPeriodClick={handlePeriodClick}
+              />
               <MonthlyCommitment
                 coachingId={accountListId}
                 accountListType={accountListType}
