@@ -122,12 +122,12 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
               <Tooltip />
               <Legend />
               <Bar
-                name={t('Last Year')}
+                name={t('Previous 13 - 24 months')}
                 dataKey="lastYear"
                 fill={theme.palette.secondary.dark}
               />
               <Bar
-                name={t('This Year')}
+                name={t('Previous 12 months')}
                 dataKey="thisYear"
                 fill={theme.palette.secondary.main}
               />
