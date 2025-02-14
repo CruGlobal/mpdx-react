@@ -129,7 +129,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
               <Bar
                 name={t('Previous 12 months')}
                 dataKey="thisYear"
-                fill={theme.palette.secondary.main}
+                fill={theme.palette.primary.main}
               />
             </BarChart>
           </ResponsiveContainer>
