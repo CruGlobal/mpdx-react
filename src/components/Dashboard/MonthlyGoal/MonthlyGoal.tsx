@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React, { ReactElement, useMemo } from 'react';
 import {
   Box,
@@ -13,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { HealthIndicatorWidget } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorWidget/HealthIndicatorWidget';
+import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import {
   ContactFilterPledgeReceivedEnum,
   StatusEnum,
@@ -181,6 +183,14 @@ const MonthlyGoal = ({
                             currencyFormat(goal, currencyCode, locale)
                           )}
                         </Typography>
+                        {!staffEnteredGoal && (
+                          <Button
+                            component={NextLink}
+                            href={`/accountLists/${accountListId}/settings/preferences?selectedTab=${PreferenceAccordion.MonthlyGoal}`}
+                          >
+                            {t('Set Monthly Goal')}
+                          </Button>
+                        )}
                       </Box>
                     </Tooltip>
                   </Grid>

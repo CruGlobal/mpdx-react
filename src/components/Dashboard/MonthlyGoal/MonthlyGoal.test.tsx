@@ -263,7 +263,7 @@ describe('MonthlyGoal', () => {
 
   describe('Monthly Goal', () => {
     it('should set the monthly goal to the user-entered goal if it exists', async () => {
-      const { findByRole } = render(
+      const { findByRole, queryByRole } = render(
         <Components
           monthlyGoalProps={defaultProps}
           healthIndicatorData={[
@@ -280,10 +280,14 @@ describe('MonthlyGoal', () => {
           name: /\$999.50/i,
         }),
       ).toBeInTheDocument();
+
+      expect(
+        queryByRole('link', { name: 'Set Monthly Goal' }),
+      ).not.toBeInTheDocument();
     });
 
     it('should set the monthly goal to the machine calculated goal', async () => {
-      const { findByRole, queryByRole } = render(
+      const { findByRole, getByRole, queryByRole } = render(
         <Components
           monthlyGoalProps={{ ...defaultProps, goal: undefined }}
           healthIndicatorData={[healthIndicatorScore]}
@@ -301,7 +305,13 @@ describe('MonthlyGoal', () => {
           name: /\$999.50/i,
         }),
       ).not.toBeInTheDocument();
+
+      expect(getByRole('link', { name: 'Set Monthly Goal' })).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/settings/preferences?selectedTab=MonthlyGoal',
+      );
     });
+
     it('should set the monthly goal to 0 if both the machineCalculatedGoal and monthly goal are unset', async () => {
       const { findByRole, queryByRole } = render(
         <Components
