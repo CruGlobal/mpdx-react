@@ -87,7 +87,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
             loading={loading}
             stat={data?.ownershipHi}
             statName={t('Ownership')}
-            toolTip={t('% of Self-raised Funds over Total Funds')}
+            toolTip={t('% of self-raised funds over total funds')}
           />
           <WidgetStat
             loading={loading}
@@ -99,7 +99,7 @@ export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({
             loading={loading}
             stat={data?.successHi}
             statName={t('Success')}
-            toolTip={t('% of Self-raised Funds over Support Goal')}
+            toolTip={t('% of self-raised funds over support goal')}
           />
           <WidgetStat
             loading={loading}
