@@ -233,6 +233,7 @@ const DonationHistories = ({
                           dataKey="goal"
                           name={t('Goal')}
                           connectNulls
+                          dot={false}
                           stroke={palette.graphTeal.main}
                           strokeWidth={3}
                         />
