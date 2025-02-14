@@ -32,6 +32,8 @@ query GetDashboard($accountListId: ID!, $periodBegin: ISO8601Date!) {
   healthIndicatorData(accountListId: $accountListId, beginDate: $periodBegin) {
     id
     indicationPeriodBegin
+    machineCalculatedGoal
+    machineCalculatedGoalCurrency
     staffEnteredGoal
   }
 }

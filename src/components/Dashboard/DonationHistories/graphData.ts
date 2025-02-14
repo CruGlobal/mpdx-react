@@ -32,20 +32,31 @@ export const calculateGraphData = ({
   data,
   currencyColors,
 }: CalculateGraphDataOptions): CalculateGraphDataResult => {
-  const { monthlyGoal: goal, totalPledges: pledged } = data?.accountList ?? {};
+  const {
+    currency,
+    monthlyGoal: goal,
+    totalPledges: pledged,
+  } = data?.accountList ?? {};
   const { healthIndicatorData, reportsDonationHistories } = data ?? {};
   const currentMonth = DateTime.now().startOf('month').toISODate();
 
   const currencies: CurrencyBar[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
-    // Use the goal from preferences for the last period, i.e. the current month
+    const hiPeriod = healthIndicatorData?.find(
+      (item) => item.indicationPeriodBegin === period.startDate,
+    );
+    // The machine calculated goal cannot be used if its currency differs from the user's currency
+    const machineCalculatedGoal =
+      currency && currency === hiPeriod?.machineCalculatedGoalCurrency
+        ? hiPeriod.machineCalculatedGoal
+        : null;
+
+    // Use the goal from preferences for the current month
     // For all other months, use the snapshot of the goal preference from the health indicator data
+    // Regardless of the goal source, if it is missing, default to the machine calculated goal
     const periodGoal =
-      period.startDate === currentMonth
-        ? goal
-        : healthIndicatorData?.find(
-            (item) => item.indicationPeriodBegin === period.startDate,
-          )?.staffEnteredGoal;
+      (period.startDate === currentMonth ? goal : hiPeriod?.staffEnteredGoal) ??
+      machineCalculatedGoal;
 
     const periodData: Period = {
       currencies: {},

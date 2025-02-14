@@ -115,6 +115,8 @@ query GetCoachingDonationGraph(
   ) {
     id
     indicationPeriodBegin
+    machineCalculatedGoal
+    machineCalculatedGoalCurrency
     staffEnteredGoal
   }
 }
