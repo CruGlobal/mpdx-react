@@ -154,18 +154,14 @@ const DonationHistories = ({
               className={classes.cardHeader}
               title={
                 <Grid container spacing={2} justifyContent="center">
-                  {goal ? (
-                    <>
-                      <Grid item data-testid="DonationHistoriesTypographyGoal">
-                        <LegendReferenceLine
-                          name={t('Goal')}
-                          value={currencyFormat(goal, currency, locale)}
-                          color={palette.graphTeal.main}
-                        />
-                      </Grid>
-                      <Grid item>|</Grid>
-                    </>
-                  ) : null}
+                  <Grid item data-testid="DonationHistoriesTypographyGoal">
+                    <LegendReferenceLine
+                      name={t('Goal')}
+                      value={goal && currencyFormat(goal, currency, locale)}
+                      color={palette.graphTeal.main}
+                    />
+                  </Grid>
+                  <Grid item>|</Grid>
                   <Grid item data-testid="DonationHistoriesTypographyAverage">
                     <LegendReferenceLine
                       name={t('Average')}

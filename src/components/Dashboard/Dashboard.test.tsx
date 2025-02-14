@@ -199,9 +199,9 @@ describe('Dashboard', () => {
       '$400',
     );
     expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000');
-    expect(
-      queryByTestId('DonationHistoriesTypographyGoal'),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('DonationHistoriesTypographyGoal')).toHaveTextContent(
+      'Goal',
+    );
     expect(
       getByTestId('DonationHistoriesTypographyAverage').textContent,
     ).toEqual('Average $750');
