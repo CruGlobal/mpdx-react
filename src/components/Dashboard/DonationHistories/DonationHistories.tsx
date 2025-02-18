@@ -171,7 +171,7 @@ const DonationHistories = ({
                           )
                         )
                       }
-                      color="#9C9FA1"
+                      color={palette.cruGrayMedium.main}
                     />
                   </Grid>
                   {pledged ? (
