@@ -122,15 +122,13 @@ const DonationHistories = ({
   } = calculateGraphData({ locale, data: data, currencyColors: fills });
   const empty = !loading && periodsEmpty;
 
-  const handleClick: CategoricalChartFunc = (period) => {
-    if (!period?.activePayload) {
+  const handleClick: CategoricalChartFunc = (state) => {
+    if (!state?.activePayload) {
       // The click was inside the chart but wasn't on a period
       return;
     }
 
-    if (onPeriodClick) {
-      onPeriodClick?.(period.activePayload[0].payload.period);
-    }
+    onPeriodClick?.(state.activePayload[0].payload.period);
   };
 
   return (
