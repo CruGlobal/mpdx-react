@@ -210,11 +210,11 @@ const DonationHistories = ({
             </Box>
           ) : (
             <>
-              <Box display={{ xs: 'none', md: 'block' }} height={250}>
+              <Box display={{ xs: 'none', md: 'block' }}>
                 {loading ? (
                   <BarChartSkeleton bars={12} />
                 ) : (
-                  <ResponsiveContainer minWidth={600}>
+                  <ResponsiveContainer height={250}>
                     <ComposedChart
                       data={periods}
                       margin={{
@@ -286,11 +286,11 @@ const DonationHistories = ({
                   </ResponsiveContainer>
                 )}
               </Box>
-              <Box display={{ xs: 'block', md: 'none' }} height={150}>
+              <Box display={{ xs: 'block', md: 'none' }}>
                 {loading ? (
                   <BarChartSkeleton bars={12} width={10} />
                 ) : (
-                  <ResponsiveContainer>
+                  <ResponsiveContainer height={150}>
                     <BarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
