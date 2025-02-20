@@ -250,7 +250,7 @@ const Preferences: React.FC = () => {
               }
               accountListId={accountListId}
               currency={
-                accountPreferencesData?.accountList?.settings?.currency || ''
+                accountPreferencesData?.accountList?.settings?.currency || null
               }
               disabled={onSetupTour && setup !== 1}
               handleSetupChange={handleSetupChange}
@@ -270,7 +270,7 @@ const Preferences: React.FC = () => {
               handleAccordionChange={setExpandedAccordion}
               expandedAccordion={expandedAccordion}
               currency={
-                accountPreferencesData?.accountList?.settings?.currency || ''
+                accountPreferencesData?.accountList?.settings?.currency || null
               }
               accountListId={accountListId}
               disabled={onSetupTour}

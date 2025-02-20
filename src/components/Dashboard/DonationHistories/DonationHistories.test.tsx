@@ -1,10 +1,9 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
+import theme from 'src/theme';
+import { DonationHistoriesProps } from './DonationHistories';
 import DonationHistories from '.';
 
 const setTime = jest.fn();
@@ -17,25 +16,23 @@ const router = {
   push,
 };
 
-describe('DonationHistories', () => {
-  let reportsDonationHistories: Parameters<
-    typeof DonationHistories
-  >[0]['reportsDonationHistories'];
+const TestComponent: React.FC<DonationHistoriesProps> = (props) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <DonationHistories setTime={setTime} {...props} />,
+    </TestRouter>
+  </ThemeProvider>
+);
 
+describe('DonationHistories', () => {
   it('default', () => {
-    const { getByTestId, queryByTestId } = render(
-      <TestRouter router={router}>
-        <DonationHistories setTime={setTime} />,
-      </TestRouter>,
-    );
+    const { getByTestId, queryByTestId } = render(<TestComponent />);
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
   });
 
   it('empty periods', () => {
-    reportsDonationHistories = {
+    const reportsDonationHistories = {
       periods: [
         {
           convertedTotal: 0,
@@ -50,33 +47,23 @@ describe('DonationHistories', () => {
       ],
       averageIgnoreCurrent: 0,
     };
+
     const { getByTestId, queryByTestId } = render(
-      <TestRouter router={router}>
-        <DonationHistories
-          setTime={setTime}
-          reportsDonationHistories={reportsDonationHistories}
-        />
-      </TestRouter>,
+      <TestComponent reportsDonationHistories={reportsDonationHistories} />,
     );
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
   });
 
   it('loading', () => {
-    const { getByTestId, queryByTestId } = render(
-      <TestRouter router={router}>
-        <DonationHistories setTime={setTime} loading={true} />
-      </TestRouter>,
-    );
-    expect(getByTestId('DonationHistoriesGridLoading')).toBeInTheDocument();
+    const { getAllByTestId, queryByTestId } = render(<TestComponent loading />);
+    expect(getAllByTestId('BarChartSkeleton')).toHaveLength(2);
     expect(queryByTestId('DonationHistoriesBoxEmpty')).not.toBeInTheDocument();
   });
 
   describe('populated periods', () => {
-    beforeEach(() => {
-      reportsDonationHistories = {
+    it('shows references', () => {
+      const reportsDonationHistories = {
         periods: [
           {
             convertedTotal: 50,
@@ -91,23 +78,13 @@ describe('DonationHistories', () => {
         ],
         averageIgnoreCurrent: 1000,
       };
-      beforeTestResizeObserver();
-    });
 
-    afterEach(() => {
-      afterTestResizeObserver();
-    });
-
-    it('shows references', () => {
       const { getByTestId } = render(
-        <TestRouter router={router}>
-          <DonationHistories
-            setTime={setTime}
-            reportsDonationHistories={reportsDonationHistories}
-            goal={100}
-            pledged={2500}
-          />
-        </TestRouter>,
+        <TestComponent
+          reportsDonationHistories={reportsDonationHistories}
+          goal={100}
+          pledged={2500}
+        />,
       );
       expect(
         getByTestId('DonationHistoriesTypographyGoal').textContent,

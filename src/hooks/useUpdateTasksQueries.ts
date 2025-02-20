@@ -8,13 +8,12 @@ import {
   TaskRowFragment,
   TaskRowFragmentDoc,
 } from 'src/components/Task/TaskRow/TaskRow.generated';
+import { isNotNullish } from 'src/lib/typeGuards';
 import {
   GetTaskIdsForMassSelectionDocument,
   GetTaskIdsForMassSelectionQuery,
   GetTaskIdsForMassSelectionQueryVariables,
 } from './GetIdsForMassSelection.generated';
-
-const isNotNull = <T>(item: T | null): item is T => item !== null;
 
 // The Apollo cache makes it trivial to update cached tasks after they are updated. However, we
 // need to update not ony the individual tasks but also the tasks list. Handling the tasks list is
@@ -81,7 +80,7 @@ export const useUpdateTasksQueries = (): {
                 }),
               )
               // Ignore tasks that aren't in the cache
-              .filter(isNotNull);
+              .filter(isNotNullish);
             return {
               ...data,
               tasks: { ...data.tasks, nodes },

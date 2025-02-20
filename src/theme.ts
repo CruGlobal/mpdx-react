@@ -10,16 +10,10 @@ const cruColors = {
   grayLight: '#EBECEC',
 };
 
-const statusColors = {
-  success: '#5CB85C',
-  warning: '#8A6D3B',
-  danger: '#A94442',
-};
-
 const mpdxColors = {
   green: '#00CA99',
   blue: '#05699B',
-  blueLight: '#e7f2f7',
+  blueLight: '#E7F2F7',
   yellow: '#FFF5CD',
   gray: '#DCDCDC',
 };
@@ -29,6 +23,20 @@ const progressBarColors = {
   orange: '#DD7D1A',
   gray: '#808080',
 };
+
+const statusColors = {
+  success: '#5CB85C',
+  warning: '#8A6D3B',
+  danger: '#A94442',
+};
+
+const graphColors = {
+  blue1: '#007398',
+  blue2: '#1FC0D2',
+  blue3: '#30F2F2',
+  teal: '#17AEBF',
+};
+
 // https://material-ui.com/customization/palette/#adding-new-colors
 declare module '@mui/material/styles/createPalette' {
   interface Palette {
@@ -46,7 +54,12 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: Palette['primary'];
     statusWarning: Palette['primary'];
     statusDanger: Palette['primary'];
+    graphBlue1: Palette['primary'];
+    graphBlue2: Palette['primary'];
+    graphBlue3: Palette['primary'];
+    graphTeal: Palette['primary'];
   }
+
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
     cruGrayDark: PaletteOptions['primary'];
@@ -62,6 +75,10 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: PaletteOptions['primary'];
     statusWarning: PaletteOptions['primary'];
     statusDanger: PaletteOptions['primary'];
+    graphBlue1: PaletteOptions['primary'];
+    graphBlue2: PaletteOptions['primary'];
+    graphBlue3: PaletteOptions['primary'];
+    graphTeal: PaletteOptions['primary'];
   }
 }
 
@@ -124,6 +141,18 @@ const theme = createTheme({
     },
     statusDanger: {
       main: statusColors.danger,
+    },
+    graphBlue1: {
+      main: graphColors.blue1,
+    },
+    graphBlue2: {
+      main: graphColors.blue2,
+    },
+    graphBlue3: {
+      main: graphColors.blue3,
+    },
+    graphTeal: {
+      main: graphColors.teal,
     },
   },
   components: {
