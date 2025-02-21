@@ -137,6 +137,62 @@ describe('calculateGraphData', () => {
         { goal: 200, startDate: 'Dec 20' }, // using staff-entered goal
       ]);
     });
+
+    it('extrapolates missing health indicator periods', () => {
+      const data = gqlMock<
+        GetDonationGraphQuery,
+        GetDonationGraphQueryVariables
+      >(GetDonationGraphDocument, {
+        mocks: {
+          accountList: {
+            currency: 'USD',
+            monthlyGoal: null,
+          },
+          reportsDonationHistories: {
+            periods: [
+              { startDate: '2020-07-01' },
+              { startDate: '2020-08-01' },
+              { startDate: '2020-09-01' },
+              { startDate: '2020-10-01' },
+              { startDate: '2020-11-01' },
+              { startDate: '2020-12-01' },
+            ],
+          },
+          // August, September, and November are missing
+          healthIndicatorData: [
+            {
+              indicationPeriodBegin: '2020-07-01',
+              staffEnteredGoal: 200,
+              machineCalculatedGoal: 100,
+            },
+            {
+              indicationPeriodBegin: '2020-10-01',
+              staffEnteredGoal: null,
+              machineCalculatedGoal: 110,
+              machineCalculatedGoalCurrency: 'USD',
+            },
+            {
+              indicationPeriodBegin: '2020-12-01',
+              staffEnteredGoal: 220,
+              machineCalculatedGoal: 120,
+              machineCalculatedGoalCurrency: 'USD',
+            },
+          ],
+        },
+        variables,
+      });
+
+      expect(
+        calculateGraphData({ ...graphOptions, data }).periods,
+      ).toMatchObject([
+        { goal: 200, startDate: 'Jul 20' },
+        { goal: 200, startDate: 'Aug 20' }, // extrapolated from July
+        { goal: 200, startDate: 'Sep 20' }, // extrapolated from July
+        { goal: 110, startDate: 'Oct 20' },
+        { goal: 110, startDate: 'Nov 20' }, // extrapolated from October
+        { goal: 220, startDate: 'Dec 20' },
+      ]);
+    });
   });
 
   describe('empty', () => {
@@ -210,7 +266,10 @@ describe('calculateGraphData', () => {
             totalPledges: 20,
           },
           reportsDonationHistories: {
-            periods: [{ convertedTotal: 100 }, { convertedTotal: 40 }],
+            periods: [
+              { startDate: '2020-11-01', convertedTotal: 100 },
+              { startDate: '2020-12-01', convertedTotal: 40 },
+            ],
             averageIgnoreCurrent: 50,
           },
           healthIndicatorData: [
@@ -236,8 +295,8 @@ describe('calculateGraphData', () => {
           },
           reportsDonationHistories: {
             periods: [
-              { convertedTotal: 30, startDate: '2020-11-01' },
-              { convertedTotal: 40, startDate: '2020-12-01' },
+              { startDate: '2020-11-01', convertedTotal: 30 },
+              { startDate: '2020-12-01', convertedTotal: 40 },
             ],
             averageIgnoreCurrent: 50,
           },
@@ -264,8 +323,8 @@ describe('calculateGraphData', () => {
           },
           reportsDonationHistories: {
             periods: [
-              { convertedTotal: 30, startDate: '2020-11-01' },
-              { convertedTotal: 40, startDate: '2020-12-01' },
+              { startDate: '2020-11-01', convertedTotal: 30 },
+              { startDate: '2020-12-01', convertedTotal: 40 },
             ],
             averageIgnoreCurrent: 50,
           },
@@ -292,8 +351,8 @@ describe('calculateGraphData', () => {
           },
           reportsDonationHistories: {
             periods: [
-              { convertedTotal: 30, startDate: '2020-11-01' },
-              { convertedTotal: 40, startDate: '2020-12-01' },
+              { startDate: '2020-11-01', convertedTotal: 30 },
+              { startDate: '2020-12-01', convertedTotal: 40 },
             ],
             averageIgnoreCurrent: 50,
           },

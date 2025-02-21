@@ -42,8 +42,12 @@ export const calculateGraphData = ({
 
   const currencies: CurrencyBar[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
-    const hiPeriod = healthIndicatorData?.find(
-      (item) => item.indicationPeriodBegin === period.startDate,
+    // Look up the health indicator period that most closely matches the current period, without
+    // going over. This handles potentially missing periods because health indicator data is not
+    // guaranteed to be available for every month. Because health indicator periods are sorted
+    // in ascending order, if e.g. March has no health indicator data, February will be used instead.
+    const hiPeriod = healthIndicatorData?.findLast(
+      (item) => item.indicationPeriodBegin <= period.startDate,
     );
     // The machine calculated goal cannot be used if its currency differs from the user's currency
     const machineCalculatedGoal =
