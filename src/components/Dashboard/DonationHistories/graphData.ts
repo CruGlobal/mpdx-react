@@ -51,11 +51,12 @@ export const calculateGraphData = ({
         ? hiPeriod.machineCalculatedGoal
         : null;
 
-    // Use the goal from preferences for the current month
-    // For all other months, use the snapshot of the goal preference from the health indicator data
-    // Regardless of the goal source, if it is missing, default to the machine calculated goal
     const periodGoal =
-      (period.startDate === currentMonth ? goal : hiPeriod?.staffEnteredGoal) ??
+      // In the current month, give the goal from preferences the highest precedence
+      (period.startDate === currentMonth ? goal : null) ??
+      // Fall back to the staff-entered goal if the preferences goal is unavailable or it is not the current month
+      hiPeriod?.staffEnteredGoal ??
+      // Finally, fall back to the machine-calculated goal as a last resort
       machineCalculatedGoal;
 
     const periodData: Period = {
