@@ -1,4 +1,8 @@
-query GetDonationGraph($accountListId: ID!, $designationAccountIds: [ID!]) {
+query GetDonationGraph(
+  $accountListId: ID!
+  $designationAccountIds: [ID!]
+  $periodBegin: ISO8601Date!
+) {
   accountList(id: $accountListId) {
     id
     currency
@@ -10,6 +14,13 @@ query GetDonationGraph($accountListId: ID!, $designationAccountIds: [ID!]) {
     designationAccountId: $designationAccountIds
   ) {
     ...DonationGraphHistories
+  }
+  healthIndicatorData(accountListId: $accountListId, beginDate: $periodBegin) {
+    id
+    indicationPeriodBegin
+    machineCalculatedGoal
+    machineCalculatedGoalCurrency
+    staffEnteredGoal
   }
 }
 

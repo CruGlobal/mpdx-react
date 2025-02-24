@@ -29,6 +29,7 @@ beforeEach(() => {
 
 const data: GetDashboardQuery = {
   user: {
+    id: 'user-1',
     firstName: 'Roger',
   },
   accountList: {
@@ -116,6 +117,7 @@ const data: GetDashboardQuery = {
     ],
     averageIgnoreCurrent: 750,
   },
+  healthIndicatorData: [],
 };
 
 describe('Dashboard', () => {
@@ -197,9 +199,9 @@ describe('Dashboard', () => {
       '$400',
     );
     expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000');
-    expect(
-      queryByTestId('DonationHistoriesTypographyGoal'),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('DonationHistoriesTypographyGoal')).toHaveTextContent(
+      'Goal',
+    );
     expect(
       getByTestId('DonationHistoriesTypographyAverage').textContent,
     ).toEqual('Average $750');
