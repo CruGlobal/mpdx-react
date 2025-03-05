@@ -6,6 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
+import { MachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
 import { MonthlyGoalAccordion } from './MonthlyGoalAccordion';
 
 jest.mock('next-auth/react');
@@ -34,17 +35,32 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
+  machineCalculatedGoal?: number;
+  machineCalculatedGoalCurrency?: string;
   expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
+  machineCalculatedGoal,
+  machineCalculatedGoalCurrency = 'USD',
   expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{
+          MachineCalculatedGoal: MachineCalculatedGoalQuery;
+        }>
+          mocks={{
+            MachineCalculatedGoal: {
+              healthIndicatorData: machineCalculatedGoal
+                ? [{ machineCalculatedGoal, machineCalculatedGoalCurrency }]
+                : [],
+            },
+          }}
+          onCall={mutationSpy}
+        >
           <MonthlyGoalAccordion
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
@@ -65,6 +81,7 @@ describe('MonthlyGoalAccordion', () => {
   afterEach(() => {
     mutationSpy.mockClear();
   });
+
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components monthlyGoal={100} expandedAccordion={null} />,
@@ -73,6 +90,21 @@ describe('MonthlyGoalAccordion', () => {
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
   });
+
+  it('should render accordion closed with calculated goal', async () => {
+    const { findByText, queryByRole } = render(
+      <Components
+        monthlyGoal={null}
+        machineCalculatedGoal={1000}
+        machineCalculatedGoalCurrency="EUR"
+        expandedAccordion={null}
+      />,
+    );
+
+    expect(await findByText('€1,000 (estimated)')).toBeInTheDocument();
+    expect(queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
   it('should render accordion open and textfield should have a value', () => {
     const { getByRole } = render(
       <Components
@@ -142,6 +174,58 @@ describe('MonthlyGoalAccordion', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('calculated goal', () => {
+    it('resets goal to calculated goal', async () => {
+      const { getByRole, findByText } = render(
+        <Components
+          monthlyGoal={1000}
+          machineCalculatedGoal={1500}
+          machineCalculatedGoalCurrency="EUR"
+          expandedAccordion={PreferenceAccordion.MonthlyGoal}
+        />,
+      );
+
+      expect(
+        await findByText(
+          /Based on the past year, NetSuite estimates that you need at least €1,500 of monthly support./,
+        ),
+      ).toBeInTheDocument();
+
+      const resetButton = getByRole('button', { name: /Reset/ });
+      userEvent.click(resetButton);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: accountListId,
+            attributes: {
+              settings: {
+                monthlyGoal: null,
+              },
+            },
+          },
+        }),
+      );
+    });
+
+    it('hides reset button if goal is null', async () => {
+      const { findByText, queryByRole } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          expandedAccordion={PreferenceAccordion.MonthlyGoal}
+        />,
+      );
+
+      expect(
+        await findByText(
+          /Based on the past year, NetSuite estimates that you need at least \$1,000 of monthly support./,
+        ),
+      ).toBeInTheDocument();
+      expect(queryByRole('button', { name: /Reset/ })).not.toBeInTheDocument();
     });
   });
 });
