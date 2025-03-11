@@ -378,7 +378,22 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
             </StyledButton>
           </Box>
         )}
-
+      {!loading && mailchimpAccount && !mailchimpAccount?.validateKey && (
+        <Box>
+          <Alert severity="error">
+            {t(
+              'There is an error with your MailChimp connection. Please disconnect and connect to MailChimp again.',
+            )}
+          </Alert>
+          <StyledServicesButton
+            onClick={handleDisconnect}
+            variant="outlined"
+            color="error"
+          >
+            {t('Disconnect')}
+          </StyledServicesButton>
+        </Box>
+      )}
       {showDeleteModal && (
         <DeleteMailchimpAccountModal
           accountListId={accountListId || ''}
