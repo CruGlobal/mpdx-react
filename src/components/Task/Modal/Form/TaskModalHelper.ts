@@ -206,8 +206,6 @@ const setTaskName = (
   setFieldTouched: SetFieldTouched,
 ) => {
   const defaultTaskName = getDefaultTaskName(activityType, activityTypes);
-  if (defaultTaskName) {
-    setFieldValue('subject', defaultTaskName);
-  }
+  setFieldValue('subject', defaultTaskName);
   setTimeout(() => setFieldTouched('activityType', true));
 };
