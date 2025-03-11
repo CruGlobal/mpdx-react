@@ -152,7 +152,7 @@ describe('MailchimpAccount', () => {
     it('is connected but with an API key error', async () => {
       mailchimpAccount.validateKey = false;
       const mutationSpy = jest.fn();
-      const { queryByText, getByRole } = render(
+      const { findByText, findByRole, queryByText } = render(
         <Components>
           <GqlMockedProvider<{
             MailchimpAccount: MailchimpAccountQuery | undefined;
@@ -172,16 +172,14 @@ describe('MailchimpAccount', () => {
         </Components>,
       );
 
-      await waitFor(() => {
-        expect(
-          queryByText(
-            'There is an error with your MailChimp connection. Please disconnect and connect to MailChimp again.',
-          ),
-        ).toBeInTheDocument();
-      });
+      expect(
+        await findByText(
+          'There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.',
+        ),
+      ).toBeInTheDocument();
 
       expect(
-        getByRole('button', {
+        await findByRole('button', {
           name: /disconnect/i,
         }),
       ).toBeInTheDocument();

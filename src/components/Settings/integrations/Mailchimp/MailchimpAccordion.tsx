@@ -382,7 +382,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
         <Box>
           <Alert severity="error">
             {t(
-              'There is an error with your MailChimp connection. Please disconnect and connect to MailChimp again.',
+              'There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.',
             )}
           </Alert>
           <StyledServicesButton
