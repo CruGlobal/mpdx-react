@@ -149,6 +149,48 @@ describe('MailchimpAccount', () => {
     beforeEach(() => {
       mailchimpAccount = { ...standardMailchimpAccount };
     });
+    it('is connected but with an API key error', async () => {
+      mailchimpAccount.validateKey = false;
+      const mutationSpy = jest.fn();
+      const { queryByText, getByRole } = render(
+        <Components>
+          <GqlMockedProvider<{
+            MailchimpAccount: MailchimpAccountQuery | undefined;
+          }>
+            mocks={{
+              MailchimpAccount: {
+                mailchimpAccount: [mailchimpAccount],
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <MailchimpAccordion
+              handleAccordionChange={handleAccordionChange}
+              expandedAccordion={IntegrationAccordion.Mailchimp}
+            />
+          </GqlMockedProvider>
+        </Components>,
+      );
+
+      await waitFor(() => {
+        expect(
+          queryByText(
+            'There is an error with your MailChimp connection. Please disconnect and connect to MailChimp again.',
+          ),
+        ).toBeInTheDocument();
+      });
+
+      expect(
+        getByRole('button', {
+          name: /disconnect/i,
+        }),
+      ).toBeInTheDocument();
+
+      expect(
+        queryByText('Pick a list to use for your newsletter'),
+      ).not.toBeInTheDocument();
+    });
+
     it('is connected but no lists present', async () => {
       mailchimpAccount.listsPresent = false;
       const mutationSpy = jest.fn();
