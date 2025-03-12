@@ -32,15 +32,14 @@ jest.mock('notistack', () => ({
 }));
 
 const handleAccordionChange = jest.fn();
+const mutationSpy = jest.fn();
 
 const Components = ({
   expandedAccordion,
   mailchimpAccount,
-  mutationSpy,
 }: {
   expandedAccordion: IntegrationAccordion | null;
   mailchimpAccount: Types.MailchimpAccount | null;
-  mutationSpy?: jest.Mock;
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
@@ -228,12 +227,10 @@ describe('MailchimpAccount', () => {
     });
 
     it('should call updateMailchimpAccount', async () => {
-      const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <Components
           expandedAccordion={IntegrationAccordion.Mailchimp}
           mailchimpAccount={mailchimpAccount}
-          mutationSpy={mutationSpy}
         />,
       );
 
@@ -283,12 +280,10 @@ describe('MailchimpAccount', () => {
     });
 
     it('should call deleteMailchimpAccount', async () => {
-      const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <Components
           expandedAccordion={IntegrationAccordion.Mailchimp}
           mailchimpAccount={mailchimpAccount}
-          mutationSpy={mutationSpy}
         />,
       );
 
@@ -360,12 +355,10 @@ describe('MailchimpAccount', () => {
     it('should call syncMailchimpAccount', async () => {
       mailchimpAccount.valid = true;
       mailchimpAccount.autoLogCampaigns = true;
-      const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
         <Components
           expandedAccordion={IntegrationAccordion.Mailchimp}
           mailchimpAccount={mailchimpAccount}
-          mutationSpy={mutationSpy}
         />,
       );
 
