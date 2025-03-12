@@ -1,4 +1,3 @@
-import { PropsWithChildren } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { act, render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -33,11 +32,34 @@ jest.mock('notistack', () => ({
 }));
 
 const handleAccordionChange = jest.fn();
+const mutationSpy = jest.fn();
 
-const Components = ({ children }: PropsWithChildren) => (
+const Components = ({
+  expandedAccordion,
+  mailchimpAccount,
+}: {
+  expandedAccordion: IntegrationAccordion | null;
+  mailchimpAccount: Types.MailchimpAccount | null;
+}) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          MailchimpAccount: MailchimpAccountQuery | undefined;
+        }>
+          mocks={{
+            MailchimpAccount: {
+              mailchimpAccount: [mailchimpAccount],
+            },
+          }}
+          onCall={mutationSpy}
+        >
+          <MailchimpAccordion
+            handleAccordionChange={handleAccordionChange}
+            expandedAccordion={expandedAccordion}
+          />
+        </GqlMockedProvider>
+      </ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );
@@ -76,14 +98,10 @@ describe('MailchimpAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
-      <Components>
-        <GqlMockedProvider>
-          <MailchimpAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedAccordion={null}
-          />
-        </GqlMockedProvider>
-      </Components>,
+      <Components
+        expandedAccordion={null}
+        mailchimpAccount={standardMailchimpAccount}
+      />,
     );
     expect(getByText('MailChimp')).toBeInTheDocument();
     const mailchimpImage = queryByRole('img', {
@@ -93,14 +111,10 @@ describe('MailchimpAccount', () => {
   });
   it('should render accordion open', async () => {
     const { queryByRole } = render(
-      <Components>
-        <GqlMockedProvider>
-          <MailchimpAccordion
-            handleAccordionChange={handleAccordionChange}
-            expandedAccordion={IntegrationAccordion.Mailchimp}
-          />
-        </GqlMockedProvider>
-      </Components>,
+      <Components
+        expandedAccordion={IntegrationAccordion.Mailchimp}
+        mailchimpAccount={standardMailchimpAccount}
+      />,
     );
     const mailchimpImage = queryByRole('img', {
       name: /mailchimp/i,
@@ -110,25 +124,11 @@ describe('MailchimpAccount', () => {
 
   describe('Not Connected', () => {
     it('should render Mailchimp Overview', async () => {
-      const mutationSpy = jest.fn();
       const { getByText } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={null}
+        />,
       );
 
       await waitFor(() => {
@@ -149,27 +149,39 @@ describe('MailchimpAccount', () => {
     beforeEach(() => {
       mailchimpAccount = { ...standardMailchimpAccount };
     });
+    it('is connected but with an API key error', async () => {
+      mailchimpAccount.validateKey = false;
+      const { findByText, findByRole, queryByText } = render(
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
+      );
+
+      expect(
+        await findByText(
+          'There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.',
+        ),
+      ).toBeInTheDocument();
+
+      expect(
+        await findByRole('button', {
+          name: /disconnect/i,
+        }),
+      ).toBeInTheDocument();
+
+      expect(
+        queryByText('Pick a list to use for your newsletter'),
+      ).not.toBeInTheDocument();
+    });
+
     it('is connected but no lists present', async () => {
       mailchimpAccount.listsPresent = false;
-      const mutationSpy = jest.fn();
       const { queryByText } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
@@ -194,25 +206,11 @@ describe('MailchimpAccount', () => {
     it('is connected but no lists present & no lists link', async () => {
       mailchimpAccount.listsPresent = false;
       mailchimpAccount.listsLink = '';
-      const mutationSpy = jest.fn();
       const { queryByText } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
@@ -229,25 +227,11 @@ describe('MailchimpAccount', () => {
     });
 
     it('should call updateMailchimpAccount', async () => {
-      const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
@@ -296,25 +280,11 @@ describe('MailchimpAccount', () => {
     });
 
     it('should call deleteMailchimpAccount', async () => {
-      const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
@@ -363,25 +333,11 @@ describe('MailchimpAccount', () => {
     });
     it('should show settings overview', async () => {
       mailchimpAccount.valid = true;
-      const mutationSpy = jest.fn();
       const { getByText } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
@@ -399,25 +355,11 @@ describe('MailchimpAccount', () => {
     it('should call syncMailchimpAccount', async () => {
       mailchimpAccount.valid = true;
       mailchimpAccount.autoLogCampaigns = true;
-      const mutationSpy = jest.fn();
       const { getByText, getByRole } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
@@ -456,25 +398,11 @@ describe('MailchimpAccount', () => {
     it('should show settings', async () => {
       mailchimpAccount.valid = true;
       mailchimpAccount.autoLogCampaigns = true;
-      const mutationSpy = jest.fn();
       const { queryByText, getByRole } = render(
-        <Components>
-          <GqlMockedProvider<{
-            MailchimpAccount: MailchimpAccountQuery | undefined;
-          }>
-            mocks={{
-              MailchimpAccount: {
-                mailchimpAccount: [mailchimpAccount],
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <MailchimpAccordion
-              handleAccordionChange={handleAccordionChange}
-              expandedAccordion={IntegrationAccordion.Mailchimp}
-            />
-          </GqlMockedProvider>
-        </Components>,
+        <Components
+          expandedAccordion={IntegrationAccordion.Mailchimp}
+          mailchimpAccount={mailchimpAccount}
+        />,
       );
 
       await waitFor(() => {
