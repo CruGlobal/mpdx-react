@@ -2007,6 +2007,7 @@
   "Their gift is {{daysLate}} day late._plural": "Пожертвование задерживается на {{daysLate}} дн.",
   "Then save to your computer.": "Затем сохраните на своем компьютере.",
   "There are no contacts for this appeal that have not been received.": "Для этой просьбы нет контактов, которые не были получены.",
+  "There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.": "There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.",
   "There was an error trying to delete the appeal.": "При попытке удаления просьбы возникла ошибка .",
   "These {{number}} contacts have been previously excluded from this appeal. Are you certain you wish to add them?": "{{number}} Контакт был ранее исключен из данной просьбы. Вы действительно хотите добавить его?",
   "This account merge cannot be undone, I accept.": "Я принимаю, что объединение учетных записей не может быть отменено.",
