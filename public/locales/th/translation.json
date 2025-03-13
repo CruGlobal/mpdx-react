@@ -2007,6 +2007,7 @@
   "Their gift is {{daysLate}} day late._plural": "Their gift is {{daysLate}} days late.",
   "Then save to your computer.": "จากนั้น บันทึกลงในคอมพิวเตอร์",
   "There are no contacts for this appeal that have not been received.": "There are no contacts for this appeal that have not been received.",
+  "There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.": "There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.",
   "There was an error trying to delete the appeal.": "เกิดข้อผิดพลาดขณะพยายามลบการอนุเคราะห์",
   "These {{number}} contacts have been previously excluded from this appeal. Are you certain you wish to add them?": "These {{number}} contacts have been previously excluded from this appeal. Are you certain you wish to add them?",
   "This account merge cannot be undone, I accept.": "การรวมบัญชีนี้จะเลิกทำไม่ได้ ฉันยอมรับ",
