@@ -8,6 +8,7 @@ import {
   Grid,
   Link,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -123,21 +124,48 @@ const AccountLists = ({ data }: Props): ReactElement => {
                             </Box>
                             <Grid container>
                               {monthlyGoal && (
-                                <Grid xs={4} item>
-                                  <Typography
-                                    component="div"
-                                    color="textSecondary"
-                                  >
-                                    {t('Goal')}
-                                  </Typography>
-                                  <Typography variant="h6">
-                                    {currencyFormat(
-                                      monthlyGoal,
-                                      currency,
-                                      locale,
-                                    )}
-                                  </Typography>
-                                </Grid>
+                                <Tooltip
+                                  title={
+                                    !hasPreferencesGoal &&
+                                    t(
+                                      'Your current goal of {{goal}} is machine-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
+                                      {
+                                        goal: currencyFormat(
+                                          monthlyGoal,
+                                          preferencesCurrency,
+                                          locale,
+                                        ),
+                                      },
+                                    )
+                                  }
+                                >
+                                  <Grid xs={4} item>
+                                    <Typography
+                                      component="div"
+                                      color={
+                                        hasPreferencesGoal
+                                          ? 'textSecondary'
+                                          : 'statusDanger.main'
+                                      }
+                                    >
+                                      {t('Goal')}
+                                    </Typography>
+                                    <Typography
+                                      variant="h6"
+                                      color={
+                                        hasPreferencesGoal
+                                          ? undefined
+                                          : 'statusDanger.main'
+                                      }
+                                    >
+                                      {currencyFormat(
+                                        monthlyGoal,
+                                        currency,
+                                        locale,
+                                      )}
+                                    </Typography>
+                                  </Grid>
+                                </Tooltip>
                               )}
                               <Grid xs={monthlyGoal ? 4 : 6} item>
                                 <Typography
@@ -169,6 +197,15 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                               </Grid>
                             </Grid>
+                            {!hasPreferencesGoal &&
+                              typeof monthlyGoal === 'number' && (
+                                <Typography
+                                  component="div"
+                                  color="statusDanger.main"
+                                >
+                                  ({t('machine-calculated')})
+                                </Typography>
+                              )}
                           </CardContent>
                         </CardActionArea>
                       </Link>

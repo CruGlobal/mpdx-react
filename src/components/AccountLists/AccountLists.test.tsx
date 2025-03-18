@@ -107,6 +107,38 @@ describe('AccountLists', () => {
     );
   });
 
+  it('adds color and label to machine calculated goals', () => {
+    const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+      mocks: {
+        accountLists: {
+          nodes: [
+            {
+              name: 'Account',
+              monthlyGoal: null,
+              healthIndicatorData: {
+                machineCalculatedGoal: 2000,
+                machineCalculatedGoalCurrency: 'USD',
+              },
+              currency: 'USD',
+            },
+          ],
+        },
+      },
+    });
+
+    const { getByLabelText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <AccountLists data={data} />
+      </ThemeProvider>,
+    );
+    expect(
+      getByLabelText(/^Your current goal of \$2,000 is machine-calculated/),
+    ).toBeInTheDocument();
+    expect(getByText('Goal')).toHaveStyle('color: rgb(169, 68, 66);');
+    expect(getByText('$2,000')).toHaveStyle('color: rgb(169, 68, 66);');
+    expect(getByText('(machine-calculated)')).toBeInTheDocument();
+  });
+
   it("hides percentages when machine calculated goal currency differs from user's currency", () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
