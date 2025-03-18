@@ -276,9 +276,13 @@ describe('MonthlyGoal', () => {
       );
 
       expect(
-        await findByRole('heading', {
-          name: /\$999.50/i,
-        }),
+        await findByLabelText(
+          /^Your current goal of \$999.50 is staff-entered/,
+        ),
+      ).not.toHaveStyle('color: rgb(169, 68, 66)');
+
+      expect(
+        await findByRole('heading', { name: '$999.50' }),
       ).toBeInTheDocument();
 
       expect(
@@ -295,15 +299,11 @@ describe('MonthlyGoal', () => {
       );
 
       expect(
-        await findByRole('heading', {
-          name: /\$7,000/i,
-        }),
+        await findByRole('heading', { name: '$7,000' }),
       ).toBeInTheDocument();
 
       expect(
-        queryByRole('heading', {
-          name: /\$999.50/i,
-        }),
+        queryByRole('heading', { name: '$999.50' }),
       ).not.toBeInTheDocument();
 
       expect(getByRole('link', { name: 'Set Monthly Goal' })).toHaveAttribute(
@@ -325,22 +325,14 @@ describe('MonthlyGoal', () => {
         />,
       );
 
-      expect(
-        await findByRole('heading', {
-          name: /\$0/i,
-        }),
-      ).toBeInTheDocument();
+      expect(await findByRole('heading', { name: '$0' })).toBeInTheDocument();
 
       expect(
-        queryByRole('heading', {
-          name: /\$7,000/i,
-        }),
+        queryByRole('heading', { name: '$7,000' }),
       ).not.toBeInTheDocument();
 
       expect(
-        queryByRole('heading', {
-          name: /\$999.50/i,
-        }),
+        queryByRole('heading', { name: '$999.50' }),
       ).not.toBeInTheDocument();
     });
   });
