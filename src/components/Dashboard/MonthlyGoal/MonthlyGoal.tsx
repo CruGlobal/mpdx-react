@@ -163,7 +163,14 @@ const MonthlyGoal = ({
               <Grid container spacing={{ sm: 1, md: 2 }}>
                 <Hidden smDown>
                   <Grid {...cssProps.statGrid} item data-testid="goalGrid">
-                    <Tooltip title={toolTipText}>
+                    <Tooltip
+                      title={toolTipText}
+                      color={
+                        !staffEnteredGoal && machineCalculatedGoal
+                          ? 'statusDanger.main'
+                          : undefined
+                      }
+                    >
                       <Box>
                         <Typography component="div" color="textSecondary">
                           <div
