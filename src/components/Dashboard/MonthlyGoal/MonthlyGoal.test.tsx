@@ -306,7 +306,7 @@ describe('MonthlyGoal', () => {
         await findByLabelText(
           /^Your current goal of \$7,000 is machine-calculated/,
         ),
-      ).toHaveStyle('color: rgb(169, 68, 66)');
+      ).toHaveStyle('color: rgb(211, 68, 0)');
 
       expect(
         await findByRole('heading', { name: '$7,000' }),

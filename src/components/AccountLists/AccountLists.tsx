@@ -142,11 +142,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                   <Grid xs={4} item>
                                     <Typography
                                       component="div"
-                                      color={
-                                        hasPreferencesGoal
-                                          ? 'textSecondary'
-                                          : 'statusDanger.main'
-                                      }
+                                      color="textSecondary"
                                     >
                                       {t('Goal')}
                                     </Typography>
@@ -155,7 +151,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                       color={
                                         hasPreferencesGoal
                                           ? undefined
-                                          : 'statusDanger.main'
+                                          : 'statusWarning.main'
                                       }
                                     >
                                       {currencyFormat(
@@ -201,7 +197,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                               typeof monthlyGoal === 'number' && (
                                 <Typography
                                   component="div"
-                                  color="statusDanger.main"
+                                  color="statusWarning.main"
                                 >
                                   ({t('machine-calculated')})
                                 </Typography>

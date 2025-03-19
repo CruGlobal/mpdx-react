@@ -167,7 +167,7 @@ const MonthlyGoal = ({
                       title={toolTipText}
                       color={
                         !staffEnteredGoal && machineCalculatedGoal
-                          ? 'statusDanger.main'
+                          ? 'statusWarning.main'
                           : undefined
                       }
                     >

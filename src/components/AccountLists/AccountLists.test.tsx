@@ -134,8 +134,7 @@ describe('AccountLists', () => {
     expect(
       getByLabelText(/^Your current goal of \$2,000 is machine-calculated/),
     ).toBeInTheDocument();
-    expect(getByText('Goal')).toHaveStyle('color: rgb(169, 68, 66);');
-    expect(getByText('$2,000')).toHaveStyle('color: rgb(169, 68, 66);');
+    expect(getByText('$2,000')).toHaveStyle('color: rgb(211, 68, 0);');
     expect(getByText('(machine-calculated)')).toBeInTheDocument();
   });
 
