@@ -76,7 +76,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:29.5.14"],\
             ["@types/lodash", "npm:4.14.191"],\
             ["@types/luxon", "npm:3.4.2"],\
-            ["@types/node", "npm:18.19.64"],\
+            ["@types/node", "npm:20.17.0"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/testing-library__jest-dom", "npm:5.14.5"],\
             ["@types/uuid", "npm:9.0.1"],\
@@ -8372,7 +8372,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["@surma/rollup-plugin-off-main-thread", [\
         ["npm:2.2.3", {\
-          "packageLocation": "./.yarn/cache/@surma-rollup-plugin-off-main-thread-npm-2.2.3-1f57d3eded-2c02134944.zip/node_modules/@surma/rollup-plugin-off-main-thread/",\
+          "packageLocation": "./.yarn/unplugged/@surma-rollup-plugin-off-main-thread-npm-2.2.3-1f57d3eded/node_modules/@surma/rollup-plugin-off-main-thread/",\
           "packageDependencies": [\
             ["@surma/rollup-plugin-off-main-thread", "npm:2.2.3"],\
             ["ejs", "npm:3.1.10"],\
@@ -8975,18 +8975,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/node", [\
-        ["npm:18.19.64", {\
-          "packageLocation": "./.yarn/cache/@types-node-npm-18.19.64-2bf88f0be4-e7680215b0.zip/node_modules/@types/node/",\
-          "packageDependencies": [\
-            ["@types/node", "npm:18.19.64"],\
-            ["undici-types", "npm:5.26.5"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:18.7.6", {\
           "packageLocation": "./.yarn/cache/@types-node-npm-18.7.6-c1eafa3d9a-5122988c32.zip/node_modules/@types/node/",\
           "packageDependencies": [\
             ["@types/node", "npm:18.7.6"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:20.17.0", {\
+          "packageLocation": "./.yarn/cache/@types-node-npm-20.17.0-9fdfb29cbc-01234eb8a5.zip/node_modules/@types/node/",\
+          "packageDependencies": [\
+            ["@types/node", "npm:20.17.0"],\
+            ["undici-types", "npm:6.19.8"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -19375,7 +19375,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/jest", "npm:29.5.14"],\
             ["@types/lodash", "npm:4.14.191"],\
             ["@types/luxon", "npm:3.4.2"],\
-            ["@types/node", "npm:18.19.64"],\
+            ["@types/node", "npm:20.17.0"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/testing-library__jest-dom", "npm:5.14.5"],\
             ["@types/uuid", "npm:9.0.1"],\
@@ -21441,7 +21441,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@react-dnd/invariant", "npm:2.0.0"],\
             ["@react-dnd/shallowequal", "npm:2.0.0"],\
             ["@types/hoist-non-react-statics", null],\
-            ["@types/node", "npm:18.19.64"],\
+            ["@types/node", "npm:20.17.0"],\
             ["@types/react", "npm:18.0.21"],\
             ["dnd-core", "npm:14.0.1"],\
             ["fast-deep-equal", "npm:3.1.3"],\
@@ -24552,10 +24552,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["undici-types", [\
-        ["npm:5.26.5", {\
-          "packageLocation": "./.yarn/cache/undici-types-npm-5.26.5-de4f7c7bb9-3192ef6f3f.zip/node_modules/undici-types/",\
+        ["npm:6.19.8", {\
+          "packageLocation": "./.yarn/cache/undici-types-npm-6.19.8-9f12285b7a-de51f1b447.zip/node_modules/undici-types/",\
           "packageDependencies": [\
-            ["undici-types", "npm:5.26.5"]\
+            ["undici-types", "npm:6.19.8"]\
           ],\
           "linkType": "HARD"\
         }]\
