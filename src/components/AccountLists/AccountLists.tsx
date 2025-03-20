@@ -12,11 +12,16 @@ import {
   Typography,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { GetAccountListsQuery } from 'pages/GetAccountLists.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
+import {
+  currencyFormat,
+  dateFormat,
+  percentageFormat,
+} from 'src/lib/intlFormat';
 import AnimatedCard from '../AnimatedCard';
 import PageHeading from '../PageHeading';
 
@@ -78,6 +83,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 id,
                 name,
                 monthlyGoal: preferencesGoal,
+                monthlyGoalUpdatedAt: preferencesGoalUpdatedAt,
                 receivedPledges,
                 totalPledges,
                 currency: preferencesCurrency,
@@ -92,6 +98,10 @@ const AccountLists = ({ data }: Props): ReactElement => {
                   : healthIndicatorData?.machineCalculatedGoalCurrency;
                 const hasMachineCalculatedGoal =
                   !hasPreferencesGoal && typeof monthlyGoal === 'number';
+                const preferencesGoalDate =
+                  typeof preferencesGoal === 'number' &&
+                  preferencesGoalUpdatedAt &&
+                  DateTime.fromISO(preferencesGoalUpdatedAt);
 
                 // If the currency comes from the machine calculated goal and is different from the
                 // user's currency preference, we can't calculate the received or total percentages
@@ -105,7 +115,8 @@ const AccountLists = ({ data }: Props): ReactElement => {
                   ? totalPledges / monthlyGoal
                   : NaN;
 
-                const ariaId = `goal-${id}`;
+                const machineCalculatedId = `machine-calculated-${id}`;
+                const lastUpdatedId = `last-updated-${id}`;
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
@@ -152,7 +163,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     </Typography>
                                     <Typography
                                       variant="h6"
-                                      aria-describedby={ariaId}
+                                      aria-describedby={`${machineCalculatedId} ${lastUpdatedId}`}
                                     >
                                       {currencyFormat(
                                         monthlyGoal,
@@ -203,17 +214,23 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                               </Grid>
                             </Grid>
-                            {!hasPreferencesGoal &&
-                              typeof monthlyGoal === 'number' && (
-                                <Typography
-                                  aria-describedby={ariaId}
-                                  component="div"
-                                  color="statusWarning.main"
-                                >
-                                  <span aria-hidden>*</span>
-                                  {t('machine-calculated')}
-                                </Typography>
-                              )}
+                            {hasMachineCalculatedGoal && (
+                              <Typography
+                                id={machineCalculatedId}
+                                component="div"
+                                color="statusWarning.main"
+                              >
+                                <span aria-hidden>*</span>
+                                {t('machine-calculated')}
+                              </Typography>
+                            )}
+                            {preferencesGoalDate && (
+                              <Typography id={lastUpdatedId} variant="body2">
+                                {t('Last updated {{date}}', {
+                                  date: dateFormat(preferencesGoalDate, locale),
+                                })}
+                              </Typography>
+                            )}
                           </CardContent>
                         </CardActionArea>
                       </Link>

@@ -62,7 +62,7 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
               <MonthlyGoal
                 accountListId={accountListId}
                 loading={loading}
-                goal={data?.accountList.monthlyGoal ?? undefined}
+                goal={data?.accountList.monthlyGoal ?? null}
                 received={data?.accountList.receivedPledges}
                 pledged={data?.accountList.totalPledges}
                 totalGiftsNotStarted={data?.contacts.totalCount}

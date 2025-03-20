@@ -169,4 +169,45 @@ describe('AccountLists', () => {
       'AccountGoal€2,000*Gifts Started-Committed-*machine-calculated',
     );
   });
+
+  describe('updated date', () => {
+    it('is the date the goal was last updated', () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [{ monthlyGoalUpdatedAt: '2019-12-30T00:00:00Z' }],
+          },
+        },
+      });
+
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(getByText('Last updated Dec 30, 2019')).toBeInTheDocument();
+    });
+
+    it('is hidden if the goal is missing', () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [
+              {
+                monthlyGoal: null,
+                monthlyGoalUpdatedAt: '2019-12-30T00:00:00Z',
+              },
+            ],
+          },
+        },
+      });
+
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(queryByText('Last updated Dec 30, 2019')).not.toBeInTheDocument();
+    });
+  });
 });

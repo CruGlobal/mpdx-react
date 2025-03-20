@@ -8,40 +8,44 @@ import { HealthIndicatorQuery } from './HealthIndicator.generated';
 import MonthlyGoal, { MonthlyGoalProps } from './MonthlyGoal';
 
 const accountListId = 'account-list-1';
-const defaultProps = {
-  goal: 999.5,
-  received: 500,
-  pledged: 750,
-};
-const healthIndicatorScore: HealthIndicatorQuery['healthIndicatorData'][0] = {
-  id: '1',
-  overallHi: 90,
-  ownershipHi: 80,
-  consistencyHi: 70,
-  successHi: 60,
-  depthHi: 50,
-  machineCalculatedGoal: 7000,
-};
+
 const mutationSpy = jest.fn();
 interface ComponentsProps {
-  healthIndicatorData?: HealthIndicatorQuery['healthIndicatorData'];
-  monthlyGoalProps?: Omit<MonthlyGoalProps, 'accountListId'>;
+  healthIndicatorData?: Partial<
+    HealthIndicatorQuery['accountList']['healthIndicatorData']
+  >;
+  accountList?: Partial<MonthlyGoalProps['accountList']> | null;
 }
 
 const Components = ({
-  healthIndicatorData = [],
-  monthlyGoalProps,
+  healthIndicatorData = null,
+  accountList,
 }: ComponentsProps) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{ HealthIndicator: HealthIndicatorQuery }>
       mocks={{
         HealthIndicator: {
-          healthIndicatorData,
+          accountList: {
+            healthIndicatorData,
+          },
         },
       }}
       onCall={mutationSpy}
     >
-      <MonthlyGoal accountListId={accountListId} {...monthlyGoalProps} />
+      <MonthlyGoal
+        accountListId={accountListId}
+        accountList={
+          accountList === null
+            ? null
+            : {
+                currency: 'USD',
+                monthlyGoal: 999.5,
+                receivedPledges: 500,
+                totalPledges: 750,
+                ...accountList,
+              }
+        }
+      />
     </GqlMockedProvider>
   </ThemeProvider>
 );
@@ -51,8 +55,12 @@ describe('MonthlyGoal', () => {
     matchMediaMock({ width: '1024px' });
   });
 
-  it('default', () => {
-    const { getByTestId, queryByTestId } = render(<Components />);
+  it('zeros', () => {
+    const { getByTestId, queryByTestId } = render(
+      <Components
+        accountList={{ monthlyGoal: 0, receivedPledges: 0, totalPledges: 0 }}
+      />,
+    );
 
     expect(
       queryByTestId('MonthlyGoalTypographyGoalMobile'),
@@ -85,9 +93,7 @@ describe('MonthlyGoal', () => {
   });
 
   it('loading', () => {
-    const { getByTestId } = render(
-      <Components monthlyGoalProps={{ loading: true }} />,
-    );
+    const { getByTestId } = render(<Components accountList={null} />);
     expect(
       getByTestId('MonthlyGoalTypographyGoal').children[0].className,
     ).toContain('MuiSkeleton-root');
@@ -116,9 +122,7 @@ describe('MonthlyGoal', () => {
 
   it('props', () => {
     const { getByTestId, queryByTestId } = render(
-      <Components
-        monthlyGoalProps={{ ...defaultProps, currencyCode: 'EUR' }}
-      />,
+      <Components accountList={{ currency: 'EUR' }} />,
     );
     expect(getByTestId('MonthlyGoalTypographyGoal').textContent).toEqual(
       '€999.50',
@@ -152,11 +156,10 @@ describe('MonthlyGoal', () => {
   it('props above goal', () => {
     const { getByTestId, queryByTestId } = render(
       <Components
-        monthlyGoalProps={{
-          ...defaultProps,
-          received: 5000,
-          pledged: 7500,
-          currencyCode: 'EUR',
+        accountList={{
+          receivedPledges: 5000,
+          totalPledges: 7500,
+          currency: 'EUR',
         }}
       />,
     );
@@ -186,7 +189,9 @@ describe('MonthlyGoal', () => {
     });
 
     it('default', () => {
-      const { getByTestId, queryByTestId } = render(<Components />);
+      const { getByTestId, queryByTestId } = render(
+        <Components accountList={{ monthlyGoal: null }} />,
+      );
       expect(
         getByTestId('MonthlyGoalTypographyGoalMobile').textContent,
       ).toEqual('$0');
@@ -203,9 +208,7 @@ describe('MonthlyGoal', () => {
 
     it('props', () => {
       const { getByTestId } = render(
-        <Components
-          monthlyGoalProps={{ ...defaultProps, currencyCode: 'EUR' }}
-        />,
+        <Components accountList={{ currency: 'EUR' }} />,
       );
       expect(
         getByTestId('MonthlyGoalTypographyGoalMobile').textContent,
@@ -215,9 +218,7 @@ describe('MonthlyGoal', () => {
 
   describe('HealthIndicator', () => {
     it('does not render HI widget if no data', async () => {
-      const { queryByText } = render(
-        <Components monthlyGoalProps={{ ...defaultProps }} />,
-      );
+      const { queryByText } = render(<Components />);
 
       await waitFor(() => {
         expect(mutationSpy).toHaveGraphqlOperation('HealthIndicator');
@@ -226,9 +227,7 @@ describe('MonthlyGoal', () => {
     });
 
     it('does not change Grid styles if no data', async () => {
-      const { getByTestId } = render(
-        <Components monthlyGoalProps={{ ...defaultProps }} />,
-      );
+      const { getByTestId } = render(<Components />);
 
       await waitFor(() => {
         expect(mutationSpy).toHaveGraphqlOperation('HealthIndicator');
@@ -241,19 +240,7 @@ describe('MonthlyGoal', () => {
 
     it('should show the health indicator and change Grid styles', async () => {
       const { getByTestId, getByText } = render(
-        <Components
-          monthlyGoalProps={{ ...defaultProps }}
-          healthIndicatorData={[
-            {
-              id: '1',
-              overallHi: 90,
-              ownershipHi: 80,
-              consistencyHi: 70,
-              successHi: 60,
-              depthHi: 50,
-            },
-          ]}
-        />,
+        <Components healthIndicatorData={{}} />,
       );
 
       await waitFor(() => {
@@ -268,15 +255,7 @@ describe('MonthlyGoal', () => {
   describe('Monthly Goal', () => {
     it('should set the monthly goal to the user-entered goal if it exists', async () => {
       const { findByLabelText, findByRole, queryByRole } = render(
-        <Components
-          monthlyGoalProps={defaultProps}
-          healthIndicatorData={[
-            {
-              ...healthIndicatorScore,
-              machineCalculatedGoal: null,
-            },
-          ]}
-        />,
+        <Components healthIndicatorData={{ machineCalculatedGoal: null }} />,
       );
 
       expect(
@@ -294,11 +273,48 @@ describe('MonthlyGoal', () => {
       ).not.toBeInTheDocument();
     });
 
+    describe('updated date', () => {
+      it('is the date that the monthly goal was updated', () => {
+        const { getByText } = render(
+          <Components
+            accountList={{
+              monthlyGoal: 5000,
+              monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
+            }}
+          />,
+        );
+
+        expect(getByText('Last updated Jan 1, 2024')).toBeInTheDocument();
+      });
+
+      it('is hidden if the goal is missing', () => {
+        const { queryByText } = render(
+          <Components
+            accountList={{
+              monthlyGoal: null,
+              monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
+            }}
+          />,
+        );
+
+        expect(queryByText('Last updated Jan 1, 2024')).not.toBeInTheDocument();
+      });
+    });
+
     it('should set the monthly goal to the machine calculated goal', async () => {
-      const { findByRole, findByLabelText, getByRole, queryByRole } = render(
+      const {
+        findByRole,
+        findByLabelText,
+        getByRole,
+        queryByRole,
+        queryByText,
+      } = render(
         <Components
-          monthlyGoalProps={{ ...defaultProps, goal: undefined }}
-          healthIndicatorData={[healthIndicatorScore]}
+          accountList={{
+            monthlyGoal: null,
+            monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
+          }}
+          healthIndicatorData={{ machineCalculatedGoal: 7000 }}
         />,
       );
 
@@ -316,6 +332,8 @@ describe('MonthlyGoal', () => {
         queryByRole('heading', { name: '$999.50' }),
       ).not.toBeInTheDocument();
 
+      expect(queryByText('Last updated Jan 1, 2024')).not.toBeInTheDocument();
+
       expect(getByRole('link', { name: 'Set Monthly Goal' })).toHaveAttribute(
         'href',
         '/accountLists/account-list-1/settings/preferences?selectedTab=MonthlyGoal',
@@ -325,13 +343,8 @@ describe('MonthlyGoal', () => {
     it('should set the monthly goal to 0 if both the machineCalculatedGoal and monthly goal are unset', async () => {
       const { findByRole, queryByRole } = render(
         <Components
-          monthlyGoalProps={{ ...defaultProps, goal: undefined }}
-          healthIndicatorData={[
-            {
-              ...healthIndicatorScore,
-              machineCalculatedGoal: null,
-            },
-          ]}
+          accountList={{ monthlyGoal: null }}
+          healthIndicatorData={{ machineCalculatedGoal: null }}
         />,
       );
 
