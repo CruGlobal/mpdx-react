@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon';
 import { dateFormatMonthOnly } from 'src/lib/intlFormat';
-import theme from 'src/theme';
 import { CoachingPeriodEnum } from './CoachingDetail';
 
 export const getLastNewsletter = (
@@ -15,17 +14,6 @@ export const getLastNewsletter = (
     return physicalDate;
   } else {
     return null;
-  }
-};
-
-// Calculate the color of a result based on how close it is to the goal
-export const getResultColor = (amount: number, goal: number): string => {
-  if (amount >= goal) {
-    return theme.palette.statusSuccess.main;
-  } else if (amount >= goal * 0.8) {
-    return theme.palette.statusWarning.main;
-  } else {
-    return theme.palette.statusDanger.main;
   }
 };
 

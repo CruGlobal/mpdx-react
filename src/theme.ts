@@ -25,9 +25,12 @@ const progressBarColors = {
 };
 
 const statusColors = {
-  success: '#5CB85C',
-  warning: '#8A6D3B',
-  danger: '#A94442',
+  // Green from the Cru brand colors
+  success: '#24C976',
+  // Vermillion from the Cru brand colors
+  warning: '#D34400',
+  // Ruby from the Cru brand colors
+  danger: '#991313',
 };
 
 const graphColors = {

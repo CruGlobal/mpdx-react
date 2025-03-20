@@ -1,7 +1,9 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import matchMediaMock from '__tests__/util/matchMediaMock';
+import theme from 'src/theme';
 import { HealthIndicatorQuery } from './HealthIndicator.generated';
 import MonthlyGoal, { MonthlyGoalProps } from './MonthlyGoal';
 
@@ -30,16 +32,18 @@ const Components = ({
   healthIndicatorData = [],
   monthlyGoalProps,
 }: ComponentsProps) => (
-  <GqlMockedProvider<{ HealthIndicator: HealthIndicatorQuery }>
-    mocks={{
-      HealthIndicator: {
-        healthIndicatorData,
-      },
-    }}
-    onCall={mutationSpy}
-  >
-    <MonthlyGoal accountListId={accountListId} {...monthlyGoalProps} />
-  </GqlMockedProvider>
+  <ThemeProvider theme={theme}>
+    <GqlMockedProvider<{ HealthIndicator: HealthIndicatorQuery }>
+      mocks={{
+        HealthIndicator: {
+          healthIndicatorData,
+        },
+      }}
+      onCall={mutationSpy}
+    >
+      <MonthlyGoal accountListId={accountListId} {...monthlyGoalProps} />
+    </GqlMockedProvider>
+  </ThemeProvider>
 );
 
 describe('MonthlyGoal', () => {
@@ -263,7 +267,7 @@ describe('MonthlyGoal', () => {
 
   describe('Monthly Goal', () => {
     it('should set the monthly goal to the user-entered goal if it exists', async () => {
-      const { findByRole, queryByRole } = render(
+      const { findByLabelText, findByRole, queryByRole } = render(
         <Components
           monthlyGoalProps={defaultProps}
           healthIndicatorData={[
@@ -276,9 +280,13 @@ describe('MonthlyGoal', () => {
       );
 
       expect(
-        await findByRole('heading', {
-          name: /\$999.50/i,
-        }),
+        await findByLabelText(
+          /^Your current goal of \$999.50 is staff-entered/,
+        ),
+      ).not.toHaveStyle('color: rgb(169, 68, 66)');
+
+      expect(
+        await findByRole('heading', { name: '$999.50' }),
       ).toBeInTheDocument();
 
       expect(
@@ -287,7 +295,7 @@ describe('MonthlyGoal', () => {
     });
 
     it('should set the monthly goal to the machine calculated goal', async () => {
-      const { findByRole, getByRole, queryByRole } = render(
+      const { findByRole, findByLabelText, getByRole, queryByRole } = render(
         <Components
           monthlyGoalProps={{ ...defaultProps, goal: undefined }}
           healthIndicatorData={[healthIndicatorScore]}
@@ -295,15 +303,17 @@ describe('MonthlyGoal', () => {
       );
 
       expect(
-        await findByRole('heading', {
-          name: /\$7,000/i,
-        }),
+        await findByLabelText(
+          /^Your current goal of \$7,000 is machine-calculated/,
+        ),
+      ).toHaveStyle('color: rgb(211, 68, 0)');
+
+      expect(
+        await findByRole('heading', { name: '$7,000' }),
       ).toBeInTheDocument();
 
       expect(
-        queryByRole('heading', {
-          name: /\$999.50/i,
-        }),
+        queryByRole('heading', { name: '$999.50' }),
       ).not.toBeInTheDocument();
 
       expect(getByRole('link', { name: 'Set Monthly Goal' })).toHaveAttribute(
@@ -325,22 +335,14 @@ describe('MonthlyGoal', () => {
         />,
       );
 
-      expect(
-        await findByRole('heading', {
-          name: /\$0/i,
-        }),
-      ).toBeInTheDocument();
+      expect(await findByRole('heading', { name: '$0' })).toBeInTheDocument();
 
       expect(
-        queryByRole('heading', {
-          name: /\$7,000/i,
-        }),
+        queryByRole('heading', { name: '$7,000' }),
       ).not.toBeInTheDocument();
 
       expect(
-        queryByRole('heading', {
-          name: /\$999.50/i,
-        }),
+        queryByRole('heading', { name: '$999.50' }),
       ).not.toBeInTheDocument();
     });
   });

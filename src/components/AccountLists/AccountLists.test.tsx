@@ -103,7 +103,39 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$2,000Gifts Started30%Committed40%',
+      'AccountGoal$2,000*Gifts Started30%Committed40%*machine-calculated',
+    );
+  });
+
+  it('adds color and label to machine calculated goals', () => {
+    const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+      mocks: {
+        accountLists: {
+          nodes: [
+            {
+              name: 'Account',
+              monthlyGoal: null,
+              healthIndicatorData: {
+                machineCalculatedGoal: 2000,
+                machineCalculatedGoalCurrency: 'USD',
+              },
+              currency: 'USD',
+            },
+          ],
+        },
+      },
+    });
+
+    const { getByLabelText, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <AccountLists data={data} />
+      </ThemeProvider>,
+    );
+    expect(
+      getByLabelText(/^Your current goal of \$2,000 is machine-calculated/),
+    ).toBeInTheDocument();
+    expect(getByText('machine-calculated')).toHaveStyle(
+      'color: rgb(211, 68, 0);',
     );
   });
 
@@ -134,7 +166,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal€2,000Gifts Started-Committed-',
+      'AccountGoal€2,000*Gifts Started-Committed-*machine-calculated',
     );
   });
 });
