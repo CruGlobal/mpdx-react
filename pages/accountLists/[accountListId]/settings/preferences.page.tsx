@@ -248,6 +248,10 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.settings?.monthlyGoal ||
                 null
               }
+              monthlyGoalUpdatedAt={
+                accountPreferencesData?.accountList?.monthlyGoalUpdatedAt ??
+                null
+              }
               accountListId={accountListId}
               currency={
                 accountPreferencesData?.accountList?.settings?.currency || null

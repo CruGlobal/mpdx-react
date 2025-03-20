@@ -1,6 +1,7 @@
 fragment AccountList on AccountList {
   id
   name
+  monthlyGoalUpdatedAt
   activeMpdMonthlyGoal
   activeMpdFinishAt
   activeMpdStartAt
