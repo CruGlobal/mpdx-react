@@ -90,6 +90,8 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 const currency = hasPreferencesGoal
                   ? preferencesCurrency
                   : healthIndicatorData?.machineCalculatedGoalCurrency;
+                const hasMachineCalculatedGoal =
+                  !hasPreferencesGoal && typeof monthlyGoal === 'number';
 
                 // If the currency comes from the machine calculated goal and is different from the
                 // user's currency preference, we can't calculate the received or total percentages
@@ -102,6 +104,8 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 const totalPercentage = hasValidGoal
                   ? totalPledges / monthlyGoal
                   : NaN;
+
+                const ariaId = `goal-${id}`;
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
@@ -148,16 +152,22 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     </Typography>
                                     <Typography
                                       variant="h6"
-                                      color={
-                                        hasPreferencesGoal
-                                          ? undefined
-                                          : 'statusWarning.main'
-                                      }
+                                      aria-describedby={ariaId}
                                     >
                                       {currencyFormat(
                                         monthlyGoal,
                                         currency,
                                         locale,
+                                      )}
+                                      {hasMachineCalculatedGoal && (
+                                        <Typography
+                                          component="span"
+                                          color="statusWarning.main"
+                                          ml={0.25}
+                                          aria-hidden
+                                        >
+                                          *
+                                        </Typography>
                                       )}
                                     </Typography>
                                   </Grid>
@@ -196,10 +206,12 @@ const AccountLists = ({ data }: Props): ReactElement => {
                             {!hasPreferencesGoal &&
                               typeof monthlyGoal === 'number' && (
                                 <Typography
+                                  aria-describedby={ariaId}
                                   component="div"
                                   color="statusWarning.main"
                                 >
-                                  ({t('machine-calculated')})
+                                  <span aria-hidden>*</span>
+                                  {t('machine-calculated')}
                                 </Typography>
                               )}
                           </CardContent>

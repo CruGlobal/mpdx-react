@@ -103,7 +103,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$2,000Gifts Started30%Committed40%',
+      'AccountGoal$2,000*Gifts Started30%Committed40%*machine-calculated',
     );
   });
 
@@ -134,8 +134,9 @@ describe('AccountLists', () => {
     expect(
       getByLabelText(/^Your current goal of \$2,000 is machine-calculated/),
     ).toBeInTheDocument();
-    expect(getByText('$2,000')).toHaveStyle('color: rgb(211, 68, 0);');
-    expect(getByText('(machine-calculated)')).toBeInTheDocument();
+    expect(getByText('machine-calculated')).toHaveStyle(
+      'color: rgb(211, 68, 0);',
+    );
   });
 
   it("hides percentages when machine calculated goal currency differs from user's currency", () => {
@@ -165,7 +166,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal€2,000Gifts Started-Committed-',
+      'AccountGoal€2,000*Gifts Started-Committed-*machine-calculated',
     );
   });
 });
