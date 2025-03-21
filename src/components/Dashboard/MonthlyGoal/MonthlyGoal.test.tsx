@@ -26,7 +26,13 @@ const Components = ({
       mocks={{
         HealthIndicator: {
           accountList: {
-            healthIndicatorData,
+            healthIndicatorData:
+              healthIndicatorData === null
+                ? null
+                : {
+                    machineCalculatedGoalCurrency: 'USD',
+                    ...healthIndicatorData,
+                  },
           },
         },
       }}
@@ -301,7 +307,7 @@ describe('MonthlyGoal', () => {
       });
     });
 
-    it('should set the monthly goal to the machine calculated goal', async () => {
+    it('should set the monthly goal to the machine-calculated goal', async () => {
       const {
         findByRole,
         findByLabelText,

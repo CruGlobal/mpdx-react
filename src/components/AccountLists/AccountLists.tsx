@@ -132,7 +132,10 @@ const AccountLists = ({ data }: Props): ReactElement => {
                       label: t('Last updated {{date}}', {
                         date: dateFormat(preferencesGoalDate, locale),
                       }),
-                      variant: 'body2',
+                      color:
+                        preferencesGoalDate <= DateTime.now().minus({ year: 1 })
+                          ? 'statusWarning.main'
+                          : undefined,
                     }
                   : null;
                 const annotationId = `annotation-${id}`;
@@ -182,6 +185,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     </Typography>
                                     <Typography
                                       variant="h6"
+                                      display="flex"
                                       aria-describedby={annotationId}
                                     >
                                       {currencyFormat(
@@ -238,7 +242,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 id={annotationId}
                                 component="div"
                                 color={annotation.color}
-                                variant={annotation.variant}
+                                variant="body2"
                               >
                                 <span aria-hidden>*</span>
                                 {annotation.label}
