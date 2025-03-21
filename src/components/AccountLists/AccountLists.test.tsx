@@ -167,7 +167,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal€2,000*Gifts Started-Committed-*machine-calculated',
+      'AccountGifts Started-Committed-',
     );
   });
 
