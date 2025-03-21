@@ -26,7 +26,13 @@ const Components = ({
       mocks={{
         HealthIndicator: {
           accountList: {
-            healthIndicatorData,
+            healthIndicatorData:
+              healthIndicatorData === null
+                ? null
+                : {
+                    machineCalculatedGoalCurrency: 'USD',
+                    ...healthIndicatorData,
+                  },
           },
         },
       }}
@@ -301,7 +307,37 @@ describe('MonthlyGoal', () => {
       });
     });
 
-    it('should set the monthly goal to the machine calculated goal', async () => {
+    describe('below machine-calculated warning', () => {
+      it('is shown if goal is less than the machine-calculated goal', async () => {
+        const { findByText } = render(
+          <Components
+            accountList={{ monthlyGoal: 5000 }}
+            healthIndicatorData={{ machineCalculatedGoal: 10000 }}
+          />,
+        );
+
+        expect(
+          await findByText('Below machine-calculated goal'),
+        ).toBeInTheDocument();
+      });
+
+      it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
+        const { queryByText } = render(
+          <Components
+            accountList={{ monthlyGoal: 5000 }}
+            healthIndicatorData={{ machineCalculatedGoal: 5000 }}
+          />,
+        );
+
+        await waitFor(() =>
+          expect(
+            queryByText('Below machine-calculated goal'),
+          ).not.toBeInTheDocument(),
+        );
+      });
+    });
+
+    it('should set the monthly goal to the machine-calculated goal', async () => {
       const {
         findByRole,
         findByLabelText,

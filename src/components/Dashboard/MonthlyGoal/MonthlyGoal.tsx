@@ -10,6 +10,7 @@ import {
   Theme,
   Tooltip,
   Typography,
+  TypographyProps,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +54,11 @@ const useStyles = makeStyles()((_theme: Theme) => ({
   },
 }));
 
+interface Annotation {
+  label: string;
+  color: TypographyProps['color'];
+}
+
 export interface MonthlyGoalProps {
   accountListId: string;
   accountList: Pick<
@@ -95,12 +101,21 @@ const MonthlyGoal = ({
   const latestHealthIndicatorData = data?.accountList.healthIndicatorData;
   const showHealthIndicator = !!latestHealthIndicatorData;
   const machineCalculatedGoal =
-    latestHealthIndicatorData?.machineCalculatedGoal ?? null;
+    latestHealthIndicatorData?.machineCalculatedGoal &&
+    typeof latestHealthIndicatorData.machineCalculatedGoalCurrency ===
+      'string' &&
+    latestHealthIndicatorData.machineCalculatedGoalCurrency === currency
+      ? latestHealthIndicatorData.machineCalculatedGoal
+      : null;
   const goal = preferencesGoal ?? machineCalculatedGoal ?? 0;
   const preferencesGoalDate =
     typeof preferencesGoal === 'number' &&
     preferencesGoalUpdatedAt &&
     DateTime.fromISO(preferencesGoalUpdatedAt);
+  const preferencesGoalLow =
+    typeof preferencesGoal === 'number' &&
+    typeof machineCalculatedGoal === 'number' &&
+    preferencesGoal < machineCalculatedGoal;
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
@@ -133,7 +148,28 @@ const MonthlyGoal = ({
     hIGrid: showHealthIndicator ? { xs: 12, md: 6, lg: 5 } : { xs: 0 },
   };
 
-  const lastUpdatedId = useId();
+  const annotation: Annotation | null = preferencesGoalLow
+    ? {
+        label: t('Below machine-calculated goal'),
+        color: 'statusWarning.main',
+      }
+    : typeof preferencesGoal !== 'number'
+    ? {
+        label: t('Machine-calculated goal'),
+        color: 'statusWarning.main',
+      }
+    : preferencesGoalDate
+    ? {
+        label: t('Last updated {{date}}', {
+          date: dateFormat(preferencesGoalDate, locale),
+        }),
+        color:
+          preferencesGoalDate <= DateTime.now().minus({ year: 1 })
+            ? 'statusWarning.main'
+            : 'textSecondary',
+      }
+    : null;
+  const annotationId = useId();
 
   return (
     <>
@@ -190,7 +226,7 @@ const MonthlyGoal = ({
                         <Typography
                           component="div"
                           color="textSecondary"
-                          aria-describedby={lastUpdatedId}
+                          aria-describedby={annotationId}
                         >
                           <div
                             className={[classes.indicator, classes.goal].join(
@@ -201,25 +237,45 @@ const MonthlyGoal = ({
                         </Typography>
                         <Typography
                           variant="h5"
+                          display="flex"
                           data-testid="MonthlyGoalTypographyGoal"
                         >
                           {loading ? (
                             <Skeleton variant="text" />
                           ) : (
-                            currencyFormat(goal, currency, locale)
+                            <>
+                              {currencyFormat(goal, currency, locale)}
+                              {annotation && (
+                                <Typography
+                                  component="span"
+                                  color={annotation.color}
+                                  aria-hidden
+                                >
+                                  *
+                                </Typography>
+                              )}
+                            </>
                           )}
                         </Typography>
-                        {preferencesGoalDate && (
-                          <Typography id={lastUpdatedId} variant="body2">
-                            {t('Last updated {{date}}', {
-                              date: dateFormat(preferencesGoalDate, locale),
-                            })}
+                        {annotation && (
+                          <Typography
+                            id={annotationId}
+                            color={annotation.color}
+                            variant="body2"
+                          >
+                            <span aria-hidden>*</span>
+                            {annotation.label}
                           </Typography>
                         )}
-                        {preferencesGoal === null && (
+                        {(preferencesGoal === null || preferencesGoalLow) && (
                           <Button
                             component={NextLink}
                             href={`/accountLists/${accountListId}/settings/preferences?selectedTab=${PreferenceAccordion.MonthlyGoal}`}
+                            variant="outlined"
+                            sx={(theme) => ({
+                              marginTop: theme.spacing(1),
+                              textAlign: 'center',
+                            })}
                           >
                             {t('Set Monthly Goal')}
                           </Button>
