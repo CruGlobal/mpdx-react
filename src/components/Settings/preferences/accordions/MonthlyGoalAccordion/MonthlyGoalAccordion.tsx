@@ -1,5 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
-import { Box, Button, TextField, Tooltip } from '@mui/material';
+import WarningIcon from '@mui/icons-material/Warning';
+import { Box, Button, TextField, Tooltip, Typography } from '@mui/material';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -10,7 +11,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat, numberFormat } from 'src/lib/intlFormat';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import { useMachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
@@ -33,7 +34,7 @@ const formatMonthlyGoal = (
   if (currency) {
     return currencyFormat(goal, currency, locale);
   }
-  return goal.toString();
+  return numberFormat(goal, locale);
 };
 
 interface MonthlyGoalAccordionProps
@@ -81,18 +82,48 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     [calculatedGoal, calculatedCurrency, locale],
   );
 
-  const formattedMonthlyGoal = useMemo(() => {
+  const accordionValue = useMemo(() => {
     const goal = formatMonthlyGoal(initialMonthlyGoal, currency, locale);
-    if (!goal || !monthlyGoalUpdatedAt) {
+
+    if (initialMonthlyGoal === null) {
+      if (typeof calculatedGoal === 'number') {
+        // There is no preferences goal, but there is a machine-calculated goal
+        return t('{{goal}} (estimated)', { goal: formattedCalculatedGoal });
+      } else {
+        // There is no preferences goal or machine-calculated goal
+        return null;
+      }
+    } else if (
+      typeof currency === 'string' &&
+      currency === calculatedCurrency &&
+      typeof calculatedGoal === 'number' &&
+      initialMonthlyGoal < calculatedGoal
+    ) {
+      // Staff-entered goal is below machine-calculated goal
+      return (
+        <Typography component="span" color="statusWarning.main">
+          {t('{{goal}} (below machine-calculated support goal)', { goal })}
+        </Typography>
+      );
+    } else if (monthlyGoalUpdatedAt) {
+      // Staff-entered goal has an updated date
+      const date = DateTime.fromISO(monthlyGoalUpdatedAt);
+      return t('{{goal}} (last updated {{updated}})', {
+        goal,
+        updated: dateFormat(date, locale),
+      });
+    } else {
+      // Staff-entered goal does not have an updated date
       return goal;
     }
-
-    const date = DateTime.fromISO(monthlyGoalUpdatedAt);
-    return t('{{goal}} (last updated {{updated}})', {
-      goal,
-      updated: dateFormat(date, locale),
-    });
-  }, [initialMonthlyGoal, monthlyGoalUpdatedAt, currency, locale]);
+  }, [
+    initialMonthlyGoal,
+    calculatedGoal,
+    formattedCalculatedGoal,
+    monthlyGoalUpdatedAt,
+    currency,
+    locale,
+  ]);
 
   const onSubmit = async (
     attributes: Pick<AccountListSettingsInput, 'monthlyGoal'>,
@@ -142,15 +173,36 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     }
   };
 
+  const getWarning = (currentGoal: number | null) => {
+    if (
+      typeof currentGoal === 'number' &&
+      typeof calculatedGoal === 'number' &&
+      currentGoal < calculatedGoal
+    ) {
+      return (
+        <Typography
+          component="span"
+          color="statusWarning.main"
+          display="flex"
+          my={1}
+          gap={0.5}
+        >
+          <WarningIcon />
+          {t(
+            'Your current monthly goal is less than the amount NetSuite estimates that you need. Please review your goal and adjust it if needed.',
+          )}
+        </Typography>
+      );
+    }
+  };
+
   return (
     <AccordionItem
       accordion={PreferenceAccordion.MonthlyGoal}
       onAccordionChange={handleAccordionChange}
       expandedAccordion={expandedAccordion}
       label={label}
-      value={
-        formattedMonthlyGoal || `${formattedCalculatedGoal} (${t('estimated')})`
-      }
+      value={accordionValue}
       fullWidth
       disabled={disabled}
     >
@@ -172,7 +224,14 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
           handleChange,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <FieldWrapper helperText={getInstructions()}>
+            <FieldWrapper
+              helperText={
+                <>
+                  {getInstructions()}
+                  {getWarning(monthlyGoal)}
+                </>
+              }
+            >
               <TextField
                 value={monthlyGoal}
                 onChange={handleChange}

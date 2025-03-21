@@ -9,7 +9,7 @@ import {
 
 interface FieldWrapperProps {
   labelText?: string;
-  helperText?: string;
+  helperText?: React.ReactNode;
   helperPosition?: HelperPositionEnum;
   formControlDisabled?: FormControlProps['disabled'];
   formControlError?: FormControlProps['error'];
@@ -22,7 +22,7 @@ interface FieldWrapperProps {
 
 export const FieldWrapper: React.FC<FieldWrapperProps> = ({
   labelText = '',
-  helperText = '',
+  helperText = null,
   helperPosition = HelperPositionEnum.Top,
   formControlDisabled = false,
   formControlError = false,
@@ -47,12 +47,10 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
     ''
   );
 
-  const helperTextOutput = helperText ? (
+  const helperTextOutput = helperText && (
     <StyledFormHelperText {...formHelperTextProps}>
-      {t(helperText)}
+      {helperText}
     </StyledFormHelperText>
-  ) : (
-    ''
   );
 
   return (
