@@ -12,7 +12,6 @@ import {
   Typography,
   TypographyProps,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { HealthIndicatorWidget } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorWidget/HealthIndicatorWidget';
@@ -23,6 +22,7 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { GoalSource, getHealthIndicatorInfo } from 'src/lib/healthIndicator';
 import {
   currencyFormat,
   dateFormat,
@@ -85,8 +85,6 @@ const MonthlyGoal = ({
 
   const loading = accountList === null;
   const {
-    monthlyGoal: preferencesGoal,
-    monthlyGoalUpdatedAt: preferencesGoalUpdatedAt,
     receivedPledges: received = 0,
     totalPledges: pledged = 0,
     currency,
@@ -100,26 +98,21 @@ const MonthlyGoal = ({
 
   const latestHealthIndicatorData = data?.accountList.healthIndicatorData;
   const showHealthIndicator = !!latestHealthIndicatorData;
-  const machineCalculatedGoal =
-    latestHealthIndicatorData?.machineCalculatedGoal &&
-    typeof latestHealthIndicatorData.machineCalculatedGoalCurrency ===
-      'string' &&
-    latestHealthIndicatorData.machineCalculatedGoalCurrency === currency
-      ? latestHealthIndicatorData.machineCalculatedGoal
-      : null;
-  const goal = preferencesGoal ?? machineCalculatedGoal ?? 0;
-  const preferencesGoalDate =
-    typeof preferencesGoal === 'number' &&
-    preferencesGoalUpdatedAt &&
-    DateTime.fromISO(preferencesGoalUpdatedAt);
-  const preferencesGoalLow =
-    typeof preferencesGoal === 'number' &&
-    typeof machineCalculatedGoal === 'number' &&
-    preferencesGoal < machineCalculatedGoal;
-  const receivedPercentage = received / goal;
-  const pledgedPercentage = pledged / goal;
-  const belowGoal = goal - pledged;
-  const belowGoalPercentage = belowGoal / goal;
+  const {
+    goal,
+    goalSource,
+    machineCalculatedGoal,
+    preferencesGoal,
+    preferencesGoalUpdatedAt,
+    preferencesGoalLow,
+    preferencesGoalOld,
+  } = getHealthIndicatorInfo(accountList, latestHealthIndicatorData);
+  const goalOrZero = goal ?? 0;
+  const hasValidGoal = goal !== null;
+  const receivedPercentage = hasValidGoal ? received / goal : NaN;
+  const pledgedPercentage = hasValidGoal ? pledged / goal : NaN;
+  const belowGoal = goalOrZero - pledged;
+  const belowGoalPercentage = hasValidGoal ? belowGoal / goal : NaN;
 
   const toolTipText = useMemo(() => {
     if (preferencesGoal) {
@@ -153,20 +146,17 @@ const MonthlyGoal = ({
         label: t('Below machine-calculated goal'),
         color: 'statusWarning.main',
       }
-    : typeof preferencesGoal !== 'number'
+    : goalSource === GoalSource.MachineCalculated
     ? {
         label: t('Machine-calculated goal'),
         color: 'statusWarning.main',
       }
-    : preferencesGoalDate
+    : preferencesGoalUpdatedAt
     ? {
         label: t('Last updated {{date}}', {
-          date: dateFormat(preferencesGoalDate, locale),
+          date: dateFormat(preferencesGoalUpdatedAt, locale),
         }),
-        color:
-          preferencesGoalDate <= DateTime.now().minus({ year: 1 })
-            ? 'statusWarning.main'
-            : 'textSecondary',
+        color: preferencesGoalOld ? 'statusWarning.main' : 'textSecondary',
       }
     : null;
   const annotationId = useId();
@@ -195,7 +185,7 @@ const MonthlyGoal = ({
               </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
-                  {!loading && currencyFormat(goal, currency, locale)}
+                  {!loading && currencyFormat(goalOrZero, currency, locale)}
                 </Box>
               </Hidden>
             </Box>
@@ -217,7 +207,7 @@ const MonthlyGoal = ({
                     <Tooltip
                       title={toolTipText}
                       color={
-                        !preferencesGoal && machineCalculatedGoal
+                        goalSource === GoalSource.MachineCalculated
                           ? 'statusWarning.main'
                           : undefined
                       }
@@ -244,7 +234,7 @@ const MonthlyGoal = ({
                             <Skeleton variant="text" />
                           ) : (
                             <>
-                              {currencyFormat(goal, currency, locale)}
+                              {currencyFormat(goalOrZero, currency, locale)}
                               {annotation && (
                                 <Typography
                                   component="span"
@@ -267,7 +257,8 @@ const MonthlyGoal = ({
                             {annotation.label}
                           </Typography>
                         )}
-                        {(preferencesGoal === null || preferencesGoalLow) && (
+                        {(goalSource === GoalSource.MachineCalculated ||
+                          preferencesGoalLow) && (
                           <Button
                             component={NextLink}
                             href={`/accountLists/${accountListId}/settings/preferences?selectedTab=${PreferenceAccordion.MonthlyGoal}`}
@@ -401,7 +392,7 @@ const MonthlyGoal = ({
         </Grid>
 
         <Grid {...cssProps.hIGrid} item>
-          {showHealthIndicator && latestHealthIndicatorData && (
+          {latestHealthIndicatorData && (
             <HealthIndicatorWidget
               accountListId={accountListId}
               data={latestHealthIndicatorData}

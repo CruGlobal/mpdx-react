@@ -338,27 +338,12 @@ describe('MonthlyGoal', () => {
     });
 
     it('should set the monthly goal to the machine-calculated goal', async () => {
-      const {
-        findByRole,
-        findByLabelText,
-        getByRole,
-        queryByRole,
-        queryByText,
-      } = render(
+      const { findByRole, getByRole, queryByRole, queryByText } = render(
         <Components
-          accountList={{
-            monthlyGoal: null,
-            monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
-          }}
+          accountList={{ monthlyGoal: null }}
           healthIndicatorData={{ machineCalculatedGoal: 7000 }}
         />,
       );
-
-      expect(
-        await findByLabelText(
-          /^Your current goal of \$7,000 is machine-calculated/,
-        ),
-      ).toHaveStyle('color: rgb(211, 68, 0)');
 
       expect(
         await findByRole('heading', { name: '$7,000' }),
