@@ -53,6 +53,7 @@ describe('AccountLists', () => {
             {
               name: 'Account',
               monthlyGoal: 1000,
+              monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
               receivedPledges: 600,
               totalPledges: 800,
               healthIndicatorData: {
@@ -72,7 +73,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$1,000Gifts Started60%Committed80%',
+      'AccountGoal$1,000*Gifts Started60%Committed80%*Last updated Jan 1, 2024',
     );
   });
 

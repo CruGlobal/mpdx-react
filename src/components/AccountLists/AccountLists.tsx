@@ -10,6 +10,7 @@ import {
   Theme,
   Tooltip,
   Typography,
+  TypographyProps,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
@@ -24,6 +25,12 @@ import {
 } from 'src/lib/intlFormat';
 import AnimatedCard from '../AnimatedCard';
 import PageHeading from '../PageHeading';
+
+interface Annotation {
+  label: string;
+  color?: TypographyProps['color'];
+  variant?: TypographyProps['variant'];
+}
 
 interface Props {
   data: GetAccountListsQuery;
@@ -115,8 +122,20 @@ const AccountLists = ({ data }: Props): ReactElement => {
                   ? totalPledges / monthlyGoal
                   : NaN;
 
-                const machineCalculatedId = `machine-calculated-${id}`;
-                const lastUpdatedId = `last-updated-${id}`;
+                const annotation: Annotation | null = hasMachineCalculatedGoal
+                  ? {
+                      label: t('machine-calculated'),
+                      color: 'statusWarning.main',
+                    }
+                  : preferencesGoalDate
+                  ? {
+                      label: t('Last updated {{date}}', {
+                        date: dateFormat(preferencesGoalDate, locale),
+                      }),
+                      variant: 'body2',
+                    }
+                  : null;
+                const annotationId = `annotation-${id}`;
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
@@ -163,17 +182,17 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     </Typography>
                                     <Typography
                                       variant="h6"
-                                      aria-describedby={`${machineCalculatedId} ${lastUpdatedId}`}
+                                      aria-describedby={annotationId}
                                     >
                                       {currencyFormat(
                                         monthlyGoal,
                                         currency,
                                         locale,
                                       )}
-                                      {hasMachineCalculatedGoal && (
+                                      {annotation && (
                                         <Typography
                                           component="span"
-                                          color="statusWarning.main"
+                                          color={annotation.color}
                                           ml={0.25}
                                           aria-hidden
                                         >
@@ -214,21 +233,15 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                               </Grid>
                             </Grid>
-                            {hasMachineCalculatedGoal && (
+                            {annotation && (
                               <Typography
-                                id={machineCalculatedId}
+                                id={annotationId}
                                 component="div"
-                                color="statusWarning.main"
+                                color={annotation.color}
+                                variant={annotation.variant}
                               >
                                 <span aria-hidden>*</span>
-                                {t('machine-calculated')}
-                              </Typography>
-                            )}
-                            {preferencesGoalDate && (
-                              <Typography id={lastUpdatedId} variant="body2">
-                                {t('Last updated {{date}}', {
-                                  date: dateFormat(preferencesGoalDate, locale),
-                                })}
+                                {annotation.label}
                               </Typography>
                             )}
                           </CardContent>
