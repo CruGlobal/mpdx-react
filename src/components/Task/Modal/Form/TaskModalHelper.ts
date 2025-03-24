@@ -118,7 +118,19 @@ export const handleResultChange = ({
     result as DisplayResultEnum,
     ActivityTypeEnum.None,
   );
-  const defaultNextAction = findNextAction(completedAction, nextActions);
+
+  // As per Scott's request, we do not set the next action field if the following are true
+  // - The phase is PartnerCare.
+  // - The completed action is InitiationSpecialGiftAppeal.
+  // There has been discussion to add this logic to the constant API.
+  // When/If that happens, this logic should be removed.
+  const doNotSetNextAction =
+    phaseData?.id === PhaseEnum.PartnerCare ||
+    completedAction === ActivityTypeEnum.InitiationSpecialGiftAppeal;
+
+  const defaultNextAction = doNotSetNextAction
+    ? null
+    : findNextAction(completedAction, nextActions);
   setFieldValue('nextAction', defaultNextAction);
 };
 
@@ -206,8 +218,6 @@ const setTaskName = (
   setFieldTouched: SetFieldTouched,
 ) => {
   const defaultTaskName = getDefaultTaskName(activityType, activityTypes);
-  if (defaultTaskName) {
-    setFieldValue('subject', defaultTaskName);
-  }
+  setFieldValue('subject', defaultTaskName);
   setTimeout(() => setFieldTouched('activityType', true));
 };

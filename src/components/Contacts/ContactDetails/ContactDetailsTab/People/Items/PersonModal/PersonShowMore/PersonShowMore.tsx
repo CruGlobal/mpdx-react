@@ -185,7 +185,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                   ? backupAnniversaryDate
                   : anniversaryDate
               }
-              onChange={(date) => date && handleDateChange(date)}
+              onChange={(date) => handleDateChange(date)}
             />
           </Grid>
         </Grid>

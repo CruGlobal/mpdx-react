@@ -17,10 +17,8 @@ onesky
       if (lang.code !== 'en' && lang.translation_progress !== '0.0%') {
         onesky
           .getFile({
+            ...options,
             language: lang.code,
-            secret: process.env.ONESKY_API_SECRET,
-            apiKey: process.env.ONESKY_API_KEY,
-            projectId: process.env.ONESKY_PROJECT_ID,
             fileName: 'translation.json',
           })
           .then(function (langContent) {
