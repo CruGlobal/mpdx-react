@@ -538,6 +538,7 @@ class MpdxRestApi extends RESTDataSource {
       switch (key) {
         // Boolean
         case 'addressHistoric':
+        case 'addressPrimary':
         case 'addressValid':
         case 'anyTags':
         case 'noAppeals':
