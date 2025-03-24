@@ -7,7 +7,8 @@ import {
 type ContactFilterKey = keyof ContactFilterSetInput;
 type ContactFilterValue = ContactFilterSetInput[ContactFilterKey];
 type ReportContactFilterKey = keyof ReportContactFilterSetInput;
-type ReportContactFilterValue = ReportContactFilterSetInput[ContactFilterKey];
+type ReportContactFilterValue =
+  ReportContactFilterSetInput[ReportContactFilterKey];
 type TaskFilterKey = keyof TaskFilterSetInput;
 type TaskFilterValue = TaskFilterSetInput[TaskFilterKey];
 export type FilterKey =
