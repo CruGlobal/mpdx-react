@@ -73,7 +73,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$1,000*Gifts Started60%Committed80%*Last updated Jan 1, 2024',
+      'AccountGoal$1,000*Gifts Started60%Committed80%*Below machine-calculated goal',
     );
   });
 
@@ -209,6 +209,62 @@ describe('AccountLists', () => {
         </ThemeProvider>,
       );
       expect(queryByText('Last updated Dec 30, 2019')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('below machine-calculated warning', () => {
+    it('is shown if goal is less than the machine-calculated goal', () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [
+              {
+                currency: 'USD',
+                monthlyGoal: 5000,
+                healthIndicatorData: {
+                  machineCalculatedGoal: 10000,
+                  machineCalculatedGoalCurrency: 'USD',
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(getByText('Below machine-calculated goal')).toBeInTheDocument();
+    });
+
+    it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [
+              {
+                currency: 'USD',
+                monthlyGoal: 5000,
+                healthIndicatorData: {
+                  machineCalculatedGoal: 5000,
+                  machineCalculatedGoalCurrency: 'USD',
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(
+        queryByText('Below machine-calculated goal'),
+      ).not.toBeInTheDocument();
     });
   });
 });

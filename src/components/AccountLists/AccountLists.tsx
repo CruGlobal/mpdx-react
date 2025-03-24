@@ -99,6 +99,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 goal,
                 goalSource,
                 preferencesGoalUpdatedAt,
+                preferencesGoalLow,
                 preferencesGoalOld,
               } = getHealthIndicatorInfo(accountList, healthIndicatorData);
 
@@ -108,22 +109,26 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 : NaN;
               const totalPercentage = hasValidGoal ? totalPledges / goal : NaN;
 
-              const annotation: Annotation | null =
-                goalSource === GoalSource.MachineCalculated
-                  ? {
-                      label: t('machine-calculated'),
-                      color: 'statusWarning.main',
-                    }
-                  : preferencesGoalUpdatedAt
-                  ? {
-                      label: t('Last updated {{date}}', {
-                        date: dateFormat(preferencesGoalUpdatedAt, locale),
-                      }),
-                      color: preferencesGoalOld
-                        ? 'statusWarning.main'
-                        : undefined,
-                    }
-                  : null;
+              const annotation: Annotation | null = preferencesGoalLow
+                ? {
+                    label: t('Below machine-calculated goal'),
+                    color: 'statusWarning.main',
+                  }
+                : goalSource === GoalSource.MachineCalculated
+                ? {
+                    label: t('machine-calculated'),
+                    color: 'statusWarning.main',
+                  }
+                : preferencesGoalUpdatedAt
+                ? {
+                    label: t('Last updated {{date}}', {
+                      date: dateFormat(preferencesGoalUpdatedAt, locale),
+                    }),
+                    color: preferencesGoalOld
+                      ? 'statusWarning.main'
+                      : undefined,
+                  }
+                : null;
               const annotationId = `annotation-${id}`;
 
               return (
