@@ -10,15 +10,27 @@ import {
   Theme,
   Tooltip,
   Typography,
+  TypographyProps,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { GetAccountListsQuery } from 'pages/GetAccountLists.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
+import {
+  currencyFormat,
+  dateFormat,
+  percentageFormat,
+} from 'src/lib/intlFormat';
 import AnimatedCard from '../AnimatedCard';
 import PageHeading from '../PageHeading';
+
+interface Annotation {
+  label: string;
+  color?: TypographyProps['color'];
+  variant?: TypographyProps['variant'];
+}
 
 interface Props {
   data: GetAccountListsQuery;
@@ -78,6 +90,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                 id,
                 name,
                 monthlyGoal: preferencesGoal,
+                monthlyGoalUpdatedAt: preferencesGoalUpdatedAt,
                 receivedPledges,
                 totalPledges,
                 currency: preferencesCurrency,
@@ -92,6 +105,10 @@ const AccountLists = ({ data }: Props): ReactElement => {
                   : healthIndicatorData?.machineCalculatedGoalCurrency;
                 const hasMachineCalculatedGoal =
                   !hasPreferencesGoal && typeof monthlyGoal === 'number';
+                const preferencesGoalDate =
+                  typeof preferencesGoal === 'number' &&
+                  preferencesGoalUpdatedAt &&
+                  DateTime.fromISO(preferencesGoalUpdatedAt);
 
                 // If the currency comes from the machine calculated goal and is different from the
                 // user's currency preference, we can't calculate the received or total percentages
@@ -105,7 +122,20 @@ const AccountLists = ({ data }: Props): ReactElement => {
                   ? totalPledges / monthlyGoal
                   : NaN;
 
-                const ariaId = `goal-${id}`;
+                const annotation: Annotation | null = hasMachineCalculatedGoal
+                  ? {
+                      label: t('machine-calculated'),
+                      color: 'statusWarning.main',
+                    }
+                  : preferencesGoalDate
+                  ? {
+                      label: t('Last updated {{date}}', {
+                        date: dateFormat(preferencesGoalDate, locale),
+                      }),
+                      variant: 'body2',
+                    }
+                  : null;
+                const annotationId = `annotation-${id}`;
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
@@ -152,17 +182,17 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                     </Typography>
                                     <Typography
                                       variant="h6"
-                                      aria-describedby={ariaId}
+                                      aria-describedby={annotationId}
                                     >
                                       {currencyFormat(
                                         monthlyGoal,
                                         currency,
                                         locale,
                                       )}
-                                      {hasMachineCalculatedGoal && (
+                                      {annotation && (
                                         <Typography
                                           component="span"
-                                          color="statusWarning.main"
+                                          color={annotation.color}
                                           ml={0.25}
                                           aria-hidden
                                         >
@@ -203,17 +233,17 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                               </Grid>
                             </Grid>
-                            {!hasPreferencesGoal &&
-                              typeof monthlyGoal === 'number' && (
-                                <Typography
-                                  aria-describedby={ariaId}
-                                  component="div"
-                                  color="statusWarning.main"
-                                >
-                                  <span aria-hidden>*</span>
-                                  {t('machine-calculated')}
-                                </Typography>
-                              )}
+                            {annotation && (
+                              <Typography
+                                id={annotationId}
+                                component="div"
+                                color={annotation.color}
+                                variant={annotation.variant}
+                              >
+                                <span aria-hidden>*</span>
+                                {annotation.label}
+                              </Typography>
+                            )}
                           </CardContent>
                         </CardActionArea>
                       </Link>

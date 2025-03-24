@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, useId, useMemo } from 'react';
 import {
   Box,
   Button,
@@ -11,17 +11,20 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { HealthIndicatorWidget } from 'src/components/Reports/HealthIndicatorReport/HealthIndicatorWidget/HealthIndicatorWidget';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import {
+  AccountList,
   ContactFilterPledgeReceivedEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import {
   currencyFormat,
+  dateFormat,
   numberFormat,
   percentageFormat,
 } from '../../../lib/intlFormat';
@@ -52,28 +55,36 @@ const useStyles = makeStyles()((_theme: Theme) => ({
 
 export interface MonthlyGoalProps {
   accountListId: string;
-  loading?: boolean;
-  goal?: number;
-  received?: number;
-  pledged?: number;
+  accountList: Pick<
+    AccountList,
+    | 'currency'
+    | 'monthlyGoal'
+    | 'monthlyGoalUpdatedAt'
+    | 'receivedPledges'
+    | 'totalPledges'
+  > | null;
   totalGiftsNotStarted?: number;
-  currencyCode?: string;
   onDashboard?: boolean;
 }
 
 const MonthlyGoal = ({
   accountListId,
-  loading,
-  goal: staffEnteredGoal = 0,
-  received = 0,
-  pledged = 0,
+  accountList,
   totalGiftsNotStarted,
-  currencyCode = 'USD',
   onDashboard = false,
 }: MonthlyGoalProps): ReactElement => {
   const { t } = useTranslation();
   const { classes } = useStyles();
   const locale = useLocale();
+
+  const loading = accountList === null;
+  const {
+    monthlyGoal: preferencesGoal,
+    monthlyGoalUpdatedAt: preferencesGoalUpdatedAt,
+    receivedPledges: received = 0,
+    totalPledges: pledged = 0,
+    currency,
+  } = accountList ?? {};
 
   const { data, loading: healthIndicatorLoading } = useHealthIndicatorQuery({
     variables: {
@@ -81,36 +92,37 @@ const MonthlyGoal = ({
     },
   });
 
-  const latestHealthIndicatorData = useMemo(
-    () => data?.healthIndicatorData.at(-1),
-    [data],
-  );
-  const showHealthIndicator = !!data?.healthIndicatorData.length;
+  const latestHealthIndicatorData = data?.accountList.healthIndicatorData;
+  const showHealthIndicator = !!latestHealthIndicatorData;
   const machineCalculatedGoal =
     latestHealthIndicatorData?.machineCalculatedGoal ?? null;
-  const goal = staffEnteredGoal || machineCalculatedGoal || 0;
+  const goal = preferencesGoal ?? machineCalculatedGoal ?? 0;
+  const preferencesGoalDate =
+    typeof preferencesGoal === 'number' &&
+    preferencesGoalUpdatedAt &&
+    DateTime.fromISO(preferencesGoalUpdatedAt);
   const receivedPercentage = received / goal;
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
   const belowGoalPercentage = belowGoal / goal;
 
   const toolTipText = useMemo(() => {
-    if (staffEnteredGoal) {
+    if (preferencesGoal) {
       return t(
         'Your current goal of {{goal}} is staff-entered, based on the value set in your settings preferences.',
-        { goal: currencyFormat(staffEnteredGoal, currencyCode, locale) },
+        { goal: currencyFormat(preferencesGoal, currency, locale) },
       );
     } else if (machineCalculatedGoal) {
       return t(
         'Your current goal of {{goal}} is machine-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
-        { goal: currencyFormat(machineCalculatedGoal, currencyCode, locale) },
+        { goal: currencyFormat(machineCalculatedGoal, currency, locale) },
       );
     } else {
       return t(
         'Your current goal is set to "0" because a monthly goal has not been set. You can set your monthly goal in your settings preferences.',
       );
     }
-  }, [machineCalculatedGoal, staffEnteredGoal, currencyCode, locale]);
+  }, [machineCalculatedGoal, preferencesGoal, currency, locale]);
 
   const cssProps = {
     containerGrid: showHealthIndicator ? { spacing: 2 } : {},
@@ -120,6 +132,9 @@ const MonthlyGoal = ({
     statGrid: showHealthIndicator ? { xs: 6 } : { sm: 6, md: 3 },
     hIGrid: showHealthIndicator ? { xs: 12, md: 6, lg: 5 } : { xs: 0 },
   };
+
+  const lastUpdatedId = useId();
+
   return (
     <>
       <Box my={{ xs: 1, sm: 2 }}>
@@ -144,7 +159,7 @@ const MonthlyGoal = ({
               </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
-                  {!loading && currencyFormat(goal, currencyCode, locale)}
+                  {!loading && currencyFormat(goal, currency, locale)}
                 </Box>
               </Hidden>
             </Box>
@@ -166,13 +181,17 @@ const MonthlyGoal = ({
                     <Tooltip
                       title={toolTipText}
                       color={
-                        !staffEnteredGoal && machineCalculatedGoal
+                        !preferencesGoal && machineCalculatedGoal
                           ? 'statusWarning.main'
                           : undefined
                       }
                     >
                       <Box>
-                        <Typography component="div" color="textSecondary">
+                        <Typography
+                          component="div"
+                          color="textSecondary"
+                          aria-describedby={lastUpdatedId}
+                        >
                           <div
                             className={[classes.indicator, classes.goal].join(
                               ' ',
@@ -187,10 +206,17 @@ const MonthlyGoal = ({
                           {loading ? (
                             <Skeleton variant="text" />
                           ) : (
-                            currencyFormat(goal, currencyCode, locale)
+                            currencyFormat(goal, currency, locale)
                           )}
                         </Typography>
-                        {!staffEnteredGoal && (
+                        {preferencesGoalDate && (
+                          <Typography id={lastUpdatedId} variant="body2">
+                            {t('Last updated {{date}}', {
+                              date: dateFormat(preferencesGoalDate, locale),
+                            })}
+                          </Typography>
+                        )}
+                        {preferencesGoal === null && (
                           <Button
                             component={NextLink}
                             href={`/accountLists/${accountListId}/settings/preferences?selectedTab=${PreferenceAccordion.MonthlyGoal}`}
@@ -230,7 +256,7 @@ const MonthlyGoal = ({
                     {loading ? (
                       <Skeleton variant="text" />
                     ) : (
-                      currencyFormat(received, currencyCode, locale)
+                      currencyFormat(received, currency, locale)
                     )}
                   </Typography>
                 </Grid>
@@ -260,7 +286,7 @@ const MonthlyGoal = ({
                     {loading ? (
                       <Skeleton variant="text" />
                     ) : (
-                      currencyFormat(pledged, currencyCode, locale)
+                      currencyFormat(pledged, currency, locale)
                     )}
                   </Typography>
                 </Grid>
@@ -280,7 +306,7 @@ const MonthlyGoal = ({
                         component="small"
                         data-testid="MonthlyGoalTypographyBelowGoal"
                       >
-                        {currencyFormat(belowGoal, currencyCode, locale)}
+                        {currencyFormat(belowGoal, currency, locale)}
                       </Typography>
                     </Grid>
                   ) : (
@@ -307,7 +333,7 @@ const MonthlyGoal = ({
                         {loading ? (
                           <Skeleton variant="text" />
                         ) : (
-                          currencyFormat(-belowGoal, currencyCode, locale)
+                          currencyFormat(-belowGoal, currency, locale)
                         )}
                       </Typography>
                     </Grid>

@@ -2,6 +2,7 @@ query MonthlyGoal($accountListId: ID!) {
   accountList(id: $accountListId) {
     id
     monthlyGoal
+    monthlyGoalUpdatedAt
     receivedPledges
     totalPledges
     currency

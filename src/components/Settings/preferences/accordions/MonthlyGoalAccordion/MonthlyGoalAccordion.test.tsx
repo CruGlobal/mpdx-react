@@ -35,6 +35,7 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
+  monthlyGoalUpdatedAt?: string;
   machineCalculatedGoal?: number;
   machineCalculatedGoalCurrency?: string;
   expandedAccordion: PreferenceAccordion | null;
@@ -42,6 +43,7 @@ interface ComponentsProps {
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
+  monthlyGoalUpdatedAt = null,
   machineCalculatedGoal,
   machineCalculatedGoalCurrency = 'USD',
   expandedAccordion,
@@ -65,6 +67,7 @@ const Components: React.FC<ComponentsProps> = ({
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
             monthlyGoal={monthlyGoal}
+            monthlyGoalUpdatedAt={monthlyGoalUpdatedAt}
             currency={'USD'}
             accountListId={accountListId}
             handleSetupChange={handleSetupChange}
@@ -83,10 +86,17 @@ describe('MonthlyGoalAccordion', () => {
   });
 
   it('should render accordion closed', () => {
-    const { getByText, queryByRole } = render(
-      <Components monthlyGoal={100} expandedAccordion={null} />,
+    const { getByTestId, getByText, queryByRole } = render(
+      <Components
+        monthlyGoal={100}
+        monthlyGoalUpdatedAt="2024-01-01T00:00:00"
+        expandedAccordion={null}
+      />,
     );
 
+    expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+      '$100 (last updated Jan 1, 2024)',
+    );
     expect(getByText(label)).toBeInTheDocument();
     expect(queryByRole('textbox')).not.toBeInTheDocument();
   });

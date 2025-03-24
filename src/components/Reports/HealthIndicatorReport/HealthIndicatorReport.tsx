@@ -29,11 +29,12 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const [noHealthIndicatorData, setNoHealthIndicatorData] = useState(false);
-  const { data, loading } = useMonthlyGoalQuery({
+  const { data } = useMonthlyGoalQuery({
     variables: {
       accountListId,
     },
   });
+
   return (
     <Box>
       <MultiPageHeader
@@ -61,12 +62,8 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
             <Grid item xs={12}>
               <MonthlyGoal
                 accountListId={accountListId}
-                loading={loading}
-                goal={data?.accountList.monthlyGoal ?? undefined}
-                received={data?.accountList.receivedPledges}
-                pledged={data?.accountList.totalPledges}
+                accountList={data?.accountList ?? null}
                 totalGiftsNotStarted={data?.contacts.totalCount}
-                currencyCode={data?.accountList.currency}
               />
             </Grid>
             <Grid item xs={12}>
