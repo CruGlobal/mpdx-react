@@ -77,6 +77,11 @@ input ReportContactFilterSetInput {
   addressLatLng: String
 
   """
+  Filter by Primary Address; Accepts values 'true', or 'false'
+  """
+  addressPrimary: Boolean
+
+  """
   Filter where address value is false; accepts "false"
   """
   addressValid: Boolean
