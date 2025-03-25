@@ -58,6 +58,12 @@ git lfs pull
 
 ### Running the local server
 
+Ensure you have corepack enabled.
+
+```bash
+corepack enable
+```
+
 Then, make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
 
 Once you have these variables you can install the dependencies.
