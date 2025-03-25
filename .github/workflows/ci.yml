@@ -20,12 +20,17 @@ jobs:
         chunk: [1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: Enable Corepack
+        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
@@ -44,12 +49,17 @@ jobs:
   eslint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: Enable Corepack
+        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
@@ -63,12 +73,17 @@ jobs:
   typescript:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: Enable Corepack
+        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
@@ -82,20 +97,27 @@ jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: Enable Corepack
+        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+
       - name: 💅 Prettier Check
         run: yarn prettier:check
 
   yarn-check-cache:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
       - name: 🔍 Check Yarn Cache
@@ -106,12 +128,17 @@ jobs:
     needs: [test, eslint, typescript, prettier]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: Enable Corepack
+        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+
       - name: 🌐 Extract Translations
         run: yarn extract
       - name: ⛅🔼 OneSky Upload
@@ -126,12 +153,17 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
+      - name: Enable Corepack
+        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
+
       - name: 📈 Run GraphQL Codegen
         uses: nick-fields/retry@v3
         with:
