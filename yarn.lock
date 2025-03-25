@@ -3,7 +3,7 @@
 
 __metadata:
   version: 8
-  cacheKey: 10
+  cacheKey: 10c0
 
 "@aashutoshrathi/word-wrap@npm:^1.2.3":
   version: 1.2.6
@@ -7715,6 +7715,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bare-events@npm:^2.5.4":
+  version: 2.5.4
+  resolution: "bare-events@npm:2.5.4"
+  checksum: 10/135ef380b13f554ca2c6905bdbcfac8edae08fce85b7f953fa01f09a9f5b0da6a25e414111659bc9a6118216f0dd1f732016acd11ce91517f2afb26ebeb4b721
+  languageName: node
+  linkType: hard
+
 "bare-fs@npm:^2.1.1":
   version: 2.2.3
   resolution: "bare-fs@npm:2.2.3"
@@ -7727,13 +7734,18 @@ __metadata:
   linkType: hard
 
 "bare-fs@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "bare-fs@npm:4.0.1"
+  version: 4.0.2
+  resolution: "bare-fs@npm:4.0.2"
   dependencies:
-    bare-events: "npm:^2.0.0"
+    bare-events: "npm:^2.5.4"
     bare-path: "npm:^3.0.0"
-    bare-stream: "npm:^2.0.0"
-  checksum: 10/70951cf7d7522f0b6780bdfaf7969226db85370fa107b1eee71c58272573463388b40203595a8826cd55ca34e6359ca4b1ee91fd5d0b8ea64ab0d1f9979de262
+    bare-stream: "npm:^2.6.4"
+  peerDependencies:
+    bare-buffer: "*"
+  peerDependenciesMeta:
+    bare-buffer:
+      optional: true
+  checksum: 10/1850934b16553efa15227a92516272fa4921a30f57fcf061fb132e7585f7d5e8a13f9b1dd922ea5a4feeaf831eeaad526dc0e3d0c7d0140a4b96a0443763ebc2
   languageName: node
   linkType: hard
 
@@ -7745,9 +7757,9 @@ __metadata:
   linkType: hard
 
 "bare-os@npm:^3.0.1":
-  version: 3.6.0
-  resolution: "bare-os@npm:3.6.0"
-  checksum: 10/2d8366d74d0c9a780a83f9a3f3da9261ca68b6066eede5fbf94b13eba0dca105a78879529967c374858fffe23c53042eef292c9b8a866e6f9c6cec18b13c0ce2
+  version: 3.6.1
+  resolution: "bare-os@npm:3.6.1"
+  checksum: 10/285d95c391250166128e64da2947f4a348ae127de680afffec1f6c82445856be0d1f259672b471afe06517e4cd3831183c373a1d63ef7799ed4aaa1321b86b67
   languageName: node
   linkType: hard
 
@@ -7769,7 +7781,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bare-stream@npm:^2.0.0":
+"bare-stream@npm:^2.6.4":
   version: 2.6.5
   resolution: "bare-stream@npm:2.6.5"
   dependencies:
