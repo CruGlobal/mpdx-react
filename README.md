@@ -11,6 +11,8 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 
 ## Getting Started
 
+### Setting up Node
+
 First, make sure that you have a suitable version of Node.js. This project uses node v20.17.0. To check your node version, run `node --version`. If you don't have node v20.17.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
 
 ```bash
@@ -30,6 +32,31 @@ asdf install nodejs
 # Check that the node version is now 20.17.0
 node --version
 ```
+
+### Download yarn cache with Git LFS
+
+Because we store the yarn cache in the GitHub repo, we use Git LFS to manage these large zip files.
+
+**Install Git LFS (if not installed):**
+
+```bash
+brew install git-lfs
+```
+
+Alternatively, download from the [official site](https://git-lfs.com/).
+
+**Initialize Git LFS and pull LFS files**
+
+```bash
+# If you haven't initialized git-lfs locally before, run:
+git lfs install
+
+# Fetch the LFS files (Ensure you're inside the repo's directory):
+git lfs pull
+
+```
+
+### Running the local server
 
 Then, make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
 
