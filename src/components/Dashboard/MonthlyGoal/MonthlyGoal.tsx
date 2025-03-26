@@ -10,7 +10,6 @@ import {
   Theme,
   Tooltip,
   Typography,
-  TypographyProps,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -56,7 +55,7 @@ const useStyles = makeStyles()((_theme: Theme) => ({
 
 interface Annotation {
   label: string;
-  color: TypographyProps['color'];
+  warning: boolean;
 }
 
 export interface MonthlyGoalProps {
@@ -144,19 +143,19 @@ const MonthlyGoal = ({
   const annotation: Annotation | null = preferencesGoalLow
     ? {
         label: t('Below machine-calculated goal'),
-        color: 'statusWarning.main',
+        warning: true,
       }
     : goalSource === GoalSource.MachineCalculated
     ? {
         label: t('Machine-calculated goal'),
-        color: 'statusWarning.main',
+        warning: true,
       }
     : preferencesGoalUpdatedAt
     ? {
         label: t('Last updated {{date}}', {
           date: dateFormat(preferencesGoalUpdatedAt, locale),
         }),
-        color: preferencesGoalOld ? 'statusWarning.main' : 'textSecondary',
+        warning: preferencesGoalOld,
       }
     : null;
   const annotationId = useId();
@@ -238,7 +237,11 @@ const MonthlyGoal = ({
                               {annotation && (
                                 <Typography
                                   component="span"
-                                  color={annotation.color}
+                                  color={
+                                    annotation.warning
+                                      ? 'statusWarning.main'
+                                      : 'textSecondary'
+                                  }
                                   aria-hidden
                                 >
                                   *
@@ -247,22 +250,12 @@ const MonthlyGoal = ({
                             </>
                           )}
                         </Typography>
-                        {annotation && (
-                          <Typography
-                            id={annotationId}
-                            color={annotation.color}
-                            variant="body2"
-                          >
-                            <span aria-hidden>*</span>
-                            {annotation.label}
-                          </Typography>
-                        )}
-                        {(goalSource === GoalSource.MachineCalculated ||
-                          preferencesGoalLow) && (
+                        {annotation?.warning && (
                           <Button
                             component={NextLink}
                             href={`/accountLists/${accountListId}/settings/preferences?selectedTab=${PreferenceAccordion.MonthlyGoal}`}
                             variant="outlined"
+                            color="statusWarning"
                             sx={(theme) => ({
                               marginTop: theme.spacing(1),
                               textAlign: 'center',
@@ -386,6 +379,24 @@ const MonthlyGoal = ({
                     </Grid>
                   )}
                 </Hidden>
+                {annotation && (
+                  <Hidden smDown>
+                    <Grid item>
+                      <Typography
+                        id={annotationId}
+                        color={
+                          annotation.warning
+                            ? 'statusWarning.main'
+                            : 'textSecondary'
+                        }
+                        variant="body2"
+                      >
+                        <span aria-hidden>*</span>
+                        {annotation.label}
+                      </Typography>
+                    </Grid>
+                  </Hidden>
+                )}
               </Grid>
             </CardContent>
           </AnimatedCard>
