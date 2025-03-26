@@ -98,13 +98,12 @@ const AccountLists = ({ data }: Props): ReactElement => {
               const {
                 goal,
                 goalSource,
-                mismatchedCurrencies,
                 preferencesGoalUpdatedAt,
                 preferencesGoalLow,
                 preferencesGoalOld,
               } = getHealthIndicatorInfo(accountList, healthIndicatorData);
 
-              const hasValidGoal = !mismatchedCurrencies && goal !== null;
+              const hasValidGoal = goal !== null;
               const receivedPercentage = hasValidGoal
                 ? receivedPledges / goal
                 : NaN;
