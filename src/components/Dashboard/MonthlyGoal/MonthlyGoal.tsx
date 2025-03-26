@@ -98,20 +98,21 @@ const MonthlyGoal = ({
 
   const latestHealthIndicatorData = data?.accountList.healthIndicatorData;
   const showHealthIndicator = !!latestHealthIndicatorData;
-  const hiInfo = getHealthIndicatorInfo(accountList, latestHealthIndicatorData);
   const {
+    goal,
     goalSource,
     machineCalculatedGoal,
     preferencesGoal,
     preferencesGoalUpdatedAt,
     preferencesGoalLow,
     preferencesGoalOld,
-  } = hiInfo;
-  const goal = preferencesGoal ?? machineCalculatedGoal ?? 0;
-  const receivedPercentage = received / goal;
-  const pledgedPercentage = pledged / goal;
-  const belowGoal = goal - pledged;
-  const belowGoalPercentage = belowGoal / goal;
+  } = getHealthIndicatorInfo(accountList, latestHealthIndicatorData);
+  const goalOrZero = goal ?? 0;
+  const hasValidGoal = goal !== null;
+  const receivedPercentage = hasValidGoal ? received / goal : NaN;
+  const pledgedPercentage = hasValidGoal ? pledged / goal : NaN;
+  const belowGoal = goalOrZero - pledged;
+  const belowGoalPercentage = hasValidGoal ? belowGoal / goal : NaN;
 
   const toolTipText = useMemo(() => {
     if (preferencesGoal) {
@@ -184,7 +185,7 @@ const MonthlyGoal = ({
               </Button>
               <Hidden smUp>
                 <Box data-testid="MonthlyGoalTypographyGoalMobile">
-                  {!loading && currencyFormat(goal, currency, locale)}
+                  {!loading && currencyFormat(goalOrZero, currency, locale)}
                 </Box>
               </Hidden>
             </Box>
@@ -233,7 +234,7 @@ const MonthlyGoal = ({
                             <Skeleton variant="text" />
                           ) : (
                             <>
-                              {currencyFormat(goal, currency, locale)}
+                              {currencyFormat(goalOrZero, currency, locale)}
                               {annotation && (
                                 <Typography
                                   component="span"
