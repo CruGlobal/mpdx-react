@@ -13,7 +13,7 @@ jobs:
       id-token: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: configure AWS credentials
         id: creds
         uses: aws-actions/configure-aws-credentials@v4
