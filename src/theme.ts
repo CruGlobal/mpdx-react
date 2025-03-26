@@ -136,6 +136,15 @@ const theme = createTheme({
     progressBarGray: {
       main: progressBarColors.gray,
     },
+    success: {
+      main: statusColors.success,
+    },
+    warning: {
+      main: statusColors.warning,
+    },
+    error: {
+      main: statusColors.danger,
+    },
     statusSuccess: {
       main: statusColors.success,
     },

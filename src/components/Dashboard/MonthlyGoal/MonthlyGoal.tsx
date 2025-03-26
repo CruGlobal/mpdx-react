@@ -255,7 +255,7 @@ const MonthlyGoal = ({
                             component={NextLink}
                             href={`/accountLists/${accountListId}/settings/preferences?selectedTab=${PreferenceAccordion.MonthlyGoal}`}
                             variant="outlined"
-                            color="statusWarning"
+                            color="warning"
                             sx={(theme) => ({
                               marginTop: theme.spacing(1),
                               textAlign: 'center',
