@@ -83,7 +83,7 @@ export const ContactDonationsTab: React.FC<ContactDonationsProp> = ({
     React.useContext(ContactDetailContext) as ContactDetailsType;
 
   const handleDonationTabChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
+    _event: React.SyntheticEvent,
     newKey: DonationTabKey,
   ) => {
     setSelectedDonationTabKey(newKey);

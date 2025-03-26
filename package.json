@@ -112,7 +112,7 @@
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^18.19.0",
+    "@types/node": "20.17.0",
     "@types/react": "^18.0.21",
     "@types/testing-library__jest-dom": "^5.14.5",
     "@types/uuid": "^9.0.1",
@@ -140,9 +140,9 @@
     "lighthouse": "^11.7.0",
     "lint-staged": "^13.0.3",
     "next-compose-plugins": "^2.2.1",
-    "node-mocks-http": "^1.11.0",
+    "node-mocks-http": "1.16.2",
     "prettier": "^2.7.1",
-    "puppeteer": "^22.6.3",
+    "puppeteer": "24.4.0",
     "ts-essentials": "^9.3.0",
     "typescript": "~5.6.3",
     "url-loader": "^4.1.1",
@@ -159,5 +159,5 @@
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --cache --fix"
   },
-  "packageManager": "yarn@3.8.6"
+  "packageManager": "yarn@4.7.0"
 }

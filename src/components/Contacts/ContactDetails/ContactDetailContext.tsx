@@ -6,10 +6,7 @@ import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 export type ContactDetailsType = {
   selectedTabKey: TabKey;
   setSelectedTabKey: React.Dispatch<React.SetStateAction<TabKey>>;
-  handleTabChange: (
-    event: React.ChangeEvent<Record<string, unknown>>,
-    newKey: TabKey,
-  ) => void;
+  handleTabChange: (event: React.SyntheticEvent, newKey: TabKey) => void;
   editModalOpen: boolean;
   setEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editOtherModalOpen: boolean;
@@ -61,10 +58,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [selectedTabKey, setSelectedTabKey] = React.useState(
     query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
   );
-  const handleTabChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
-    newKey: TabKey,
-  ) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newKey: TabKey) => {
     setSelectedTabKey(newKey);
   };
 
