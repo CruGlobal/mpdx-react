@@ -58,11 +58,13 @@ const donationsData: DonationHistoriesData = {
       {
         convertedTotal: 50,
         startDate: '2019-01-01',
+        endDate: '2019-01-31',
         totals: [{ currency: 'USD', convertedAmount: 50 }],
       },
       {
         convertedTotal: 60,
         startDate: '2019-02-01',
+        endDate: '2019-02-31',
         totals: [{ currency: 'NZD', convertedAmount: 60 }],
       },
     ],
@@ -95,12 +97,14 @@ describe('DonationHistories', () => {
         periods: [
           {
             convertedTotal: 0,
-            startDate: '1-1-2019',
+            startDate: '2019-01-01',
+            endDate: '2019-01-31',
             totals: [{ currency: 'USD', convertedAmount: 0 }],
           },
           {
             convertedTotal: 0,
-            startDate: '1-2-2019',
+            startDate: '2019-02-01',
+            endDate: '2019-02-28',
             totals: [{ currency: 'NZD', convertedAmount: 0 }],
           },
         ],
