@@ -33,6 +33,22 @@ asdf install nodejs
 node --version
 ```
 
+### Setting up Corepack and Yarn 4
+
+Corepack lets you use Yarn without installing it globally. It automatically detects and prepares the version specified in our `package.json`.
+
+```bash
+# Enable Corepack if you haven't already:
+corepack enable
+
+# Install and activate the correct Yarn version:
+corepack install
+
+# Optional - If you want to activate Yarn 4.7.0 globally run:
+corepack prepare yarn@4.7.0 --activate
+```
+
+
 ### Download yarn cache with Git LFS
 
 Because we store the yarn cache in the GitHub repo, we use Git LFS to manage these large zip files.
@@ -58,13 +74,7 @@ git lfs pull
 
 ### Running the local server
 
-Ensure you have corepack enabled.
-
-```bash
-corepack enable
-```
-
-Then, make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
+Make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
 
 Once you have these variables you can install the dependencies.
 
