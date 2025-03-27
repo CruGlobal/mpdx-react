@@ -138,7 +138,6 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
     },
   });
 
-  // This calculation will be skewed if the periods are unevenly spaced
   const averageOverallHi = useMemo(() => {
     if (!data) {
       return null;
@@ -170,7 +169,7 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
             : DateTime.fromISO(periods[0].indicationPeriodBegin).startOf(
                 'month',
               );
-        // The newest most ends with its last period, but all others end on the end of the month
+        // The newest month ends with its last period, but all others end on the end of the month
         const periodEnd =
           monthIndex === months.length - 1 && periods.length
             ? null
