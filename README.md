@@ -45,13 +45,10 @@ brew install git-lfs
 
 Alternatively, download from the [official site](https://git-lfs.com/).
 
-**Initialize Git LFS and pull LFS files**
+**Pull LFS files**
 
 ```bash
-# If you haven't initialized git-lfs locally before, run:
-git lfs install
-
-# Fetch the LFS files (Ensure you're inside the repo's directory):
+# Fetch the LFS files
 git lfs pull
 
 ```
