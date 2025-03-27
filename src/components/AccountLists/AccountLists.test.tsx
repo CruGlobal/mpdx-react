@@ -213,7 +213,7 @@ describe('AccountLists', () => {
   });
 
   describe('below machine-calculated warning', () => {
-    it('is shown if goal is below machine-calculated goal', () => {
+    it('is shown if goal is less than the machine-calculated goal', () => {
       const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
         mocks: {
           accountLists: {
@@ -239,7 +239,7 @@ describe('AccountLists', () => {
       expect(getByText('Below machine-calculated goal')).toBeInTheDocument();
     });
 
-    it('is hidden if goal is above machine-calculated goal', async () => {
+    it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
       const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
         mocks: {
           accountLists: {
