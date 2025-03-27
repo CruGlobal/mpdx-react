@@ -6,7 +6,6 @@ describe('getHealthIndicatorInfo', () => {
     expect(getHealthIndicatorInfo(null, null)).toEqual({
       goal: null,
       goalSource: null,
-      mismatchedCurrencies: false,
       machineCalculatedGoal: null,
       machineCalculatedGoalCurrency: null,
       unsafeMachineCalculatedGoal: null,
@@ -30,7 +29,6 @@ describe('getHealthIndicatorInfo', () => {
     ).toEqual({
       goal: 2000,
       goalSource: GoalSource.Preferences,
-      mismatchedCurrencies: false,
       machineCalculatedGoal: 1000,
       machineCalculatedGoalCurrency: 'USD',
       unsafeMachineCalculatedGoal: 1000,
@@ -54,7 +52,6 @@ describe('getHealthIndicatorInfo', () => {
     ).toEqual({
       goal: 2000,
       goalSource: GoalSource.Preferences,
-      mismatchedCurrencies: false,
       machineCalculatedGoal: null,
       machineCalculatedGoalCurrency: null,
       unsafeMachineCalculatedGoal: null,
@@ -74,7 +71,6 @@ describe('getHealthIndicatorInfo', () => {
     ).toEqual({
       goal: 1000,
       goalSource: GoalSource.MachineCalculated,
-      mismatchedCurrencies: false,
       machineCalculatedGoal: 1000,
       machineCalculatedGoalCurrency: 'USD',
       unsafeMachineCalculatedGoal: 1000,
@@ -94,7 +90,6 @@ describe('getHealthIndicatorInfo', () => {
     ).toMatchObject({
       goal: null,
       goalSource: null,
-      mismatchedCurrencies: true,
       machineCalculatedGoal: null,
       machineCalculatedGoalCurrency: 'EUR',
       unsafeMachineCalculatedGoal: 1000,
@@ -110,7 +105,6 @@ describe('getHealthIndicatorInfo', () => {
     ).toMatchObject({
       goal: null,
       goalSource: null,
-      mismatchedCurrencies: true,
       machineCalculatedGoal: null,
       machineCalculatedGoalCurrency: null,
       unsafeMachineCalculatedGoal: 1000,
