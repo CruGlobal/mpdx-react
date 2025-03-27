@@ -17,13 +17,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText('Oct 12, 21');
-
-    expect(dateText).toBeInTheDocument();
-
-    const style = dateText && window.getComputedStyle(dateText);
-
-    expect(style?.color).toMatchInlineSnapshot(`"rgb(56, 63, 67)"`);
+    expect(getByText('Oct 12, 21')).toHaveStyle('color: #383F43');
   });
 
   it('should render complete', () => {
@@ -33,13 +27,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText('Oct 12, 21');
-
-    expect(dateText).toBeInTheDocument();
-
-    const style = dateText && window.getComputedStyle(dateText);
-
-    expect(style?.color).toMatchInlineSnapshot(`"rgb(156, 159, 161)"`);
+    expect(getByText('Oct 12, 21')).toHaveStyle('color: #9C9FA1');
   });
 
   it('should render late', () => {
@@ -49,13 +37,7 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText('Oct 12, 19');
-
-    expect(dateText).toBeInTheDocument();
-
-    const style = dateText && window.getComputedStyle(dateText);
-
-    expect(style?.color).toMatchInlineSnapshot(`"rgb(211, 47, 47)"`);
+    expect(getByText('Oct 12, 19')).toHaveStyle('color: #991313');
   });
 
   it('should not render year', () => {
@@ -65,7 +47,6 @@ describe('TaskCommentsButton', () => {
       </ThemeProvider>,
     );
 
-    const dateText = getByText('Oct 12');
-    expect(dateText).toBeInTheDocument();
+    expect(getByText('Oct 12')).toBeInTheDocument();
   });
 });

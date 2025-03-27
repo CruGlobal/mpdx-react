@@ -26,7 +26,13 @@ const Components = ({
       mocks={{
         HealthIndicator: {
           accountList: {
-            healthIndicatorData,
+            healthIndicatorData:
+              healthIndicatorData === null
+                ? null
+                : {
+                    machineCalculatedGoalCurrency: 'USD',
+                    ...healthIndicatorData,
+                  },
           },
         },
       }}
@@ -301,28 +307,43 @@ describe('MonthlyGoal', () => {
       });
     });
 
-    it('should set the monthly goal to the machine calculated goal', async () => {
-      const {
-        findByRole,
-        findByLabelText,
-        getByRole,
-        queryByRole,
-        queryByText,
-      } = render(
+    describe('below machine-calculated warning', () => {
+      it('is shown if goal is less than the machine-calculated goal', async () => {
+        const { findByText } = render(
+          <Components
+            accountList={{ monthlyGoal: 5000 }}
+            healthIndicatorData={{ machineCalculatedGoal: 10000 }}
+          />,
+        );
+
+        expect(
+          await findByText('Below machine-calculated goal'),
+        ).toBeInTheDocument();
+      });
+
+      it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
+        const { queryByText } = render(
+          <Components
+            accountList={{ monthlyGoal: 5000 }}
+            healthIndicatorData={{ machineCalculatedGoal: 5000 }}
+          />,
+        );
+
+        await waitFor(() =>
+          expect(
+            queryByText('Below machine-calculated goal'),
+          ).not.toBeInTheDocument(),
+        );
+      });
+    });
+
+    it('should set the monthly goal to the machine-calculated goal', async () => {
+      const { findByRole, getByRole, queryByRole, queryByText } = render(
         <Components
-          accountList={{
-            monthlyGoal: null,
-            monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
-          }}
+          accountList={{ monthlyGoal: null }}
           healthIndicatorData={{ machineCalculatedGoal: 7000 }}
         />,
       );
-
-      expect(
-        await findByLabelText(
-          /^Your current goal of \$7,000 is machine-calculated/,
-        ),
-      ).toHaveStyle('color: rgb(211, 68, 0)');
 
       expect(
         await findByRole('heading', { name: '$7,000' }),

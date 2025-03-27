@@ -120,7 +120,7 @@ describe('AnnouncementAction', () => {
 
         const button = getByText('Contacts');
         expect(button).toHaveStyle({
-          'background-color': '#ED6C02',
+          'background-color': '#D34400',
           color: '#FFFFFF',
         });
       });
@@ -131,7 +131,7 @@ describe('AnnouncementAction', () => {
 
         const button = getByText('Contacts');
         expect(button).toHaveStyle({
-          'background-color': '#ED6C02',
+          'background-color': '#D34400',
           color: '#FFFFFF',
         });
       });
