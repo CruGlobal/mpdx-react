@@ -159,6 +159,16 @@ const MonthlyGoal = ({
       }
     : null;
   const annotationId = useId();
+  const annotationNode = annotation && (
+    <Typography
+      id={annotationId}
+      color={annotation.warning ? 'statusWarning.main' : 'textSecondary'}
+      variant="body2"
+    >
+      <span aria-hidden>*</span>
+      {annotation.label}
+    </Typography>
+  );
 
   return (
     <>
@@ -250,6 +260,8 @@ const MonthlyGoal = ({
                             </>
                           )}
                         </Typography>
+                        {/* Without the HI card there is enough space for the annotation so display it here */}
+                        {annotation && !showHealthIndicator && annotationNode}
                         {annotation?.warning && (
                           <Button
                             component={NextLink}
@@ -379,22 +391,10 @@ const MonthlyGoal = ({
                     </Grid>
                   )}
                 </Hidden>
-                {annotation && (
+                {/* With the HI card there isn't enough space for the annotation next to the monthly goal so display it here */}
+                {annotation && showHealthIndicator && (
                   <Hidden smDown>
-                    <Grid item>
-                      <Typography
-                        id={annotationId}
-                        color={
-                          annotation.warning
-                            ? 'statusWarning.main'
-                            : 'textSecondary'
-                        }
-                        variant="body2"
-                      >
-                        <span aria-hidden>*</span>
-                        {annotation.label}
-                      </Typography>
-                    </Grid>
+                    <Grid item>{annotationNode}</Grid>
                   </Hidden>
                 )}
               </Grid>
