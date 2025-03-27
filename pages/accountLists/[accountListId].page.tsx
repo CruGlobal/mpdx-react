@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { DateTime } from 'luxon';
 import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
@@ -106,6 +107,10 @@ export const getServerSideProps = makeGetServerSideProps(
         query: GetDashboardDocument,
         variables: {
           accountListId: query.accountListId,
+          periodBegin: DateTime.now()
+            .startOf('month')
+            .minus({ years: 1 })
+            .toISODate(),
           // TODO: implement these variables in query
           // endOfDay: DateTime.local().endOf('day').toISO(),
           // today: DateTime.local().endOf('day').toISODate(),

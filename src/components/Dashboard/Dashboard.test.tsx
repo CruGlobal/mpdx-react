@@ -4,10 +4,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import matchMediaMock from '__tests__/util/matchMediaMock';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
@@ -33,6 +29,7 @@ beforeEach(() => {
 
 const data: GetDashboardQuery = {
   user: {
+    id: 'user-1',
     firstName: 'Roger',
   },
   accountList: {
@@ -120,16 +117,12 @@ const data: GetDashboardQuery = {
     ],
     averageIgnoreCurrent: 750,
   },
+  healthIndicatorData: [],
 };
 
 describe('Dashboard', () => {
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
   });
 
   it('default', async () => {
@@ -206,9 +199,9 @@ describe('Dashboard', () => {
       '$400',
     );
     expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000');
-    expect(
-      queryByTestId('DonationHistoriesTypographyGoal'),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('DonationHistoriesTypographyGoal')).toHaveTextContent(
+      'Goal',
+    );
     expect(
       getByTestId('DonationHistoriesTypographyAverage').textContent,
     ).toEqual('Average $750');

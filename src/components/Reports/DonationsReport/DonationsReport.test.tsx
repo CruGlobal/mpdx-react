@@ -5,10 +5,6 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import { DonationTableQuery } from 'src/components/DonationTable/DonationTable.generated';
 import theme from 'src/theme';
 import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
@@ -83,14 +79,6 @@ interface Mocks {
 }
 
 describe('DonationsReport', () => {
-  beforeEach(() => {
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
-  });
-
   it('renders empty', async () => {
     const {
       getByTestId,
@@ -129,9 +117,7 @@ describe('DonationsReport', () => {
     );
     expect(getByText(title)).toBeInTheDocument();
     expect(getByTestId('DonationHistoriesBoxEmpty')).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
     expect(queryAllByRole('button')[1]).toBeInTheDocument();
   });
 
@@ -157,9 +143,7 @@ describe('DonationsReport', () => {
     expect(
       getByTestId('DonationHistoriesTypographyAverage'),
     ).toBeInTheDocument();
-    expect(
-      queryByTestId('DonationHistoriesGridLoading'),
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('BarChartSkeleton')).not.toBeInTheDocument();
     expect(await findByRole('cell', { name: 'John' })).toBeInTheDocument();
   });
 

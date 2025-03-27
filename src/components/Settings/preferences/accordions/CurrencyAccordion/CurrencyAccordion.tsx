@@ -20,7 +20,7 @@ const preferencesSchema: yup.ObjectSchema<
 });
 
 interface CurrencyAccordionProps extends AccordionProps<PreferenceAccordion> {
-  currency: string;
+  currency: string | null;
   accountListId: string;
   disabled?: boolean;
 }
@@ -74,7 +74,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
       onAccordionChange={handleAccordionChange}
       expandedAccordion={expandedAccordion}
       label={label}
-      value={currency}
+      value={currency ?? ''}
       fullWidth
       disabled={disabled}
     >
