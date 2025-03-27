@@ -35,7 +35,7 @@ onesky
               JSON.stringify(sortedContent, null, 2),
             );
             // For printing results in CLI log
-            console.log(sortedContent);
+            // console.log(sortedContent);
           })
           .catch(function (langError) {
             console.log(langError); // log error results
