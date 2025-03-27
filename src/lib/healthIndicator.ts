@@ -16,9 +16,6 @@ interface HealthIndicatorInfo {
   /** Whether the goal came from preferences is is machine-calculated */
   goalSource: GoalSource | null;
 
-  /** `true` if the machine-calculated goal's currency differs from the account's currency */
-  mismatchedCurrencies: boolean;
-
   /** The machine-calculated goal, `null` if it is not loaded or is unavailable */
   machineCalculatedGoal: number | null;
 
@@ -99,7 +96,6 @@ export const getHealthIndicatorInfo = (
   return {
     goal,
     goalSource,
-    mismatchedCurrencies,
     machineCalculatedGoal,
     machineCalculatedGoalCurrency,
     unsafeMachineCalculatedGoal,
