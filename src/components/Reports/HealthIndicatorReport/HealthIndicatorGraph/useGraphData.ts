@@ -25,11 +25,6 @@ interface UseGraphDataResult {
   periods: Period[] | null;
 }
 
-// Scale a health indicator value by its weight in the overall calculation
-const scale = (value: number | null, weight = 1): number | null => {
-  return value === null ? null : (value * weight) / 7;
-};
-
 // Round a health indicator value if it is set
 const round = (value: number | null): number | null => {
   return value === null ? null : Math.round(value);
@@ -140,25 +135,37 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
       );
 
       const periodSpans = calculatePeriodSpans(periods);
-      const consistency = weightedAverage(
-        periods,
-        'consistencyHi',
-        periodSpans,
-      );
-      const depth = weightedAverage(periods, 'depthHi', periodSpans);
-      const ownership = weightedAverage(periods, 'ownershipHi', periodSpans);
-      const success = weightedAverage(periods, 'successHi', periodSpans);
+      // Convert 0s to null
+      const consistency =
+        weightedAverage(periods, 'consistencyHi', periodSpans) || null;
+      const depth = weightedAverage(periods, 'depthHi', periodSpans) || null;
+      const ownership =
+        weightedAverage(periods, 'ownershipHi', periodSpans) || null;
+      const success =
+        weightedAverage(periods, 'successHi', periodSpans) || null;
 
+      // Determine the weighted average denominator
+      const totalWeights =
+        (consistency === null ? 0 : 1) +
+        (depth === null ? 0 : 1) +
+        (ownership === null ? 0 : 3) +
+        (success === null ? 0 : 2);
       return {
         month: monthYearFormat(DateTime.fromISO(isoMonth), locale),
         consistency: round(consistency),
         depth: round(depth),
         ownership: round(ownership),
         success: round(success),
-        consistencyScaled: round(scale(consistency)),
-        depthScaled: round(scale(depth)),
-        ownershipScaled: round(scale(ownership, 3)),
-        successScaled: round(scale(success, 2)),
+        // Scale the health indicator values by their weight in the overall calculation, ignoring missing values
+        consistencyScaled:
+          consistency === null ? null : Math.round(consistency / totalWeights),
+        depthScaled: depth === null ? null : Math.round(depth / totalWeights),
+        ownershipScaled:
+          ownership === null
+            ? null
+            : Math.round((ownership * 3) / totalWeights),
+        successScaled:
+          success === null ? null : Math.round((success * 2) / totalWeights),
       };
     });
   }, [data]);
