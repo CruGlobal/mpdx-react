@@ -13,9 +13,9 @@ import { AppealStatusEnum } from '../../AppealsContext/AppealsContext';
 
 const useStyles = makeStyles()(() => ({
   li: {
-    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
     '&:hover': {
-      backgroundColor: theme.palette.cruGrayLight.main,
+      backgroundColor: theme.palette.mpdxGrayLight.main,
     },
   },
 }));
@@ -36,7 +36,7 @@ const countBoxStyles = (status: AppealStatusEnum): React.CSSProperties => {
     case AppealStatusEnum.Asked:
       return {
         ...styles,
-        backgroundColor: theme.palette.cruGrayMedium.main,
+        backgroundColor: theme.palette.mpdxGrayMedium.main,
         border: '1px solid #ffffff',
       };
     case AppealStatusEnum.Processed:
@@ -47,8 +47,8 @@ const countBoxStyles = (status: AppealStatusEnum): React.CSSProperties => {
     default:
       return {
         ...styles,
-        backgroundColor: theme.palette.cruYellow.main,
-        color: theme.palette.cruGrayDark.main,
+        backgroundColor: theme.palette.yellow.main,
+        color: theme.palette.mpdxGrayDark.main,
       };
   }
 };

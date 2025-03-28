@@ -87,8 +87,8 @@ describe('AppealsListFilterPanelItem', () => {
 
       expect(getByText(initialProps.title)).toBeInTheDocument();
       expect(getByTestId('panel-item-count-box')).toHaveStyle({
-        color: theme.palette.cruGrayDark.main,
-        'background-color': theme.palette.cruYellow.main,
+        color: theme.palette.mpdxGrayDark.main,
+        'background-color': theme.palette.yellow.main,
       });
     });
 
@@ -100,7 +100,7 @@ describe('AppealsListFilterPanelItem', () => {
       expect(getByText(initialProps.title)).toBeInTheDocument();
       expect(getByTestId('panel-item-count-box')).toHaveStyle({
         color: '#ffffff',
-        'background-color': theme.palette.cruGrayMedium.main,
+        'background-color': theme.palette.mpdxGrayMedium.main,
       });
     });
   });

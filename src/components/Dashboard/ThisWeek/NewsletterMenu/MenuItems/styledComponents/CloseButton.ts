@@ -7,6 +7,6 @@ export const CloseButton = styled(IconButton)(({ theme }) => ({
   top: theme.spacing(1),
   color: theme.palette.text.primary,
   '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
 }));

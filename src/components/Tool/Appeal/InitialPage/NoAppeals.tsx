@@ -12,7 +12,7 @@ export interface Props {
 
 const useStyles = makeStyles()((theme: Theme) => ({
   greyedOut: {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
 }));
 

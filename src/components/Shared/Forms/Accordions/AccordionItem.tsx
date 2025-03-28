@@ -25,7 +25,7 @@ const StyledAccordion = styled(Accordion)(({ theme }) => ({
     borderBottom: 0,
   },
   '&.MuiAccordion-rounded.Mui-disabled': {
-    color: theme.palette.cruGrayDark,
+    color: theme.palette.mpdxGrayDark,
     backgroundColor: 'white',
   },
   ...accordionShared,

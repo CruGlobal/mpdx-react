@@ -53,7 +53,7 @@ const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
 
 const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
   flexShrink: 0,
-  borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
+  borderRight: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   left: 0,
   background: theme.palette.common.white,
   [theme.breakpoints.down('md')]: {
@@ -79,7 +79,7 @@ const RightPanelWrapper = styled(FullHeightBox)(({ theme, headerHeight }) => {
     },
     '@media (min-width:600px)': {
       top: `calc(${toolbar['@media (min-width:600px)'].minHeight}px + ${headerHeight})`,
-      borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+      borderLeft: `1px solid ${theme.palette.mpdxGrayLight.main}`,
     },
     [theme.breakpoints.down('sm')]: {
       width: '100%',

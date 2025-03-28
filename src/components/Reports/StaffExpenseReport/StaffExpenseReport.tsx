@@ -63,11 +63,11 @@ const StyledTimeNavBox = styled(Box)({
 });
 
 const StyledFilterButton = styled(Button)({
-  color: theme.palette.cruGrayDark.main,
-  borderColor: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
+  borderColor: theme.palette.mpdxGrayDark.main,
   '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-    borderColor: theme.palette.cruGrayDark.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
+    borderColor: theme.palette.mpdxGrayDark.main,
   },
 });
 

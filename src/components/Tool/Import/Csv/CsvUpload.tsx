@@ -85,7 +85,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
     <Card>
       <CardHeader
         sx={{
-          backgroundColor: theme.palette.cruGrayLight.main,
+          backgroundColor: theme.palette.mpdxGrayLight.main,
         }}
         title={t('Upload your CSV File')}
       />
@@ -98,7 +98,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
       </CardContent>
       <Box
         sx={{
-          backgroundColor: 'cruGrayLight.main',
+          backgroundColor: 'mpdxGrayLight.main',
           padding: '10px 15px',
           textAlign: 'right',
         }}

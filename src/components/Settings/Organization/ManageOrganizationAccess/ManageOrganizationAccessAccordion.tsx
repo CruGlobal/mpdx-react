@@ -51,7 +51,7 @@ const SharedWithBox = styled(Box)(() => ({
 const StyledListItem = styled(ListItem)(() => ({
   borderRadius: '6px',
   '&:nth-child(even)': {
-    background: theme.palette.cruGrayLight.main,
+    background: theme.palette.mpdxGrayLight.main,
   },
 }));
 

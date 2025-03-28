@@ -24,7 +24,7 @@ const ListItemContent: React.FC<ListItemContentProps> = ({
       sx={(theme) => ({
         color: complete
           ? theme.palette.mpdxBlue.main
-          : theme.palette.cruGrayDark.main,
+          : theme.palette.mpdxGrayDark.main,
       })}
     >
       {complete ? <CircleIcon /> : <RadioButtonUncheckedIcon />}

@@ -5,7 +5,7 @@ import theme from 'src/theme';
 export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '@media print': {
     '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.cruGrayLight.main,
+      backgroundColor: theme.palette.mpdxGrayLight.main,
       WebkitPrintColorAdjust: 'exact',
       printColorAdjust: 'exact',
     },
@@ -13,7 +13,7 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
   minWidth: 700,
   margin: 'auto',

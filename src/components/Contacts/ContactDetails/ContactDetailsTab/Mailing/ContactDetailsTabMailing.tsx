@@ -26,7 +26,7 @@ const ContactDetailsMailingMainContainer = styled(Box)(({ theme }) => ({
 
 const ContactDetailsMailingIcon = styled(LocationOn)(({ theme }) => ({
   margin: theme.spacing(1, 2),
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 const ContactDetailsMailingTextContainer = styled(Box)(({}) => ({
@@ -57,7 +57,7 @@ const AddressEditIcon = styled(CreateIcon)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 const AddressEditIconContainer = styled(IconButton)(({ theme }) => ({

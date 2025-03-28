@@ -11,7 +11,7 @@ import theme from 'src/theme';
 
 const useStyles = makeStyles()(() => ({
   li: {
-    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
     paddingBottom: theme.spacing(3),
   },
   itemBox: {

@@ -99,7 +99,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     sx={{
                       color: item.isActive
                         ? theme.palette.mpdxBlue.main
-                        : theme.palette.cruGrayDark.main,
+                        : theme.palette.mpdxGrayDark.main,
                     }}
                     onClick={item.onClick}
                   >
@@ -115,7 +115,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                   <IconButton
                     title={backTitle ?? t('Back to dashboard')}
                     sx={(theme) => ({
-                      color: theme.palette.cruGrayDark.main,
+                      color: theme.palette.mpdxGrayDark.main,
                     })}
                   >
                     <ArrowBackIcon />

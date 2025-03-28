@@ -12,7 +12,7 @@ export const EditIcon = styled(Create)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 export const AddButton = styled(Button)(({ theme }) => ({
@@ -29,7 +29,7 @@ export const LockIcon = styled(Lock)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 export const ContactDetailLoadingPlaceHolder = styled(Skeleton)(

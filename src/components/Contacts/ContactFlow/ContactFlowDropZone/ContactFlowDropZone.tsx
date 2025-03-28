@@ -18,14 +18,14 @@ export const DropZoneBox = styled(Box, {
   width: '100%',
   border: canDrop
     ? `3px dashed ${theme.palette.mpdxBlue.main}`
-    : `3px solid ${theme.palette.cruGrayMedium.main}`,
+    : `3px solid ${theme.palette.mpdxGrayMedium.main}`,
   zIndex: canDrop ? 1 : 0,
-  color: canDrop ? theme.palette.common.white : theme.palette.cruGrayDark.main,
+  color: canDrop ? theme.palette.common.white : theme.palette.mpdxGrayDark.main,
   backgroundColor: canDrop
     ? isOver
       ? theme.palette.info.main
       : theme.palette.info.light
-    : theme.palette.cruGrayLight.main,
+    : theme.palette.mpdxGrayLight.main,
   justifyContent: 'center',
   alignItems: 'center',
 }));

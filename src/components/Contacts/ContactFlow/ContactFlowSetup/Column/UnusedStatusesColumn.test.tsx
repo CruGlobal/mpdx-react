@@ -39,7 +39,7 @@ describe('UnusedStatusesColumn', () => {
     );
     await waitFor(() =>
       expect(getByTestId('column-header')).toHaveStyle({
-        borderBottom: `5px solid ${theme.palette.cruGrayMedium.main}`,
+        borderBottom: `5px solid ${theme.palette.mpdxGrayMedium.main}`,
       }),
     );
     expect(getByText('Unused Statuses')).toBeInTheDocument();

@@ -12,7 +12,7 @@ const IconContainer = styled(Box, {
   top: '50%',
   left: 8,
   transform: transform,
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 interface ModalSectionIconProps {
