@@ -102,11 +102,14 @@ const DonationHistories = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const fills = [
-    palette.graphBlue1.main,
-    palette.graphBlue2.main,
-    palette.graphBlue3.main,
+    palette.cyan.main,
+    palette.pink.main,
+    palette.green.main,
     palette.yellow.main,
   ];
+  const goalColor = palette.orange.main;
+  const averageColor = palette.graphite.main;
+  const pledgedColor = palette.yellow.main;
 
   const {
     monthlyGoal: goal,
@@ -149,7 +152,7 @@ const DonationHistories = ({
                     <LegendReferenceLine
                       name={t('Goal')}
                       value={goal && currencyFormat(goal, currency, locale)}
-                      color={palette.graphTeal.main}
+                      color={goalColor}
                     />
                   </Grid>
                   <Grid item>|</Grid>
@@ -171,7 +174,7 @@ const DonationHistories = ({
                           )
                         )
                       }
-                      color={palette.mpdxGrayMedium.main}
+                      color={averageColor}
                     />
                   </Grid>
                   {pledged ? (
@@ -184,7 +187,7 @@ const DonationHistories = ({
                         <LegendReferenceLine
                           name={t('Committed')}
                           value={currencyFormat(pledged, currency, locale)}
-                          color={palette.yellow.main}
+                          color={pledgedColor}
                         />
                       </Grid>
                     </>
@@ -228,7 +231,7 @@ const DonationHistories = ({
                       {!data?.healthIndicatorData?.length ? (
                         <ReferenceLine
                           y={goal ?? undefined}
-                          stroke={palette.graphTeal.main}
+                          stroke={goalColor}
                           strokeWidth={3}
                         />
                       ) : (
@@ -237,19 +240,19 @@ const DonationHistories = ({
                           name={t('Goal')}
                           connectNulls
                           dot={false}
-                          stroke={palette.graphTeal.main}
+                          stroke={goalColor}
                           strokeWidth={3}
                         />
                       )}
                       <ReferenceLine
                         y={data?.reportsDonationHistories?.averageIgnoreCurrent}
-                        stroke={palette.mpdxGrayMedium.main}
+                        stroke={averageColor}
                         strokeWidth={3}
                       />
                       {pledged && (
                         <ReferenceLine
                           y={pledged}
-                          stroke={palette.yellow.main}
+                          stroke={pledgedColor}
                           strokeWidth={3}
                         />
                       )}
@@ -294,11 +297,7 @@ const DonationHistories = ({
                     <BarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
-                      <Bar
-                        dataKey="total"
-                        fill={palette.graphBlue1.main}
-                        barSize={10}
-                      />
+                      <Bar dataKey="total" fill={fills[0]} barSize={10} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}

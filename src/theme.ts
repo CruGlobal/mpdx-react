@@ -49,13 +49,6 @@ const statusColors = {
   danger: cruColors.ruby,
 };
 
-const graphColors = {
-  blue1: '#007398',
-  blue2: '#1FC0D2',
-  blue3: '#30F2F2',
-  teal: '#17AEBF',
-};
-
 // https://material-ui.com/customization/palette/#adding-new-colors
 declare module '@mui/material/styles/createPalette' {
   interface Palette {
@@ -92,10 +85,6 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: Palette['primary'];
     statusWarning: Palette['primary'];
     statusDanger: Palette['primary'];
-    graphBlue1: Palette['primary'];
-    graphBlue2: Palette['primary'];
-    graphBlue3: Palette['primary'];
-    graphTeal: Palette['primary'];
   }
 
   interface PaletteOptions {
@@ -132,10 +121,6 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: PaletteOptions['primary'];
     statusWarning: PaletteOptions['primary'];
     statusDanger: PaletteOptions['primary'];
-    graphBlue1: PaletteOptions['primary'];
-    graphBlue2: PaletteOptions['primary'];
-    graphBlue3: PaletteOptions['primary'];
-    graphTeal: PaletteOptions['primary'];
   }
 }
 
@@ -216,18 +201,6 @@ const theme = createTheme({
     },
     statusDanger: {
       main: statusColors.danger,
-    },
-    graphBlue1: {
-      main: graphColors.blue1,
-    },
-    graphBlue2: {
-      main: graphColors.blue2,
-    },
-    graphBlue3: {
-      main: graphColors.blue3,
-    },
-    graphTeal: {
-      main: graphColors.teal,
     },
   },
   components: {

@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
+import { useIndicatorColors } from '../useIndicatorColors';
 import { useGraphData } from './useGraphData';
 
 interface HealthIndicatorGraphProps {
@@ -26,23 +27,17 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
 }) => {
   const { t } = useTranslation();
   const { palette } = useTheme();
+  const colors = useIndicatorColors();
 
   const { loading, average, periods } = useGraphData(accountListId);
 
   const stacks = [
-    {
-      field: 'ownership',
-      label: t('Ownership'),
-      color: palette.yellow.main,
-    },
-    { field: 'success', label: t('Success'), color: palette.graphBlue1.main },
-    {
-      field: 'consistency',
-      label: t('Consistency'),
-      color: palette.graphBlue2.main,
-    },
-    { field: 'depth', label: t('Depth'), color: palette.graphBlue3.main },
+    { field: 'ownership', label: t('Ownership') },
+    { field: 'success', label: t('Success') },
+    { field: 'consistency', label: t('Consistency') },
+    { field: 'depth', label: t('Depth') },
   ];
+  const averageColor = palette.graphite.main;
 
   if (periods?.length === 0) {
     // The account has no account list entries
@@ -69,7 +64,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
             <LegendReferenceLine
               name={t('Average')}
               value={average}
-              color={palette.graphTeal.main}
+              color={averageColor}
             />
           )
         }
@@ -98,7 +93,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
             {average !== null && (
               <ReferenceLine
                 y={average}
-                stroke={palette.graphTeal.main}
+                stroke={averageColor}
                 strokeWidth={3}
               />
             )}
@@ -112,13 +107,13 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
                 </Text>
               }
             />
-            {stacks.map(({ field, label, color }) => (
+            {stacks.map(({ field, label }) => (
               <Bar
                 key={field}
                 dataKey={field + 'Scaled'}
                 name={label}
                 stackId="a"
-                fill={color}
+                fill={colors[field]}
                 barSize={30}
               />
             ))}
