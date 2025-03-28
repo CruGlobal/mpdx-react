@@ -48,7 +48,6 @@ corepack install
 corepack prepare yarn@4.7.0 --activate
 ```
 
-
 ### Download yarn cache with Git LFS
 
 Because we store the yarn cache in the GitHub repo, we use Git LFS to manage these large zip files.
