@@ -70,7 +70,10 @@ export interface DonationHistoriesData {
     'averageIgnoreCurrent'
   > & {
     periods: Array<
-      Pick<Types.DonationHistoriesPeriod, 'startDate' | 'convertedTotal'> & {
+      Pick<
+        Types.DonationHistoriesPeriod,
+        'startDate' | 'endDate' | 'convertedTotal'
+      > & {
         totals: Array<Pick<Types.Total, 'currency' | 'convertedAmount'>>;
       }
     >;
