@@ -18,7 +18,7 @@ const Banner = styled(Box)(({ theme }) => ({
   padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
   boxShadow: `0px 0px 10px 0px ${
     theme.palette.augmentColor({
-      color: { main: theme.palette.cruGrayDark.main },
+      color: { main: theme.palette.mpdxGrayDark.main },
     }).light
   }`,
   position: 'fixed',
@@ -61,7 +61,7 @@ const ButtonContainer = styled(Box)(() => ({
 const createAnnouncementStyles = (announcementStyle?: StyleEnum | null) => {
   const defaultStyles = {
     background: theme.palette.primary.main,
-    textAndIconColor: theme.palette.cruGrayLight.main,
+    textAndIconColor: theme.palette.mpdxGrayLight.main,
   };
   switch (announcementStyle) {
     case StyleEnum.Danger:

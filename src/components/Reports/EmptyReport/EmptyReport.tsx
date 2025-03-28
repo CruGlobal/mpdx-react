@@ -18,7 +18,7 @@ interface Props {
 }
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
   minWidth: 700,
   maxWidth: '97%',

@@ -47,7 +47,7 @@ const StatusAccordion = styled(Accordion)(() => ({
 
 const StatusHeader = styled(AccordionSummary)(() => ({
   minHeight: '58px !important',
-  boxShadow: `0px 0px 1px 1px ${theme.palette.cruGrayMedium.main}`,
+  boxShadow: `0px 0px 1px 1px ${theme.palette.mpdxGrayMedium.main}`,
   '& .MuiAccordion-root.Mui-expanded': {
     margin: 'auto',
   },
@@ -66,16 +66,16 @@ const ContactWrapper = styled(Box, {
 })(({ current }: { current: boolean }) => ({
   display: 'flex',
   justifyContent: 'space-between',
-  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
   alignItems: 'center',
   width: '100%',
   padding: theme.spacing(1),
   paddingLeft: theme.spacing(2),
   backgroundColor: current
-    ? theme.palette.cruGrayLight.main
+    ? theme.palette.mpdxGrayLight.main
     : theme.palette.common.white,
   '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
     cursor: 'pointer',
   },
 }));

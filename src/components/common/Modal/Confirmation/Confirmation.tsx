@@ -19,7 +19,7 @@ const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 export interface ConfirmationProps {

@@ -31,7 +31,7 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   top: theme.spacing(1),
   color: theme.palette.text.primary,
   '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
 }));
 
@@ -39,7 +39,7 @@ const TextArea = styled(TextareaAutosize)(() => ({
   width: '100%',
 }));
 const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 const ExportEmail = ({

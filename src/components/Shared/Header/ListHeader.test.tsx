@@ -297,7 +297,7 @@ describe('ListHeader', () => {
     });
 
     expect(filterButton).toHaveStyle({
-      backgroundColor: theme.palette.cruYellow.main,
+      backgroundColor: theme.palette.yellow.main,
     });
     expect(toggleFilterPanel).not.toHaveBeenCalled();
     expect(onSearchTermChanged).not.toHaveBeenCalled();
@@ -313,7 +313,7 @@ describe('ListHeader', () => {
     });
 
     expect(filterButton).toHaveStyle({
-      backgroundColor: theme.palette.cruYellow.main,
+      backgroundColor: theme.palette.yellow.main,
     });
     expect(toggleFilterPanel).not.toHaveBeenCalled();
     expect(onSearchTermChanged).not.toHaveBeenCalled();

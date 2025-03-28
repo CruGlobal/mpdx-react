@@ -84,7 +84,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   responsiveBorder: {
     [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
-      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
     },
   },
   paddingX: {
@@ -540,7 +540,7 @@ const Contact: React.FC<Props> = ({
                                         size={1}
                                         style={{
                                           color:
-                                            theme.palette.cruGrayMedium.main,
+                                            theme.palette.mpdxGrayMedium.main,
                                         }}
                                       />
                                     </Box>

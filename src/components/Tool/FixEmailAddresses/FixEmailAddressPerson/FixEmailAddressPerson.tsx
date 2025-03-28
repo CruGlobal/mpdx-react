@@ -45,7 +45,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   responsiveBorder: {
     [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
-      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
     },
   },
   paddingX: {
@@ -497,7 +497,8 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
                                       path={mdiLock}
                                       size={1}
                                       style={{
-                                        color: theme.palette.cruGrayMedium.main,
+                                        color:
+                                          theme.palette.mpdxGrayMedium.main,
                                       }}
                                     />
                                   </Box>

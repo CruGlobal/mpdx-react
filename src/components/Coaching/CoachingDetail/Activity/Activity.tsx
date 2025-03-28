@@ -73,8 +73,8 @@ const ActivitySection = styled('div')(({ theme }) => ({
   height: '280px',
   paddingTop: theme.spacing(2),
   // Only apply inner borders to the grid of sections
-  borderRight: `1px solid ${theme.palette.cruGrayMedium.main}`,
-  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  borderRight: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
   '@media (max-width: 1150px)': {
     // One column
     ':nth-of-type(n + 6)': {
@@ -125,7 +125,7 @@ const StatsRow = styled('div')(({ theme }) => ({
   width: '100%',
   maxHeight: '88px',
   ':nth-of-type(2)': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
@@ -138,7 +138,7 @@ const StatsColumn = styled('div')(({ theme }) => ({
   alignItems: 'center',
   flex: 1,
   padding: theme.spacing(0.5),
-  borderLeft: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  borderLeft: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
   ':first-of-type': {
     borderLeft: 'none',
   },

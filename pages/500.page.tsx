@@ -8,7 +8,7 @@ import BaseLayout from 'src/components/Layouts/Basic';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
   minWidth: 700,
   margin: 'auto',

@@ -39,7 +39,7 @@ const TaskRowWrap = styled(Box, {
   justifyContent: 'space-between',
   margin: theme.spacing(0),
   height: theme.spacing(8),
-  ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  ...(isChecked ? { backgroundColor: theme.palette.mpdxGrayLight.main } : {}),
 }));
 
 const TaskItemWrap = styled(Box)(({ theme }) => ({
