@@ -95,7 +95,7 @@ export const MergePeopleModal: React.FC<MergePeopleModalProps> = ({
               borderColor:
                 winnerId === person.id
                   ? theme.palette.mpdxGreen.main
-                  : theme.palette.cruGrayLight.main,
+                  : theme.palette.mpdxGrayLight.main,
             })}
             data-testid="MergePeopleModalPerson"
           >

@@ -74,7 +74,7 @@ const useStyles = makeStyles()(() => ({
   responsiveBorder: {
     [theme.breakpoints.down('sm')]: {
       paddingBottom: theme.spacing(2),
-      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
     },
   },
   paddingX: {

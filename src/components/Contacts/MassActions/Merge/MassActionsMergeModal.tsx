@@ -141,7 +141,7 @@ export const MassActionsMergeModal: React.FC<MassActionsMergeModalProps> = ({
                   borderColor:
                     primaryContactId === contact.id
                       ? theme.palette.mpdxGreen.main
-                      : theme.palette.cruGrayLight.main,
+                      : theme.palette.mpdxGrayLight.main,
                 })}
                 data-testid="MassActionsMergeModalContact"
               >

@@ -105,7 +105,7 @@ const DonationHistories = ({
     palette.graphBlue1.main,
     palette.graphBlue2.main,
     palette.graphBlue3.main,
-    palette.cruYellow.main,
+    palette.yellow.main,
   ];
 
   const {
@@ -171,7 +171,7 @@ const DonationHistories = ({
                           )
                         )
                       }
-                      color={palette.cruGrayMedium.main}
+                      color={palette.mpdxGrayMedium.main}
                     />
                   </Grid>
                   {pledged ? (
@@ -184,7 +184,7 @@ const DonationHistories = ({
                         <LegendReferenceLine
                           name={t('Committed')}
                           value={currencyFormat(pledged, currency, locale)}
-                          color={palette.cruYellow.main}
+                          color={palette.yellow.main}
                         />
                       </Grid>
                     </>
@@ -243,13 +243,13 @@ const DonationHistories = ({
                       )}
                       <ReferenceLine
                         y={data?.reportsDonationHistories?.averageIgnoreCurrent}
-                        stroke={palette.cruGrayMedium.main}
+                        stroke={palette.mpdxGrayMedium.main}
                         strokeWidth={3}
                       />
                       {pledged && (
                         <ReferenceLine
                           y={pledged}
-                          stroke={palette.cruYellow.main}
+                          stroke={palette.yellow.main}
                           strokeWidth={3}
                         />
                       )}

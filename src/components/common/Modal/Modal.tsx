@@ -20,7 +20,7 @@ const ModalTitle = styled(DialogTitle, {
     paddingLeft: theme.spacing(8),
     textAlign: 'center',
   },
-  backgroundColor: altColors ? theme.palette.cruGrayDark.main : 'white',
+  backgroundColor: altColors ? theme.palette.mpdxGrayDark.main : 'white',
   color: altColors ? 'white' : 'auto',
 }));
 
@@ -33,8 +33,8 @@ const CloseButton = styled(IconButton, {
   color: altColors ? 'white' : theme.palette.text.primary,
   '&:hover': {
     backgroundColor: altColors
-      ? theme.palette.cruGrayMedium.main
-      : theme.palette.cruGrayLight.main,
+      ? theme.palette.mpdxGrayMedium.main
+      : theme.palette.mpdxGrayLight.main,
   },
 }));
 

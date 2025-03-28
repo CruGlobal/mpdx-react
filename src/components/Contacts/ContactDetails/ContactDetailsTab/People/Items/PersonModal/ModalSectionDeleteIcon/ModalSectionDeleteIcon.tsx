@@ -9,7 +9,7 @@ const ContactEditDeleteIconButton = styled(IconButton)(({ theme }) => ({
   top: '50%',
   right: 0,
   transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   '&:disabled': {
     cursor: 'not-allowed',
     pointerEvents: 'all',

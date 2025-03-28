@@ -33,7 +33,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
     {
       field: 'ownership',
       label: t('Ownership'),
-      color: palette.cruYellow.main,
+      color: palette.yellow.main,
     },
     { field: 'success', label: t('Success'), color: palette.graphBlue1.main },
     {

@@ -40,7 +40,7 @@ const ExistingTagButton = styled(Button)(() => ({
 const SelectedTagButton = styled(Button)(() => ({
   textTransform: 'none',
   textDecoration: 'line-through',
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   width: 'fit-content',
   '&:hover': {
     textDecoration: 'line-through',

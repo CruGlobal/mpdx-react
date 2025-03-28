@@ -46,7 +46,7 @@ export const StyledCardContent = styled(CardContent)(() => ({
   position: 'relative',
   height: 'calc(100vh - 260px)',
   padding: 0,
-  background: theme.palette.cruGrayLight.main,
+  background: theme.palette.mpdxGrayLight.main,
 }));
 
 export const CardContentInner = styled(Box, {

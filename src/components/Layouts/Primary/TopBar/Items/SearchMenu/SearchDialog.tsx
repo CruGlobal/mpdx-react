@@ -43,7 +43,7 @@ const AutocompleteOption = styled(Link)(({ theme }) => ({
   padding: '6px 16px',
   '&:hover': {
     textDecoration: 'none',
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
 })) as typeof Link;
 
