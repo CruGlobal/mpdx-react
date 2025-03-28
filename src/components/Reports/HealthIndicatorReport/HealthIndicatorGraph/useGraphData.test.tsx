@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import { DateTime } from 'luxon';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { HealthIndicatorQueryVariables } from 'src/components/Dashboard/MonthlyGoal/HealthIndicator.generated';
 import {
@@ -58,7 +57,7 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
             successHi: null,
           },
           {
-            indicationPeriodBegin: '2024-03-05',
+            indicationPeriodBegin: '2024-03-04',
             consistencyHi: 40,
             depthHi: 40,
             ownershipHi: 40,
@@ -66,6 +65,13 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
           },
           {
             indicationPeriodBegin: '2024-03-06',
+            consistencyHi: null,
+            depthHi: null,
+            ownershipHi: null,
+            successHi: null,
+          },
+          {
+            indicationPeriodBegin: '2024-03-10',
             consistencyHi: 50,
             depthHi: 50,
             ownershipHi: 50,
@@ -146,108 +152,72 @@ describe('uniqueMonths', () => {
   });
 });
 
-describe('calculatePeriodSpans', () => {
-  const makePeriod = (
-    indicationPeriodBegin: string,
-  ): HealthIndicatorGraphQuery['healthIndicatorData'][number] => ({
-    id: '',
-    indicationPeriodBegin,
-  });
+const makePeriod = (
+  indicationPeriodBegin: string,
+): HealthIndicatorGraphQuery['healthIndicatorData'][number] => ({
+  id: '',
+  indicationPeriodBegin,
+});
 
+describe('calculatePeriodSpans', () => {
   it('returns all 1s when no periods are missing', () => {
     expect(
-      calculatePeriodSpans(
-        [
-          makePeriod('2024-01-05'),
-          makePeriod('2024-01-06'),
-          makePeriod('2024-01-07'),
-          makePeriod('2024-01-08'),
-          makePeriod('2024-01-09'),
-          makePeriod('2024-01-10'),
-        ],
-        null,
-        null,
-      ),
+      calculatePeriodSpans([
+        makePeriod('2024-01-05'),
+        makePeriod('2024-01-06'),
+        makePeriod('2024-01-07'),
+        makePeriod('2024-01-08'),
+        makePeriod('2024-01-09'),
+        makePeriod('2024-01-10'),
+      ]),
     ).toEqual([1, 1, 1, 1, 1, 1]);
   });
 
   it('returns an empty array when there are no periods', () => {
-    expect(calculatePeriodSpans([], null, null)).toEqual([]);
+    expect(calculatePeriodSpans([])).toEqual([]);
   });
 
   it('extrapolates missing days', () => {
     expect(
-      calculatePeriodSpans(
-        [
-          makePeriod('2024-01-05'),
-          makePeriod('2024-01-15'),
-          makePeriod('2024-01-28'),
-        ],
-        null,
-        null,
-      ),
+      calculatePeriodSpans([
+        makePeriod('2024-01-05'),
+        makePeriod('2024-01-15'),
+        makePeriod('2024-01-28'),
+      ]),
     ).toEqual([
       10, // January 5-14
       13, // January 15-27
       1, // January 28
-    ]);
-  });
-
-  it('handles custom period start', () => {
-    expect(
-      calculatePeriodSpans(
-        [
-          makePeriod('2024-01-05'),
-          makePeriod('2024-01-15'),
-          makePeriod('2024-01-28'),
-        ],
-        DateTime.fromISO('2024-01-01'),
-        null,
-      ),
-    ).toEqual([
-      14, // January 1-14
-      13, // January 15-27
-      1, // January 28
-    ]);
-  });
-
-  it('handles custom period end', () => {
-    expect(
-      calculatePeriodSpans(
-        [
-          makePeriod('2024-01-05'),
-          makePeriod('2024-01-15'),
-          makePeriod('2024-01-28'),
-        ],
-        null,
-        DateTime.fromISO('2024-01-31'),
-      ),
-    ).toEqual([
-      10, // January 5-14
-      13, // January 15-27
-      4, // January 28-31
     ]);
   });
 
   it('handles spanning multiple months', () => {
     expect(
-      calculatePeriodSpans(
-        [
-          makePeriod('2024-01-30'),
-          makePeriod('2024-02-03'),
-          makePeriod('2024-03-03'),
-          makePeriod('2024-03-04'),
-          makePeriod('2024-03-06'),
-        ],
-        null,
-        null,
-      ),
+      calculatePeriodSpans([
+        makePeriod('2024-01-30'),
+        makePeriod('2024-02-03'),
+        makePeriod('2024-03-03'),
+        makePeriod('2024-03-04'),
+        makePeriod('2024-03-06'),
+      ]),
     ).toEqual([
       4, // January 30-February 2
       29, // February 2-March 2
       1, // March 3
       2, // March 4-5
       1, // March 6
+    ]);
+  });
+
+  it('handles spanning daylight savings start', () => {
+    expect(
+      calculatePeriodSpans([
+        makePeriod('2024-03-09'),
+        makePeriod('2024-03-10'),
+      ]),
+    ).toEqual([
+      1, // March 9
+      1, // March 10
     ]);
   });
 });
@@ -296,6 +266,9 @@ describe('useGraphData', () => {
     await waitForNextUpdate();
     expect(result.current.periods).toEqual([
       {
+        // Jan 10 - Jan 30 = 21 span * 10 HI
+        // Jan 31          = 1 span  * 40 HI
+        // Average = (21*10 + 1*40) / 22 = ~11.36, rounds to 11
         month: 'Jan 2024',
         consistency: 11,
         depth: 11,
@@ -307,6 +280,7 @@ describe('useGraphData', () => {
         successScaled: 3,
       },
       {
+        // No February periods, so all indicators are null
         month: 'Feb 2024',
         consistency: null,
         depth: null,
@@ -318,14 +292,18 @@ describe('useGraphData', () => {
         successScaled: null,
       },
       {
+        // Mar 4 - Mar 5 = 2 span * 40 HI
+        // Mar 6 - Mar 9 = 3 span * null HI
+        // Mar 10        = 1 span * 50 HI
+        // Average = (2*40 + 1*50) / 3 = ~43.33, rounds to 43
         month: 'Mar 2024',
-        consistency: 42,
-        depth: 42,
-        ownership: 42,
-        success: 42,
+        consistency: 43,
+        depth: 43,
+        ownership: 43,
+        success: 43,
         consistencyScaled: 6,
         depthScaled: 6,
-        ownershipScaled: 18,
+        ownershipScaled: 19,
         successScaled: 12,
       },
     ]);

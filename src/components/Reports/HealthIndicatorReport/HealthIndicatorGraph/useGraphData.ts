@@ -97,35 +97,22 @@ export const uniqueMonths = (
  *   first period spans from January 5-14, the second spans from January 15-24, and the third
  *   only covers January 25.
  *
- * `calculatePeriodSpans` also accepts `periodStart` and `periodEnd` that control how and whether
- * the first and last periods are extrapolated backwards and forwards, respectively.
- *
- * For example:
- * - If `periodStart` is January 1 and the periods are the 5th, 15th, and 25th, the first period's
- *   span will be 14 because it spans from January 1-14.
- * - If `periodEnd` is January 31 and the periods are the 5th, 15th, and 25th, the last period's
- *   span will be 7 because it spans from January 25-31.
- *
  * See the test cases for more examples of the expected outputs of various inputs.
  */
 export const calculatePeriodSpans = (
   periods: HealthIndicatorGraphQuery['healthIndicatorData'],
-  periodStart: DateTime | null,
-  periodEnd: DateTime | null,
 ): number[] => {
-  return periods.map((period, index, periods) => {
-    // The first period may have a custom start date
-    const start =
-      index === 0 && periodStart
-        ? periodStart
-        : DateTime.fromISO(period.indicationPeriodBegin);
-    // The last period may have a custom end date, otherwise this period ends at the start of the next one
-    const end =
-      index === periods.length - 1
-        ? (periodEnd ?? start).plus({ days: 1 })
-        : DateTime.fromISO(periods[index + 1].indicationPeriodBegin);
+  return periods.map((period, index) => {
+    // The last period always has a span of 1
+    if (index === periods.length - 1) {
+      return 1;
+    }
+
+    const start = DateTime.fromISO(period.indicationPeriodBegin);
+    // Periods end at the start of the next period
+    const end = DateTime.fromISO(periods[index + 1].indicationPeriodBegin);
     // Calculate how many days the period spans
-    return Math.floor(end.diff(start, 'days').days);
+    return end.diff(start, 'days').days;
   });
 };
 
@@ -143,11 +130,7 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
       return null;
     }
 
-    const periodSpans = calculatePeriodSpans(
-      data.healthIndicatorData,
-      null,
-      null,
-    );
+    const periodSpans = calculatePeriodSpans(data.healthIndicatorData);
     return weightedAverage(data.healthIndicatorData, 'overallHi', periodSpans);
   }, [data]);
 
@@ -156,54 +139,33 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
       return null;
     }
 
-    return Array.from(uniqueMonths(data).values()).map(
-      (isoMonth, monthIndex, months) => {
-        const periods = data.healthIndicatorData.filter((period) =>
-          period.indicationPeriodBegin.startsWith(isoMonth),
-        );
+    return Array.from(uniqueMonths(data).values()).map((isoMonth) => {
+      const periods = data.healthIndicatorData.filter((period) =>
+        period.indicationPeriodBegin.startsWith(isoMonth),
+      );
 
-        // The oldest month starts with its first period, but all others start on the first of the month
-        const periodStart =
-          monthIndex === 0 && periods.length
-            ? null
-            : DateTime.fromISO(periods[0].indicationPeriodBegin).startOf(
-                'month',
-              );
-        // The newest month ends with its last period, but all others end on the end of the month
-        const periodEnd =
-          monthIndex === months.length - 1 && periods.length
-            ? null
-            : DateTime.fromISO(periods[0].indicationPeriodBegin)
-                .endOf('month')
-                .startOf('day');
-        const periodSpans = calculatePeriodSpans(
-          periods,
-          periodStart,
-          periodEnd,
-        );
+      const periodSpans = calculatePeriodSpans(periods);
+      const consistency = weightedAverage(
+        periods,
+        'consistencyHi',
+        periodSpans,
+      );
+      const depth = weightedAverage(periods, 'depthHi', periodSpans);
+      const ownership = weightedAverage(periods, 'ownershipHi', periodSpans);
+      const success = weightedAverage(periods, 'successHi', periodSpans);
 
-        const consistency = weightedAverage(
-          periods,
-          'consistencyHi',
-          periodSpans,
-        );
-        const depth = weightedAverage(periods, 'depthHi', periodSpans);
-        const ownership = weightedAverage(periods, 'ownershipHi', periodSpans);
-        const success = weightedAverage(periods, 'successHi', periodSpans);
-
-        return {
-          month: monthYearFormat(DateTime.fromISO(isoMonth), locale),
-          consistency: round(consistency),
-          depth: round(depth),
-          ownership: round(ownership),
-          success: round(success),
-          consistencyScaled: round(scale(consistency)),
-          depthScaled: round(scale(depth)),
-          ownershipScaled: round(scale(ownership, 3)),
-          successScaled: round(scale(success, 2)),
-        };
-      },
-    );
+      return {
+        month: monthYearFormat(DateTime.fromISO(isoMonth), locale),
+        consistency: round(consistency),
+        depth: round(depth),
+        ownership: round(ownership),
+        success: round(success),
+        consistencyScaled: round(scale(consistency)),
+        depthScaled: round(scale(depth)),
+        ownershipScaled: round(scale(ownership, 3)),
+        successScaled: round(scale(success, 2)),
+      };
+    });
   }, [data]);
 
   return {
