@@ -72,7 +72,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   const accountList = currency
     ? { currency, monthlyGoal: initialMonthlyGoal, monthlyGoalUpdatedAt }
     : null;
-  const healthIndicatorData = data?.healthIndicatorData.at(-1);
+  const healthIndicatorData = data?.accountList.healthIndicatorData;
   const {
     goalSource,
     machineCalculatedGoalCurrency,

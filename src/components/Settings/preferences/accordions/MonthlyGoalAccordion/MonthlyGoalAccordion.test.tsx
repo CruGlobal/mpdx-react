@@ -56,9 +56,11 @@ const Components: React.FC<ComponentsProps> = ({
         }>
           mocks={{
             MachineCalculatedGoal: {
-              healthIndicatorData: machineCalculatedGoal
-                ? [{ machineCalculatedGoal, machineCalculatedGoalCurrency }]
-                : [],
+              accountList: {
+                healthIndicatorData: machineCalculatedGoal
+                  ? { machineCalculatedGoal, machineCalculatedGoalCurrency }
+                  : null,
+              },
             },
           }}
           onCall={mutationSpy}
