@@ -31,6 +31,7 @@ import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChar
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { GoalSource, getHealthIndicatorInfo } from 'src/lib/healthIndicator';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedBox from '../../AnimatedBox';
@@ -108,18 +109,18 @@ const DonationHistories = ({
     palette.cruYellow.main,
   ];
 
-  const {
-    monthlyGoal: goal,
-    totalPledges: pledged,
-    currency,
-  } = data?.accountList ?? {};
+  const { totalPledges: pledged, currency } = data?.accountList ?? {};
+  const { goal, goalSource } = getHealthIndicatorInfo(
+    data?.accountList,
+    data?.healthIndicatorData.at(-1),
+  );
 
   const {
     periods,
     currencies,
     empty: periodsEmpty,
     domainMax,
-  } = calculateGraphData({ locale, data: data, currencyColors: fills });
+  } = calculateGraphData({ locale, data, currencyColors: fills });
   const empty = !loading && periodsEmpty;
 
   const handleClick: CategoricalChartFunc = (state) => {
@@ -225,7 +226,7 @@ const DonationHistories = ({
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
-                      {!data?.healthIndicatorData?.length ? (
+                      {goalSource === GoalSource.Preferences ? (
                         <ReferenceLine
                           y={goal ?? undefined}
                           stroke={palette.graphTeal.main}
