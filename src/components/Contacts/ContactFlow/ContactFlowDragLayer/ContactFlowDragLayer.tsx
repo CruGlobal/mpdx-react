@@ -17,7 +17,7 @@ export const layerStyles: CSSProperties = {
 
 export const dragPreviewStyle: CSSProperties = {
   display: 'inline-block',
-  border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  border: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
 };
 
 export function getItemStyles(

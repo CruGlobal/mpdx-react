@@ -29,14 +29,14 @@ type ProfileMenuContent = {
 const MobileDrawer = styled(Drawer)(() => ({
   '& .MuiDrawer-paper': {
     width: 290,
-    backgroundColor: theme.palette.cruGrayDark.main,
+    backgroundColor: theme.palette.mpdxGrayDark.main,
     zIndex: theme.zIndex.drawer + 201,
   },
 }));
 
 const LeafListItemHover = styled(LeafListItem)(() => ({
   '&:hover': {
-    backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
+    backgroundColor: `${theme.palette.mpdxGrayMedium.main} !important`,
   },
 }));
 
@@ -151,8 +151,8 @@ export const ProfileMenuPanel: React.FC = () => {
                 style={{
                   backgroundColor:
                     accountListId === accountList.id
-                      ? theme.palette.cruGrayMedium.main
-                      : theme.palette.cruGrayDark.main,
+                      ? theme.palette.mpdxGrayMedium.main
+                      : theme.palette.mpdxGrayDark.main,
                 }}
                 onClick={() => changeAccountListId(accountList.id)}
               >

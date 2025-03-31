@@ -32,7 +32,7 @@ const useStyles = makeStyles()(() => ({
     color: theme.palette.progressBarGray.main,
   },
   progressBarOuter: {
-    backgroundColor: theme.palette.cruGrayDark.main,
+    backgroundColor: theme.palette.mpdxGrayDark.main,
     width: '100%',
     height: '30px',
     borderRadius: 10,

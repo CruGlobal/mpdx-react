@@ -4,7 +4,6 @@ import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   ReferenceLine,
@@ -15,6 +14,7 @@ import {
   YAxis,
 } from 'recharts';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { StyledBarChart } from 'src/components/common/StyledBarChart/StyledBarChart';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import type { Theme } from '@mui/material/styles/createTheme';
@@ -76,7 +76,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
             style={{ height: '250px' }}
           >
             <ResponsiveContainer>
-              <BarChart
+              <StyledBarChart
                 data={data}
                 margin={{
                   left: 20,
@@ -109,7 +109,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
                   fill={theme.palette.primary.main}
                   barSize={30}
                 />
-              </BarChart>
+              </StyledBarChart>
             </ResponsiveContainer>
           </Box>
           <Box
@@ -117,7 +117,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
             style={{ height: '150px' }}
           >
             <ResponsiveContainer>
-              <BarChart data={data}>
+              <StyledBarChart data={data}>
                 <XAxis tickLine={false} dataKey="startDate" />
                 <Tooltip />
                 <Bar
@@ -125,7 +125,7 @@ export const AccountListItemChart: FC<AccountListItemChartProps> = ({
                   fill={theme.palette.primary.main}
                   barSize={10}
                 />
-              </BarChart>
+              </StyledBarChart>
             </ResponsiveContainer>
           </Box>
         </CardContent>

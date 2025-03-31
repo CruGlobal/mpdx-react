@@ -31,7 +31,7 @@ const Offset = styled('div')(({ theme }) => ({
 }));
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayDark.main,
+  backgroundColor: theme.palette.mpdxGrayDark.main,
 }));
 
 const TopBar = ({

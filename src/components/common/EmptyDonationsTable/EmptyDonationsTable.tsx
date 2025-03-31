@@ -16,7 +16,7 @@ interface Props {
 }
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
   minWidth: 700,
   maxWidth: '97%',
@@ -29,7 +29,7 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const StyledLocalAtmIcon = styled(LocalAtmIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {

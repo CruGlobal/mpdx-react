@@ -37,7 +37,7 @@ const BorderBox = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isSpouse',
 })(({ isSpouse }: { isSpouse: boolean }) => ({
   border: isSpouse ? '1px solid' : 'none',
-  borderColor: theme.palette.cruYellow.main,
+  borderColor: theme.palette.yellow.main,
   borderRadius: theme.shape.borderRadius,
   padding: isSpouse ? '10px' : '0',
 }));
@@ -199,7 +199,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                               {account.name}
                               <Typography
                                 variant="body2"
-                                color={theme.palette.cruGrayLight.light}
+                                color={theme.palette.mpdxGrayLight.light}
                                 marginLeft="5px"
                               >
                                 ({account.id})
@@ -261,7 +261,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                               {currentAccount.name}
                               <Typography
                                 variant="body2"
-                                color={theme.palette.cruGrayLight.light}
+                                color={theme.palette.mpdxGrayLight.light}
                                 marginLeft="5px"
                               >
                                 ({currentAccount.id})

@@ -59,7 +59,7 @@ const PartnershipEditIcon = styled(CreateIcon)(({ theme }) => ({
   width: '18px',
   height: '18px',
   margin: theme.spacing(0),
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 const ClearIcon = styled(Clear)(({ theme }) => ({

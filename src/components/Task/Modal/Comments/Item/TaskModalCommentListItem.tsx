@@ -58,7 +58,7 @@ interface Props {
 
 const CommentInfoText = styled(Typography)(() => ({
   fontSize: 12,
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 const TaskModalCommentsListItem: React.FC<Props> = ({
@@ -224,7 +224,7 @@ const TaskModalCommentsListItem: React.FC<Props> = ({
     </Box>
   ) : (
     <>
-      <Box borderBottom={`1px solid ${theme.palette.cruGrayLight.main}`}>
+      <Box borderBottom={`1px solid ${theme.palette.mpdxGrayLight.main}`}>
         <Typography whiteSpace="pre-line">{comment.body}</Typography>
       </Box>
       <Box width="100%" display="flex" justifyContent="space-between" mb={2}>

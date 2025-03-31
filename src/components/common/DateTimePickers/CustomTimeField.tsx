@@ -28,7 +28,7 @@ export const CustomTimeField: React.FC<DesktopTimeFieldProps> = (props) => {
           InputProps: {
             endAdornment: (
               <InputAdornment position="end">
-                <Schedule sx={{ color: 'cruGrayMedium' }} />
+                <Schedule sx={{ color: 'mpdxGrayMedium' }} />
               </InputAdornment>
             ),
           },

@@ -25,7 +25,7 @@ const NewsletterIcon: React.FC = () => (
   <Icon
     path={mdiNewspaperVariantOutline}
     size={1}
-    color={theme.palette.cruGrayMedium.main}
+    color={theme.palette.mpdxGrayMedium.main}
   />
 );
 

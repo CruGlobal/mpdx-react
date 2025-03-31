@@ -40,7 +40,7 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
     marginTop: 16,
   },
   '&.checked': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
 })) as typeof ButtonBase;
 

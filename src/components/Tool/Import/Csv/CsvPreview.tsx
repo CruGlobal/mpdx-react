@@ -167,7 +167,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
       <Card sx={{ minWidth: '340px' }}>
         <CardHeader
           sx={{
-            backgroundColor: theme.palette.cruGrayLight.main,
+            backgroundColor: theme.palette.mpdxGrayLight.main,
           }}
           title={t('Preview')}
         />
@@ -311,7 +311,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
         </Box>
         <Box
           sx={{
-            backgroundColor: 'cruGrayLight.main',
+            backgroundColor: 'mpdxGrayLight.main',
             padding: '10px 15px',
             display: 'flex',
             justifyContent: 'space-between',

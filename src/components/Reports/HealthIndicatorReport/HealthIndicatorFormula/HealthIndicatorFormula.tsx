@@ -10,6 +10,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { GroupedAccordion } from 'src/components/Shared/Forms/Accordions/GroupedAccordion';
+import { useIndicatorColors } from '../useIndicatorColors';
 import { ConsistencyExplanation } from './ConsistencyExplanation';
 import { DepthExplanation } from './DepthExplanation';
 import { useHealthIndicatorFormulaQuery } from './HealthIndicatorFormula.generated';
@@ -46,6 +47,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
   setNoHealthIndicatorData,
 }) => {
   const { t } = useTranslation();
+  const colors = useIndicatorColors();
 
   const { data, loading } = useHealthIndicatorFormulaQuery({
     variables: {
@@ -73,6 +75,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
       </Typography>
       <FormulaItem
         name={t('Ownership')}
+        color={colors.ownership}
         description={t('% of self-raised funds over total funds')}
         explanation={<OwnershipExplanation />}
         value={latestMpdHealthData?.ownershipHi ?? 0}
@@ -80,6 +83,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
       />
       <FormulaItem
         name={t('Success')}
+        color={colors.success}
         description={t('% of self-raised funds over support goal')}
         explanation={<SuccessExplanation />}
         value={latestMpdHealthData?.successHi ?? 0}
@@ -87,6 +91,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
       />
       <FormulaItem
         name={t('Consistency')}
+        color={colors.consistency}
         description={t('% of months with positive account balance')}
         value={latestMpdHealthData?.consistencyHi ?? 0}
         explanation={<ConsistencyExplanation />}
@@ -94,6 +99,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
       />
       <FormulaItem
         name={t('Depth')}
+        color={colors.depth}
         description={t('Trend of local partners')}
         explanation={<DepthExplanation />}
         value={latestMpdHealthData?.depthHi ?? 0}
@@ -105,6 +111,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
 
 interface FormulaItemProps {
   name: string;
+  color: string;
   description: string;
   explanation?: React.ReactNode;
   value: number;
@@ -113,6 +120,7 @@ interface FormulaItemProps {
 
 const FormulaItem: React.FC<FormulaItemProps> = ({
   name,
+  color,
   description,
   explanation,
   value,
@@ -123,7 +131,7 @@ const FormulaItem: React.FC<FormulaItemProps> = ({
       {isLoading ? (
         <Skeleton width={60} height={42} />
       ) : (
-        <Typography variant="h4" color="primary" fontWeight="bold" width={60}>
+        <Typography variant="h4" color={color} fontWeight="bold" width={60}>
           {value}
         </Typography>
       )}

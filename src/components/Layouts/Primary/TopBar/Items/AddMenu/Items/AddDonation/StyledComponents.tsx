@@ -12,6 +12,6 @@ export const LogFormLabel = styled(FormLabel)(({ theme }) => ({
 
 export const FormTextField = styled(TextField)(({ theme }) => ({
   '& .MuiInputBase-root.Mui-disabled': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
 }));

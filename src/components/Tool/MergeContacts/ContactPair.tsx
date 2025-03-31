@@ -84,9 +84,9 @@ const useStyles = makeStyles()(() => ({
     alignItems: 'center',
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      border: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
       padding: theme.spacing(2),
-      backgroundColor: theme.palette.cruGrayLight.main,
+      backgroundColor: theme.palette.mpdxGrayLight.main,
     },
   },
   outer: {
@@ -98,7 +98,7 @@ const useStyles = makeStyles()(() => ({
     color: theme.palette.mpdxGreen.main,
   },
   grey: {
-    color: theme.palette.cruGrayMedium.main,
+    color: theme.palette.mpdxGrayMedium.main,
   },
   red: {
     color: 'red',

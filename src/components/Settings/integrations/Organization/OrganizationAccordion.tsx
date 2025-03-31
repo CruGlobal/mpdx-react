@@ -35,7 +35,7 @@ type OrganizationAccountPartial =
   GetUsersOrganizationsAccountsQuery['userOrganizationAccounts'][0];
 
 const OrganizationDeleteIconButton = styled(IconButton)(() => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   marginLeft: '10px',
   '&:disabled': {
     cursor: 'not-allowed',
@@ -223,7 +223,7 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                   sx={{
                     p: 1,
                     pl: 2,
-                    background: theme.palette.cruGrayLight.main,
+                    background: theme.palette.mpdxGrayLight.main,
                     justifyContent: 'space-between',
                     display: 'flex',
                   }}

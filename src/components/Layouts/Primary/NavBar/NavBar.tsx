@@ -106,7 +106,7 @@ function reduceChildRoutes({
 const useStyles = makeStyles()((theme: Theme) => ({
   mobileDrawer: {
     width: 290,
-    backgroundColor: theme.palette.cruGrayDark.main,
+    backgroundColor: theme.palette.mpdxGrayDark.main,
   },
 }));
 

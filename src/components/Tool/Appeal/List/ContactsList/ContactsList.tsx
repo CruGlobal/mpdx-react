@@ -24,7 +24,7 @@ import { ContactRow } from '../ContactRow/ContactRow';
 
 const useStyles = makeStyles()(() => ({
   headerContainer: {
-    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   },
   contactHeader: {
     padding: theme.spacing(1, 2),

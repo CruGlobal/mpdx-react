@@ -38,7 +38,7 @@ const useStyles = makeStyles()(() => ({
     alignItems: 'center',
     marginBottom: theme.spacing(2),
     [theme.breakpoints.down('md')]: {
-      border: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      border: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
     },
   },
   buttonIcon: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles()(() => ({
     marginTop: '15px',
     marginInline: '2px',
     border: '1px solid',
-    borderColor: theme.palette.cruGrayLight.main,
+    borderColor: theme.palette.mpdxGrayLight.main,
     [theme.breakpoints.down('sm')]: {
       backgroundColor: 'white',
       width: '100%',
@@ -200,7 +200,7 @@ const Contact = ({
       ></CardHeader>
       <CardContent
         className={classes.minimalPadding}
-        sx={{ backgroundColor: theme.palette.cruGrayLight.main }}
+        sx={{ backgroundColor: theme.palette.mpdxGrayLight.main }}
       >
         <Grid container alignItems="center">
           <Grid item xs={6} sm={5} md={4}>

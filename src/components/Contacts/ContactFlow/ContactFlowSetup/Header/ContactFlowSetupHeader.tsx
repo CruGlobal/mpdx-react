@@ -15,7 +15,7 @@ const HeaderWrap = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   justifyContent: 'space-between',
   alignItems: 'center',
-  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
 }));
 
 const ButtonWrap = styled(Box)(() => ({
@@ -27,14 +27,14 @@ const ButtonWrap = styled(Box)(() => ({
 }));
 
 const BackButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
-  borderColor: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
+  borderColor: theme.palette.mpdxGrayDark.main,
   paddingLeft: theme.spacing(1),
   textTransform: 'none',
 }));
 
 const ResetButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
   textTransform: 'none',
   '@media (min-width: 381px)': {
     marginRight: theme.spacing(3),
