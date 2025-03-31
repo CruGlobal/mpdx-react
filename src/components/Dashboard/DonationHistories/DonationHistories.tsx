@@ -107,9 +107,9 @@ const DonationHistories = ({
     palette.cyan.main,
     palette.pink.main,
     palette.green.main,
-    palette.yellow.main,
+    palette.orange.main,
   ];
-  const goalColor = palette.orange.main;
+  const goalColor = palette.ruby.main;
   const averageColor = palette.graphite.main;
   const pledgedColor = palette.yellow.main;
 
