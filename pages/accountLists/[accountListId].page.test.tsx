@@ -79,6 +79,7 @@ describe('AccountListsId page', () => {
             contacts: {
               totalCount: 5,
             },
+            healthIndicatorData: [],
           },
         }),
       });

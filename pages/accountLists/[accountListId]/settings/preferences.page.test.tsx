@@ -135,7 +135,9 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
             },
           },
           MachineCalculatedGoal: {
-            healthIndicatorData: [],
+            accountList: {
+              healthIndicatorData: null,
+            },
           },
         }}
         onCall={mutationSpy}

@@ -53,13 +53,12 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
     },
   });
 
+  const healthIndicatorData = data?.accountList.healthIndicatorData;
   useEffect(() => {
-    if (!data?.healthIndicatorData?.length && !loading) {
+    if (!healthIndicatorData && !loading) {
       setNoHealthIndicatorData(true);
     }
-  }, [data, loading]);
-
-  const latestMpdHealthData = data?.healthIndicatorData.at(-1);
+  }, [healthIndicatorData, loading]);
 
   if (noHealthIndicatorData) {
     return null;
@@ -75,20 +74,20 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
         name={t('Ownership')}
         description={t('% of self-raised funds over total funds')}
         explanation={<OwnershipExplanation />}
-        value={latestMpdHealthData?.ownershipHi ?? 0}
+        value={healthIndicatorData?.ownershipHi ?? 0}
         isLoading={loading && !data}
       />
       <FormulaItem
         name={t('Success')}
         description={t('% of self-raised funds over support goal')}
         explanation={<SuccessExplanation />}
-        value={latestMpdHealthData?.successHi ?? 0}
+        value={healthIndicatorData?.successHi ?? 0}
         isLoading={loading && !data}
       />
       <FormulaItem
         name={t('Consistency')}
         description={t('% of months with positive account balance')}
-        value={latestMpdHealthData?.consistencyHi ?? 0}
+        value={healthIndicatorData?.consistencyHi ?? 0}
         explanation={<ConsistencyExplanation />}
         isLoading={loading && !data}
       />
@@ -96,7 +95,7 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
         name={t('Depth')}
         description={t('Trend of local partners')}
         explanation={<DepthExplanation />}
-        value={latestMpdHealthData?.depthHi ?? 0}
+        value={healthIndicatorData?.depthHi ?? 0}
         isLoading={loading && !data}
       />
     </Card>
