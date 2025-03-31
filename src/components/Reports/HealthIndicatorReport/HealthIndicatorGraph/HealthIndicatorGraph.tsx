@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   ReferenceLine,
@@ -15,6 +14,7 @@ import {
 } from 'recharts';
 import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
+import { StyledBarChart } from 'src/components/common/StyledBarChart/StyledBarChart';
 import { useIndicatorColors } from '../useIndicatorColors';
 import { useGraphData } from './useGraphData';
 
@@ -71,7 +71,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
       />
       <CardContent>
         <ResponsiveContainer minWidth={600} height={400}>
-          <BarChart
+          <StyledBarChart
             data={periods ?? undefined}
             margin={{
               left: 20,
@@ -117,7 +117,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
                 barSize={30}
               />
             ))}
-          </BarChart>
+          </StyledBarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
