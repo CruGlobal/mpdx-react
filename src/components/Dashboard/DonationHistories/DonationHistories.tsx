@@ -13,9 +13,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
-  ComposedChart,
   Legend,
   Line,
   ReferenceLine,
@@ -29,6 +27,10 @@ import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalCh
 import { makeStyles } from 'tss-react/mui';
 import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
+import {
+  StyledBarChart,
+  StyledComposedChart,
+} from 'src/components/common/StyledBarChart/StyledBarChart';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
@@ -218,7 +220,7 @@ const DonationHistories = ({
                   <BarChartSkeleton bars={12} />
                 ) : (
                   <ResponsiveContainer height={250}>
-                    <ComposedChart
+                    <StyledComposedChart
                       data={periods}
                       margin={{
                         left: 20,
@@ -285,7 +287,7 @@ const DonationHistories = ({
                           barSize={30}
                         />
                       ))}
-                    </ComposedChart>
+                    </StyledComposedChart>
                   </ResponsiveContainer>
                 )}
               </Box>
@@ -294,11 +296,11 @@ const DonationHistories = ({
                   <BarChartSkeleton bars={12} width={10} />
                 ) : (
                   <ResponsiveContainer height={150}>
-                    <BarChart data={periods}>
+                    <StyledBarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
                       <Bar dataKey="total" fill={fills[0]} barSize={10} />
-                    </BarChart>
+                    </StyledBarChart>
                   </ResponsiveContainer>
                 )}
               </Box>

@@ -1,6 +1,0 @@
-.recharts-legend-item-text {
-  /* recharts sets the color of the text of legend items to the color of the line or bar in the
-  graph using an inline style. This leads to contrast issues because the text is too small. Override
-  the color to use the parent element's color to match other text in the graph. */
-  color: inherit !important;
-}
