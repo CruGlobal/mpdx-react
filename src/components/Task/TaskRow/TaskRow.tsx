@@ -49,6 +49,8 @@ const TaskRowWrapper = styled(Box, {
 })<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
   ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
   minWidth: '300px',
+  width: '100%',
+  padding: theme.spacing(1),
 }));
 
 const ContactRowButton = styled(Box, {
@@ -153,10 +155,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const areMoreTags = tagsToShow < task.tagList.length;
 
   return (
-    <TaskRowWrapper role="row" p={1} isChecked={isChecked}>
+    <TaskRowWrapper role="row" isChecked={isChecked}>
       <ContactRowButton
-        display="flex"
-        alignItems="center"
         data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
         useTopMargin={useTopMargin}
