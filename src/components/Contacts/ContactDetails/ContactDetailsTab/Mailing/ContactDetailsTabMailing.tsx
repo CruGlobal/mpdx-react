@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CreateIcon from '@mui/icons-material/Create';
 import LocationOn from '@mui/icons-material/LocationOn';
-import { Box, IconButton, Link, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -40,10 +40,6 @@ const ContactDetailsMailingLabelTextContainer = styled(Box)(({}) => ({
 
 const StyledAddressTypography = styled(Typography)(() => ({
   lineHeight: '1.25',
-}));
-
-const ContactMailingShowMoreLabel = styled(Typography)(({ theme }) => ({
-  color: theme.palette.info.main,
 }));
 
 const ContactAddressPrimaryText = styled(Typography)(({ theme }) => ({
@@ -207,22 +203,19 @@ export const ContactDetailsTabMailing: React.FC<MailingProp> = ({
               ))}
             {nonPrimaryAddresses.length > 0 && (
               <ContactDetailsMailingLabelTextContainer>
-                <Link href="#" underline="hover">
-                  <ContactMailingShowMoreLabel
-                    variant="subtitle1"
-                    onClick={() =>
-                      setShowContactDetailTabMoreOpen(
-                        !showContactDetailTabMoreOpen,
-                      )
-                    }
-                  >
-                    {showContactDetailTabMoreOpen
-                      ? t('Show Less')
-                      : t('Show {{amount}} More', {
-                          amount: nonPrimaryAddresses.length,
-                        })}
-                  </ContactMailingShowMoreLabel>
-                </Link>
+                <Button
+                  onClick={() =>
+                    setShowContactDetailTabMoreOpen(
+                      !showContactDetailTabMoreOpen,
+                    )
+                  }
+                >
+                  {showContactDetailTabMoreOpen
+                    ? t('Show Fewer')
+                    : t('Show {{amount}} More', {
+                        amount: nonPrimaryAddresses.length,
+                      })}
+                </Button>
               </ContactDetailsMailingLabelTextContainer>
             )}
           </ContactDetailsMailingTextContainer>
