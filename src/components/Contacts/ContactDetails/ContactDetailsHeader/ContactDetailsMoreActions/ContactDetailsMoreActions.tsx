@@ -259,14 +259,15 @@ export const ContactDetailsMoreAcitions: React.FC<
   return (
     <>
       <IconButton
-        aria-controls="add-menu"
-        aria-haspopup="true"
+        aria-label={t('More Actions')}
+        aria-controls="more-actions"
+        aria-haspopup="menu"
         onClick={(event) => setAnchorEl(event.currentTarget)}
       >
         <MoreButtonIcon titleAccess={t('More Actions')} />
       </IconButton>
       <MenuContainer
-        id="add-menu"
+        id="more-actions"
         keepMounted
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(undefined)}
