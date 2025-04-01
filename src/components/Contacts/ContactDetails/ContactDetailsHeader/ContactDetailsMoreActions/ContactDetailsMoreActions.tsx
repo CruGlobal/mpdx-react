@@ -1,11 +1,17 @@
-import React, { ReactElement, useState } from 'react';
+import React, { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
 import MoreVert from '@mui/icons-material/MoreVert';
 import PersonIcon from '@mui/icons-material/Person';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Box, IconButton, ListItemText, Menu } from '@mui/material';
+import {
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -42,15 +48,6 @@ import {
   preloadMoreActionHideContactModal,
 } from './DynamicMoreActionHideContactModal';
 
-type AddMenuItem = {
-  visibility: boolean;
-  text: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: any;
-  onClick: () => void;
-  onMouseEnter: () => void;
-};
-
 const MoreButtonIcon = styled(MoreVert)(({ theme }) => ({
   width: 24,
   height: 24,
@@ -58,69 +55,29 @@ const MoreButtonIcon = styled(MoreVert)(({ theme }) => ({
 }));
 
 const MenuContainer = styled(Menu)(({ theme }) => ({
-  '& .MuiPaper-root': {
+  '.MuiPaper-root': {
     width: '35ch',
     [theme.breakpoints.down('xs')]: {
       width: '100%',
     },
   },
-  '& .MuiMenu-list': {
-    padding: 0,
+  '.MuiList-root': {
+    paddingBlock: 0,
   },
-  '& .MuiListItemText-root': {
-    margin: 0,
-  },
-}));
-
-const RowContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(1),
-  borderBottom: '1px solid',
-  borderBottomColor: theme.palette.divider,
-  '&:hover': {
-    backgroundColor: theme.palette.grey[100],
-  },
-  '&:last-child': {
-    borderBottom: 'none',
+  '.MuiMenuItem-root + .MuiMenuItem-root': {
+    borderTop: `1px solid ${theme.palette.divider}`,
   },
 }));
 
-const MenuItemText = styled(ListItemText)(({ theme }) => ({
-  padding: theme.spacing(0, 1),
-}));
-
-const ActionPanel = ({
-  actionContent,
-}: {
-  actionContent: AddMenuItem[];
-}): ReactElement => {
-  return (
-    <Box display="flex" flexDirection="column" justifyContent="center">
-      {actionContent
-        .filter((i: AddMenuItem) => i.visibility)
-        .map(({ text, icon, onClick, onMouseEnter }, index) => (
-          <RowContainer
-            key={index}
-            display="flex"
-            onClick={onClick}
-            onMouseEnter={onMouseEnter}
-          >
-            {icon}
-            <MenuItemText primary={text} />
-          </RowContainer>
-        ))}
-    </Box>
-  );
-};
-
-interface ContactDetailsMoreAcitionsProps {
+interface ContactDetailsMoreActionsProps {
   contactId: string;
   status: StatusEnum;
   onClose: () => void;
   contextType?: ContactContextTypesEnum;
 }
 
-export const ContactDetailsMoreAcitions: React.FC<
-  ContactDetailsMoreAcitionsProps
+export const ContactDetailsMoreActions: React.FC<
+  ContactDetailsMoreActionsProps
 > = ({
   contactId,
   status,
@@ -275,7 +232,14 @@ export const ContactDetailsMoreAcitions: React.FC<
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <ActionPanel actionContent={actionContent} />
+        {actionContent
+          .filter((item) => item.visibility)
+          .map(({ text, icon, onClick, onMouseEnter }, index) => (
+            <MenuItem key={index} onClick={onClick} onMouseEnter={onMouseEnter}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText>{text}</ListItemText>
+            </MenuItem>
+          ))}
       </MenuContainer>
       <Modal
         isOpen={referralsModalOpen}
