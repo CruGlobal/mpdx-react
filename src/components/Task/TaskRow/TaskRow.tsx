@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import {
   Avatar,
@@ -153,6 +153,7 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     : '';
   const tagsToShow = 3;
   const areMoreTags = tagsToShow < task.tagList.length;
+  const subjectId = useId();
 
   return (
     <TaskRowWrapper role="row" isChecked={isChecked}>
@@ -210,10 +211,15 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 }}
                 onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
               >
-                <TaskActionPhase activityData={activityData} isXs={isXs} />
+                <TaskActionPhase
+                  activityData={activityData}
+                  describedBy={subjectId}
+                  isXs={isXs}
+                />
               </Box>
             )}
             <Box
+              id={subjectId}
               sx={{
                 width: '100%',
                 overflow: 'hidden',
