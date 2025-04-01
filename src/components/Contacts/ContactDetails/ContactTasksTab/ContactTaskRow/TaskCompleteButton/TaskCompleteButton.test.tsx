@@ -15,21 +15,10 @@ describe('TaskCompleteButton', () => {
       </ThemeProvider>,
     );
 
-    const completeButton = getByRole('button');
-    const checkIcon = getByRole('img', { hidden: true, name: 'Check' });
-
-    expect(completeButton).toBeInTheDocument();
-    expect(checkIcon).toBeInTheDocument();
-
-    const completeButtonStyle =
-      completeButton && window.getComputedStyle(completeButton);
-
-    expect(completeButtonStyle?.backgroundColor).toMatchInlineSnapshot(
-      `"transparent"`,
+    expect(getByRole('button', { name: 'Complete Task' })).toHaveStyle(
+      'background-color: transparent; color: rgb(0, 202, 153);',
     );
-    expect(completeButtonStyle?.color).toMatchInlineSnapshot(
-      `"rgb(0, 202, 153)"`,
-    );
+    expect(getByRole('img')).toBeInTheDocument();
   });
 
   it('should render complete', () => {
@@ -41,21 +30,10 @@ describe('TaskCompleteButton', () => {
       </ThemeProvider>,
     );
 
-    const completeButton = getByRole('button');
-    const checkIcon = getByRole('img', { hidden: true, name: 'Check' });
-
-    expect(completeButton).toBeInTheDocument();
-    expect(checkIcon).toBeInTheDocument();
-
-    const completeButtonStyle =
-      completeButton && window.getComputedStyle(completeButton);
-
-    expect(completeButtonStyle?.backgroundColor).toMatchInlineSnapshot(
-      `"rgb(0, 202, 153)"`,
+    expect(getByRole('button', { name: 'Complete Task' })).toHaveStyle(
+      'background-color: rgb(0, 202, 153); color: rgb(255, 255, 255);',
     );
-    expect(completeButtonStyle?.color).toMatchInlineSnapshot(
-      `"rgb(255, 255, 255)"`,
-    );
+    expect(getByRole('img')).toBeInTheDocument();
   });
 
   it('should handle click', () => {
@@ -63,15 +41,11 @@ describe('TaskCompleteButton', () => {
 
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <TaskCompleteButton isComplete={true} onClick={onClick} />
+        <TaskCompleteButton isComplete={false} onClick={onClick} />
       </ThemeProvider>,
     );
 
-    const completeButton = getByRole('button');
-
-    expect(completeButton).toBeInTheDocument();
-
-    userEvent.click(completeButton);
+    userEvent.click(getByRole('button', { name: 'Complete Task' }));
 
     expect(onClick).toHaveBeenCalled();
   });
