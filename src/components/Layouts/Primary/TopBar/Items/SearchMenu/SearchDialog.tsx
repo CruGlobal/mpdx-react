@@ -112,24 +112,34 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       link: `/accountLists/${accountListId}/tasks`,
     },
     {
-      name: t('Preferences - Manage Accounts'),
+      name: t('Preferences'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/manageAccounts`,
+      link: `/accountLists/${accountListId}/settings/preferences`,
     },
     {
-      name: t('Preferences - Manage Coaches'),
+      name: t('Preferences - Notifications'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/coaching`,
+      link: `/accountLists/${accountListId}/settings/notifications`,
     },
     {
       name: t('Preferences - Connect Services'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/connectServices`,
+      link: `/accountLists/${accountListId}/settings/integrations`,
+    },
+    {
+      name: t('Preferences - Manage Accounts'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/settings/manageAccounts`,
+    },
+    {
+      name: t('Preferences - Manage Coaches'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/settings/manageCoaches`,
     },
     {
       name: t('Reports - Donations'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
+      link: `/accountLists/${accountListId}/reports/donations`,
     },
     {
       name: t('Reports - Monthly Report (Partner Currency)'),
@@ -159,7 +169,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     {
       name: t('Reports - Partner Giving Analysis'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/PartnerGivingAnalysis`,
+      link: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
     },
     {
       name: t('Reports - Coaching'),
@@ -172,59 +182,64 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       link: `/accountLists/${accountListId}/tools`,
     },
     {
+      name: t('Tools - Appeals'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/appeals`,
+    },
+    {
+      name: t('Tools - Fix Commitment Info'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/commitmentInfo`,
+    },
+    {
+      name: t('Tools - Fix Mailing Addresses'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/mailingAddresses`,
+    },
+    {
+      name: t('Tools - Fix Send Newsletter'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/sendNewsletter`,
+    },
+    {
+      name: t('Tools - Merge Contacts'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/merge/contacts`,
+    },
+    {
+      name: t('Tools - Fix Email Addresses'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/emailAddresses`,
+    },
+    {
+      name: t('Tools - Fix Phone Numbers'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/phoneNumbers`,
+    },
+    {
+      name: t('Tools - Merge People'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/merge/people`,
+    },
+    {
+      name: t('Tools - Import from Google'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/import/google`,
+    },
+    {
+      name: t('Tools - Import from TntConnect'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/import/tntConnect`,
+    },
+    {
+      name: t('Tools - Import from CSV'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/import/csv`,
+    },
+    {
       name: t('Coaching'),
       icon: <CompassIcon />,
       link: `/accountLists/${accountListId}/coaching`,
-    },
-    {
-      name: t('Tools - Fix - Commitment Info'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixCommitmentInfo`,
-    },
-    {
-      name: t('Tools - Fix - Mailing Addresses'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixMailingAddresses`,
-    },
-    {
-      name: t('Tools - Fix - Send Newsletter'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixSendNewsletter`,
-    },
-    {
-      name: t('Tools - Fix - Merge Contacts'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/mergeContacts`,
-    },
-    {
-      name: t('Tools - Fix - Email Addresses'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixEmailAddresses`,
-    },
-    {
-      name: t('Tools - Fix - Phone Numbers'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixPhoneNumbers`,
-    },
-    {
-      name: t('Tools - Fix - Merge People'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/mergePeople`,
-    },
-    {
-      name: t('Tools - Import - Google'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/google`,
-    },
-    {
-      name: t('Tools - Import - TntConnect'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/tntConnect`,
-    },
-    {
-      name: t('Tools - Import - CSV'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/csv`,
     },
   ];
 
