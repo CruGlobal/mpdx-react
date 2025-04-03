@@ -52,6 +52,7 @@ const SearchPopper = styled(Popper)(({ theme }) => ({
 }));
 
 interface Option {
+  id?: string;
   name: string;
   status?: StatusEnum | null;
   icon: ReactElement;
@@ -244,6 +245,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
 
   const options: Option[] = [
     ...(contacts?.nodes.map(({ name, status, id }) => ({
+      id,
       name,
       status,
       icon: <PersonIcon />,
@@ -314,7 +316,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
           );
 
           return (
-            <li {...props}>
+            <li {...props} key={option.id ?? option.name}>
               {option.link === 'createContact' ? (
                 <ButtonBase>{content}</ButtonBase>
               ) : (
