@@ -269,101 +269,99 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       onClose={handleClose}
       disableRestoreFocus={true}
     >
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Autocomplete
-          fullWidth
-          multiple
-          PopperComponent={SearchPopper}
-          loading={loading}
-          filterSelectedOptions
-          onChange={handleClose}
-          getOptionLabel={(option) => option.name}
-          renderOption={(props, option) => {
-            if (option.link === 'createContact') {
-              return (
-                <AutocompleteOption onClick={handleCreateContact}>
-                  <Box display="flex" marginRight={1}>
-                    {option.icon}
-                  </Box>
-                  <Box display="flex" flexDirection="column">
-                    <Typography>{option.name}</Typography>
-                  </Box>
-                </AutocompleteOption>
-              );
-            }
-
+      <Autocomplete
+        fullWidth
+        multiple
+        PopperComponent={SearchPopper}
+        loading={loading}
+        filterSelectedOptions
+        onChange={handleClose}
+        getOptionLabel={(option) => option.name}
+        renderOption={(props, option) => {
+          if (option.link === 'createContact') {
             return (
-              <AutocompleteOption
-                component={NextLink}
-                href={option.link}
-                onClick={handleClose}
-              >
+              <AutocompleteOption onClick={handleCreateContact}>
                 <Box display="flex" marginRight={1}>
                   {option.icon}
                 </Box>
                 <Box display="flex" flexDirection="column">
                   <Typography>{option.name}</Typography>
-                  <Typography variant="subtitle2">
-                    {getLocalizedContactStatus(option.status)}
-                  </Typography>
                 </Box>
               </AutocompleteOption>
             );
-          }}
-          options={wildcardSearch !== '' ? options : []}
-          filterOptions={(options, params) => {
-            if (params.inputValue !== '') {
-              if (
-                data?.contacts.totalCount &&
-                data?.contacts.totalCount > data.contacts.nodes.length
-              ) {
-                options.splice(5, 0, {
-                  name: t(
-                    `And ${
-                      data?.contacts.totalCount - data.contacts.nodes.length
-                    } more`,
-                  ),
-                  icon: <PeopleIcon />,
-                  link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
-                });
-              }
-              options.push({
-                name: t('Create a new contact for "{{ name }}"', {
-                  name: params.inputValue,
-                }),
-                icon: <AddIcon />,
-                link: 'createContact',
+          }
+
+          return (
+            <AutocompleteOption
+              component={NextLink}
+              href={option.link}
+              onClick={handleClose}
+            >
+              <Box display="flex" marginRight={1}>
+                {option.icon}
+              </Box>
+              <Box display="flex" flexDirection="column">
+                <Typography>{option.name}</Typography>
+                <Typography variant="subtitle2">
+                  {getLocalizedContactStatus(option.status)}
+                </Typography>
+              </Box>
+            </AutocompleteOption>
+          );
+        }}
+        options={wildcardSearch !== '' ? options : []}
+        filterOptions={(options, params) => {
+          if (params.inputValue !== '') {
+            if (
+              data?.contacts.totalCount &&
+              data?.contacts.totalCount > data.contacts.nodes.length
+            ) {
+              options.splice(5, 0, {
+                name: t(
+                  `And ${
+                    data?.contacts.totalCount - data.contacts.nodes.length
+                  } more`,
+                ),
+                icon: <PeopleIcon />,
+                link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
               });
             }
+            options.push({
+              name: t('Create a new contact for "{{ name }}"', {
+                name: params.inputValue,
+              }),
+              icon: <AddIcon />,
+              link: 'createContact',
+            });
+          }
 
-            return options;
-          }}
-          renderInput={(params): ReactElement => (
-            <TextField
-              {...params}
-              fullWidth
-              placeholder={t('Type something to start searching')}
-              value={wildcardSearch}
-              InputProps={{
-                ...params.InputProps,
-                type: 'search',
-                startAdornment: (
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                ),
-                endAdornment: null,
-              }}
-              onChange={(e) => {
-                setWildcardSearch(e.target.value);
-                handleUpdateWildcardSearch(e.target.value);
-              }}
-              // eslint-disable-next-line
-              autoFocus
-            />
-          )}
-        />
-      </Box>
+          return options;
+        }}
+        renderInput={(params): ReactElement => (
+          <TextField
+            {...params}
+            fullWidth
+            placeholder={t('Type something to start searching')}
+            value={wildcardSearch}
+            InputProps={{
+              ...params.InputProps,
+              type: 'search',
+              startAdornment: (
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              ),
+              endAdornment: null,
+            }}
+            onChange={(e) => {
+              setWildcardSearch(e.target.value);
+              handleUpdateWildcardSearch(e.target.value);
+            }}
+            // eslint-disable-next-line
+            autoFocus
+          />
+        )}
+      />
     </StyledDialog>
   );
 };
