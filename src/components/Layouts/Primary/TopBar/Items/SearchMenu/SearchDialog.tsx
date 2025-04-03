@@ -349,7 +349,9 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
                 `And ${contacts.totalCount - contacts.nodes.length} more`,
               ),
               icon: <PeopleIcon />,
-              link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
+              link: `/accountLists/${accountListId}/contacts?searchTerm=${encodeURIComponent(
+                wildcardSearch,
+              )}`,
             });
           }
 
