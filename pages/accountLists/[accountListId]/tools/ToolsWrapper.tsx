@@ -28,7 +28,6 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
   pageTitle,
   pageUrl,
   selectedMenuId,
-  showToolsHeader = true,
   children,
 }) => {
   const { push } = useRouter();
@@ -60,27 +59,20 @@ export const ToolsWrapper: React.FC<ToolsWrapperProps> = ({
           leftWidth="290px"
           mainContent={
             <>
-              {showToolsHeader && (
-                <>
-                  <MultiPageHeader
-                    isNavListOpen={isToolDrawerOpen}
-                    onNavListToggle={() =>
-                      setIsToolDrawerOpen(!isToolDrawerOpen)
-                    }
-                    title={pageTitle || ''}
-                    headerType={HeaderTypeEnum.Tools}
-                  />
-                  <PageContentWrapper
-                    maxWidth="lg"
-                    style={{
-                      height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
-                    }}
-                  >
-                    {children}
-                  </PageContentWrapper>
-                </>
-              )}
-              {!showToolsHeader && children}
+              <MultiPageHeader
+                isNavListOpen={isToolDrawerOpen}
+                onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
+                title={pageTitle || ''}
+                headerType={HeaderTypeEnum.Tools}
+              />
+              <PageContentWrapper
+                maxWidth="lg"
+                style={{
+                  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+                }}
+              >
+                {children}
+              </PageContentWrapper>
             </>
           }
           rightPanel={
