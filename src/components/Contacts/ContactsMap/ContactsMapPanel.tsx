@@ -169,7 +169,9 @@ export const ContactsMapPanel: React.FC<ContactMapsPanelProps> = ({
     <>
       <Box padding={2}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">{t('Partners by Status')}</Typography>
+          <Typography variant="h6" id="left-panel-header">
+            {t('Partners by Status')}
+          </Typography>
           <IconButton onClick={onClose} aria-label={t('Close')}>
             <Close titleAccess={t('Close')} />
           </IconButton>
