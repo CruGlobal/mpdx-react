@@ -79,7 +79,9 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Typography variant="h6">{t('Tools')}</Typography>
+                <Typography variant="h6" id="left-panel-header">
+                  {t('Tools')}
+                </Typography>
                 <IconButton
                   data-testid="ToolNavToggle"
                   onClick={() => toggle(!isOpen)}

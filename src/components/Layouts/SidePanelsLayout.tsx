@@ -11,10 +11,10 @@ interface ToolbarMixin extends CSSProperties {
   };
 }
 
-type FullHeightBoxProps = {
+interface FullHeightBoxProps {
   isScrollable?: boolean;
   headerHeight: number | string;
-};
+}
 
 const FullHeightBox = styled(Box, {
   shouldForwardProp: (prop) =>
@@ -119,6 +119,8 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   return (
     <OuterWrapper>
       <RightPanelWrapper
+        component="aside"
+        aria-labelledby="right-panel-header"
         data-testid="RightPanelWrapper"
         width={isMobile ? '100%' : rightWidth}
         headerHeight={headerHeight}
@@ -133,6 +135,8 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
       <ExpandingContent open={rightOpen}>
         <CollapsibleWrapper justifyContent="flex-end">
           <LeftPanelWrapper
+            component="aside"
+            aria-labelledby="left-panel-header"
             width={leftWidth}
             flexBasis={leftWidth}
             headerHeight="0px"
@@ -142,7 +146,9 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           >
             {leftOpen && leftPanel}
           </LeftPanelWrapper>
-          <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
+          <ExpandingContent component="main" open={leftOpen}>
+            {mainContent}
+          </ExpandingContent>
         </CollapsibleWrapper>
       </ExpandingContent>
     </OuterWrapper>

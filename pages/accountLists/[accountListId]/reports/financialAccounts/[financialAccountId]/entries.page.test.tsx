@@ -69,7 +69,7 @@ describe('Financial Accounts Page', () => {
     const { findByRole } = render(<Components />);
 
     expect(
-      await findByRole('heading', { name: 'Filter (1)' }),
+      await findByRole('heading', { name: 'Filter (1 active)' }),
     ).toBeInTheDocument();
   });
 
@@ -78,11 +78,11 @@ describe('Financial Accounts Page', () => {
 
     // Filters
     expect(
-      await findByRole('heading', { name: 'Filter (1)' }),
+      await findByRole('heading', { name: 'Filter (1 active)' }),
     ).toBeInTheDocument();
     userEvent.click(getByRole('img', { name: 'Close' }));
     expect(
-      queryByRole('heading', { name: 'Filter (1)' }),
+      queryByRole('heading', { name: 'Filter (1 active)' }),
     ).not.toBeInTheDocument();
 
     // Menu

@@ -175,7 +175,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             </Box>
           ) : (
             <>
-              <PrimaryContactName data-testid="ContactName" variant="h5">
+              <PrimaryContactName
+                data-testid="ContactName"
+                variant="h5"
+                id="right-panel-header"
+              >
                 {data?.contact.name}
               </PrimaryContactName>
               <IconButton
