@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete,
   Box,
+  ButtonBase,
   Dialog,
   IconButton,
   Link,
@@ -36,20 +37,17 @@ const StyledDialog = styled(Dialog)(() => ({
   },
 }));
 
-const AutocompleteOption = styled(Link)(({ theme }) => ({
-  color: 'inherit',
-  display: 'flex',
-  width: '100%',
-  padding: '6px 16px',
-  '&:hover': {
-    textDecoration: 'none',
-    backgroundColor: theme.palette.cruGrayLight.main,
+const SearchPopper = styled(Popper)(({ theme }) => ({
+  '.MuiButtonBase-root': {
+    justifyContent: 'left',
   },
-})) as typeof Link;
-
-const SearchPopper = styled(Popper)(() => ({
-  '& .MuiAutocomplete-option': {
-    padding: 0,
+  '.MuiLink-root': {
+    display: 'flex',
+  },
+  '.MuiButtonBase-root, .MuiLink-root': {
+    alignItems: 'center',
+    flex: 1,
+    gap: theme.spacing(1),
   },
 }));
 
@@ -76,6 +74,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
 
   const [searchForContacts, { loading, data }] =
     useGetSearchMenuContactsLazyQuery();
+  const contacts = data?.contacts;
 
   const [createContact] = useCreateContactMutation();
 
@@ -244,7 +243,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
   ];
 
   const options: Option[] = [
-    ...(data?.contacts.nodes.map(({ name, status, id }) => ({
+    ...(contacts?.nodes.map(({ name, status, id }) => ({
       name,
       status,
       icon: <PersonIcon />,
@@ -286,56 +285,58 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     >
       <Autocomplete
         fullWidth
-        multiple
         PopperComponent={SearchPopper}
         loading={loading}
         filterSelectedOptions
-        onChange={handleClose}
-        getOptionLabel={(option) => option.name}
-        renderOption={(props, option) => {
-          if (option.link === 'createContact') {
-            return (
-              <AutocompleteOption onClick={handleCreateContact}>
-                <Box display="flex" marginRight={1}>
-                  {option.icon}
-                </Box>
-                <Box display="flex" flexDirection="column">
-                  <Typography>{option.name}</Typography>
-                </Box>
-              </AutocompleteOption>
-            );
+        onChange={(_event, option) => {
+          if (option) {
+            if (option.link === 'createContact') {
+              handleCreateContact();
+            } else {
+              push(option.link);
+            }
           }
 
-          return (
-            <AutocompleteOption
-              component={NextLink}
-              href={option.link}
-              onClick={handleClose}
-            >
-              <Box display="flex" marginRight={1}>
-                {option.icon}
-              </Box>
+          handleClose();
+        }}
+        getOptionLabel={(option) => option.name}
+        renderOption={(props, option) => {
+          const content = (
+            <>
+              {option.icon}
               <Box display="flex" flexDirection="column">
                 <Typography>{option.name}</Typography>
-                <Typography variant="subtitle2">
+                <Typography variant="body2">
                   {getLocalizedContactStatus(option.status)}
                 </Typography>
               </Box>
-            </AutocompleteOption>
+            </>
+          );
+
+          return (
+            <li {...props}>
+              {option.link === 'createContact' ? (
+                <ButtonBase>{content}</ButtonBase>
+              ) : (
+                <Link
+                  component={NextLink}
+                  href={option.link}
+                  underline="none"
+                  color="inherit"
+                >
+                  {content}
+                </Link>
+              )}
+            </li>
           );
         }}
         options={wildcardSearch !== '' ? options : []}
         filterOptions={(options, params) => {
           if (params.inputValue !== '') {
-            if (
-              data?.contacts.totalCount &&
-              data?.contacts.totalCount > data.contacts.nodes.length
-            ) {
+            if (contacts && contacts.totalCount > contacts.nodes.length) {
               options.splice(5, 0, {
                 name: t(
-                  `And ${
-                    data?.contacts.totalCount - data.contacts.nodes.length
-                  } more`,
+                  `And ${contacts.totalCount - contacts.nodes.length} more`,
                 ),
                 icon: <PeopleIcon />,
                 link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
