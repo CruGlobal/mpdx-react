@@ -118,20 +118,6 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
 
   return (
     <OuterWrapper>
-      <RightPanelWrapper
-        component="aside"
-        aria-labelledby="right-panel-header"
-        data-testid="RightPanelWrapper"
-        width={isMobile ? '100%' : rightWidth}
-        headerHeight={headerHeight}
-        isScrollable
-        style={{
-          transform: rightOpen ? 'none' : 'translate(100%)',
-        }}
-        id="scrollOverride"
-      >
-        {rightOpen && rightPanel}
-      </RightPanelWrapper>
       <ExpandingContent open={rightOpen}>
         <CollapsibleWrapper justifyContent="flex-end">
           <LeftPanelWrapper
@@ -151,6 +137,20 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           </ExpandingContent>
         </CollapsibleWrapper>
       </ExpandingContent>
+      <RightPanelWrapper
+        component="aside"
+        aria-labelledby="right-panel-header"
+        data-testid="RightPanelWrapper"
+        width={isMobile ? '100%' : rightWidth}
+        headerHeight={headerHeight}
+        isScrollable
+        style={{
+          transform: rightOpen ? 'none' : 'translate(100%)',
+        }}
+        id="scrollOverride"
+      >
+        {rightOpen && rightPanel}
+      </RightPanelWrapper>
     </OuterWrapper>
   );
 };
