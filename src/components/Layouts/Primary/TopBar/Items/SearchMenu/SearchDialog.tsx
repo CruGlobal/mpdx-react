@@ -334,17 +334,27 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
         }}
         options={wildcardSearch !== '' ? options : []}
         filterOptions={(options, params) => {
+          // Filter pages but not contacts because they were already filtered by the server
+          const filteredOptions = options.filter((option) =>
+            option.id
+              ? true
+              : option.name
+                  .toLowerCase()
+                  .includes(wildcardSearch.toLowerCase()),
+          );
+
+          if (contacts && contacts.totalCount > contacts.nodes.length) {
+            filteredOptions.splice(contacts.nodes.length, 0, {
+              name: t(
+                `And ${contacts.totalCount - contacts.nodes.length} more`,
+              ),
+              icon: <PeopleIcon />,
+              link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
+            });
+          }
+
           if (params.inputValue !== '') {
-            if (contacts && contacts.totalCount > contacts.nodes.length) {
-              options.splice(5, 0, {
-                name: t(
-                  `And ${contacts.totalCount - contacts.nodes.length} more`,
-                ),
-                icon: <PeopleIcon />,
-                link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
-              });
-            }
-            options.push({
+            filteredOptions.push({
               name: t('Create a new contact for "{{ name }}"', {
                 name: params.inputValue,
               }),
@@ -353,7 +363,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
             });
           }
 
-          return options;
+          return filteredOptions;
         }}
         renderInput={(params): ReactElement => (
           <TextField
