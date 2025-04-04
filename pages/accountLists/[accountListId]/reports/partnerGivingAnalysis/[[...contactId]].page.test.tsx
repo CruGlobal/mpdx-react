@@ -117,7 +117,9 @@ describe('partnerGivingAnalysis page', () => {
   it('renders filters panel', async () => {
     const { findByRole } = render(<TestingComponent />);
 
-    expect(await findByRole('heading', { name: 'Filter' })).toBeInTheDocument();
+    expect(
+      await findByRole('complementary', { name: 'Filter' }),
+    ).toBeInTheDocument();
   });
 
   it('toggles filter panel', async () => {
