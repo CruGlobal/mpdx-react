@@ -1,5 +1,6 @@
 import React from 'react';
 import { IconButton, IconButtonProps } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
 
@@ -16,14 +17,15 @@ export const StarContactIconButton: React.FC<Props> = ({
   isStarred,
   size = 'medium',
 }) => {
+  const { t } = useTranslation();
   const [setContactStarred] = useSetContactStarredMutation();
 
   return (
     <IconButton
+      aria-label={isStarred ? t('Remove star') : t('Add star')}
       size={size}
-      component="div"
       onClick={(event) => {
-        event.stopPropagation();
+        event.preventDefault();
         setContactStarred({
           variables: { accountListId, contactId, starred: !isStarred },
           optimisticResponse: {

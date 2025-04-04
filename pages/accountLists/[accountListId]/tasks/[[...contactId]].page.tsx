@@ -331,19 +331,18 @@ const TasksPage: React.FC = () => {
                         height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
                       }}
                       itemContent={(index, task) => (
-                        <Box key={index} flexDirection="row" width="100%">
-                          <TaskRow
-                            accountListId={accountListId}
-                            task={task}
-                            onContactSelected={setContactFocus}
-                            onTaskCheckToggle={toggleSelectionById}
-                            isChecked={isRowChecked(task.id)}
-                            useTopMargin={index === 0}
-                            getContactHrefObject={getContactHrefObject}
-                            removeSelectedIds={deselectMultipleIds}
-                            filterPanelOpen={filterPanelOpen}
-                          />
-                        </Box>
+                        <TaskRow
+                          key={task.id}
+                          accountListId={accountListId}
+                          task={task}
+                          onContactSelected={setContactFocus}
+                          onTaskCheckToggle={toggleSelectionById}
+                          isChecked={isRowChecked(task.id)}
+                          useTopMargin={index === 0}
+                          getContactHrefObject={getContactHrefObject}
+                          removeSelectedIds={deselectMultipleIds}
+                          filterPanelOpen={filterPanelOpen}
+                        />
                       )}
                       groupBy={(item) => {
                         if (item.completedAt) {

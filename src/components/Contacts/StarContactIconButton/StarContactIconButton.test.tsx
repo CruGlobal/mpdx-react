@@ -12,7 +12,7 @@ const contactId = '1';
 
 describe('StarTaskIconButton', () => {
   it('renders not starred', async () => {
-    const { queryByTestId } = render(
+    const { getByRole, queryByTestId } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
@@ -29,10 +29,11 @@ describe('StarTaskIconButton', () => {
 
     expect(starFilledIcon).not.toBeInTheDocument();
     expect(starOutlineIcon).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Add star' })).toBeInTheDocument();
   });
 
   it('renders starred', async () => {
-    const { queryByTestId } = render(
+    const { queryByTestId, getByRole } = render(
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
@@ -49,12 +50,13 @@ describe('StarTaskIconButton', () => {
 
     expect(starFilledIcon).toBeInTheDocument();
     expect(starOutlineIcon).not.toBeInTheDocument();
+    expect(getByRole('button', { name: 'Remove star' })).toBeInTheDocument();
   });
 
   it('should toggle starred state', async () => {
     const mutationSpy = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <GqlMockedProvider onCall={mutationSpy}>
         <ThemeProvider theme={theme}>
           <StarContactIconButton
@@ -65,24 +67,14 @@ describe('StarTaskIconButton', () => {
         </ThemeProvider>
       </GqlMockedProvider>,
     );
-    const starOutlineIcon = getByTestId('Outline Star Icon');
 
-    userEvent.click(starOutlineIcon);
+    userEvent.click(getByRole('button', { name: 'Add star' }));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveBeenCalledWith({
-        operation: expect.objectContaining({
-          operationName: 'SetContactStarred',
-          variables: { accountListId: 'abc', contactId: '1', starred: true },
-        }),
-        response: {
-          data: {
-            updateContact: {
-              __typename: 'ContactUpdateMutationPayload',
-              contact: { __typename: 'Contact', id: '2418942', starred: true },
-            },
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('SetContactStarred', {
+        accountListId,
+        contactId,
+        starred: true,
       }),
     );
   });

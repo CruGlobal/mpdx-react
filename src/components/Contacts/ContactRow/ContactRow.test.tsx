@@ -129,9 +129,9 @@ describe('ContactsRow', () => {
   });
 
   it('should open log task modal', async () => {
-    const { getByTitle } = render(<Components />);
+    const { getByRole } = render(<Components />);
 
-    const taskButton = getByTitle('Log Task');
+    const taskButton = getByRole('button', { name: 'Log Task' });
     userEvent.click(taskButton);
     expect(openTaskModal).toHaveBeenCalledWith({
       view: TaskModalEnum.Log,

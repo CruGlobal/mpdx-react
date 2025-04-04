@@ -156,7 +156,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </Grid>
       </Grid>
       <Hidden xsDown>
-        <Box onClick={(event) => event.stopPropagation()}>
+        <Box onClick={(event) => event.preventDefault()}>
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
             contactId={contactId}

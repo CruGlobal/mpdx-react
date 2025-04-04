@@ -3,11 +3,10 @@ import Check from '@mui/icons-material/Check';
 import { Button, ButtonProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import theme from 'src/theme';
 
 const ButtonWrap = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'isComplete',
-})<{ isComplete?: boolean }>(({ isComplete }) => ({
+})<{ isComplete?: boolean }>(({ isComplete, theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -18,8 +17,11 @@ const ButtonWrap = styled(Button, {
   border: `2px solid ${theme.palette.mpdxGreen.main}`,
   margin: theme.spacing(2),
   color: isComplete ? theme.palette.common.white : theme.palette.mpdxGreen.main,
-  '&:hover': {
+  '&:hover, &:focus': {
     backgroundColor: theme.palette.mpdxGreen.main,
+    color: theme.palette.common.white,
+  },
+  '&.Mui-disabled': {
     color: theme.palette.common.white,
   },
   '@media (max-width:500px)': {
@@ -40,9 +42,10 @@ export const TaskCompleteButton: React.FC<TaskCompleteButtonProps> = ({
     <ButtonWrap
       data-testid="checkCompleteButton"
       isComplete={isComplete}
+      disabled={isComplete}
       {...props}
     >
-      <Check titleAccess={t('Check')} />
+      <Check titleAccess={t('Complete Task')} />
     </ButtonWrap>
   );
 };
