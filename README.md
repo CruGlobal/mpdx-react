@@ -13,7 +13,7 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 
 ### Setting up Node
 
-First, make sure that you have a suitable version of Node.js. This project uses node v20.17.0. To check your node version, run `node --version`. If you don't have node v20.17.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
+First, make sure that you have a suitable version of Node.js. This project uses node v22.14.0. To check your node version, run `node --version`. If you don't have node v22.14.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
 
 ```bash
 # Install asdf and the node plugin
@@ -29,8 +29,23 @@ echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ${ZDOTDIR:-~}/.zshrc
 # Install the version of node defined in this project's .tool-versions file
 asdf install nodejs
 
-# Check that the node version is now 20.17.0
+# Check that the node version is now 22.14.0
 node --version
+```
+
+### Setting up Corepack and Yarn 4
+
+Corepack lets you use Yarn without installing it globally. It automatically detects and prepares the version specified in our `package.json`.
+
+```bash
+# Enable Corepack if you haven't already:
+corepack enable
+
+# Install and activate the correct Yarn version:
+corepack install
+
+# Optional - If you want to activate Yarn 4.7.0 globally run:
+corepack prepare yarn@4.7.0 --activate
 ```
 
 ### Download yarn cache with Git LFS
@@ -55,13 +70,7 @@ git lfs pull
 
 ### Running the local server
 
-Ensure you have corepack enabled.
-
-```bash
-corepack enable
-```
-
-Then, make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
+Make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
 
 Once you have these variables you can install the dependencies.
 
