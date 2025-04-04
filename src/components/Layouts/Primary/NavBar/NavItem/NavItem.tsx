@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { Button, Collapse, ListItemButton, MenuItem } from '@mui/material';
+import { Button, Collapse, ListItem } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { LeafListItem, Title } from '../StyledComponents';
@@ -20,11 +20,11 @@ interface NavItemProps {
   whatsNewLink?: boolean;
 }
 
-const StyledListItem = styled(ListItemButton)(() => ({
+const StyledListItem = styled(ListItem)({
   display: 'block',
   paddingTop: 0,
   paddingBottom: 0,
-}));
+});
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -99,19 +99,24 @@ export const NavItem: FC<NavItemProps> = ({
   }
 
   return (
-    <LeafListItem disableGutters key={title} {...rest}>
-      <MenuItem component={NextLink} href={href} style={style}>
-        {Icon && <Icon style={iconStyle} size="20" />}
-        {whatsNewLink && process.env.HELP_WHATS_NEW_IMAGE_URL && (
-          <img
-            src={process.env.HELP_WHATS_NEW_IMAGE_URL}
-            alt={t('Help logo')}
-            height={24}
-            style={{ marginRight: theme.spacing(1) }}
-          />
-        )}
-        <Title>{title}</Title>
-      </MenuItem>
+    <LeafListItem
+      disableGutters
+      key={title}
+      component={NextLink}
+      href={href}
+      style={style}
+      {...rest}
+    >
+      {Icon && <Icon style={iconStyle} size="20" />}
+      {whatsNewLink && process.env.HELP_WHATS_NEW_IMAGE_URL && (
+        <img
+          src={process.env.HELP_WHATS_NEW_IMAGE_URL}
+          alt={t('Help logo')}
+          height={24}
+          style={{ marginRight: theme.spacing(1) }}
+        />
+      )}
+      <Title>{title}</Title>
     </LeafListItem>
   );
 };

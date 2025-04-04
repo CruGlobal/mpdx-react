@@ -13,7 +13,7 @@ import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
 import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';
-import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions';
+import { ContactDetailsMoreActions } from './ContactDetailsMoreActions';
 
 const accountListId = '111';
 const contactId = 'contact-1';
@@ -56,7 +56,7 @@ describe('ContactDetailsMoreActions', () => {
             <GqlMockedProvider>
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
@@ -88,7 +88,7 @@ describe('ContactDetailsMoreActions', () => {
             <GqlMockedProvider>
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
@@ -121,7 +121,7 @@ describe('ContactDetailsMoreActions', () => {
             <GqlMockedProvider>
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
@@ -166,7 +166,7 @@ describe('ContactDetailsMoreActions', () => {
             >
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
@@ -207,7 +207,7 @@ describe('ContactDetailsMoreActions', () => {
             <GqlMockedProvider>
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
@@ -246,7 +246,7 @@ describe('ContactDetailsMoreActions', () => {
             <GqlMockedProvider>
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}
@@ -282,7 +282,7 @@ describe('ContactDetailsMoreActions', () => {
             <GqlMockedProvider cache={cache}>
               <ContactsWrapper>
                 <ContactDetailProvider>
-                  <ContactDetailsMoreAcitions
+                  <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
                     onClose={onClose}

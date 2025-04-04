@@ -177,11 +177,11 @@ describe('ContactDetailsPartnerAccounts', () => {
   });
 
   it('handle clicking delete button', async () => {
-    const { getByText, findByText, queryAllByRole } = render(<Components />);
+    const { getByText, findByText, getAllByRole } = render(<Components />);
 
     expect(await findByText('accountNumber-1')).toBeInTheDocument();
 
-    userEvent.click(queryAllByRole('button', { name: '' })[0]);
+    userEvent.click(getAllByRole('button', { name: 'Delete' })[0]);
     expect(getByText('accountNumber-1')).toBeInTheDocument();
     expect(getByText('accountNumber-2')).toBeInTheDocument();
     await waitFor(() =>

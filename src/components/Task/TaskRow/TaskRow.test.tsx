@@ -242,6 +242,7 @@ describe('TaskRow', () => {
       const task = gqlMock<TaskRowFragment>(TaskRowFragmentDoc, {
         mocks: {
           startAt,
+          completedAt: null,
           result: ResultEnum.None,
         },
       });
@@ -262,8 +263,7 @@ describe('TaskRow', () => {
       );
 
       expect(getAllByText(task.subject).length).toBe(1);
-      userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
-      userEvent.click(getByRole('img', { hidden: true, name: 'Check' }));
+      userEvent.click(getByRole('button', { name: 'Complete Task' }));
       expect(openTaskModal).toHaveBeenCalledWith({
         taskId: task.id,
         view: TaskModalEnum.Complete,

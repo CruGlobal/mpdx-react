@@ -48,15 +48,13 @@ describe('NavBar', () => {
     const { getByRole, queryByTestId } = render(<TestComponent openMobile />);
 
     expect(queryByTestId('NavBarDrawer')).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
   });
 
   it('hides links during the setup tour', () => {
     const { queryByRole } = render(<TestComponent openMobile onSetupTour />);
 
-    expect(
-      queryByRole('menuitem', { name: 'Dashboard' }),
-    ).not.toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
   });
 
   describe("What's New link", () => {
@@ -67,7 +65,7 @@ describe('NavBar', () => {
       const { getByRole } = render(<TestComponent openMobile />);
 
       expect(
-        getByRole('menuitem', { name: "Help logo What's New" }),
+        getByRole('link', { name: "Help logo What's New" }),
       ).toHaveAttribute('href', '/new');
     });
 
@@ -77,7 +75,7 @@ describe('NavBar', () => {
       const { queryByRole } = render(<TestComponent openMobile />);
 
       expect(
-        queryByRole('menuitem', { name: "Help logo What's New" }),
+        queryByRole('link', { name: "Help logo What's New" }),
       ).not.toBeInTheDocument();
     });
   });

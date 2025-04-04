@@ -15,7 +15,7 @@ describe('ContactUncompletedTasksCount', () => {
       </ThemeProvider>,
     );
 
-    const TaskCompletedIcon = getByRole('img', {
+    const TaskCompletedIcon = getByRole('button', {
       name: 'Log Task',
     });
 
