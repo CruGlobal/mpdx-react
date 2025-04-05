@@ -1,23 +1,19 @@
 import React from 'react';
-import { InMemoryCache } from '@apollo/client';
-import { MockedProvider } from '@apollo/client/testing';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { NotificationTypeTypeEnum } from 'src/graphql/types.generated';
-import {
-  GetNotificationsDocument,
-  GetNotificationsQuery,
-} from '../GetNotificationsQuery.generated';
-import acknowledgeUserNotificationMutationMock from './Item.mock';
+import { GetNotificationsQuery } from '../GetNotificationsQuery.generated';
 import NotificationMenuItem from '.';
 
 const router = {
   query: { accountListId: 'abc' },
   isReady: true,
 };
+const mutationSpy = jest.fn();
 
 describe('NotificationMenuItem', () => {
   const id = 'd1b7a8c1-9b2e-4234-b2d6-e52c151bbc7b';
@@ -437,33 +433,20 @@ describe('NotificationMenuItem', () => {
       window.open = jest.fn();
     });
 
-    it('calls function', async () => {
-      const cache = new InMemoryCache({ addTypename: false });
-      jest.spyOn(cache, 'writeQuery');
-      const data: GetNotificationsQuery = {
-        userNotifications: {
-          nodes: [],
-          pageInfo: {
-            endCursor: null,
-            hasNextPage: false,
-          },
-          unreadCount: 2,
-        },
-      };
-      cache.writeQuery({
-        query: GetNotificationsDocument,
-        variables: {
-          accountListId: 'abc',
-          after: null,
-        },
-        data,
-      });
+    it('calls AcknowledgeUserNotification function', async () => {
       const handleClick = jest.fn();
       const { getByRole } = render(
         <TestRouter router={router}>
-          <MockedProvider
-            mocks={[acknowledgeUserNotificationMutationMock(id)]}
-            cache={cache}
+          <GqlMockedProvider
+            mocks={{
+              acknowledgeUserNotification: {
+                notification: {
+                  id,
+                  read: true,
+                },
+              },
+            }}
+            onCall={mutationSpy}
           >
             <NotificationMenuItem
               item={itemWithoutDonation(
@@ -471,27 +454,20 @@ describe('NotificationMenuItem', () => {
               )}
               onClick={handleClick}
             />
-          </MockedProvider>
+          </GqlMockedProvider>
         </TestRouter>,
       );
       userEvent.click(getByRole('link'));
       await waitFor(() => expect(handleClick).toHaveBeenCalled());
-      expect(cache.writeQuery).toHaveBeenCalledWith({
-        query: GetNotificationsDocument,
-        variables: {
-          accountListId: 'abc',
-          after: null,
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'AcknowledgeUserNotification',
+        {
+          notificationId: id,
         },
-        data: {
-          userNotifications: {
-            nodes: [],
-            pageInfo: {
-              endCursor: null,
-              hasNextPage: false,
-            },
-            unreadCount: 1,
-          },
-        },
+      );
+      expect(mutationSpy).toHaveGraphqlOperation('GetNotifications', {
+        accountListId: 'abc',
+        after: null,
       });
     });
   });
