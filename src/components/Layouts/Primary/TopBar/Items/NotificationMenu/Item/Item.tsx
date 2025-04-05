@@ -69,7 +69,6 @@ const NotificationMenuItem = ({
   const [acknoweldgeUserNotification] =
     useAcknowledgeUserNotificationMutation();
   const handleClick = async () => {
-    let optimisticResponse = true;
     if (!item.read) {
       await acknoweldgeUserNotification({
         variables: { notificationId: item.id },
@@ -81,30 +80,12 @@ const NotificationMenuItem = ({
             },
           },
         },
-        update: (cache) => {
-          if (!optimisticResponse) {
-            return;
-          }
-
-          const query = {
+        refetchQueries: [
+          {
             query: GetNotificationsDocument,
-            variables: {
-              accountListId: accountListId,
-              after: null,
-            },
-          };
-          const dataFromCache = cache.readQuery<GetNotificationsQuery>(query);
-          if (dataFromCache) {
-            const data = {
-              userNotifications: {
-                ...dataFromCache.userNotifications,
-                unreadCount: dataFromCache.userNotifications.unreadCount - 1,
-              },
-            };
-            cache.writeQuery({ ...query, data });
-            optimisticResponse = false;
-          }
-        },
+            variables: { accountListId, after: null },
+          },
+        ],
       });
     }
     if (typeof onClick === 'function') {
