@@ -168,40 +168,20 @@ const NotificationMenu = ({
   const [acknoweldgeAllUserNotifications] =
     useAcknowledgeAllUserNotificationsMutation();
 
-  const handleAcknowledgeAllClick = () => {
-    const optimisticResponse = true;
-    acknoweldgeAllUserNotifications({
+  const handleAcknowledgeAllClick = async () => {
+    await acknoweldgeAllUserNotifications({
       variables: { accountListId: accountListId ?? '' },
       optimisticResponse: {
         acknowledgeAllUserNotifications: {
           notificationIds: [],
         },
       },
-      update: (cache) => {
-        if (!optimisticResponse) {
-          return;
-        }
-
-        const query = {
+      refetchQueries: [
+        {
           query: GetNotificationsDocument,
-          variables: {
-            accountListId: accountListId,
-            after: null,
-          },
-        };
-        const dataFromCache = cache.readQuery<GetNotificationsQuery>(query);
-        const data = {
-          userNotifications: {
-            ...dataFromCache?.userNotifications,
-            unreadCount: 0,
-            nodes: dataFromCache?.userNotifications.nodes.map((node) => ({
-              ...node,
-              read: true,
-            })),
-          },
-        };
-        cache.writeQuery({ ...query, data });
-      },
+          variables: { accountListId, after: null },
+        },
+      ],
     });
     handleClose();
   };
