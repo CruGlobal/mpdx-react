@@ -75,7 +75,7 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
     merge(
       existing = makeEmptyData(),
       incoming,
-      { args, isReference, readField },
+      { args, isReference, readField, mergeObjects },
     ) {
       // `merge` can be called multiple times with the same incoming data as Apollo recursively
       // merges data at various levels in the tree. If the incoming data is the same as the existing
@@ -84,7 +84,10 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
         incoming.pageInfo?.endCursor &&
         incoming.pageInfo?.endCursor === existing.pageInfo.endCursor
       ) {
-        return existing;
+        return mergeObjects(
+          existing,
+          __rest(incoming, ['edges', 'nodes', 'pageInfo']),
+        );
       }
 
       const incomingEdges = incoming.edges
