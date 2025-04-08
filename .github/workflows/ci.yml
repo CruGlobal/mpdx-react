@@ -23,15 +23,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-      - name: Enable Corepack
-        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
 
@@ -56,15 +50,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-      - name: Enable Corepack
-        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
 
@@ -84,15 +72,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-      - name: Enable Corepack
-        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
 
@@ -112,15 +94,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-      - name: Enable Corepack
-        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
 
@@ -135,15 +111,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-      - name: Enable Corepack
-        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
 
@@ -164,15 +134,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Enable Corepack
-        run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-      - name: Enable Corepack
-        run: corepack enable
       - name: 📦 Install Dependencies
         run: yarn install --immutable --immutable-cache
 
