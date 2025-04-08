@@ -69,7 +69,6 @@ const NotificationMenuItem = ({
   const [acknoweldgeUserNotification] =
     useAcknowledgeUserNotificationMutation();
   const handleClick = async () => {
-    let optimisticResponse = true;
     if (!item.read) {
       await acknoweldgeUserNotification({
         variables: { notificationId: item.id },
@@ -82,10 +81,6 @@ const NotificationMenuItem = ({
           },
         },
         update: (cache) => {
-          if (!optimisticResponse) {
-            return;
-          }
-
           const query = {
             query: GetNotificationsDocument,
             variables: {
@@ -102,7 +97,6 @@ const NotificationMenuItem = ({
               },
             };
             cache.writeQuery({ ...query, data });
-            optimisticResponse = false;
           }
         },
       });

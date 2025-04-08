@@ -169,7 +169,6 @@ const NotificationMenu = ({
     useAcknowledgeAllUserNotificationsMutation();
 
   const handleAcknowledgeAllClick = () => {
-    const optimisticResponse = true;
     acknoweldgeAllUserNotifications({
       variables: { accountListId: accountListId ?? '' },
       optimisticResponse: {
@@ -178,10 +177,6 @@ const NotificationMenu = ({
         },
       },
       update: (cache) => {
-        if (!optimisticResponse) {
-          return;
-        }
-
         const query = {
           query: GetNotificationsDocument,
           variables: {
