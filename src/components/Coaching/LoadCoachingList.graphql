@@ -1,5 +1,5 @@
 query LoadCoachingList($after: String) {
-  coachingAccountLists(first: 25, after: $after) {
+  coachingAccountLists(first: 1, after: $after) {
     nodes {
       ...CoachedPerson
     }

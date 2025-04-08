@@ -80,12 +80,12 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
       // `merge` can be called multiple times with the same incoming data as Apollo recursively
       // merges data at various levels in the tree. If the incoming data is the same as the existing
       // data, simply ignore it.
-      if (
-        incoming.pageInfo?.endCursor &&
-        incoming.pageInfo?.endCursor === existing.pageInfo.endCursor
-      ) {
-        return existing;
-      }
+      // if (
+      //   incoming.pageInfo?.endCursor &&
+      //   incoming.pageInfo?.endCursor === existing.pageInfo.endCursor
+      // ) {
+      //   return existing;
+      // }
 
       const incomingEdges = incoming.edges
         ? incoming.edges.map((edge) => {
