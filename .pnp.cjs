@@ -75,7 +75,7 @@ const RAW_RUNTIME_STATE =
           ["@types/jest", "npm:29.5.14"],\
           ["@types/lodash", "npm:4.14.191"],\
           ["@types/luxon", "npm:3.4.2"],\
-          ["@types/node", "npm:20.17.0"],\
+          ["@types/node", "npm:22.13.14"],\
           ["@types/react", "npm:18.0.21"],\
           ["@types/testing-library__jest-dom", "npm:5.14.5"],\
           ["@types/uuid", "npm:9.0.1"],\
@@ -8995,11 +8995,11 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:20.17.0", {\
-        "packageLocation": "./.yarn/cache/@types-node-npm-20.17.0-9fdfb29cbc-3b39bb883a.zip/node_modules/@types/node/",\
+      ["npm:22.13.14", {\
+        "packageLocation": "./.yarn/cache/@types-node-npm-22.13.14-2796c41449-fa2ab5b827.zip/node_modules/@types/node/",\
         "packageDependencies": [\
-          ["@types/node", "npm:20.17.0"],\
-          ["undici-types", "npm:6.19.8"]\
+          ["@types/node", "npm:22.13.14"],\
+          ["undici-types", "npm:6.20.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -19526,7 +19526,7 @@ const RAW_RUNTIME_STATE =
           ["@types/jest", "npm:29.5.14"],\
           ["@types/lodash", "npm:4.14.191"],\
           ["@types/luxon", "npm:3.4.2"],\
-          ["@types/node", "npm:20.17.0"],\
+          ["@types/node", "npm:22.13.14"],\
           ["@types/react", "npm:18.0.21"],\
           ["@types/testing-library__jest-dom", "npm:5.14.5"],\
           ["@types/uuid", "npm:9.0.1"],\
@@ -20017,7 +20017,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["node-mocks-http", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.16.2"],\
           ["@types/express", null],\
-          ["@types/node", "npm:20.17.0"],\
+          ["@types/node", "npm:22.13.14"],\
           ["accepts", "npm:1.3.8"],\
           ["content-disposition", "npm:0.5.4"],\
           ["depd", "npm:1.1.2"],\
@@ -21650,7 +21650,7 @@ const RAW_RUNTIME_STATE =
           ["@react-dnd/invariant", "npm:2.0.0"],\
           ["@react-dnd/shallowequal", "npm:2.0.0"],\
           ["@types/hoist-non-react-statics", null],\
-          ["@types/node", "npm:20.17.0"],\
+          ["@types/node", "npm:22.13.14"],\
           ["@types/react", "npm:18.0.21"],\
           ["dnd-core", "npm:14.0.1"],\
           ["fast-deep-equal", "npm:3.1.3"],\
@@ -24817,10 +24817,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["undici-types", [\
-      ["npm:6.19.8", {\
-        "packageLocation": "./.yarn/cache/undici-types-npm-6.19.8-9f12285b7a-cf0b48ed4f.zip/node_modules/undici-types/",\
+      ["npm:6.20.0", {\
+        "packageLocation": "./.yarn/cache/undici-types-npm-6.20.0-bd21e669af-68e659a988.zip/node_modules/undici-types/",\
         "packageDependencies": [\
-          ["undici-types", "npm:6.19.8"]\
+          ["undici-types", "npm:6.20.0"]\
         ],\
         "linkType": "HARD"\
       }]\
