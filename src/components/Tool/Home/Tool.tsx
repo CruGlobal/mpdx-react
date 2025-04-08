@@ -7,6 +7,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Link,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
@@ -89,9 +90,11 @@ const Tool = ({
       elevation={3}
       data-testid={`${toolId}-container`}
     >
-      <NextLink
+      <Link
+        component={NextLink}
         href={`/accountLists/${accountListId}/tools/${url}`}
-        scroll={false}
+        color="inherit"
+        underline="none"
       >
         <CardActionArea>
           <CardContent className={classes.cardContent}>
@@ -116,7 +119,7 @@ const Tool = ({
             <Typography variant="subtitle2">{desc}</Typography>
           </CardContent>
         </CardActionArea>
-      </NextLink>
+      </Link>
     </Card>
   );
 };
