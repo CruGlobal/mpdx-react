@@ -143,7 +143,9 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Typography variant="h6">{navTitle}</Typography>
+                <Typography variant="h6" id="left-panel-header">
+                  {navTitle}
+                </Typography>
                 <IconButton onClick={onClose}>
                   <Close titleAccess={t('Close')} />
                 </IconButton>
