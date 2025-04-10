@@ -109,7 +109,7 @@ const DonationHistories = ({
     palette.green.main,
     palette.orange.main,
   ];
-  const goalColor = palette.ruby.main;
+  const goalColor = palette.graphite.main;
   const averageColor = palette.graphite.main;
   const pledgedColor = palette.yellow.main;
 
@@ -155,6 +155,7 @@ const DonationHistories = ({
                       name={t('Goal')}
                       value={goal && currencyFormat(goal, currency, locale)}
                       color={goalColor}
+                      dashed
                     />
                   </Grid>
                   <Grid item>|</Grid>
@@ -243,6 +244,8 @@ const DonationHistories = ({
                           connectNulls
                           dot={false}
                           stroke={goalColor}
+                          strokeDasharray="5,8"
+                          strokeLinecap="round"
                           strokeWidth={3}
                         />
                       )}
