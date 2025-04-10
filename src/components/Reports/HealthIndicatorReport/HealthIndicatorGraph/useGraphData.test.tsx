@@ -92,10 +92,10 @@ describe('weightedAverage', () => {
     expect(weightedAverage([], 'field', [])).toBeNull();
   });
 
-  it('returns null when items contains only missing values', () => {
+  it('returns 0 when items contains only missing values', () => {
     expect(
       weightedAverage([{ field: null }, { field: undefined }], 'field', [1, 1]),
-    ).toBeNull();
+    ).toBe(0);
   });
 
   it('calculates the weighted average of the field', () => {
@@ -121,7 +121,7 @@ describe('weightedAverage', () => {
         'field',
         [1, 1, 1, 1, 1],
       ),
-    ).toBe(2);
+    ).toBe(1.2);
   });
 });
 
@@ -247,11 +247,11 @@ describe('useGraphData', () => {
     expect(result.current.average).toBe(null);
     await waitForNextUpdate();
     // Jan 10 - Feb 14 = 36 span * 10 HI
-    // Feb 15 - Feb 24 = 10 span * null HI
+    // Feb 15 - Feb 24 = 10 span * 0 HI
     // Feb 25          = 1 span  * 80 HI
     // Feb 26          = 1 span  * 90 HI
-    // Average = (36*10 + 1*80 + 1*90) / 38 = ~13.95, rounds to 14
-    expect(result.current.average).toBe(14);
+    // Average = (36*10 + 10*0 + 1*80 + 1*90) / 48 = ~11.04, rounds to 11
+    expect(result.current.average).toBe(11);
   });
 
   it('extrapolates missing periods and averages periods in the same month', async () => {
@@ -282,29 +282,29 @@ describe('useGraphData', () => {
       {
         // No February periods, so all indicators are null
         month: 'Feb 2024',
-        consistency: null,
-        depth: null,
-        ownership: null,
-        success: null,
-        consistencyScaled: null,
-        depthScaled: null,
-        ownershipScaled: null,
-        successScaled: null,
+        consistency: 0,
+        depth: 0,
+        ownership: 0,
+        success: 0,
+        consistencyScaled: 0,
+        depthScaled: 0,
+        ownershipScaled: 0,
+        successScaled: 0,
       },
       {
         // Mar 4 - Mar 5 = 2 span * 40 HI
-        // Mar 6 - Mar 9 = 4 span * null HI
+        // Mar 6 - Mar 9 = 4 span * 0 HI
         // Mar 10        = 1 span * 50 HI
-        // Average = (2*40 + 1*50) / 3 = ~43.33, rounds to 43
+        // Average = (2*40 + 4*0 + 1*50) / 7 = ~18.57, rounds to 19
         month: 'Mar 2024',
-        consistency: 43,
-        depth: 43,
-        ownership: 43,
-        success: 43,
-        consistencyScaled: 6,
-        depthScaled: 6,
-        ownershipScaled: 19,
-        successScaled: 12,
+        consistency: 19,
+        depth: 19,
+        ownership: 19,
+        success: 19,
+        consistencyScaled: 3,
+        depthScaled: 3,
+        ownershipScaled: 8,
+        successScaled: 5,
       },
     ]);
   });

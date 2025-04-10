@@ -36,8 +36,8 @@ const round = (value: number | null): number | null => {
 };
 
 /**
- * Calculate the weighted average value of a particular field in an array of items, ignoring
- * missing values.
+ * Calculate the weighted average value of a particular field in an array of items, treating missing
+ * values as 0.
  *
  * @param items An array of records with a property {@link field} that is `number | null | undefined`
  * @param field The field in {@link items} to be averaged
@@ -54,12 +54,7 @@ export const weightedAverage = <
 ): number | null => {
   const { total, denominator } = items.reduce(
     ({ total, denominator }, item, index) => {
-      const value = item[field];
-      if (typeof value !== 'number') {
-        // Ignore missing values
-        return { total, denominator };
-      }
-
+      const value = item[field] ?? 0;
       const weight = weights[index];
       return {
         total: total + value * weight,
