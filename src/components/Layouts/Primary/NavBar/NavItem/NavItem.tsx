@@ -37,11 +37,11 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const ExpandItemIcon = styled(ExpandLessIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 const CollapseItemIcon = styled(ChevronRightIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 export const NavItem: FC<NavItemProps> = ({

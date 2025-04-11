@@ -55,7 +55,7 @@ const OuterBox = styled(Box)(() => ({
 }));
 
 const HeaderBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   width: '100%',
   padding: theme.spacing(1),
   display: 'flex',
@@ -70,7 +70,7 @@ const HeaderBox = styled(Box)(({ theme }) => ({
 const BorderBox = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
-  border: `1px solid ${theme.palette.cruGrayLight.main}`,
+  border: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   width: '100%',
   borderRadius: '7px',
 }));
@@ -287,7 +287,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                         <Card>
                           <CardHeader
                             sx={{
-                              backgroundColor: theme.palette.cruGrayLight.main,
+                              backgroundColor: theme.palette.mpdxGrayLight.main,
                             }}
                             title={
                               <Trans

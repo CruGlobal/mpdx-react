@@ -44,7 +44,7 @@ const PrimaryContactIcon = styled(BookmarkIcon)(({ theme }) => ({
   top: '50%',
   left: 8,
   transform: 'translateY(-50%)',
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({

@@ -34,7 +34,7 @@ const ProgressBar = styled('div')(({ theme }) => ({
   textAlign: 'left',
   whiteSpace: 'nowrap',
   borderRadius: '10px',
-  backgroundColor: theme.palette.cruGrayDark.main,
+  backgroundColor: theme.palette.mpdxGrayDark.main,
 }));
 
 const ProgressSegment = styled('div')({

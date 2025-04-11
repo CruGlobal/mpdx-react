@@ -13,9 +13,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
-  ComposedChart,
   Legend,
   Line,
   ReferenceLine,
@@ -29,6 +27,10 @@ import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalCh
 import { makeStyles } from 'tss-react/mui';
 import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
 import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
+import {
+  StyledBarChart,
+  StyledComposedChart,
+} from 'src/components/common/StyledBarChart/StyledBarChart';
 import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
@@ -105,11 +107,14 @@ const DonationHistories = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const fills = [
-    palette.graphBlue1.main,
-    palette.graphBlue2.main,
-    palette.graphBlue3.main,
-    palette.cruYellow.main,
+    palette.cyan.main,
+    palette.pink.main,
+    palette.green.main,
+    palette.orange.main,
   ];
+  const goalColor = palette.graphite.main;
+  const averageColor = palette.graphite.main;
+  const pledgedColor = palette.yellow.main;
 
   const {
     monthlyGoal: goal,
@@ -152,7 +157,8 @@ const DonationHistories = ({
                     <LegendReferenceLine
                       name={t('Goal')}
                       value={goal && currencyFormat(goal, currency, locale)}
-                      color={palette.graphTeal.main}
+                      color={goalColor}
+                      dashed
                     />
                   </Grid>
                   <Grid item>|</Grid>
@@ -174,7 +180,7 @@ const DonationHistories = ({
                           )
                         )
                       }
-                      color={palette.cruGrayMedium.main}
+                      color={averageColor}
                     />
                   </Grid>
                   {pledged ? (
@@ -187,7 +193,7 @@ const DonationHistories = ({
                         <LegendReferenceLine
                           name={t('Committed')}
                           value={currencyFormat(pledged, currency, locale)}
-                          color={palette.cruYellow.main}
+                          color={pledgedColor}
                         />
                       </Grid>
                     </>
@@ -218,7 +224,7 @@ const DonationHistories = ({
                   <BarChartSkeleton bars={12} />
                 ) : (
                   <ResponsiveContainer height={250}>
-                    <ComposedChart
+                    <StyledComposedChart
                       data={periods}
                       margin={{
                         left: 20,
@@ -231,7 +237,7 @@ const DonationHistories = ({
                       {!data?.healthIndicatorData?.length ? (
                         <ReferenceLine
                           y={goal ?? undefined}
-                          stroke={palette.graphTeal.main}
+                          stroke={goalColor}
                           strokeWidth={3}
                         />
                       ) : (
@@ -240,19 +246,21 @@ const DonationHistories = ({
                           name={t('Goal')}
                           connectNulls
                           dot={false}
-                          stroke={palette.graphTeal.main}
+                          stroke={goalColor}
+                          strokeDasharray="5,8"
+                          strokeLinecap="round"
                           strokeWidth={3}
                         />
                       )}
                       <ReferenceLine
                         y={data?.reportsDonationHistories?.averageIgnoreCurrent}
-                        stroke={palette.cruGrayMedium.main}
+                        stroke={averageColor}
                         strokeWidth={3}
                       />
                       {pledged && (
                         <ReferenceLine
                           y={pledged}
-                          stroke={palette.cruYellow.main}
+                          stroke={pledgedColor}
                           strokeWidth={3}
                         />
                       )}
@@ -285,7 +293,7 @@ const DonationHistories = ({
                           barSize={30}
                         />
                       ))}
-                    </ComposedChart>
+                    </StyledComposedChart>
                   </ResponsiveContainer>
                 )}
               </Box>
@@ -294,15 +302,11 @@ const DonationHistories = ({
                   <BarChartSkeleton bars={12} width={10} />
                 ) : (
                   <ResponsiveContainer height={150}>
-                    <BarChart data={periods}>
+                    <StyledBarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
-                      <Bar
-                        dataKey="total"
-                        fill={palette.graphBlue1.main}
-                        barSize={10}
-                      />
-                    </BarChart>
+                      <Bar dataKey="total" fill={fills[0]} barSize={10} />
+                    </StyledBarChart>
                   </ResponsiveContainer>
                 )}
               </Box>

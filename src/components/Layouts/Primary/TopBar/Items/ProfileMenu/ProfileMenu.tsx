@@ -60,8 +60,8 @@ const MenuItemFooter = styled(MenuItem)(({ theme }) => ({
 const MenuButton = styled(Button)(({ theme }) => ({
   width: '100%',
   marginTop: theme.spacing(1),
-  borderColor: theme.palette.cruGrayLight.main,
-  color: theme.palette.cruGrayLight.main,
+  borderColor: theme.palette.mpdxGrayLight.main,
+  color: theme.palette.mpdxGrayLight.main,
 }));
 
 const NameBox = styled(Box)(() => ({
@@ -73,7 +73,7 @@ const NameBox = styled(Box)(() => ({
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   '&:hover': {
-    backgroundColor: `${theme.palette.cruGrayMedium.main} !important`,
+    backgroundColor: `${theme.palette.mpdxGrayMedium.main} !important`,
   },
 }));
 
@@ -91,7 +91,7 @@ const AccountListSelectorDetails = styled(AccordionDetails)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   padding: 0,
-  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   maxHeight: theme.spacing(44),
   overflow: 'auto',
   '& .MuiMenuItem-root': {
@@ -107,12 +107,12 @@ const MenuWrapper = styled(Menu)(({ theme }) => ({
     boxShadow: 'none',
   },
   '& .MuiAccordionSummary-root': {
-    borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
-    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderTop: `1px solid ${theme.palette.mpdxGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   },
   '& .MuiPaper-root': {
     color: 'white',
-    backgroundColor: theme.palette.cruGrayDark.main,
+    backgroundColor: theme.palette.mpdxGrayDark.main,
   },
 }));
 
@@ -303,7 +303,7 @@ const ProfileMenu = (): ReactElement => {
                 style={{
                   backgroundColor:
                     accountListId === accountList.id
-                      ? theme.palette.cruGrayMedium.main
+                      ? theme.palette.mpdxGrayMedium.main
                       : 'inherit',
                 }}
                 onClick={() => handleAccountListClick(accountList)}

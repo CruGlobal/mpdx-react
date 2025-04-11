@@ -35,7 +35,7 @@ const YearTableCell = styled(TableCell)(({}) => ({
 }));
 
 const YearTypography = styled(Typography)(({ theme }) => ({
-  borderLeft: `1px solid ${theme.palette.cruGrayLight.main}`,
+  borderLeft: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   '@media print': {
     lineHeight: 1,
     fontSize: '1rem',

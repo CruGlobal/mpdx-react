@@ -12,9 +12,9 @@ interface ContactUncompletedTasksCountProps {
 }
 
 const LogTaskButton = styled(CheckCircleOutlineIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   '&:hover': {
-    color: theme.palette.cruGrayDark.main,
+    color: theme.palette.mpdxGrayDark.main,
   },
 }));
 

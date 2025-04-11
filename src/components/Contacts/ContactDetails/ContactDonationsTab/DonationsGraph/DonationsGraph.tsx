@@ -5,7 +5,6 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   ResponsiveContainer,
@@ -14,6 +13,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { StyledBarChart } from 'src/components/common/StyledBarChart/StyledBarChart';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -109,7 +109,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
           />
         ) : (
           <ResponsiveContainer minWidth={600}>
-            <BarChart margin={{ left: 30 }} data={months}>
+            <StyledBarChart margin={{ left: 30 }} data={months}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis
@@ -131,7 +131,7 @@ export const DonationsGraph: React.FC<DonationsGraphProps> = ({
                 dataKey="thisYear"
                 fill={theme.palette.primary.main}
               />
-            </BarChart>
+            </StyledBarChart>
           </ResponsiveContainer>
         )}
       </GraphContainer>

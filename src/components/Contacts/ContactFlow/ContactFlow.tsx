@@ -39,7 +39,7 @@ export const colorMap: { [key: string]: string } = {
   'color-warning': theme.palette.progressBarYellow.main,
   'color-success': theme.palette.success.main,
   'color-info': theme.palette.mpdxBlue.main,
-  'color-text': theme.palette.cruGrayDark.main,
+  'color-text': theme.palette.mpdxGrayDark.main,
 };
 
 export const ContactFlow: React.FC<Props> = ({
