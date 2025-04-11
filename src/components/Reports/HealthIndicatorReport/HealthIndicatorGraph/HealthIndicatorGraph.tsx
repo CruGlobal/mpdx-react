@@ -62,7 +62,7 @@ export const HealthIndicatorGraph: React.FC<HealthIndicatorGraphProps> = ({
         title={
           average && (
             <LegendReferenceLine
-              name={t('Average')}
+              name={t('12-month overall average')}
               value={average}
               color={averageColor}
             />
