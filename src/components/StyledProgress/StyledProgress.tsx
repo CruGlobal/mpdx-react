@@ -1,48 +1,55 @@
 import React, { ReactElement } from 'react';
-import { Box, Skeleton, Theme, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { makeStyles } from 'tss-react/mui';
-import { useLocale } from 'src/hooks/useLocale';
-import { percentageFormat } from '../../lib/intlFormat';
 import MinimalSpacingTooltip from '../Shared/MinimalSpacingTooltip';
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  box: {
-    width: '100%',
-    height: '54px',
-    border: '2px solid #999999',
-    borderRadius: '50px',
-    padding: '2px',
-    position: 'relative',
-    marginBottom: theme.spacing(2),
-    display: 'flex',
-    alignItems: 'center',
-  },
-  progress: {
-    position: 'absolute',
-    left: '2px',
-    height: '46px',
-    minWidth: '46px',
-    maxWidth: '99.6%',
-    borderRadius: '46px',
-    transition: 'width 1s ease-out',
-    width: '0%',
-  },
-  skeleton: {
-    borderRadius: '46px',
-    height: '46px',
-    transform: 'none',
-  },
-  primary: {
-    background: 'linear-gradient(180deg, #FFE67C 0%, #FFCF07 100%)',
-  },
-  secondary: {
-    border: '5px solid #FFCF07',
-  },
-  inline: {
-    display: 'inline',
-  },
-  belowDetails: { position: 'absolute', right: '5px' },
+const ProgressBoxContainer = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'barHeight',
+})<{ barHeight: number }>(({ barHeight, theme }) => ({
+  width: '100%',
+  height: barHeight + 8,
+  border: '2px solid #999999',
+  borderRadius: '50px',
+  padding: '2px',
+  position: 'relative',
+  marginBottom: theme.spacing(2),
+  display: 'flex',
+  alignItems: 'center',
+}));
+
+const ProgressBar = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'barHeight' && prop !== 'isPrimary',
+})<{ barHeight: number; isPrimary: boolean }>(({ barHeight, isPrimary }) => ({
+  position: 'absolute',
+  left: '2px',
+  height: barHeight,
+  minWidth: barHeight,
+  maxWidth: '99.6%',
+  borderRadius: barHeight,
+  transition: 'width 1s ease-out',
+  width: '0%',
+  background: isPrimary
+    ? 'linear-gradient(180deg, #FFE67C 0%, #FFCF07 100%)'
+    : 'initial',
+  border: isPrimary ? 'none' : '5px solid #FFCF07',
+}));
+
+const StyledSkeleton = styled(Skeleton, {
+  shouldForwardProp: (prop) => prop !== 'barHeight',
+})<{ barHeight: number }>(({ barHeight }) => ({
+  borderRadius: barHeight,
+  height: barHeight,
+  transform: 'none',
+}));
+
+const InlineTypography = styled(Typography)(() => ({
+  display: 'inline',
+}));
+
+const BelowDetailsBox = styled(Box)(() => ({
+  position: 'absolute',
+  right: '5px',
 }));
 
 interface Props {
@@ -51,7 +58,18 @@ interface Props {
   secondary?: number;
   receivedBelow?: string;
   committedBelow?: string;
+  barHeight?: number;
 }
+
+export const formatPercentage = (value: number): string => {
+  if (value > 1) {
+    return `${value}%`; // Treat as a percentage
+  }
+  if (value >= 0) {
+    return `${value * 100}%`; // Convert 0.* and 1 to percentage
+  }
+  return '0%'; // Default to 0%
+};
 
 const StyledProgress = ({
   loading,
@@ -59,53 +77,54 @@ const StyledProgress = ({
   secondary = 0,
   receivedBelow = '',
   committedBelow = '',
+  barHeight = 46,
 }: Props): ReactElement => {
-  const locale = useLocale();
   const { t } = useTranslation();
-  const { classes } = useStyles();
 
   return (
-    <Box className={classes.box}>
+    <ProgressBoxContainer barHeight={barHeight}>
       {loading ? (
-        <Skeleton
+        <StyledSkeleton
           data-testid="styledProgressLoading"
-          className={classes.skeleton}
+          barHeight={barHeight}
           animation="wave"
         />
       ) : (
         <>
-          <Box
+          <ProgressBar
             style={{
-              width: percentageFormat(secondary, locale).replace('\xa0', ''),
+              width: `calc(${formatPercentage(secondary)} - 4px)`,
             }}
-            className={[classes.progress, classes.secondary].join(' ')}
+            isPrimary={false}
+            barHeight={barHeight}
             data-testid="styledProgressSecondary"
           />
-          <Box
+          <ProgressBar
             style={{
-              width: percentageFormat(primary, locale).replace('\xa0', ''),
+              width: `calc(${formatPercentage(primary)} - 4px)`,
             }}
-            className={[classes.progress, classes.primary].join(' ')}
+            isPrimary={true}
+            barHeight={barHeight}
             data-testid="styledProgressPrimary"
           />
         </>
       )}
-      <Box className={classes.belowDetails}>
+      <BelowDetailsBox>
         {receivedBelow && (
           <MinimalSpacingTooltip title={t('Received Below Goal')} arrow>
-            <Typography className={classes.inline}>{receivedBelow}</Typography>
+            <InlineTypography>{receivedBelow}</InlineTypography>
           </MinimalSpacingTooltip>
         )}
         {committedBelow && receivedBelow && (
-          <Typography className={classes.inline}>{' / '}</Typography>
+          <InlineTypography>{' / '}</InlineTypography>
         )}
         {committedBelow && (
           <MinimalSpacingTooltip title={t('Committed Below Goal')} arrow>
-            <Typography className={classes.inline}>{committedBelow}</Typography>
+            <InlineTypography>{committedBelow}</InlineTypography>
           </MinimalSpacingTooltip>
         )}
-      </Box>
-    </Box>
+      </BelowDetailsBox>
+    </ProgressBoxContainer>
   );
 };
 

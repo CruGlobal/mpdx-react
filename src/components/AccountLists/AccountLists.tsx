@@ -8,6 +8,7 @@ import {
   Grid,
   Link,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -76,18 +77,42 @@ const AccountLists = ({ data }: Props): ReactElement => {
               ({
                 id,
                 name,
-                monthlyGoal,
+                monthlyGoal: preferencesGoal,
                 receivedPledges,
                 totalPledges,
-                currency,
+                currency: preferencesCurrency,
+                healthIndicatorData,
               }) => {
-                const receivedPercentage =
-                  receivedPledges / (monthlyGoal ?? NaN);
-                const totalPercentage = totalPledges / (monthlyGoal ?? NaN);
+                const hasPreferencesGoal = typeof preferencesGoal === 'number';
+                const monthlyGoal = hasPreferencesGoal
+                  ? preferencesGoal
+                  : healthIndicatorData?.machineCalculatedGoal;
+                const currency = hasPreferencesGoal
+                  ? preferencesCurrency
+                  : healthIndicatorData?.machineCalculatedGoalCurrency;
+                const hasMachineCalculatedGoal =
+                  !hasPreferencesGoal && typeof monthlyGoal === 'number';
+
+                // If the currency comes from the machine calculated goal and is different from the
+                // user's currency preference, we can't calculate the received or total percentages
+                // because the numbers are in different currencies
+                const hasValidGoal =
+                  currency === preferencesCurrency && !!monthlyGoal;
+                const receivedPercentage = hasValidGoal
+                  ? receivedPledges / monthlyGoal
+                  : NaN;
+                const totalPercentage = hasValidGoal
+                  ? totalPledges / monthlyGoal
+                  : NaN;
+
+                const ariaId = `goal-${id}`;
 
                 return (
                   <Grid key={id} item xs={12} sm={4}>
-                    <AnimatedCard elevation={3}>
+                    <AnimatedCard
+                      elevation={3}
+                      data-testid={`account-list-${id}`}
+                    >
                       <Link
                         component={NextLink}
                         href={`/accountLists/${id}`}
@@ -97,27 +122,56 @@ const AccountLists = ({ data }: Props): ReactElement => {
                         <CardActionArea>
                           <CardContent className={classes.cardContent}>
                             <Box flex={1}>
-                              <Typography variant="h5" data-testid={id} noWrap>
+                              <Typography variant="h5" noWrap>
                                 {name}
                               </Typography>
                             </Box>
                             <Grid container>
                               {monthlyGoal && (
-                                <Grid xs={4} item>
-                                  <Typography
-                                    component="div"
-                                    color="textSecondary"
-                                  >
-                                    {t('Goal')}
-                                  </Typography>
-                                  <Typography variant="h6">
-                                    {currencyFormat(
-                                      monthlyGoal,
-                                      currency,
-                                      locale,
-                                    )}
-                                  </Typography>
-                                </Grid>
+                                <Tooltip
+                                  title={
+                                    !hasPreferencesGoal &&
+                                    t(
+                                      'Your current goal of {{goal}} is machine-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
+                                      {
+                                        goal: currencyFormat(
+                                          monthlyGoal,
+                                          preferencesCurrency,
+                                          locale,
+                                        ),
+                                      },
+                                    )
+                                  }
+                                >
+                                  <Grid xs={4} item>
+                                    <Typography
+                                      component="div"
+                                      color="textSecondary"
+                                    >
+                                      {t('Goal')}
+                                    </Typography>
+                                    <Typography
+                                      variant="h6"
+                                      aria-describedby={ariaId}
+                                    >
+                                      {currencyFormat(
+                                        monthlyGoal,
+                                        currency,
+                                        locale,
+                                      )}
+                                      {hasMachineCalculatedGoal && (
+                                        <Typography
+                                          component="span"
+                                          color="statusWarning.main"
+                                          ml={0.25}
+                                          aria-hidden
+                                        >
+                                          *
+                                        </Typography>
+                                      )}
+                                    </Typography>
+                                  </Grid>
+                                </Tooltip>
                               )}
                               <Grid xs={monthlyGoal ? 4 : 6} item>
                                 <Typography
@@ -149,6 +203,17 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 </Typography>
                               </Grid>
                             </Grid>
+                            {!hasPreferencesGoal &&
+                              typeof monthlyGoal === 'number' && (
+                                <Typography
+                                  aria-describedby={ariaId}
+                                  component="div"
+                                  color="statusWarning.main"
+                                >
+                                  <span aria-hidden>*</span>
+                                  {t('machine-calculated')}
+                                </Typography>
+                              )}
                           </CardContent>
                         </CardActionArea>
                       </Link>

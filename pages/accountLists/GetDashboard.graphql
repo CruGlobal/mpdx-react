@@ -1,5 +1,6 @@
-query GetDashboard($accountListId: ID!) {
+query GetDashboard($accountListId: ID!, $periodBegin: ISO8601Date!) {
   user {
+    id
     firstName
   }
   accountList(id: $accountListId) {
@@ -21,11 +22,19 @@ query GetDashboard($accountListId: ID!) {
     averageIgnoreCurrent
     periods {
       startDate
+      endDate
       convertedTotal
       totals {
         currency
         convertedAmount
       }
     }
+  }
+  healthIndicatorData(accountListId: $accountListId, beginDate: $periodBegin) {
+    id
+    indicationPeriodBegin
+    machineCalculatedGoal
+    machineCalculatedGoalCurrency
+    staffEnteredGoal
   }
 }
