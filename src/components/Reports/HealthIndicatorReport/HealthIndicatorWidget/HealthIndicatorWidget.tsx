@@ -34,7 +34,7 @@ interface HealthIndicatorWidgetProps {
   accountListId: string;
   onDashboard: boolean;
   loading: boolean;
-  data: HealthIndicatorQuery['healthIndicatorData'][0];
+  data: HealthIndicatorQuery['accountList']['healthIndicatorData'];
 }
 
 export const HealthIndicatorWidget: React.FC<HealthIndicatorWidgetProps> = ({

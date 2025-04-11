@@ -1,6 +1,7 @@
 import React, { ReactElement, useMemo } from 'react';
 import { Box, Button, TextField, Tooltip } from '@mui/material';
 import { Formik } from 'formik';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -9,7 +10,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import { useMachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
@@ -38,6 +39,7 @@ const formatMonthlyGoal = (
 interface MonthlyGoalAccordionProps
   extends AccordionProps<PreferenceAccordion> {
   monthlyGoal: number | null;
+  monthlyGoalUpdatedAt: string | null;
   accountListId: string;
   currency: string | null;
   disabled?: boolean;
@@ -48,6 +50,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   handleAccordionChange,
   expandedAccordion,
   monthlyGoal: initialMonthlyGoal,
+  monthlyGoalUpdatedAt,
   accountListId,
   currency,
   disabled,
@@ -78,10 +81,18 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     [calculatedGoal, calculatedCurrency, locale],
   );
 
-  const formattedMonthlyGoal = useMemo(
-    () => formatMonthlyGoal(initialMonthlyGoal, currency, locale),
-    [initialMonthlyGoal, currency, locale],
-  );
+  const formattedMonthlyGoal = useMemo(() => {
+    const goal = formatMonthlyGoal(initialMonthlyGoal, currency, locale);
+    if (!goal || !monthlyGoalUpdatedAt) {
+      return goal;
+    }
+
+    const date = DateTime.fromISO(monthlyGoalUpdatedAt);
+    return t('{{goal}} (last updated {{updated}})', {
+      goal,
+      updated: dateFormat(date, locale),
+    });
+  }, [initialMonthlyGoal, monthlyGoalUpdatedAt, currency, locale]);
 
   const onSubmit = async (
     attributes: Pick<AccountListSettingsInput, 'monthlyGoal'>,
