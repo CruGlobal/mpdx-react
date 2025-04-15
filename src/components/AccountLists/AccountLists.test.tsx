@@ -53,6 +53,7 @@ describe('AccountLists', () => {
             {
               name: 'Account',
               monthlyGoal: 1000,
+              monthlyGoalUpdatedAt: '2024-01-01T00:00:00Z',
               receivedPledges: 600,
               totalPledges: 800,
               healthIndicatorData: {
@@ -72,7 +73,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$1,000Gifts Started60%Committed80%',
+      'AccountGoal$1,000*Gifts Started60%Committed80%*Below machine-calculated goal',
     );
   });
 
@@ -166,7 +167,104 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal€2,000*Gifts Started-Committed-*machine-calculated',
+      'AccountGifts Started-Committed-',
     );
+  });
+
+  describe('updated date', () => {
+    it('is the date the goal was last updated', () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [{ monthlyGoalUpdatedAt: '2019-12-30T00:00:00Z' }],
+          },
+        },
+      });
+
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(getByText('Last updated Dec 30, 2019')).toBeInTheDocument();
+    });
+
+    it('is hidden if the goal is missing', () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [
+              {
+                monthlyGoal: null,
+                monthlyGoalUpdatedAt: '2019-12-30T00:00:00Z',
+              },
+            ],
+          },
+        },
+      });
+
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(queryByText('Last updated Dec 30, 2019')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('below machine-calculated warning', () => {
+    it('is shown if goal is less than the machine-calculated goal', () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [
+              {
+                currency: 'USD',
+                monthlyGoal: 5000,
+                healthIndicatorData: {
+                  machineCalculatedGoal: 10000,
+                  machineCalculatedGoalCurrency: 'USD',
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(getByText('Below machine-calculated goal')).toBeInTheDocument();
+    });
+
+    it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
+      const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
+        mocks: {
+          accountLists: {
+            nodes: [
+              {
+                currency: 'USD',
+                monthlyGoal: 5000,
+                healthIndicatorData: {
+                  machineCalculatedGoal: 5000,
+                  machineCalculatedGoalCurrency: 'USD',
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <AccountLists data={data} />
+        </ThemeProvider>,
+      );
+      expect(
+        queryByText('Below machine-calculated goal'),
+      ).not.toBeInTheDocument();
+    });
   });
 });

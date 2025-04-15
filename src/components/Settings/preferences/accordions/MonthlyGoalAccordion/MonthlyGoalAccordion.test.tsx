@@ -35,13 +35,15 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
+  monthlyGoalUpdatedAt?: string | null;
   machineCalculatedGoal?: number;
-  machineCalculatedGoalCurrency?: string;
+  machineCalculatedGoalCurrency?: string | null;
   expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
+  monthlyGoalUpdatedAt = null,
   machineCalculatedGoal,
   machineCalculatedGoalCurrency = 'USD',
   expandedAccordion,
@@ -65,6 +67,7 @@ const Components: React.FC<ComponentsProps> = ({
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
             monthlyGoal={monthlyGoal}
+            monthlyGoalUpdatedAt={monthlyGoalUpdatedAt}
             currency={'USD'}
             accountListId={accountListId}
             handleSetupChange={handleSetupChange}
@@ -82,27 +85,128 @@ describe('MonthlyGoalAccordion', () => {
     mutationSpy.mockClear();
   });
 
-  it('should render accordion closed', () => {
-    const { getByText, queryByRole } = render(
-      <Components monthlyGoal={100} expandedAccordion={null} />,
-    );
+  describe('closed', () => {
+    it('renders label and hides the textbox', () => {
+      const { getByText, queryByRole } = render(
+        <Components monthlyGoal={100} expandedAccordion={null} />,
+      );
 
-    expect(getByText(label)).toBeInTheDocument();
-    expect(queryByRole('textbox')).not.toBeInTheDocument();
-  });
+      expect(getByText(label)).toBeInTheDocument();
+      expect(queryByRole('textbox')).not.toBeInTheDocument();
+    });
 
-  it('should render accordion closed with calculated goal', async () => {
-    const { findByText, queryByRole } = render(
-      <Components
-        monthlyGoal={null}
-        machineCalculatedGoal={1000}
-        machineCalculatedGoalCurrency="EUR"
-        expandedAccordion={null}
-      />,
-    );
+    it('renders goal without updated date', () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          monthlyGoalUpdatedAt={null}
+          expandedAccordion={null}
+        />,
+      );
 
-    expect(await findByText('€1,000 (estimated)')).toBeInTheDocument();
-    expect(queryByRole('textbox')).not.toBeInTheDocument();
+      expect(getByTestId('AccordionSummaryValue')).toHaveTextContent('$100');
+    });
+
+    it('renders goal and updated date', () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          monthlyGoalUpdatedAt="2024-01-01T00:00:00"
+          expandedAccordion={null}
+        />,
+      );
+
+      expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+        '$100 (last updated Jan 1, 2024)',
+      );
+    });
+
+    it('renders too low warning', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          machineCalculatedGoal={1000}
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+          '$100 (below machine-calculated support goal)',
+        ),
+      );
+    });
+
+    it('hides too low warning when currencies do not match', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          machineCalculatedGoal={1000}
+          machineCalculatedGoalCurrency="EUR"
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).not.toHaveTextContent(
+          /below machine-calculated support goal/,
+        ),
+      );
+    });
+
+    it('renders calculated goal', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          machineCalculatedGoalCurrency="EUR"
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+          '€1,000 (estimated)',
+        ),
+      );
+    });
+
+    it('renders calculated goal without currency', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          machineCalculatedGoalCurrency={null}
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+          '1,000 (estimated)',
+        ),
+      );
+    });
+
+    it('renders only goal when calculated goal is missing', async () => {
+      const { getByTestId } = render(
+        <Components monthlyGoal={100} expandedAccordion={null} />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent('$100'),
+      );
+    });
+
+    it('renders nothing when goal and calculated goal are missing', async () => {
+      const { queryByTestId } = render(
+        <Components monthlyGoal={null} expandedAccordion={null} />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('AccordionSummaryValue')).not.toBeInTheDocument(),
+      );
+    });
   });
 
   it('should render accordion open and textfield should have a value', () => {

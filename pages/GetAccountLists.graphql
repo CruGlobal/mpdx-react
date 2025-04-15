@@ -8,6 +8,7 @@ query GetAccountLists {
       id
       name
       monthlyGoal
+      monthlyGoalUpdatedAt
       receivedPledges
       totalPledges
       currency
