@@ -210,7 +210,9 @@ describe('Appeal navigation', () => {
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
 
     await waitFor(() => {
-      expect(getByRole('heading', { name: 'Filter' })).toBeInTheDocument();
+      expect(
+        getByRole('complementary', { name: 'Filter' }),
+      ).toBeInTheDocument();
       expect(
         getByRole('heading', { name: 'See More Filters' }),
       ).toBeInTheDocument();

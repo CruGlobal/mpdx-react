@@ -11,10 +11,10 @@ interface ToolbarMixin extends CSSProperties {
   };
 }
 
-type FullHeightBoxProps = {
+interface FullHeightBoxProps {
   isScrollable?: boolean;
   headerHeight: number | string;
-};
+}
 
 const FullHeightBox = styled(Box, {
   shouldForwardProp: (prop) =>
@@ -118,7 +118,28 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
 
   return (
     <OuterWrapper>
+      <ExpandingContent open={rightOpen}>
+        <CollapsibleWrapper justifyContent="flex-end">
+          <LeftPanelWrapper
+            component="aside"
+            aria-labelledby="left-panel-header"
+            width={leftWidth}
+            flexBasis={leftWidth}
+            headerHeight="0px"
+            isScrollable={isScrollBox}
+            style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
+            data-testid="SidePanelsLayoutLeftPanel"
+          >
+            {leftOpen && leftPanel}
+          </LeftPanelWrapper>
+          <ExpandingContent component="main" open={leftOpen}>
+            {mainContent}
+          </ExpandingContent>
+        </CollapsibleWrapper>
+      </ExpandingContent>
       <RightPanelWrapper
+        component="aside"
+        aria-labelledby="right-panel-header"
         data-testid="RightPanelWrapper"
         width={isMobile ? '100%' : rightWidth}
         headerHeight={headerHeight}
@@ -130,21 +151,6 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
       >
         {rightOpen && rightPanel}
       </RightPanelWrapper>
-      <ExpandingContent open={rightOpen}>
-        <CollapsibleWrapper justifyContent="flex-end">
-          <LeftPanelWrapper
-            width={leftWidth}
-            flexBasis={leftWidth}
-            headerHeight="0px"
-            isScrollable={isScrollBox}
-            style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}
-            data-testid="SidePanelsLayoutLeftPanel"
-          >
-            {leftOpen && leftPanel}
-          </LeftPanelWrapper>
-          <ExpandingContent open={leftOpen}>{mainContent}</ExpandingContent>
-        </CollapsibleWrapper>
-      </ExpandingContent>
     </OuterWrapper>
   );
 };
