@@ -104,7 +104,7 @@ interface AccordionItemProps<AccordionEnum> {
   onAccordionChange: (accordion: AccordionEnum | null) => void;
   expandedAccordion: AccordionEnum | null;
   label: string;
-  value: string;
+  value: React.ReactNode;
   children?: React.ReactNode;
   fullWidth?: boolean;
   image?: React.ReactNode;

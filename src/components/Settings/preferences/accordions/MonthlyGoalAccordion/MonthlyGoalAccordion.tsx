@@ -1,7 +1,7 @@
 import React, { ReactElement, useMemo } from 'react';
-import { Box, Button, TextField, Tooltip } from '@mui/material';
+import WarningIcon from '@mui/icons-material/Warning';
+import { Box, Button, TextField, Tooltip, Typography } from '@mui/material';
 import { Formik } from 'formik';
-import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -10,7 +10,8 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { GoalSource, getHealthIndicatorInfo } from 'src/lib/healthIndicator';
+import { currencyFormat, dateFormat, numberFormat } from 'src/lib/intlFormat';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 import { useMachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
@@ -25,15 +26,15 @@ const formatMonthlyGoal = (
   goal: number | null,
   currency: string | null,
   locale: string,
-): string => {
+): string | null => {
   if (goal === null) {
-    return '';
+    return null;
   }
 
   if (currency) {
     return currencyFormat(goal, currency, locale);
   }
-  return goal.toString();
+  return numberFormat(goal, locale);
 };
 
 interface MonthlyGoalAccordionProps
@@ -67,32 +68,57 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
       accountListId,
     },
   });
+
+  const accountList = currency
+    ? { currency, monthlyGoal: initialMonthlyGoal, monthlyGoalUpdatedAt }
+    : null;
+  const healthIndicatorData = data?.healthIndicatorData.at(-1);
   const {
-    machineCalculatedGoal: calculatedGoal,
-    machineCalculatedGoalCurrency: calculatedCurrency,
-  } = data?.healthIndicatorData.at(-1) ?? {};
+    goalSource,
+    machineCalculatedGoalCurrency,
+    unsafeMachineCalculatedGoal,
+    preferencesGoalLow,
+    preferencesGoalUpdatedAt,
+  } = getHealthIndicatorInfo(accountList, healthIndicatorData);
+
   const formattedCalculatedGoal = useMemo(
     () =>
       formatMonthlyGoal(
-        calculatedGoal ?? null,
-        calculatedCurrency ?? null,
+        unsafeMachineCalculatedGoal,
+        machineCalculatedGoalCurrency,
         locale,
       ),
-    [calculatedGoal, calculatedCurrency, locale],
+    [unsafeMachineCalculatedGoal, machineCalculatedGoalCurrency, locale],
   );
 
-  const formattedMonthlyGoal = useMemo(() => {
+  const accordionValue = useMemo(() => {
     const goal = formatMonthlyGoal(initialMonthlyGoal, currency, locale);
-    if (!goal || !monthlyGoalUpdatedAt) {
-      return goal;
-    }
 
-    const date = DateTime.fromISO(monthlyGoalUpdatedAt);
-    return t('{{goal}} (last updated {{updated}})', {
-      goal,
-      updated: dateFormat(date, locale),
-    });
-  }, [initialMonthlyGoal, monthlyGoalUpdatedAt, currency, locale]);
+    if (goalSource === GoalSource.Preferences) {
+      if (preferencesGoalLow) {
+        return (
+          <Typography component="span" color="statusWarning.main">
+            {t('{{goal}} (below machine-calculated support goal)', { goal })}
+          </Typography>
+        );
+      } else if (preferencesGoalUpdatedAt) {
+        return t('{{goal}} (last updated {{updated}})', {
+          goal,
+          updated: dateFormat(preferencesGoalUpdatedAt, locale),
+        });
+      } else {
+        return goal;
+      }
+    } else if (formattedCalculatedGoal !== null) {
+      return t('{{goal}} (estimated)', { goal: formattedCalculatedGoal });
+    }
+  }, [
+    initialMonthlyGoal,
+    formattedCalculatedGoal,
+    preferencesGoalUpdatedAt,
+    currency,
+    locale,
+  ]);
 
   const onSubmit = async (
     attributes: Pick<AccountListSettingsInput, 'monthlyGoal'>,
@@ -123,13 +149,13 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
   };
 
   const getInstructions = () => {
-    if (typeof calculatedGoal !== 'number') {
+    if (unsafeMachineCalculatedGoal === null) {
       return t(
         'This amount should be set to the amount your organization has determined is your target monthly goal. If you do not know, make your best guess for now. You can change it at any time.',
       );
     }
 
-    if (initialMonthlyGoal) {
+    if (goalSource === GoalSource.MachineCalculated) {
       return t(
         'Based on the past year, NetSuite estimates that you need at least {{goal}} of monthly support. You can choose your own target monthly goal or leave it blank to use the estimate.',
         { goal: formattedCalculatedGoal },
@@ -142,15 +168,39 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     }
   };
 
+  const getWarning = (currentGoal: number | null) => {
+    if (
+      currentGoal &&
+      accountList &&
+      getHealthIndicatorInfo(
+        { ...accountList, monthlyGoal: currentGoal },
+        healthIndicatorData,
+      ).preferencesGoalLow
+    ) {
+      return (
+        <Typography
+          component="span"
+          color="statusWarning.main"
+          display="flex"
+          my={1}
+          gap={0.5}
+        >
+          <WarningIcon />
+          {t(
+            'Your current monthly goal is less than the amount NetSuite estimates that you need. Please review your goal and adjust it if needed.',
+          )}
+        </Typography>
+      );
+    }
+  };
+
   return (
     <AccordionItem
       accordion={PreferenceAccordion.MonthlyGoal}
       onAccordionChange={handleAccordionChange}
       expandedAccordion={expandedAccordion}
       label={label}
-      value={
-        formattedMonthlyGoal || `${formattedCalculatedGoal} (${t('estimated')})`
-      }
+      value={accordionValue}
       fullWidth
       disabled={disabled}
     >
@@ -172,7 +222,14 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
           handleChange,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <FieldWrapper helperText={getInstructions()}>
+            <FieldWrapper
+              helperText={
+                <>
+                  {getInstructions()}
+                  {getWarning(monthlyGoal)}
+                </>
+              }
+            >
               <TextField
                 value={monthlyGoal}
                 onChange={handleChange}
@@ -199,26 +256,27 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
               >
                 {t('Save')}
               </Button>
-              {calculatedGoal && initialMonthlyGoal !== null && (
-                <Tooltip
-                  title={t(
-                    'Reset to NetSuite estimated goal of {{calculatedGoal}}',
-                    {
-                      calculatedGoal: formattedCalculatedGoal,
-                    },
-                  )}
-                >
-                  <Button
-                    variant="outlined"
-                    type="button"
-                    onClick={() => {
-                      onSubmit({ monthlyGoal: null });
-                    }}
+              {unsafeMachineCalculatedGoal !== null &&
+                goalSource === GoalSource.Preferences && (
+                  <Tooltip
+                    title={t(
+                      'Reset to NetSuite estimated goal of {{calculatedGoal}}',
+                      {
+                        calculatedGoal: formattedCalculatedGoal,
+                      },
+                    )}
                   >
-                    {t('Reset to Calculated Goal')}
-                  </Button>
-                </Tooltip>
-              )}
+                    <Button
+                      variant="outlined"
+                      type="button"
+                      onClick={() => {
+                        onSubmit({ monthlyGoal: null });
+                      }}
+                    >
+                      {t('Reset to Calculated Goal')}
+                    </Button>
+                  </Tooltip>
+                )}
             </Box>
           </form>
         )}
