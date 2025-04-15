@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { getHealthIndicatorInfo } from 'src/lib/healthIndicator';
+import { monthYearFormat } from 'src/lib/intlFormat';
 import { DonationHistoriesData } from './DonationHistories';
 
 export interface CalculateGraphDataOptions {
@@ -35,16 +36,20 @@ export const calculateGraphData = ({
 }: CalculateGraphDataOptions): CalculateGraphDataResult => {
   const pledged = data?.accountList?.totalPledges;
   const { healthIndicatorData, reportsDonationHistories } = data ?? {};
-  const currentMonth = DateTime.now().startOf('month').toISODate();
+  const currentMonth = DateTime.now();
 
   const currencies: CurrencyBar[] = [];
   const periods = reportsDonationHistories?.periods?.map((period) => {
-    // Look up the health indicator period that most closely matches the current period, without
+    const startDate = DateTime.fromISO(period.startDate);
+
+    // Look up the latest health indicator period in or before the current report period, without
     // going over. This handles potentially missing periods because health indicator data is not
-    // guaranteed to be available for every month. Because health indicator periods are sorted
-    // in ascending order, if e.g. March has no health indicator data, February will be used instead.
+    // guaranteed to be available for every day. Because health indicator periods are sorted
+    // in ascending order, if e.g. March has no health indicator data, February will be used
+    // instead. If there are multiple health indicator periods in a report period, the latest one
+    // will be selected.
     const hiPeriod = healthIndicatorData?.findLast(
-      (item) => item.indicationPeriodBegin <= period.startDate,
+      (item) => item.indicationPeriodBegin <= period.endDate,
     );
 
     const { machineCalculatedGoal, preferencesGoal } = getHealthIndicatorInfo(
@@ -54,7 +59,7 @@ export const calculateGraphData = ({
 
     const periodGoal =
       // In the current month, give the goal from preferences the highest precedence
-      (period.startDate === currentMonth ? preferencesGoal : null) ??
+      (startDate.hasSame(currentMonth, 'month') ? preferencesGoal : null) ??
       // Fall back to the staff-entered goal if the preferences goal is unavailable or it is not the current month
       hiPeriod?.staffEnteredGoal ??
       // Finally, fall back to the machine-calculated goal as a last resort
@@ -62,12 +67,10 @@ export const calculateGraphData = ({
 
     const periodData: Period = {
       currencies: {},
-      startDate: DateTime.fromISO(period.startDate)
-        .toJSDate()
-        .toLocaleDateString(locale, { month: 'short', year: '2-digit' }),
+      startDate: monthYearFormat(startDate, locale, false),
       total: period.convertedTotal,
       goal: periodGoal ?? null,
-      period: DateTime.fromISO(period.startDate),
+      period: startDate,
     };
     period.totals.forEach((total) => {
       if (!currencies.find((currency) => total.currency === currency.name)) {

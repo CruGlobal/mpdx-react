@@ -23,6 +23,7 @@ query GetDashboard($accountListId: ID!, $periodBegin: ISO8601Date!) {
     averageIgnoreCurrent
     periods {
       startDate
+      endDate
       convertedTotal
       totals {
         currency

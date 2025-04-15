@@ -48,7 +48,8 @@ const data: GetDashboardQuery = {
     periods: [
       {
         convertedTotal: 200,
-        startDate: '2011-12-1',
+        startDate: '2011-12-01',
+        endDate: '2011-12-31',
         totals: [
           {
             currency: 'USD',
@@ -58,7 +59,8 @@ const data: GetDashboardQuery = {
       },
       {
         convertedTotal: 400,
-        startDate: '2012-1-1',
+        startDate: '2012-01-01',
+        endDate: '2012-01-31',
         totals: [
           {
             currency: 'USD',
@@ -68,7 +70,8 @@ const data: GetDashboardQuery = {
       },
       {
         convertedTotal: 900,
-        startDate: '2012-2-1',
+        startDate: '2012-02-01',
+        endDate: '2012-02-29',
         totals: [
           {
             currency: 'USD',
@@ -90,7 +93,8 @@ const data: GetDashboardQuery = {
       },
       {
         convertedTotal: 1100,
-        startDate: '2012-3-1',
+        startDate: '2012-03-01',
+        endDate: '2012-03-31',
         totals: [
           {
             currency: 'USD',

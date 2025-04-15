@@ -4,10 +4,26 @@ const defaultTheme = createTheme();
 
 // https://www.cru.org/brand/color/
 const cruColors = {
-  yellow: '#FFCF07',
-  grayDark: '#383F43',
-  grayMedium: '#9C9FA1',
-  grayLight: '#EBECEC',
+  lemon: '#FFE378',
+  yellow: '#FFD000',
+  orange: '#F08020',
+  vermilion: '#D34400',
+  rose: '#FFB4C8',
+  pink: '#EA657F',
+  cerise: '#C23C49',
+  ruby: '#991313',
+  sky: '#89EFF7',
+  cyan: '#00C0D8',
+  turquoise: '#007890',
+  navy: '#1F1F47',
+  mint: '#88E4B6',
+  green: '#24C976',
+  moss: '#476052',
+  oliveDrab: '#2E3A33',
+  white: '#FFFFFF',
+  gray: '#F0EFEE',
+  graphite: '#565652',
+  black: '#000000',
 };
 
 const mpdxColors = {
@@ -16,6 +32,9 @@ const mpdxColors = {
   blueLight: '#E7F2F7',
   yellow: '#FFF5CD',
   gray: '#DCDCDC',
+  grayDark: '#383F43',
+  grayMedium: '#9C9FA1',
+  grayLight: '#EBECEC',
 };
 
 const progressBarColors = {
@@ -25,63 +44,83 @@ const progressBarColors = {
 };
 
 const statusColors = {
-  // Green from the Cru brand colors
-  success: '#24C976',
-  // Vermillion from the Cru brand colors
-  warning: '#D34400',
-  // Ruby from the Cru brand colors
-  danger: '#991313',
-};
-
-const graphColors = {
-  blue1: '#007398',
-  blue2: '#1FC0D2',
-  blue3: '#30F2F2',
-  teal: '#17AEBF',
+  success: cruColors.green,
+  warning: cruColors.vermilion,
+  danger: cruColors.ruby,
 };
 
 // https://material-ui.com/customization/palette/#adding-new-colors
 declare module '@mui/material/styles/createPalette' {
   interface Palette {
-    cruYellow: Palette['primary'];
-    cruGrayDark: Palette['primary'];
-    cruGrayMedium: Palette['primary'];
-    cruGrayLight: Palette['primary'];
-    mpdxGreen: Palette['primary'];
-    mpdxBlue: Palette['primary'];
-    mpdxYellow: Palette['primary'];
-    mpdxGray: Palette['primary'];
-    progressBarYellow: Palette['primary'];
-    progressBarOrange: Palette['primary'];
-    progressBarGray: Palette['primary'];
-    statusSuccess: Palette['primary'];
-    statusWarning: Palette['primary'];
-    statusDanger: Palette['primary'];
-    graphBlue1: Palette['primary'];
-    graphBlue2: Palette['primary'];
-    graphBlue3: Palette['primary'];
-    graphTeal: Palette['primary'];
+    lemon: PaletteColor;
+    yellow: PaletteColor;
+    orange: PaletteColor;
+    vermilion: PaletteColor;
+    rose: PaletteColor;
+    pink: PaletteColor;
+    cerise: PaletteColor;
+    ruby: PaletteColor;
+    sky: PaletteColor;
+    cyan: PaletteColor;
+    turquoise: PaletteColor;
+    navy: PaletteColor;
+    mint: PaletteColor;
+    green: PaletteColor;
+    moss: PaletteColor;
+    oliveDrab: PaletteColor;
+    white: PaletteColor;
+    gray: PaletteColor;
+    graphite: PaletteColor;
+    black: PaletteColor;
+    mpdxGreen: PaletteColor;
+    mpdxBlue: PaletteColor;
+    mpdxYellow: PaletteColor;
+    mpdxGray: PaletteColor;
+    mpdxGrayLight: PaletteColor;
+    mpdxGrayMedium: PaletteColor;
+    mpdxGrayDark: PaletteColor;
+    progressBarYellow: PaletteColor;
+    progressBarOrange: PaletteColor;
+    progressBarGray: PaletteColor;
+    statusSuccess: PaletteColor;
+    statusWarning: PaletteColor;
+    statusDanger: PaletteColor;
   }
 
   interface PaletteOptions {
-    cruYellow: PaletteOptions['primary'];
-    cruGrayDark: PaletteOptions['primary'];
-    cruGrayMedium: PaletteOptions['primary'];
-    cruGrayLight: PaletteOptions['primary'];
-    mpdxGreen: PaletteOptions['primary'];
-    mpdxBlue: PaletteOptions['primary'];
-    mpdxYellow: PaletteOptions['primary'];
-    mpdxGray: PaletteOptions['primary'];
-    progressBarYellow: PaletteOptions['primary'];
-    progressBarOrange: PaletteOptions['primary'];
-    progressBarGray: PaletteOptions['primary'];
-    statusSuccess: PaletteOptions['primary'];
-    statusWarning: PaletteOptions['primary'];
-    statusDanger: PaletteOptions['primary'];
-    graphBlue1: PaletteOptions['primary'];
-    graphBlue2: PaletteOptions['primary'];
-    graphBlue3: PaletteOptions['primary'];
-    graphTeal: PaletteOptions['primary'];
+    lemon: PaletteColorOptions;
+    yellow: PaletteColorOptions;
+    orange: PaletteColorOptions;
+    vermilion: PaletteColorOptions;
+    rose: PaletteColorOptions;
+    pink: PaletteColorOptions;
+    cerise: PaletteColorOptions;
+    ruby: PaletteColorOptions;
+    sky: PaletteColorOptions;
+    cyan: PaletteColorOptions;
+    turquoise: PaletteColorOptions;
+    navy: PaletteColorOptions;
+    mint: PaletteColorOptions;
+    green: PaletteColorOptions;
+    moss: PaletteColorOptions;
+    oliveDrab: PaletteColorOptions;
+    white: PaletteColorOptions;
+    gray: PaletteColorOptions;
+    graphite: PaletteColorOptions;
+    black: PaletteColorOptions;
+    mpdxGreen: PaletteColorOptions;
+    mpdxBlue: PaletteColorOptions;
+    mpdxYellow: PaletteColorOptions;
+    mpdxGray: PaletteColorOptions;
+    mpdxGrayLight: PaletteColorOptions;
+    mpdxGrayMedium: PaletteColorOptions;
+    mpdxGrayDark: PaletteColorOptions;
+    progressBarYellow: PaletteColorOptions;
+    progressBarOrange: PaletteColorOptions;
+    progressBarGray: PaletteColorOptions;
+    statusSuccess: PaletteColorOptions;
+    statusWarning: PaletteColorOptions;
+    statusDanger: PaletteColorOptions;
   }
 }
 
@@ -91,29 +130,38 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      dark: cruColors.grayDark,
+      dark: mpdxColors.grayDark,
       main: mpdxColors.blue,
     },
     secondary: {
       main: cruColors.yellow,
-      dark: cruColors.grayMedium,
+      dark: mpdxColors.grayMedium,
     },
     text: {
-      primary: cruColors.grayDark,
-      secondary: cruColors.grayMedium,
+      primary: mpdxColors.grayDark,
+      secondary: mpdxColors.grayMedium,
     },
-    cruYellow: {
-      main: cruColors.yellow,
-    },
-    cruGrayDark: {
-      main: cruColors.grayDark,
-    },
-    cruGrayMedium: {
-      main: cruColors.grayMedium,
-    },
-    cruGrayLight: {
-      main: cruColors.grayLight,
-    },
+    lemon: { main: cruColors.lemon },
+    yellow: { main: cruColors.yellow },
+    orange: { main: cruColors.orange },
+    vermilion: { main: cruColors.vermilion },
+    rose: { main: cruColors.rose },
+    pink: { main: cruColors.pink },
+    cerise: { main: cruColors.cerise },
+    ruby: { main: cruColors.ruby },
+    sky: { main: cruColors.sky },
+    cyan: { main: cruColors.cyan },
+    turquoise: { main: cruColors.turquoise },
+    navy: { main: cruColors.navy },
+    mint: { main: cruColors.mint },
+    green: { main: cruColors.green },
+    moss: { main: cruColors.moss },
+    oliveDrab: { main: cruColors.oliveDrab },
+    white: { main: cruColors.white },
+    gray: { main: cruColors.gray },
+    graphite: { main: cruColors.graphite },
+    black: { main: cruColors.black },
+
     mpdxGreen: {
       main: mpdxColors.green,
     },
@@ -126,6 +174,15 @@ const theme = createTheme({
     },
     mpdxGray: {
       main: mpdxColors.gray,
+    },
+    mpdxGrayDark: {
+      main: mpdxColors.grayDark,
+    },
+    mpdxGrayMedium: {
+      main: mpdxColors.grayMedium,
+    },
+    mpdxGrayLight: {
+      main: mpdxColors.grayLight,
     },
     progressBarYellow: {
       main: progressBarColors.yellow,
@@ -154,18 +211,6 @@ const theme = createTheme({
     statusDanger: {
       main: statusColors.danger,
     },
-    graphBlue1: {
-      main: graphColors.blue1,
-    },
-    graphBlue2: {
-      main: graphColors.blue2,
-    },
-    graphBlue3: {
-      main: graphColors.blue3,
-    },
-    graphTeal: {
-      main: graphColors.teal,
-    },
   },
   components: {
     MuiCard: {
@@ -187,7 +232,7 @@ const theme = createTheme({
     MuiCardHeader: {
       styleOverrides: {
         root: {
-          borderBottom: '1px solid #EBECEC',
+          borderBottom: `1px solid ${mpdxColors.grayLight}`,
         },
         title: {
           fontSize: '1.2rem',
@@ -207,7 +252,7 @@ const theme = createTheme({
     MuiCardActions: {
       styleOverrides: {
         root: {
-          borderTop: '1px solid #EBECEC',
+          borderTop: `1px solid ${mpdxColors.grayLight}`,
           justifyContent: 'flex-end',
           [defaultTheme.breakpoints.down('xs')]: {
             justifyContent: 'center',
@@ -233,9 +278,9 @@ const theme = createTheme({
     MuiCheckbox: {
       styleOverrides: {
         colorSecondary: {
-          color: cruColors.grayMedium,
+          color: mpdxColors.grayMedium,
           '&.Mui-checked, &.MuiCheckbox-indeterminate': {
-            color: cruColors.grayDark,
+            color: mpdxColors.grayDark,
           },
         },
       },

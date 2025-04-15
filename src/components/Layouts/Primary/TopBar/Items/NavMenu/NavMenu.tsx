@@ -33,7 +33,7 @@ const useStyles = makeStyles()(() => ({
       display: 'none',
     },
     '&[aria-current=page]': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundColor: theme.palette.mpdxGrayMedium.main,
       backgroundBlendMode: 'multiply',
     },
   },
@@ -48,11 +48,11 @@ const useStyles = makeStyles()(() => ({
     transform: 'rotate(180deg)',
   },
   subMenu: {
-    backgroundImage: `linear-gradient(0deg, ${theme.palette.cruGrayDark.main}, ${theme.palette.cruGrayDark.main})`,
+    backgroundImage: `linear-gradient(0deg, ${theme.palette.mpdxGrayDark.main}, ${theme.palette.mpdxGrayDark.main})`,
   },
   menuItemSelected: {
     backgroundBlendMode: 'multiply',
-    backgroundColor: theme.palette.cruGrayMedium.main,
+    backgroundColor: theme.palette.mpdxGrayMedium.main,
   },
   needsAttention: {
     backgroundImage: `linear-gradient(0deg, ${theme.palette.mpdxYellow.main}, ${theme.palette.mpdxYellow.main})`,
@@ -77,7 +77,7 @@ const useStyles = makeStyles()(() => ({
     },
   },
   darkText: {
-    color: theme.palette.cruGrayDark.main,
+    color: theme.palette.mpdxGrayDark.main,
   },
   whiteText: {
     color: 'white',
@@ -85,7 +85,7 @@ const useStyles = makeStyles()(() => ({
   menuItem: {
     paddingInline: '10px',
     '&:focus-visible, &:hover, &[aria-current=page]': {
-      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundColor: theme.palette.mpdxGrayMedium.main,
       backgroundBlendMode: 'multiply',
     },
   },

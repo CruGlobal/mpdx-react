@@ -28,6 +28,7 @@ fragment DonationGraphHistories on DonationHistories {
   averageIgnoreCurrent
   periods {
     startDate
+    endDate
     convertedTotal
     totals {
       currency
