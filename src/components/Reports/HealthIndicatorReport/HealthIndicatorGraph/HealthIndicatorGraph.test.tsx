@@ -60,7 +60,7 @@ describe('HealthIndicatorGraph', () => {
     );
 
     expect(await findByTestId('HealthIndicatorGraphHeader')).toHaveTextContent(
-      'Average 50',
+      'Overall average 50',
     );
   });
 });

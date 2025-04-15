@@ -35,7 +35,7 @@ export const LegendReferenceLine: React.FC<LegendReferenceLineProps> = ({
       />
     </svg>
     <Typography variant="body1" component="span">
-      <strong>{name}</strong> {value}
+      {name} <strong>{value}</strong>
     </Typography>
   </Container>
 );
