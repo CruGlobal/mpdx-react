@@ -1,23 +1,23 @@
+import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import AppealsDetailsPage from 'src/components/Tool/Appeal/AppealDetails/AppealsDetailsPage';
-import { ToolsWrapper } from '../../ToolsWrapper';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { AppealsWrapper } from '../AppealsWrapper';
 
 const Appeals = (): ReactElement => {
   const { t } = useTranslation();
-  const pageUrl = 'appeals';
+  const { appName } = useGetAppSettings();
+  const pageTitle = t('Appeals');
 
   return (
-    <ToolsWrapper
-      pageTitle={t('Appeals')}
-      pageUrl={pageUrl}
-      selectedMenuId="appeals"
-      showToolsHeader={false}
-    >
+    <>
+      <Head>
+        <title>{`${appName} | ${pageTitle}`}</title>
+      </Head>
       <AppealsDetailsPage />
-    </ToolsWrapper>
+    </>
   );
 };
 
