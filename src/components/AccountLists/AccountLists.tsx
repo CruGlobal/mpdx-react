@@ -111,12 +111,12 @@ const AccountLists = ({ data }: Props): ReactElement => {
 
               const annotation: Annotation | null = preferencesGoalLow
                 ? {
-                    label: t('Below machine-calculated goal'),
+                    label: t('Below NetSuite-calculated goal'),
                     color: 'statusWarning.main',
                   }
                 : goalSource === GoalSource.MachineCalculated
                 ? {
-                    label: t('machine-calculated'),
+                    label: t('NetSuite-calculated'),
                     color: 'statusWarning.main',
                   }
                 : preferencesGoalUpdatedAt
@@ -156,7 +156,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                 title={
                                   goalSource === GoalSource.MachineCalculated &&
                                   t(
-                                    'Your current goal of {{goal}} is machine-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
+                                    'Your current goal of {{goal}} is NetSuite-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
                                     {
                                       goal: currencyFormat(
                                         goal,

@@ -73,7 +73,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$1,000*Gifts Started60%Committed80%*Below machine-calculated goal',
+      'AccountGoal$1,000*Gifts Started60%Committed80%*Below NetSuite-calculated goal',
     );
   });
 
@@ -104,7 +104,7 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$2,000*Gifts Started30%Committed40%*machine-calculated',
+      'AccountGoal$2,000*Gifts Started30%Committed40%*NetSuite-calculated',
     );
   });
 
@@ -133,9 +133,9 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(
-      getByLabelText(/^Your current goal of \$2,000 is machine-calculated/),
+      getByLabelText(/^Your current goal of \$2,000 is NetSuite-calculated/),
     ).toBeInTheDocument();
-    expect(getByText('machine-calculated')).toHaveStyle(
+    expect(getByText('NetSuite-calculated')).toHaveStyle(
       'color: rgb(211, 68, 0);',
     );
   });
@@ -236,7 +236,7 @@ describe('AccountLists', () => {
           <AccountLists data={data} />
         </ThemeProvider>,
       );
-      expect(getByText('Below machine-calculated goal')).toBeInTheDocument();
+      expect(getByText('Below NetSuite-calculated goal')).toBeInTheDocument();
     });
 
     it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
@@ -263,7 +263,7 @@ describe('AccountLists', () => {
         </ThemeProvider>,
       );
       expect(
-        queryByText('Below machine-calculated goal'),
+        queryByText('Below NetSuite-calculated goal'),
       ).not.toBeInTheDocument();
     });
   });

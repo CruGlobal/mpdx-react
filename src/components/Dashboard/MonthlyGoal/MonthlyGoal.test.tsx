@@ -317,7 +317,7 @@ describe('MonthlyGoal', () => {
         );
 
         expect(
-          await findByText('Below machine-calculated goal'),
+          await findByText('Below NetSuite-calculated goal'),
         ).toBeInTheDocument();
       });
 
@@ -331,7 +331,7 @@ describe('MonthlyGoal', () => {
 
         await waitFor(() =>
           expect(
-            queryByText('Below machine-calculated goal'),
+            queryByText('Below NetSuite-calculated goal'),
           ).not.toBeInTheDocument(),
         );
       });
