@@ -45,7 +45,7 @@ describe('AccountLists', () => {
     ).toBeInTheDocument();
   });
 
-  it('ignores machine calculated goal when monthly goal is set', () => {
+  it('ignores machine-calculated goal when monthly goal is set', () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -77,7 +77,7 @@ describe('AccountLists', () => {
     );
   });
 
-  it('uses machine calculated goal when goal is not set', () => {
+  it('uses machine-calculated goal when goal is not set', () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -108,7 +108,7 @@ describe('AccountLists', () => {
     );
   });
 
-  it('adds color and label to machine calculated goals', () => {
+  it('adds color and label to machine-calculated goals', () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -140,7 +140,7 @@ describe('AccountLists', () => {
     );
   });
 
-  it("hides percentages when machine calculated goal currency differs from user's currency", () => {
+  it("hides percentages when machine-calculated goal currency differs from user's currency", () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
