@@ -1,9 +1,11 @@
 query HealthIndicatorFormula($accountListId: ID!) {
-  healthIndicatorData(accountListId: $accountListId) {
-    id
-    consistencyHi
-    depthHi
-    ownershipHi
-    successHi
+  accountList(id: $accountListId) {
+    healthIndicatorData {
+      id
+      consistencyHi
+      depthHi
+      ownershipHi
+      successHi
+    }
   }
 }
