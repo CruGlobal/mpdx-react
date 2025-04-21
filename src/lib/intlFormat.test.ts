@@ -39,7 +39,8 @@ describe('intlFormat', () => {
         expect(numberFormat(1000.01, 'fr-FR')).toEqual('1 000,01');
         expect(currencyFormat(1000.1, 'EUR', 'fr-FR')).toEqual('1 000,10 €');
         expect(currencyFormat(25000.1, 'EUR', 'de-DE')).toEqual('25.000,10 €');
-        expect(currencyFormat(6000.5, 'JPY', 'ja-JP')).toEqual('￥6,000.50');
+        // Yen doesn't use fractional digits
+        expect(currencyFormat(6000.5, 'JPY', 'ja-JP')).toEqual('￥6,001');
       });
     });
   });
