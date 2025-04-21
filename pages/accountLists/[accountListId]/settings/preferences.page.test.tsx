@@ -81,10 +81,10 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
               name: 'test',
               activeMpdMonthlyGoal: null,
               activeMpdFinishAt: null,
+              currency: 'USD',
               activeMpdStartAt: null,
               salaryOrganizationId: null,
               settings: {
-                currency: 'USD',
                 homeCountry: 'USA',
                 monthlyGoal: 100,
                 tester: true,

@@ -1,45 +1,58 @@
 import { render } from '@testing-library/react';
-import { HealthIndicatorQuery } from 'src/components/Dashboard/MonthlyGoal/HealthIndicator.generated';
+import { gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  HealthIndicatorDocument,
+  HealthIndicatorQuery,
+  HealthIndicatorQueryVariables,
+} from 'src/components/Dashboard/MonthlyGoal/HealthIndicator.generated';
 import { HealthIndicatorWidget } from './HealthIndicatorWidget';
 
 const accountListId = 'account-list-1';
 const healthIndicatorScore = {
-  id: '1',
   overallHi: 90,
   ownershipHi: 80,
   consistencyHi: 70,
   successHi: 60,
   depthHi: 50,
-  machineCalculatedGoal: 7000,
 };
 
 interface ComponentsProps {
-  healthIndicatorData?: HealthIndicatorQuery['healthIndicatorData'][0];
   loading?: boolean;
   onDashboard?: boolean;
 }
+
 const Components = ({
-  healthIndicatorData = {} as unknown as HealthIndicatorQuery['healthIndicatorData'][0],
   loading = false,
   onDashboard = true,
-}: ComponentsProps) => (
-  <HealthIndicatorWidget
-    accountListId={accountListId}
-    onDashboard={onDashboard}
-    loading={loading}
-    data={healthIndicatorData}
-  />
-);
+}: ComponentsProps) => {
+  const { healthIndicatorData } = gqlMock<
+    HealthIndicatorQuery,
+    HealthIndicatorQueryVariables
+  >(HealthIndicatorDocument, {
+    variables: {
+      accountListId,
+    },
+    mocks: {
+      accountList: {
+        healthIndicatorData: healthIndicatorScore,
+      },
+    },
+  }).accountList;
+
+  return (
+    <HealthIndicatorWidget
+      accountListId={accountListId}
+      onDashboard={onDashboard}
+      loading={loading}
+      data={healthIndicatorData}
+    />
+  );
+};
 
 describe('HealthIndicatorWidget', () => {
   describe('On Dashboard', () => {
     it('should show the view details button', async () => {
-      const { findByRole } = render(
-        <Components
-          healthIndicatorData={healthIndicatorScore}
-          onDashboard={true}
-        />,
-      );
+      const { findByRole } = render(<Components onDashboard={true} />);
 
       expect(
         await findByRole('link', { name: 'View Details' }),
@@ -48,10 +61,7 @@ describe('HealthIndicatorWidget', () => {
 
     it('should not show view details button if not on dashboard', async () => {
       const { findByText, queryByRole } = render(
-        <Components
-          healthIndicatorData={healthIndicatorScore}
-          onDashboard={false}
-        />,
+        <Components onDashboard={false} />,
       );
 
       expect(await findByText('Ownership')).toBeInTheDocument();
@@ -63,9 +73,7 @@ describe('HealthIndicatorWidget', () => {
   });
 
   it('renders the data correctly', async () => {
-    const { findByText, getByText } = render(
-      <Components healthIndicatorData={healthIndicatorScore} />,
-    );
+    const { findByText, getByText } = render(<Components />);
 
     expect(await findByText('Ownership')).toBeInTheDocument();
     expect(getByText('MPD Health Indicator')).toBeInTheDocument();

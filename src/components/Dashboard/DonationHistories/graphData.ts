@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { getHealthIndicatorInfo } from 'src/lib/healthIndicator';
 import { monthYearFormat } from 'src/lib/intlFormat';
 import { DonationHistoriesData } from './DonationHistories';
 
@@ -33,11 +34,7 @@ export const calculateGraphData = ({
   data,
   currencyColors,
 }: CalculateGraphDataOptions): CalculateGraphDataResult => {
-  const {
-    currency,
-    monthlyGoal: goal,
-    totalPledges: pledged,
-  } = data?.accountList ?? {};
+  const pledged = data?.accountList?.totalPledges;
   const { healthIndicatorData, reportsDonationHistories } = data ?? {};
   const currentMonth = DateTime.now();
 
@@ -54,15 +51,15 @@ export const calculateGraphData = ({
     const hiPeriod = healthIndicatorData?.findLast(
       (item) => item.indicationPeriodBegin <= period.endDate,
     );
-    // The machine calculated goal cannot be used if its currency differs from the user's currency
-    const machineCalculatedGoal =
-      currency && currency === hiPeriod?.machineCalculatedGoalCurrency
-        ? hiPeriod.machineCalculatedGoal
-        : null;
+
+    const { machineCalculatedGoal, preferencesGoal } = getHealthIndicatorInfo(
+      data?.accountList,
+      hiPeriod,
+    );
 
     const periodGoal =
       // In the current month, give the goal from preferences the highest precedence
-      (startDate.hasSame(currentMonth, 'month') ? goal : null) ??
+      (startDate.hasSame(currentMonth, 'month') ? preferencesGoal : null) ??
       // Fall back to the staff-entered goal if the preferences goal is unavailable or it is not the current month
       hiPeriod?.staffEnteredGoal ??
       // Finally, fall back to the machine-calculated goal as a last resort
