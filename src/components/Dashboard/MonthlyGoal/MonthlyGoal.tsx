@@ -121,7 +121,7 @@ const MonthlyGoal = ({
       );
     } else if (machineCalculatedGoal) {
       return t(
-        'Your current goal of {{goal}} is machine-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
+        'Your current goal of {{goal}} is NetSuite-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
         { goal: currencyFormat(machineCalculatedGoal, currency, locale) },
       );
     } else {
@@ -142,12 +142,12 @@ const MonthlyGoal = ({
 
   const annotation: Annotation | null = preferencesGoalLow
     ? {
-        label: t('Below machine-calculated goal'),
+        label: t('Below NetSuite-calculated goal'),
         warning: true,
       }
     : goalSource === GoalSource.MachineCalculated
     ? {
-        label: t('Machine-calculated goal'),
+        label: t('NetSuite-calculated goal'),
         warning: true,
       }
     : preferencesGoalUpdatedAt

@@ -45,7 +45,7 @@ describe('AccountLists', () => {
     ).toBeInTheDocument();
   });
 
-  it('ignores machine calculated goal when monthly goal is set', () => {
+  it('ignores machine-calculated goal when monthly goal is set', () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -73,11 +73,11 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$1,000*Gifts Started60%Committed80%*Below machine-calculated goal',
+      'AccountGoal$1,000*Gifts Started60%Committed80%*Below NetSuite-calculated goal',
     );
   });
 
-  it('uses machine calculated goal when goal is not set', () => {
+  it('uses machine-calculated goal when goal is not set', () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -104,11 +104,11 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(getByRole('link')).toHaveTextContent(
-      'AccountGoal$2,000*Gifts Started30%Committed40%*machine-calculated',
+      'AccountGoal$2,000*Gifts Started30%Committed40%*NetSuite-calculated',
     );
   });
 
-  it('adds color and label to machine calculated goals', () => {
+  it('adds color and label to machine-calculated goals', () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -133,14 +133,14 @@ describe('AccountLists', () => {
       </ThemeProvider>,
     );
     expect(
-      getByLabelText(/^Your current goal of \$2,000 is machine-calculated/),
+      getByLabelText(/^Your current goal of \$2,000 is NetSuite-calculated/),
     ).toBeInTheDocument();
-    expect(getByText('machine-calculated')).toHaveStyle(
+    expect(getByText('NetSuite-calculated')).toHaveStyle(
       'color: rgb(211, 68, 0);',
     );
   });
 
-  it("hides percentages when machine calculated goal currency differs from user's currency", () => {
+  it("hides percentages when machine-calculated goal currency differs from user's currency", () => {
     const data = gqlMock<GetAccountListsQuery>(GetAccountListsDocument, {
       mocks: {
         accountLists: {
@@ -236,7 +236,7 @@ describe('AccountLists', () => {
           <AccountLists data={data} />
         </ThemeProvider>,
       );
-      expect(getByText('Below machine-calculated goal')).toBeInTheDocument();
+      expect(getByText('Below NetSuite-calculated goal')).toBeInTheDocument();
     });
 
     it('is hidden if goal is greater than or equal to the machine-calculated goal', async () => {
@@ -263,7 +263,7 @@ describe('AccountLists', () => {
         </ThemeProvider>,
       );
       expect(
-        queryByText('Below machine-calculated goal'),
+        queryByText('Below NetSuite-calculated goal'),
       ).not.toBeInTheDocument();
     });
   });

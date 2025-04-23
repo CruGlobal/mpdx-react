@@ -98,7 +98,7 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
       if (preferencesGoalLow) {
         return (
           <Typography component="span" color="statusWarning.main">
-            {t('{{goal}} (below machine-calculated support goal)', { goal })}
+            {t('{{goal}} (below NetSuite-calculated support goal)', { goal })}
           </Typography>
         );
       } else if (preferencesGoalUpdatedAt) {

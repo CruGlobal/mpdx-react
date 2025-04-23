@@ -134,7 +134,7 @@ describe('MonthlyGoalAccordion', () => {
 
       await waitFor(() =>
         expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
-          '$100 (below machine-calculated support goal)',
+          '$100 (below NetSuite-calculated support goal)',
         ),
       );
     });
@@ -151,7 +151,7 @@ describe('MonthlyGoalAccordion', () => {
 
       await waitFor(() =>
         expect(getByTestId('AccordionSummaryValue')).not.toHaveTextContent(
-          /below machine-calculated support goal/,
+          /below NetSuite-calculated support goal/,
         ),
       );
     });

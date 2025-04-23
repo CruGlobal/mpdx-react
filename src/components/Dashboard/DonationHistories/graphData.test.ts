@@ -81,7 +81,7 @@ describe('calculateGraphData', () => {
       ]);
     });
 
-    it('uses the machine calculated goal when the staff entered goal is missing', () => {
+    it('uses the machine-calculated goal when the staff entered goal is missing', () => {
       const data = gqlMock<
         GetDonationGraphQuery,
         GetDonationGraphQueryVariables
