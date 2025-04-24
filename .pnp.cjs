@@ -78,7 +78,6 @@ const RAW_RUNTIME_STATE =
           ["@types/node", "npm:22.13.14"],\
           ["@types/react", "npm:18.0.21"],\
           ["@types/testing-library__jest-dom", "npm:5.14.5"],\
-          ["@types/uuid", "npm:9.0.1"],\
           ["@typescript-eslint/eslint-plugin", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.5.0"],\
           ["@typescript-eslint/parser", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.17.0"],\
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
@@ -143,7 +142,6 @@ const RAW_RUNTIME_STATE =
           ["tss-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.3"],\
           ["typescript", "patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"],\
           ["url-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.1"],\
-          ["uuid", "npm:9.0.0"],\
           ["webpack", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.96.1"],\
           ["yup", "npm:1.4.0"]\
         ],\
@@ -9202,15 +9200,6 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@types-trusted-types-npm-2.0.2-035cb17c5e-3371eef5f1.zip/node_modules/@types/trusted-types/",\
         "packageDependencies": [\
           ["@types/trusted-types", "npm:2.0.2"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["@types/uuid", [\
-      ["npm:9.0.1", {\
-        "packageLocation": "./.yarn/cache/@types-uuid-npm-9.0.1-b44e45eb8a-c472b8a77c.zip/node_modules/@types/uuid/",\
-        "packageDependencies": [\
-          ["@types/uuid", "npm:9.0.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -19529,7 +19518,6 @@ const RAW_RUNTIME_STATE =
           ["@types/node", "npm:22.13.14"],\
           ["@types/react", "npm:18.0.21"],\
           ["@types/testing-library__jest-dom", "npm:5.14.5"],\
-          ["@types/uuid", "npm:9.0.1"],\
           ["@typescript-eslint/eslint-plugin", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.5.0"],\
           ["@typescript-eslint/parser", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.17.0"],\
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
@@ -19594,7 +19582,6 @@ const RAW_RUNTIME_STATE =
           ["tss-react", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.3"],\
           ["typescript", "patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"],\
           ["url-loader", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.1.1"],\
-          ["uuid", "npm:9.0.0"],\
           ["webpack", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.96.1"],\
           ["yup", "npm:1.4.0"]\
         ],\
