@@ -81,7 +81,7 @@ const RAW_RUNTIME_STATE =
           ["@typescript-eslint/eslint-plugin", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.5.0"],\
           ["@typescript-eslint/parser", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.17.0"],\
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
-          ["clsx", "npm:1.2.1"],\
+          ["clsx", "npm:2.1.1"],\
           ["concurrently", "npm:8.2.2"],\
           ["cross-env", "npm:7.0.3"],\
           ["css-mediaquery", "npm:0.1.2"],\
@@ -12073,6 +12073,13 @@ const RAW_RUNTIME_STATE =
           ["clsx", "npm:2.1.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:2.1.1", {\
+        "packageLocation": "./.yarn/cache/clsx-npm-2.1.1-96125b98be-c4c8eb865f.zip/node_modules/clsx/",\
+        "packageDependencies": [\
+          ["clsx", "npm:2.1.1"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["co", [\
@@ -19521,7 +19528,7 @@ const RAW_RUNTIME_STATE =
           ["@typescript-eslint/eslint-plugin", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.5.0"],\
           ["@typescript-eslint/parser", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.17.0"],\
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
-          ["clsx", "npm:1.2.1"],\
+          ["clsx", "npm:2.1.1"],\
           ["concurrently", "npm:8.2.2"],\
           ["cross-env", "npm:7.0.3"],\
           ["css-mediaquery", "npm:0.1.2"],\
