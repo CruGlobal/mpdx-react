@@ -45,15 +45,14 @@ const uploadPersonAvatar = async (
       return;
     }
 
-    const {
-      fields: { personId },
-      files: { avatar },
-    } = await parseBody(req);
+    const { fields, files } = await parseBody(req);
+    const personId = fields.personId?.[0];
+    const avatar = files.avatar?.[0];
     if (typeof personId !== 'string') {
       res.status(400).send('Missing personId');
       return;
     }
-    if (!avatar || Array.isArray(avatar)) {
+    if (!avatar) {
       res.status(400).send('Missing avatar');
       return;
     }
