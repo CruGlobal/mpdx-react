@@ -213,25 +213,7 @@ export const MassActionsEditTasksModal: React.FC<
                     onChange={(userId) => setFieldValue('userId', userId)}
                   />
                 </Grid>
-                {!noDueDate && (
-                  <DateTimeFieldPair
-                    dateLabel={t('Due Date')}
-                    timeLabel={t('Due Time')}
-                    value={startAt}
-                    onChange={(date) => setFieldValue('startAt', date)}
-                    render={(dateField, timeField) => (
-                      <>
-                        <Grid item xs={12} sm={6}>
-                          {dateField}
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                          {timeField}
-                        </Grid>
-                      </>
-                    )}
-                  />
-                )}
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <FormControlLabel
                     control={<Checkbox checked={noDueDate} color="secondary" />}
                     label={t('No Due Date')}
@@ -239,6 +221,24 @@ export const MassActionsEditTasksModal: React.FC<
                     onChange={handleChange}
                   />
                 </Grid>
+                {!noDueDate && (
+                  <DateTimeFieldPair
+                    dateLabel={t('Due Date')}
+                    timeLabel={t('Due Time')}
+                    value={startAt}
+                    onChange={(date) => setFieldValue('startAt', date)}
+                    render={(dateField, timeField) => (
+                      <Grid sx={{ ml: 0, mt: 0 }} container spacing={2} xs={12}>
+                        <Grid item xs={12} sm={6}>
+                          {dateField}
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          {timeField}
+                        </Grid>
+                      </Grid>
+                    )}
+                  />
+                )}
                 <Grid item xs={12}>
                   <TextField
                     label={t('Add New Comment')}
