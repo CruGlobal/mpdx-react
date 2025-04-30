@@ -1,36 +1,36 @@
 extend type Query {
-  fourteenMonthReport(
+  twelveMonthReport(
     accountListId: ID!
     designationAccountId: [ID!]
-    currencyType: FourteenMonthReportCurrencyType!
-  ): FourteenMonthReport!
+    currencyType: TwelveMonthReportCurrencyType!
+  ): TwelveMonthReport!
 }
 
-enum FourteenMonthReportCurrencyType {
+enum TwelveMonthReportCurrencyType {
   salary
   donor
 }
 
-type FourteenMonthReport {
-  currencyType: FourteenMonthReportCurrencyType
-  currencyGroups: [FourteenMonthReportCurrencyGroup!]!
+type TwelveMonthReport {
+  currencyType: TwelveMonthReportCurrencyType
+  currencyGroups: [TwelveMonthReportCurrencyGroup!]!
   salaryCurrency: String!
 }
 
-type FourteenMonthReportCurrencyGroup {
+type TwelveMonthReportCurrencyGroup {
   currency: String!
-  totals: FourteenMonthReportCurrencyGroupTotals!
-  contacts: [FourteenMonthReportContact!]!
+  totals: TwelveMonthReportCurrencyGroupTotals!
+  contacts: [TwelveMonthReportContact!]!
 }
 
-type FourteenMonthReportCurrencyGroupTotals {
+type TwelveMonthReportCurrencyGroupTotals {
   year: Float!
-  months: [FourteenMonthReportCurrencyGroupTotalsMonth!]!
+  months: [TwelveMonthReportCurrencyGroupTotalsMonth!]!
   average: Float!
   minimum: Float!
 }
 
-type FourteenMonthReportCurrencyGroupTotalsMonth {
+type TwelveMonthReportCurrencyGroupTotalsMonth {
   month: ISO8601Date!
   total: Float!
 }
@@ -52,13 +52,13 @@ enum StatusEnum {
   UNRESPONSIVE
 }
 
-type FourteenMonthReportContact {
+type TwelveMonthReportContact {
   id: ID!
   name: String!
   total: Float!
   average: Float!
   minimum: Float!
-  months: [FourteenMonthReportContactMonths!]!
+  months: [TwelveMonthReportContactMonths!]!
   accountNumbers: [String!]!
   lateBy30Days: Boolean!
   lateBy60Days: Boolean!
@@ -68,14 +68,14 @@ type FourteenMonthReportContact {
   status: StatusEnum
 }
 
-type FourteenMonthReportContactMonths {
+type TwelveMonthReportContactMonths {
   month: ISO8601Date!
   total: Float!
   salaryCurrencyTotal: Float!
-  donations: [FourteenMonthReportContactDonation!]!
+  donations: [TwelveMonthReportContactDonation!]!
 }
 
-type FourteenMonthReportContactDonation {
+type TwelveMonthReportContactDonation {
   amount: Float!
   date: ISO8601Date!
   currency: String!

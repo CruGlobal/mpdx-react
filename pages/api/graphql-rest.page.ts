@@ -107,21 +107,21 @@ import {
 } from './Schema/reports/financialAccounts/datahandler';
 import { financialAccountSummaryHandler } from './Schema/reports/financialAccounts/financialAccounts/datahandler';
 import { financialAccountEntriesHandler } from './Schema/reports/financialAccounts/financialEntries/datahandler';
-import {
-  FourteenMonthReportResponse,
-  mapFourteenMonthReport,
-} from './Schema/reports/fourteenMonth/datahandler';
 import { mapPartnerGivingAnalysisResponse } from './Schema/reports/partnerGivingAnalysis/datahandler';
 import { getReportsPledgeHistories } from './Schema/reports/pledgeHistories/dataHandler';
+import {
+  TwelveMonthReportResponse,
+  mapTwelveMonthReport,
+} from './Schema/reports/twelveMonth/datahandler';
 import {
   CoachingAnswerSet,
   ContactFilterNewsletterEnum,
   ContactFilterNotesInput,
   ContactFilterStatusEnum,
   DateRangeInput,
-  FourteenMonthReportCurrencyType,
   NumericRangeInput,
   ReportContactFilterSetInput,
+  TwelveMonthReportCurrencyType,
 } from './graphql-rest.page.generated';
 import type { FetcherResponse } from '@apollo/utils.fetcher';
 
@@ -476,16 +476,16 @@ class MpdxRestApi extends RESTDataSource {
     };
   }
 
-  async getFourteenMonthReport(
+  async getTwelveMonthReport(
     accountListId: string,
     designationAccountId: string[] | null | undefined,
-    currencyType: FourteenMonthReportCurrencyType,
+    currencyType: TwelveMonthReportCurrencyType,
   ) {
     const designationAccountFilter =
       designationAccountId && designationAccountId.length > 0
         ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
-    const { data }: { data: FourteenMonthReportResponse } = await this.get(
+    const { data }: { data: TwelveMonthReportResponse } = await this.get(
       `reports/${
         currencyType === 'salary'
           ? 'salary_currency_donations'
@@ -494,7 +494,7 @@ class MpdxRestApi extends RESTDataSource {
         .minus({ months: 13 })
         .toISODate()}...${DateTime.now().toISODate()}`,
     );
-    return mapFourteenMonthReport(data, currencyType);
+    return mapTwelveMonthReport(data, currencyType);
   }
 
   async getExpectedMonthlyTotalReport(

@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
-import { FourteenMonthReportTableHead } from './TableHead';
+import { TwelveMonthReportTableHead } from './TableHead';
 
 const onRequestSort = jest.fn();
 
@@ -27,11 +27,11 @@ const totals = [
 
 const noTotals = [];
 
-describe('FourteenMonthReportTableHead', () => {
+describe('TwelveMonthReportTableHead', () => {
   it('default', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportTableHead
+        <TwelveMonthReportTableHead
           isExpanded={true}
           totals={totals}
           salaryCurrency={salaryCurrency}
@@ -48,7 +48,7 @@ describe('FourteenMonthReportTableHead', () => {
   it('sort event', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportTableHead
+        <TwelveMonthReportTableHead
           isExpanded={true}
           totals={totals}
           salaryCurrency={salaryCurrency}
@@ -65,7 +65,7 @@ describe('FourteenMonthReportTableHead', () => {
   it('Confirm months headers are not showing with no data', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportTableHead
+        <TwelveMonthReportTableHead
           isExpanded={true}
           totals={noTotals}
           salaryCurrency={salaryCurrency}

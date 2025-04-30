@@ -19,15 +19,15 @@ import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
-import { MonthTotal } from '../../FourteenMonthReport';
+import { MonthTotal } from '../../TwelveMonthReport';
 import { StyledTableCell } from './StyledComponents';
 import {
-  FourteenMonthReportTableHead as TableHead,
-  FourteenMonthReportTableHeadProps as TableHeadProps,
+  TwelveMonthReportTableHead as TableHead,
+  TwelveMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
 import type { Contact } from './TableHead/TableHead';
 
-export interface FourteenMonthReportTableProps extends TableHeadProps {
+export interface TwelveMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[];
   totals: MonthTotal[];
@@ -80,9 +80,7 @@ const StyledTotalsRow = styled(TableRow)({
   },
 });
 
-export const FourteenMonthReportTable: React.FC<
-  FourteenMonthReportTableProps
-> = ({
+export const TwelveMonthReportTable: React.FC<TwelveMonthReportTableProps> = ({
   isExpanded,
   order,
   orderBy,
@@ -119,11 +117,11 @@ export const FourteenMonthReportTable: React.FC<
   );
 
   return (
-    <PrintableContainer className="fourteen-month-report">
+    <PrintableContainer className="twelve-month-report">
       <Table
         stickyHeader={true}
-        aria-label={t('Fourteen month report table')}
-        data-testid="FourteenMonthReport"
+        aria-label={t('Twelve month report table')}
+        data-testid="TwelveMonthReport"
       >
         <TableHead
           isExpanded={isExpanded}
@@ -140,7 +138,7 @@ export const FourteenMonthReportTable: React.FC<
               <TableRow
                 key={contact.id}
                 hover
-                data-testid="FourteenMonthReportTableRow"
+                data-testid="TwelveMonthReportTableRow"
               >
                 <StyledTableCell>
                   <Box display="flex" flexDirection="column">
