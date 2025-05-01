@@ -92,14 +92,6 @@ export const twelveMonthReportMock = {
                     },
                   ],
                 },
-                {
-                  total: 0,
-                  donations: [],
-                },
-                {
-                  total: 0,
-                  donations: [],
-                },
               ],
             },
           ],
@@ -132,8 +124,6 @@ export const twelveMonthReportMock = {
         '2024-02-01',
         '2024-01-01',
         '2023-12-01',
-        '2023-11-01',
-        '2023-10-01',
       ],
       salary_currency: 'USD',
       updated_at: null,
