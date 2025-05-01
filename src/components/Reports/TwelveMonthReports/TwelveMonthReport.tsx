@@ -78,7 +78,7 @@ export const TwelveMonthReport: React.FC<Props> = ({
             ? 'salary_currency_donations'
             : 'donor_currency_donations'
         }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
-          .minus({ months: 13 })
+          .minus({ months: 11 })
           .toISODate()}...${DateTime.now().toISODate()}`;
 
         const response = await fetch(
