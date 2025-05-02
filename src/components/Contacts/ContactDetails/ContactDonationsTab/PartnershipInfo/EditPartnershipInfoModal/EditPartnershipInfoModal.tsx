@@ -352,7 +352,12 @@ export const EditPartnershipInfoModal: React.FC<
                           )
                         }
                       >
-                        {Object.values(SendNewsletterEnum).map((value) => (
+                        {[
+                          SendNewsletterEnum.None,
+                          SendNewsletterEnum.Email,
+                          SendNewsletterEnum.Physical,
+                          SendNewsletterEnum.Both,
+                        ].map((value) => (
                           <MenuItem key={value} value={value}>
                             {getLocalizedSendNewsletter(t, value)}
                           </MenuItem>
