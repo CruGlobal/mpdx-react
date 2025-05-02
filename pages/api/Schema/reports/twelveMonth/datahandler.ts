@@ -1,13 +1,13 @@
 import { convertStatus } from 'src/utils/functions/convertContactStatus';
 import {
-  FourteenMonthReport,
-  FourteenMonthReportCurrencyType,
+  TwelveMonthReport,
+  TwelveMonthReportCurrencyType,
 } from '../../../graphql-rest.page.generated';
 
 // We have switched to call the REST API directly from the frontend
 // due to Next.js having issues when the size of the response is too large.
 
-export interface FourteenMonthReportResponse {
+export interface TwelveMonthReportResponse {
   id: string;
   type:
     | 'reports_salary_currency_donations'
@@ -72,11 +72,11 @@ export interface FourteenMonthReportResponse {
   };
 }
 
-export const mapFourteenMonthReport = (
-  data: FourteenMonthReportResponse,
-  currencyType: FourteenMonthReportCurrencyType,
-): FourteenMonthReport => {
-  const isSalaryType = currencyType === FourteenMonthReportCurrencyType.Salary;
+export const mapTwelveMonthReport = (
+  data: TwelveMonthReportResponse,
+  currencyType: TwelveMonthReportCurrencyType,
+): TwelveMonthReport => {
+  const isSalaryType = currencyType === TwelveMonthReportCurrencyType.Salary;
   return {
     currencyType,
     salaryCurrency: data.attributes.salary_currency,

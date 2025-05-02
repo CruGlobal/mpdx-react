@@ -4,23 +4,23 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { MonthTotal } from '../../../FourteenMonthReport';
 import {
-  FourteenMonthReportContactFragment,
-  FourteenMonthReportQuery,
-} from '../../../GetFourteenMonthReport.generated';
+  TwelveMonthReportContactFragment,
+  TwelveMonthReportQuery,
+} from '../../../GetTwelveMonthReport.generated';
+import { MonthTotal } from '../../../TwelveMonthReport';
 import { StyledTableCell } from '../StyledComponents';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 import type { Order } from '../../../../Reports.type';
 
-export type Contact = FourteenMonthReportContactFragment;
-export type OrderBy = keyof FourteenMonthReportContactFragment | number; // numbers mean sorting by a specific month index
+export type Contact = TwelveMonthReportContactFragment;
+export type OrderBy = keyof TwelveMonthReportContactFragment | number; // numbers mean sorting by a specific month index
 
-export interface FourteenMonthReportTableHeadProps {
+export interface TwelveMonthReportTableHeadProps {
   isExpanded: boolean;
   totals: MonthTotal[] | undefined;
   salaryCurrency:
-    | FourteenMonthReportQuery['fourteenMonthReport']['salaryCurrency']
+    | TwelveMonthReportQuery['twelveMonthReport']['salaryCurrency']
     | undefined;
   onRequestSort: (event: React.MouseEvent<unknown>, property: OrderBy) => void;
   order: Order;
@@ -49,8 +49,8 @@ const CurrencyTypography = styled(Typography)(() => ({
   },
 }));
 
-export const FourteenMonthReportTableHead: FC<
-  FourteenMonthReportTableHeadProps
+export const TwelveMonthReportTableHead: FC<
+  TwelveMonthReportTableHeadProps
 > = ({ isExpanded, totals, salaryCurrency, order, orderBy, onRequestSort }) => {
   const { t } = useTranslation();
   const locale = useLocale();
