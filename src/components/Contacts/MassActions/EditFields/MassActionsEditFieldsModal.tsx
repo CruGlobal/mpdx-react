@@ -269,7 +269,15 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {Object.values(SendNewsletterEnum).map((value) => (
+                      {[
+                        SendNewsletterEnum.None,
+                        ...Object.values(SendNewsletterEnum).filter(
+                          (value) =>
+                            value !== SendNewsletterEnum.Both &&
+                            value !== SendNewsletterEnum.None,
+                        ),
+                        SendNewsletterEnum.Both,
+                      ].map((value) => (
                         <MenuItem key={value} value={value}>
                           {getLocalizedSendNewsletter(t, value)}
                         </MenuItem>
