@@ -162,7 +162,15 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                         )
                       }
                     >
-                      {Object.values(SendNewsletterEnum).map((value) => (
+                      {[
+                        SendNewsletterEnum.Both,
+                        ...Object.values(SendNewsletterEnum).filter(
+                          (value) =>
+                            value !== SendNewsletterEnum.Both &&
+                            value !== SendNewsletterEnum.None,
+                        ),
+                        SendNewsletterEnum.None,
+                      ].map((value) => (
                         <MenuItem key={value} value={value}>
                           {getLocalizedSendNewsletter(t, value)}
                         </MenuItem>
