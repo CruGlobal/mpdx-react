@@ -41,15 +41,14 @@ const uploadFile = async (
       return;
     }
 
-    const {
-      fields: { accountListId },
-      files: { file },
-    } = await parseBody(req);
+    const { fields, files } = await parseBody(req);
+    const accountListId = fields.accountListId?.[0];
+    const file = files.file?.[0];
     if (typeof accountListId !== 'string') {
       res.status(400).send('Missing accountListId');
       return;
     }
-    if (!file || Array.isArray(file)) {
+    if (!file) {
       res.status(400).send('Missing file');
       return;
     }
