@@ -256,7 +256,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                   {t(
                     "If you are already logged in using your ministry account, you'll need to ",
                   )}
-                  <Link href={donationServicesEmailLink}>
+                  <Link href={donationServicesEmailLink} target="_blank">
                     {t(
                       'contact your donation services team to request access.',
                     )}
