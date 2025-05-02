@@ -78,9 +78,12 @@ const updateCsvData = async (
       return;
     }
 
-    const {
-      fields: { accountListId, csvFileId, initialData, patchedData, include },
-    } = await parseBody(req);
+    const { fields } = await parseBody(req);
+    const accountListId = fields.accountListId?.[0];
+    const csvFileId = fields.csvFileId?.[0];
+    const initialData = fields.initialData?.[0];
+    const patchedData = fields.patchedData?.[0];
+    const include = fields.include?.[0];
     if (typeof accountListId !== 'string') {
       res.status(400).send('Missing accountListId');
       return;
