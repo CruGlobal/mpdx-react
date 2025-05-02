@@ -60,10 +60,10 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Donations' })).toBeVisible();
     expect(
-      getByRole('menuitem', { name: '14 Month Partner Report' }),
+      getByRole('menuitem', { name: '12 Month Partner Report' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: '14 Month Salary Report' }),
+      getByRole('menuitem', { name: '12 Month Salary Report' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
@@ -109,10 +109,10 @@ describe('NavMenu', () => {
     ).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Donations' })).not.toBeVisible();
     expect(
-      getByRole('menuitem', { name: '14 Month Partner Report' }),
+      getByRole('menuitem', { name: '12 Month Partner Report' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', { name: '14 Month Salary Report' }),
+      getByRole('menuitem', { name: '12 Month Salary Report' }),
     ).not.toBeVisible();
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
