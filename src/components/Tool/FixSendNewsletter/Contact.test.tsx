@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -201,5 +202,21 @@ describe('Fix Newsletter - Contact', () => {
       'href',
       `/accountLists/${accountListId}/tools/fix/sendNewsletter/contact123`,
     );
+  });
+
+  it('should show newsletter options in correct order', async () => {
+    const { findAllByRole, findByRole } = render(
+      <TestComponent
+        primaryPerson={primaryPerson}
+        primaryAddress={primaryAddress}
+      />,
+    );
+
+    const combobox = await findByRole('combobox');
+    userEvent.click(combobox);
+    const options = await findAllByRole('option');
+    expect(options).toHaveLength(4);
+    expect(options[0]).toHaveTextContent('None');
+    expect(options[options.length - 1]).toHaveTextContent('Both');
   });
 });
