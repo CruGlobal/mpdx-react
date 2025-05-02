@@ -40,7 +40,7 @@ export const ContactHeaderEmailSection = ({
     return (
       <ContactHeaderSection icon={<EmailIcon />}>
         <Typography variant="subtitle1" style={{ width: 'fit-content' }}>
-          <Link underline="hover" href={`mailto:${email}`}>
+          <Link underline="hover" href={`mailto:${email}`} target="_blank">
             {email}
           </Link>
         </Typography>

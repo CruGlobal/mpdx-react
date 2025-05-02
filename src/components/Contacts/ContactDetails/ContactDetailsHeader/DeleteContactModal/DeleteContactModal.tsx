@@ -162,7 +162,11 @@ export const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
               {t(
                 `For contacts originating from Donation Services or DonorHub, `,
               )}
-              <Link href={dataInfo.emailLink} sx={{ fontWeight: 'bold' }}>
+              <Link
+                href={dataInfo.emailLink}
+                target="_blank"
+                sx={{ fontWeight: 'bold' }}
+              >
                 {t('email Donation Services to request deletion.')}
               </Link>
             </Typography>
