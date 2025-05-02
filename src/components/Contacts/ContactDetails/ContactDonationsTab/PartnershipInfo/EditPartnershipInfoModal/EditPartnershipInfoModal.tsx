@@ -150,6 +150,10 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeStartDate: attributes.pledgeStartDate?.toISODate() ?? null,
           nextAsk: attributes.nextAsk?.toISODate() ?? null,
           primaryPersonId: attributes.primaryPersonId,
+          pledgeAmount:
+            (attributes.pledgeAmount as any) === ''
+              ? null
+              : Number(attributes.pledgeAmount),
         },
       },
     });
