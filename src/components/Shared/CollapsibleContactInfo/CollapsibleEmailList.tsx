@@ -13,7 +13,7 @@ const Email: React.FC<EmailProps> = ({ email }) => {
 
   return (
     <ContactInfoText data-testid="EmailAddress">
-      <Link href={`mailto:${email.email}`} underline="hover">
+      <Link href={`mailto:${email.email}`} target="_blank" underline="hover">
         {email.email}
       </Link>
       {email.location && (

@@ -115,6 +115,7 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
                           <Link
                             underline="hover"
                             href={`mailto:${email?.email}`}
+                            target="_blank"
                           >
                             {email?.email}
                           </Link>
