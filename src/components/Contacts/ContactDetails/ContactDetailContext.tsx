@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
@@ -21,6 +21,8 @@ export type ContactDetailsType = {
   setEditPersonModalOpen: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
+  openPersonModal: (id: string) => void;
+  closePersonModal: () => void;
   createPersonModalOpen: boolean;
   setCreatePersonModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedDonationTabKey: DonationTabKey;
@@ -76,6 +78,37 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
 
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
 
+  useEffect(() => {
+    const personId = router.query.personId as string;
+    if (personId) {
+      setSelectedTabKey(TabKey.ContactDetails);
+      setEditPersonModalOpen(personId);
+    }
+  }, [router.query.personId]);
+
+  useEffect(() => {
+    if (!router.query.personId && editPersonModalOpen) {
+      setEditPersonModalOpen(undefined);
+    }
+  }, [router.query.personId]);
+
+  const openPersonModal = (id: string) => {
+    router.replace(
+      { pathname: router.pathname, query: { ...router.query, personId: id } },
+      undefined,
+      { shallow: true },
+    );
+    setEditPersonModalOpen(id);
+  };
+
+  const closePersonModal = () => {
+    const { personId: _, ...rest } = router.query;
+    router.replace({ pathname: router.pathname, query: rest }, undefined, {
+      shallow: true,
+    });
+    setEditPersonModalOpen(undefined);
+  };
+
   return (
     <ContactDetailContext.Provider
       value={{
@@ -94,6 +127,8 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         handleTabChange: handleTabChange,
         editPersonModalOpen: editPersonModalOpen,
         setEditPersonModalOpen: setEditPersonModalOpen,
+        openPersonModal,
+        closePersonModal,
         createPersonModalOpen: createPersonModalOpen,
         setCreatePersonModalOpen: setCreatePersonModalOpen,
         selectedDonationTabKey: selectedDonationTabKey,
