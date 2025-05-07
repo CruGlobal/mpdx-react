@@ -93,18 +93,32 @@ export const ContactsWrapper: React.FC<Props> = ({
   }, [viewMode, activeFiltersRaw]);
 
   const getContactHrefObject: GetContactHrefObject = useCallback(
-    (contactId?: string) => {
+    (newContactId?: string) => {
       // Omit the filters and searchTerm from the previous query because we don't want them in the URL
       // if they are empty and Next.js will still add them to the URL query even if they are undefined.
       // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm
-      const newQuery = omit(query, ['filters', 'searchTerm']);
+      const omitKeys = ['filters', 'searchTerm'];
+
+      const currentContactId = extractContactId(query);
+
+      // Only omit `personId` if the contactId is changing
+      const isChangingContact =
+        newContactId && newContactId !== currentContactId;
+      if (isChangingContact) {
+        omitKeys.push('personId');
+      }
+
+      const newQuery: Record<string, string | string[] | undefined> = omit(
+        query,
+        omitKeys,
+      );
 
       const queryContactId: string[] = [];
       if (addViewMode && viewMode !== TableViewModeEnum.List) {
         queryContactId.push(viewMode);
       }
-      if (contactId) {
-        queryContactId.push(contactId);
+      if (newContactId) {
+        queryContactId.push(newContactId);
       }
       newQuery.contactId = queryContactId;
 

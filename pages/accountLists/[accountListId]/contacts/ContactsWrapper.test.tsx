@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -190,6 +190,61 @@ describe('ContactsWrapper', () => {
         contactId: [],
       },
     });
+  });
+  it('removes personId from URL when a different contact is selected', async () => {
+    const routeReplace = jest.fn();
+    const router = {
+      pathname: '/contacts',
+      query: {
+        accountListId: 'account-list-1',
+        contactId: ['contact-1'],
+        personId: 'person-123',
+      },
+      replace: routeReplace,
+      isReady: true,
+    };
+
+    const hrefRef = {
+      current: null as ReturnType<ContactsType['getContactHrefObject']> | null,
+    };
+
+    const CaptureHrefComponent: React.FC = () => {
+      const { getContactHrefObject } = useContext(
+        ContactsContext,
+      ) as ContactsType;
+
+      useEffect(() => {
+        hrefRef.current = getContactHrefObject('contact-2');
+      }, [getContactHrefObject]);
+
+      return null;
+    };
+
+    render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <ContactsWrapper>
+                <CaptureHrefComponent />
+              </ContactsWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+
+    await waitFor(() => {
+      expect(hrefRef.current).not.toBeNull();
+    });
+
+    const result = hrefRef.current as {
+      pathname: string;
+      query: Record<string, string | string[]>;
+    };
+
+    expect(result.query.personId).toBeUndefined();
+    expect(result.query.contactId).toEqual(['contact-2']);
   });
 });
 
