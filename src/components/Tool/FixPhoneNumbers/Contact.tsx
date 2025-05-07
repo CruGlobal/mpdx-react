@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -124,6 +124,19 @@ const ContactAvatar = styled(Avatar)(() => ({
   width: theme.spacing(4),
   height: theme.spacing(4),
 }));
+
+interface AutoSubmitProps {
+  values: any;
+  submitForm: () => void;
+}
+
+const AutoSubmit: React.FC<AutoSubmitProps> = ({ values, submitForm }) => {
+  useEffect(() => {
+    submitForm();
+  }, [values, submitForm]);
+
+  return null;
+};
 
 export interface PhoneNumber {
   id: string;
@@ -365,6 +378,10 @@ const Contact: React.FC<Props> = ({
                           errors,
                         }): ReactElement => (
                           <>
+                            <AutoSubmit
+                              values={newPhone}
+                              submitForm={handleSubmit}
+                            />
                             <Grid
                               data-testid="phoneNumbers"
                               item
@@ -480,7 +497,6 @@ const Contact: React.FC<Props> = ({
                                     value={newPhone}
                                     onChange={(e) => {
                                       setFieldValue('newPhone', e.target.value);
-                                      handleSubmit();
                                     }}
                                     disabled={
                                       !isEditableSource(phoneNumber.source)
