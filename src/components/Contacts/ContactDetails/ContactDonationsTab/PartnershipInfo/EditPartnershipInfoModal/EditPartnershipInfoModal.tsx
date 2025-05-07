@@ -150,10 +150,10 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeStartDate: attributes.pledgeStartDate?.toISODate() ?? null,
           nextAsk: attributes.nextAsk?.toISODate() ?? null,
           primaryPersonId: attributes.primaryPersonId,
-          pledgeAmount:
-            (attributes.pledgeAmount as any) === ''
-              ? null
-              : Number(attributes.pledgeAmount),
+          // When the field is blank, the value will be an empty string, even though TypeScript says the type is `number | null | undefined`
+          pledgeAmount: !attributes.pledgeAmount
+            ? null
+            : Number(attributes.pledgeAmount),
         },
       },
     });
