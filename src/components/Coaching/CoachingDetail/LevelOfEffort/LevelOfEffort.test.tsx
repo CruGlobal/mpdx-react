@@ -95,7 +95,7 @@ describe('LevelOfEffort', () => {
     expect(followUpTextRow.children[4]).toHaveTextContent('8');
     expect(followUpTextRow.children[5]).toHaveTextContent('18');
 
-    const thankRow = rows[21];
+    const thankRow = rows[26];
     expect(thankRow.children[0]).toHaveTextContent('Thank');
     expect(thankRow.children[1]).toHaveTextContent('33');
     expect(thankRow.children[2]).toHaveTextContent('13');
