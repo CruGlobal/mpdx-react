@@ -96,6 +96,7 @@ const TestComponent = ({
                 handleChange={handleChangeMock}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
+                submitAll={false}
               />
             </GqlMockedProvider>
           </TestWrapper>
@@ -309,7 +310,9 @@ describe('Fix PhoneNumber Contact', () => {
 
       userEvent.click(getByRole('button', { name: 'Confirm' }));
 
-      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+      });
     });
   });
   describe('submit button', () => {
@@ -321,16 +324,28 @@ describe('Fix PhoneNumber Contact', () => {
     });
   });
 
-  it('should submit form with errors', async () => {
+  it('should show error on each keystroke', async () => {
     const { getByTestId, getAllByTestId } = render(<TestComponent />);
     const textInput = getByTestId('textfield-contactTestId-number2');
     userEvent.clear(textInput);
-    userEvent.type(textInput, 'pq');
+    userEvent.type(textInput, 'p');
 
     await waitFor(() => {
       expect(getAllByTestId('statusSelectError')[1]).toHaveTextContent(
         'This field is not a valid phone number',
       );
+    });
+  });
+
+  it('should not submit form with errors', async () => {
+    const { getByTestId, getByRole } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    userEvent.clear(textInput);
+    userEvent.type(textInput, 'p');
+
+    userEvent.click(getByRole('button', { name: 'Confirm' }));
+    await waitFor(() => {
+      expect(handleSingleConfirm).not.toHaveBeenCalled();
     });
   });
 });
