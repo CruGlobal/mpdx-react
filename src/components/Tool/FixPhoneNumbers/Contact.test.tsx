@@ -75,7 +75,6 @@ const TestComponent = ({
   dataState = defaultDataState,
 }: TestComponentProps) => {
   const handleChangePrimaryMock = jest.fn();
-  const setSubmitAll = jest.fn();
 
   return (
     <AppSettingsProvider>
@@ -95,7 +94,6 @@ const TestComponent = ({
                 accountListId={accountListId}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
-                setSubmitAll={setSubmitAll}
                 submitAll={false}
               />
             </GqlMockedProvider>
@@ -310,7 +308,9 @@ describe('Fix PhoneNumber Contact', () => {
 
       userEvent.click(getByRole('button', { name: 'Confirm' }));
 
-      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+      });
     });
   });
   describe('submit button', () => {
