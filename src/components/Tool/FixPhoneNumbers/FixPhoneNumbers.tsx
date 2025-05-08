@@ -24,11 +24,9 @@ import { ToolsGridContainer } from '../styledComponents';
 import Contact, { PhoneNumber, PhoneNumberData } from './Contact';
 import {
   PersonInvalidNumberFragment,
-  PersonPhoneNumberFragment,
   useGetInvalidPhoneNumbersQuery,
 } from './GetInvalidPhoneNumbers.generated';
 import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
-import { determineBulkDataToSend } from './helper';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -38,21 +36,6 @@ const useStyles = makeStyles()(() => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  outter: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'end',
-    width: '80%',
-    maxWidth: '1500px',
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-    },
-  },
-  divider: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-
   footer: {
     width: '100%',
     display: 'flex',
@@ -84,24 +67,9 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-export interface ModalState {
-  open: boolean;
-  personIndex: number;
-  numberIndex: number;
-  phoneNumber: string;
-}
-
-export interface PersonPhoneNumbers {
-  phoneNumbers: PersonPhoneNumberFragment[];
-}
-
 export interface FormValuesPerson extends PersonInvalidNumberFragment {
   newPhoneNumber: string;
   isNewPhoneNumber: boolean;
-}
-
-export interface FormValues {
-  people: FormValuesPerson[];
 }
 
 interface Props {
@@ -154,58 +122,14 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     setDefaultSource(event.target.value);
   };
 
-  const handleChange = (
-    personId: string,
-    numberIndex: number,
-    newNumber: string,
-  ): void => {
-    const temp = { ...dataState };
-    dataState[personId].phoneNumbers[numberIndex].number = newNumber;
-    setDataState(temp);
-  };
-
   const handleBulkConfirm = async () => {
     setSubmitAll(true);
-    const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
-
-    if (!dataToSend.length) {
-      enqueueSnackbar(t(`No phone numbers were updated`), {
-        variant: 'warning',
-      });
-      return;
-    }
-
-    await updateInvalidPhoneNumbers({
-      variables: {
-        input: {
-          accountListId,
-          attributes: dataToSend,
-        },
-      },
-      update: (cache) => {
-        data?.people.nodes.forEach((person: PersonInvalidNumberFragment) => {
-          cache.evict({ id: `Person:${person.id}` });
-        });
-      },
-      onError: () => {
-        enqueueSnackbar(t('Error updating phone numbers'), {
-          variant: 'error',
-        });
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('Phone numbers updated!'), {
-          variant: 'success',
-        });
-      },
-    });
   };
 
   const handleSingleConfirm = async (
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
   ) => {
-    setSubmitAll(false);
-
     const personName = `${person.firstName} ${person.lastName}`;
     const phoneNumbers = numbers.map((phoneNumber) => ({
       id: phoneNumber.id,
@@ -342,12 +266,10 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                       key={person.id}
                       submitAll={submitAll}
                       person={person}
-                      handleChange={handleChange}
                       handleSingleConfirm={handleSingleConfirm}
                       dataState={dataState}
                       handleChangePrimary={handleChangePrimary}
                       accountListId={accountListId}
-                      setSubmitAll={setSubmitAll}
                     />
                   ),
                 )}

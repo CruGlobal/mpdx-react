@@ -74,7 +74,6 @@ const TestComponent = ({
   mocks,
   dataState = defaultDataState,
 }: TestComponentProps) => {
-  const handleChangeMock = jest.fn();
   const handleChangePrimaryMock = jest.fn();
   const setSubmitAll = jest.fn();
 
@@ -94,7 +93,6 @@ const TestComponent = ({
                 person={person}
                 dataState={dataState}
                 accountListId={accountListId}
-                handleChange={handleChangeMock}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
                 setSubmitAll={setSubmitAll}
