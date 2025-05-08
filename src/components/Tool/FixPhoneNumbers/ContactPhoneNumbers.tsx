@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { mdiDelete, mdiLock } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import StarIcon from '@mui/icons-material/Star';
@@ -10,16 +10,14 @@ import {
   Grid,
   Hidden,
   TextField,
-  Theme,
   Tooltip,
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
-import { useFormik } from 'formik';
+import { Field } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
@@ -27,47 +25,7 @@ import theme from '../../../theme';
 import { PhoneNumber } from './Contact';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  left: {},
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-  },
-  boxBottom: {
-    width: '100%',
-    [theme.breakpoints.down('xs')]: {
-      paddingTop: theme.spacing(2),
-    },
-  },
-  contactCard: {
-    marginBottom: theme.spacing(2),
-  },
-  buttonTop: {
-    marginLeft: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(2),
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-    '& .MuiButton-root': {
-      backgroundColor: theme.palette.mpdxBlue.main,
-      color: 'white',
-    },
-  },
-  buttonIcon: {
-    marginRight: theme.spacing(1),
-  },
-  rowChangeResponsive: {
-    flexDirection: 'column',
-    [theme.breakpoints.down('xs')]: {
-      marginTop: -20,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-  },
+const useStyles = makeStyles()(() => ({
   responsiveBorder: {
     [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
@@ -78,15 +36,8 @@ const useStyles = makeStyles()((theme: Theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
   },
-  paddingY: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
   paddingB2: {
     paddingBottom: theme.spacing(1),
-  },
-  phoneNumberContainer: {
-    width: '100%',
   },
   hoverHighlight: {
     '&:hover': {
@@ -102,7 +53,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
 }));
 
 interface Props {
-  key: string;
   index: number;
   person: PersonInvalidNumberFragment;
   phoneNumber: PhoneNumber;
@@ -111,63 +61,27 @@ interface Props {
     personId: string;
     phoneNumber: PhoneNumber;
   }) => void;
-  submitAll: boolean;
   handleSingleConfirm: (
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
   ) => void;
-  numbers: PhoneNumber[];
+  handleChange: (field: string, value: string) => void;
+  errors: any;
 }
 
-export const FixPhoneNumbersForm: React.FC<Props> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  key,
+export const ContactPhoneNumbers: React.FC<Props> = ({
+  handleChange,
+  errors,
   index,
   person,
   phoneNumber,
   handleChangePrimary,
   handleDeleteNumberOpen,
-  submitAll,
-  handleSingleConfirm,
-  numbers,
 }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
   const { id: personId } = person;
-
-  const validationSchema = yup.object({
-    newPhone: yup
-      .string()
-      .test(
-        'is-phone-number',
-        t('This field is not a valid phone number'),
-        (val) => typeof val === 'string' && /\d/.test(val),
-      )
-      .required(t('This field is required')),
-  });
-
-  const { values, setFieldValue, handleSubmit, errors } = useFormik({
-    initialValues: {
-      newPhone: phoneNumber.number,
-    },
-    validationSchema: validationSchema,
-
-    onSubmit: (values) => {
-      numbers[index] = {
-        ...phoneNumber,
-        number: values.newPhone,
-      };
-
-      handleSingleConfirm(person, numbers);
-    },
-  });
-
-  useEffect(() => {
-    if (submitAll) {
-      handleSubmit();
-    }
-  }, [submitAll]);
 
   return (
     <>
@@ -190,8 +104,8 @@ export const FixPhoneNumbersForm: React.FC<Props> = ({
               </Typography>
             </Hidden>
             <Typography display="inline" variant="body2">
-              {`${sourceToStr(t, phoneNumber.source)} (${dateFormatShort(
-                DateTime.fromISO(phoneNumber.updatedAt),
+              {`${sourceToStr(t, phoneNumber?.source)} (${dateFormatShort(
+                DateTime.fromISO(phoneNumber?.updatedAt),
                 locale,
               )})`}
             </Typography>
@@ -205,7 +119,7 @@ export const FixPhoneNumbersForm: React.FC<Props> = ({
           className={classes.paddingX}
         >
           <Typography display="flex" alignItems="center">
-            {phoneNumber.primary ? (
+            {phoneNumber?.primary ? (
               <>
                 <Hidden smUp>
                   <Typography
@@ -217,7 +131,7 @@ export const FixPhoneNumbersForm: React.FC<Props> = ({
                   </Typography>
                 </Hidden>
                 <StarIcon
-                  data-testid={`starIcon-${personId}-${phoneNumber.id}`}
+                  data-testid={`starIcon-${personId}-${phoneNumber?.id}`}
                   className={classes.hoverHighlight}
                 />
               </>
@@ -234,7 +148,7 @@ export const FixPhoneNumbersForm: React.FC<Props> = ({
                 </Hidden>
                 <Tooltip title={t('Set as Primary')} placement="left">
                   <StarOutlineIcon
-                    data-testid={`starOutlineIcon-${personId}-${phoneNumber.id}`}
+                    data-testid={`starOutlineIcon-${personId}-${phoneNumber?.id}`}
                     className={classes.hoverHighlight}
                     onClick={() => handleChangePrimary(personId, index)}
                   />
@@ -251,29 +165,33 @@ export const FixPhoneNumbersForm: React.FC<Props> = ({
           className={clsx(classes.responsiveBorder, classes.paddingX)}
         >
           <FormControl fullWidth>
-            <TextField
-              style={{ width: '100%' }}
-              size="small"
-              inputProps={{
-                'data-testid': `textfield-${personId}-${phoneNumber.id}`,
-              }}
-              name="newPhone"
-              value={values.newPhone}
-              onChange={(e) => {
-                setFieldValue('newPhone', e.target.value);
-              }}
-              disabled={!isEditableSource(phoneNumber.source)}
-            />
-            <FormHelperText error={true} data-testid="statusSelectError">
-              {errors.newPhone}
+            <Field name={`numbers.${index}.number`}>
+              {({ field }: any) => (
+                <TextField
+                  {...field}
+                  style={{ width: '100%' }}
+                  size="small"
+                  inputProps={{
+                    'data-testid': `textfield-${personId}-${phoneNumber?.id}`,
+                  }}
+                  onChange={handleChange}
+                  disabled={!isEditableSource(phoneNumber?.source)}
+                />
+              )}
+            </Field>
+            <FormHelperText
+              error={!!errors?.numbers?.[index]?.number}
+              data-testid="statusSelectError"
+            >
+              {errors?.numbers?.[index]?.number}
             </FormHelperText>
           </FormControl>
-          {isEditableSource(phoneNumber.source) ? (
+          {isEditableSource(phoneNumber?.source) ? (
             <Box display="flex" justifyContent="center" alignItems="center">
               <Box
                 display="flex"
                 alignItems="center"
-                data-testid={`delete-${personId}-${phoneNumber.id}`}
+                data-testid={`delete-${personId}-${phoneNumber?.id}`}
                 onClick={() =>
                   handleDeleteNumberOpen({
                     personId,

@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -13,22 +13,23 @@ import {
   Grid,
   Hidden,
   Link,
-  Theme,
   Typography,
 } from '@mui/material';
+import { FormikProvider, useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
+import * as yup from 'yup';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
-import { FixPhoneNumbersForm } from './FixPhoneNumbersForm';
+import { ContactPhoneNumbers } from './ContactPhoneNumbers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 import PhoneValidationForm from './PhoneNumberValidationForm';
 import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   left: {},
   container: {
     display: 'flex',
@@ -133,11 +134,6 @@ interface NumberToDelete {
 interface Props {
   submitAll: boolean; // Used as a trigger to submit each individual form
   person: PersonInvalidNumberFragment;
-  handleChange: (
-    personId: string,
-    numberIndex: number,
-    newNumber: string,
-  ) => void;
   handleSingleConfirm: (
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
@@ -145,7 +141,6 @@ interface Props {
   dataState: { [key: string]: PhoneNumberData };
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   accountListId: string;
-  setSubmitAll: (submitAll: boolean) => void;
 }
 
 const Contact: React.FC<Props> = ({
@@ -155,7 +150,6 @@ const Contact: React.FC<Props> = ({
   dataState,
   handleChangePrimary,
   accountListId,
-  setSubmitAll,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -184,6 +178,43 @@ const Contact: React.FC<Props> = ({
   }, [person, dataState]);
 
   const name: string = `${person.firstName} ${person.lastName}`;
+
+  const validationSchema = yup.object().shape({
+    numbers: yup
+      .array()
+      .of(
+        yup.object().shape({
+          number: yup
+            .string()
+            .test(
+              'is-phone-number',
+              t('This field is not a valid phone number'),
+              (val) => typeof val === 'string' && /\d/.test(val),
+            )
+            .required(t('This field is required')),
+        }),
+      )
+      .required(t('Must have at least 1 Phone Number to confirm')),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      numbers: numbers,
+    },
+    enableReinitialize: true,
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      handleSingleConfirm(person, values.numbers);
+    },
+  });
+
+  const { values, handleChange, handleSubmit, errors } = formik;
+
+  useEffect(() => {
+    if (submitAll) {
+      handleSubmit();
+    }
+  }, [submitAll]);
 
   const handleDeleteNumberOpen = ({
     personId,
@@ -245,7 +276,7 @@ const Contact: React.FC<Props> = ({
   };
 
   return (
-    <>
+    <FormikProvider value={formik}>
       <Grid container className={classes.container}>
         <Grid container>
           <Card className={classes.contactCard}>
@@ -274,9 +305,10 @@ const Contact: React.FC<Props> = ({
                     action={
                       <Button
                         data-testid={`confirmButton-${person.id}`}
-                        onClick={() => setSubmitAll(true)}
+                        onClick={() => handleSubmit()}
                         variant="contained"
                         style={{ width: '100%' }}
+                        disabled={Object.keys(errors).length > 0}
                       >
                         <Icon
                           path={mdiCheckboxMarkedCircle}
@@ -325,17 +357,16 @@ const Contact: React.FC<Props> = ({
                         </Box>
                       </Grid>
                     </Hidden>
-                    {numbers.map((phoneNumber, index) => (
-                      <FixPhoneNumbersForm
+                    {values.numbers.map((phoneNumber, index) => (
+                      <ContactPhoneNumbers
                         key={phoneNumber.id}
+                        errors={errors}
                         index={index}
                         person={person}
                         phoneNumber={phoneNumber}
                         handleChangePrimary={handleChangePrimary}
                         handleDeleteNumberOpen={handleDeleteNumberOpen}
                         handleSingleConfirm={handleSingleConfirm}
-                        submitAll={submitAll}
-                        numbers={numbers}
                       />
                     ))}
                     <Grid item xs={12} sm={6} className={classes.paddingB2}>
@@ -385,7 +416,7 @@ const Contact: React.FC<Props> = ({
           handleClose={handleDeleteNumberModalClose}
         />
       )}
-    </>
+    </FormikProvider>
   );
 };
 
