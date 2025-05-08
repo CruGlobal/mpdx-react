@@ -139,6 +139,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   });
   const [updateAddress] = useUpdateContactAddressMutation();
   const { enqueueSnackbar } = useSnackbar();
+  const [dataState, setDataState] = useState({});
 
   useEffect(() => {
     const existingSources = new Set<string>();
@@ -150,7 +151,40 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
       });
     });
     setSourceOptions([...existingSources]);
+
+    const newDataState = data
+      ? data.contacts.nodes?.reduce(
+          (map, contact) => ({
+            ...map,
+            [contact.id]: {
+              addresses: contact.addresses.nodes.map((address) => {
+                existingSources.add(address.source);
+                return { ...address };
+              }),
+            },
+          }),
+          {},
+        )
+      : {};
+    setDataState(newDataState);
   }, [loading, data]);
+
+  const handleChangePrimary = (personId: string, numberIndex: number): void => {
+    if (!dataState[personId]) {
+      return;
+    }
+
+    const temp = { ...dataState };
+
+    temp[personId].addresses = temp[personId].addresses.map(
+      (address, index) => ({
+        ...address,
+        primary: index === numberIndex,
+      }),
+    );
+
+    setDataState(temp);
+  };
 
   const handleSingleConfirm = async ({
     addresses,
@@ -417,6 +451,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
                         handleSingleConfirm={handleSingleConfirm}
+                        handleChangePrimary={handleChangePrimary}
                       />
                     ))}
                   </Grid>
