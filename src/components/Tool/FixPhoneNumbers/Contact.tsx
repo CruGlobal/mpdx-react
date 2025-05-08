@@ -314,6 +314,7 @@ const Contact: React.FC<Props> = ({
                         onClick={() => handleSubmit()}
                         variant="contained"
                         style={{ width: '100%' }}
+                        disabled={Object.keys(errors).length > 0}
                       >
                         <Icon
                           path={mdiCheckboxMarkedCircle}
