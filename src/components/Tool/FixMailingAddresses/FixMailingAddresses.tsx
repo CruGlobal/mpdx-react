@@ -36,7 +36,7 @@ import {
 } from './GetInvalidAddresses.generated';
 
 export type HandleSingleConfirmProps = {
-  addresses: ContactAddressFragment[];
+  addressesData: ContactAddressFragment[];
   id: string;
   name: string;
   onlyErrorOnce?: boolean;
@@ -166,35 +166,33 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
           {},
         )
       : {};
+
     setDataState(newDataState);
   }, [loading, data]);
 
-  const handleChangePrimary = (personId: string, numberIndex: number): void => {
-    if (!dataState[personId]) {
+  const handleChangePrimary = (contactId: string, addressId: number): void => {
+    if (!dataState[contactId]) {
       return;
     }
 
     const temp = { ...dataState };
 
-    temp[personId].addresses = temp[personId].addresses.map(
-      (address, index) => ({
-        ...address,
-        primary: index === numberIndex,
-      }),
-    );
-
+    temp[contactId].addresses = temp[contactId].addresses.map((address) => ({
+      ...address,
+      primaryMailingAddress: address.id === addressId,
+    }));
     setDataState(temp);
   };
 
   const handleSingleConfirm = async ({
-    addresses,
+    addressesData,
     id,
     name,
   }: HandleSingleConfirmProps) => {
     let errorOccurred = false;
 
-    for (let idx = 0; idx < addresses.length; idx++) {
-      const address = addresses[idx];
+    for (let idx = 0; idx < addressesData.length; idx++) {
+      const address = addressesData[idx];
 
       await updateAddress({
         variables: {
@@ -206,7 +204,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
           },
         },
         update(cache) {
-          if (idx === addresses.length - 1 && !errorOccurred) {
+          if (idx === addressesData.length - 1 && !errorOccurred) {
             cache.evict({ id: `Contact:${id}` });
           }
         },
@@ -245,7 +243,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
           });
           const callContactMutation = () =>
             handleSingleConfirm({
-              addresses,
+              addressesData: [...addresses],
               id: contact.id,
               name: contact.name,
             });
@@ -452,6 +450,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                         }
                         handleSingleConfirm={handleSingleConfirm}
                         handleChangePrimary={handleChangePrimary}
+                        dataState={dataState}
                       />
                     ))}
                   </Grid>
