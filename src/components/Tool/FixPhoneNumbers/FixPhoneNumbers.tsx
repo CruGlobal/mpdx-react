@@ -111,6 +111,7 @@ interface Props {
 const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const [submitAll, setSubmitAll] = useState(false);
 
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
   const { data } = useGetInvalidPhoneNumbersQuery({
@@ -164,6 +165,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   const handleBulkConfirm = async () => {
+    setSubmitAll(true);
     const dataToSend = determineBulkDataToSend(dataState, defaultSource ?? '');
 
     if (!dataToSend.length) {
@@ -202,6 +204,8 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
   ) => {
+    setSubmitAll(false);
+
     const personName = `${person.firstName} ${person.lastName}`;
     const phoneNumbers = numbers.map((phoneNumber) => ({
       id: phoneNumber.id,
@@ -336,12 +340,14 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                   (person: PersonInvalidNumberFragment) => (
                     <Contact
                       key={person.id}
+                      submitAll={submitAll}
                       person={person}
                       handleChange={handleChange}
                       handleSingleConfirm={handleSingleConfirm}
                       dataState={dataState}
                       handleChangePrimary={handleChangePrimary}
                       accountListId={accountListId}
+                      setSubmitAll={setSubmitAll}
                     />
                   ),
                 )}

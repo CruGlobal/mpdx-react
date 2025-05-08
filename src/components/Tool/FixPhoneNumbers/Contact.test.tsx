@@ -76,6 +76,7 @@ const TestComponent = ({
 }: TestComponentProps) => {
   const handleChangeMock = jest.fn();
   const handleChangePrimaryMock = jest.fn();
+  const setSubmitAll = jest.fn();
 
   return (
     <AppSettingsProvider>
@@ -96,6 +97,8 @@ const TestComponent = ({
                 handleChange={handleChangeMock}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
+                setSubmitAll={setSubmitAll}
+                submitAll={false}
               />
             </GqlMockedProvider>
           </TestWrapper>
