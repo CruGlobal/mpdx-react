@@ -75,7 +75,6 @@ const TestComponent = ({
   dataState = defaultDataState,
 }: TestComponentProps) => {
   const handleChangePrimaryMock = jest.fn();
-  const setSubmitAll = jest.fn();
 
   return (
     <AppSettingsProvider>
@@ -95,7 +94,6 @@ const TestComponent = ({
                 accountListId={accountListId}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
-                setSubmitAll={setSubmitAll}
                 submitAll={false}
               />
             </GqlMockedProvider>
@@ -310,7 +308,9 @@ describe('Fix PhoneNumber Contact', () => {
 
       userEvent.click(getByRole('button', { name: 'Confirm' }));
 
-      expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+      });
     });
   });
   describe('submit button', () => {
@@ -322,16 +322,76 @@ describe('Fix PhoneNumber Contact', () => {
     });
   });
 
-  it('should submit form with errors', async () => {
+  it('should show error on each keystroke', async () => {
     const { getByTestId, getAllByTestId } = render(<TestComponent />);
     const textInput = getByTestId('textfield-contactTestId-number2');
     userEvent.clear(textInput);
-    userEvent.type(textInput, 'pq');
+    userEvent.type(textInput, 'p');
 
     await waitFor(() => {
       expect(getAllByTestId('statusSelectError')[1]).toHaveTextContent(
         'This field is not a valid phone number',
       );
+    });
+  });
+
+  it('should not submit form with errors', async () => {
+    const { getByTestId, getByRole } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    userEvent.clear(textInput);
+    userEvent.type(textInput, 'p');
+
+    userEvent.click(getByRole('button', { name: 'Confirm' }));
+    await waitFor(() => {
+      expect(mockEnqueue).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should submit with matching input', async () => {
+    const { getByTestId, getByRole } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    const inputNumber = '1234';
+    userEvent.clear(textInput);
+    userEvent.type(textInput, inputNumber);
+    expect(textInput).toHaveValue(inputNumber);
+
+    userEvent.click(getByRole('button', { name: 'Confirm' }));
+    await waitFor(() => {
+      expect(handleSingleConfirm).toHaveBeenCalledWith(person, [
+        {
+          id: 'number1',
+          isPrimary: true,
+          isValid: false,
+          number: '123456',
+          personId: 'contactTestId',
+          primary: true,
+          source: 'DataServer',
+          updatedAt: '2021-06-21T00:00:00.000+00:00',
+        },
+        {
+          id: 'number2',
+          isPrimary: false,
+          isValid: false,
+          number: inputNumber,
+          personId: 'contactTestId',
+          primary: false,
+          source: 'MPDX',
+          updatedAt: '2021-06-22T00:00:00.000+00:00',
+        },
+      ]);
+    });
+  });
+  it('should not submit when number is invalid', async () => {
+    const { getByTestId, getByRole } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    const inputText = 'Aa';
+    userEvent.clear(textInput);
+    userEvent.type(textInput, inputText);
+    expect(textInput).toHaveValue(inputText);
+
+    userEvent.click(getByRole('button', { name: 'Confirm' }));
+    await waitFor(() => {
+      expect(mockEnqueue).not.toHaveBeenCalled();
     });
   });
 });

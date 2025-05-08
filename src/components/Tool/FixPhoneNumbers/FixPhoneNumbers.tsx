@@ -67,6 +67,13 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
+export interface ModalState {
+  open: boolean;
+  personIndex: number;
+  numberIndex: number;
+  phoneNumber: string;
+}
+
 export interface FormValuesPerson extends PersonInvalidNumberFragment {
   newPhoneNumber: string;
   isNewPhoneNumber: boolean;
