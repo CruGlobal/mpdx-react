@@ -36,7 +36,6 @@ import {
 } from './GetInvalidAddresses.generated';
 
 export type HandleSingleConfirmProps = {
-  addresses: ContactAddressFragment[];
   id: string;
   name: string;
   onlyErrorOnce?: boolean;
@@ -139,6 +138,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   });
   const [updateAddress] = useUpdateContactAddressMutation();
   const { enqueueSnackbar } = useSnackbar();
+  const [dataState, setDataState] = useState({});
 
   useEffect(() => {
     const existingSources = new Set<string>();
@@ -150,17 +150,53 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
       });
     });
     setSourceOptions([...existingSources]);
+
+    const newDataState = data
+      ? data.contacts.nodes?.reduce(
+          (map, contact) => ({
+            ...map,
+            [contact.id]: {
+              addresses: contact.addresses.nodes.map((address) => {
+                existingSources.add(address.source);
+                return { ...address };
+              }),
+            },
+          }),
+          {},
+        )
+      : {};
+
+    setDataState(newDataState);
   }, [loading, data]);
 
+  const handleChangePrimary = (
+    contactId: string,
+    numberIndex: number,
+  ): void => {
+    if (!dataState[contactId]) {
+      return;
+    }
+
+    const temp = { ...dataState };
+
+    temp[contactId].addresses = temp[contactId].addresses.map(
+      (address, index) => ({
+        ...address,
+        primaryMailingAddress: index === numberIndex,
+      }),
+    );
+    setDataState(temp);
+  };
+
   const handleSingleConfirm = async ({
-    addresses,
     id,
     name,
   }: HandleSingleConfirmProps) => {
     let errorOccurred = false;
+    const addressesData = dataState[id]?.addresses || [];
 
-    for (let idx = 0; idx < addresses.length; idx++) {
-      const address = addresses[idx];
+    for (let idx = 0; idx < addressesData.length; idx++) {
+      const address = addressesData[idx];
 
       await updateAddress({
         variables: {
@@ -172,7 +208,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
           },
         },
         update(cache) {
-          if (idx === addresses.length - 1 && !errorOccurred) {
+          if (idx === addressesData.length - 1 && !errorOccurred) {
             cache.evict({ id: `Contact:${id}` });
           }
         },
@@ -198,20 +234,12 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
       data?.contacts?.nodes.forEach((contact) => {
-        const primaryAddress = contact.addresses.nodes.find((address) =>
-          sourcesMatch(defaultSource, address.source),
+        const primaryAddress = dataState[contact.id]?.addresses.find(
+          (address) => sourcesMatch(defaultSource, address.source),
         );
         if (primaryAddress) {
-          const addresses: ContactAddressFragment[] = [];
-          contact.addresses.nodes.forEach((address) => {
-            addresses.push({
-              ...address,
-              primaryMailingAddress: address.id === primaryAddress?.id,
-            });
-          });
           const callContactMutation = () =>
             handleSingleConfirm({
-              addresses,
               id: contact.id,
               name: contact.name,
             });
@@ -417,6 +445,8 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
                         handleSingleConfirm={handleSingleConfirm}
+                        handleChangePrimary={handleChangePrimary}
+                        dataState={dataState}
                       />
                     ))}
                   </Grid>
