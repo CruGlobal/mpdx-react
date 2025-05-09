@@ -65,12 +65,12 @@ interface Props {
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
   ) => void;
-  setFieldValue: (field: string, value: string) => void;
+  handleChange: (field: string, value: string) => void;
   errors: any;
 }
 
 export const ContactPhoneNumbers: React.FC<Props> = ({
-  setFieldValue,
+  handleChange,
   errors,
   index,
   person,
@@ -174,9 +174,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   inputProps={{
                     'data-testid': `textfield-${personId}-${phoneNumber?.id}`,
                   }}
-                  onChange={(e) => {
-                    setFieldValue(`numbers.${index}.number`, e.target.value);
-                  }}
+                  onChange={handleChange}
                   disabled={!isEditableSource(phoneNumber?.source)}
                 />
               )}

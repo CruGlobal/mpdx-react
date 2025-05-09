@@ -208,7 +208,7 @@ const Contact: React.FC<Props> = ({
     },
   });
 
-  const { values, setFieldValue, handleSubmit, errors } = formik;
+  const { values, handleChange, handleSubmit, errors } = formik;
 
   useEffect(() => {
     if (submitAll) {
@@ -364,7 +364,7 @@ const Contact: React.FC<Props> = ({
                           {values.numbers.map((phoneNumber, index) => (
                             <ContactPhoneNumbers
                               key={phoneNumber.id}
-                              setFieldValue={setFieldValue}
+                              handleChange={handleChange}
                               errors={errors}
                               index={index}
                               person={person}
