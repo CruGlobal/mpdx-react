@@ -135,11 +135,6 @@ interface NumberToDelete {
 interface Props {
   submitAll: boolean;
   person: PersonInvalidNumberFragment;
-  handleChange: (
-    personId: string,
-    numberIndex: number,
-    newNumber: string,
-  ) => void;
   handleSingleConfirm: (
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
