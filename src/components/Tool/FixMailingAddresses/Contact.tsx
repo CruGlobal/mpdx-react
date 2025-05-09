@@ -114,7 +114,7 @@ interface Props {
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
   handleSingleConfirm: ({ id, name }: HandleSingleConfirmProps) => void;
-  handleChangePrimary: (contactId: string, addressId: string) => void;
+  handleChangePrimary: (addressId: string, numberIndex: number) => void;
   dataState: any;
 }
 
@@ -146,7 +146,7 @@ const Contact: React.FC<Props> = ({
   }, [dataState]);
 
   const handleConfirm = () => {
-    handleSingleConfirm({ addressesData, id, name });
+    handleSingleConfirm({ id, name });
   };
 
   return (

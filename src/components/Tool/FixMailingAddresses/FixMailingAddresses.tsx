@@ -36,7 +36,6 @@ import {
 } from './GetInvalidAddresses.generated';
 
 export type HandleSingleConfirmProps = {
-  addressesData: ContactAddressFragment[];
   id: string;
   name: string;
   onlyErrorOnce?: boolean;
@@ -185,11 +184,11 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   };
 
   const handleSingleConfirm = async ({
-    addressesData,
     id,
     name,
   }: HandleSingleConfirmProps) => {
     let errorOccurred = false;
+    const addressesData = dataState[id]?.addresses || [];
 
     for (let idx = 0; idx < addressesData.length; idx++) {
       const address = addressesData[idx];
@@ -229,24 +228,13 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const handleBulkConfirm = async () => {
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
-      // loop through each person
       data?.contacts?.nodes.forEach((contact) => {
-        // find the primary address on that person
-        const primaryAddress = dataState[contact.id].addresses.find((address) =>
-          sourcesMatch(defaultSource, address.source),
+        const primaryAddress = dataState[contact.id]?.addresses.find(
+          (address) => sourcesMatch(defaultSource, address.source),
         );
-        // if it has a primary address, we will make an array of the contacts addresses
         if (primaryAddress) {
-          const addresses: ContactAddressFragment[] = [];
-          dataState[contact.id].addresses.forEach((address) => {
-            addresses.push({
-              ...address,
-              primaryMailingAddress: address.id === primaryAddress?.id,
-            });
-          });
           const callContactMutation = () =>
             handleSingleConfirm({
-              addressesData: addresses,
               id: contact.id,
               name: contact.name,
             });
