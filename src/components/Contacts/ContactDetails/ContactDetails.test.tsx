@@ -28,19 +28,14 @@ const createRouter = (
     },
     replace: jest.fn(),
     isReady: true,
-  } as {
-    pathname: string;
-    query: Record<string, string | string[] | undefined>;
-    replace: jest.Mock;
-    isReady: boolean;
   };
 };
 
 const renderWithProviders = (
   router: ReturnType<typeof createRouter>,
   Component: React.FC,
-) => {
-  return render(
+) =>
+  render(
     <SnackbarProvider>
       <TestRouter router={router}>
         <GqlMockedProvider>
@@ -55,10 +50,9 @@ const renderWithProviders = (
       </TestRouter>
     </SnackbarProvider>,
   );
-};
 
 describe('ContactDetails', () => {
-  it('should change tab', async () => {
+  it('should change the tab', async () => {
     const router = createRouter();
 
     const { getAllByRole } = renderWithProviders(router, () => (
