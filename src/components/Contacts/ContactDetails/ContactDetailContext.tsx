@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
@@ -18,9 +18,6 @@ export type ContactDetailsType = {
   addAddressModalOpen: boolean;
   setAddAddressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editPersonModalOpen: string | undefined;
-  setEditPersonModalOpen: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
   openPersonModal: (id: string) => void;
   closePersonModal: () => void;
   createPersonModalOpen: boolean;
@@ -92,22 +89,25 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
     }
   }, [router.query.personId]);
 
-  const openPersonModal = (id: string) => {
-    router.replace(
-      { pathname: router.pathname, query: { ...router.query, personId: id } },
-      undefined,
-      { shallow: true },
-    );
-    setEditPersonModalOpen(id);
-  };
+  const openPersonModal = useCallback(
+    (id: string) => {
+      router.replace(
+        { pathname: router.pathname, query: { ...router.query, personId: id } },
+        undefined,
+        { shallow: true },
+      );
+      setEditPersonModalOpen(id);
+    },
+    [router, setEditPersonModalOpen],
+  );
 
-  const closePersonModal = () => {
+  const closePersonModal = useCallback(() => {
     const { personId: _, ...rest } = router.query;
     router.replace({ pathname: router.pathname, query: rest }, undefined, {
       shallow: true,
     });
     setEditPersonModalOpen(undefined);
-  };
+  }, [router, setEditPersonModalOpen]);
 
   return (
     <ContactDetailContext.Provider
@@ -126,7 +126,6 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         setSelectedTabKey: setSelectedTabKey,
         handleTabChange: handleTabChange,
         editPersonModalOpen: editPersonModalOpen,
-        setEditPersonModalOpen: setEditPersonModalOpen,
         openPersonModal,
         closePersonModal,
         createPersonModalOpen: createPersonModalOpen,
