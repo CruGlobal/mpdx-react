@@ -212,9 +212,12 @@ describe('FixPhoneNumbers-Home', () => {
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        `Successfully updated phone numbers for Simba Lion`,
+        {
+          variant: 'success',
+        },
+      );
     });
 
     expect(
