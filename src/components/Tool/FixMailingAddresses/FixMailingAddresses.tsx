@@ -229,13 +229,16 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   const handleBulkConfirm = async () => {
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
+      // loop through each person
       data?.contacts?.nodes.forEach((contact) => {
-        const primaryAddress = contact.addresses.nodes.find((address) =>
+        // find the primary address on that person
+        const primaryAddress = dataState[contact.id].addresses.find((address) =>
           sourcesMatch(defaultSource, address.source),
         );
+        // if it has a primary address, we will make an array of the contacts addresses
         if (primaryAddress) {
           const addresses: ContactAddressFragment[] = [];
-          contact.addresses.nodes.forEach((address) => {
+          dataState[contact.id].addresses.forEach((address) => {
             addresses.push({
               ...address,
               primaryMailingAddress: address.id === primaryAddress?.id,
@@ -243,7 +246,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
           });
           const callContactMutation = () =>
             handleSingleConfirm({
-              addressesData: [...addresses],
+              addressesData: addresses,
               id: contact.id,
               name: contact.name,
             });
