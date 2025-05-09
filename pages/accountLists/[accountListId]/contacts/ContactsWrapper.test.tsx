@@ -7,6 +7,10 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
+  ContactDetailContext,
+  ContactDetailProvider,
+} from 'src/components/Contacts/ContactDetails/ContactDetailContext';
+import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
@@ -238,14 +242,54 @@ describe('ContactsWrapper', () => {
       expect(hrefRef.current).not.toBeNull();
     });
 
-    const result = hrefRef.current as {
-      pathname: string;
-      query: Record<string, string | string[]>;
-    };
+    const result = hrefRef.current;
 
-    expect(result.query.personId).toBeUndefined();
-    expect(result.query.contactId).toEqual(['contact-2']);
+    expect(result?.query.personId).toBeUndefined();
+    expect(result?.query.contactId).toEqual(['contact-2']);
   });
+});
+
+it('updates personId in URL when a different person is selected', async () => {
+  const routeReplace = jest.fn();
+  const router = {
+    pathname: '/contacts',
+    query: {
+      accountListId: 'account-list-1',
+      contactId: ['contact-1'],
+      personId: 'person-1',
+    },
+    replace: routeReplace,
+    isReady: true,
+  };
+
+  const TestComponent = () => {
+    const context = React.useContext(ContactDetailContext);
+    useEffect(() => {
+      context?.openPersonModal('person-2');
+    }, [context]);
+    return null;
+  };
+
+  render(
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <TestComponent />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </LocalizationProvider>,
+  );
+
+  await waitFor(() => {
+    expect(routeReplace).toHaveBeenCalled();
+  });
+
+  const [[replaceCall]] = routeReplace.mock.calls;
+  expect(replaceCall.query.personId).toBe('person-2');
 });
 
 describe('extractContactId', () => {
