@@ -53,7 +53,6 @@ const useStyles = makeStyles()(() => ({
 }));
 
 interface Props {
-  key: string;
   index: number;
   person: PersonInvalidNumberFragment;
   phoneNumber: PhoneNumber;
@@ -71,8 +70,6 @@ interface Props {
 }
 
 export const ContactPhoneNumbers: React.FC<Props> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  key,
   setFieldValue,
   errors,
   index,
