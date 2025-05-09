@@ -13,7 +13,6 @@ import {
   Grid,
   Hidden,
   Link,
-  Theme,
   Typography,
 } from '@mui/material';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
@@ -30,7 +29,7 @@ import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated'
 import PhoneValidationForm from './PhoneNumberValidationForm';
 import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   left: {},
   container: {
     display: 'flex',

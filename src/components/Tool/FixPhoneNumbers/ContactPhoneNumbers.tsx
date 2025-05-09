@@ -10,7 +10,6 @@ import {
   Grid,
   Hidden,
   TextField,
-  Theme,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -26,7 +25,7 @@ import theme from '../../../theme';
 import { PhoneNumber } from './Contact';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   responsiveBorder: {
     [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
