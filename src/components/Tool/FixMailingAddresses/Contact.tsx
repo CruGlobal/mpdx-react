@@ -209,7 +209,13 @@ const Contact: React.FC<Props> = ({
             {addressesData &&
               addressesData.map((address, index) => (
                 <Fragment key={address.id}>
-                  <Grid item xs={12} md={5} className={classes.paddingB2}>
+                  <Grid
+                    item
+                    xs={12}
+                    md={5}
+                    className={classes.paddingB2}
+                    data-testid="address"
+                  >
                     <Box display="flex" justifyContent="space-between">
                       <Grid item md={8}>
                         <Hidden mdUp>
@@ -232,7 +238,7 @@ const Contact: React.FC<Props> = ({
                       <Grid item md={4} className={classes.alignCenter}>
                         <ContactIconContainer
                           aria-label={t('Edit Icon')}
-                          disabled={!isEditableSource(address.source)}
+                          // disabled={!isEditableSource(address.source)}
                           onClick={() => handleChangePrimary(id, index)}
                         >
                           {address.primaryMailingAddress ? (
