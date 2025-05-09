@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -6,6 +6,10 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  ContactDetailContext,
+  ContactDetailProvider,
+} from 'src/components/Contacts/ContactDetails/ContactDetailContext';
 import {
   ContactsContext,
   ContactsType,
@@ -191,6 +195,101 @@ describe('ContactsWrapper', () => {
       },
     });
   });
+  it('removes personId from URL when a different contact is selected', async () => {
+    const routeReplace = jest.fn();
+    const router = {
+      pathname: '/contacts',
+      query: {
+        accountListId: 'account-list-1',
+        contactId: ['contact-1'],
+        personId: 'person-123',
+      },
+      replace: routeReplace,
+      isReady: true,
+    };
+
+    const hrefRef = {
+      current: null as ReturnType<ContactsType['getContactHrefObject']> | null,
+    };
+
+    const CaptureHrefComponent: React.FC = () => {
+      const { getContactHrefObject } = useContext(
+        ContactsContext,
+      ) as ContactsType;
+
+      useEffect(() => {
+        hrefRef.current = getContactHrefObject('contact-2');
+      }, [getContactHrefObject]);
+
+      return null;
+    };
+
+    render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <ContactsWrapper>
+                <CaptureHrefComponent />
+              </ContactsWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+
+    await waitFor(() => {
+      expect(hrefRef.current).not.toBeNull();
+    });
+
+    const result = hrefRef.current;
+
+    expect(result?.query.personId).toBeUndefined();
+    expect(result?.query.contactId).toEqual(['contact-2']);
+  });
+});
+
+it('updates personId in URL when a different person is selected', async () => {
+  const routeReplace = jest.fn();
+  const router = {
+    pathname: '/contacts',
+    query: {
+      accountListId: 'account-list-1',
+      contactId: ['contact-1'],
+      personId: 'person-1',
+    },
+    replace: routeReplace,
+    isReady: true,
+  };
+
+  const TestComponent = () => {
+    const context = React.useContext(ContactDetailContext);
+    useEffect(() => {
+      context?.openPersonModal('person-2');
+    }, [context]);
+    return null;
+  };
+
+  render(
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <ContactDetailProvider>
+              <TestComponent />
+            </ContactDetailProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </LocalizationProvider>,
+  );
+
+  await waitFor(() => {
+    expect(routeReplace).toHaveBeenCalled();
+  });
+
+  const [[replaceCall]] = routeReplace.mock.calls;
+  expect(replaceCall.query.personId).toBe('person-2');
 });
 
 describe('extractContactId', () => {
