@@ -129,16 +129,6 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     setDefaultSource(event.target.value);
   };
 
-  const handleChange = (
-    personId: string,
-    numberIndex: number,
-    newNumber: string,
-  ): void => {
-    const temp = { ...dataState };
-    dataState[personId].phoneNumbers[numberIndex].number = newNumber;
-    setDataState(temp);
-  };
-
   const handleBulkConfirm = async () => {
     setSubmitAll(true);
   };
@@ -283,7 +273,6 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                       key={person.id}
                       submitAll={submitAll}
                       person={person}
-                      handleChange={handleChange}
                       handleSingleConfirm={handleSingleConfirm}
                       dataState={dataState}
                       handleChangePrimary={handleChangePrimary}

@@ -10,7 +10,6 @@ import {
   Grid,
   Hidden,
   TextField,
-  Theme,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -26,7 +25,7 @@ import theme from '../../../theme';
 import { PhoneNumber } from './Contact';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   responsiveBorder: {
     [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
@@ -54,7 +53,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
 }));
 
 interface Props {
-  key: string;
   index: number;
   person: PersonInvalidNumberFragment;
   phoneNumber: PhoneNumber;
@@ -67,14 +65,12 @@ interface Props {
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
   ) => void;
-  setFieldValue: (field: string, value: string) => void;
+  handleChange: (field: string, value: string) => void;
   errors: any;
 }
 
 export const ContactPhoneNumbers: React.FC<Props> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  key,
-  setFieldValue,
+  handleChange,
   errors,
   index,
   person,
@@ -178,9 +174,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   inputProps={{
                     'data-testid': `textfield-${personId}-${phoneNumber?.id}`,
                   }}
-                  onChange={(e) => {
-                    setFieldValue(`numbers.${index}.number`, e.target.value);
-                  }}
+                  onChange={handleChange}
                   disabled={!isEditableSource(phoneNumber?.source)}
                 />
               )}

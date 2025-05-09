@@ -74,7 +74,6 @@ const TestComponent = ({
   mocks,
   dataState = defaultDataState,
 }: TestComponentProps) => {
-  const handleChangeMock = jest.fn();
   const handleChangePrimaryMock = jest.fn();
 
   return (
@@ -93,7 +92,6 @@ const TestComponent = ({
                 person={person}
                 dataState={dataState}
                 accountListId={accountListId}
-                handleChange={handleChangeMock}
                 handleChangePrimary={handleChangePrimaryMock}
                 handleSingleConfirm={handleSingleConfirm}
                 submitAll={false}
@@ -346,6 +344,40 @@ describe('Fix PhoneNumber Contact', () => {
     userEvent.click(getByRole('button', { name: 'Confirm' }));
     await waitFor(() => {
       expect(handleSingleConfirm).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should not submit stale data', async () => {
+    const { getByTestId, getByRole } = render(<TestComponent />);
+    const textInput = getByTestId('textfield-contactTestId-number2');
+    userEvent.clear(textInput);
+    userEvent.type(textInput, '1234');
+    expect(textInput).toHaveValue('1234');
+
+    userEvent.click(getByRole('button', { name: 'Confirm' }));
+    await waitFor(() => {
+      expect(handleSingleConfirm).toHaveBeenCalledWith(person, [
+        {
+          id: 'number1',
+          isPrimary: true,
+          isValid: false,
+          number: '123456',
+          personId: 'contactTestId',
+          primary: true,
+          source: 'DataServer',
+          updatedAt: '2021-06-21T00:00:00.000+00:00',
+        },
+        {
+          id: 'number2',
+          isPrimary: false,
+          isValid: false,
+          number: '1234',
+          personId: 'contactTestId',
+          primary: false,
+          source: 'MPDX',
+          updatedAt: '2021-06-22T00:00:00.000+00:00',
+        },
+      ]);
     });
   });
 });

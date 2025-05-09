@@ -13,7 +13,6 @@ import {
   Grid,
   Hidden,
   Link,
-  Theme,
   Typography,
 } from '@mui/material';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
@@ -30,7 +29,7 @@ import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated'
 import PhoneValidationForm from './PhoneNumberValidationForm';
 import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   left: {},
   container: {
     display: 'flex',
@@ -135,11 +134,6 @@ interface NumberToDelete {
 interface Props {
   submitAll: boolean;
   person: PersonInvalidNumberFragment;
-  handleChange: (
-    personId: string,
-    numberIndex: number,
-    newNumber: string,
-  ) => void;
   handleSingleConfirm: (
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
@@ -214,7 +208,7 @@ const Contact: React.FC<Props> = ({
     },
   });
 
-  const { values, setFieldValue, handleSubmit, errors } = formik;
+  const { values, handleChange, handleSubmit, errors } = formik;
 
   useEffect(() => {
     if (submitAll) {
@@ -314,6 +308,7 @@ const Contact: React.FC<Props> = ({
                         onClick={() => handleSubmit()}
                         variant="contained"
                         style={{ width: '100%' }}
+                        disabled={Object.keys(errors).length > 0}
                       >
                         <Icon
                           path={mdiCheckboxMarkedCircle}
@@ -369,7 +364,7 @@ const Contact: React.FC<Props> = ({
                           {values.numbers.map((phoneNumber, index) => (
                             <ContactPhoneNumbers
                               key={phoneNumber.id}
-                              setFieldValue={setFieldValue}
+                              handleChange={handleChange}
                               errors={errors}
                               index={index}
                               person={person}
