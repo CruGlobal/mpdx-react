@@ -169,7 +169,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     setDataState(newDataState);
   }, [loading, data]);
 
-  const handleChangePrimary = (contactId: string, addressId: number): void => {
+  const handleChangePrimary = (contactId: string, addressId: string): void => {
     if (!dataState[contactId]) {
       return;
     }
