@@ -239,7 +239,7 @@ const Contact: React.FC<Props> = ({
                         <ContactIconContainer
                           aria-label={t('Edit Icon')}
                           disabled={!isEditableSource(address.source)}
-                          onClick={() => handleChangePrimary(id, address.id)}
+                          onClick={() => handleChangePrimary(id, index)}
                         >
                           {address.primaryMailingAddress ? (
                             <StarIcon
