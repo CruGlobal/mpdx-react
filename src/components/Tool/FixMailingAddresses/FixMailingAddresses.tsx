@@ -169,61 +169,64 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     setAddressesState(newAddressesState);
   }, [loading, data]);
 
-  const handleChangePrimary = (contactId: string, addressId: string): void => {
-    if (!addressesState[contactId]) {
-      return;
-    }
+  const handleChangePrimary = useCallback(
+    (contactId: string, addressId: string): void => {
+      if (!addressesState[contactId]) {
+        return;
+      }
 
-    const temp = { ...addressesState };
+      const temp = { ...addressesState };
 
-    temp[contactId].addresses = temp[contactId].addresses.map((address) => ({
-      ...address,
-      primaryMailingAddress: address.id === addressId,
-    }));
-    setAddressesState(temp);
-  };
+      temp[contactId].addresses = temp[contactId].addresses.map((address) => ({
+        ...address,
+        primaryMailingAddress: address.id === addressId,
+      }));
+      setAddressesState(temp);
+    },
+    [addressesState],
+  );
 
-  const handleSingleConfirm = async ({
-    id,
-    name,
-  }: HandleSingleConfirmProps) => {
-    let errorOccurred = false;
-    const addressesData = addressesState[id]?.addresses || [];
+  const handleSingleConfirm = useCallback(
+    async ({ id, name }: HandleSingleConfirmProps) => {
+      let errorOccurred = false;
+      const addressesData = addressesState[id]?.addresses || [];
 
-    for (let idx = 0; idx < addressesData.length; idx++) {
-      const address = addressesData[idx];
+      for (let idx = 0; idx < addressesData.length; idx++) {
+        const address = addressesData[idx];
 
-      await updateAddress({
-        variables: {
-          accountListId,
-          attributes: {
-            id: address.id,
-            validValues: true,
-            primaryMailingAddress: address.primaryMailingAddress,
+        await updateAddress({
+          variables: {
+            accountListId,
+            attributes: {
+              id: address.id,
+              validValues: true,
+              primaryMailingAddress: address.primaryMailingAddress,
+            },
           },
-        },
-        update(cache) {
-          if (idx === addressesData.length - 1 && !errorOccurred) {
-            cache.evict({ id: `Contact:${id}` });
-          }
-        },
-        onError() {
-          errorOccurred = true;
-        },
-      });
-    }
+          update(cache) {
+            if (idx === addressesData.length - 1 && !errorOccurred) {
+              cache.evict({ id: `Contact:${id}` });
+            }
+          },
+          onError() {
+            errorOccurred = true;
+          },
+        });
+      }
 
-    if (errorOccurred) {
-      enqueueSnackbar(t(`Error updating contact ${name}`), {
-        variant: 'error',
-        autoHideDuration: 7000,
-      });
-      return { success: false };
-    } else {
-      enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
-      return { success: true };
-    }
-  };
+      if (errorOccurred) {
+        enqueueSnackbar(t(`Error updating contact ${name}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+        return { success: false };
+      } else {
+        enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
+        return { success: true };
+      }
+    },
+    [addressesState, updateAddress, accountListId, enqueueSnackbar, t],
+  );
 
   const handleBulkConfirm = async () => {
     try {
