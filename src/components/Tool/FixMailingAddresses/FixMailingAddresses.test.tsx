@@ -417,7 +417,31 @@ describe('FixMailingAddresses', () => {
           <Components
             mocks={{
               InvalidAddresses: {
-                ...mockInvalidAddressesResponse.InvalidAddresses,
+                contacts: {
+                  nodes: [
+                    {
+                      id: contactId,
+                      name: 'Baggins, Frodo',
+                      status: null,
+                      addresses: {
+                        nodes: [
+                          mpdxSourcedAddress,
+                          {
+                            ...siebelSourcedAddress,
+                            source: 'TntImport',
+                            primaryMailingAddress: false,
+                          },
+                          {
+                            ...siebelSourcedAddress,
+                            country: 'Canada',
+                            source: 'TntImport',
+                            primaryMailingAddress: false,
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
               },
             }}
           />,
@@ -432,11 +456,12 @@ describe('FixMailingAddresses', () => {
       const secondaryAddresses = getAllByTestId('contactStarIcon');
 
       expect(primaryAddress).toBeInTheDocument();
+
       expect(secondaryAddresses.length).toBe(2);
 
       expect(queryAllByTestId('settingPrimaryAddress').length).toBe(0);
 
-      userEvent.click(secondaryAddresses[0]);
+      userEvent.click(secondaryAddresses[1]);
 
       expect(mockEnqueue).not.toHaveBeenCalled();
     });

@@ -238,7 +238,7 @@ const Contact: React.FC<Props> = ({
                       <Grid item md={4} className={classes.alignCenter}>
                         <ContactIconContainer
                           aria-label={t('Edit Icon')}
-                          // disabled={!isEditableSource(address.source)}
+                          disabled={!isEditableSource(address.source)}
                           onClick={() => handleChangePrimary(id, index)}
                         >
                           {address.primaryMailingAddress ? (
