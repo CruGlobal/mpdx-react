@@ -1,6 +1,6 @@
 import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -405,56 +405,76 @@ describe('FixMailingAddresses', () => {
 
   describe('Set primary mailing address', () => {
     it('should set the address as primary', async () => {
-      const { findByTestId, getAllByTestId, queryByTestId, queryAllByTestId } =
-        render(
-          <Components
-            mocks={{
-              InvalidAddresses: {
-                contacts: {
-                  nodes: [
-                    {
-                      id: contactId,
-                      name: 'Baggins, Frodo',
-                      status: null,
-                      addresses: {
-                        nodes: [
-                          mpdxSourcedAddress,
-                          {
-                            ...siebelSourcedAddress,
-                            source: 'TntImport',
-                            primaryMailingAddress: false,
-                          },
-                          {
-                            ...siebelSourcedAddress,
-                            country: 'Canada',
-                            source: 'TntImport',
-                            primaryMailingAddress: false,
-                          },
-                        ],
-                      },
+      const {
+        findAllByTestId,
+        getAllByTestId,
+        queryByTestId,
+        queryAllByTestId,
+      } = render(
+        <Components
+          mocks={{
+            InvalidAddresses: {
+              contacts: {
+                nodes: [
+                  {
+                    id: contactId,
+                    name: 'Baggins, Frodo',
+                    status: null,
+                    addresses: {
+                      nodes: [
+                        {
+                          ...mpdxSourcedAddress,
+                          id: 'test1',
+                          primaryMailingAddress: true,
+                        },
+                        {
+                          ...siebelSourcedAddress,
+                          id: 'test2',
+                          source: 'TntImport',
+                          primaryMailingAddress: false,
+                        },
+                        {
+                          ...siebelSourcedAddress,
+                          id: 'test3',
+                          country: 'Canada',
+                          source: 'TntImport',
+                          primaryMailingAddress: false,
+                        },
+                      ],
                     },
-                  ],
-                },
+                  },
+                ],
               },
-            }}
-          />,
-        );
+            },
+          }}
+        />,
+      );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      const primaryAddress = await findByTestId('primaryContactStarIcon');
+      const addresses = await findAllByTestId('address');
+
+      expect(addresses.length).toBe(3);
+
+      const primaryAddress = within(addresses[0]).getByTestId(
+        'primaryContactStarIcon',
+      );
+      expect(primaryAddress).toBeInTheDocument();
 
       const secondaryAddresses = getAllByTestId('contactStarIcon');
 
-      expect(primaryAddress).toBeInTheDocument();
-
       expect(secondaryAddresses.length).toBe(2);
-
       expect(queryAllByTestId('settingPrimaryAddress').length).toBe(0);
 
       userEvent.click(secondaryAddresses[1]);
 
+      const newPrimaryAddress = within(addresses[2]).getByTestId(
+        'primaryContactStarIcon',
+      );
+
+      expect(newPrimaryAddress).toBeInTheDocument();
+      expect(newPrimaryAddress).not.toBe(primaryAddress);
       expect(mockEnqueue).not.toHaveBeenCalled();
     });
   });
