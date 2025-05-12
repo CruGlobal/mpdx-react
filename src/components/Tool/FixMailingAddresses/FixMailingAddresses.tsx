@@ -144,13 +144,6 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     const existingSources = new Set<string>();
     existingSources.add(manualSourceValue);
 
-    data?.contacts.nodes.forEach((contact) => {
-      contact.addresses.nodes.forEach((address) => {
-        existingSources.add(address.source);
-      });
-    });
-    setSourceOptions([...existingSources]);
-
     const newAddressesState = data
       ? data.contacts.nodes?.reduce(
           (dataStateObj, contact) => ({
@@ -166,6 +159,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
         )
       : {};
 
+    setSourceOptions([...existingSources]);
     setAddressesState(newAddressesState);
   }, [loading, data]);
 
