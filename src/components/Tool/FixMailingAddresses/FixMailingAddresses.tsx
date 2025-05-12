@@ -153,8 +153,8 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
 
     const newDataState = data
       ? data.contacts.nodes?.reduce(
-          (map, contact) => ({
-            ...map,
+          (dataStateObj, contact) => ({
+            ...dataStateObj,
             [contact.id]: {
               addresses: contact.addresses.nodes.map((address) => {
                 existingSources.add(address.source);
