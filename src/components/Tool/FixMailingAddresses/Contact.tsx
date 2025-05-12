@@ -114,7 +114,7 @@ interface Props {
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
   handleSingleConfirm: ({ id, name }: HandleSingleConfirmProps) => void;
-  handleChangePrimary: (addressId: string, numberIndex: number) => void;
+  handleChangePrimary: (contactId: string, addressId: string) => void;
   dataState: any;
 }
 
@@ -207,7 +207,7 @@ const Contact: React.FC<Props> = ({
               </Grid>
             </Hidden>
             {addressesData &&
-              addressesData.map((address, index) => (
+              addressesData.map((address) => (
                 <Fragment key={address.id}>
                   <Grid
                     item
@@ -239,7 +239,7 @@ const Contact: React.FC<Props> = ({
                         <ContactIconContainer
                           aria-label={t('Edit Icon')}
                           disabled={!isEditableSource(address.source)}
-                          onClick={() => handleChangePrimary(id, index)}
+                          onClick={() => handleChangePrimary(id, address.id)}
                         >
                           {address.primaryMailingAddress ? (
                             <StarIcon
