@@ -98,7 +98,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
       );
       setEditPersonModalOpen(id);
     },
-    [router, setEditPersonModalOpen],
+    [router],
   );
 
   const closePersonModal = useCallback(() => {
@@ -107,7 +107,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
       shallow: true,
     });
     setEditPersonModalOpen(undefined);
-  }, [router, setEditPersonModalOpen]);
+  }, [router]);
 
   return (
     <ContactDetailContext.Provider
