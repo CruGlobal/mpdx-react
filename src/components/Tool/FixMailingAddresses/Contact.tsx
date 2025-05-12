@@ -115,7 +115,7 @@ interface Props {
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
   handleSingleConfirm: ({ id, name }: HandleSingleConfirmProps) => void;
   handleChangePrimary: (contactId: string, addressId: string) => void;
-  dataState: any;
+  addressesState: any;
 }
 
 const Contact: React.FC<Props> = ({
@@ -126,7 +126,7 @@ const Contact: React.FC<Props> = ({
   openNewAddressModal,
   handleSingleConfirm,
   handleChangePrimary,
-  dataState,
+  addressesState,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -142,8 +142,8 @@ const Contact: React.FC<Props> = ({
   const { appName } = useGetAppSettings();
 
   const addressesData = useMemo(() => {
-    return dataState[id]?.addresses;
-  }, [dataState]);
+    return addressesState[id]?.addresses;
+  }, [addressesState]);
 
   const handleConfirm = () => {
     handleSingleConfirm({ id, name });

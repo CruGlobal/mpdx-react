@@ -138,7 +138,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   });
   const [updateAddress] = useUpdateContactAddressMutation();
   const { enqueueSnackbar } = useSnackbar();
-  const [dataState, setDataState] = useState({});
+  const [addressesState, setAddressesState] = useState({});
 
   useEffect(() => {
     const existingSources = new Set<string>();
@@ -151,7 +151,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     });
     setSourceOptions([...existingSources]);
 
-    const newDataState = data
+    const newAddressesState = data
       ? data.contacts.nodes?.reduce(
           (dataStateObj, contact) => ({
             ...dataStateObj,
@@ -166,21 +166,21 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
         )
       : {};
 
-    setDataState(newDataState);
+    setAddressesState(newAddressesState);
   }, [loading, data]);
 
   const handleChangePrimary = (contactId: string, addressId: string): void => {
-    if (!dataState[contactId]) {
+    if (!addressesState[contactId]) {
       return;
     }
 
-    const temp = { ...dataState };
+    const temp = { ...addressesState };
 
     temp[contactId].addresses = temp[contactId].addresses.map((address) => ({
       ...address,
       primaryMailingAddress: address.id === addressId,
     }));
-    setDataState(temp);
+    setAddressesState(temp);
   };
 
   const handleSingleConfirm = async ({
@@ -188,7 +188,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     name,
   }: HandleSingleConfirmProps) => {
     let errorOccurred = false;
-    const addressesData = dataState[id]?.addresses || [];
+    const addressesData = addressesState[id]?.addresses || [];
 
     for (let idx = 0; idx < addressesData.length; idx++) {
       const address = addressesData[idx];
@@ -229,7 +229,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
       data?.contacts?.nodes.forEach((contact) => {
-        const primaryAddress = dataState[contact.id]?.addresses.find(
+        const primaryAddress = addressesState[contact.id]?.addresses.find(
           (address) => sourcesMatch(defaultSource, address.source),
         );
         if (primaryAddress) {
@@ -441,7 +441,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                         }
                         handleSingleConfirm={handleSingleConfirm}
                         handleChangePrimary={handleChangePrimary}
-                        dataState={dataState}
+                        addressesState={addressesState}
                       />
                     ))}
                   </Grid>
