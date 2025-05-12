@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import fetch from 'node-fetch';
 
-const buildUrlPath = (originalPath?: string | string[]) => {
+export const buildUrlPath = (originalPath?: string | string[]) => {
   if (!originalPath) {
     return originalPath;
   }
