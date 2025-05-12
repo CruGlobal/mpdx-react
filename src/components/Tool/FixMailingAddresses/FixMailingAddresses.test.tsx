@@ -275,17 +275,20 @@ describe('FixMailingAddresses', () => {
     it("should not allow deletion of address when source isn't editable", async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
-      const { getByTestId, getByRole, queryByTestId, queryByRole, findByText } =
-        render(
-          <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
-        );
+      const {
+        findByTestId,
+        getByRole,
+        queryByTestId,
+        queryByRole,
+        findByText,
+      } = render(
+        <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
+      );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      await waitFor(() =>
-        userEvent.click(getByTestId(`address-${siebelSourcedAddress.id}`)),
-      );
+      userEvent.click(await findByTestId(`address-${siebelSourcedAddress.id}`));
 
       expect(await findByText('Edit Address')).toBeInTheDocument();
 
@@ -356,11 +359,9 @@ describe('FixMailingAddresses', () => {
 
       userEvent.click(getByTestId(`addAddress-${contactId}`));
 
-      await waitFor(() => {
-        expect(
-          getByRole('heading', { name: 'Add Address (MPDX)' }),
-        ).toBeInTheDocument();
-      });
+      expect(
+        await findByRole('heading', { name: 'Add Address (MPDX)' }),
+      ).toBeInTheDocument();
 
       await waitFor(() => {
         expect(getByRole('button', { name: 'Save' })).toBeDisabled();
@@ -387,6 +388,7 @@ describe('FixMailingAddresses', () => {
       await waitFor(() => {
         expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
       });
+
       userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() =>
@@ -403,7 +405,7 @@ describe('FixMailingAddresses', () => {
 
   describe('Set primary mailing address', () => {
     it('should set the address as primary', async () => {
-      const { getByTestId, getAllByTestId, queryByTestId, queryAllByTestId } =
+      const { findByTestId, getAllByTestId, queryByTestId, queryAllByTestId } =
         render(
           <Components
             mocks={{
@@ -441,9 +443,8 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      const primaryAddress = await waitFor(() =>
-        getByTestId('primaryContactStarIcon'),
-      );
+      const primaryAddress = await findByTestId('primaryContactStarIcon');
+
       const secondaryAddresses = getAllByTestId('contactStarIcon');
 
       expect(primaryAddress).toBeInTheDocument();
@@ -483,7 +484,7 @@ describe('FixMailingAddresses', () => {
         getAllByRole,
         getByText,
         queryByTestId,
-        getAllByTestId,
+        findAllByTestId,
         findByText,
       } = render(
         <Components
@@ -501,7 +502,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      await waitFor(() => getAllByTestId('address'));
+      expect(await findAllByTestId('address')).toHaveLength(3);
 
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
@@ -522,7 +523,7 @@ describe('FixMailingAddresses', () => {
     it('should handle success and remove contact', async () => {
       const {
         getAllByRole,
-        getAllByTestId,
+        findAllByTestId,
         queryByTestId,
         queryByText,
         findByText,
@@ -539,7 +540,7 @@ describe('FixMailingAddresses', () => {
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      await waitFor(() => getAllByTestId('address'));
+      expect(await findAllByTestId('address')).toHaveLength(3);
 
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
@@ -560,7 +561,7 @@ describe('FixMailingAddresses', () => {
     const name2 = 'Gamgee, Samwise';
 
     it('should handle Error', async () => {
-      const { getByRole, getByText, queryByTestId } = render(
+      const { getByRole, getByText, queryByTestId, findByRole } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -600,9 +601,9 @@ describe('FixMailingAddresses', () => {
 
       userEvent.click(getByRole('button', { name: 'Confirm 2 as MPDX' }));
 
-      await waitFor(() =>
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('heading', { name: 'Confirm' }),
+      ).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
@@ -634,7 +635,7 @@ describe('FixMailingAddresses', () => {
     });
 
     it('should handle success and remove contacts', async () => {
-      const { getByRole, queryByTestId, queryByText } = render(
+      const { getByRole, queryByTestId, queryByText, findByRole } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -667,9 +668,9 @@ describe('FixMailingAddresses', () => {
       );
       userEvent.click(getByRole('button', { name: 'Confirm 2 as MPDX' }));
 
-      await waitFor(() =>
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('heading', { name: 'Confirm' }),
+      ).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
@@ -688,7 +689,7 @@ describe('FixMailingAddresses', () => {
   });
 
   it('should not fire handleSingleConfirm', async () => {
-    const { getByRole, queryByTestId, queryByText } = render(
+    const { getByRole, queryByTestId, queryByText, findByRole } = render(
       <Components
         mocks={{
           InvalidAddresses: {
@@ -708,9 +709,9 @@ describe('FixMailingAddresses', () => {
       getByRole('button', { name: 'Confirm 1 as US Donation Services' }),
     );
 
-    await waitFor(() =>
-      expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
-    );
+    expect(
+      await findByRole('heading', { name: 'Confirm' }),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'No' }));
 
