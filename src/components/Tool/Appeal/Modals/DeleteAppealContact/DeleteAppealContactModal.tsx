@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Box,
   CircularProgress,
@@ -19,11 +19,7 @@ import {
   AppealsType,
   TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
-import {
-  AppealContactsInfoFragment,
-  useAppealContactsQuery,
-  useDeleteAppealContactMutation,
-} from './DeleteAppealContact.generated';
+import { useDeleteAppealContactMutation } from './DeleteAppealContact.generated';
 
 const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -44,48 +40,9 @@ export const DeleteAppealContactModal: React.FC<
   ) as AppealsType;
   const [deleteAppealContact, { loading: mutating }] =
     useDeleteAppealContactMutation();
-  const { data, fetchMore } = useAppealContactsQuery({
-    variables: {
-      appealId: appealId ?? '',
-    },
-  });
-  const [loading, setLoading] = useState(false);
-  const [appealContactsIds, setAppealContactsIds] = useState<
-    AppealContactsInfoFragment[]
-  >([]);
-
-  const loadAllAppealContacts = async () => {
-    let allContacts = data?.appealContacts.nodes ?? [];
-    let hasNextPage = true;
-    let cursor: string | null = null;
-
-    while (hasNextPage) {
-      const response = await fetchMore({
-        variables: {
-          after: cursor,
-        },
-      });
-
-      const newContacts = response.data.appealContacts.nodes;
-      allContacts = [...allContacts, ...newContacts];
-      hasNextPage = response.data.appealContacts.pageInfo.hasNextPage;
-      cursor = response.data.appealContacts.pageInfo.endCursor ?? null;
-    }
-
-    setAppealContactsIds(allContacts);
-    setLoading(false);
-    return allContacts;
-  };
-
-  useEffect(() => {
-    loadAllAppealContacts();
-  }, []);
 
   const handleRemoveContact = async () => {
-    const appealContactId = appealContactsIds.find(
-      (appealContact) => appealContact.contact.id === contactId,
-    )?.id;
-    if (!appealContactId) {
+    if (!appealId) {
       enqueueSnackbar('Error while removing contact from appeal.', {
         variant: 'error',
       });
@@ -137,13 +94,13 @@ export const DeleteAppealContactModal: React.FC<
         )}
       </DialogContent>
       <DialogActions>
-        <CancelButton onClick={onClickDecline} disabled={mutating || loading}>
+        <CancelButton onClick={onClickDecline} disabled={mutating}>
           {t('No')}
         </CancelButton>
         <SubmitButton
           type="button"
           onClick={handleRemoveContact}
-          disabled={mutating || loading}
+          disabled={mutating}
         >
           {t('Yes')}
         </SubmitButton>
