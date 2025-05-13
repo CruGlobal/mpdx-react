@@ -94,7 +94,8 @@ export const DeleteAppealContactModal: React.FC<
     await deleteAppealContact({
       variables: {
         input: {
-          id: appealContactId,
+          contactId,
+          appealId,
         },
       },
       update: (cache) => {
