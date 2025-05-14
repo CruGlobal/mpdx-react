@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { Fragment } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -12,7 +12,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CircularProgress,
   Grid,
   Hidden,
   IconButton,
@@ -21,10 +20,8 @@ import {
 } from '@mui/material';
 import clsx from 'clsx';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
   AddButton,
   AddIcon,
@@ -37,7 +34,6 @@ import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -117,25 +113,23 @@ interface Props {
   addresses: ContactAddressFragment[];
   openEditAddressModal: (address: ContactAddressFragment, id: string) => void;
   openNewAddressModal: (address: ContactAddressFragment, id: string) => void;
-  handleSingleConfirm: ({
-    addresses,
-    id,
-    name,
-  }: HandleSingleConfirmProps) => void;
+  handleSingleConfirm: ({ id, name }: HandleSingleConfirmProps) => void;
+  handleChangePrimary: (contactId: string, addressId: string) => void;
+  addressesState: any;
 }
 
 const Contact: React.FC<Props> = ({
   id,
   name,
   status,
-  addresses,
   openEditAddressModal,
   openNewAddressModal,
   handleSingleConfirm,
+  handleChangePrimary,
+  addressesState,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const accountListId = useAccountListId();
   const { getContactUrl } = useContactLinks({
@@ -144,37 +138,22 @@ const Contact: React.FC<Props> = ({
   const contactUrl = getContactUrl(id);
 
   const newAddress = { ...emptyAddress, newAddress: true };
-  const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
-    useSetContactPrimaryAddressMutation();
-  const { update } = useUpdateCache(id);
   const { getLocalizedContactStatus } = useLocalizedConstants();
   const { appName } = useGetAppSettings();
 
-  const handleSetPrimaryContact = async (address: ContactAddressFragment) => {
-    await setContactPrimaryAddress({
-      variables: {
-        contactId: id,
-        primaryAddressId: address.primaryMailingAddress ? null : address.id,
-      },
-      update,
-      onCompleted: () => {
-        enqueueSnackbar(t('Mailing information edited successfully'), {
-          variant: 'success',
-        });
-      },
-      onError: () => {
-        enqueueSnackbar(
-          t('Error occurred while updating mailing information'),
-          {
-            variant: 'error',
-          },
-        );
-      },
-    });
-  };
+  const addressesData = useMemo(() => {
+    return addressesState[id]?.addresses;
+  }, [addressesState]);
+
+  const editableSources = useMemo(() => {
+    return addressesData?.reduce((acc, address) => {
+      acc[address.id] = isEditableSource(address.source);
+      return acc;
+    }, {} as Record<string, boolean>);
+  }, [addressesData]);
 
   const handleConfirm = () => {
-    handleSingleConfirm({ addresses, id, name });
+    handleSingleConfirm({ id, name });
   };
 
   return (
@@ -234,9 +213,15 @@ const Contact: React.FC<Props> = ({
                 </Box>
               </Grid>
             </Hidden>
-            {addresses.map((address) => (
+            {addressesData?.map((address) => (
               <Fragment key={address.id}>
-                <Grid item xs={12} md={5} className={classes.paddingB2}>
+                <Grid
+                  item
+                  xs={12}
+                  md={5}
+                  className={classes.paddingB2}
+                  data-testid="address"
+                >
                   <Box display="flex" justifyContent="space-between">
                     <Grid item md={8}>
                       <Hidden mdUp>
@@ -257,30 +242,23 @@ const Contact: React.FC<Props> = ({
                       </Typography>
                     </Grid>
                     <Grid item md={4} className={classes.alignCenter}>
-                      {!settingPrimaryAddress && (
-                        <ContactIconContainer
-                          aria-label={t('Edit Icon')}
-                          onClick={() => handleSetPrimaryContact(address)}
-                        >
-                          {address.primaryMailingAddress ? (
-                            <StarIcon
-                              className={classes.hoverHighlight}
-                              data-testid="primaryContactStarIcon"
-                            />
-                          ) : (
-                            <StarOutlineIcon
-                              className={classes.hoverHighlight}
-                              data-testid="contactStarIcon"
-                            />
-                          )}
-                        </ContactIconContainer>
-                      )}
-                      {settingPrimaryAddress && (
-                        <CircularProgress
-                          size={'20px'}
-                          data-testid="settingPrimaryAddress"
-                        />
-                      )}
+                      <ContactIconContainer
+                        aria-label={t('Edit Icon')}
+                        disabled={!editableSources[address.id]}
+                        onClick={() => handleChangePrimary(id, address.id)}
+                      >
+                        {address.primaryMailingAddress ? (
+                          <StarIcon
+                            className={classes.hoverHighlight}
+                            data-testid="primaryContactStarIcon"
+                          />
+                        ) : (
+                          <StarOutlineIcon
+                            className={classes.hoverHighlight}
+                            data-testid="contactStarIcon"
+                          />
+                        )}
+                      </ContactIconContainer>
                     </Grid>
                   </Box>
                 </Grid>
@@ -313,7 +291,7 @@ const Contact: React.FC<Props> = ({
                     </Box>
 
                     <ContactIconContainer aria-label={t('Edit Icon')}>
-                      {isEditableSource(address.source) ? (
+                      {editableSources[address.id] ? (
                         <EditIcon />
                       ) : (
                         <LockIcon />
