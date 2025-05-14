@@ -99,6 +99,30 @@ describe('StreetAutocomplete', () => {
     });
   });
 
+  it('can override predictions from the Google Maps places API', async () => {
+    const { getByRole, getByTestId, queryByTestId } = render(
+      <ComponentWithMocks />,
+    );
+
+    // Let Google Maps initialize
+    jest.runOnlyPendingTimers();
+
+    userEvent.type(getByRole('combobox', { name: 'Street' }), '100 Lake Hart');
+    expect(getByTestId('LoadingPredictions')).toBeInTheDocument();
+
+    jest.advanceTimersByTime(2000);
+    await act(async () => {
+      await placePromise;
+    });
+
+    expect(queryByTestId('LoadingPredictions')).not.toBeInTheDocument();
+
+    userEvent.tab();
+
+    expect(getDetails).not.toHaveBeenCalled();
+    expect(onPredictionChosen).not.toHaveBeenCalled();
+  });
+
   it('does not query for predictions when the street is empty', async () => {
     const { getByRole } = render(<ComponentWithMocks />);
 
