@@ -213,95 +213,94 @@ const Contact: React.FC<Props> = ({
                 </Box>
               </Grid>
             </Hidden>
-            {addressesData &&
-              addressesData.map((address) => (
-                <Fragment key={address.id}>
-                  <Grid
-                    item
-                    xs={12}
-                    md={5}
-                    className={classes.paddingB2}
-                    data-testid="address"
-                  >
-                    <Box display="flex" justifyContent="space-between">
-                      <Grid item md={8}>
-                        <Hidden mdUp>
-                          <Typography display="inline">
-                            <strong>{t('Source')}: </strong>
-                          </Typography>
-                        </Hidden>
+            {addressesData?.map((address) => (
+              <Fragment key={address.id}>
+                <Grid
+                  item
+                  xs={12}
+                  md={5}
+                  className={classes.paddingB2}
+                  data-testid="address"
+                >
+                  <Box display="flex" justifyContent="space-between">
+                    <Grid item md={8}>
+                      <Hidden mdUp>
                         <Typography display="inline">
-                          {sourceToStr(t, address.source)}{' '}
+                          <strong>{t('Source')}: </strong>
                         </Typography>
-                        <Typography display="inline">
-                          {dateFormatShort(
-                            DateTime.fromISO(
-                              address.startDate || address.createdAt,
-                            ),
-                            locale,
-                          )}
-                        </Typography>
-                      </Grid>
-                      <Grid item md={4} className={classes.alignCenter}>
-                        <ContactIconContainer
-                          aria-label={t('Edit Icon')}
-                          disabled={!editableSources[address.id]}
-                          onClick={() => handleChangePrimary(id, address.id)}
-                        >
-                          {address.primaryMailingAddress ? (
-                            <StarIcon
-                              className={classes.hoverHighlight}
-                              data-testid="primaryContactStarIcon"
-                            />
-                          ) : (
-                            <StarOutlineIcon
-                              className={classes.hoverHighlight}
-                              data-testid="contactStarIcon"
-                            />
-                          )}
-                        </ContactIconContainer>
-                      </Grid>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} md={7} className={classes.paddingB2}>
-                    <Box
-                      display="flex"
-                      justifyContent="flex-start"
-                      className={clsx(
-                        classes.responsiveBorder,
-                        classes.paddingL2,
-                        classes.hoverHighlight,
-                      )}
-                      data-testid={`address-${address.id}`}
-                      onClick={() => openEditAddressModal(address, id)}
-                    >
-                      <Box className={classes.address}>
-                        <Typography
-                          style={{
-                            textDecoration: address.historic
-                              ? 'line-through'
-                              : 'none',
-                          }}
-                        >
-                          {`${address.street ? address.street : ''}, ${
-                            address.city ? address.city : ''
-                          } ${address.state ? address.state : ''} ${
-                            address.postalCode ? address.postalCode : ''
-                          }`}
-                        </Typography>
-                      </Box>
-
-                      <ContactIconContainer aria-label={t('Edit Icon')}>
-                        {editableSources[address.id] ? (
-                          <EditIcon />
+                      </Hidden>
+                      <Typography display="inline">
+                        {sourceToStr(t, address.source)}{' '}
+                      </Typography>
+                      <Typography display="inline">
+                        {dateFormatShort(
+                          DateTime.fromISO(
+                            address.startDate || address.createdAt,
+                          ),
+                          locale,
+                        )}
+                      </Typography>
+                    </Grid>
+                    <Grid item md={4} className={classes.alignCenter}>
+                      <ContactIconContainer
+                        aria-label={t('Edit Icon')}
+                        disabled={!editableSources[address.id]}
+                        onClick={() => handleChangePrimary(id, address.id)}
+                      >
+                        {address.primaryMailingAddress ? (
+                          <StarIcon
+                            className={classes.hoverHighlight}
+                            data-testid="primaryContactStarIcon"
+                          />
                         ) : (
-                          <LockIcon />
+                          <StarOutlineIcon
+                            className={classes.hoverHighlight}
+                            data-testid="contactStarIcon"
+                          />
                         )}
                       </ContactIconContainer>
+                    </Grid>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} md={7} className={classes.paddingB2}>
+                  <Box
+                    display="flex"
+                    justifyContent="flex-start"
+                    className={clsx(
+                      classes.responsiveBorder,
+                      classes.paddingL2,
+                      classes.hoverHighlight,
+                    )}
+                    data-testid={`address-${address.id}`}
+                    onClick={() => openEditAddressModal(address, id)}
+                  >
+                    <Box className={classes.address}>
+                      <Typography
+                        style={{
+                          textDecoration: address.historic
+                            ? 'line-through'
+                            : 'none',
+                        }}
+                      >
+                        {`${address.street ? address.street : ''}, ${
+                          address.city ? address.city : ''
+                        } ${address.state ? address.state : ''} ${
+                          address.postalCode ? address.postalCode : ''
+                        }`}
+                      </Typography>
                     </Box>
-                  </Grid>
-                </Fragment>
-              ))}
+
+                    <ContactIconContainer aria-label={t('Edit Icon')}>
+                      {editableSources[address.id] ? (
+                        <EditIcon />
+                      ) : (
+                        <LockIcon />
+                      )}
+                    </ContactIconContainer>
+                  </Box>
+                </Grid>
+              </Fragment>
+            ))}
             <Grid item xs={12} md={5} className={classes.paddingB2}>
               <Box display="flex" justifyContent="space-between">
                 <Box>
