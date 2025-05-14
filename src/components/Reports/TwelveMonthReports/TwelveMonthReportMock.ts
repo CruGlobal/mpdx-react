@@ -1,6 +1,6 @@
-import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
+import { TwelveMonthReportQuery } from './GetTwelveMonthReport.generated';
 
-export const fourteenMonthReportMock = {
+export const twelveMonthReportMock = {
   data: {
     attributes: {
       currency_groups: {
@@ -92,14 +92,6 @@ export const fourteenMonthReportMock = {
                     },
                   ],
                 },
-                {
-                  total: 0,
-                  donations: [],
-                },
-                {
-                  total: 0,
-                  donations: [],
-                },
               ],
             },
           ],
@@ -132,8 +124,6 @@ export const fourteenMonthReportMock = {
         '2024-02-01',
         '2024-01-01',
         '2023-12-01',
-        '2023-11-01',
-        '2023-10-01',
       ],
       salary_currency: 'USD',
       updated_at: null,
@@ -150,7 +140,7 @@ export const fourteenMonthReportMock = {
   },
 };
 
-export const fourteenMonthReportRestMock = {
+export const twelveMonthReportRestMock = {
   data: {
     id: '',
     type: 'reports_donor_currency_donations',
@@ -446,8 +436,8 @@ export const fourteenMonthReportRestMock = {
   },
 };
 
-export const defaultFourteenMonthReport = {
-  fourteenMonthReport: {
+export const defaultTwelveMonthReport = {
+  twelveMonthReport: {
     currencyGroups: [
       {
         contacts: [
@@ -604,4 +594,4 @@ export const defaultFourteenMonthReport = {
       },
     ],
   },
-} as unknown as FourteenMonthReportQuery;
+} as unknown as TwelveMonthReportQuery;
