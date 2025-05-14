@@ -145,6 +145,13 @@ const Contact: React.FC<Props> = ({
     return addressesState[id]?.addresses;
   }, [addressesState]);
 
+  const editableSources = useMemo(() => {
+    return addressesData?.reduce((acc, address) => {
+      acc[address.id] = isEditableSource(address.source);
+      return acc;
+    }, {} as Record<string, boolean>);
+  }, [addressesData]);
+
   const handleConfirm = () => {
     handleSingleConfirm({ id, name });
   };
@@ -238,7 +245,7 @@ const Contact: React.FC<Props> = ({
                       <Grid item md={4} className={classes.alignCenter}>
                         <ContactIconContainer
                           aria-label={t('Edit Icon')}
-                          disabled={!isEditableSource(address.source)}
+                          disabled={!editableSources[address.id]}
                           onClick={() => handleChangePrimary(id, address.id)}
                         >
                           {address.primaryMailingAddress ? (
@@ -285,7 +292,7 @@ const Contact: React.FC<Props> = ({
                       </Box>
 
                       <ContactIconContainer aria-label={t('Edit Icon')}>
-                        {isEditableSource(address.source) ? (
+                        {editableSources[address.id] ? (
                           <EditIcon />
                         ) : (
                           <LockIcon />

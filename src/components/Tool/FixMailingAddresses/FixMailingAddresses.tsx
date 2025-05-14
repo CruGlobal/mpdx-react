@@ -144,20 +144,19 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     const existingSources = new Set<string>();
     existingSources.add(manualSourceValue);
 
-    const newAddressesState = data
-      ? data.contacts.nodes?.reduce(
-          (dataStateObj, contact) => ({
-            ...dataStateObj,
-            [contact.id]: {
-              addresses: contact.addresses.nodes.map((address) => {
-                existingSources.add(address.source);
-                return { ...address };
-              }),
-            },
-          }),
-          {},
-        )
-      : {};
+    const newAddressesState =
+      data?.contacts.nodes?.reduce(
+        (dataStateObj, contact) => ({
+          ...dataStateObj,
+          [contact.id]: {
+            addresses: contact.addresses.nodes.map((address) => {
+              existingSources.add(address.source);
+              return { ...address };
+            }),
+          },
+        }),
+        {},
+      ) || {};
 
     setSourceOptions([...existingSources]);
     setAddressesState(newAddressesState);
@@ -222,7 +221,7 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     [addressesState, updateAddress, accountListId, enqueueSnackbar, t],
   );
 
-  const handleBulkConfirm = async () => {
+  const handleBulkConfirm = useCallback(async () => {
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
       data?.contacts?.nodes.forEach((contact) => {
@@ -266,7 +265,14 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     } catch (error) {
       enqueueSnackbar(t(`Error updating contacts`), { variant: 'error' });
     }
-  };
+  }, [
+    data,
+    addressesState,
+    defaultSource,
+    handleSingleConfirm,
+    enqueueSnackbar,
+    t,
+  ]);
 
   const handleUpdateCacheForDeleteAddress = useCallback(
     (cache: ApolloCache<unknown>, data) => {
