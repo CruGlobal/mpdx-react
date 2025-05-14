@@ -144,6 +144,7 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
         input: street,
         sessionToken,
       });
+
       // Ignore stale predictions (i.e. the street we loaded predictions for is now different from the current street)
       if (street === streetValue) {
         setPredictions(predictions);
@@ -183,7 +184,6 @@ export const StreetAutocomplete: React.FC<StreetAutocompleteProps> = ({
       <Autocomplete
         freeSolo
         disableClearable
-        autoSelect
         autoHighlight
         disabled={disabled}
         getOptionLabel={(option) =>
