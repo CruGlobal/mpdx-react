@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import {
   TaskRowFragment,
@@ -38,7 +37,7 @@ export const TaskModalCommentsListForm = ({
     values: CommentSchemaAttributes,
     { resetForm }: FormikHelpers<TaskCommentCreateInput>,
   ): Promise<void> => {
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const body = values.body.trim();
     const user = session.data?.user;
     resetForm();

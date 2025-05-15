@@ -126,7 +126,9 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Typography variant="h6">{t('Appeals')}</Typography>
+                <Typography variant="h6" id="left-panel-header">
+                  {t('Appeals')}
+                </Typography>
                 <IconButton
                   onClick={onClose}
                   aria-label={t('Close')}

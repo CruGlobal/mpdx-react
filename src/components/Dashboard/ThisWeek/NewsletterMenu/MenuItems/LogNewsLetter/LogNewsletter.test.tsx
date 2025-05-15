@@ -15,9 +15,6 @@ import LogNewsletter from './LogNewsletter';
 
 const accountListId = 'abc';
 const handleClose = jest.fn();
-jest.mock('uuid', () => ({
-  v4: (): string => 'comment-0',
-}));
 
 describe('LogNewsletter', () => {
   beforeEach(() => {
