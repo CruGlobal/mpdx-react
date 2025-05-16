@@ -626,6 +626,7 @@ const TaskModalForm = ({
               <Grid item xs={12}>
                 <TagsAutocomplete
                   accountListId={accountListId}
+                  selectedSuggestedTags={selectedSuggestedTags}
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
