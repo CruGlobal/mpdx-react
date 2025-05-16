@@ -393,8 +393,8 @@ const TaskModalForm = ({
   };
 
   const handleChangeAutocomplete = useCallback(
-    (tagList: string[]) => {
-      const suggested = tagList.filter((tag) =>
+    (autoCompleteTagList: string[], tagList: string[]) => {
+      const suggested = autoCompleteTagList.filter((tag) =>
         phaseTags.map(
           (phaseTag) => phaseTag.toLowerCase() === tag.toLowerCase(),
         ),
@@ -403,8 +403,18 @@ const TaskModalForm = ({
       if (suggested.length) {
         setSelectedSuggestedTags((prev) => [...prev, ...suggested]);
       }
+
+      const removedTag = tagList.find(
+        (tag) => !autoCompleteTagList.includes(tag),
+      );
+
+      if (removedTag && selectedSuggestedTags.includes(removedTag)) {
+        setSelectedSuggestedTags((prev) =>
+          prev.filter((tag) => tag !== removedTag),
+        );
+      }
     },
-    [phaseTags, setSelectedSuggestedTags],
+    [phaseTags, setSelectedSuggestedTags, selectedSuggestedTags],
   );
 
   return (
@@ -636,7 +646,14 @@ const TaskModalForm = ({
                 <PhaseTags
                   tags={phaseTags}
                   selectedTags={selectedSuggestedTags}
-                  setSelectedTags={setSelectedSuggestedTags}
+                  setSelectedTags={(tags) => {
+                    setSelectedSuggestedTags(tags);
+                    // Remove any deselected suggested tags from tagList as well
+                    setFieldValue(
+                      'tagList',
+                      tagList.filter((tag) => tags.includes(tag)),
+                    );
+                  }}
                 />
               )}
               <Grid item xs={12}>
@@ -644,10 +661,10 @@ const TaskModalForm = ({
                   accountListId={accountListId}
                   selectedSuggestedTags={selectedSuggestedTags}
                   type={TagTypeEnum.Tag}
-                  value={tagList ?? []}
-                  onChange={(tagList) => {
-                    setFieldValue('tagList', tagList);
-                    handleChangeAutocomplete(tagList);
+                  value={tagList || []}
+                  onChange={(autoCompleteTagList) => {
+                    setFieldValue('tagList', autoCompleteTagList);
+                    handleChangeAutocomplete(autoCompleteTagList, tagList);
                   }}
                   label={
                     phaseTags?.length && initialTask.completedAt
