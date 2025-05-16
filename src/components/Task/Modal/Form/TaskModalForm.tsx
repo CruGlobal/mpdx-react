@@ -1,5 +1,6 @@
 import React, {
   ReactElement,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -391,6 +392,21 @@ const TaskModalForm = ({
     setTimeout(() => activityRef?.current?.focus(), 50);
   };
 
+  const handleChangeAutocomplete = useCallback(
+    (tagList: string[]) => {
+      const suggested = tagList.filter((tag) =>
+        phaseTags.map(
+          (phaseTag) => phaseTag.toLowerCase() === tag.toLowerCase(),
+        ),
+      );
+
+      if (suggested.length) {
+        setSelectedSuggestedTags((prev) => [...prev, ...suggested]);
+      }
+    },
+    [phaseTags, setSelectedSuggestedTags],
+  );
+
   return (
     <Formik
       initialValues={initialTask}
@@ -629,7 +645,10 @@ const TaskModalForm = ({
                   selectedSuggestedTags={selectedSuggestedTags}
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
-                  onChange={(tagList) => setFieldValue('tagList', tagList)}
+                  onChange={(tagList) => {
+                    setFieldValue('tagList', tagList);
+                    handleChangeAutocomplete(tagList);
+                  }}
                   label={
                     phaseTags?.length && initialTask.completedAt
                       ? t('Additional Tags')
