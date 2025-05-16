@@ -395,13 +395,21 @@ const TaskModalForm = ({
   const handleChangeAutocomplete = useCallback(
     (autoCompleteTagList: string[], tagList: string[]) => {
       const suggested = autoCompleteTagList.filter((tag) =>
-        phaseTags.map(
+        phaseTags.some(
           (phaseTag) => phaseTag.toLowerCase() === tag.toLowerCase(),
         ),
       );
 
       if (suggested.length) {
-        setSelectedSuggestedTags((prev) => [...prev, ...suggested]);
+        setSelectedSuggestedTags([
+          ...selectedSuggestedTags,
+          ...suggested.filter(
+            (tag) =>
+              !selectedSuggestedTags
+                .map((t) => t.toLowerCase())
+                .includes(tag.toLowerCase()),
+          ),
+        ]);
       }
 
       const removedTag = tagList.find(
