@@ -188,24 +188,8 @@ describe('DeleteAppealContactModal', () => {
     expect(handleClose).toHaveBeenCalledTimes(2);
   });
 
-  it('fetches all the appealContacts and matches up the correct ID to send to the API', async () => {
+  it('should successfully delete a contact from an appeal', async () => {
     const { getByRole } = render(<Components />);
-
-    // Call AppealContacts 3 times getting all contacts.
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
-        after: 'endCursor2',
-        appealId: 'appealId',
-      }),
-    );
-    expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
-      after: null,
-      appealId: 'appealId',
-    });
-    expect(mutationSpy).toHaveGraphqlOperation('AppealContacts', {
-      after: 'endCursor1',
-      appealId: 'appealId',
-    });
 
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
@@ -221,7 +205,8 @@ describe('DeleteAppealContactModal', () => {
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('DeleteAppealContact', {
         input: {
-          id: 'appealContactId',
+          contactId: 'contact-1',
+          appealId: 'appealId',
         },
       });
     });
