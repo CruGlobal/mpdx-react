@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -20,7 +20,7 @@ import { manualSourceValue, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
-import Contact, { PhoneNumberData } from './Contact';
+import Contact from './Contact';
 import {
   PersonInvalidNumberFragment,
   useGetInvalidPhoneNumbersQuery,
@@ -90,35 +90,21 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   });
   const { t } = useTranslation();
 
-  const [dataState, setDataState] = useState<{
-    [key: string]: PhoneNumberData;
-  }>({});
-
   const [defaultSource, setDefaultSource] = useState(manualSourceValue);
-  const [sourceOptions, setSourceOptions] = useState([manualSourceValue]);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
-  // Create a mutable copy of the query data and store in the state
-  useEffect(() => {
+  const sourceOptions = useMemo(() => {
     const existingSources = new Set<string>();
     existingSources.add(manualSourceValue);
 
-    const newDataState = data
-      ? data.people.nodes?.reduce(
-          (map, person) => ({
-            ...map,
-            [person.id]: {
-              phoneNumbers: person.phoneNumbers.nodes.map((phoneNumber) => {
-                existingSources.add(phoneNumber.source);
-                return { ...phoneNumber };
-              }),
-            },
-          }),
-          {},
-        )
-      : {};
-    setDataState(newDataState);
-    setSourceOptions([...existingSources]);
+    if (data?.people?.nodes) {
+      data.people.nodes.forEach((person) => {
+        person.phoneNumbers.nodes.forEach((phoneNumber) => {
+          existingSources.add(phoneNumber.source);
+        });
+      });
+    }
+    return [...existingSources];
   }, [data]);
 
   const handleSourceChange = (event: SelectChangeEvent): void => {
@@ -127,23 +113,6 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
 
   const handleBulkConfirm = async () => {
     setSubmitAll(true);
-  };
-
-  const handleChangePrimary = (personId: string, numberIndex: number): void => {
-    if (!dataState[personId]) {
-      return;
-    }
-
-    const temp = { ...dataState };
-
-    temp[personId].phoneNumbers = temp[personId].phoneNumbers.map(
-      (number, index) => ({
-        ...number,
-        primary: index === numberIndex,
-      }),
-    );
-
-    setDataState(temp);
   };
 
   return (
@@ -220,8 +189,6 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                       key={person.id}
                       submitAll={submitAll}
                       person={person}
-                      dataState={dataState}
-                      handleChangePrimary={handleChangePrimary}
                       accountListId={accountListId}
                     />
                   ),

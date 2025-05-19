@@ -56,7 +56,7 @@ interface Props {
   index: number;
   person: PersonInvalidNumberFragment;
   phoneNumber: PhoneNumber;
-  handleChangePrimary: (personId: string, index: number) => void;
+  handleChangePrimary: (phoneNumberId: string) => void;
   handleDeleteNumberOpen: (person: {
     personId: string;
     phoneNumber: PhoneNumber;
@@ -102,8 +102,8 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
               </Typography>
             </Hidden>
             <Typography display="inline" variant="body2">
-              {`${sourceToStr(t, phoneNumber?.source)} (${dateFormatShort(
-                DateTime.fromISO(phoneNumber?.updatedAt),
+              {`${sourceToStr(t, phoneNumber.source)} (${dateFormatShort(
+                DateTime.fromISO(phoneNumber.updatedAt),
                 locale,
               )})`}
             </Typography>
@@ -117,7 +117,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
           className={classes.paddingX}
         >
           <Typography display="flex" alignItems="center">
-            {phoneNumber?.primary ? (
+            {phoneNumber.primary ? (
               <>
                 <Hidden smUp>
                   <Typography
@@ -129,7 +129,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   </Typography>
                 </Hidden>
                 <StarIcon
-                  data-testid={`starIcon-${personId}-${phoneNumber?.id}`}
+                  data-testid={`starIcon-${personId}-${phoneNumber.id}`}
                   className={classes.hoverHighlight}
                 />
               </>
@@ -146,9 +146,9 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                 </Hidden>
                 <Tooltip title={t('Set as Primary')} placement="left">
                   <StarOutlineIcon
-                    data-testid={`starOutlineIcon-${personId}-${phoneNumber?.id}`}
+                    data-testid={`starOutlineIcon-${personId}-${phoneNumber.id}`}
                     className={classes.hoverHighlight}
-                    onClick={() => handleChangePrimary(personId, index)}
+                    onClick={() => handleChangePrimary(phoneNumber.id)}
                   />
                 </Tooltip>
               </>
@@ -170,9 +170,9 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   style={{ width: '100%' }}
                   size="small"
                   inputProps={{
-                    'data-testid': `textfield-${personId}-${phoneNumber?.id}`,
+                    'data-testid': `textfield-${personId}-${phoneNumber.id}`,
                   }}
-                  disabled={!isEditableSource(phoneNumber?.source)}
+                  disabled={!isEditableSource(phoneNumber.source)}
                 />
               )}
             </Field>
@@ -183,12 +183,12 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
               {errors?.numbers?.[index]?.number}
             </FormHelperText>
           </FormControl>
-          {isEditableSource(phoneNumber?.source) ? (
+          {isEditableSource(phoneNumber.source) ? (
             <Box display="flex" justifyContent="center" alignItems="center">
               <Box
                 display="flex"
                 alignItems="center"
-                data-testid={`delete-${personId}-${phoneNumber?.id}`}
+                data-testid={`delete-${personId}-${phoneNumber.id}`}
                 onClick={() =>
                   handleDeleteNumberOpen({
                     personId,
