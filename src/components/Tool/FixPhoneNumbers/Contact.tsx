@@ -1,10 +1,8 @@
 import NextLink from 'next/link';
-import React, { ReactElement, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import { mdiCheckboxMarkedCircle, mdiDelete, mdiLock } from '@mdi/js';
+import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import {
   Avatar,
   Box,
@@ -12,19 +10,12 @@ import {
   Card,
   CardContent,
   CardHeader,
-  FormControl,
-  FormHelperText,
   Grid,
   Hidden,
   Link,
-  TextField,
-  Theme,
-  Tooltip,
   Typography,
 } from '@mui/material';
-import clsx from 'clsx';
-import { Formik } from 'formik';
-import { DateTime } from 'luxon';
+import { FormikProvider, useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -32,15 +23,16 @@ import * as yup from 'yup';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat';
-import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
+import { ContactPhoneNumbers } from './ContactPhoneNumbers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 import PhoneValidationForm from './PhoneNumberValidationForm';
-import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
+import {
+  useUpdateInvalidPhoneNumbersMutation,
+  useUpdatePhoneNumberMutation,
+} from './UpdateInvalidPhoneNumbers.generated';
 
-const useStyles = makeStyles()((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   left: {},
   container: {
     display: 'flex',
@@ -143,31 +135,13 @@ interface NumberToDelete {
 }
 
 interface Props {
+  submitAll: boolean; // Used as a trigger to submit each individual form
   person: PersonInvalidNumberFragment;
-  handleChange: (
-    personId: string,
-    numberIndex: number,
-    newNumber: string,
-  ) => void;
-  handleSingleConfirm: (
-    person: PersonInvalidNumberFragment,
-    numbers: PhoneNumber[],
-  ) => void;
-  dataState: { [key: string]: PhoneNumberData };
-  handleChangePrimary: (personId: string, numberIndex: number) => void;
   accountListId: string;
 }
 
-const Contact: React.FC<Props> = ({
-  person,
-  handleChange,
-  handleSingleConfirm,
-  dataState,
-  handleChangePrimary,
-  accountListId,
-}) => {
+const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const { appName } = useGetAppSettings();
@@ -181,30 +155,53 @@ const Contact: React.FC<Props> = ({
   const { id: personId, contactId } = person;
 
   const contactUrl = getContactUrl(contactId);
-
-  const numbers: PhoneNumber[] = useMemo(() => {
-    return (
-      dataState[personId]?.phoneNumbers.map((number) => ({
-        ...number,
-        isValid: false,
-        personId: personId,
-        isPrimary: number.primary,
-      })) || []
-    );
-  }, [person, dataState]);
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
 
   const name: string = `${person.firstName} ${person.lastName}`;
 
-  const validationSchema = yup.object({
-    newPhone: yup
-      .string()
-      .test(
-        'is-phone-number',
-        t('This field is not a valid phone number'),
-        (val) => typeof val === 'string' && /\d/.test(val),
+  const validationSchema = yup.object().shape({
+    numbers: yup
+      .array()
+      .of(
+        yup.object().shape({
+          number: yup
+            .string()
+            .test(
+              'is-phone-number',
+              t('This field is not a valid phone number'),
+              (val) => typeof val === 'string' && /\d/.test(val),
+            )
+            .required(t('This field is required')),
+          primary: yup.bool(),
+        }),
       )
-      .required(t('This field is required')),
+      .required(t('Must have at least 1 Phone Number to confirm')),
   });
+
+  const formik = useFormik({
+    initialValues: {
+      numbers: person.phoneNumbers.nodes.map((phoneNumber) => ({
+        id: phoneNumber?.id,
+        number: phoneNumber?.number ?? '',
+        primary: phoneNumber?.primary,
+        source: phoneNumber?.source,
+        updatedAt: phoneNumber?.updatedAt,
+      })),
+    },
+    enableReinitialize: true,
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      handleSingleConfirm(person, values.numbers);
+    },
+  });
+
+  const { values, handleSubmit, setFieldValue, errors } = formik;
+
+  useEffect(() => {
+    if (submitAll) {
+      handleSubmit();
+    }
+  }, [submitAll]);
 
   const handleDeleteNumberOpen = ({
     personId,
@@ -265,8 +262,67 @@ const Contact: React.FC<Props> = ({
     setNumberToDelete(null);
   };
 
+  const handleSingleConfirm = async (
+    person: PersonInvalidNumberFragment,
+    numbers: PhoneNumber[],
+  ) => {
+    const personName = `${person.firstName} ${person.lastName}`;
+    const phoneNumbers = numbers.map((phoneNumber) => ({
+      id: phoneNumber.id,
+      primary: phoneNumber.primary,
+      number: phoneNumber.number,
+      validValues: true,
+    }));
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes: [
+            {
+              id: person.id,
+              phoneNumbers,
+            },
+          ],
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${person.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully updated phone numbers for {{name}}`, {
+            name: personName,
+          }),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
+        enqueueSnackbar(
+          t(`Error updating phone numbers for {{name}}`, { name: personName }),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  };
+
+  const handleChangePrimary = (phoneNumberId: string): void => {
+    setFieldValue(
+      'numbers',
+      values.numbers.map((phoneNumber) => ({
+        ...phoneNumber,
+        primary: phoneNumber.id === phoneNumberId,
+      })),
+    );
+  };
+
   return (
-    <>
+    <FormikProvider value={formik}>
       <Grid container className={classes.container}>
         <Grid container>
           <Card className={classes.contactCard}>
@@ -295,9 +351,10 @@ const Contact: React.FC<Props> = ({
                     action={
                       <Button
                         data-testid={`confirmButton-${person.id}`}
-                        onClick={() => handleSingleConfirm(person, numbers)}
+                        onClick={() => handleSubmit()}
                         variant="contained"
                         style={{ width: '100%' }}
+                        disabled={Object.keys(errors).length > 0}
                       >
                         <Icon
                           path={mdiCheckboxMarkedCircle}
@@ -346,211 +403,17 @@ const Contact: React.FC<Props> = ({
                         </Box>
                       </Grid>
                     </Hidden>
-                    {numbers.map((phoneNumber, index) => (
-                      <Formik
+                    {values.numbers.map((phoneNumber, index) => (
+                      <ContactPhoneNumbers
                         key={phoneNumber.id}
-                        enableReinitialize={true}
-                        initialValues={{
-                          newPhone: phoneNumber.number,
-                        }}
-                        validationSchema={validationSchema}
-                        onSubmit={(values) => {
-                          handleChange(personId, index, values.newPhone);
-                        }}
-                      >
-                        {({
-                          values: { newPhone },
-                          setFieldValue,
-                          handleSubmit,
-                          errors,
-                        }): ReactElement => (
-                          <>
-                            <Grid
-                              data-testid="phoneNumbers"
-                              item
-                              xs={6}
-                              sm={4}
-                              className={classes.paddingB2}
-                            >
-                              <Box
-                                display="flex"
-                                justifyContent="space-between"
-                                className={classes.paddingX}
-                              >
-                                <Box>
-                                  <Hidden smUp>
-                                    <Typography
-                                      display="inline"
-                                      variant="body2"
-                                      fontWeight="bold"
-                                    >
-                                      {t('Source')}:
-                                    </Typography>
-                                  </Hidden>
-                                  <Typography display="inline" variant="body2">
-                                    {`${sourceToStr(
-                                      t,
-                                      phoneNumber.source,
-                                    )} (${dateFormatShort(
-                                      DateTime.fromISO(phoneNumber.updatedAt),
-                                      locale,
-                                    )})`}
-                                  </Typography>
-                                </Box>
-                              </Box>
-                            </Grid>
-                            <Grid
-                              item
-                              xs={6}
-                              sm={2}
-                              className={classes.paddingB2}
-                            >
-                              <Box
-                                display="flex"
-                                justifyContent="center"
-                                className={classes.paddingX}
-                              >
-                                <Typography display="flex" alignItems="center">
-                                  {phoneNumber.primary ? (
-                                    <>
-                                      <Hidden smUp>
-                                        <Typography
-                                          display="inline"
-                                          variant="body2"
-                                          fontWeight="bold"
-                                        >
-                                          {t('Source')}:
-                                        </Typography>
-                                      </Hidden>
-                                      <StarIcon
-                                        data-testid={`starIcon-${person.id}-${phoneNumber.id}`}
-                                        className={classes.hoverHighlight}
-                                      />
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Hidden smUp>
-                                        <Typography
-                                          display="inline"
-                                          variant="body2"
-                                          fontWeight="bold"
-                                        >
-                                          {t('Source')}:
-                                        </Typography>
-                                      </Hidden>
-                                      <Tooltip
-                                        title={t('Set as Primary')}
-                                        placement="left"
-                                      >
-                                        <StarOutlineIcon
-                                          data-testid={`starOutlineIcon-${person.id}-${phoneNumber.id}`}
-                                          className={classes.hoverHighlight}
-                                          onClick={() =>
-                                            handleChangePrimary(personId, index)
-                                          }
-                                        />
-                                      </Tooltip>
-                                    </>
-                                  )}
-                                </Typography>
-                              </Box>
-                            </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                              sm={6}
-                              className={classes.paddingB2}
-                            >
-                              <Box
-                                display="flex"
-                                justifyContent="flex-start"
-                                className={clsx(
-                                  classes.responsiveBorder,
-                                  classes.paddingX,
-                                )}
-                              >
-                                <FormControl fullWidth>
-                                  <TextField
-                                    style={{ width: '100%' }}
-                                    size="small"
-                                    inputProps={{
-                                      'data-testid': `textfield-${person.id}-${phoneNumber.id}`,
-                                    }}
-                                    name="newPhone"
-                                    value={newPhone}
-                                    onChange={(e) => {
-                                      setFieldValue('newPhone', e.target.value);
-                                      handleSubmit();
-                                    }}
-                                    disabled={
-                                      !isEditableSource(phoneNumber.source)
-                                    }
-                                  />
-                                  <FormHelperText
-                                    error={true}
-                                    data-testid="statusSelectError"
-                                  >
-                                    {errors.newPhone}
-                                  </FormHelperText>
-                                </FormControl>
-                                {isEditableSource(phoneNumber.source) ? (
-                                  <Box
-                                    display="flex"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                  >
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      data-testid={`delete-${person.id}-${phoneNumber.id}`}
-                                      onClick={() =>
-                                        handleDeleteNumberOpen({
-                                          personId,
-                                          phoneNumber,
-                                        })
-                                      }
-                                      className={classes.ContactIconContainer}
-                                    >
-                                      <Tooltip
-                                        title={t('Delete Number')}
-                                        placement="left"
-                                      >
-                                        <Icon
-                                          path={mdiDelete}
-                                          size={1}
-                                          className={classes.hoverHighlight}
-                                        />
-                                      </Tooltip>
-                                    </Box>
-                                  </Box>
-                                ) : (
-                                  <Box
-                                    display="flex"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                  >
-                                    <Box
-                                      display="flex"
-                                      alignItems="center"
-                                      data-testid={`lock-${person.id}-${index}`}
-                                      className={classes.paddingX}
-                                    >
-                                      <Icon
-                                        path={mdiLock}
-                                        size={1}
-                                        style={{
-                                          color:
-                                            theme.palette.cruGrayMedium.main,
-                                        }}
-                                      />
-                                    </Box>
-                                  </Box>
-                                )}
-                              </Box>
-                            </Grid>
-                          </>
-                        )}
-                      </Formik>
+                        errors={errors}
+                        index={index}
+                        person={person}
+                        phoneNumber={phoneNumber}
+                        handleChangePrimary={handleChangePrimary}
+                        handleDeleteNumberOpen={handleDeleteNumberOpen}
+                        handleSingleConfirm={handleSingleConfirm}
+                      />
                     ))}
                     <Grid item xs={12} sm={6} className={classes.paddingB2}>
                       <Box
@@ -599,7 +462,7 @@ const Contact: React.FC<Props> = ({
           handleClose={handleDeleteNumberModalClose}
         />
       )}
-    </>
+    </FormikProvider>
   );
 };
 

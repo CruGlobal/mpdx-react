@@ -39,7 +39,8 @@ jest.mock('notistack', () => ({
 const Components: React.FC<{
   data?: ErgonoMockShape[];
   cache?: ApolloCache<object>;
-}> = ({ data = testData, cache }) => (
+  count?: number;
+}> = ({ data = testData, cache, count = 2 }) => (
   <AppSettingsProvider>
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -51,7 +52,7 @@ const Components: React.FC<{
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
-                    totalCount: 2,
+                    totalCount: count,
                     nodes: data,
                   },
                 },
@@ -212,13 +213,61 @@ describe('FixPhoneNumbers-Home', () => {
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        `Successfully updated phone numbers for Simba Lion`,
+        {
+          variant: 'success',
+        },
+      );
     });
 
     expect(
       getByText('No people with phone numbers need attention'),
     ).toBeVisible();
+  });
+  it('should handle 100+ phone numbers gracefully', async () => {
+    const largeTestData = Array.from({ length: 51 }, (_, index) => ({
+      id: `person-${index}`,
+      firstName: `FirstName${index}`,
+      lastName: `LastName${index}`,
+      phoneNumbers: {
+        nodes: [
+          {
+            id: `phone-${index}`,
+            number: `+123456789${index}`,
+            primary: index === 0,
+            source: 'Manual',
+          },
+        ],
+      },
+    }));
+
+    const { getByText, getAllByTestId, queryByTestId, getByTestId } = render(
+      <Components data={largeTestData} count={51} />,
+    );
+    await waitFor(() => {
+      expect(queryByTestId('loading')).not.toBeInTheDocument();
+    });
+
+    expect(
+      await getByText('You have 51 phone numbers to confirm.'),
+    ).toBeInTheDocument();
+
+    const phoneNumberElements = await waitFor(() =>
+      getAllByTestId('phoneNumbers'),
+    );
+    await waitFor(() => {
+      expect(phoneNumberElements).toHaveLength(51);
+    });
+
+    expect(queryByTestId('no-data')).not.toBeInTheDocument();
+    expect(getByText('Confirm 51 as MPDX')).toBeInTheDocument();
+
+    userEvent.click(getByTestId('source-button'));
+
+    userEvent.click(getByText('Yes'));
+    await waitFor(() => expect(mockEnqueue).toHaveBeenCalledTimes(51), {
+      timeout: 2000,
+    });
   });
 });
