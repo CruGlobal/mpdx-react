@@ -194,7 +194,7 @@ const Contact: React.FC<Props> = ({
             .required(t('This field is required')),
         }),
       )
-      .required('Must have at least 1 Phone Number to confirm'),
+      .required(t('Must have at least 1 Phone Number to confirm')),
   });
 
   const formik = useFormik({
