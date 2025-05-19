@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -137,18 +137,10 @@ interface NumberToDelete {
 interface Props {
   submitAll: boolean; // Used as a trigger to submit each individual form
   person: PersonInvalidNumberFragment;
-  dataState: { [key: string]: PhoneNumberData };
-  handleChangePrimary: (personId: string, numberIndex: number) => void;
   accountListId: string;
 }
 
-const Contact: React.FC<Props> = ({
-  person,
-  submitAll,
-  dataState,
-  handleChangePrimary,
-  accountListId,
-}) => {
+const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
@@ -165,17 +157,6 @@ const Contact: React.FC<Props> = ({
   const contactUrl = getContactUrl(contactId);
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
 
-  const numbers: PhoneNumber[] = useMemo(() => {
-    return (
-      dataState[personId]?.phoneNumbers.map((number) => ({
-        ...number,
-        isValid: false,
-        personId: personId,
-        isPrimary: number.primary,
-      })) || []
-    );
-  }, [person, dataState]);
-
   const name: string = `${person.firstName} ${person.lastName}`;
 
   const validationSchema = yup.object().shape({
@@ -191,6 +172,7 @@ const Contact: React.FC<Props> = ({
               (val) => typeof val === 'string' && /\d/.test(val),
             )
             .required(t('This field is required')),
+          primary: yup.bool(),
         }),
       )
       .required(t('Must have at least 1 Phone Number to confirm')),
@@ -198,7 +180,13 @@ const Contact: React.FC<Props> = ({
 
   const formik = useFormik({
     initialValues: {
-      numbers: numbers,
+      numbers: person.phoneNumbers.nodes.map((phoneNumber) => ({
+        id: phoneNumber?.id,
+        number: phoneNumber?.number ?? '',
+        primary: phoneNumber?.primary,
+        source: phoneNumber?.source,
+        updatedAt: phoneNumber?.updatedAt,
+      })),
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
@@ -207,7 +195,7 @@ const Contact: React.FC<Props> = ({
     },
   });
 
-  const { values, handleSubmit, errors } = formik;
+  const { values, handleSubmit, setFieldValue, errors } = formik;
 
   useEffect(() => {
     if (submitAll) {
@@ -321,6 +309,16 @@ const Contact: React.FC<Props> = ({
         );
       },
     });
+  };
+
+  const handleChangePrimary = (phoneNumberId: string): void => {
+    setFieldValue(
+      'numbers',
+      values.numbers.map((phoneNumber) => ({
+        ...phoneNumber,
+        primary: phoneNumber.id === phoneNumberId,
+      })),
+    );
   };
 
   return (
