@@ -132,7 +132,7 @@ interface NumberToDelete {
 }
 
 interface Props {
-  submitAll: boolean;
+  submitAll: boolean; // Used as a trigger to submit each individual form
   person: PersonInvalidNumberFragment;
   handleSingleConfirm: (
     person: PersonInvalidNumberFragment,
