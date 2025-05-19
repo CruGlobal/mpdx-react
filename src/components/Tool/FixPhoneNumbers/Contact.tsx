@@ -15,7 +15,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { FieldArray, FormikProvider, useFormik } from 'formik';
+import { FormikProvider, useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -357,25 +357,18 @@ const Contact: React.FC<Props> = ({
                         </Box>
                       </Grid>
                     </Hidden>
-                    <FieldArray
-                      name="numbers"
-                      render={() => (
-                        <>
-                          {values.numbers.map((phoneNumber, index) => (
-                            <ContactPhoneNumbers
-                              key={phoneNumber.id}
-                              errors={errors}
-                              index={index}
-                              person={person}
-                              phoneNumber={phoneNumber}
-                              handleChangePrimary={handleChangePrimary}
-                              handleDeleteNumberOpen={handleDeleteNumberOpen}
-                              handleSingleConfirm={handleSingleConfirm}
-                            />
-                          ))}
-                        </>
-                      )}
-                    />
+                    {values.numbers.map((phoneNumber, index) => (
+                      <ContactPhoneNumbers
+                        key={phoneNumber.id}
+                        errors={errors}
+                        index={index}
+                        person={person}
+                        phoneNumber={phoneNumber}
+                        handleChangePrimary={handleChangePrimary}
+                        handleDeleteNumberOpen={handleDeleteNumberOpen}
+                        handleSingleConfirm={handleSingleConfirm}
+                      />
+                    ))}
                     <Grid item xs={12} sm={6} className={classes.paddingB2}>
                       <Box
                         display="flex"
