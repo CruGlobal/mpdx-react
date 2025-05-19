@@ -27,7 +27,10 @@ import theme from '../../../theme';
 import { ContactPhoneNumbers } from './ContactPhoneNumbers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
 import PhoneValidationForm from './PhoneNumberValidationForm';
-import { useUpdatePhoneNumberMutation } from './UpdateInvalidPhoneNumbers.generated';
+import {
+  useUpdateInvalidPhoneNumbersMutation,
+  useUpdatePhoneNumberMutation,
+} from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   left: {},
@@ -134,10 +137,6 @@ interface NumberToDelete {
 interface Props {
   submitAll: boolean; // Used as a trigger to submit each individual form
   person: PersonInvalidNumberFragment;
-  handleSingleConfirm: (
-    person: PersonInvalidNumberFragment,
-    numbers: PhoneNumber[],
-  ) => void;
   dataState: { [key: string]: PhoneNumberData };
   handleChangePrimary: (personId: string, numberIndex: number) => void;
   accountListId: string;
@@ -146,7 +145,6 @@ interface Props {
 const Contact: React.FC<Props> = ({
   person,
   submitAll,
-  handleSingleConfirm,
   dataState,
   handleChangePrimary,
   accountListId,
@@ -165,6 +163,7 @@ const Contact: React.FC<Props> = ({
   const { id: personId, contactId } = person;
 
   const contactUrl = getContactUrl(contactId);
+  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
 
   const numbers: PhoneNumber[] = useMemo(() => {
     return (
@@ -208,7 +207,7 @@ const Contact: React.FC<Props> = ({
     },
   });
 
-  const { values, handleChange, handleSubmit, errors } = formik;
+  const { values, handleSubmit, errors } = formik;
 
   useEffect(() => {
     if (submitAll) {
@@ -273,6 +272,55 @@ const Contact: React.FC<Props> = ({
 
   const handleDeleteNumberModalClose = (): void => {
     setNumberToDelete(null);
+  };
+
+  const handleSingleConfirm = async (
+    person: PersonInvalidNumberFragment,
+    numbers: PhoneNumber[],
+  ) => {
+    const personName = `${person.firstName} ${person.lastName}`;
+    const phoneNumbers = numbers.map((phoneNumber) => ({
+      id: phoneNumber.id,
+      primary: phoneNumber.primary,
+      number: phoneNumber.number,
+      validValues: true,
+    }));
+
+    await updateInvalidPhoneNumbers({
+      variables: {
+        input: {
+          accountListId,
+          attributes: [
+            {
+              id: person.id,
+              phoneNumbers,
+            },
+          ],
+        },
+      },
+      update: (cache) => {
+        cache.evict({ id: `Person:${person.id}` });
+        cache.gc();
+      },
+      onCompleted: () => {
+        enqueueSnackbar(
+          t(`Successfully updated phone numbers for {{name}}`, {
+            name: personName,
+          }),
+          {
+            variant: 'success',
+          },
+        );
+      },
+      onError: () => {
+        enqueueSnackbar(
+          t(`Error updating phone numbers for {{name}}`, { name: personName }),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
   };
 
   return (

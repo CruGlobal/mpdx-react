@@ -45,7 +45,6 @@ const person: PersonInvalidNumberFragment = {
 };
 
 const mutationSpy = jest.fn();
-const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
 
 jest.mock('notistack', () => ({
@@ -93,7 +92,6 @@ const TestComponent = ({
                 dataState={dataState}
                 accountListId={accountListId}
                 handleChangePrimary={handleChangePrimaryMock}
-                handleSingleConfirm={handleSingleConfirm}
                 submitAll={false}
               />
             </GqlMockedProvider>
@@ -299,8 +297,6 @@ describe('Fix PhoneNumber Contact', () => {
     it('should not disable confirm button if there is exactly one primary number', async () => {
       const { getByRole, queryByRole } = render(<TestComponent />);
 
-      expect(handleSingleConfirm).toHaveBeenCalledTimes(0);
-
       await waitFor(() => {
         expect(queryByRole('loading')).not.toBeInTheDocument();
         expect(getByRole('button', { name: 'Confirm' })).not.toBeDisabled();
@@ -309,7 +305,10 @@ describe('Fix PhoneNumber Contact', () => {
       userEvent.click(getByRole('button', { name: 'Confirm' }));
 
       await waitFor(() => {
-        expect(handleSingleConfirm).toHaveBeenCalledTimes(1);
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          expect.stringContaining('Successfully updated phone numbers'),
+          expect.objectContaining({ variant: 'success' }),
+        );
       });
     });
   });
@@ -343,7 +342,10 @@ describe('Fix PhoneNumber Contact', () => {
 
     userEvent.click(getByRole('button', { name: 'Confirm' }));
     await waitFor(() => {
-      expect(mockEnqueue).not.toHaveBeenCalled();
+      expect(mockEnqueue).not.toHaveBeenCalledWith(
+        expect.stringContaining('Successfully updated phone numbers'),
+        expect.objectContaining({ variant: 'success' }),
+      );
     });
   });
 
@@ -357,28 +359,10 @@ describe('Fix PhoneNumber Contact', () => {
 
     userEvent.click(getByRole('button', { name: 'Confirm' }));
     await waitFor(() => {
-      expect(handleSingleConfirm).toHaveBeenCalledWith(person, [
-        {
-          id: 'number1',
-          isPrimary: true,
-          isValid: false,
-          number: '123456',
-          personId: 'contactTestId',
-          primary: true,
-          source: 'DataServer',
-          updatedAt: '2021-06-21T00:00:00.000+00:00',
-        },
-        {
-          id: 'number2',
-          isPrimary: false,
-          isValid: false,
-          number: inputNumber,
-          personId: 'contactTestId',
-          primary: false,
-          source: 'MPDX',
-          updatedAt: '2021-06-22T00:00:00.000+00:00',
-        },
-      ]);
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('Successfully updated phone numbers'),
+        expect.objectContaining({ variant: 'success' }),
+      );
     });
   });
   it('should not submit when number is invalid', async () => {
@@ -391,7 +375,10 @@ describe('Fix PhoneNumber Contact', () => {
 
     userEvent.click(getByRole('button', { name: 'Confirm' }));
     await waitFor(() => {
-      expect(mockEnqueue).not.toHaveBeenCalled();
+      expect(mockEnqueue).not.toHaveBeenCalledWith(
+        expect.stringContaining('Successfully updated phone numbers'),
+        expect.objectContaining({ variant: 'success' }),
+      );
     });
   });
 });

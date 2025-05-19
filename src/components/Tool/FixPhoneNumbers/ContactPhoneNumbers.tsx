@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
-import { Field } from 'formik';
+import { Field, FieldProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -65,12 +65,10 @@ interface Props {
     person: PersonInvalidNumberFragment,
     numbers: PhoneNumber[],
   ) => void;
-  handleChange: (field: string, value: string) => void;
   errors: any;
 }
 
 export const ContactPhoneNumbers: React.FC<Props> = ({
-  handleChange,
   errors,
   index,
   person,
@@ -166,7 +164,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
         >
           <FormControl fullWidth>
             <Field name={`numbers.${index}.number`}>
-              {({ field }: any) => (
+              {({ field }: FieldProps) => (
                 <TextField
                   {...field}
                   style={{ width: '100%' }}
@@ -174,7 +172,6 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   inputProps={{
                     'data-testid': `textfield-${personId}-${phoneNumber?.id}`,
                   }}
-                  onChange={handleChange}
                   disabled={!isEditableSource(phoneNumber?.source)}
                 />
               )}

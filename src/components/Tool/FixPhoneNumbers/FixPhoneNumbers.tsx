@@ -13,7 +13,6 @@ import {
   SelectChangeEvent,
   Typography,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
@@ -21,12 +20,11 @@ import { manualSourceValue, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
-import Contact, { PhoneNumber, PhoneNumberData } from './Contact';
+import Contact, { PhoneNumberData } from './Contact';
 import {
   PersonInvalidNumberFragment,
   useGetInvalidPhoneNumbersQuery,
 } from './GetInvalidPhoneNumbers.generated';
-import { useUpdateInvalidPhoneNumbersMutation } from './UpdateInvalidPhoneNumbers.generated';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -85,10 +83,8 @@ interface Props {
 
 const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
   const [submitAll, setSubmitAll] = useState(false);
 
-  const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
   const { data } = useGetInvalidPhoneNumbersQuery({
     variables: { accountListId },
   });
@@ -131,55 +127,6 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
 
   const handleBulkConfirm = async () => {
     setSubmitAll(true);
-  };
-
-  const handleSingleConfirm = async (
-    person: PersonInvalidNumberFragment,
-    numbers: PhoneNumber[],
-  ) => {
-    const personName = `${person.firstName} ${person.lastName}`;
-    const phoneNumbers = numbers.map((phoneNumber) => ({
-      id: phoneNumber.id,
-      primary: phoneNumber.primary,
-      number: phoneNumber.number,
-      validValues: true,
-    }));
-
-    await updateInvalidPhoneNumbers({
-      variables: {
-        input: {
-          accountListId,
-          attributes: [
-            {
-              id: person.id,
-              phoneNumbers,
-            },
-          ],
-        },
-      },
-      update: (cache) => {
-        cache.evict({ id: `Person:${person.id}` });
-        cache.gc();
-      },
-      onCompleted: () => {
-        enqueueSnackbar(
-          t(`Successfully updated phone numbers for {{name}}`, {
-            name: personName,
-          }),
-          {
-            variant: 'success',
-          },
-        );
-      },
-      onError: () => {
-        enqueueSnackbar(
-          t(`Error updating phone numbers for {{name}}`, { name: personName }),
-          {
-            variant: 'error',
-          },
-        );
-      },
-    });
   };
 
   const handleChangePrimary = (personId: string, numberIndex: number): void => {
@@ -273,7 +220,6 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
                       key={person.id}
                       submitAll={submitAll}
                       person={person}
-                      handleSingleConfirm={handleSingleConfirm}
                       dataState={dataState}
                       handleChangePrimary={handleChangePrimary}
                       accountListId={accountListId}
