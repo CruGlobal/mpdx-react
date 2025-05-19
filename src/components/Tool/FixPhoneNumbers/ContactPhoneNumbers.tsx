@@ -56,7 +56,7 @@ interface Props {
   index: number;
   person: PersonInvalidNumberFragment;
   phoneNumber: PhoneNumber;
-  handleChangePrimary: (personId: string, index: number) => void;
+  handleChangePrimary: (phoneNumberId: string) => void;
   handleDeleteNumberOpen: (person: {
     personId: string;
     phoneNumber: PhoneNumber;
@@ -148,7 +148,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   <StarOutlineIcon
                     data-testid={`starOutlineIcon-${personId}-${phoneNumber?.id}`}
                     className={classes.hoverHighlight}
-                    onClick={() => handleChangePrimary(personId, index)}
+                    onClick={() => handleChangePrimary(phoneNumber?.id)}
                   />
                 </Tooltip>
               </>

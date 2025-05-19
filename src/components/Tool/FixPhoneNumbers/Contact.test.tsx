@@ -58,23 +58,12 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const defaultDataState = {
-  contactTestId: {
-    phoneNumbers: person.phoneNumbers.nodes,
-  },
-} as { [key: string]: PhoneNumberData };
-
 type TestComponentProps = {
   mocks?: ApolloErgonoMockMap;
   dataState?: { [key: string]: PhoneNumberData };
 };
 
-const TestComponent = ({
-  mocks,
-  dataState = defaultDataState,
-}: TestComponentProps) => {
-  const handleChangePrimaryMock = jest.fn();
-
+const TestComponent = ({ mocks }: TestComponentProps) => {
   return (
     <AppSettingsProvider>
       <SnackbarProvider>
@@ -89,9 +78,7 @@ const TestComponent = ({
             >
               <Contact
                 person={person}
-                dataState={dataState}
                 accountListId={accountListId}
-                handleChangePrimary={handleChangePrimaryMock}
                 submitAll={false}
               />
             </GqlMockedProvider>
