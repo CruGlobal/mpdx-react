@@ -35,11 +35,11 @@ interface Props {
   loading?: boolean;
 }
 
-const Loading: React.FC<Props> = () => {
+const Loading: React.FC<Props> = ({ loading = false }) => {
   const { classes } = useStyles();
   const router = useRouter();
 
-  const [currentlyLoading, setCurrentlyLoading] = useState(true);
+  const [currentlyLoading, setCurrentlyLoading] = useState(loading);
 
   useEffect(() => {
     const handleStart = (): void => {
