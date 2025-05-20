@@ -116,6 +116,12 @@ const DonationHistories = ({
   const goalColor = palette.graphite.main;
   const averageColor = palette.graphite.main;
   const pledgedColor = palette.yellow.main;
+  const goalLineStyles = {
+    stroke: goalColor,
+    strokeDasharray: '5,8',
+    strokeLinecap: 'round' as const,
+    strokeWidth: 3,
+  };
 
   const { totalPledges: pledged, currency } = data?.accountList ?? {};
   const { goal, goalSource } = getHealthIndicatorInfo(
@@ -238,8 +244,7 @@ const DonationHistories = ({
                       {goalSource === GoalSource.Preferences ? (
                         <ReferenceLine
                           y={goal ?? undefined}
-                          stroke={goalColor}
-                          strokeWidth={3}
+                          {...goalLineStyles}
                         />
                       ) : (
                         <Line
@@ -247,10 +252,7 @@ const DonationHistories = ({
                           name={t('Goal')}
                           connectNulls
                           dot={false}
-                          stroke={goalColor}
-                          strokeDasharray="5,8"
-                          strokeLinecap="round"
-                          strokeWidth={3}
+                          {...goalLineStyles}
                         />
                       )}
                       <ReferenceLine
