@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -15,7 +15,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { FormikProvider, useFormik } from 'formik';
+import { Formik, useFormikContext } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -31,6 +31,18 @@ import {
   useUpdateInvalidPhoneNumbersMutation,
   useUpdatePhoneNumberMutation,
 } from './UpdateInvalidPhoneNumbers.generated';
+
+const ImperativeSubmit: React.FC<{ submitAll: boolean }> = ({ submitAll }) => {
+  const { submitForm } = useFormikContext();
+
+  useEffect(() => {
+    if (submitAll) {
+      submitForm();
+    }
+  }, [submitAll]);
+
+  return null;
+};
 
 const useStyles = makeStyles()(() => ({
   left: {},
@@ -178,31 +190,6 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
       .required(t('Must have at least 1 Phone Number to confirm')),
   });
 
-  const formik = useFormik({
-    initialValues: {
-      numbers: person.phoneNumbers.nodes.map((phoneNumber) => ({
-        id: phoneNumber?.id,
-        number: phoneNumber?.number ?? '',
-        primary: phoneNumber?.primary,
-        source: phoneNumber?.source,
-        updatedAt: phoneNumber?.updatedAt,
-      })),
-    },
-    enableReinitialize: true,
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      handleSingleConfirm(person, values.numbers);
-    },
-  });
-
-  const { values, handleSubmit, setFieldValue, errors } = formik;
-
-  useEffect(() => {
-    if (submitAll) {
-      handleSubmit();
-    }
-  }, [submitAll]);
-
   const handleDeleteNumberOpen = ({
     personId,
     phoneNumber,
@@ -262,10 +249,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
     setNumberToDelete(null);
   };
 
-  const handleSingleConfirm = async (
-    person: PersonInvalidNumberFragment,
-    numbers: PhoneNumber[],
-  ) => {
+  const handleSingleConfirm = async (numbers: PhoneNumber[]) => {
     const personName = `${person.firstName} ${person.lastName}`;
     const phoneNumbers = numbers.map((phoneNumber) => ({
       id: phoneNumber.id,
@@ -311,158 +295,175 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
     });
   };
 
-  const handleChangePrimary = (phoneNumberId: string): void => {
-    setFieldValue(
-      'numbers',
-      values.numbers.map((phoneNumber) => ({
-        ...phoneNumber,
-        primary: phoneNumber.id === phoneNumberId,
-      })),
-    );
-  };
-
   return (
-    <FormikProvider value={formik}>
-      <Grid container className={classes.container}>
-        <Grid container>
-          <Card className={classes.contactCard}>
-            <Box display="flex" alignItems="center" className={classes.left}>
-              <Grid container>
-                <Grid item xs={12}>
-                  <ContactHeader
-                    avatar={
-                      <Link component={NextLink} href={contactUrl} shallow>
-                        <ContactAvatar
-                          src={person?.avatar || ''}
-                          aria-label="Contact Avatar"
-                        />
-                      </Link>
-                    }
-                    title={
-                      <Link component={NextLink} href={contactUrl} shallow>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ display: 'inline' }}
-                        >
-                          {name}
-                        </Typography>
-                      </Link>
-                    }
-                    action={
-                      <Button
-                        data-testid={`confirmButton-${person.id}`}
-                        onClick={() => handleSubmit()}
-                        variant="contained"
-                        style={{ width: '100%' }}
-                        disabled={Object.keys(errors).length > 0}
-                      >
-                        <Icon
-                          path={mdiCheckboxMarkedCircle}
-                          size={0.8}
-                          className={classes.buttonIcon}
-                        />
-                        {t('Confirm')}
-                      </Button>
-                    }
-                  ></ContactHeader>
-                </Grid>
-                <CardContent sx={{ padding: 2 }}>
-                  <Grid container display="flex" alignItems="center">
-                    <Hidden smDown>
-                      <Grid item xs={6} sm={4} className={classes.paddingY}>
-                        <Box
-                          display="flex"
-                          justifyContent="space-between"
-                          className={classes.paddingX}
-                        >
-                          <Typography variant="body2" fontWeight="bold">
-                            {t('Source')}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={6} sm={2} className={classes.paddingY}>
-                        <Box
-                          display="flex"
-                          justifyContent="center"
-                          className={classes.paddingX}
-                        >
-                          <Typography variant="body2" fontWeight="bold">
-                            {t('Primary')}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} sm={6} className={classes.paddingY}>
-                        <Box
-                          display="flex"
-                          justifyContent="flex-start"
-                          className={classes.paddingX}
-                        >
-                          <Typography variant="body2" fontWeight="bold">
-                            {t('Phone Number')}
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    </Hidden>
-                    {values.numbers.map((phoneNumber, index) => (
-                      <ContactPhoneNumbers
-                        key={phoneNumber.id}
-                        errors={errors}
-                        index={index}
-                        person={person}
-                        phoneNumber={phoneNumber}
-                        handleChangePrimary={handleChangePrimary}
-                        handleDeleteNumberOpen={handleDeleteNumberOpen}
-                        handleSingleConfirm={handleSingleConfirm}
-                      />
-                    ))}
-                    <Grid item xs={12} sm={6} className={classes.paddingB2}>
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        className={classes.paddingX}
-                      >
-                        <Box>
-                          <Hidden smUp>
+    <Formik
+      validationSchema={validationSchema}
+      enableReinitialize
+      initialValues={{
+        numbers: person.phoneNumbers.nodes.map((phoneNumber) => ({
+          id: phoneNumber?.id,
+          number: phoneNumber?.number ?? '',
+          primary: phoneNumber?.primary,
+          source: phoneNumber?.source,
+          updatedAt: phoneNumber?.updatedAt,
+        })),
+      }}
+      onSubmit={({ numbers }) => handleSingleConfirm(numbers)}
+    >
+      {({ values, handleSubmit, errors, setFieldValue }): ReactElement => (
+        <form>
+          <ImperativeSubmit submitAll={submitAll} />
+          <Grid container className={classes.container}>
+            <Grid container>
+              <Card className={classes.contactCard}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  className={classes.left}
+                >
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <ContactHeader
+                        avatar={
+                          <Link component={NextLink} href={contactUrl} shallow>
+                            <ContactAvatar
+                              src={person?.avatar || ''}
+                              aria-label="Contact Avatar"
+                            />
+                          </Link>
+                        }
+                        title={
+                          <Link component={NextLink} href={contactUrl} shallow>
                             <Typography
-                              display="inline"
-                              variant="body2"
-                              fontWeight="bold"
+                              variant="subtitle1"
+                              sx={{ display: 'inline' }}
                             >
-                              {t('Source')}:
+                              {name}
                             </Typography>
-                          </Hidden>
-                          <Typography display="inline" variant="body2">
-                            {appName}
-                          </Typography>
-                        </Box>
-                      </Box>
+                          </Link>
+                        }
+                        action={
+                          <Button
+                            data-testid={`confirmButton-${person.id}`}
+                            onClick={() => handleSubmit()}
+                            variant="contained"
+                            style={{ width: '100%' }}
+                            disabled={Object.keys(errors).length > 0}
+                          >
+                            <Icon
+                              path={mdiCheckboxMarkedCircle}
+                              size={0.8}
+                              className={classes.buttonIcon}
+                            />
+                            {t('Confirm')}
+                          </Button>
+                        }
+                      ></ContactHeader>
                     </Grid>
-                    <PhoneValidationForm
-                      personId={personId}
-                      accountListId={accountListId}
-                    />
+                    <CardContent sx={{ padding: 2 }}>
+                      <Grid container display="flex" alignItems="center">
+                        <Hidden smDown>
+                          <Grid item xs={6} sm={4} className={classes.paddingY}>
+                            <Box
+                              display="flex"
+                              justifyContent="space-between"
+                              className={classes.paddingX}
+                            >
+                              <Typography variant="body2" fontWeight="bold">
+                                {t('Source')}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={6} sm={2} className={classes.paddingY}>
+                            <Box
+                              display="flex"
+                              justifyContent="center"
+                              className={classes.paddingX}
+                            >
+                              <Typography variant="body2" fontWeight="bold">
+                                {t('Primary')}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            className={classes.paddingY}
+                          >
+                            <Box
+                              display="flex"
+                              justifyContent="flex-start"
+                              className={classes.paddingX}
+                            >
+                              <Typography variant="body2" fontWeight="bold">
+                                {t('Phone Number')}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Hidden>
+                        {values.numbers.map((phoneNumber, index) => (
+                          <ContactPhoneNumbers
+                            key={phoneNumber.id}
+                            errors={errors}
+                            index={index}
+                            person={person}
+                            phoneNumber={phoneNumber}
+                            values={values}
+                            setFieldValue={setFieldValue}
+                            handleDeleteNumberOpen={handleDeleteNumberOpen}
+                          />
+                        ))}
+                        <Grid item xs={12} sm={6} className={classes.paddingB2}>
+                          <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            className={classes.paddingX}
+                          >
+                            <Box>
+                              <Hidden smUp>
+                                <Typography
+                                  display="inline"
+                                  variant="body2"
+                                  fontWeight="bold"
+                                >
+                                  {t('Source')}:
+                                </Typography>
+                              </Hidden>
+                              <Typography display="inline" variant="body2">
+                                {appName}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Grid>
+                        <PhoneValidationForm
+                          personId={personId}
+                          accountListId={accountListId}
+                        />
+                      </Grid>
+                    </CardContent>
                   </Grid>
-                </CardContent>
-              </Grid>
-            </Box>
-          </Card>
-        </Grid>
-      </Grid>
-      {numberToDelete && (
-        <Confirmation
-          title={t('Confirm')}
-          isOpen={true}
-          message={
-            <>
-              {t('Are you sure you wish to delete this number:')}{' '}
-              <strong>{numberToDelete?.phoneNumber.number}</strong>
-            </>
-          }
-          mutation={handleDelete}
-          handleClose={handleDeleteNumberModalClose}
-        />
+                </Box>
+              </Card>
+            </Grid>
+          </Grid>
+          {numberToDelete && (
+            <Confirmation
+              title={t('Confirm')}
+              isOpen={true}
+              message={
+                <>
+                  {t('Are you sure you wish to delete this number:')}{' '}
+                  <strong>{numberToDelete?.phoneNumber.number}</strong>
+                </>
+              }
+              mutation={handleDelete}
+              handleClose={handleDeleteNumberModalClose}
+            />
+          )}
+        </form>
       )}
-    </FormikProvider>
+    </Formik>
   );
 };
 

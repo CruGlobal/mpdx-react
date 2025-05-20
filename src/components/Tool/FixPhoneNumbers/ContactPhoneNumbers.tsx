@@ -56,15 +56,14 @@ interface Props {
   index: number;
   person: PersonInvalidNumberFragment;
   phoneNumber: PhoneNumber;
-  handleChangePrimary: (phoneNumberId: string) => void;
   handleDeleteNumberOpen: (person: {
     personId: string;
     phoneNumber: PhoneNumber;
   }) => void;
-  handleSingleConfirm: (
-    person: PersonInvalidNumberFragment,
-    numbers: PhoneNumber[],
-  ) => void;
+  values: {
+    numbers: PhoneNumber[];
+  };
+  setFieldValue: (field: string, value: React.SetStateAction<any>) => void;
   errors: any;
 }
 
@@ -73,8 +72,9 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
   index,
   person,
   phoneNumber,
-  handleChangePrimary,
   handleDeleteNumberOpen,
+  values,
+  setFieldValue,
 }) => {
   const { classes } = useStyles();
   const { t } = useTranslation();
@@ -148,7 +148,15 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   <StarOutlineIcon
                     data-testid={`starOutlineIcon-${personId}-${phoneNumber.id}`}
                     className={classes.hoverHighlight}
-                    onClick={() => handleChangePrimary(phoneNumber.id)}
+                    onClick={() =>
+                      setFieldValue(
+                        'numbers',
+                        values.numbers.map((number: PhoneNumber) => ({
+                          ...number,
+                          primary: number.id === phoneNumber.id,
+                        })),
+                      )
+                    }
                   />
                 </Tooltip>
               </>
