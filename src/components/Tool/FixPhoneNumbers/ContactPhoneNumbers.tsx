@@ -63,7 +63,7 @@ interface Props {
   values: {
     numbers: PhoneNumber[];
   };
-  setFieldValue: (field: string, value: any) => void;
+  setFieldValue: (field: string, value: React.SetStateAction<any>) => void;
   errors: any;
 }
 

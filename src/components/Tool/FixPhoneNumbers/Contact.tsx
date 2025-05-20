@@ -298,6 +298,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
   return (
     <Formik
       validationSchema={validationSchema}
+      enableReinitialize
       initialValues={{
         numbers: person.phoneNumbers.nodes.map((phoneNumber) => ({
           id: phoneNumber?.id,
