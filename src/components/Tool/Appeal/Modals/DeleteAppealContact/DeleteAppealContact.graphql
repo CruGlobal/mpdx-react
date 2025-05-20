@@ -3,22 +3,3 @@ mutation DeleteAppealContact($input: AppealContactDeleteMutationInput!) {
     id
   }
 }
-
-query AppealContacts($appealId: ID!, $after: String) {
-  appealContacts(appealId: $appealId, first: 50, after: $after) {
-    nodes {
-      ...AppealContactsInfo
-    }
-    pageInfo {
-      hasNextPage
-      endCursor
-    }
-  }
-}
-
-fragment AppealContactsInfo on AppealContact {
-  id
-  contact {
-    id
-  }
-}
