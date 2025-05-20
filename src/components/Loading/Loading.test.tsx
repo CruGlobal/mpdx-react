@@ -70,18 +70,18 @@ describe('Loading', () => {
       </TestRouter>,
     );
     const spinner = getByTestId('Loading');
-    await waitFor(() => expect(spinner).not.toHaveClass('visible'));
+    await waitFor(() => expect(spinner).toHaveStyle('visibility: visible'));
 
     router.events.emit('routeChangeStart');
-    await waitFor(() => expect(spinner).toHaveClass('visible'));
+    await waitFor(() => expect(spinner).toHaveStyle('visibility: visible'));
 
     router.events.emit('routeChangeComplete');
-    await waitFor(() => expect(spinner).not.toHaveClass('visible'));
+    await waitFor(() => expect(spinner).not.toHaveStyle('visibility: visible'));
 
     router.events.emit('routeChangeStart');
-    await waitFor(() => expect(spinner).toHaveClass('visible'));
+    await waitFor(() => expect(spinner).toHaveStyle('visibility: visible'));
 
     router.events.emit('routeChangeError');
-    await waitFor(() => expect(spinner).not.toHaveClass('visible'));
+    await waitFor(() => expect(spinner).not.toHaveStyle('visibility: visible'));
   });
 });
