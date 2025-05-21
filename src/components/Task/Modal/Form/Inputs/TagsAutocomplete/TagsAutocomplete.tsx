@@ -13,6 +13,7 @@ interface TagsAutocompleteProps {
   value: string[];
   onChange: (tagList: string[]) => void;
   label?: string;
+  selectedSuggestedTags?: string[];
 }
 
 export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
@@ -21,6 +22,7 @@ export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
   value,
   onChange,
   label,
+  selectedSuggestedTags,
 }) => {
   const { t } = useTranslation();
 
@@ -32,7 +34,11 @@ export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
   });
   // Because of the @skip and @include directives, only contactTagList or taskTagList will be populated, but not both
   const options =
-    data?.accountList.contactTagList ?? data?.accountList.taskTagList ?? [];
+    data?.accountList.contactTagList ??
+    data?.accountList?.taskTagList?.filter(
+      (tag) => !selectedSuggestedTags?.includes(tag),
+    ) ??
+    [];
 
   return (
     <Autocomplete
