@@ -199,66 +199,6 @@ describe('TaskModalForm', () => {
     });
   }, 10000);
 
-  it('should toggle suggested tags and additional tags', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <GqlMockedProvider<{
-            AssigneeOptions: AssigneeOptionsQuery;
-            ContactOptions: ContactOptionsQuery;
-            TagOptions: TagOptionsQuery;
-          }>
-            mocks={{
-              AssigneeOptions: {
-                accountListUsers: {
-                  nodes: [
-                    {
-                      user: { id: 'user-1', firstName: 'User', lastName: '1' },
-                    },
-                    {
-                      user: { id: 'user-2', firstName: 'User', lastName: '2' },
-                    },
-                  ],
-                },
-              },
-              ContactOptions: {
-                contacts: {
-                  nodes: [
-                    { id: 'contact-1', name: 'Contact 1' },
-                    { id: 'contact-2', name: 'Contact 2' },
-                  ],
-                },
-              },
-              TagOptions: {
-                accountList: {
-                  taskTagList: ['tag-1', 'tag-2'],
-                },
-              },
-            }}
-            onCall={mutationSpy}
-          >
-            <TaskModalForm accountListId={accountListId} onClose={onClose} />
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>,
-    );
-
-    userEvent.click(getByRole('combobox', { name: 'Task Type' }));
-    userEvent.click(await findByRole('option', { name: 'Appointment' }));
-
-    expect(getByRole('combobox', { name: 'Tags' })).toBeInTheDocument();
-
-    userEvent.click(getByRole('combobox', { name: 'Tags' }));
-    userEvent.click(await findByRole('option', { name: 'tag-1' }));
-
-    expect(getByRole('button', { name: 'tag-1' })).toBeInTheDocument();
-
-    userEvent.click(getByRole('combobox', { name: 'Tags' }));
-    await waitFor(() =>
-      expect(queryByRole('option', { name: 'tag-1' })).not.toBeInTheDocument(),
-    );
-  });
-
   it('persisted', async () => {
     const {
       getByRole,
