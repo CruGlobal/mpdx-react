@@ -257,7 +257,7 @@ describe('TaskModalForm', () => {
     await waitFor(() =>
       expect(queryByRole('option', { name: 'tag-1' })).not.toBeInTheDocument(),
     );
-  }, 10000);
+  });
 
   it('persisted', async () => {
     const {
