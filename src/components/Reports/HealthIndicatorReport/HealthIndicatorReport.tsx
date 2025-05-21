@@ -52,7 +52,7 @@ export const HealthIndicatorReport: React.FC<HealthIndicatorReportProps> = ({
               </Typography>
               <Typography variant="body1" mt={2}>
                 {t(
-                  'There is currently no Health Indicator data available for this account. Please switch to an account that is an MPD Global account. If you are unsure whether you have access to an MPD Global account or need assistance in switching accounts, please reach out to your coach or our support team for guidance.',
+                  'Health Indicator data is only available for staff who are paid in countries that use NetSuite. If you are unsure what that means or need help, contact your financial office.',
                 )}
               </Typography>
             </Grid>
