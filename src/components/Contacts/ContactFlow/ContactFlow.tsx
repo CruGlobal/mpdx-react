@@ -88,17 +88,7 @@ export const ContactFlow: React.FC<Props> = ({
         accountListId,
         attributes,
       },
-      refetchQueries: () =>
-        flowOptions.map((flowOption) => ({
-          query: ContactsDocument,
-          variables: {
-            accountListId,
-            contactsFilters: {
-              status: flowOption.statuses,
-              ...selectedFilters,
-            },
-          },
-        })),
+      refetchQueries: [ContactsDocument],
     });
     enqueueSnackbar(t('Contact status updated!'), {
       variant: 'success',
