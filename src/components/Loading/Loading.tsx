@@ -17,11 +17,10 @@ const useStyles = makeStyles()((theme: Theme) => ({
       duration: theme.transitions.duration.short,
     }),
     visibility: 'hidden',
-
-    '.visible': {
-      opacity: 1,
-      visibility: 'visible',
-    },
+  },
+  visible: {
+    opacity: 1,
+    visibility: 'visible',
   },
   fab: {
     backgroundColor: theme.palette.common.white,
@@ -64,7 +63,7 @@ const Loading: React.FC<Props> = ({ loading = false }) => {
 
   return (
     <div
-      className={clsx(classes.box, currentlyLoading && 'visible')}
+      className={clsx(classes.box, currentlyLoading && classes.visible)}
       data-testid="Loading"
     >
       <Fab color="default" disableRipple className={classes.fab}>
