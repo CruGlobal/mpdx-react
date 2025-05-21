@@ -223,6 +223,7 @@ describe('DeleteContactModal', () => {
       );
       const emailLink = createEmailLink({ partnerAccountNumbers, contactName });
       expect(donationServicesLink).toHaveAttribute('href', emailLink);
+      expect(donationServicesLink).toHaveAttribute('target', '_blank');
     });
   });
 
