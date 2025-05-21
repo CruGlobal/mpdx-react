@@ -628,6 +628,7 @@ const TaskModalForm = ({
                   accountListId={accountListId}
                   type={TagTypeEnum.Tag}
                   value={tagList || []}
+                  phaseTags={phaseTags || []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
                   label={
                     phaseTags?.length && initialTask.completedAt
