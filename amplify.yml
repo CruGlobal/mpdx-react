@@ -7,6 +7,8 @@ frontend:
         - echo "Using Node.js version $NODE_VERSION"
         - nvm install "$NODE_VERSION"
         - node -v
+        # Set the NEXTAUTH_URL to the preview URL if the branch is not main or staging
+        # The preview URL is in the format https://<branch-name>.<app-id>.amplifyapp.com
         - |
           if [[ "${AWS_BRANCH}" != "main" && "${AWS_BRANCH}" != "staging" ]]; then
             SUBDOMAIN="$(echo $AWS_BRANCH | sed 's/[^a-zA-Z0-9-]/-/g')"
@@ -15,11 +17,23 @@ frontend:
             echo "PREVIEW_URL=$PREVIEW_URL" >> .env;
           fi
         - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
+        # Download git-lfs and make it executable
+        - curl -L -o git-lfs.tar.gz https://github.com/git-lfs/git-lfs/releases/download/v3.6.1/git-lfs-linux-amd64-v3.6.1.tar.gz
+        - mkdir -p ./bin
+        - tar -xvzf git-lfs.tar.gz
+        - mv git-lfs-3.6.1/git-lfs ./bin/
+        - chmod +x ./bin/git-lfs
+        # Install git-lfs and pull down the files
+        - export PATH=$PATH:$(pwd)/bin && git-lfs install
+        - export PATH=$PATH:$(pwd)/bin && git-lfs pull
+        # install dependencies
         - yarn config set nodeLinker node-modules
         - yarn -v
         - yarn
         - yarn disable-telemetry
+        # Build graphql files
         - yarn gql
+        # Extract translations
         - timeout 1m yarn onesky:download || echo "yarn onesky:download timed out after 1 minute or failed with an error"
     build:
       commands:

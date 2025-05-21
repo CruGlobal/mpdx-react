@@ -10,15 +10,12 @@ export const percentageFormat = (value: number, locale: string): string =>
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
 
-// When we upgrade to Node 20 we can utilize this option for currencyFormat:
-//trailingZeroDisplay: 'stripIfInteger',
 export const currencyFormat = (
   value: number,
   currency: string | null | undefined,
   locale: string,
 ): string => {
   const amount = Number.isNaN(value) ? 0 : value;
-  const decimal = amount % 1 !== 0;
   if (!currency) {
     currency = 'USD';
   }
@@ -26,8 +23,7 @@ export const currencyFormat = (
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: decimal ? 2 : 0,
-      maximumFractionDigits: decimal ? 2 : 0,
+      trailingZeroDisplay: 'stripIfInteger',
     }).format(Number.isFinite(amount) ? amount : 0);
   } catch (error) {
     // eslint-disable-next-line no-console

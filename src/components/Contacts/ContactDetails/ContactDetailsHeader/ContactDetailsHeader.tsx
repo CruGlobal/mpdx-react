@@ -20,7 +20,7 @@ import { StarContactIconButton } from '../../StarContactIconButton/StarContactIc
 import { EditIcon } from '../ContactDetailsTab/StyledComponents';
 import { EditPartnershipInfoModal } from '../ContactDonationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { useGetContactDetailsHeaderQuery } from './ContactDetailsHeader.generated';
-import { ContactDetailsMoreAcitions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
+import { ContactDetailsMoreActions } from './ContactDetailsMoreActions/ContactDetailsMoreActions';
 import { ContactHeaderAddressSection } from './ContactHeaderSection/ContactHeaderAddressSection';
 import { ContactHeaderEmailSection } from './ContactHeaderSection/ContactHeaderEmailSection';
 import { ContactHeaderNewsletterSection } from './ContactHeaderSection/ContactHeaderNewsletterSection';
@@ -175,7 +175,11 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             </Box>
           ) : (
             <>
-              <PrimaryContactName data-testid="ContactName" variant="h5">
+              <PrimaryContactName
+                data-testid="ContactName"
+                variant="h5"
+                id="right-panel-header"
+              >
                 {data?.contact.name}
               </PrimaryContactName>
               <IconButton
@@ -196,7 +200,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
             contactId={contactId}
             isStarred={data?.contact?.starred || false}
           />
-          <ContactDetailsMoreAcitions
+          <ContactDetailsMoreActions
             contactId={contactId}
             status={data?.contact.status ?? StatusEnum.Unresponsive}
             onClose={onClose}

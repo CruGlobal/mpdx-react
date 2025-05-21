@@ -1,15 +1,12 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
 export type ContactDetailsType = {
   selectedTabKey: TabKey;
   setSelectedTabKey: React.Dispatch<React.SetStateAction<TabKey>>;
-  handleTabChange: (
-    event: React.ChangeEvent<Record<string, unknown>>,
-    newKey: TabKey,
-  ) => void;
+  handleTabChange: (event: React.SyntheticEvent, newKey: TabKey) => void;
   editModalOpen: boolean;
   setEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editOtherModalOpen: boolean;
@@ -21,9 +18,8 @@ export type ContactDetailsType = {
   addAddressModalOpen: boolean;
   setAddAddressModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editPersonModalOpen: string | undefined;
-  setEditPersonModalOpen: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
+  openPersonModal: (id: string) => void;
+  closePersonModal: () => void;
   createPersonModalOpen: boolean;
   setCreatePersonModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedDonationTabKey: DonationTabKey;
@@ -61,10 +57,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [selectedTabKey, setSelectedTabKey] = React.useState(
     query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
   );
-  const handleTabChange = (
-    _event: React.ChangeEvent<Record<string, unknown>>,
-    newKey: TabKey,
-  ) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newKey: TabKey) => {
     setSelectedTabKey(newKey);
   };
 
@@ -81,6 +74,40 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>();
+
+  useEffect(() => {
+    const personId = router.query.personId as string;
+    if (personId) {
+      setSelectedTabKey(TabKey.ContactDetails);
+      setEditPersonModalOpen(personId);
+    }
+  }, [router.query.personId]);
+
+  useEffect(() => {
+    if (!router.query.personId && editPersonModalOpen) {
+      setEditPersonModalOpen(undefined);
+    }
+  }, [router.query.personId]);
+
+  const openPersonModal = useCallback(
+    (id: string) => {
+      router.replace(
+        { pathname: router.pathname, query: { ...router.query, personId: id } },
+        undefined,
+        { shallow: true },
+      );
+      setEditPersonModalOpen(id);
+    },
+    [router],
+  );
+
+  const closePersonModal = useCallback(() => {
+    const { personId: _, ...rest } = router.query;
+    router.replace({ pathname: router.pathname, query: rest }, undefined, {
+      shallow: true,
+    });
+    setEditPersonModalOpen(undefined);
+  }, [router]);
 
   return (
     <ContactDetailContext.Provider
@@ -99,7 +126,8 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
         setSelectedTabKey: setSelectedTabKey,
         handleTabChange: handleTabChange,
         editPersonModalOpen: editPersonModalOpen,
-        setEditPersonModalOpen: setEditPersonModalOpen,
+        openPersonModal,
+        closePersonModal,
         createPersonModalOpen: createPersonModalOpen,
         setCreatePersonModalOpen: setCreatePersonModalOpen,
         selectedDonationTabKey: selectedDonationTabKey,

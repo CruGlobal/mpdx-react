@@ -77,13 +77,20 @@ export function relayStylePaginationWithNodes<TNode = Reference>(
       incoming,
       { args, isReference, readField },
     ) {
-      // `merge` can be called multiple times with the same incoming data as Apollo recursively
-      // merges data at various levels in the tree. If the incoming data is the same as the existing
-      // data, simply ignore it.
-      if (
-        incoming.pageInfo?.endCursor &&
-        incoming.pageInfo?.endCursor === existing.pageInfo.endCursor
-      ) {
+      // If the cache already contains some but not all of the pages, a
+      // `useQuery`/`useFetchAllPages` pair can quickly corrupt it.
+      // 1. `useQuery` attempts to fetch the first page, while `useFetchAllPages` simultaneously
+      //    attempts to fetch the next page after the last one in the cache.
+      // 2. `BatchHttpLink` batches the requests and responses together.
+      // 3. Apollo cache receives the responses and overwrites the pages with the `useQuery`
+      //    response. It then immediately overwrites those pages with the `useFetchAllPages`
+      //    response. The first few pages have been overwritten and lost.
+      // 4. `useFetchAllPages` continues fetching the next pages without ever recovering the missing
+      //    initial pages.
+      // When we detect this situation, we keep the first page (the one without `after`) and ignore
+      // the second one
+      if (args?.after && args.after !== existing.pageInfo.endCursor) {
+        // This page does not come after the one in the cache, so ignore it
         return existing;
       }
 

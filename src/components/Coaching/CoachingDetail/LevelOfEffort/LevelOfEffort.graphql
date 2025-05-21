@@ -12,12 +12,19 @@ query LevelOfEffort($accountListId: ID!, $range: String!) {
       followUpTextMessage
       followUpSocialMedia
       followUpInPerson
+      followUpToDo
       partnerCareUpdateInformation
       partnerCareToDo
       partnerCareThank
       partnerCarePrayerRequest
       partnerCarePhysicalNewsletter
       partnerCareDigitalNewsletter
+      partnerCareEmail
+      partnerCareInPerson
+      partnerCareLetterCard
+      partnerCarePhoneCall
+      partnerCareSocialMedia
+      partnerCareTextMessage
       initiationTextMessage
       initiationEmail
       initiationSpecialGiftAppeal
@@ -25,6 +32,7 @@ query LevelOfEffort($accountListId: ID!, $range: String!) {
       initiationPhoneCall
       initiationLetter
       initiationInPerson
+      initiationToDo
       appointmentTotal
       followUpTotal
       partnerCareTotal

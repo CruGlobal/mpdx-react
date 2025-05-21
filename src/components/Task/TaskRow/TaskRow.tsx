@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import LocalOffer from '@mui/icons-material/LocalOffer';
 import {
   Avatar,
@@ -49,6 +49,8 @@ const TaskRowWrapper = styled(Box, {
 })<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
   ...(isChecked ? { backgroundColor: theme.palette.mpdxGrayLight.main } : {}),
   minWidth: '300px',
+  width: '100%',
+  padding: theme.spacing(1),
 }));
 
 const ContactRowButton = styled(Box, {
@@ -151,12 +153,11 @@ export const TaskRow: React.FC<TaskRowProps> = ({
     : '';
   const tagsToShow = 3;
   const areMoreTags = tagsToShow < task.tagList.length;
+  const subjectId = useId();
 
   return (
-    <TaskRowWrapper role="row" p={1} isChecked={isChecked}>
+    <TaskRowWrapper role="row" isChecked={isChecked}>
       <ContactRowButton
-        display="flex"
-        alignItems="center"
         data-testid="task-row"
         onClick={() => onTaskCheckToggle(taskId)}
         useTopMargin={useTopMargin}
@@ -210,10 +211,15 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                 }}
                 onMouseEnter={() => preloadTaskModal(TaskModalEnum.Edit)}
               >
-                <TaskActionPhase activityData={activityData} isXs={isXs} />
+                <TaskActionPhase
+                  activityData={activityData}
+                  describedBy={subjectId}
+                  isXs={isXs}
+                />
               </Box>
             )}
             <Box
+              id={subjectId}
               sx={{
                 width: '100%',
                 overflow: 'hidden',

@@ -151,6 +151,7 @@ export const NotificationContent = ({
 const NotificationMenu = ({
   isInDrawer = false,
 }: NotificationMenuProps): ReactElement => {
+  const { t } = useTranslation();
   const { classes } = useStyles();
   const accountListId = useAccountListId();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
@@ -168,7 +169,6 @@ const NotificationMenu = ({
     useAcknowledgeAllUserNotificationsMutation();
 
   const handleAcknowledgeAllClick = () => {
-    const optimisticResponse = true;
     acknoweldgeAllUserNotifications({
       variables: { accountListId: accountListId ?? '' },
       optimisticResponse: {
@@ -177,10 +177,6 @@ const NotificationMenu = ({
         },
       },
       update: (cache) => {
-        if (!optimisticResponse) {
-          return;
-        }
-
         const query = {
           query: GetNotificationsDocument,
           variables: {
@@ -234,24 +230,28 @@ const NotificationMenu = ({
     );
   }
 
+  const unread = data?.userNotifications?.unreadCount;
   return (
     <>
       <IconButton
         className={classes.link}
+        aria-label={
+          unread
+            ? t('Notifications ({{unread}} unread)', {
+                unread,
+              })
+            : t('Notifications')
+        }
         aria-controls="notification-menu"
-        aria-haspopup="true"
+        aria-haspopup="menu"
         onClick={handleClick}
       >
         <Badge
-          badgeContent={data?.userNotifications?.unreadCount}
+          badgeContent={unread}
           classes={{ badge: classes.customBadge }}
           max={99}
         >
-          {data?.userNotifications?.unreadCount !== 0 ? (
-            <NotificationsIcon />
-          ) : (
-            <NotificationsNoneIcon />
-          )}
+          {unread !== 0 ? <NotificationsIcon /> : <NotificationsNoneIcon />}
         </Badge>
       </IconButton>
       <Menu

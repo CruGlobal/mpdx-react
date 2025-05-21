@@ -176,38 +176,45 @@ export const ContactDetailsPartnerAccounts: React.FC<
           )}
         </Formik>
       )}
-      {data.contact.contactDonorAccounts.nodes.map((donorAccount) => (
-        <ContactPartnerAccountsTextContainer key={donorAccount.id}>
-          <Box display="flex" flexDirection="column">
-            {donorAccount.donorAccount.organization.id && (
-              <OrganizationName>
-                {donorAccount.donorAccount.organization.name}
-              </OrganizationName>
-            )}
-            <PartnerAccountTextContainer>
-              <PartnerAccountTextLabel>
-                {t('Account Number:')}
-              </PartnerAccountTextLabel>
-              <Typography>{donorAccount.donorAccount.accountNumber}</Typography>
-            </PartnerAccountTextContainer>
-            <PartnerAccountTextContainer>
-              <PartnerAccountTextLabel>
-                {t('Account Name:')}
-              </PartnerAccountTextLabel>
-              <Typography variant="body2">
-                {donorAccount.donorAccount.displayName}
-              </Typography>
-            </PartnerAccountTextContainer>
-          </Box>
-          <IconButton
-            onClick={() =>
-              deleteContactDonorAccount(donorAccount.donorAccount.id)
-            }
-          >
-            <Delete />
-          </IconButton>
-        </ContactPartnerAccountsTextContainer>
-      ))}
+      {data.contact.contactDonorAccounts.nodes.map((donorAccount) => {
+        const nameId = `partner-account-${donorAccount.donorAccount.accountNumber}`;
+        return (
+          <ContactPartnerAccountsTextContainer key={donorAccount.id}>
+            <Box display="flex" flexDirection="column">
+              {donorAccount.donorAccount.organization.id && (
+                <OrganizationName>
+                  {donorAccount.donorAccount.organization.name}
+                </OrganizationName>
+              )}
+              <PartnerAccountTextContainer>
+                <PartnerAccountTextLabel>
+                  {t('Account Number:')}
+                </PartnerAccountTextLabel>
+                <Typography>
+                  {donorAccount.donorAccount.accountNumber}
+                </Typography>
+              </PartnerAccountTextContainer>
+              <PartnerAccountTextContainer>
+                <PartnerAccountTextLabel>
+                  {t('Account Name:')}
+                </PartnerAccountTextLabel>
+                <Typography variant="body2" id={nameId}>
+                  {donorAccount.donorAccount.displayName}
+                </Typography>
+              </PartnerAccountTextContainer>
+            </Box>
+            <IconButton
+              aria-label={t('Delete')}
+              aria-describedby={nameId}
+              onClick={() =>
+                deleteContactDonorAccount(donorAccount.donorAccount.id)
+              }
+            >
+              <Delete />
+            </IconButton>
+          </ContactPartnerAccountsTextContainer>
+        );
+      })}
     </ContactPartnerAccountsContainer>
   );
 };

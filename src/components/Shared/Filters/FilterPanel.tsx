@@ -614,9 +614,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Typography variant="h6">
+                <Typography variant="h6" id="left-panel-header">
                   {selectedFilterCount > 0
-                    ? t('Filter ({{count}})', {
+                    ? t('Filter ({{count}} active)', {
                         count: selectedFilterCount,
                       })
                     : t('Filter')}

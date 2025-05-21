@@ -11,7 +11,9 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 
 ## Getting Started
 
-First, make sure that you have a suitable version of Node.js. This project uses node v18.19.0. To check your node version, run `node --version`. If you don't have node v18.19.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
+### Setting up Node
+
+First, make sure that you have a suitable version of Node.js. This project uses node v22.14.0. To check your node version, run `node --version`. If you don't have node v22.14.0 installed or a suitable version, the recommended way to install it is with [asdf](https://asdf-vm.com/), a development tool version manager.
 
 ```bash
 # Install asdf and the node plugin
@@ -27,11 +29,33 @@ echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ${ZDOTDIR:-~}/.zshrc
 # Install the version of node defined in this project's .tool-versions file
 asdf install nodejs
 
-# Check that the node version is now 18.19.0
+# Check that the node version is now 22.14.0
 node --version
 ```
 
-Then, make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
+### Download yarn cache with Git LFS
+
+Because we store the yarn cache in the GitHub repo, we use Git LFS to manage these large zip files.
+
+**Install Git LFS (if not installed):**
+
+```bash
+brew install git-lfs
+```
+
+Alternatively, download from the [official site](https://git-lfs.com/).
+
+**Pull LFS files**
+
+```bash
+# Fetch the LFS files
+git lfs pull
+
+```
+
+### Running the local server
+
+Make sure you get the environment variables necessary for this project from another developer and put them in a `.env` file in the project's root directory.
 
 Once you have these variables you can install the dependencies.
 

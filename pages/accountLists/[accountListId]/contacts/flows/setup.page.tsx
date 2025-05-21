@@ -7,7 +7,6 @@ import { useSnackbar } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useTranslation } from 'react-i18next';
-import { v4 as uuidv4 } from 'uuid';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { colorMap } from 'src/components/Contacts/ContactFlow/ContactFlow';
 import { ContactFlowSetupColumn } from 'src/components/Contacts/ContactFlow/ContactFlowSetup/Column/ContactFlowSetupColumn';
@@ -72,7 +71,7 @@ const ContactFlowSetupPage: React.FC = () => {
       ...flowOptions,
       {
         name: 'Untitled',
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         statuses: [],
         color: 'color-text',
       },

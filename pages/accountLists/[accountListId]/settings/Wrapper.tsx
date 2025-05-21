@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
@@ -39,40 +38,38 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
       <Head>
         <title>{`${appName} | ${pageTitle}`}</title>
       </Head>
-      <Box component="main">
-        <SidePanelsLayout
-          isScrollBox
-          leftPanel={
-            <MultiPageMenu
-              isOpen={isNavListOpen}
-              selectedId={selectedMenuId}
-              onClose={handleNavListToggle}
-              navType={NavTypeEnum.Settings}
+      <SidePanelsLayout
+        isScrollBox
+        leftPanel={
+          <MultiPageMenu
+            isOpen={isNavListOpen}
+            selectedId={selectedMenuId}
+            onClose={handleNavListToggle}
+            navType={NavTypeEnum.Settings}
+          />
+        }
+        leftOpen={isNavListOpen}
+        leftWidth="290px"
+        mainContent={
+          <>
+            <MultiPageHeader
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              title={pageHeading}
+              rightExtra={null}
+              headerType={HeaderTypeEnum.Settings}
             />
-          }
-          leftOpen={isNavListOpen}
-          leftWidth="290px"
-          mainContent={
-            <>
-              <MultiPageHeader
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={pageHeading}
-                rightExtra={null}
-                headerType={HeaderTypeEnum.Settings}
-              />
-              <PageContentWrapper
-                maxWidth="lg"
-                style={{
-                  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
-                }}
-              >
-                {children}
-              </PageContentWrapper>
-            </>
-          }
-        />
-      </Box>
+            <PageContentWrapper
+              maxWidth="lg"
+              style={{
+                height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+              }}
+            >
+              {children}
+            </PageContentWrapper>
+          </>
+        }
+      />
     </>
   );
 };

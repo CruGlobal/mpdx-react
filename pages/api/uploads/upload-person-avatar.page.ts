@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';
 import { getToken } from 'next-auth/jwt';
 import fetch, { File, FormData } from 'node-fetch';
-import { v4 as uuidv4 } from 'uuid';
 
 export const config = {
   api: {
@@ -46,20 +45,19 @@ const uploadPersonAvatar = async (
       return;
     }
 
-    const {
-      fields: { personId },
-      files: { avatar },
-    } = await parseBody(req);
+    const { fields, files } = await parseBody(req);
+    const personId = fields.personId?.[0];
+    const avatar = files.avatar?.[0];
     if (typeof personId !== 'string') {
       res.status(400).send('Missing personId');
       return;
     }
-    if (!avatar || Array.isArray(avatar)) {
+    if (!avatar) {
       res.status(400).send('Missing avatar');
       return;
     }
 
-    const pictureId = uuidv4();
+    const pictureId = crypto.randomUUID();
     const file = new File(
       [await readFile(avatar.filepath)],
       avatar.originalFilename ?? 'avatar',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import {
   DynamicSearchDialog,
   preloadSearchDialog,
@@ -17,13 +18,14 @@ const SearchButton = styled(IconButton)(() => ({
 }));
 
 const SearchMenu: React.FC = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <SearchButton
-        aria-controls="search-menu"
-        aria-haspopup="true"
+        aria-label={t('Search')}
+        aria-haspopup="dialog"
         onClick={() => setOpen(true)}
         onMouseEnter={preloadSearchDialog}
       >

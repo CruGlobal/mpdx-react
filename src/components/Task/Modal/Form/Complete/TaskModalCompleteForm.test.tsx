@@ -40,10 +40,6 @@ beforeEach(() => {
 
 jest.mock('src/lib/analytics');
 
-jest.mock('uuid', () => ({
-  v4: (): string => 'comment-1',
-}));
-
 const accountListId = 'abc';
 const taskId = 'task-1';
 const task = {

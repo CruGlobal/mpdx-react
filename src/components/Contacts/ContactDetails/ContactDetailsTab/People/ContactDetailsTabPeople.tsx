@@ -90,9 +90,10 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
 
   const {
     editPersonModalOpen,
-    setEditPersonModalOpen,
     createPersonModalOpen,
     setCreatePersonModalOpen,
+    openPersonModal,
+    closePersonModal,
   } = React.useContext(ContactDetailContext) as ContactDetailsType;
 
   const [selecting, setSelectingRaw] = useState(false);
@@ -173,7 +174,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
               </ContactPersonPrimaryText>
             ) : null}
             <ContactEditIconContainer
-              onClick={() => setEditPersonModalOpen(person.id)}
+              onClick={() => openPersonModal(person.id)}
               aria-label={t('Edit Icon')}
             >
               <EditIcon />
@@ -256,7 +257,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
             person={person}
             contactId={id}
             accountListId={accountListId}
-            handleClose={() => setEditPersonModalOpen(undefined)}
+            handleClose={() => closePersonModal()}
             contactData={data}
           />
         ) : null}

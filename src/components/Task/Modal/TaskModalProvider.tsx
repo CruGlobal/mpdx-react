@@ -1,5 +1,4 @@
 import { ReactElement, ReactNode, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import theme from 'src/theme';
 import { preloadTaskModalCommentsList } from './Comments/DynamicTaskModalCommentsList';
 import { preloadTaskModalCompleteForm } from './Form/Complete/DynamicTaskModalCompleteForm';
@@ -25,7 +24,7 @@ interface TaskModalPropsWithId extends TaskModalProps {
 const TaskModalProvider = ({ children }: Props): ReactElement => {
   const [taskModals, setTaskModals] = useState<TaskModalPropsWithId[]>([]);
   const openTaskModal = (taskModalProps: TaskModalProps): void => {
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     if (
       !taskModalProps.taskId ||
       !taskModals.find(

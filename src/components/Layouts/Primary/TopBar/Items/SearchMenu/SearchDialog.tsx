@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete,
   Box,
+  ButtonBase,
   Dialog,
   IconButton,
   Link,
@@ -36,24 +37,22 @@ const StyledDialog = styled(Dialog)(() => ({
   },
 }));
 
-const AutocompleteOption = styled(Link)(({ theme }) => ({
-  color: 'inherit',
-  display: 'flex',
-  width: '100%',
-  padding: '6px 16px',
-  '&:hover': {
-    textDecoration: 'none',
-    backgroundColor: theme.palette.mpdxGrayLight.main,
+const SearchPopper = styled(Popper)(({ theme }) => ({
+  '.MuiButtonBase-root': {
+    justifyContent: 'left',
   },
-})) as typeof Link;
-
-const SearchPopper = styled(Popper)(() => ({
-  '& .MuiAutocomplete-option': {
-    padding: 0,
+  '.MuiLink-root': {
+    display: 'flex',
+  },
+  '.MuiButtonBase-root, .MuiLink-root': {
+    alignItems: 'center',
+    flex: 1,
+    gap: theme.spacing(1),
   },
 }));
 
 interface Option {
+  id?: string;
   name: string;
   status?: StatusEnum | null;
   icon: ReactElement;
@@ -76,6 +75,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
 
   const [searchForContacts, { loading, data }] =
     useGetSearchMenuContactsLazyQuery();
+  const contacts = data?.contacts;
 
   const [createContact] = useCreateContactMutation();
 
@@ -112,24 +112,34 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       link: `/accountLists/${accountListId}/tasks`,
     },
     {
-      name: t('Preferences - Manage Accounts'),
+      name: t('Preferences'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/manageAccounts`,
+      link: `/accountLists/${accountListId}/settings/preferences`,
     },
     {
-      name: t('Preferences - Manage Coaches'),
+      name: t('Preferences - Notifications'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/coaching`,
+      link: `/accountLists/${accountListId}/settings/notifications`,
     },
     {
       name: t('Preferences - Connect Services'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/preferences/connectServices`,
+      link: `/accountLists/${accountListId}/settings/integrations`,
+    },
+    {
+      name: t('Preferences - Manage Accounts'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/settings/manageAccounts`,
+    },
+    {
+      name: t('Preferences - Manage Coaches'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/settings/manageCoaches`,
     },
     {
       name: t('Reports - Donations'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
+      link: `/accountLists/${accountListId}/reports/donations`,
     },
     {
       name: t('Reports - Monthly Report (Partner Currency)'),
@@ -159,7 +169,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     {
       name: t('Reports - Partner Giving Analysis'),
       icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/PartnerGivingAnalysis`,
+      link: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
     },
     {
       name: t('Reports - Coaching'),
@@ -172,64 +182,70 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       link: `/accountLists/${accountListId}/tools`,
     },
     {
+      name: t('Tools - Appeals'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/appeals`,
+    },
+    {
+      name: t('Tools - Fix Commitment Info'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/commitmentInfo`,
+    },
+    {
+      name: t('Tools - Fix Mailing Addresses'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/mailingAddresses`,
+    },
+    {
+      name: t('Tools - Fix Send Newsletter'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/sendNewsletter`,
+    },
+    {
+      name: t('Tools - Merge Contacts'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/merge/contacts`,
+    },
+    {
+      name: t('Tools - Fix Email Addresses'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/emailAddresses`,
+    },
+    {
+      name: t('Tools - Fix Phone Numbers'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/fix/phoneNumbers`,
+    },
+    {
+      name: t('Tools - Merge People'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/merge/people`,
+    },
+    {
+      name: t('Tools - Import from Google'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/import/google`,
+    },
+    {
+      name: t('Tools - Import from TntConnect'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/import/tntConnect`,
+    },
+    {
+      name: t('Tools - Import from CSV'),
+      icon: <CompassIcon />,
+      link: `/accountLists/${accountListId}/tools/import/csv`,
+    },
+    {
       name: t('Coaching'),
       icon: <CompassIcon />,
       link: `/accountLists/${accountListId}/coaching`,
     },
-    {
-      name: t('Tools - Fix - Commitment Info'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixCommitmentInfo`,
-    },
-    {
-      name: t('Tools - Fix - Mailing Addresses'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixMailingAddresses`,
-    },
-    {
-      name: t('Tools - Fix - Send Newsletter'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixSendNewsletter`,
-    },
-    {
-      name: t('Tools - Fix - Merge Contacts'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/mergeContacts`,
-    },
-    {
-      name: t('Tools - Fix - Email Addresses'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixEmailAddresses`,
-    },
-    {
-      name: t('Tools - Fix - Phone Numbers'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fixPhoneNumbers`,
-    },
-    {
-      name: t('Tools - Fix - Merge People'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/mergePeople`,
-    },
-    {
-      name: t('Tools - Import - Google'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/google`,
-    },
-    {
-      name: t('Tools - Import - TntConnect'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/tntConnect`,
-    },
-    {
-      name: t('Tools - Import - CSV'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/csv`,
-    },
   ];
 
   const options: Option[] = [
-    ...(data?.contacts.nodes.map(({ name, status, id }) => ({
+    ...(contacts?.nodes.map(({ name, status, id }) => ({
+      id,
       name,
       status,
       icon: <PersonIcon />,
@@ -269,101 +285,113 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
       onClose={handleClose}
       disableRestoreFocus={true}
     >
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Autocomplete
-          fullWidth
-          multiple
-          PopperComponent={SearchPopper}
-          loading={loading}
-          filterSelectedOptions
-          onChange={handleClose}
-          getOptionLabel={(option) => option.name}
-          renderOption={(props, option) => {
+      <Autocomplete
+        fullWidth
+        PopperComponent={SearchPopper}
+        loading={loading}
+        filterSelectedOptions
+        onChange={(_event, option) => {
+          if (option) {
             if (option.link === 'createContact') {
-              return (
-                <AutocompleteOption onClick={handleCreateContact}>
-                  <Box display="flex" marginRight={1}>
-                    {option.icon}
-                  </Box>
-                  <Box display="flex" flexDirection="column">
-                    <Typography>{option.name}</Typography>
-                  </Box>
-                </AutocompleteOption>
-              );
+              handleCreateContact();
+            } else {
+              push(option.link);
             }
+          }
 
-            return (
-              <AutocompleteOption
-                component={NextLink}
-                href={option.link}
-                onClick={handleClose}
-              >
-                <Box display="flex" marginRight={1}>
-                  {option.icon}
-                </Box>
-                <Box display="flex" flexDirection="column">
-                  <Typography>{option.name}</Typography>
-                  <Typography variant="subtitle2">
-                    {getLocalizedContactStatus(option.status)}
-                  </Typography>
-                </Box>
-              </AutocompleteOption>
-            );
-          }}
-          options={wildcardSearch !== '' ? options : []}
-          filterOptions={(options, params) => {
-            if (params.inputValue !== '') {
-              if (
-                data?.contacts.totalCount &&
-                data?.contacts.totalCount > data.contacts.nodes.length
-              ) {
-                options.splice(5, 0, {
-                  name: t(
-                    `And ${
-                      data?.contacts.totalCount - data.contacts.nodes.length
-                    } more`,
-                  ),
-                  icon: <PeopleIcon />,
-                  link: `/accountLists/${accountListId}/contacts?searchTerm=${wildcardSearch}`,
-                });
-              }
-              options.push({
-                name: t('Create a new contact for "{{ name }}"', {
-                  name: params.inputValue,
-                }),
-                icon: <AddIcon />,
-                link: 'createContact',
-              });
-            }
+          handleClose();
+        }}
+        getOptionLabel={(option) => option.name}
+        renderOption={(props, option) => {
+          const content = (
+            <>
+              {option.icon}
+              <Box display="flex" flexDirection="column">
+                <Typography>{option.name}</Typography>
+                <Typography variant="body2">
+                  {getLocalizedContactStatus(option.status)}
+                </Typography>
+              </Box>
+            </>
+          );
 
-            return options;
-          }}
-          renderInput={(params): ReactElement => (
-            <TextField
-              {...params}
-              fullWidth
-              placeholder={t('Type something to start searching')}
-              value={wildcardSearch}
-              InputProps={{
-                ...params.InputProps,
-                type: 'search',
-                startAdornment: (
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                ),
-                endAdornment: null,
-              }}
-              onChange={(e) => {
-                setWildcardSearch(e.target.value);
-                handleUpdateWildcardSearch(e.target.value);
-              }}
-              // eslint-disable-next-line
-              autoFocus
-            />
-          )}
-        />
-      </Box>
+          return (
+            <li {...props} key={option.id ?? option.name}>
+              {option.link === 'createContact' ? (
+                <ButtonBase>{content}</ButtonBase>
+              ) : (
+                <Link
+                  component={NextLink}
+                  href={option.link}
+                  underline="none"
+                  color="inherit"
+                >
+                  {content}
+                </Link>
+              )}
+            </li>
+          );
+        }}
+        options={wildcardSearch !== '' ? options : []}
+        filterOptions={(options, params) => {
+          // Filter pages but not contacts because they were already filtered by the server
+          const filteredOptions = options.filter((option) =>
+            option.id
+              ? true
+              : option.name
+                  .toLowerCase()
+                  .includes(wildcardSearch.toLowerCase()),
+          );
+
+          if (contacts && contacts.totalCount > contacts.nodes.length) {
+            filteredOptions.splice(contacts.nodes.length, 0, {
+              name: t(
+                `And ${contacts.totalCount - contacts.nodes.length} more`,
+              ),
+              icon: <PeopleIcon />,
+              link: `/accountLists/${accountListId}/contacts?searchTerm=${encodeURIComponent(
+                wildcardSearch,
+              )}`,
+            });
+          }
+
+          if (params.inputValue !== '') {
+            filteredOptions.push({
+              name: t('Create a new contact for "{{ name }}"', {
+                name: params.inputValue,
+              }),
+              icon: <AddIcon />,
+              link: 'createContact',
+            });
+          }
+
+          return filteredOptions;
+        }}
+        renderInput={(params): ReactElement => (
+          <TextField
+            {...params}
+            fullWidth
+            placeholder={t('Type something to start searching')}
+            value={wildcardSearch}
+            InputProps={{
+              ...params.InputProps,
+              type: 'search',
+              startAdornment: (
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              ),
+              endAdornment: null,
+            }}
+            onChange={(e) => {
+              setWildcardSearch(e.target.value);
+              handleUpdateWildcardSearch(e.target.value);
+            }}
+            // eslint-disable-next-line
+            autoFocus
+          />
+        )}
+      />
     </StyledDialog>
   );
 };
