@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { TagTypeEnum, TagsAutocomplete } from './TagsAutocomplete';
@@ -11,11 +11,13 @@ const mutationSpy = jest.fn();
 interface TestComponentProps {
   type?: TagTypeEnum;
   value?: string[];
+  phaseTags?: string[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   type = TagTypeEnum.Contact,
   value = [],
+  phaseTags = [],
 }) => (
   <GqlMockedProvider<{ TagOptions: TagOptionsQuery }>
     mocks={{
@@ -33,6 +35,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       type={type}
       value={value}
       onChange={onChange}
+      phaseTags={phaseTags}
     />
   </GqlMockedProvider>
 );
@@ -90,5 +93,22 @@ describe('TagsAutocomplete', () => {
     userEvent.tab();
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('should not have any phaseTags in the list', async () => {
+    const { queryByRole, getByRole } = render(
+      <TestComponent
+        value={['ct-1']}
+        type={TagTypeEnum.Tag}
+        phaseTags={['tt-2', 'tt-3']}
+      />,
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Tags' }));
+    await waitFor(() => {
+      expect(queryByRole('option', { name: 'tt-1' })).toBeInTheDocument();
+      expect(queryByRole('option', { name: 'tt-2' })).not.toBeInTheDocument();
+      expect(queryByRole('option', { name: 'tt-3' })).not.toBeInTheDocument();
+    });
   });
 });
