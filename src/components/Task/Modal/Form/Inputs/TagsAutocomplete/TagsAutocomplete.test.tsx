@@ -104,7 +104,7 @@ describe('TagsAutocomplete', () => {
       <TestComponent
         value={['ct-1']}
         type={TagTypeEnum.Tag}
-        phaseTags={['tt-2', 'tt-3']}
+        allPhaseTags={new Set(['tt-2', 'tt-3'])}
       />,
     );
 

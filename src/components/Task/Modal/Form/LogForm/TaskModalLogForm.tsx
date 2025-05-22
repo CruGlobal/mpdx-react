@@ -125,6 +125,7 @@ const TaskModalLogForm = ({
     taskPhases,
     activityTypes,
     activitiesByPhase,
+    allPhaseTags,
   } = usePhaseData();
   const [selectedSuggestedTags, setSelectedSuggestedTags] = useState<string[]>(
     [],
@@ -537,7 +538,7 @@ const TaskModalLogForm = ({
                             accountListId={accountListId}
                             type={TagTypeEnum.Tag}
                             value={tagList ?? []}
-                            phaseTags={phaseTags ?? []}
+                            allPhaseTags={allPhaseTags}
                             onChange={(tagList) =>
                               setFieldValue('tagList', tagList)
                             }

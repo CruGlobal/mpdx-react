@@ -182,6 +182,7 @@ const TaskModalForm = ({
     taskPhases,
     activityTypes,
     activitiesByPhase,
+    allPhaseTags,
   } = usePhaseData(task?.taskPhase);
 
   const phaseTags = useMemo(
@@ -628,7 +629,7 @@ const TaskModalForm = ({
                   accountListId={accountListId}
                   type={TagTypeEnum.Tag}
                   value={tagList || []}
-                  phaseTags={phaseTags || []}
+                  allPhaseTags={allPhaseTags}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
                   label={
                     phaseTags?.length && initialTask.completedAt
