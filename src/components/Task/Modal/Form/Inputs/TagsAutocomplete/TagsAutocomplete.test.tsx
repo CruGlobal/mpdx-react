@@ -11,13 +11,13 @@ const mutationSpy = jest.fn();
 interface TestComponentProps {
   type?: TagTypeEnum;
   value?: string[];
-  phaseTags?: string[];
+  allPhaseTags?: Set<string>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   type = TagTypeEnum.Contact,
   value = [],
-  phaseTags = [],
+  allPhaseTags = new Set(),
 }) => (
   <GqlMockedProvider<{ TagOptions: TagOptionsQuery }>
     mocks={{
@@ -35,7 +35,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       type={type}
       value={value}
       onChange={onChange}
-      phaseTags={phaseTags}
+      allPhaseTags={allPhaseTags}
     />
   </GqlMockedProvider>
 );
@@ -100,7 +100,7 @@ describe('TagsAutocomplete', () => {
       <TestComponent
         value={['ct-1']}
         type={TagTypeEnum.Tag}
-        phaseTags={['tt-2', 'tt-3']}
+        allPhaseTags={new Set(['tt-2', 'tt-3'])}
       />,
     );
 
