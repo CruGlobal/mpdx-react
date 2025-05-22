@@ -42,7 +42,7 @@ class MyDocument extends Document {
           {process.env.HELPJUICE_ORIGIN && (
             <script
               dangerouslySetInnerHTML={{
-                __html: `window.helpjuice_account_url = '${process.env.HELPJUICE_ORIGIN}';
+                __html: `window.helpjuice_account_url = '${process.env.SITE_URL}/api/helpjuice';
 window.helpjuice_contact_us_url = '${process.env.HELPJUICE_ORIGIN}/contact-us';
 window.helpjuiceSwiftyConfig = { widgetPosition: 'bottomRight' };
 window.helpjuiceSwiftyUrlMap = {};`,
