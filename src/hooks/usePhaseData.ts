@@ -18,6 +18,7 @@ type GetPhaseData = {
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
   phasesMap: Map<PhaseEnum, PhaseMappedData>;
   activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>;
+  allPhaseTags: Set<string>;
 };
 
 export type ActivityData = {
@@ -66,6 +67,18 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     },
     [constants],
   );
+
+  const allPhaseTags = useMemo(() => {
+    const allTags: Set<string> = new Set();
+    constants?.phases?.forEach((phase) => {
+      phase?.results?.tags?.forEach((tag) => {
+        if (tag && tag.value) {
+          allTags.add(tag.value.toLowerCase());
+        }
+      });
+    });
+    return allTags;
+  }, [constants]);
 
   // phaseData = {
   //   contactStatuses: ['CALL_FOR_DECISION'],
@@ -203,5 +216,6 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     phasesMap,
     activityTypes,
     activitiesByPhase,
+    allPhaseTags,
   };
 };
