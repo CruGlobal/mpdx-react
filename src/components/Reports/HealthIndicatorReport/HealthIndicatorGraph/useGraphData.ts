@@ -145,11 +145,15 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
         weightedAverage(periods, 'successHi', periodSpans) || null;
 
       // Determine the weighted average denominator
+      const CONSISTENCY_WEIGHT = 1;
+      const DEPTH_WEIGHT = 1;
+      const OWNERSHIP_WEIGHT = 3;
+      const SUCCESS_WEIGHT = 2;
       const totalWeights =
-        (consistency === null ? 0 : 1) +
-        (depth === null ? 0 : 1) +
-        (ownership === null ? 0 : 3) +
-        (success === null ? 0 : 2);
+        (consistency === null ? 0 : CONSISTENCY_WEIGHT) +
+        (depth === null ? 0 : DEPTH_WEIGHT) +
+        (ownership === null ? 0 : OWNERSHIP_WEIGHT) +
+        (success === null ? 0 : SUCCESS_WEIGHT);
       return {
         month: monthYearFormat(DateTime.fromISO(isoMonth), locale),
         consistency: round(consistency),
@@ -158,14 +162,21 @@ export const useGraphData = (accountListId: string): UseGraphDataResult => {
         success: round(success),
         // Scale the health indicator values by their weight in the overall calculation, ignoring missing values
         consistencyScaled:
-          consistency === null ? null : Math.round(consistency / totalWeights),
-        depthScaled: depth === null ? null : Math.round(depth / totalWeights),
+          consistency === null
+            ? null
+            : Math.round((consistency * CONSISTENCY_WEIGHT) / totalWeights),
+        depthScaled:
+          depth === null
+            ? null
+            : Math.round((depth * DEPTH_WEIGHT) / totalWeights),
         ownershipScaled:
           ownership === null
             ? null
-            : Math.round((ownership * 3) / totalWeights),
+            : Math.round((ownership * OWNERSHIP_WEIGHT) / totalWeights),
         successScaled:
-          success === null ? null : Math.round((success * 2) / totalWeights),
+          success === null
+            ? null
+            : Math.round((success * SUCCESS_WEIGHT) / totalWeights),
       };
     });
   }, [data]);
