@@ -44,7 +44,7 @@ export interface AccountListRowProps {
 
 const BorderRightGrid = styled(Grid)(() => ({
   borderRight: '1px solid',
-  borderColor: theme.palette.cruGrayLight.main,
+  borderColor: theme.palette.mpdxGrayLight.main,
 }));
 
 const NoItemsBox = styled(Box)(() => ({
@@ -341,7 +341,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
           container
           style={{
             borderBottom: '1px solid',
-            borderColor: theme.palette.cruGrayLight.main,
+            borderColor: theme.palette.mpdxGrayLight.main,
           }}
         >
           <Grid item xs={4}>

@@ -248,10 +248,12 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.settings?.monthlyGoal ||
                 null
               }
-              accountListId={accountListId}
-              currency={
-                accountPreferencesData?.accountList?.settings?.currency || ''
+              monthlyGoalUpdatedAt={
+                accountPreferencesData?.accountList?.monthlyGoalUpdatedAt ??
+                null
               }
+              accountListId={accountListId}
+              currency={accountPreferencesData?.accountList?.currency || null}
               disabled={onSetupTour && setup !== 1}
               handleSetupChange={handleSetupChange}
             />
@@ -269,9 +271,7 @@ const Preferences: React.FC = () => {
             <CurrencyAccordion
               handleAccordionChange={setExpandedAccordion}
               expandedAccordion={expandedAccordion}
-              currency={
-                accountPreferencesData?.accountList?.settings?.currency || ''
-              }
+              currency={accountPreferencesData?.accountList?.currency || null}
               accountListId={accountListId}
               disabled={onSetupTour}
             />
@@ -312,9 +312,7 @@ const Preferences: React.FC = () => {
                 accountPreferencesData?.accountList?.activeMpdMonthlyGoal ||
                 null
               }
-              currency={
-                accountPreferencesData?.accountList?.settings?.currency || ''
-              }
+              currency={accountPreferencesData?.accountList?.currency || ''}
               accountListId={accountListId}
               disabled={onSetupTour}
             />

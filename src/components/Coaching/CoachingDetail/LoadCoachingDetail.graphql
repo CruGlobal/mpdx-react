@@ -96,8 +96,27 @@ query LoadAccountListCoachingDetail($accountListId: ID!) {
   }
 }
 
-query GetCoachingDonationGraph($coachingAccountListId: ID!) {
+query GetCoachingDonationGraph(
+  $coachingAccountListId: ID!
+  $periodBegin: ISO8601Date!
+) {
+  accountList: coachingAccountList(id: $coachingAccountListId) {
+    id
+    currency
+    monthlyGoal
+    totalPledges
+  }
   reportsDonationHistories(accountListId: $coachingAccountListId) {
     ...DonationGraphHistories
+  }
+  healthIndicatorData: coachingAccountListHealthIndicatorData(
+    accountListId: $coachingAccountListId
+    beginDate: $periodBegin
+  ) {
+    id
+    indicationPeriodBegin
+    machineCalculatedGoal
+    machineCalculatedGoalCurrency
+    staffEnteredGoal
   }
 }

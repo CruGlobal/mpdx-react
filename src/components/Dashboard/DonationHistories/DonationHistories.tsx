@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   Box,
@@ -8,14 +7,15 @@ import {
   Skeleton,
   Theme,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Legend,
+  Line,
   ReferenceLine,
   ResponsiveContainer,
   Text,
@@ -25,33 +25,24 @@ import {
 } from 'recharts';
 import { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart.d';
 import { makeStyles } from 'tss-react/mui';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { BarChartSkeleton } from 'src/components/common/BarChartSkeleton/BarChartSkeleton';
+import { LegendReferenceLine } from 'src/components/common/LegendReferenceLine/LegendReferenceLine';
+import {
+  StyledBarChart,
+  StyledComposedChart,
+} from 'src/components/common/StyledBarChart/StyledBarChart';
+import * as Types from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { GoalSource, getHealthIndicatorInfo } from 'src/lib/healthIndicator';
 import illustration15 from '../../../images/drawkit/grape/drawkit-grape-pack-illustration-15.svg';
 import { currencyFormat } from '../../../lib/intlFormat';
 import AnimatedBox from '../../AnimatedBox';
 import AnimatedCard from '../../AnimatedCard';
+import { calculateGraphData } from './graphData';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   cardHeader: {
     textAlign: 'center',
-  },
-  lineKey: {
-    display: 'inline-block',
-    height: '5px',
-    width: '20px',
-    marginRight: '10px',
-    marginBottom: '4px',
-    borderRadius: '5px',
-  },
-  lineKeyGoal: {
-    backgroundColor: '#17AEBF',
-  },
-  lineKeyAverage: {
-    backgroundColor: '#9C9FA1',
-  },
-  lineKeyPledged: {
-    backgroundColor: '#FFCF07',
   },
   boxImg: {
     display: 'flex',
@@ -72,84 +63,87 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-interface Props {
-  loading?: boolean;
-  reportsDonationHistories?: {
-    periods: {
-      convertedTotal: number;
-      startDate: string;
-      totals: { currency: string; convertedAmount: number }[];
-    }[];
-    averageIgnoreCurrent: number;
+export interface DonationHistoriesData {
+  accountList: Pick<
+    Types.AccountList,
+    'currency' | 'monthlyGoal' | 'totalPledges'
+  >;
+  reportsDonationHistories: Pick<
+    Types.DonationHistories,
+    'averageIgnoreCurrent'
+  > & {
+    periods: Array<
+      Pick<
+        Types.DonationHistoriesPeriod,
+        'startDate' | 'endDate' | 'convertedTotal'
+      > & {
+        totals: Array<Pick<Types.Total, 'currency' | 'convertedAmount'>>;
+      }
+    >;
   };
-  currencyCode?: string;
-  goal?: number;
-  pledged?: number;
-  setTime?: (time: DateTime) => void;
+  healthIndicatorData: Array<
+    Pick<
+      Types.HealthIndicatorData,
+      | 'indicationPeriodBegin'
+      | 'machineCalculatedGoal'
+      | 'machineCalculatedGoalCurrency'
+      | 'staffEnteredGoal'
+    >
+  >;
+}
+
+export interface DonationHistoriesProps {
+  loading?: boolean;
+  data: DonationHistoriesData | undefined;
+  onPeriodClick?: (period: DateTime) => void;
 }
 
 const DonationHistories = ({
   loading,
-  reportsDonationHistories,
-  goal,
-  pledged,
-  currencyCode = 'USD',
-  setTime,
-}: Props): ReactElement => {
+  data,
+  onPeriodClick,
+}: DonationHistoriesProps): ReactElement => {
   const { classes } = useStyles();
-  const { push } = useRouter();
+  const { palette } = useTheme();
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
-  const fills = ['#FFCF07', '#30F2F2', '#1FC0D2', '#007398'];
-  const currencies: { dataKey: string; fill: string }[] = [];
-  const periods = reportsDonationHistories?.periods?.map((period) => {
-    const data: {
-      [key: string]: string | number | DateTime;
-      startDate: string;
-      total: number;
-      period: DateTime;
-    } = {
-      startDate: DateTime.fromISO(period.startDate)
-        .toJSDate()
-        .toLocaleDateString(locale, { month: 'short', year: '2-digit' }),
-      total: period.convertedTotal,
-      period: DateTime.fromISO(period.startDate),
-    };
-    period.totals.forEach((total) => {
-      if (!currencies.find((currency) => total.currency === currency.dataKey)) {
-        currencies.push({ dataKey: total.currency, fill: fills.pop() ?? '' });
-      }
-      data[total.currency] = total.convertedAmount;
-    });
-    return data;
-  });
-  const empty =
-    !loading &&
-    (periods === undefined ||
-      periods.reduce((result, { total }) => result + total, 0) === 0);
-  const domainMax = Math.max(
-    ...(periods?.map((period) => period.total) || []),
-    goal ?? 0,
-    pledged ?? 0,
-    reportsDonationHistories?.averageIgnoreCurrent ?? 0,
+  const fills = [
+    palette.cyan.main,
+    palette.pink.main,
+    palette.green.main,
+    palette.orange.main,
+  ];
+  const goalColor = palette.graphite.main;
+  const averageColor = palette.graphite.main;
+  const pledgedColor = palette.yellow.main;
+  const goalLineStyles = {
+    stroke: goalColor,
+    strokeDasharray: '5,8',
+    strokeLinecap: 'round' as const,
+    strokeWidth: 3,
+  };
+
+  const { totalPledges: pledged, currency } = data?.accountList ?? {};
+  const { goal, goalSource } = getHealthIndicatorInfo(
+    data?.accountList,
+    data?.healthIndicatorData.at(-1),
   );
 
-  const handleClick: CategoricalChartFunc = (period) => {
-    if (!period?.activePayload) {
+  const {
+    periods,
+    currencies,
+    empty: periodsEmpty,
+    domainMax,
+  } = calculateGraphData({ locale, data, currencyColors: fills });
+  const empty = !loading && periodsEmpty;
+
+  const handleClick: CategoricalChartFunc = (state) => {
+    if (!state?.activePayload) {
       // The click was inside the chart but wasn't on a period
       return;
     }
-    if (setTime) {
-      setTime(period.activePayload[0].payload.period);
-    } else {
-      push({
-        pathname: `/accountLists/${accountListId}/reports/donations`,
-        query: {
-          month: period.activePayload[0].payload.period.toISO(),
-        },
-      });
-    }
+
+    onPeriodClick?.(state.activePayload[0].payload.period);
   };
 
   return (
@@ -166,72 +160,48 @@ const DonationHistories = ({
               className={classes.cardHeader}
               title={
                 <Grid container spacing={2} justifyContent="center">
-                  {goal ? (
-                    <>
-                      <Grid item>
-                        <Box
-                          className={[
-                            classes.lineKey,
-                            classes.lineKeyGoal,
-                          ].join(' ')}
-                        />
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          data-testid="DonationHistoriesTypographyGoal"
-                        >
-                          <strong>{t('Goal')}</strong>{' '}
-                          {currencyFormat(goal, currencyCode, locale)}
-                        </Typography>
-                      </Grid>
-                      <Grid item>|</Grid>
-                    </>
-                  ) : null}
-                  <Grid item>
-                    <Box
-                      className={[classes.lineKey, classes.lineKeyAverage].join(
-                        ' ',
-                      )}
+                  <Grid item data-testid="DonationHistoriesTypographyGoal">
+                    <LegendReferenceLine
+                      name={t('Goal')}
+                      value={goal && currencyFormat(goal, currency, locale)}
+                      color={goalColor}
+                      dashed
                     />
-                    <Typography
-                      variant="body1"
-                      component="span"
-                      data-testid="DonationHistoriesTypographyAverage"
-                    >
-                      <strong>{t('Average')}</strong>{' '}
-                      {loading || !reportsDonationHistories ? (
-                        <Skeleton
-                          variant="text"
-                          style={{ display: 'inline-block' }}
-                          width={90}
-                        />
-                      ) : (
-                        currencyFormat(
-                          reportsDonationHistories.averageIgnoreCurrent,
-                          currencyCode,
-                          locale,
+                  </Grid>
+                  <Grid item>|</Grid>
+                  <Grid item data-testid="DonationHistoriesTypographyAverage">
+                    <LegendReferenceLine
+                      name={t('Average')}
+                      value={
+                        loading || !data?.reportsDonationHistories ? (
+                          <Skeleton
+                            variant="text"
+                            style={{ display: 'inline-block' }}
+                            width={90}
+                          />
+                        ) : (
+                          currencyFormat(
+                            data.reportsDonationHistories.averageIgnoreCurrent,
+                            currency,
+                            locale,
+                          )
                         )
-                      )}
-                    </Typography>
+                      }
+                      color={averageColor}
+                    />
                   </Grid>
                   {pledged ? (
                     <>
                       <Grid item>|</Grid>
-                      <Grid item>
-                        <Box
-                          className={[
-                            classes.lineKey,
-                            classes.lineKeyPledged,
-                          ].join(' ')}
+                      <Grid
+                        item
+                        data-testid="DonationHistoriesTypographyPledged"
+                      >
+                        <LegendReferenceLine
+                          name={t('Committed')}
+                          value={currencyFormat(pledged, currency, locale)}
+                          color={pledgedColor}
                         />
-                        <Typography
-                          variant="body1"
-                          component="span"
-                          data-testid="DonationHistoriesTypographyPledged"
-                        >
-                          <strong>{t('Committed')}</strong>{' '}
-                          {currencyFormat(pledged, currencyCode, locale)}
-                        </Typography>
                       </Grid>
                     </>
                   ) : null}
@@ -256,30 +226,12 @@ const DonationHistories = ({
             </Box>
           ) : (
             <>
-              <Box display={{ xs: 'none', md: 'block' }} height={250}>
+              <Box display={{ xs: 'none', md: 'block' }}>
                 {loading ? (
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                    data-testid="DonationHistoriesGridLoading"
-                  >
-                    <Skeleton variant="rectangular" width={30} height={30} />
-                    <Skeleton variant="rectangular" width={30} height={50} />
-                    <Skeleton variant="rectangular" width={30} height={70} />
-                    <Skeleton variant="rectangular" width={30} height={90} />
-                    <Skeleton variant="rectangular" width={30} height={110} />
-                    <Skeleton variant="rectangular" width={30} height={130} />
-                    <Skeleton variant="rectangular" width={30} height={150} />
-                    <Skeleton variant="rectangular" width={30} height={170} />
-                    <Skeleton variant="rectangular" width={30} height={190} />
-                    <Skeleton variant="rectangular" width={30} height={210} />
-                    <Skeleton variant="rectangular" width={30} height={230} />
-                    <Skeleton variant="rectangular" width={30} height={250} />
-                  </Grid>
+                  <BarChartSkeleton bars={12} />
                 ) : (
-                  <ResponsiveContainer minWidth={600}>
-                    <BarChart
+                  <ResponsiveContainer height={250}>
+                    <StyledComposedChart
                       data={periods}
                       margin={{
                         left: 20,
@@ -289,22 +241,29 @@ const DonationHistories = ({
                     >
                       <Legend />
                       <CartesianGrid vertical={false} />
-                      {goal && (
+                      {goalSource === GoalSource.Preferences ? (
                         <ReferenceLine
-                          y={goal}
-                          stroke="#17AEBF"
-                          strokeWidth={3}
+                          y={goal ?? undefined}
+                          {...goalLineStyles}
+                        />
+                      ) : (
+                        <Line
+                          dataKey="goal"
+                          name={t('Goal')}
+                          connectNulls
+                          dot={false}
+                          {...goalLineStyles}
                         />
                       )}
                       <ReferenceLine
-                        y={reportsDonationHistories?.averageIgnoreCurrent}
-                        stroke="#9C9FA1"
+                        y={data?.reportsDonationHistories?.averageIgnoreCurrent}
+                        stroke={averageColor}
                         strokeWidth={3}
                       />
                       {pledged && (
                         <ReferenceLine
                           y={pledged}
-                          stroke="#FFCF07"
+                          stroke={pledgedColor}
                           strokeWidth={3}
                         />
                       )}
@@ -320,8 +279,8 @@ const DonationHistories = ({
                             offset={0}
                             angle={-90}
                           >
-                            {t('Amount ({{ currencyCode }})', {
-                              currencyCode,
+                            {t('Amount ({{ currency }})', {
+                              currency,
                             })}
                           </Text>
                         }
@@ -329,44 +288,28 @@ const DonationHistories = ({
                       <Tooltip />
                       {currencies.map((currency) => (
                         <Bar
-                          key={currency.dataKey}
-                          dataKey={currency.dataKey}
+                          key={currency.name}
+                          dataKey={`currencies.${currency.name}`}
+                          name={currency.name}
                           stackId="a"
                           fill={currency.fill}
                           barSize={30}
                         />
                       ))}
-                    </BarChart>
+                    </StyledComposedChart>
                   </ResponsiveContainer>
                 )}
               </Box>
-              <Box display={{ xs: 'block', md: 'none' }} height={150}>
+              <Box display={{ xs: 'block', md: 'none' }}>
                 {loading ? (
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="flex-end"
-                  >
-                    <Skeleton variant="rectangular" width={10} height={40} />
-                    <Skeleton variant="rectangular" width={10} height={50} />
-                    <Skeleton variant="rectangular" width={10} height={60} />
-                    <Skeleton variant="rectangular" width={10} height={70} />
-                    <Skeleton variant="rectangular" width={10} height={80} />
-                    <Skeleton variant="rectangular" width={10} height={90} />
-                    <Skeleton variant="rectangular" width={10} height={100} />
-                    <Skeleton variant="rectangular" width={10} height={110} />
-                    <Skeleton variant="rectangular" width={10} height={120} />
-                    <Skeleton variant="rectangular" width={10} height={130} />
-                    <Skeleton variant="rectangular" width={10} height={140} />
-                    <Skeleton variant="rectangular" width={10} height={150} />
-                  </Grid>
+                  <BarChartSkeleton bars={12} width={10} />
                 ) : (
-                  <ResponsiveContainer>
-                    <BarChart data={periods}>
+                  <ResponsiveContainer height={150}>
+                    <StyledBarChart data={periods}>
                       <XAxis tickLine={false} dataKey="startDate" />
                       <Tooltip />
-                      <Bar dataKey="total" fill="#007398" barSize={10} />
-                    </BarChart>
+                      <Bar dataKey="total" fill={fills[0]} barSize={10} />
+                    </StyledBarChart>
                   </ResponsiveContainer>
                 )}
               </Box>

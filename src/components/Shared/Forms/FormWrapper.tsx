@@ -7,7 +7,6 @@ interface FormWrapperProps {
   onSubmit: () => void;
   isValid: boolean;
   isSubmitting: boolean;
-  formAttrs?: { action?: string; method?: string };
   children: React.ReactNode;
   buttonText?: string;
 }
@@ -16,7 +15,6 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   onSubmit,
   isValid,
   isSubmitting,
-  formAttrs = {},
   children,
   buttonText,
 }) => {
@@ -24,7 +22,7 @@ export const FormWrapper: React.FC<FormWrapperProps> = ({
   const theme = useTheme();
 
   return (
-    <form {...formAttrs} onSubmit={onSubmit}>
+    <form onSubmit={onSubmit}>
       {children}
       <Button
         variant="contained"

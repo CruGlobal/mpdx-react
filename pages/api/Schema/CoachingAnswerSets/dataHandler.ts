@@ -3,8 +3,7 @@ import {
   CoachingAnswerSet,
   CoachingQuestion,
 } from 'src/graphql/types.generated';
-
-const isNotNull = <T>(item: T | null): item is T => item !== null;
+import { isNotNullish } from 'src/lib/typeGuards';
 
 interface CoachingAnswerSetData {
   id: string;
@@ -77,10 +76,10 @@ const parseCoachingAnswerSet = (
   };
   const answers = relationships.answers.data
     .map(({ id }) => getIncludedAnswer(id, included))
-    .filter(isNotNull);
+    .filter(isNotNullish);
   const questions = relationships.questions.data
     .map(({ id }) => getIncludedQuestion(id, included))
-    .filter(isNotNull);
+    .filter(isNotNullish);
 
   return {
     id,

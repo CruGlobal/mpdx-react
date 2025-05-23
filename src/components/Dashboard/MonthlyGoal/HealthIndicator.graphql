@@ -1,0 +1,15 @@
+query HealthIndicator($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    healthIndicatorData {
+      id
+      overallHi
+      ownershipHi
+      consistencyHi
+      successHi
+      depthHi
+      machineCalculatedGoal
+      machineCalculatedGoalCurrency
+    }
+  }
+}

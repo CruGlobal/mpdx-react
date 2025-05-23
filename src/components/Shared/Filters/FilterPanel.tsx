@@ -97,7 +97,7 @@ const LinkButton = styled(Button)(({ theme }) => ({
 const FlatAccordion = styled(Accordion)(({ theme }) => ({
   '&.MuiPaper-elevation1': {
     boxShadow: 'none',
-    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   },
   '& .MuiAccordionDetails-root': {
     paddingLeft: 0,

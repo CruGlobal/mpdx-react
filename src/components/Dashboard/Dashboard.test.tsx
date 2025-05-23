@@ -4,10 +4,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import matchMediaMock from '__tests__/util/matchMediaMock';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
@@ -33,6 +29,7 @@ beforeEach(() => {
 
 const data: GetDashboardQuery = {
   user: {
+    id: 'user-1',
     firstName: 'Roger',
   },
   accountList: {
@@ -51,7 +48,8 @@ const data: GetDashboardQuery = {
     periods: [
       {
         convertedTotal: 200,
-        startDate: '2011-12-1',
+        startDate: '2011-12-01',
+        endDate: '2011-12-31',
         totals: [
           {
             currency: 'USD',
@@ -61,7 +59,8 @@ const data: GetDashboardQuery = {
       },
       {
         convertedTotal: 400,
-        startDate: '2012-1-1',
+        startDate: '2012-01-01',
+        endDate: '2012-01-31',
         totals: [
           {
             currency: 'USD',
@@ -71,7 +70,8 @@ const data: GetDashboardQuery = {
       },
       {
         convertedTotal: 900,
-        startDate: '2012-2-1',
+        startDate: '2012-02-01',
+        endDate: '2012-02-29',
         totals: [
           {
             currency: 'USD',
@@ -93,7 +93,8 @@ const data: GetDashboardQuery = {
       },
       {
         convertedTotal: 1100,
-        startDate: '2012-3-1',
+        startDate: '2012-03-01',
+        endDate: '2012-03-31',
         totals: [
           {
             currency: 'USD',
@@ -120,16 +121,12 @@ const data: GetDashboardQuery = {
     ],
     averageIgnoreCurrent: 750,
   },
+  healthIndicatorData: [],
 };
 
 describe('Dashboard', () => {
   beforeEach(() => {
     matchMediaMock({ width: '1024px' });
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
   });
 
   it('default', async () => {
@@ -206,9 +203,9 @@ describe('Dashboard', () => {
       '$400',
     );
     expect(getByTestId('BalanceTypography').textContent).toEqual('$1,000');
-    expect(
-      queryByTestId('DonationHistoriesTypographyGoal'),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('DonationHistoriesTypographyGoal')).toHaveTextContent(
+      'Goal',
+    );
     expect(
       getByTestId('DonationHistoriesTypographyAverage').textContent,
     ).toEqual('Average $750');

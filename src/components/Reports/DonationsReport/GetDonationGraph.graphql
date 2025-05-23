@@ -1,4 +1,8 @@
-query GetDonationGraph($accountListId: ID!, $designationAccountIds: [ID!]) {
+query GetDonationGraph(
+  $accountListId: ID!
+  $designationAccountIds: [ID!]
+  $periodBegin: ISO8601Date!
+) {
   accountList(id: $accountListId) {
     id
     currency
@@ -11,12 +15,20 @@ query GetDonationGraph($accountListId: ID!, $designationAccountIds: [ID!]) {
   ) {
     ...DonationGraphHistories
   }
+  healthIndicatorData(accountListId: $accountListId, beginDate: $periodBegin) {
+    id
+    indicationPeriodBegin
+    machineCalculatedGoal
+    machineCalculatedGoalCurrency
+    staffEnteredGoal
+  }
 }
 
 fragment DonationGraphHistories on DonationHistories {
   averageIgnoreCurrent
   periods {
     startDate
+    endDate
     convertedTotal
     totals {
       currency

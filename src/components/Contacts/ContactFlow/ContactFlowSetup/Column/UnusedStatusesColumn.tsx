@@ -35,7 +35,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
         alignItems="center"
         justifyContent="space-between"
         data-testid="column-header"
-        borderBottom={`5px solid ${theme.palette.cruGrayMedium.main}`}
+        borderBottom={`5px solid ${theme.palette.mpdxGrayMedium.main}`}
         height={theme.spacing(7)}
       >
         <Typography>{t('Unused Statuses')}</Typography>
@@ -45,7 +45,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
           position: 'relative',
           height: 'calc(100vh - 230px)',
           padding: 0,
-          background: theme.palette.cruGrayLight.main,
+          background: theme.palette.mpdxGrayLight.main,
           overflowY: 'auto',
         }}
       >
@@ -62,7 +62,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
             alignItems="center"
             height={theme.spacing(4)}
             width="100%"
-            borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
+            borderBottom={`1px solid ${theme.palette.mpdxGrayMedium.main}`}
             style={{
               backgroundColor: theme.palette.common.white,
               padding: theme.spacing(2.5),
@@ -75,7 +75,7 @@ export const UnusedStatusesColumn: React.FC<Props> = ({
             >
               <FiberManualRecord
                 style={{
-                  color: theme.palette.cruGrayMedium.main,
+                  color: theme.palette.mpdxGrayMedium.main,
                   height: theme.spacing(4),
                   width: theme.spacing(4),
                 }}

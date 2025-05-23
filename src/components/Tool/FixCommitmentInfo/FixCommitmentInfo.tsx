@@ -23,7 +23,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
   toolIcon: {
     height: theme.spacing(5),
     width: theme.spacing(5),
-    color: theme.palette.cruGrayDark.main,
+    color: theme.palette.mpdxGrayDark.main,
   },
   outer: {
     display: 'flex',

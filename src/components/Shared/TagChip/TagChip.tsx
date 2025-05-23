@@ -15,14 +15,14 @@ export const TagChip = styled(Chip, {
       ? theme.palette.mpdxBlue.main
       : selectType === 'exclude'
       ? theme.palette.error.main
-      : theme.palette.cruGrayMedium.main,
+      : theme.palette.mpdxGrayMedium.main,
   '&:focus': {
     backgroundColor:
       selectType === 'include'
         ? theme.palette.mpdxBlue.main
         : selectType === 'exclude'
         ? theme.palette.error.main
-        : theme.palette.cruGrayMedium.main,
+        : theme.palette.mpdxGrayMedium.main,
   },
   '&:hover': {
     backgroundColor:

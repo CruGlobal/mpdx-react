@@ -24,7 +24,7 @@ import { FinancialAccountEntriesQuery } from '../financialAccountTransactions.ge
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
   '.MuiDataGrid-cell': {
     overflow: 'hidden',
@@ -38,7 +38,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 
   '.MuiDataGrid-main .MuiDataGrid-row[data-id="openingBalanceRow"], .MuiDataGrid-main .MuiDataGrid-row[data-id="closingBalanceRow"]':
     {
-      backgroundColor: theme.palette.cruGrayMedium.main,
+      backgroundColor: theme.palette.mpdxGrayMedium.main,
       fontWeight: 'bold',
     },
 }));

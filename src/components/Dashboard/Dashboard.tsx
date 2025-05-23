@@ -1,6 +1,8 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
+import { DateTime } from 'luxon';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
@@ -28,6 +30,17 @@ const variants = {
 };
 
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
+  const { push } = useRouter();
+
+  const handlePeriodClick = (period: DateTime) => {
+    push({
+      pathname: `/accountLists/${accountListId}/reports/donations`,
+      query: {
+        month: period.toISODate(),
+      },
+    });
+  };
+
   return (
     <>
       <Welcome firstName={data.user.firstName ?? undefined} />
@@ -39,15 +52,13 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
-            <Grid container spacing={3} alignItems="stretch">
+            <Grid container spacing={2} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
                   accountListId={accountListId}
-                  goal={data.accountList.monthlyGoal ?? undefined}
-                  received={data.accountList.receivedPledges}
-                  pledged={data.accountList.totalPledges}
+                  accountList={data.accountList}
                   totalGiftsNotStarted={data.contacts.totalCount}
-                  currencyCode={data.accountList.currency}
+                  onDashboard={true}
                 />
               </Grid>
               <Grid xs={12} sm={4} item>
@@ -58,10 +69,8 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
               </Grid>
               <Grid xs={12} item>
                 <DonationHistories
-                  goal={data.accountList.monthlyGoal ?? undefined}
-                  pledged={data.accountList.totalPledges}
-                  reportsDonationHistories={data.reportsDonationHistories}
-                  currencyCode={data.accountList.currency}
+                  data={data}
+                  onPeriodClick={handlePeriodClick}
                 />
               </Grid>
               <Grid xs={12} item>

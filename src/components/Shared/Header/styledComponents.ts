@@ -26,7 +26,7 @@ export const StickyButtonHeaderBox = styled(Box)(({ theme }) => ({
   top: '80px',
   zIndex: '100',
   borderBottom: '1px solid',
-  borderBottomColor: theme.palette.cruGrayLight.main,
+  borderBottomColor: theme.palette.mpdxGrayLight.main,
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
     alignItems: 'start',
@@ -38,5 +38,5 @@ export const FilterButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'activeFilters',
 })<{ activeFilters?: boolean }>(({ theme, activeFilters }) => ({
   marginRight: theme.spacing(2),
-  backgroundColor: activeFilters ? theme.palette.cruYellow.main : 'transparent',
+  backgroundColor: activeFilters ? theme.palette.yellow.main : 'transparent',
 }));

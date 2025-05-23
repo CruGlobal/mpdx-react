@@ -161,8 +161,7 @@ export const AccountSummary: React.FC<AccountSummaryProps> = ({
 
       // Periods
       const startDateFormatted = monthYearFormat(
-        DateTime.fromISO(item?.startDate ?? '').month,
-        DateTime.fromISO(item?.startDate ?? '').year,
+        DateTime.fromISO(item.startDate),
         locale,
         false,
       );

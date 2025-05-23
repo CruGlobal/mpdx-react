@@ -1,0 +1,9 @@
+query MachineCalculatedGoal($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    healthIndicatorData {
+      id
+      machineCalculatedGoal
+      machineCalculatedGoalCurrency
+    }
+  }
+}

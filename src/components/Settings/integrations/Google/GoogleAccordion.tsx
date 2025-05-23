@@ -44,7 +44,7 @@ const EditIconButton = styled(IconButton)(() => ({
   },
 }));
 const DeleteIconButton = styled(IconButton)(() => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   marginLeft: '10px',
   '&:disabled': {
     cursor: 'not-allowed',
@@ -164,7 +164,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
           googleAccounts?.map((account) => (
             <Card
               sx={{
-                background: theme.palette.cruGrayLight.main,
+                background: theme.palette.mpdxGrayLight.main,
                 p: 1,
               }}
               key={account?.remoteId}
@@ -233,7 +233,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
         <DialogContent dividers>
           <DialogContentText
             component="div"
-            color={theme.palette.cruGrayDark.main}
+            color={theme.palette.mpdxGrayDark.main}
           >
             <Trans
               defaults="When you add a Google account to {{appName}}, Google will ask you what {{appName}} should be allowed to access. <bold>Please select ALL of the checkboxes.</bold><br/><br/>Otherwise, {{appName}} may not work properly."

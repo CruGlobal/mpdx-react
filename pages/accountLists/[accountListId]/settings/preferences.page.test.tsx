@@ -15,6 +15,7 @@ import {
 } from 'src/components/Settings/preferences/GetAccountPreferences.generated';
 import { GetPersonalPreferencesQuery } from 'src/components/Settings/preferences/GetPersonalPreferences.generated';
 import { GetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
+import { MachineCalculatedGoalQuery } from 'src/components/Settings/preferences/accordions/MonthlyGoalAccordion/MachineCalculatedGoal.generated';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import Preferences from './preferences.page';
@@ -68,6 +69,7 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
         GetPersonalPreferences: GetPersonalPreferencesQuery;
         GetProfileInfo: GetProfileInfoQuery;
         CanUserExportData: CanUserExportDataQuery;
+        MachineCalculatedGoal: MachineCalculatedGoalQuery;
       }>
         mocks={{
           GetAccountPreferences: {
@@ -79,10 +81,10 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
               name: 'test',
               activeMpdMonthlyGoal: null,
               activeMpdFinishAt: null,
+              currency: 'USD',
               activeMpdStartAt: null,
               salaryOrganizationId: null,
               settings: {
-                currency: 'USD',
                 homeCountry: 'USA',
                 monthlyGoal: 100,
                 tester: true,
@@ -130,6 +132,11 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
             canUserExportData: {
               allowed: canUserExportData,
               exportedAt: null,
+            },
+          },
+          MachineCalculatedGoal: {
+            accountList: {
+              healthIndicatorData: null,
             },
           },
         }}

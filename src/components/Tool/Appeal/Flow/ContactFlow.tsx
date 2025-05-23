@@ -37,7 +37,7 @@ export interface ContactFlowOption {
 
 export const colorMap: { [key: string]: string } = {
   'color-danger': theme.palette.error.main,
-  'color-text': theme.palette.cruGrayDark.main,
+  'color-text': theme.palette.mpdxGrayDark.main,
   'color-committed': theme.palette.progressBarGray.main,
   'color-given': theme.palette.progressBarYellow.main,
   'color-received‌⁠': theme.palette.progressBarOrange.main,

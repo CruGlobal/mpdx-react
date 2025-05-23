@@ -47,7 +47,7 @@ const ContactText = styled(Typography)(({ theme }) => ({
 const TaskRowWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isChecked',
 })<{ isChecked?: boolean }>(({ theme, isChecked }) => ({
-  ...(isChecked ? { backgroundColor: theme.palette.cruGrayLight.main } : {}),
+  ...(isChecked ? { backgroundColor: theme.palette.mpdxGrayLight.main } : {}),
   minWidth: '300px',
   width: '100%',
   padding: theme.spacing(1),

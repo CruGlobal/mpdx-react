@@ -29,7 +29,7 @@ const ContactPartnerAccountsContainer = styled(Box)(({ theme }) => ({
 
 const OrganizationName = styled(Typography)(({ theme }) => ({
   fontSize: theme.spacing(1.5),
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 const ContactPartnerAccountsTextContainer = styled(Box)(({ theme }) => ({

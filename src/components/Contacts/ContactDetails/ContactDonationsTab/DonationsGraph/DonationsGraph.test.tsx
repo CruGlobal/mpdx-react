@@ -2,10 +2,6 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-hooks';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
 import { DonationsGraph } from './DonationsGraph';
 import {
   GetDonationsGraphQuery,
@@ -30,14 +26,6 @@ const donorAccountIds = ['donor-Account-Id'];
 const currency = 'USD';
 
 describe('Donations Graph', () => {
-  beforeEach(() => {
-    beforeTestResizeObserver();
-  });
-
-  afterEach(() => {
-    afterTestResizeObserver();
-  });
-
   it('test renderer', async () => {
     const { findByText } = render(
       <GqlMockedProvider<{ GetDonationsGraph: GetDonationsGraphQuery }>

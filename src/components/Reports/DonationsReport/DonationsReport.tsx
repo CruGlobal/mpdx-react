@@ -43,6 +43,10 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
       designationAccountIds: designationAccounts?.length
         ? designationAccounts
         : null,
+      periodBegin: DateTime.now()
+        .startOf('month')
+        .minus({ years: 1 })
+        .toISODate(),
     },
   });
 
@@ -68,11 +72,8 @@ export const DonationsReport: React.FC<DonationReportsProps> = ({
       <Container>
         <DonationHistories
           loading={loading}
-          goal={data?.accountList.monthlyGoal ?? undefined}
-          pledged={data?.accountList.totalPledges}
-          reportsDonationHistories={data?.reportsDonationHistories}
-          currencyCode={data?.accountList.currency}
-          setTime={setTime}
+          data={data}
+          onPeriodClick={setTime}
         />
         <DonationsReportTable
           accountListId={accountListId}

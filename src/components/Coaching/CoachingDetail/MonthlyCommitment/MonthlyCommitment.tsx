@@ -9,7 +9,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
-  BarChart,
   CartesianGrid,
   Legend,
   ReferenceLine,
@@ -20,6 +19,7 @@ import {
   YAxis,
 } from 'recharts';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { StyledBarChart } from 'src/components/common/StyledBarChart/StyledBarChart';
 import { AccountList, Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -147,7 +147,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
               <Skeleton />
             </>
           ) : (
-            <BarChart data={pledges} margin={{ left: 20, right: 20 }}>
+            <StyledBarChart data={pledges} margin={{ left: 20, right: 20 }}>
               <YAxis
                 domain={[0, domainMax]}
                 label={
@@ -186,7 +186,7 @@ export const MonthlyCommitment: React.FC<MonthlyCommitmentProps> = ({
                 barSize={30}
                 fill={theme.palette.progressBarOrange.main}
               />
-            </BarChart>
+            </StyledBarChart>
           )}
         </ResponsiveContainer>
       </CardContent>

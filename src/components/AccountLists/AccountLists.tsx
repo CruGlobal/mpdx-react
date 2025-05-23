@@ -8,16 +8,29 @@ import {
   Grid,
   Link,
   Theme,
+  Tooltip,
   Typography,
+  TypographyProps,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { GetAccountListsQuery } from 'pages/GetAccountLists.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
+import { GoalSource, getHealthIndicatorInfo } from 'src/lib/healthIndicator';
+import {
+  currencyFormat,
+  dateFormat,
+  percentageFormat,
+} from 'src/lib/intlFormat';
 import AnimatedCard from '../AnimatedCard';
 import PageHeading from '../PageHeading';
+
+interface Annotation {
+  label: string;
+  color?: TypographyProps['color'];
+  variant?: TypographyProps['variant'];
+}
 
 interface Props {
   data: GetAccountListsQuery;
@@ -72,37 +85,88 @@ const AccountLists = ({ data }: Props): ReactElement => {
       >
         <Container>
           <Grid container spacing={3}>
-            {data.accountLists.nodes.map(
-              ({
+            {data.accountLists.nodes.map((accountList) => {
+              const {
                 id,
                 name,
-                monthlyGoal,
                 receivedPledges,
                 totalPledges,
                 currency,
-              }) => {
-                const receivedPercentage =
-                  receivedPledges / (monthlyGoal ?? NaN);
-                const totalPercentage = totalPledges / (monthlyGoal ?? NaN);
+                healthIndicatorData,
+              } = accountList;
 
-                return (
-                  <Grid key={id} item xs={12} sm={4}>
-                    <AnimatedCard elevation={3}>
-                      <Link
-                        component={NextLink}
-                        href={`/accountLists/${id}`}
-                        underline="none"
-                        color="inherit"
-                      >
-                        <CardActionArea>
-                          <CardContent className={classes.cardContent}>
-                            <Box flex={1}>
-                              <Typography variant="h5" data-testid={id} noWrap>
-                                {name}
-                              </Typography>
-                            </Box>
-                            <Grid container>
-                              {monthlyGoal && (
+              const {
+                goal,
+                goalSource,
+                preferencesGoalUpdatedAt,
+                preferencesGoalLow,
+                preferencesGoalOld,
+              } = getHealthIndicatorInfo(accountList, healthIndicatorData);
+
+              const hasValidGoal = goal !== null;
+              const receivedPercentage = hasValidGoal
+                ? receivedPledges / goal
+                : NaN;
+              const totalPercentage = hasValidGoal ? totalPledges / goal : NaN;
+
+              const annotation: Annotation | null = preferencesGoalLow
+                ? {
+                    label: t('Below NetSuite-calculated goal'),
+                    color: 'statusWarning.main',
+                  }
+                : goalSource === GoalSource.MachineCalculated
+                ? {
+                    label: t('NetSuite-calculated'),
+                    color: 'statusWarning.main',
+                  }
+                : preferencesGoalUpdatedAt
+                ? {
+                    label: t('Last updated {{date}}', {
+                      date: dateFormat(preferencesGoalUpdatedAt, locale),
+                    }),
+                    color: preferencesGoalOld
+                      ? 'statusWarning.main'
+                      : undefined,
+                  }
+                : null;
+              const annotationId = `annotation-${id}`;
+
+              return (
+                <Grid key={id} item xs={12} sm={4}>
+                  <AnimatedCard
+                    elevation={3}
+                    data-testid={`account-list-${id}`}
+                  >
+                    <Link
+                      component={NextLink}
+                      href={`/accountLists/${id}`}
+                      underline="none"
+                      color="inherit"
+                    >
+                      <CardActionArea>
+                        <CardContent className={classes.cardContent}>
+                          <Box flex={1}>
+                            <Typography variant="h5" noWrap>
+                              {name}
+                            </Typography>
+                          </Box>
+                          <Grid container>
+                            {goal && (
+                              <Tooltip
+                                title={
+                                  goalSource === GoalSource.MachineCalculated &&
+                                  t(
+                                    'Your current goal of {{goal}} is NetSuite-calculated, based on the past year of NetSuite data. You can adjust this goal in your settings preferences.',
+                                    {
+                                      goal: currencyFormat(
+                                        goal,
+                                        currency,
+                                        locale,
+                                      ),
+                                    },
+                                  )
+                                }
+                              >
                                 <Grid xs={4} item>
                                   <Typography
                                     component="div"
@@ -110,53 +174,65 @@ const AccountLists = ({ data }: Props): ReactElement => {
                                   >
                                     {t('Goal')}
                                   </Typography>
-                                  <Typography variant="h6">
-                                    {currencyFormat(
-                                      monthlyGoal,
-                                      currency,
-                                      locale,
+                                  <Typography
+                                    variant="h6"
+                                    display="flex"
+                                    aria-describedby={annotationId}
+                                  >
+                                    {currencyFormat(goal, currency, locale)}
+                                    {annotation && (
+                                      <Typography
+                                        component="span"
+                                        color={annotation.color}
+                                        ml={0.25}
+                                        aria-hidden
+                                      >
+                                        *
+                                      </Typography>
                                     )}
                                   </Typography>
                                 </Grid>
-                              )}
-                              <Grid xs={monthlyGoal ? 4 : 6} item>
-                                <Typography
-                                  component="div"
-                                  color="textSecondary"
-                                >
-                                  {t('Gifts Started')}
-                                </Typography>
-                                <Typography variant="h6">
-                                  {Number.isFinite(receivedPercentage)
-                                    ? percentageFormat(
-                                        receivedPercentage,
-                                        locale,
-                                      )
-                                    : '-'}
-                                </Typography>
-                              </Grid>
-                              <Grid xs={monthlyGoal ? 4 : 6} item>
-                                <Typography
-                                  component="div"
-                                  color="textSecondary"
-                                >
-                                  {t('Committed')}
-                                </Typography>
-                                <Typography variant="h6">
-                                  {Number.isFinite(totalPercentage)
-                                    ? percentageFormat(totalPercentage, locale)
-                                    : '-'}
-                                </Typography>
-                              </Grid>
+                              </Tooltip>
+                            )}
+                            <Grid xs={goal ? 4 : 6} item>
+                              <Typography component="div" color="textSecondary">
+                                {t('Gifts Started')}
+                              </Typography>
+                              <Typography variant="h6">
+                                {Number.isFinite(receivedPercentage)
+                                  ? percentageFormat(receivedPercentage, locale)
+                                  : '-'}
+                              </Typography>
                             </Grid>
-                          </CardContent>
-                        </CardActionArea>
-                      </Link>
-                    </AnimatedCard>
-                  </Grid>
-                );
-              },
-            )}
+                            <Grid xs={goal ? 4 : 6} item>
+                              <Typography component="div" color="textSecondary">
+                                {t('Committed')}
+                              </Typography>
+                              <Typography variant="h6">
+                                {Number.isFinite(totalPercentage)
+                                  ? percentageFormat(totalPercentage, locale)
+                                  : '-'}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                          {annotation && (
+                            <Typography
+                              id={annotationId}
+                              component="div"
+                              color={annotation.color}
+                              variant="body2"
+                            >
+                              <span aria-hidden>*</span>
+                              {annotation.label}
+                            </Typography>
+                          )}
+                        </CardContent>
+                      </CardActionArea>
+                    </Link>
+                  </AnimatedCard>
+                </Grid>
+              );
+            })}
           </Grid>
         </Container>
       </motion.div>

@@ -24,9 +24,9 @@ const ToolNavListContainer = styled('div')(() => ({
 }));
 
 const NavListItem = styled(ListItem)(({ theme }) => ({
-  borderTop: `1px solid ${theme.palette.cruGrayLight.main}`,
-  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
-  borderColor: theme.palette.cruGrayLight.main,
+  borderTop: `1px solid ${theme.palette.mpdxGrayLight.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
+  borderColor: theme.palette.mpdxGrayLight.main,
 }));
 
 const FilterHeader = styled(Box)(({ theme }) => ({

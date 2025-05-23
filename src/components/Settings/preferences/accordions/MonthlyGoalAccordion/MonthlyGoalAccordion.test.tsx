@@ -6,6 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import theme from 'src/theme';
+import { MachineCalculatedGoalQuery } from './MachineCalculatedGoal.generated';
 import { MonthlyGoalAccordion } from './MonthlyGoalAccordion';
 
 jest.mock('next-auth/react');
@@ -34,21 +35,41 @@ const mutationSpy = jest.fn();
 
 interface ComponentsProps {
   monthlyGoal: number | null;
+  monthlyGoalUpdatedAt?: string | null;
+  machineCalculatedGoal?: number;
+  machineCalculatedGoalCurrency?: string | null;
   expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   monthlyGoal,
+  monthlyGoalUpdatedAt = null,
+  machineCalculatedGoal,
+  machineCalculatedGoalCurrency = 'USD',
   expandedAccordion,
 }) => (
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{
+          MachineCalculatedGoal: MachineCalculatedGoalQuery;
+        }>
+          mocks={{
+            MachineCalculatedGoal: {
+              accountList: {
+                healthIndicatorData: machineCalculatedGoal
+                  ? { machineCalculatedGoal, machineCalculatedGoalCurrency }
+                  : null,
+              },
+            },
+          }}
+          onCall={mutationSpy}
+        >
           <MonthlyGoalAccordion
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
             monthlyGoal={monthlyGoal}
+            monthlyGoalUpdatedAt={monthlyGoalUpdatedAt}
             currency={'USD'}
             accountListId={accountListId}
             handleSetupChange={handleSetupChange}
@@ -65,14 +86,131 @@ describe('MonthlyGoalAccordion', () => {
   afterEach(() => {
     mutationSpy.mockClear();
   });
-  it('should render accordion closed', () => {
-    const { getByText, queryByRole } = render(
-      <Components monthlyGoal={100} expandedAccordion={null} />,
-    );
 
-    expect(getByText(label)).toBeInTheDocument();
-    expect(queryByRole('textbox')).not.toBeInTheDocument();
+  describe('closed', () => {
+    it('renders label and hides the textbox', () => {
+      const { getByText, queryByRole } = render(
+        <Components monthlyGoal={100} expandedAccordion={null} />,
+      );
+
+      expect(getByText(label)).toBeInTheDocument();
+      expect(queryByRole('textbox')).not.toBeInTheDocument();
+    });
+
+    it('renders goal without updated date', () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          monthlyGoalUpdatedAt={null}
+          expandedAccordion={null}
+        />,
+      );
+
+      expect(getByTestId('AccordionSummaryValue')).toHaveTextContent('$100');
+    });
+
+    it('renders goal and updated date', () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          monthlyGoalUpdatedAt="2024-01-01T00:00:00"
+          expandedAccordion={null}
+        />,
+      );
+
+      expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+        '$100 (last updated Jan 1, 2024)',
+      );
+    });
+
+    it('renders too low warning', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          machineCalculatedGoal={1000}
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+          '$100 (below NetSuite-calculated support goal)',
+        ),
+      );
+    });
+
+    it('hides too low warning when currencies do not match', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={100}
+          machineCalculatedGoal={1000}
+          machineCalculatedGoalCurrency="EUR"
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).not.toHaveTextContent(
+          /below NetSuite-calculated support goal/,
+        ),
+      );
+    });
+
+    it('renders calculated goal', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          machineCalculatedGoalCurrency="EUR"
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+          '€1,000 (estimated)',
+        ),
+      );
+    });
+
+    it('renders calculated goal without currency', async () => {
+      const { getByTestId } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          machineCalculatedGoalCurrency={null}
+          expandedAccordion={null}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent(
+          '1,000 (estimated)',
+        ),
+      );
+    });
+
+    it('renders only goal when calculated goal is missing', async () => {
+      const { getByTestId } = render(
+        <Components monthlyGoal={100} expandedAccordion={null} />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('AccordionSummaryValue')).toHaveTextContent('$100'),
+      );
+    });
+
+    it('renders nothing when goal and calculated goal are missing', async () => {
+      const { queryByTestId } = render(
+        <Components monthlyGoal={null} expandedAccordion={null} />,
+      );
+
+      await waitFor(() =>
+        expect(queryByTestId('AccordionSummaryValue')).not.toBeInTheDocument(),
+      );
+    });
   });
+
   it('should render accordion open and textfield should have a value', () => {
     const { getByRole } = render(
       <Components
@@ -142,6 +280,58 @@ describe('MonthlyGoalAccordion', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('calculated goal', () => {
+    it('resets goal to calculated goal', async () => {
+      const { getByRole, findByText } = render(
+        <Components
+          monthlyGoal={1000}
+          machineCalculatedGoal={1500}
+          machineCalculatedGoalCurrency="EUR"
+          expandedAccordion={PreferenceAccordion.MonthlyGoal}
+        />,
+      );
+
+      expect(
+        await findByText(
+          /Based on the past year, NetSuite estimates that you need at least €1,500 of monthly support./,
+        ),
+      ).toBeInTheDocument();
+
+      const resetButton = getByRole('button', { name: /Reset/ });
+      userEvent.click(resetButton);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
+          input: {
+            id: accountListId,
+            attributes: {
+              settings: {
+                monthlyGoal: null,
+              },
+            },
+          },
+        }),
+      );
+    });
+
+    it('hides reset button if goal is null', async () => {
+      const { findByText, queryByRole } = render(
+        <Components
+          monthlyGoal={null}
+          machineCalculatedGoal={1000}
+          expandedAccordion={PreferenceAccordion.MonthlyGoal}
+        />,
+      );
+
+      expect(
+        await findByText(
+          /Based on the past year, NetSuite estimates that you need at least \$1,000 of monthly support./,
+        ),
+      ).toBeInTheDocument();
+      expect(queryByRole('button', { name: /Reset/ })).not.toBeInTheDocument();
     });
   });
 });

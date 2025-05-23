@@ -84,7 +84,7 @@ export const Item: React.FC<Props> = ({ item, selectedId, navType }) => {
           timeout="auto"
           unmountOnExit
           style={{
-            background: theme.palette.cruGrayLight.main,
+            background: theme.palette.mpdxGrayLight.main,
           }}
         >
           {item.subItems.map((subItem) => {
