@@ -36,7 +36,6 @@ import {
 } from './GetInvalidAddresses.generated';
 
 export type HandleSingleConfirmProps = {
-  addresses: ContactAddressFragment[];
   id: string;
   name: string;
   onlyErrorOnce?: boolean;
@@ -139,79 +138,99 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
   });
   const [updateAddress] = useUpdateContactAddressMutation();
   const { enqueueSnackbar } = useSnackbar();
+  const [addressesState, setAddressesState] = useState({});
 
   useEffect(() => {
     const existingSources = new Set<string>();
     existingSources.add(manualSourceValue);
 
-    data?.contacts.nodes.forEach((contact) => {
-      contact.addresses.nodes.forEach((address) => {
-        existingSources.add(address.source);
-      });
-    });
+    const newAddressesState =
+      data?.contacts.nodes?.reduce(
+        (dataStateObj, contact) => ({
+          ...dataStateObj,
+          [contact.id]: {
+            addresses: contact.addresses.nodes.map((address) => {
+              existingSources.add(address.source);
+              return { ...address };
+            }),
+          },
+        }),
+        {},
+      ) || {};
+
     setSourceOptions([...existingSources]);
+    setAddressesState(newAddressesState);
   }, [loading, data]);
 
-  const handleSingleConfirm = async ({
-    addresses,
-    id,
-    name,
-  }: HandleSingleConfirmProps) => {
-    let errorOccurred = false;
+  const handleChangePrimary = useCallback(
+    (contactId: string, addressId: string): void => {
+      if (!addressesState[contactId]) {
+        return;
+      }
 
-    for (let idx = 0; idx < addresses.length; idx++) {
-      const address = addresses[idx];
+      const temp = { ...addressesState };
 
-      await updateAddress({
-        variables: {
-          accountListId,
-          attributes: {
-            id: address.id,
-            validValues: true,
-            primaryMailingAddress: address.primaryMailingAddress,
+      temp[contactId].addresses = temp[contactId].addresses.map((address) => ({
+        ...address,
+        primaryMailingAddress: address.id === addressId,
+      }));
+      setAddressesState(temp);
+    },
+    [addressesState],
+  );
+
+  const handleSingleConfirm = useCallback(
+    async ({ id, name }: HandleSingleConfirmProps) => {
+      let errorOccurred = false;
+      const addressesData = addressesState[id]?.addresses || [];
+
+      for (let idx = 0; idx < addressesData.length; idx++) {
+        const address = addressesData[idx];
+
+        await updateAddress({
+          variables: {
+            accountListId,
+            attributes: {
+              id: address.id,
+              validValues: true,
+              primaryMailingAddress: address.primaryMailingAddress,
+            },
           },
-        },
-        update(cache) {
-          if (idx === addresses.length - 1 && !errorOccurred) {
-            cache.evict({ id: `Contact:${id}` });
-          }
-        },
-        onError() {
-          errorOccurred = true;
-        },
-      });
-    }
+          update(cache) {
+            if (idx === addressesData.length - 1 && !errorOccurred) {
+              cache.evict({ id: `Contact:${id}` });
+            }
+          },
+          onError() {
+            errorOccurred = true;
+          },
+        });
+      }
 
-    if (errorOccurred) {
-      enqueueSnackbar(t(`Error updating contact ${name}`), {
-        variant: 'error',
-        autoHideDuration: 7000,
-      });
-      return { success: false };
-    } else {
-      enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
-      return { success: true };
-    }
-  };
+      if (errorOccurred) {
+        enqueueSnackbar(t(`Error updating contact ${name}`), {
+          variant: 'error',
+          autoHideDuration: 7000,
+        });
+        return { success: false };
+      } else {
+        enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
+        return { success: true };
+      }
+    },
+    [addressesState, updateAddress, accountListId, enqueueSnackbar, t],
+  );
 
-  const handleBulkConfirm = async () => {
+  const handleBulkConfirm = useCallback(async () => {
     try {
       const callsByContact: (() => Promise<{ success: boolean }>)[] = [];
       data?.contacts?.nodes.forEach((contact) => {
-        const primaryAddress = contact.addresses.nodes.find((address) =>
-          sourcesMatch(defaultSource, address.source),
+        const primaryAddress = addressesState[contact.id]?.addresses.find(
+          (address) => sourcesMatch(defaultSource, address.source),
         );
         if (primaryAddress) {
-          const addresses: ContactAddressFragment[] = [];
-          contact.addresses.nodes.forEach((address) => {
-            addresses.push({
-              ...address,
-              primaryMailingAddress: address.id === primaryAddress?.id,
-            });
-          });
           const callContactMutation = () =>
             handleSingleConfirm({
-              addresses,
               id: contact.id,
               name: contact.name,
             });
@@ -246,7 +265,14 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
     } catch (error) {
       enqueueSnackbar(t(`Error updating contacts`), { variant: 'error' });
     }
-  };
+  }, [
+    data,
+    addressesState,
+    defaultSource,
+    handleSingleConfirm,
+    enqueueSnackbar,
+    t,
+  ]);
 
   const handleUpdateCacheForDeleteAddress = useCallback(
     (cache: ApolloCache<unknown>, data) => {
@@ -417,6 +443,8 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
                           handleModalOpen(ModalEnum.New, address, contactId)
                         }
                         handleSingleConfirm={handleSingleConfirm}
+                        handleChangePrimary={handleChangePrimary}
+                        addressesState={addressesState}
                       />
                     ))}
                   </Grid>
