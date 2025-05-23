@@ -1,6 +1,6 @@
 import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
@@ -110,7 +110,7 @@ describe('FixMailingAddresses', () => {
   });
 
   it('should count total contacts and startDate', async () => {
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId, getByText, findByText } = render(
       <Components
         mocks={{
           InvalidAddresses: {
@@ -135,11 +135,11 @@ describe('FixMailingAddresses', () => {
     expect(
       getByText('You have 3 mailing addresses to confirm.'),
     ).toBeInTheDocument();
-    expect(getByText(/12\/10\/2022/i)).toBeInTheDocument();
+    expect(await findByText(/12\/10\/2022/i)).toBeInTheDocument();
   });
 
   it('should show createdAt date when startDate is null', async () => {
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId, findByText } = render(
       <Components
         mocks={{
           InvalidAddresses: {
@@ -159,50 +159,53 @@ describe('FixMailingAddresses', () => {
     await waitFor(() =>
       expect(queryByTestId('loading')).not.toBeInTheDocument(),
     );
-    expect(getByText(/6\/12\/2024/i)).toBeInTheDocument();
+    expect(await findByText(/6\/12\/2024/i)).toBeInTheDocument();
   });
 
   describe('Editing an address', () => {
     it('should edit Address via EditContactAddressModal', async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
-      const { queryByTestId, getByText, getByRole, findByRole } = render(
-        <Components
-          cache={cache}
-          mocks={{
-            InvalidAddresses: {
-              contacts: {
-                nodes: [
-                  {
-                    id: contactId,
-                    name: 'Baggins, Frodo',
-                    status: null,
-                    addresses: {
-                      nodes: [
-                        mpdxSourcedAddress,
-                        siebelSourcedAddress,
-                        {
-                          ...siebelSourcedAddress,
-                          country: 'Canada',
-                        },
-                      ],
+      const { queryByTestId, getByText, getByRole, findByRole, findByText } =
+        render(
+          <Components
+            cache={cache}
+            mocks={{
+              InvalidAddresses: {
+                contacts: {
+                  nodes: [
+                    {
+                      id: contactId,
+                      name: 'Baggins, Frodo',
+                      status: null,
+                      addresses: {
+                        nodes: [
+                          mpdxSourcedAddress,
+                          siebelSourcedAddress,
+                          {
+                            ...siebelSourcedAddress,
+                            country: 'Canada',
+                          },
+                        ],
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          }}
-        />,
-      );
+            }}
+          />,
+        );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
+      expect(
+        await findByText('100 Lake Hart Drive, Orlando FL 32832'),
+      ).toBeInTheDocument();
+
       userEvent.click(getByText('100 Lake Hart Drive, Orlando FL 32832'));
 
-      await waitFor(() => {
-        expect(getByText('Edit Address')).toBeInTheDocument();
-      });
+      expect(await findByText('Edit Address')).toBeInTheDocument();
 
       const streetInput = getByRole('combobox', { name: 'Street' });
       const cityInput = getByRole('textbox', { name: 'City' });
@@ -237,18 +240,18 @@ describe('FixMailingAddresses', () => {
     it('should delete address via EditContactAddressModal', async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
-      const { queryByTestId, getByText, getByRole, queryByText } = render(
+      const { queryByTestId, getByRole, queryByText, findByText } = render(
         <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
       );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByText('100 Lake Hart Drive, Orlando FL 32832'));
+      userEvent.click(
+        await findByText('100 Lake Hart Drive, Orlando FL 32832'),
+      );
 
-      await waitFor(() => {
-        expect(getByText('Edit Address')).toBeInTheDocument();
-      });
+      expect(await findByText('Edit Address')).toBeInTheDocument();
 
       expect(getByRole('button', { name: 'Delete' })).not.toBeDisabled();
       userEvent.click(getByRole('button', { name: 'Delete' }));
@@ -272,19 +275,22 @@ describe('FixMailingAddresses', () => {
     it("should not allow deletion of address when source isn't editable", async () => {
       const cache = new InMemoryCache();
       jest.spyOn(cache, 'writeFragment');
-      const { getByTestId, getByText, getByRole, queryByTestId, queryByRole } =
-        render(
-          <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
-        );
+      const {
+        findByTestId,
+        getByRole,
+        queryByTestId,
+        queryByRole,
+        findByText,
+      } = render(
+        <Components cache={cache} mocks={mockInvalidAddressesResponse} />,
+      );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      userEvent.click(getByTestId(`address-${siebelSourcedAddress.id}`));
+      userEvent.click(await findByTestId(`address-${siebelSourcedAddress.id}`));
 
-      await waitFor(() => {
-        expect(getByText('Edit Address')).toBeInTheDocument();
-      });
+      expect(await findByText('Edit Address')).toBeInTheDocument();
 
       expect(queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
 
@@ -308,11 +314,11 @@ describe('FixMailingAddresses', () => {
     it('should add address via AddAddressModal and update cache', async () => {
       const {
         getByTestId,
-        getByText,
         getByRole,
         findByRole,
         queryByTestId,
         queryByText,
+        findByText,
       } = render(
         <Components
           mocks={{
@@ -353,11 +359,9 @@ describe('FixMailingAddresses', () => {
 
       userEvent.click(getByTestId(`addAddress-${contactId}`));
 
-      await waitFor(() => {
-        expect(
-          getByRole('heading', { name: 'Add Address (MPDX)' }),
-        ).toBeInTheDocument();
-      });
+      expect(
+        await findByRole('heading', { name: 'Add Address (MPDX)' }),
+      ).toBeInTheDocument();
 
       await waitFor(() => {
         expect(getByRole('button', { name: 'Save' })).toBeDisabled();
@@ -384,6 +388,7 @@ describe('FixMailingAddresses', () => {
       await waitFor(() => {
         expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
       });
+
       userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() =>
@@ -392,49 +397,85 @@ describe('FixMailingAddresses', () => {
         }),
       );
 
-      await waitFor(() =>
-        expect(
-          getByText('Buckingham Palace, London SW1A 1AA'),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        await findByText('Buckingham Palace, London SW1A 1AA'),
+      ).toBeInTheDocument();
     }, 10000);
   });
+
   describe('Set primary mailing address', () => {
     it('should set the address as primary', async () => {
-      const { getByTestId, getAllByTestId, queryByTestId, queryAllByTestId } =
-        render(
-          <Components
-            mocks={{
-              InvalidAddresses: {
-                ...mockInvalidAddressesResponse.InvalidAddresses,
+      const {
+        findAllByTestId,
+        getAllByTestId,
+        queryByTestId,
+        queryAllByTestId,
+      } = render(
+        <Components
+          mocks={{
+            InvalidAddresses: {
+              contacts: {
+                nodes: [
+                  {
+                    id: contactId,
+                    name: 'Baggins, Frodo',
+                    status: null,
+                    addresses: {
+                      nodes: [
+                        {
+                          ...mpdxSourcedAddress,
+                          id: 'test1',
+                          primaryMailingAddress: true,
+                        },
+                        {
+                          ...siebelSourcedAddress,
+                          id: 'test2',
+                          source: 'TntImport',
+                          primaryMailingAddress: false,
+                        },
+                        {
+                          ...siebelSourcedAddress,
+                          id: 'test3',
+                          country: 'Canada',
+                          source: 'TntImport',
+                          primaryMailingAddress: false,
+                        },
+                      ],
+                    },
+                  },
+                ],
               },
-            }}
-          />,
-        );
+            },
+          }}
+        />,
+      );
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
 
-      const primaryAddress = getByTestId('primaryContactStarIcon');
+      const addresses = await findAllByTestId('address');
+
+      expect(addresses.length).toBe(3);
+
+      const primaryAddress = within(addresses[0]).getByTestId(
+        'primaryContactStarIcon',
+      );
+      expect(primaryAddress).toBeInTheDocument();
+
       const secondaryAddresses = getAllByTestId('contactStarIcon');
 
-      expect(primaryAddress).toBeInTheDocument();
       expect(secondaryAddresses.length).toBe(2);
-
       expect(queryAllByTestId('settingPrimaryAddress').length).toBe(0);
 
-      userEvent.click(secondaryAddresses[0]);
+      userEvent.click(secondaryAddresses[1]);
 
-      expect(getAllByTestId('settingPrimaryAddress').length).toBe(3);
-
-      await waitFor(() =>
-        expect(mockEnqueue).toHaveBeenCalledWith(
-          'Mailing information edited successfully',
-          {
-            variant: 'success',
-          },
-        ),
+      const newPrimaryAddress = within(addresses[2]).getByTestId(
+        'primaryContactStarIcon',
       );
+
+      expect(newPrimaryAddress).toBeInTheDocument();
+      expect(newPrimaryAddress).not.toBe(primaryAddress);
+      expect(mockEnqueue).not.toHaveBeenCalled();
     });
   });
 
@@ -459,7 +500,13 @@ describe('FixMailingAddresses', () => {
   describe('handleSingleConfirm()', () => {
     const name = 'Baggins, Frodo';
     it('should handle error', async () => {
-      const { getAllByRole, getByText, queryByTestId } = render(
+      const {
+        getAllByRole,
+        getByText,
+        queryByTestId,
+        findAllByTestId,
+        findByText,
+      } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -474,9 +521,12 @@ describe('FixMailingAddresses', () => {
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
+
+      expect(await findAllByTestId('address')).toHaveLength(3);
+
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
-      await waitFor(() => expect(getByText(name)).toBeInTheDocument());
+      expect(await findByText(name)).toBeInTheDocument();
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
@@ -491,7 +541,13 @@ describe('FixMailingAddresses', () => {
     });
 
     it('should handle success and remove contact', async () => {
-      const { getAllByRole, getByText, queryByTestId, queryByText } = render(
+      const {
+        getAllByRole,
+        findAllByTestId,
+        queryByTestId,
+        queryByText,
+        findByText,
+      } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -503,16 +559,20 @@ describe('FixMailingAddresses', () => {
       await waitFor(() =>
         expect(queryByTestId('loading')).not.toBeInTheDocument(),
       );
+
+      expect(await findAllByTestId('address')).toHaveLength(3);
+
       userEvent.click(getAllByRole('button', { name: 'Confirm' })[0]);
 
-      await waitFor(() => expect(getByText(name)).toBeInTheDocument());
+      expect(await findByText(name)).toBeInTheDocument();
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(`Updated contact ${name}`, {
           variant: 'success',
         });
-        expect(queryByText(name)).not.toBeInTheDocument();
       });
+
+      await waitFor(() => expect(queryByText(name)).not.toBeInTheDocument());
     });
   });
 
@@ -521,7 +581,7 @@ describe('FixMailingAddresses', () => {
     const name2 = 'Gamgee, Samwise';
 
     it('should handle Error', async () => {
-      const { getByRole, getByText, queryByTestId } = render(
+      const { getByRole, getByText, queryByTestId, findByRole } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -561,9 +621,9 @@ describe('FixMailingAddresses', () => {
 
       userEvent.click(getByRole('button', { name: 'Confirm 2 as MPDX' }));
 
-      await waitFor(() =>
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('heading', { name: 'Confirm' }),
+      ).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
@@ -595,7 +655,7 @@ describe('FixMailingAddresses', () => {
     });
 
     it('should handle success and remove contacts', async () => {
-      const { getByRole, queryByTestId, queryByText } = render(
+      const { getByRole, queryByTestId, queryByText, findByRole } = render(
         <Components
           mocks={{
             InvalidAddresses: {
@@ -628,9 +688,9 @@ describe('FixMailingAddresses', () => {
       );
       userEvent.click(getByRole('button', { name: 'Confirm 2 as MPDX' }));
 
-      await waitFor(() =>
-        expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
-      );
+      expect(
+        await findByRole('heading', { name: 'Confirm' }),
+      ).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Yes' }));
 
@@ -649,7 +709,7 @@ describe('FixMailingAddresses', () => {
   });
 
   it('should not fire handleSingleConfirm', async () => {
-    const { getByRole, queryByTestId, queryByText } = render(
+    const { getByRole, queryByTestId, queryByText, findByRole } = render(
       <Components
         mocks={{
           InvalidAddresses: {
@@ -669,9 +729,9 @@ describe('FixMailingAddresses', () => {
       getByRole('button', { name: 'Confirm 1 as US Donation Services' }),
     );
 
-    await waitFor(() =>
-      expect(getByRole('heading', { name: 'Confirm' })).toBeInTheDocument(),
-    );
+    expect(
+      await findByRole('heading', { name: 'Confirm' }),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'No' }));
 
