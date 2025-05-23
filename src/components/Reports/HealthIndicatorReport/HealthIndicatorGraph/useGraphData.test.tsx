@@ -1,5 +1,7 @@
 import { ReactElement } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
+import { ErgonoMockShape } from 'graphql-ergonomock';
+import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { HealthIndicatorQueryVariables } from 'src/components/Dashboard/MonthlyGoal/HealthIndicator.generated';
 import {
@@ -13,77 +15,24 @@ import {
   weightedAverage,
 } from './useGraphData';
 
-const AverageWrapper = ({ children }: { children: ReactElement }) => (
-  <GqlMockedProvider<{ HealthIndicatorGraph: HealthIndicatorGraphQuery }>
-    mocks={{
-      HealthIndicatorGraph: {
-        healthIndicatorData: [
-          { indicationPeriodBegin: '2024-01-10', overallHi: 10 },
-          { indicationPeriodBegin: '2024-02-15', overallHi: null },
-          { indicationPeriodBegin: '2024-02-25', overallHi: 80 },
-          { indicationPeriodBegin: '2024-02-26', overallHi: 90 },
-        ],
-      },
-    }}
-  >
-    {children}
-  </GqlMockedProvider>
-);
-
-const Wrapper = ({ children }: { children: ReactElement }) => (
-  <GqlMockedProvider<{ HealthIndicatorGraph: HealthIndicatorGraphQuery }>
-    mocks={{
-      HealthIndicatorGraph: {
-        healthIndicatorData: [
-          {
-            indicationPeriodBegin: '2024-01-10',
-            consistencyHi: 10,
-            depthHi: 10,
-            ownershipHi: 10,
-            successHi: 10,
-          },
-          {
-            indicationPeriodBegin: '2024-01-31',
-            consistencyHi: 40,
-            depthHi: 40,
-            ownershipHi: 40,
-            successHi: 40,
-          },
-          {
-            indicationPeriodBegin: '2024-02-15',
-            consistencyHi: null,
-            depthHi: null,
-            ownershipHi: null,
-            successHi: null,
-          },
-          {
-            indicationPeriodBegin: '2024-03-04',
-            consistencyHi: 40,
-            depthHi: 40,
-            ownershipHi: 40,
-            successHi: 40,
-          },
-          {
-            indicationPeriodBegin: '2024-03-06',
-            consistencyHi: null,
-            depthHi: null,
-            ownershipHi: null,
-            successHi: null,
-          },
-          {
-            indicationPeriodBegin: '2024-03-10',
-            consistencyHi: 50,
-            depthHi: 50,
-            ownershipHi: 50,
-            successHi: 50,
-          },
-        ],
-      },
-    }}
-  >
-    {children}
-  </GqlMockedProvider>
-);
+// Create and return wrapper component that will provide the mock HI data to the hook
+const makeWrapper = (
+  mockHealthIndicatorData: DeepPartial<
+    HealthIndicatorGraphQuery['healthIndicatorData']
+  > &
+    Array<ErgonoMockShape>,
+) => {
+  const Wrapper = ({ children }: { children: ReactElement }) => (
+    <GqlMockedProvider<{ HealthIndicatorGraph: HealthIndicatorGraphQuery }>
+      mocks={{
+        HealthIndicatorGraph: { healthIndicatorData: mockHealthIndicatorData },
+      }}
+    >
+      {children}
+    </GqlMockedProvider>
+  );
+  return Wrapper;
+};
 
 const accountListId = 'account-list-1';
 
@@ -223,6 +172,51 @@ describe('calculatePeriodSpans', () => {
 });
 
 describe('useGraphData', () => {
+  const Wrapper = makeWrapper([
+    {
+      indicationPeriodBegin: '2024-01-10',
+      consistencyHi: 10,
+      depthHi: 10,
+      ownershipHi: 10,
+      successHi: 10,
+    },
+    {
+      indicationPeriodBegin: '2024-01-31',
+      consistencyHi: 40,
+      depthHi: 40,
+      ownershipHi: 40,
+      successHi: 40,
+    },
+    {
+      indicationPeriodBegin: '2024-02-15',
+      consistencyHi: null,
+      depthHi: null,
+      ownershipHi: null,
+      successHi: null,
+    },
+    {
+      indicationPeriodBegin: '2024-03-04',
+      consistencyHi: 40,
+      depthHi: 40,
+      ownershipHi: 40,
+      successHi: 40,
+    },
+    {
+      indicationPeriodBegin: '2024-03-06',
+      consistencyHi: null,
+      depthHi: null,
+      ownershipHi: null,
+      successHi: null,
+    },
+    {
+      indicationPeriodBegin: '2024-03-10',
+      consistencyHi: 50,
+      depthHi: 50,
+      ownershipHi: 50,
+      successHi: 50,
+    },
+  ]);
+
   it('loading is true while the data is loading', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useGraphData(accountListId),
@@ -240,7 +234,12 @@ describe('useGraphData', () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useGraphData(accountListId),
       {
-        wrapper: AverageWrapper,
+        wrapper: makeWrapper([
+          { indicationPeriodBegin: '2024-01-10', overallHi: 10 },
+          { indicationPeriodBegin: '2024-02-15', overallHi: null },
+          { indicationPeriodBegin: '2024-02-25', overallHi: 80 },
+          { indicationPeriodBegin: '2024-02-26', overallHi: 90 },
+        ]),
       },
     );
 
@@ -282,14 +281,14 @@ describe('useGraphData', () => {
       {
         // No February periods, so all indicators are null
         month: 'Feb 2024',
-        consistency: 0,
-        depth: 0,
-        ownership: 0,
-        success: 0,
-        consistencyScaled: 0,
-        depthScaled: 0,
-        ownershipScaled: 0,
-        successScaled: 0,
+        consistency: null,
+        depth: null,
+        ownership: null,
+        success: null,
+        consistencyScaled: null,
+        depthScaled: null,
+        ownershipScaled: null,
+        successScaled: null,
       },
       {
         // Mar 4 - Mar 5 = 2 span * 40 HI
@@ -306,6 +305,63 @@ describe('useGraphData', () => {
         ownershipScaled: 8,
         successScaled: 5,
       },
+    ]);
+  });
+
+  it('excludes missing indicators from the weighted average', async () => {
+    const { result, waitForNextUpdate } = renderHook(
+      () => useGraphData(accountListId),
+      {
+        wrapper: makeWrapper([
+          {
+            indicationPeriodBegin: '2024-01-01',
+            consistencyHi: 10,
+            depthHi: 20,
+            ownershipHi: 30,
+            successHi: 40,
+          },
+          {
+            indicationPeriodBegin: '2024-02-01',
+            consistencyHi: null,
+            depthHi: null,
+            ownershipHi: 30,
+            successHi: 40,
+          },
+          {
+            indicationPeriodBegin: '2024-03-01',
+            consistencyHi: 10,
+            depthHi: null,
+            ownershipHi: null,
+            successHi: 40,
+          },
+        ]),
+      },
+    );
+
+    expect(result.current.periods).toBe(null);
+    await waitForNextUpdate();
+    expect(result.current.periods).toEqual([
+      expect.objectContaining({
+        month: 'Jan 2024',
+        consistencyScaled: 1, // 10 / 7 = ~1.43, rounds to 1
+        depthScaled: 3, // 20 / 7 = ~2.86, rounds to 3
+        ownershipScaled: 13, // 30 * 3 / 7 = ~12.86, rounds to 13
+        successScaled: 11, // 40 * 2 / 7 = ~11.43, rounds to 11
+      }),
+      expect.objectContaining({
+        month: 'Feb 2024',
+        consistencyScaled: null, // missing
+        depthScaled: null, // missing
+        ownershipScaled: 18, // 30 * 3 / 5 = 18
+        successScaled: 16, // 40 * 2 / 5 = 16
+      }),
+      expect.objectContaining({
+        month: 'Mar 2024',
+        consistencyScaled: 3, // 10 / 3 = ~3.33, rounds to 3
+        depthScaled: null, // missing
+        ownershipScaled: null, // missing
+        successScaled: 27, // 40 * 2 / 3 = ~26.67, rounds to 27
+      }),
     ]);
   });
 });

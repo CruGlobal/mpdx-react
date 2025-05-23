@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { GroupedAccordion } from 'src/components/Shared/Forms/Accordions/GroupedAccordion';
 import { useIndicatorColors } from '../useIndicatorColors';
 import { ConsistencyExplanation } from './ConsistencyExplanation';
@@ -68,10 +68,32 @@ export const HealthIndicatorFormula: React.FC<HealthIndicatorFormulaProps> = ({
 
   return (
     <Card sx={{ padding: 3, mb: 5 }}>
-      <Typography variant="h6" mb={2}>
-        {t('MPD Health')} = [({t('Ownership')} x 3) + ({t('Success')} x 2) + (
-        {t('Consistency')} x 1) + ({t('Depth')} x 1)] / 7
-      </Typography>
+      <GroupedAccordion disableGutters>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">
+            {t('MPD Health')} = [({t('Ownership')} x 3) + ({t('Success')} x 2) +
+            ({t('Consistency')} x 1) + ({t('Depth')} x 1)] / 7
+          </Typography>
+        </AccordionSummary>
+        <StyledDetails>
+          <p>
+            <Trans>
+              The divisor (7) above in the MPD Health formula is based on the
+              total weight of all included areas: 3 (Ownership) + 2 (Success) +
+              1 (Consistency) + 1 (Depth) = 7. If any area has no value (=0) at
+              the time of the calculation, the divisor decreases accordingly.
+              For example, if no value can be calculated for Ownership, then
+              this divisor is: 0 + 2 + 1 + 1 = 4, and the calculation would now
+              be:
+            </Trans>
+          </p>
+          <p>
+            {t('MPD Health')} = [({t('Success')} x 2) + ({t('Consistency')} x 1)
+            + ({t('Depth')} x 1)] / 4
+          </p>
+        </StyledDetails>
+      </GroupedAccordion>
+
       <FormulaItem
         name={t('Ownership')}
         color={colors.ownership}
