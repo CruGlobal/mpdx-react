@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
@@ -91,11 +91,9 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
   const { t } = useTranslation();
 
   const [defaultSource, setDefaultSource] = useState(manualSourceValue);
-  const [sourceOptions, setSourceOptions] = useState([manualSourceValue]);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
 
-  // Create a mutable copy of the query data and store in the state
-  useEffect(() => {
+  const sourceOptions = useMemo(() => {
     const existingSources = new Set<string>();
     existingSources.add(manualSourceValue);
 
@@ -106,7 +104,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
         });
       });
     }
-    setSourceOptions([...existingSources]);
+    return [...existingSources];
   }, [data]);
 
   const handleSourceChange = (event: SelectChangeEvent): void => {
