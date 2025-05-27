@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import styled from '@emotion/styled';
 import { mdiCheckboxMarkedCircle } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -15,7 +15,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { Formik, useFormikContext } from 'formik';
+import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
@@ -26,23 +26,12 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { ContactPhoneNumbers } from './ContactPhoneNumbers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
+import { ImperativeSubmit } from './ImperativeSubmit';
 import PhoneValidationForm from './PhoneNumberValidationForm';
 import {
   useUpdateInvalidPhoneNumbersMutation,
   useUpdatePhoneNumberMutation,
 } from './UpdateInvalidPhoneNumbers.generated';
-
-const ImperativeSubmit: React.FC<{ submitAll: boolean }> = ({ submitAll }) => {
-  const { submitForm } = useFormikContext();
-
-  useEffect(() => {
-    if (submitAll) {
-      submitForm();
-    }
-  }, [submitAll]);
-
-  return null;
-};
 
 const useStyles = makeStyles()(() => ({
   left: {},
