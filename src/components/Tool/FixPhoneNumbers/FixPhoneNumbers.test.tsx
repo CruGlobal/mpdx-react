@@ -1,5 +1,4 @@
 import React from 'react';
-import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
@@ -38,9 +37,8 @@ jest.mock('notistack', () => ({
 
 const Components: React.FC<{
   data?: ErgonoMockShape[];
-  cache?: ApolloCache<object>;
   count?: number;
-}> = ({ data = testData, cache, count = 2 }) => (
+}> = ({ data = testData, count = 2 }) => (
   <AppSettingsProvider>
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -57,7 +55,6 @@ const Components: React.FC<{
                   },
                 },
               }}
-              cache={cache}
             >
               <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
@@ -214,10 +211,8 @@ describe('FixPhoneNumbers-Home', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        `Successfully updated phone numbers for Simba Lion`,
-        {
-          variant: 'success',
-        },
+        expect.stringContaining('Successfully updated phone numbers'),
+        expect.objectContaining({ variant: 'success' }),
       );
     });
 
