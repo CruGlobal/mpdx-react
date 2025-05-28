@@ -1,5 +1,4 @@
 import React from 'react';
-import { ApolloCache } from '@apollo/client';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
@@ -38,8 +37,8 @@ jest.mock('notistack', () => ({
 
 const Components: React.FC<{
   data?: ErgonoMockShape[];
-  cache?: ApolloCache<object>;
-}> = ({ data = testData, cache }) => (
+  count?: number;
+}> = ({ data = testData, count = 2 }) => (
   <AppSettingsProvider>
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -51,12 +50,11 @@ const Components: React.FC<{
               mocks={{
                 GetInvalidPhoneNumbers: {
                   people: {
-                    totalCount: 2,
+                    totalCount: count,
                     nodes: data,
                   },
                 },
               }}
-              cache={cache}
             >
               <FixPhoneNumbers accountListId={accountListId} />
             </GqlMockedProvider>
@@ -212,13 +210,56 @@ describe('FixPhoneNumbers-Home', () => {
     userEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(`Phone numbers updated!`, {
-        variant: 'success',
-      });
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('Successfully updated phone numbers'),
+        expect.objectContaining({ variant: 'success' }),
+      );
     });
 
     expect(
       getByText('No people with phone numbers need attention'),
     ).toBeVisible();
+  });
+  it('should handle 50+ phone numbers gracefully', async () => {
+    const largeTestData = Array.from({ length: 51 }, (_, index) => ({
+      id: `person-${index}`,
+      firstName: `FirstName${index}`,
+      lastName: `LastName${index}`,
+      phoneNumbers: {
+        nodes: [
+          {
+            id: `phone-${index}`,
+            number: `+123456789${index}`,
+            primary: index === 0,
+            source: 'Manual',
+          },
+        ],
+      },
+    }));
+
+    const { getByText, getAllByTestId, queryByTestId, getByTestId } = render(
+      <Components data={largeTestData} count={51} />,
+    );
+    await waitFor(() => {
+      expect(queryByTestId('loading')).not.toBeInTheDocument();
+    });
+
+    expect(
+      getByText('You have 51 phone numbers to confirm.'),
+    ).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(getAllByTestId('phoneNumbers')).toHaveLength(51),
+    );
+
+    expect(queryByTestId('no-data')).not.toBeInTheDocument();
+    expect(getByText('Confirm 51 as MPDX')).toBeInTheDocument();
+
+    userEvent.click(getByTestId('source-button'));
+
+    userEvent.click(getByText('Yes'));
+    await waitFor(() => expect(mockEnqueue).toHaveBeenCalledTimes(51), {
+      timeout: 2000,
+    });
   });
 });
