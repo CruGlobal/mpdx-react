@@ -225,7 +225,7 @@ describe('FixPhoneNumbers-Home', () => {
       getByText('No people with phone numbers need attention'),
     ).toBeVisible();
   });
-  it('should handle 100+ phone numbers gracefully', async () => {
+  it('should handle 50+ phone numbers gracefully', async () => {
     const largeTestData = Array.from({ length: 51 }, (_, index) => ({
       id: `person-${index}`,
       firstName: `FirstName${index}`,
@@ -250,15 +250,12 @@ describe('FixPhoneNumbers-Home', () => {
     });
 
     expect(
-      await getByText('You have 51 phone numbers to confirm.'),
+      getByText('You have 51 phone numbers to confirm.'),
     ).toBeInTheDocument();
 
-    const phoneNumberElements = await waitFor(() =>
-      getAllByTestId('phoneNumbers'),
+    await waitFor(() =>
+      expect(getAllByTestId('phoneNumbers')).toHaveLength(51),
     );
-    await waitFor(() => {
-      expect(phoneNumberElements).toHaveLength(51);
-    });
 
     expect(queryByTestId('no-data')).not.toBeInTheDocument();
     expect(getByText('Confirm 51 as MPDX')).toBeInTheDocument();
