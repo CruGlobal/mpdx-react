@@ -111,7 +111,7 @@ const FixPhoneNumbers: React.FC<Props> = ({ accountListId }: Props) => {
     setDefaultSource(event.target.value);
   };
 
-  const handleBulkConfirm = () => {
+  const handleBulkConfirm = async () => {
     setSubmitAll(true);
   };
 

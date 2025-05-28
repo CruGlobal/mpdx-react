@@ -27,7 +27,7 @@ export interface ConfirmationProps {
   title: string;
   subtitle?: ReactNode | string;
   message?: ReactNode;
-  mutation: () => Promise<unknown> | void;
+  mutation: () => Promise<unknown>;
   confirmButtonProps?: ActionButtonProps;
   handleClose: () => void;
   handleDecline?: () => void;
@@ -56,20 +56,13 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
 
   const onClickConfirm = () => {
     setMutating(true);
-    const result = mutation();
-
-    if (typeof (result as Promise<unknown>)?.then === 'function') {
-      (result as Promise<unknown>)
-        // Parent component must do error handling
-        .catch(() => undefined)
-        .finally(() => {
-          setMutating(false);
-          handleClose();
-        });
-    } else {
-      setMutating(false);
-      handleClose();
-    }
+    mutation()
+      // Parent component must do error handling
+      .catch(() => undefined)
+      .finally(() => {
+        setMutating(false);
+        handleClose();
+      });
   };
 
   return (
