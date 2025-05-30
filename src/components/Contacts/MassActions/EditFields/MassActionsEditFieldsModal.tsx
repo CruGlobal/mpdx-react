@@ -271,11 +271,8 @@ export const MassActionsEditFieldsModal: React.FC<
                       </MenuItem>
                       {[
                         SendNewsletterEnum.None,
-                        ...Object.values(SendNewsletterEnum).filter(
-                          (value) =>
-                            value !== SendNewsletterEnum.Both &&
-                            value !== SendNewsletterEnum.None,
-                        ),
+                        SendNewsletterEnum.Email,
+                        SendNewsletterEnum.Physical,
                         SendNewsletterEnum.Both,
                       ].map((value) => (
                         <MenuItem key={value} value={value}>
