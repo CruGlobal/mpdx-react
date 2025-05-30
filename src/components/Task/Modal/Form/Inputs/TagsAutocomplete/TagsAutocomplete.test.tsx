@@ -11,18 +11,22 @@ const mutationSpy = jest.fn();
 interface TestComponentProps {
   type?: TagTypeEnum;
   value?: string[];
+  contactTagList?: string[];
+  taskTagList?: string[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   type = TagTypeEnum.Contact,
   value = [],
+  contactTagList = ['ct-1', 'ct-2', 'ct-3'],
+  taskTagList = ['tt-1', 'tt-2', 'tt-3'],
 }) => (
   <GqlMockedProvider<{ TagOptions: TagOptionsQuery }>
     mocks={{
       TagOptions: {
         accountList: {
-          contactTagList: ['ct-1', 'ct-2', 'ct-3'],
-          taskTagList: ['tt-1', 'tt-2', 'tt-3'],
+          contactTagList,
+          taskTagList,
         },
       },
     }}
@@ -90,5 +94,24 @@ describe('TagsAutocomplete', () => {
     userEvent.tab();
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('should default to an empty array of options', async () => {
+    const { getByRole, queryByRole } = render(
+      <TestComponent
+        type={TagTypeEnum.Tag}
+        value={[]}
+        contactTagList={[]}
+        taskTagList={[]}
+      />,
+    );
+
+    userEvent.click(getByRole('combobox', { name: 'Tags' }));
+    expect(
+      await queryByRole('option', { name: 'tt-1' }),
+    ).not.toBeInTheDocument();
+    expect(
+      await queryByRole('option', { name: 'ct-1' }),
+    ).not.toBeInTheDocument();
   });
 });
