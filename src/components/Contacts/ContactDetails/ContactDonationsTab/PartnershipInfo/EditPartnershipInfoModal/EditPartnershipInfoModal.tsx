@@ -241,253 +241,77 @@ export const EditPartnershipInfoModal: React.FC<
           touched,
           errors,
           handleBlur,
-        }) => (
-          <form onSubmit={handleSubmit} noValidate>
-            {errors.pledgeFrequency}
-            <DialogContent dividers sx={{ maxHeight: '60vh' }}>
-              <Grid container>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <TextField
-                      name="name"
-                      label={t('Contact Name')}
-                      value={name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      inputProps={{ 'aria-label': t('Contact') }}
-                      error={!!errors.name && touched.name}
-                      helperText={
-                        errors.name &&
-                        touched.name &&
-                        t('Contact name is required')
-                      }
-                      fullWidth
-                    />
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <FormControl fullWidth={true}>
-                      <InputLabel id="primary-person-select-label">
-                        {t('Primary Person')}
-                      </InputLabel>
-                      <Select
-                        label={t('Primary Person')}
-                        labelId="primary-person-select-label"
-                        value={primaryPersonId}
-                        onChange={(e) =>
-                          setFieldValue('primaryPersonId', e.target.value)
+        }) => {
+          const [rawPledgeAmount, setRawPledgeAmount] = useState(
+            pledgeAmount?.toFixed(2) ?? '',
+          );
+
+          return (
+            <form onSubmit={handleSubmit} noValidate>
+              {errors.pledgeFrequency}
+              <DialogContent dividers sx={{ maxHeight: '60vh' }}>
+                <Grid container>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <TextField
+                        name="name"
+                        label={t('Contact Name')}
+                        value={name}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        inputProps={{ 'aria-label': t('Contact') }}
+                        error={!!errors.name && touched.name}
+                        helperText={
+                          errors.name &&
+                          touched.name &&
+                          t('Contact name is required')
                         }
-                        fullWidth={true}
-                      >
-                        {contact.people.nodes.map((person) => (
-                          <MenuItem key={person.id} value={person.id}>{`${
-                            person.firstName || ''
-                          } ${person.lastName || ''}`}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <FormControl fullWidth>
-                      <InputLabel id="status-select-label">
-                        {t('Status')}
-                      </InputLabel>
-                      <Select
-                        label={t('Status')}
-                        labelId="status-select-label"
-                        value={status}
-                        onChange={(e) =>
-                          updateStatus(
-                            e.target.value as StatusEnum,
-                            setFieldValue,
-                            status,
-                            pledgeAmount,
-                            pledgeFrequency,
-                          )
-                        }
-                        MenuProps={{
-                          anchorOrigin: {
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                          },
-                          transformOrigin: {
-                            vertical: 'top',
-                            horizontal: 'left',
-                          },
-                          PaperProps: {
-                            style: {
-                              maxHeight: '300px',
-                              overflow: 'auto',
-                            },
-                          },
-                        }}
-                      >
-                        {phases?.map((phase) => [
-                          <ListSubheader key={phase?.id}>
-                            {phase?.name}
-                          </ListSubheader>,
-                          phase?.contactStatuses.map((status) => (
-                            <MenuItem key={status} value={status}>
-                              {getLocalizedContactStatus(status)}
-                            </MenuItem>
-                          )),
-                        ])}
-                      </Select>
-                    </FormControl>
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <FormControl fullWidth>
-                      <InputLabel id="newsletter-select-label">
-                        {t('Newsletter')}
-                      </InputLabel>
-                      <Select
-                        label={t('Newsletter')}
-                        labelId="newsletter-select-label"
-                        value={sendNewsletter}
-                        onChange={(e) =>
-                          setFieldValue(
-                            'sendNewsletter',
-                            e.target.value as SendNewsletterEnum,
-                          )
-                        }
-                      >
-                        {Object.values(SendNewsletterEnum).map((value) => (
-                          <MenuItem key={value} value={value}>
-                            {getLocalizedSendNewsletter(t, value)}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </ContactInputWrapper>
-                </Grid>
-                {showRemoveCommitmentWarning && (
-                  <ContactInputWrapper data-testid="removeCommitmentMessage">
-                    <Alert severity="warning">
-                      <Typography>
-                        {t(
-                          '{{appName}} uses your contact status, commitment amount, and frequency together to calculate many things, including your progress towards your goal and notification alerts.',
-                          { appName },
-                        )}
-                      </Typography>
-                      <Typography my={'10px'}>
-                        {t(
-                          'If you are switching this contact away from Partner - Financial status, their commitment amount and frequency will no longer be included in calculations. Would you like to remove their commitment amount and frequency, as well?',
-                        )}
-                      </Typography>
-                      <RemoveCommitmentActions>
-                        <Button
-                          color="inherit"
-                          size="small"
-                          variant="contained"
-                          onClick={() => setShowRemoveCommitmentWarning(false)}
-                        >
-                          {t('No')}
-                        </Button>
-                        <Button
-                          color="primary"
-                          size="small"
-                          variant="contained"
-                          onClick={() => removeCommittedDetails(setFieldValue)}
-                        >
-                          {t('Yes')}
-                        </Button>
-                      </RemoveCommitmentActions>
-                    </Alert>
-                  </ContactInputWrapper>
-                )}
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <TextFieldInteractive
-                      label={t('Amount')}
-                      isDisabled={status !== StatusEnum.PartnerFinancial}
-                      value={pledgeAmount}
-                      type="number"
-                      disabled={status !== StatusEnum.PartnerFinancial}
-                      aria-readonly={status !== StatusEnum.PartnerFinancial}
-                      onChange={handleChange('pledgeAmount')}
-                      inputProps={{ 'aria-label': t('Amount') }}
-                      InputProps={{
-                        endAdornment: (
-                          <Tooltip
-                            title={
-                              <Typography>
-                                {t(
-                                  'Commitments can only be set if status is Partner - Financial',
-                                )}
-                              </Typography>
-                            }
-                          >
-                            <InfoIcon />
-                          </Tooltip>
-                        ),
-                      }}
-                      fullWidth
-                    />
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <FormControl fullWidth>
-                      <InputLabel id="frequency-select-label">
-                        {t('Frequency')}
-                      </InputLabel>
-                      <SelectInteractive
-                        label={t('Frequency')}
-                        labelId="frequency-select-label"
-                        value={pledgeFrequency ?? ''}
-                        isDisabled={status !== StatusEnum.PartnerFinancial}
-                        disabled={status !== StatusEnum.PartnerFinancial}
-                        aria-readonly={status !== StatusEnum.PartnerFinancial}
-                        onChange={(e) =>
-                          setFieldValue('pledgeFrequency', e.target.value)
-                        }
-                        IconComponent={
-                          status !== StatusEnum.PartnerFinancial
-                            ? () => (
-                                <Tooltip
-                                  sx={{ marginRight: '14px' }}
-                                  title={
-                                    <Typography>
-                                      {t(
-                                        'Commitments can only be set if status is Partner - Financial',
-                                      )}
-                                    </Typography>
-                                  }
-                                >
-                                  <InfoIcon />
-                                </Tooltip>
-                              )
-                            : undefined
-                        }
-                      >
-                        <MenuItem value={''} disabled></MenuItem>
-                        {Object.values(PledgeFrequencyEnum).map((value) => (
-                          <MenuItem key={value} value={value}>
-                            {getLocalizedPledgeFrequency(value)}
-                          </MenuItem>
-                        ))}
-                      </SelectInteractive>
-                    </FormControl>
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <FormControl fullWidth>
-                      <InputLabel id="currency-select-label">
-                        {t('Currency')}
-                      </InputLabel>
-                      {pledgeCurrencies && (
+                        fullWidth
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth={true}>
+                        <InputLabel id="primary-person-select-label">
+                          {t('Primary Person')}
+                        </InputLabel>
                         <Select
-                          label={t('Currency')}
-                          labelId="currency-select-label"
-                          value={pledgeCurrency ?? ''}
+                          label={t('Primary Person')}
+                          labelId="primary-person-select-label"
+                          value={primaryPersonId}
                           onChange={(e) =>
-                            setFieldValue('pledgeCurrency', e.target.value)
+                            setFieldValue('primaryPersonId', e.target.value)
+                          }
+                          fullWidth={true}
+                        >
+                          {contact.people.nodes.map((person) => (
+                            <MenuItem key={person.id} value={person.id}>{`${
+                              person.firstName || ''
+                            } ${person.lastName || ''}`}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth>
+                        <InputLabel id="status-select-label">
+                          {t('Status')}
+                        </InputLabel>
+                        <Select
+                          label={t('Status')}
+                          labelId="status-select-label"
+                          value={status}
+                          onChange={(e) =>
+                            updateStatus(
+                              e.target.value as StatusEnum,
+                              setFieldValue,
+                              status,
+                              pledgeAmount,
+                              pledgeFrequency,
+                            )
                           }
                           MenuProps={{
                             anchorOrigin: {
@@ -506,112 +330,320 @@ export const EditPartnershipInfoModal: React.FC<
                             },
                           }}
                         >
-                          <MenuItem value={''} disabled></MenuItem>
-                          {getPledgeCurrencyOptions(pledgeCurrencies)}
+                          {phases?.map((phase) => [
+                            <ListSubheader key={phase?.id}>
+                              {phase?.name}
+                            </ListSubheader>,
+                            phase?.contactStatuses.map((status) => (
+                              <MenuItem key={status} value={status}>
+                                {getLocalizedContactStatus(status)}
+                              </MenuItem>
+                            )),
+                          ])}
                         </Select>
-                      )}
-                    </FormControl>
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <CustomDateField
-                      label={t('Start Date')}
-                      value={pledgeStartDate}
-                      onChange={(date) =>
-                        setFieldValue('pledgeStartDate', date)
-                      }
-                    />
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <FormControl fullWidth>
-                      <InputLabel id="likely-to-give-select-label">
-                        {t('Likely To Give')}
-                      </InputLabel>
-                      <Select
-                        label={t('Likely To Give')}
-                        labelId="likely-to-give-select-label"
-                        value={likelyToGive ?? ''}
-                        onChange={(e) =>
-                          setFieldValue(
-                            'likelyToGive',
-                            e.target.value as LikelyToGiveEnum,
-                          )
-                        }
-                      >
-                        {Object.values(LikelyToGiveEnum).map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {getLocalizedLikelyToGive(t, val)}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </ContactInputWrapper>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <ContactInputWrapper>
-                    <CustomDateField
-                      label={t('Next Increase Ask')}
-                      value={nextAsk}
-                      onChange={(nextAsk) => setFieldValue('nextAsk', nextAsk)}
-                    />
-                  </ContactInputWrapper>
-                </Grid>
-                {showRelationshipCode && (
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
                   <Grid item xs={12} sm={6}>
                     <ContactInputWrapper>
-                      <TextField
-                        name="relationshipCode"
-                        label={t('Relationship Code')}
-                        value={relationshipCode}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        inputProps={{ 'aria-label': t('Relationship Code') }}
-                        fullWidth
+                      <FormControl fullWidth>
+                        <InputLabel id="newsletter-select-label">
+                          {t('Newsletter')}
+                        </InputLabel>
+                        <Select
+                          label={t('Newsletter')}
+                          labelId="newsletter-select-label"
+                          value={sendNewsletter}
+                          onChange={(e) =>
+                            setFieldValue(
+                              'sendNewsletter',
+                              e.target.value as SendNewsletterEnum,
+                            )
+                          }
+                        >
+                          {Object.values(SendNewsletterEnum).map((value) => (
+                            <MenuItem key={value} value={value}>
+                              {getLocalizedSendNewsletter(t, value)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
+                  {showRemoveCommitmentWarning && (
+                    <ContactInputWrapper data-testid="removeCommitmentMessage">
+                      <Alert severity="warning">
+                        <Typography>
+                          {t(
+                            '{{appName}} uses your contact status, commitment amount, and frequency together to calculate many things, including your progress towards your goal and notification alerts.',
+                            { appName },
+                          )}
+                        </Typography>
+                        <Typography my={'10px'}>
+                          {t(
+                            'If you are switching this contact away from Partner - Financial status, their commitment amount and frequency will no longer be included in calculations. Would you like to remove their commitment amount and frequency, as well?',
+                          )}
+                        </Typography>
+                        <RemoveCommitmentActions>
+                          <Button
+                            color="inherit"
+                            size="small"
+                            variant="contained"
+                            onClick={() =>
+                              setShowRemoveCommitmentWarning(false)
+                            }
+                          >
+                            {t('No')}
+                          </Button>
+                          <Button
+                            color="primary"
+                            size="small"
+                            variant="contained"
+                            onClick={() => {
+                              removeCommittedDetails(setFieldValue);
+                              setRawPledgeAmount('');
+                            }}
+                          >
+                            {t('Yes')}
+                          </Button>
+                        </RemoveCommitmentActions>
+                      </Alert>
+                    </ContactInputWrapper>
+                  )}
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <TextFieldInteractive
+                        label={t('Amount')}
+                        isDisabled={status !== StatusEnum.PartnerFinancial}
+                        value={rawPledgeAmount}
+                        disabled={status !== StatusEnum.PartnerFinancial}
+                        aria-readonly={status !== StatusEnum.PartnerFinancial}
+                        onChange={(e) => {
+                          const val = e.target.value;
+
+                          // Only allow digits and one optional dot
+                          if (/^\d*\.?\d{0,2}$/.test(val)) {
+                            setRawPledgeAmount(val);
+                          }
+                        }}
+                        onBlur={() => {
+                          const parsed = parseFloat(rawPledgeAmount);
+                          if (!isNaN(parsed)) {
+                            const rounded = parsed.toFixed(2);
+                            setRawPledgeAmount(rounded);
+                            setFieldValue('pledgeAmount', parseFloat(rounded));
+                          } else {
+                            setRawPledgeAmount('');
+                            setFieldValue('pledgeAmount', null);
+                          }
+                        }}
+                        inputProps={{
+                          'aria-label': t('Amount'),
+                          inputMode: 'decimal',
+                        }}
+                        InputProps={{
+                          endAdornment: (
+                            <Tooltip
+                              title={
+                                <Typography>
+                                  {t(
+                                    'Commitments can only be set if status is Partner - Financial',
+                                  )}
+                                </Typography>
+                              }
+                            >
+                              <InfoIcon />
+                            </Tooltip>
+                          ),
+                        }}
                       />
                     </ContactInputWrapper>
                   </Grid>
-                )}
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth>
+                        <InputLabel id="frequency-select-label">
+                          {t('Frequency')}
+                        </InputLabel>
+                        <SelectInteractive
+                          label={t('Frequency')}
+                          labelId="frequency-select-label"
+                          value={pledgeFrequency ?? ''}
+                          isDisabled={status !== StatusEnum.PartnerFinancial}
+                          disabled={status !== StatusEnum.PartnerFinancial}
+                          aria-readonly={status !== StatusEnum.PartnerFinancial}
+                          onChange={(e) =>
+                            setFieldValue('pledgeFrequency', e.target.value)
+                          }
+                          IconComponent={
+                            status !== StatusEnum.PartnerFinancial
+                              ? () => (
+                                  <Tooltip
+                                    sx={{ marginRight: '14px' }}
+                                    title={
+                                      <Typography>
+                                        {t(
+                                          'Commitments can only be set if status is Partner - Financial',
+                                        )}
+                                      </Typography>
+                                    }
+                                  >
+                                    <InfoIcon />
+                                  </Tooltip>
+                                )
+                              : undefined
+                          }
+                        >
+                          <MenuItem value={''} disabled></MenuItem>
+                          {Object.values(PledgeFrequencyEnum).map((value) => (
+                            <MenuItem key={value} value={value}>
+                              {getLocalizedPledgeFrequency(value)}
+                            </MenuItem>
+                          ))}
+                        </SelectInteractive>
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth>
+                        <InputLabel id="currency-select-label">
+                          {t('Currency')}
+                        </InputLabel>
+                        {pledgeCurrencies && (
+                          <Select
+                            label={t('Currency')}
+                            labelId="currency-select-label"
+                            value={pledgeCurrency ?? ''}
+                            onChange={(e) =>
+                              setFieldValue('pledgeCurrency', e.target.value)
+                            }
+                            MenuProps={{
+                              anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                              },
+                              transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                              },
+                              PaperProps: {
+                                style: {
+                                  maxHeight: '300px',
+                                  overflow: 'auto',
+                                },
+                              },
+                            }}
+                          >
+                            <MenuItem value={''} disabled></MenuItem>
+                            {getPledgeCurrencyOptions(pledgeCurrencies)}
+                          </Select>
+                        )}
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <CustomDateField
+                        label={t('Start Date')}
+                        value={pledgeStartDate}
+                        onChange={(date) =>
+                          setFieldValue('pledgeStartDate', date)
+                        }
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <FormControl fullWidth>
+                        <InputLabel id="likely-to-give-select-label">
+                          {t('Likely To Give')}
+                        </InputLabel>
+                        <Select
+                          label={t('Likely To Give')}
+                          labelId="likely-to-give-select-label"
+                          value={likelyToGive ?? ''}
+                          onChange={(e) =>
+                            setFieldValue(
+                              'likelyToGive',
+                              e.target.value as LikelyToGiveEnum,
+                            )
+                          }
+                        >
+                          {Object.values(LikelyToGiveEnum).map((val) => (
+                            <MenuItem key={val} value={val}>
+                              {getLocalizedLikelyToGive(t, val)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </ContactInputWrapper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <ContactInputWrapper>
+                      <CustomDateField
+                        label={t('Next Increase Ask')}
+                        value={nextAsk}
+                        onChange={(nextAsk) =>
+                          setFieldValue('nextAsk', nextAsk)
+                        }
+                      />
+                    </ContactInputWrapper>
+                  </Grid>
+                  {showRelationshipCode && (
+                    <Grid item xs={12} sm={6}>
+                      <ContactInputWrapper>
+                        <TextField
+                          name="relationshipCode"
+                          label={t('Relationship Code')}
+                          value={relationshipCode}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          inputProps={{ 'aria-label': t('Relationship Code') }}
+                          fullWidth
+                        />
+                      </ContactInputWrapper>
+                    </Grid>
+                  )}
+                </Grid>
 
-              <ContactInputWrapper>
-                <CheckboxLabel
-                  control={
-                    <Checkbox
-                      checked={Boolean(pledgeReceived)}
-                      onChange={() =>
-                        setFieldValue('pledgeReceived', !pledgeReceived)
-                      }
-                      color="secondary"
-                    />
-                  }
-                  label={t('Commitment Received')}
-                />
-              </ContactInputWrapper>
-              <ContactInputWrapper>
-                <CheckboxLabel
-                  control={
-                    <Checkbox
-                      checked={!noAppeals}
-                      onChange={() => setFieldValue('noAppeals', !noAppeals)}
-                      color="secondary"
-                    />
-                  }
-                  label={t('Send Appeals')}
-                />
-              </ContactInputWrapper>
-            </DialogContent>
-            <DialogActions>
-              <CancelButton onClick={handleClose} disabled={isSubmitting} />
-              <SubmitButton disabled={!isValid || isSubmitting}>
-                {updating && <LoadingIndicator color="primary" size={20} />}
-                {t('Save')}
-              </SubmitButton>
-            </DialogActions>
-          </form>
-        )}
+                <ContactInputWrapper>
+                  <CheckboxLabel
+                    control={
+                      <Checkbox
+                        checked={Boolean(pledgeReceived)}
+                        onChange={() =>
+                          setFieldValue('pledgeReceived', !pledgeReceived)
+                        }
+                        color="secondary"
+                      />
+                    }
+                    label={t('Commitment Received')}
+                  />
+                </ContactInputWrapper>
+                <ContactInputWrapper>
+                  <CheckboxLabel
+                    control={
+                      <Checkbox
+                        checked={!noAppeals}
+                        onChange={() => setFieldValue('noAppeals', !noAppeals)}
+                        color="secondary"
+                      />
+                    }
+                    label={t('Send Appeals')}
+                  />
+                </ContactInputWrapper>
+              </DialogContent>
+              <DialogActions>
+                <CancelButton onClick={handleClose} disabled={isSubmitting} />
+                <SubmitButton disabled={!isValid || isSubmitting}>
+                  {updating && <LoadingIndicator color="primary" size={20} />}
+                  {t('Save')}
+                </SubmitButton>
+              </DialogActions>
+            </form>
+          );
+        }}
       </Formik>
     </Modal>
   );
