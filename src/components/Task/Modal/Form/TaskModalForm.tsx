@@ -1,6 +1,5 @@
 import React, {
   ReactElement,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -183,6 +182,7 @@ const TaskModalForm = ({
     taskPhases,
     activityTypes,
     activitiesByPhase,
+    allPhaseTags,
   } = usePhaseData(task?.taskPhase);
 
   const phaseTags = useMemo(
@@ -391,39 +391,6 @@ const TaskModalForm = ({
   const focusActivity = (): void => {
     setTimeout(() => activityRef?.current?.focus(), 50);
   };
-
-  const handleChangeAutocomplete = useCallback(
-    (autoCompleteTagList: string[], tagList: string[]) => {
-      const suggested = autoCompleteTagList.filter((tag) =>
-        phaseTags.some(
-          (phaseTag) => phaseTag.toLowerCase() === tag.toLowerCase(),
-        ),
-      );
-
-      if (suggested.length) {
-        setSelectedSuggestedTags([
-          ...selectedSuggestedTags,
-          ...suggested.filter(
-            (tag) =>
-              !selectedSuggestedTags
-                .map((t) => t.toLowerCase())
-                .includes(tag.toLowerCase()),
-          ),
-        ]);
-      }
-
-      const removedTag = tagList.find(
-        (tag) => !autoCompleteTagList.includes(tag),
-      );
-
-      if (removedTag && selectedSuggestedTags.includes(removedTag)) {
-        setSelectedSuggestedTags((prev) =>
-          prev.filter((tag) => tag !== removedTag),
-        );
-      }
-    },
-    [phaseTags, setSelectedSuggestedTags, selectedSuggestedTags],
-  );
 
   return (
     <Formik
@@ -654,26 +621,16 @@ const TaskModalForm = ({
                 <PhaseTags
                   tags={phaseTags}
                   selectedTags={selectedSuggestedTags}
-                  setSelectedTags={(tags) => {
-                    setSelectedSuggestedTags(tags);
-                    // Remove any deselected suggested tags from tagList as well
-                    setFieldValue(
-                      'tagList',
-                      tagList.filter((tag) => tags.includes(tag)),
-                    );
-                  }}
+                  setSelectedTags={setSelectedSuggestedTags}
                 />
               )}
               <Grid item xs={12}>
                 <TagsAutocomplete
                   accountListId={accountListId}
-                  selectedSuggestedTags={selectedSuggestedTags}
                   type={TagTypeEnum.Tag}
                   value={tagList || []}
-                  onChange={(autoCompleteTagList) => {
-                    setFieldValue('tagList', autoCompleteTagList);
-                    handleChangeAutocomplete(autoCompleteTagList, tagList);
-                  }}
+                  allPhaseTags={allPhaseTags}
+                  onChange={(tagList) => setFieldValue('tagList', tagList)}
                   label={
                     phaseTags?.length && initialTask.completedAt
                       ? t('Additional Tags')
