@@ -209,7 +209,7 @@ describe('EditPartnershipInfoModal', () => {
       expect(statusInput.textContent).toEqual('Partner - Financial'),
     );
 
-    expect(amountInput).toHaveValue(50);
+    expect(amountInput).toHaveValue('50.00');
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
 
     userEvent.click(statusInput);
@@ -218,7 +218,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'No' }));
 
-    expect(amountInput).toHaveValue(50);
+    expect(amountInput).toHaveValue('50.00');
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
     expect(getByText('Every 2 Months')).toBeInTheDocument();
 
@@ -231,7 +231,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    expect(amountInput).toHaveValue(0);
+    expect(amountInput).toHaveValue('');
     expect(amountInput).toBeDisabled();
     expect(queryByText('Every 2 Months')).not.toBeInTheDocument();
     expect(statusInput.textContent).toEqual('Ask in Future');
@@ -278,7 +278,7 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(getByText('Partner - Financial'));
     userEvent.click(frequencyInput);
     userEvent.click(getByText('Every 2 Months'));
-    expect(amountInput).toHaveValue(0);
+    expect(amountInput).toHaveValue('');
     userEvent.click(statusInput);
     userEvent.click(getByText('Ask in Future'));
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
@@ -316,15 +316,16 @@ describe('EditPartnershipInfoModal', () => {
       expect(statusInput.textContent).toEqual('Partner - Financial'),
     );
 
-    expect(amountInput).toHaveValue(50);
+    expect(amountInput).toHaveValue('50.00');
 
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
-    userEvent.type(amountInput, '0');
+    userEvent.clear(amountInput);
+    userEvent.type(amountInput, '500');
     userEvent.click(frequencyInput);
     userEvent.click(getByText('Annual'));
 
     await waitFor(() => expect(frequencyInput.textContent).toEqual('Annual'));
-    expect(amountInput).toHaveValue(500);
+    expect(amountInput).toHaveValue('500.00');
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
