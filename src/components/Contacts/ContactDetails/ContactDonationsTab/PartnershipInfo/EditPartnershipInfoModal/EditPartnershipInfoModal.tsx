@@ -354,11 +354,8 @@ export const EditPartnershipInfoModal: React.FC<
                       >
                         {[
                           SendNewsletterEnum.None,
-                          ...Object.values(SendNewsletterEnum).filter(
-                            (value) =>
-                              value !== SendNewsletterEnum.Both &&
-                              value !== SendNewsletterEnum.None,
-                          ),
+                          SendNewsletterEnum.Email,
+                          SendNewsletterEnum.Physical,
                           SendNewsletterEnum.Both,
                         ].map((value) => (
                           <MenuItem key={value} value={value}>
