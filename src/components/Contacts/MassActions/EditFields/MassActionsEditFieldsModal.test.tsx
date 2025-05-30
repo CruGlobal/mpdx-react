@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -71,5 +71,32 @@ describe('MassActionsEditFieldsModal', () => {
       }),
     );
     await waitFor(() => expect(handleClose).toHaveBeenCalled());
+  });
+
+  it('should show newsletter options in correct order', async () => {
+    const mutationSpy = jest.fn();
+    const { getByLabelText, findByRole } = render(
+      <GqlMockedProvider onCall={mutationSpy}>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <SnackbarProvider>
+              <MassActionsEditFieldsModal
+                ids={selectedIds}
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </GqlMockedProvider>,
+    );
+    const sendNewsletterInput = getByLabelText('Newsletter');
+    userEvent.click(sendNewsletterInput);
+    const listbox = await findByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(options).toHaveLength(5);
+    expect(options[0]).toHaveTextContent("Don't change");
+    expect(options[1]).toHaveTextContent('None');
+    expect(options[options.length - 1]).toHaveTextContent('Both');
   });
 });

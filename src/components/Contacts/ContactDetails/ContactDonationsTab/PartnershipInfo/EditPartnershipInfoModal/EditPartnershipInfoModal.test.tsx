@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -602,5 +602,16 @@ describe('EditPartnershipInfoModal', () => {
         }),
       );
     });
+  });
+
+  it('should show newsletter options in correct order', async () => {
+    const { getByLabelText, findByRole } = render(<Components />);
+    const sendNewsletterInput = getByLabelText('Newsletter');
+    userEvent.click(sendNewsletterInput);
+    const listbox = await findByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(options).toHaveLength(4);
+    expect(options[0]).toHaveTextContent('None');
+    expect(options[options.length - 1]).toHaveTextContent('Both');
   });
 });
