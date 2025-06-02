@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -143,5 +143,28 @@ describe('EditMailingInfoModal', () => {
     expect(operation.variables.attributes.sendNewsletter).toEqual(
       newSendNewsletter,
     );
+  });
+
+  it('should show newsletter options in correct order', async () => {
+    const { getByLabelText, findByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <EditMailingInfoModal
+              accountListId={accountListId}
+              contact={contact}
+              handleClose={handleClose}
+            />
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+    const sendNewsletterInput = getByLabelText('Newsletter');
+    userEvent.click(sendNewsletterInput);
+    const listbox = await findByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(options).toHaveLength(4);
+    expect(options[0]).toHaveTextContent('None');
+    expect(options[options.length - 1]).toHaveTextContent('Both');
   });
 });
