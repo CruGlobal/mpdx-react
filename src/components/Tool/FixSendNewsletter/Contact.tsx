@@ -224,6 +224,7 @@ const Contact = ({
                 {contact.primaryPerson?.primaryEmailAddress?.email && (
                   <Link
                     href={`mailto:${contact.primaryPerson.primaryEmailAddress.email}`}
+                    target="_blank"
                   >
                     <Typography variant="body2">
                       {contact.primaryPerson?.primaryEmailAddress.email}
