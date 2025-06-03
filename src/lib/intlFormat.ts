@@ -32,6 +32,55 @@ export const currencyFormat = (
   }
 };
 
+export const amountFormat = (
+  value: number | undefined | null,
+  locale: string,
+): string => {
+  if (!value) {
+    return '';
+  }
+
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'decimal',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      trailingZeroDisplay: 'stripIfInteger',
+    }).format(Number.isFinite(value) ? value : 0);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`Error formatting amount: ${error}`);
+    return value.toString();
+  }
+};
+
+export const normalizeCurrencyString = (
+  input: string | null | undefined,
+): number | null => {
+  if (!input) {
+    return null;
+  }
+
+  const sanitized = input.trim().replace(/\s/g, '');
+
+  // If input contains both . and , assume the last one is the decimal
+  const lastDot = sanitized.lastIndexOf('.');
+  const lastComma = sanitized.lastIndexOf(',');
+
+  let decimalSeparator = '.';
+  if (lastComma > lastDot) {
+    decimalSeparator = ',';
+  }
+
+  // Remove all group separators (commas or dots not at the decimal place)
+  const cleaned = sanitized
+    .replace(new RegExp(`[^0-9${decimalSeparator}]`, 'g'), '')
+    .replace(decimalSeparator, '.');
+
+  const result = parseFloat(cleaned);
+  return isNaN(result) ? null : result;
+};
+
 export const dayMonthFormat = (
   day: number,
   month: number,
