@@ -49,7 +49,7 @@ const contactMock = gqlMock<ContactDonorAccountsFragment>(
       pledgeCurrency: 'CAD',
       pledgeStartDate: '2021-09-07T16:38:20.242-04:00',
       pledgeFrequency: PledgeFrequencyEnum.Every_2Months,
-      pledgeAmount: 50,
+      pledgeAmount: 50.5,
       pledgeReceived: false,
       sendNewsletter: SendNewsletterEnum.Email,
       noAppeals: true,
@@ -209,7 +209,7 @@ describe('EditPartnershipInfoModal', () => {
       expect(statusInput.textContent).toEqual('Partner - Financial'),
     );
 
-    expect(amountInput).toHaveValue('50.00');
+    expect(amountInput).toHaveValue('50.50');
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
 
     userEvent.click(statusInput);
@@ -218,7 +218,7 @@ describe('EditPartnershipInfoModal', () => {
     expect(getByTestId('removeCommitmentMessage')).toBeInTheDocument();
     userEvent.click(getByRole('button', { name: 'No' }));
 
-    expect(amountInput).toHaveValue('50.00');
+    expect(amountInput).toHaveValue('50.50');
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
     expect(getByText('Every 2 Months')).toBeInTheDocument();
 
@@ -316,7 +316,7 @@ describe('EditPartnershipInfoModal', () => {
       expect(statusInput.textContent).toEqual('Partner - Financial'),
     );
 
-    expect(amountInput).toHaveValue('50.00');
+    expect(amountInput).toHaveValue('50.50');
 
     expect(frequencyInput.textContent).toEqual('Every 2 Months');
     userEvent.clear(amountInput);
@@ -325,7 +325,7 @@ describe('EditPartnershipInfoModal', () => {
     userEvent.click(getByText('Annual'));
 
     await waitFor(() => expect(frequencyInput.textContent).toEqual('Annual'));
-    expect(amountInput).toHaveValue('500.00');
+    expect(amountInput).toHaveValue('500');
 
     userEvent.click(getByText('Save'));
     await waitFor(() =>
