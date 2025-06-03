@@ -220,6 +220,7 @@ export const ContactDetailsTabPeople: React.FC<ContactDetailsPeopleProp> = ({
                 <Link
                   underline="hover"
                   href={`mailto:${person.primaryEmailAddress?.email}`}
+                  target="_blank"
                 >
                   {person.primaryEmailAddress?.email}
                 </Link>
