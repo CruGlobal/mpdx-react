@@ -105,6 +105,7 @@ describe('TagsAutocomplete', () => {
         value={['ct-1']}
         type={TagTypeEnum.Tag}
         allPhaseTags={new Set(['tt-2', 'tt-3'])}
+        contactTagList={[]}
       />,
     );
 
