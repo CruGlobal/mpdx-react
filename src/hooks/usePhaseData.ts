@@ -18,6 +18,7 @@ type GetPhaseData = {
   activityTypes: Map<ActivityTypeEnum, ActivityData>;
   phasesMap: Map<PhaseEnum, PhaseMappedData>;
   activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>;
+  allPhaseTags: Set<string>;
 };
 
 export type ActivityData = {
@@ -67,48 +68,18 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     [constants],
   );
 
-  // phaseData = {
-  //   contactStatuses: ['CALL_FOR_DECISION'],
-  //   id: 'FOLLOW_UP',
-  //   name: 'Follow Up',
-  //   tasks: [
-  //     'FOLLOW_UP_PHONE_CALL',
-  //     'FOLLOW_UP_EMAIL',
-  //     'FOLLOW_UP_TEXT_MESSAGE',
-  //     'FOLLOW_UP_SOCIAL_MEDIA',
-  //     'FOLLOW_UP_IN_PERSON',
-  //   ],
-  //   results: {
-  //     resultOptions: [
-  //       {
-  //         name: 'INITIATION_RESULT_NO_RESPONSE',
-  //         suggestedContactStatus: null,
-  //         suggestedNextActions: [
-  //           'FOLLOW_UP_PHONE_CALL',
-  //           'FOLLOW_UP_EMAIL',
-  //           'FOLLOW_UP_TEXT_MESSAGE',
-  //           'FOLLOW_UP_SOCIAL_MEDIA',
-  //           'FOLLOW_UP_IN_PERSON',
-  //         ],
-  //         dbResult: [
-  //           { result: 'ATTEMPTED', task: 'FOLLOW_UP_PHONE_CALL' },
-  //           { result: 'COMPLETED', task: 'FOLLOW_UP_EMAIL' },
-  //           { result: 'COMPLETED', task: 'FOLLOW_UP_TEXT_MESSAGE' },
-  //           { result: 'COMPLETED', task: 'FOLLOW_UP_SOCIAL_MEDIA' },
-  //           { result: 'COMPLETED', task: 'FOLLOW_UP_IN_PERSON' },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // };
+  const allPhaseTags = useMemo(() => {
+    const allTags: Set<string> = new Set();
+    constants?.phases?.forEach((phase) => {
+      phase?.results?.tags?.forEach((tag) => {
+        if (tag && tag.value) {
+          allTags.add(tag.value.toLowerCase());
+        }
+      });
+    });
+    return allTags;
+  }, [constants]);
 
-  // taskPhases
-  //   [
-  //     'INITIATION',
-  //     'APPOINTMENT',
-  //     'FOLLOW_UP',
-  //     'PARTNER_CARE',
-  //   ]
   const taskPhases = useMemo(() => {
     return (
       constants?.phases
@@ -116,22 +87,6 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
         .map((phase) => phase?.id) || []
     );
   }, [constants]);
-
-  // activityTypes
-  // {INITIATION_SPECIAL_GIFT_APPEAL: {
-  //   translatedShortName: 'Special Gift Appeal',
-  //   translatedFullName: 'Initiation - Special Gift Appeal',
-  //   phase: 'Initiation',
-  //   phaseId: 'INITIATION',
-  //   subject: 'Special Gift Appeal',
-  // },
-  // FOLLOW_UP_TEXT_MESSAGE: {
-  //   translatedShortName: 'Text Message',
-  //   translatedFullName: 'Follow Up - Text Message',
-  //   phase: 'Follow-Up',
-  //   phaseId: 'FOLLOW_UP',
-  //   subject: 'Text Message To Follow Up',
-  // },}
 
   const activityTypes = useMemo(() => {
     const activitiesMap = new Map<ActivityTypeEnum, ActivityData>();
@@ -154,15 +109,6 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     return activitiesMap;
   }, [constants]);
 
-  // phasesMap
-  // {INITIATION: {
-  //   phaseId: 'INITIATION',
-  //   translatedName: 'Initiation',
-  // },
-  // {PARTNER_CARE: {
-  //   phaseId: 'PARTNER_CARE',
-  //   translatedName: 'Partner Care',
-  // },
   const phasesMap: Map<PhaseEnum, PhaseMappedData> = useMemo(() => {
     const phaseMap = new Map();
 
@@ -176,15 +122,6 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     return phaseMap;
   }, [constants]);
 
-  // activitiesByPhase
-  // {
-  //   APPOINTMENT: [
-  //     'APPOINTMENT_IN_PERSON',
-  //     'APPOINTMENT_PHONE_CALL',
-  //     'APPOINTMENT_VIDEO_CALL',
-  //   ],
-  //   ARCHIVE: [],
-  // }
   const activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]> = useMemo(() => {
     const phasesMap = new Map();
 
@@ -203,5 +140,6 @@ export const usePhaseData = (phaseEnum?: PhaseEnum | null): GetPhaseData => {
     phasesMap,
     activityTypes,
     activitiesByPhase,
+    allPhaseTags,
   };
 };
