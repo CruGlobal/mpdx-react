@@ -538,7 +538,7 @@ const TaskModalLogForm = ({
                             accountListId={accountListId}
                             type={TagTypeEnum.Tag}
                             value={tagList ?? []}
-                            allPhaseTags={allPhaseTags ?? new Set()}
+                            allPhaseTags={allPhaseTags}
                             onChange={(tagList) =>
                               setFieldValue('tagList', tagList)
                             }

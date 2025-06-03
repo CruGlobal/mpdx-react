@@ -398,7 +398,7 @@ const TaskModalCompleteForm = ({
               <Grid item>
                 <TagsAutocomplete
                   accountListId={accountListId}
-                  allPhaseTags={allPhaseTags ?? new Set()}
+                  allPhaseTags={allPhaseTags}
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}

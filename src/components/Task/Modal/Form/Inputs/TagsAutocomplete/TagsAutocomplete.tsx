@@ -22,7 +22,7 @@ export const TagsAutocomplete: React.FC<TagsAutocompleteProps> = ({
   value,
   onChange,
   label,
-  allPhaseTags,
+  allPhaseTags = new Set(),
 }) => {
   const { t } = useTranslation();
 
