@@ -94,7 +94,8 @@ const TaskModalCompleteForm = ({
   const { enqueueSnackbar } = useSnackbar();
   const activityType = task.activityType || null;
   const taskPhase = useMemo(() => getPhaseByActivityType(activityType), [task]);
-  const { phaseData, setPhaseId, activityTypes } = usePhaseData(taskPhase);
+  const { phaseData, setPhaseId, activityTypes, allPhaseTags } =
+    usePhaseData(taskPhase);
 
   const initialCompletedAt =
     task.completedAt ||
@@ -397,6 +398,7 @@ const TaskModalCompleteForm = ({
               <Grid item>
                 <TagsAutocomplete
                   accountListId={accountListId}
+                  allPhaseTags={allPhaseTags}
                   type={TagTypeEnum.Tag}
                   value={tagList ?? []}
                   onChange={(tagList) => setFieldValue('tagList', tagList)}
