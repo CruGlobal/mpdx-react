@@ -404,9 +404,7 @@ export const EditPartnershipInfoModal: React.FC<
                           color="primary"
                           size="small"
                           variant="contained"
-                          onClick={() => {
-                            removeCommittedDetails(setFieldValue);
-                          }}
+                          onClick={() => removeCommittedDetails(setFieldValue)}
                         >
                           {t('Yes')}
                         </Button>
