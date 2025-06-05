@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import {
+  amountFormat,
   currencyFormat,
   dateFormat,
   dateFormatMonthOnly,
@@ -8,6 +9,7 @@ import {
   dateTimeFormat,
   dayMonthFormat,
   monthYearFormat,
+  normalizeCurrencyString,
   numberFormat,
   percentageFormat,
   validateAndFormatInvalidDate,
@@ -90,6 +92,56 @@ describe('intlFormat', () => {
 
       it('handles an error', () => {
         expect(currencyFormat(1234.56, ' ', 'en-GB')).toEqual('1234.56  ');
+      });
+    });
+
+    describe('amountFormat', () => {
+      it('formats number with two decimals in en-US', () => {
+        expect(amountFormat(1234.5, 'en-US')).toEqual('1,234.50');
+      });
+
+      it('strips trailing zero if integer', () => {
+        expect(amountFormat(1000, 'en-US')).toEqual('1,000');
+      });
+
+      it('formats number in French locale', () => {
+        expect(amountFormat(1234.5, 'fr-FR')).toEqual('1 234,50');
+      });
+
+      it('returns empty string for null or undefined', () => {
+        expect(amountFormat(null, 'en-US')).toEqual('');
+        expect(amountFormat(undefined, 'en-US')).toEqual('');
+      });
+
+      it('handles invalid locale by falling back to toString', () => {
+        const invalidLocale = 'invalid-locale';
+        const result = amountFormat(1234.56, invalidLocale);
+        expect(typeof result).toBe('string');
+      });
+    });
+
+    describe('normalizeCurrencyString', () => {
+      it('converts en-US style string to number', () => {
+        expect(normalizeCurrencyString('1,234.56')).toEqual(1234.56);
+      });
+
+      it('converts European-style string to number', () => {
+        expect(normalizeCurrencyString('1.234,56')).toEqual(1234.56);
+      });
+
+      it('converts string with spaces and currency symbols', () => {
+        expect(normalizeCurrencyString(' €  1 234,56 ')).toEqual(1234.56);
+      });
+
+      it('returns null for null, undefined or string', () => {
+        expect(normalizeCurrencyString(null)).toBeNull();
+        expect(normalizeCurrencyString(undefined)).toBeNull();
+        expect(normalizeCurrencyString('')).toBeNull();
+        expect(normalizeCurrencyString('asdf')).toBeNull();
+      });
+
+      it('handles decimal at the end', () => {
+        expect(normalizeCurrencyString('1234,')).toEqual(1234);
       });
     });
 

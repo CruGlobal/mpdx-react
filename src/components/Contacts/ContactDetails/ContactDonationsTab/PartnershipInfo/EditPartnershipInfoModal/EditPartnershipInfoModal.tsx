@@ -37,9 +37,11 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
+import { amountFormat, normalizeCurrencyString } from 'src/lib/intlFormat';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -90,7 +92,7 @@ const SelectInteractive = styled(Select, {
 const contactPartnershipSchema = yup.object({
   id: yup.string().required(),
   status: yup.mixed<StatusEnum>().oneOf(Object.values(StatusEnum)).nullable(),
-  pledgeAmount: yup.number().moreThan(-1).nullable(),
+  pledgeAmount: yup.string().nullable(),
   pledgeStartDate: nullableDateTime(),
   pledgeReceived: yup.boolean().default(false).nullable(),
   pledgeCurrency: yup.string().nullable(),
@@ -118,6 +120,7 @@ export const EditPartnershipInfoModal: React.FC<
   EditPartnershipInfoModalProps
 > = ({ contact, handleClose }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
@@ -142,6 +145,12 @@ export const EditPartnershipInfoModal: React.FC<
   const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
+    // When the pledgeAmount field is blank, the value will be an empty string, even though TypeScript says the type is `number | null | undefined`
+    const pledgeAmountNumber =
+      attributes.pledgeAmount?.trim() === ''
+        ? null
+        : normalizeCurrencyString(attributes.pledgeAmount);
+
     await updateContactPartnership({
       variables: {
         accountListId: accountListId ?? '',
@@ -150,10 +159,7 @@ export const EditPartnershipInfoModal: React.FC<
           pledgeStartDate: attributes.pledgeStartDate?.toISODate() ?? null,
           nextAsk: attributes.nextAsk?.toISODate() ?? null,
           primaryPersonId: attributes.primaryPersonId,
-          // When the field is blank, the value will be an empty string, even though TypeScript says the type is `number | null | undefined`
-          pledgeAmount: !attributes.pledgeAmount
-            ? null
-            : Number(attributes.pledgeAmount),
+          pledgeAmount: pledgeAmountNumber,
         },
       },
     });
@@ -168,23 +174,29 @@ export const EditPartnershipInfoModal: React.FC<
     newStatus: StatusEnum,
     setFieldValue: (name: string, value: StatusEnum | number | null) => void,
     oldStatus?: StatusEnum | null,
-    pledgeAmount?: number | null,
+    pledgeAmount?: string | null,
     pledgeFrequency?: PledgeFrequencyEnum | null,
   ) => {
     setFieldValue('status', newStatus);
+    const normalizedPledgeAmount = normalizeCurrencyString(pledgeAmount);
     if (
-      newStatus !== StatusEnum.PartnerFinancial &&
-      oldStatus === StatusEnum.PartnerFinancial &&
-      ((pledgeAmount && pledgeAmount > 0) || pledgeFrequency)
+      (newStatus !== StatusEnum.PartnerFinancial &&
+        oldStatus === StatusEnum.PartnerFinancial &&
+        normalizedPledgeAmount &&
+        normalizedPledgeAmount > 0) ||
+      pledgeFrequency
     ) {
       setShowRemoveCommitmentWarning(true);
     }
   };
 
   const removeCommittedDetails = (
-    setFieldValue: (name: string, value: StatusEnum | number | null) => void,
+    setFieldValue: (
+      name: string,
+      value: StatusEnum | string | number | null,
+    ) => void,
   ) => {
-    setFieldValue('pledgeAmount', 0);
+    setFieldValue('pledgeAmount', '');
     setFieldValue('pledgeFrequency', null);
     setShowRemoveCommitmentWarning(false);
   };
@@ -199,7 +211,7 @@ export const EditPartnershipInfoModal: React.FC<
         initialValues={{
           id: contact.id,
           status: contact.status,
-          pledgeAmount: contact.pledgeAmount,
+          pledgeAmount: amountFormat(contact.pledgeAmount, locale) ?? '',
           pledgeFrequency: contact.pledgeFrequency,
           pledgeReceived: contact.pledgeReceived,
           pledgeCurrency: contact.pledgeCurrency,
@@ -411,10 +423,22 @@ export const EditPartnershipInfoModal: React.FC<
                       label={t('Amount')}
                       isDisabled={status !== StatusEnum.PartnerFinancial}
                       value={pledgeAmount}
-                      type="number"
+                      type="text"
                       disabled={status !== StatusEnum.PartnerFinancial}
                       aria-readonly={status !== StatusEnum.PartnerFinancial}
-                      onChange={handleChange('pledgeAmount')}
+                      onChange={(e) => {
+                        setFieldValue('pledgeAmount', e.target.value);
+                      }}
+                      onBlur={() => {
+                        const normalizedPledgeAmount =
+                          normalizeCurrencyString(pledgeAmount);
+                        if (normalizedPledgeAmount) {
+                          setFieldValue(
+                            'pledgeAmount',
+                            amountFormat(normalizedPledgeAmount, locale),
+                          );
+                        }
+                      }}
                       inputProps={{ 'aria-label': t('Amount') }}
                       InputProps={{
                         endAdornment: (
