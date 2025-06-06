@@ -41,7 +41,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { amountFormat, normalizeCurrencyString } from 'src/lib/intlFormat';
+import {
+  amountFormat,
+  parseNumberFromCurrencyString,
+} from 'src/lib/intlFormat';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -149,7 +152,7 @@ export const EditPartnershipInfoModal: React.FC<
     const pledgeAmountNumber =
       attributes.pledgeAmount?.trim() === ''
         ? null
-        : normalizeCurrencyString(attributes.pledgeAmount, locale);
+        : parseNumberFromCurrencyString(attributes.pledgeAmount, locale);
 
     await updateContactPartnership({
       variables: {
@@ -178,7 +181,7 @@ export const EditPartnershipInfoModal: React.FC<
     pledgeFrequency?: PledgeFrequencyEnum | null,
   ) => {
     setFieldValue('status', newStatus);
-    const normalizedPledgeAmount = normalizeCurrencyString(
+    const normalizedPledgeAmount = parseNumberFromCurrencyString(
       pledgeAmount,
       locale,
     );
@@ -433,10 +436,8 @@ export const EditPartnershipInfoModal: React.FC<
                         setFieldValue('pledgeAmount', e.target.value);
                       }}
                       onBlur={() => {
-                        const normalizedPledgeAmount = normalizeCurrencyString(
-                          pledgeAmount,
-                          locale,
-                        );
+                        const normalizedPledgeAmount =
+                          parseNumberFromCurrencyString(pledgeAmount, locale);
                         setFieldValue(
                           'pledgeAmount',
                           amountFormat(normalizedPledgeAmount, locale),

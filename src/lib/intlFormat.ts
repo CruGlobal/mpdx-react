@@ -54,7 +54,7 @@ export const amountFormat = (
   }
 };
 
-export const normalizeCurrencyString = (
+export const parseNumberFromCurrencyString = (
   input: string | null | undefined,
   locale: string = 'en-US',
 ): number | null => {
@@ -66,11 +66,11 @@ export const normalizeCurrencyString = (
   const parts = new Intl.NumberFormat(locale).formatToParts(1234567.89);
   const group =
     parts.find((part) => {
-      part.type === 'group';
+      return part.type === 'group';
     })?.value || ',';
   const decimal =
     parts.find((part) => {
-      part.type === 'decimal';
+      return part.type === 'decimal';
     })?.value || '.';
 
   let sanitized = input.trim().replace(/\s/g, '');
