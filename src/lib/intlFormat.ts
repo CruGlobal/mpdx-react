@@ -64,8 +64,14 @@ export const normalizeCurrencyString = (
 
   // Use Intl.NumberFormat to determine group and decimal separators for the locale
   const parts = new Intl.NumberFormat(locale).formatToParts(1234567.89);
-  const group = parts.find((p) => p.type === 'group')?.value || ',';
-  const decimal = parts.find((p) => p.type === 'decimal')?.value || '.';
+  const group =
+    parts.find((part) => {
+      part.type === 'group';
+    })?.value || ',';
+  const decimal =
+    parts.find((part) => {
+      part.type === 'decimal';
+    })?.value || '.';
 
   let sanitized = input.trim().replace(/\s/g, '');
 
