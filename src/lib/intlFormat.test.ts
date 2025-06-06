@@ -9,8 +9,8 @@ import {
   dateTimeFormat,
   dayMonthFormat,
   monthYearFormat,
-  normalizeCurrencyString,
   numberFormat,
+  parseNumberFromCurrencyString,
   percentageFormat,
   validateAndFormatInvalidDate,
 } from './intlFormat';
@@ -120,28 +120,36 @@ describe('intlFormat', () => {
       });
     });
 
-    describe('normalizeCurrencyString', () => {
+    describe('parseNumberFromCurrencyString', () => {
       it('converts en-US style string to number', () => {
-        expect(normalizeCurrencyString('1,234.56')).toEqual(1234.56);
+        expect(parseNumberFromCurrencyString('1,234.56')).toEqual(1234.56);
+      });
+
+      it('converts en-US style string without decimals to number', () => {
+        expect(parseNumberFromCurrencyString('1,234')).toEqual(1234);
       });
 
       it('converts European-style string to number', () => {
-        expect(normalizeCurrencyString('1.234,56')).toEqual(1234.56);
+        expect(parseNumberFromCurrencyString('1.234,56', 'de-DE')).toEqual(
+          1234.56,
+        );
       });
 
       it('converts string with spaces and currency symbols', () => {
-        expect(normalizeCurrencyString(' €  1 234,56 ')).toEqual(1234.56);
+        expect(parseNumberFromCurrencyString('1 234,56 ', 'fr-FR')).toEqual(
+          1234.56,
+        );
       });
 
       it('returns null for null, undefined or string', () => {
-        expect(normalizeCurrencyString(null)).toBeNull();
-        expect(normalizeCurrencyString(undefined)).toBeNull();
-        expect(normalizeCurrencyString('')).toBeNull();
-        expect(normalizeCurrencyString('asdf')).toBeNull();
+        expect(parseNumberFromCurrencyString(null)).toBeNull();
+        expect(parseNumberFromCurrencyString(undefined)).toBeNull();
+        expect(parseNumberFromCurrencyString('')).toBeNull();
+        expect(parseNumberFromCurrencyString('asdf')).toBeNull();
       });
 
       it('handles decimal at the end', () => {
-        expect(normalizeCurrencyString('1234,')).toEqual(1234);
+        expect(parseNumberFromCurrencyString('1234,')).toEqual(1234);
       });
     });
 
