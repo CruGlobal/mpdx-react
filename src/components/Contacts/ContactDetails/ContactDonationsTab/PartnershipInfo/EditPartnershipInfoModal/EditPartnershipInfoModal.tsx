@@ -41,7 +41,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { amountFormat, normalizeCurrencyString } from 'src/lib/intlFormat';
+import {
+  amountFormat,
+  parseNumberFromCurrencyString,
+} from 'src/lib/intlFormat';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
@@ -149,7 +152,7 @@ export const EditPartnershipInfoModal: React.FC<
     const pledgeAmountNumber =
       attributes.pledgeAmount?.trim() === ''
         ? null
-        : normalizeCurrencyString(attributes.pledgeAmount);
+        : parseNumberFromCurrencyString(attributes.pledgeAmount, locale);
 
     await updateContactPartnership({
       variables: {
@@ -178,7 +181,10 @@ export const EditPartnershipInfoModal: React.FC<
     pledgeFrequency?: PledgeFrequencyEnum | null,
   ) => {
     setFieldValue('status', newStatus);
-    const normalizedPledgeAmount = normalizeCurrencyString(pledgeAmount);
+    const normalizedPledgeAmount = parseNumberFromCurrencyString(
+      pledgeAmount,
+      locale,
+    );
     if (
       (newStatus !== StatusEnum.PartnerFinancial &&
         oldStatus === StatusEnum.PartnerFinancial &&
@@ -431,13 +437,11 @@ export const EditPartnershipInfoModal: React.FC<
                       }}
                       onBlur={() => {
                         const normalizedPledgeAmount =
-                          normalizeCurrencyString(pledgeAmount);
-                        if (normalizedPledgeAmount) {
-                          setFieldValue(
-                            'pledgeAmount',
-                            amountFormat(normalizedPledgeAmount, locale),
-                          );
-                        }
+                          parseNumberFromCurrencyString(pledgeAmount, locale);
+                        setFieldValue(
+                          'pledgeAmount',
+                          amountFormat(normalizedPledgeAmount, locale),
+                        );
                       }}
                       inputProps={{ 'aria-label': t('Amount') }}
                       InputProps={{
