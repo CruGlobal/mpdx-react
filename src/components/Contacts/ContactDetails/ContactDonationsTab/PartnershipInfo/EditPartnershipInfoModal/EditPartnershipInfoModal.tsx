@@ -149,7 +149,7 @@ export const EditPartnershipInfoModal: React.FC<
     const pledgeAmountNumber =
       attributes.pledgeAmount?.trim() === ''
         ? null
-        : normalizeCurrencyString(attributes.pledgeAmount);
+        : normalizeCurrencyString(attributes.pledgeAmount, locale);
 
     await updateContactPartnership({
       variables: {
@@ -178,7 +178,10 @@ export const EditPartnershipInfoModal: React.FC<
     pledgeFrequency?: PledgeFrequencyEnum | null,
   ) => {
     setFieldValue('status', newStatus);
-    const normalizedPledgeAmount = normalizeCurrencyString(pledgeAmount);
+    const normalizedPledgeAmount = normalizeCurrencyString(
+      pledgeAmount,
+      locale,
+    );
     if (
       (newStatus !== StatusEnum.PartnerFinancial &&
         oldStatus === StatusEnum.PartnerFinancial &&
@@ -430,14 +433,14 @@ export const EditPartnershipInfoModal: React.FC<
                         setFieldValue('pledgeAmount', e.target.value);
                       }}
                       onBlur={() => {
-                        const normalizedPledgeAmount =
-                          normalizeCurrencyString(pledgeAmount);
-                        if (normalizedPledgeAmount) {
-                          setFieldValue(
-                            'pledgeAmount',
-                            amountFormat(normalizedPledgeAmount, locale),
-                          );
-                        }
+                        const normalizedPledgeAmount = normalizeCurrencyString(
+                          pledgeAmount,
+                          locale,
+                        );
+                        setFieldValue(
+                          'pledgeAmount',
+                          amountFormat(normalizedPledgeAmount, locale),
+                        );
                       }}
                       inputProps={{ 'aria-label': t('Amount') }}
                       InputProps={{
