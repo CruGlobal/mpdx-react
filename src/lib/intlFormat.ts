@@ -56,28 +56,30 @@ export const amountFormat = (
 
 export const normalizeCurrencyString = (
   input: string | null | undefined,
+  locale: string = 'en-US',
 ): number | null => {
   if (!input) {
     return null;
   }
 
-  const sanitized = input.trim().replace(/\s/g, '');
+  // Use Intl.NumberFormat to determine group and decimal separators for the locale
+  const parts = new Intl.NumberFormat(locale).formatToParts(1234567.89);
+  const group = parts.find((p) => p.type === 'group')?.value || ',';
+  const decimal = parts.find((p) => p.type === 'decimal')?.value || '.';
 
-  // If input contains both . and , assume the last one is the decimal
-  const lastDot = sanitized.lastIndexOf('.');
-  const lastComma = sanitized.lastIndexOf(',');
+  let sanitized = input.trim().replace(/\s/g, '');
 
-  let decimalSeparator = '.';
-  if (lastComma > lastDot) {
-    decimalSeparator = ',';
+  // Remove group separators
+  const groupRegex = new RegExp(`\\${group}`, 'g');
+  sanitized = sanitized.replace(groupRegex, '');
+
+  // Replace locale-specific decimal with `.`
+  if (decimal !== '.') {
+    const decimalRegex = new RegExp(`\\${decimal}`, 'g');
+    sanitized = sanitized.replace(decimalRegex, '.');
   }
 
-  // Remove all group separators (commas or dots not at the decimal place)
-  const cleaned = sanitized
-    .replace(new RegExp(`[^0-9${decimalSeparator}]`, 'g'), '')
-    .replace(decimalSeparator, '.');
-
-  const result = parseFloat(cleaned);
+  const result = parseFloat(sanitized);
   return isNaN(result) ? null : result;
 };
 

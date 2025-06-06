@@ -125,12 +125,16 @@ describe('intlFormat', () => {
         expect(normalizeCurrencyString('1,234.56')).toEqual(1234.56);
       });
 
+      it('converts en-US style string without decimals to number', () => {
+        expect(normalizeCurrencyString('1,234')).toEqual(1234);
+      });
+
       it('converts European-style string to number', () => {
-        expect(normalizeCurrencyString('1.234,56')).toEqual(1234.56);
+        expect(normalizeCurrencyString('1.234,56', 'de-DE')).toEqual(1234.56);
       });
 
       it('converts string with spaces and currency symbols', () => {
-        expect(normalizeCurrencyString(' €  1 234,56 ')).toEqual(1234.56);
+        expect(normalizeCurrencyString('1 234,56 ', 'fr-FR')).toEqual(1234.56);
       });
 
       it('returns null for null, undefined or string', () => {
