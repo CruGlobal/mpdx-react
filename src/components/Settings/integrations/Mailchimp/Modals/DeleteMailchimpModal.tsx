@@ -67,13 +67,13 @@ export const DeleteMailchimpAccountModal: React.FC<
   return (
     <Modal
       isOpen={true}
-      title={t('Confirm to Disconnect Mailchimp Account')}
+      title={t('Confirm to Disconnect MailChimp Account')}
       handleClose={handleClose}
       size={'sm'}
     >
       <DialogContent>
         <Typography>
-          {t(`Are you sure you wish to disconnect your Mailchimp account?`)}
+          {t(`Are you sure you wish to disconnect your MailChimp account?`)}
         </Typography>
       </DialogContent>
 
