@@ -343,7 +343,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Your contacts are now automatically syncing with MailChimp',
+            'Your contacts are now automatically syncing with MailChimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).toBeInTheDocument();
       });
@@ -365,7 +365,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Your contacts are now automatically syncing with MailChimp',
+            'Your contacts are now automatically syncing with MailChimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).toBeInTheDocument();
       });
@@ -408,7 +408,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'Your contacts are now automatically syncing with MailChimp',
+            'Your contacts are now automatically syncing with MailChimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).toBeInTheDocument();
       });
@@ -424,7 +424,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'Your contacts are now automatically syncing with MailChimp',
+            'Your contacts are now automatically syncing with MailChimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).not.toBeInTheDocument();
         expect(
