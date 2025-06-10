@@ -110,7 +110,7 @@ describe('Connect Services page', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Add or change the organizations that sync donation information with this MPDX account. Removing an organization will not remove past information, but will prevent future donations and contacts from syncing.',
+            'Add organizations that sync donation information with this MPDX account. That organization will have the ability to manage or delete your account. Removing an organization will not remove past information, but will prevent future donations and contacts from syncing.',
           ),
         ).toBeVisible();
       });
