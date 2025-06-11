@@ -337,7 +337,11 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
         !showSettings && (
           <Box>
             <Alert severity="success" style={{ marginBottom: '20px' }}>
-              {t('Your contacts are now automatically syncing with MailChimp')}
+              {t(
+                `Your contacts are now automatically syncing with MailChimp. Changes 
+                to MailChimp contacts and tags should only be done in {{appName}}.`,
+                { appName },
+              )}
             </Alert>
 
             <List
