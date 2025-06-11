@@ -23,6 +23,7 @@ import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
+import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import { numberFormat } from '../../../../lib/intlFormat';
 import AnimatedCard from '../../../AnimatedCard';
 import { useGetWeeklyActivityQuery } from './GetWeeklyActivity.generated';
@@ -30,6 +31,7 @@ import {
   DynamicWeeklyReportModal,
   preloadWeeklyReportModal,
 } from './WeeklyReportModal/DynamicWeeklyReportModal';
+import { useCurrentCoachingAnswerSetQuery } from './WeeklyReportModal/WeeklyReportModal.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   div: {
@@ -85,6 +87,7 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
+  const organizationId = useOrganizationId();
 
   const [interval, setInterval] = useState(
     Interval.fromDateTimes(
@@ -103,6 +106,17 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
       endOfWeek: interval.end.toISO(),
     },
   });
+
+  const { data: coachingAnswerSetData } = useCurrentCoachingAnswerSetQuery({
+    variables: {
+      accountListId,
+      organizationId: organizationId ?? '',
+    },
+    skip: !organizationId,
+  });
+
+  const questions =
+    coachingAnswerSetData?.currentCoachingAnswerSet.questions ?? [];
 
   const addWeek = (): void =>
     setInterval((interval) =>
@@ -252,7 +266,11 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
             </Table>
           </TableContainer>
         </CardContent>
-        <CardActions sx={{ justifyContent: 'space-between' }}>
+        <CardActions
+          sx={{
+            justifyContent: questions.length > 0 ? 'space-between' : 'flex-end',
+          }}
+        >
           <Button
             LinkComponent={NextLink}
             href={`/accountLists/${accountListId}/reports/coaching`}
@@ -261,14 +279,16 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           >
             {t('View Activity Detail')}
           </Button>
-          <Button
-            size="small"
-            color="primary"
-            onClick={onWeeklyReportOpen}
-            onMouseEnter={preloadWeeklyReportModal}
-          >
-            {t('Fill out weekly report')}
-          </Button>
+          {questions.length > 0 && (
+            <Button
+              size="small"
+              color="primary"
+              onClick={onWeeklyReportOpen}
+              onMouseEnter={preloadWeeklyReportModal}
+            >
+              {t('Fill out weekly report')}
+            </Button>
+          )}
           {openWeeklyReportModal && (
             <DynamicWeeklyReportModal
               accountListId={accountListId}
