@@ -36,29 +36,39 @@ export const useContactPanel = (): ContactPanel => {
   return context;
 };
 
-export const ContactPanelProvider: React.FC<{ children: ReactNode }> = ({
+export interface ContactPanelProviderProps {
+  /**
+   * The name of the query param that holds the contact id. It is `'contactId'` for most pages but
+   * is `appealId` on the appeal page.
+   **/
+  contactIdParam?: string;
+  children: ReactNode;
+}
+
+export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
+  contactIdParam = 'contactId',
   children,
 }) => {
   const { query, pathname, push } = useRouter();
 
   // Extract the initial contact id from the URL
   const [contactId, setContactId] = useState<string | undefined>(() =>
-    extractContactId(query),
+    extractContactId(query[contactIdParam]),
   );
   // Update the contact id when the URL changes
   useEffect(() => {
-    setContactId(extractContactId(query));
-  }, [query]);
+    setContactId(extractContactId(query[contactIdParam]));
+  }, [query, contactIdParam]);
 
   const updateContactAndUrl = useCallback(
     (contactId: string | undefined) => {
-      const newQuery = omit(query, 'contactId');
+      const newQuery = omit(query, contactIdParam);
       // The contact id is the last item in the contactId query param
-      newQuery.contactId = Array.isArray(query.contactId)
-        ? query.contactId.slice(0, -1)
+      newQuery[contactIdParam] = Array.isArray(query[contactIdParam])
+        ? query[contactIdParam].slice(0, -1)
         : [];
       if (typeof contactId === 'string') {
-        newQuery.contactId.push(contactId);
+        newQuery[contactIdParam].push(contactId);
       }
 
       push({ pathname, query: newQuery }, undefined, { shallow: true });
