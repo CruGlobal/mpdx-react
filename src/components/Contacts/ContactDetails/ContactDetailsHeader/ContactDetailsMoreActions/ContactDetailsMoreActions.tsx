@@ -17,20 +17,14 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
-  ContactsContext,
-  ContactsType,
-} from 'src/components/Contacts/ContactsContext/ContactsContext';
-import {
   DynamicCreateMultipleContacts,
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import {
-  AppealsContext,
-  AppealsType,
-} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import {
@@ -72,24 +66,16 @@ const MenuContainer = styled(Menu)(({ theme }) => ({
 interface ContactDetailsMoreActionsProps {
   contactId: string;
   status: StatusEnum;
-  onClose: () => void;
   contextType?: ContactContextTypesEnum;
 }
 
 export const ContactDetailsMoreActions: React.FC<
   ContactDetailsMoreActionsProps
-> = ({
-  contactId,
-  status,
-  onClose,
-  contextType = ContactContextTypesEnum.Contacts,
-}) => {
+> = ({ contactId, status }) => {
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { t } = useTranslation();
-  const { accountListId } =
-    contextType === ContactContextTypesEnum.Contacts
-      ? (React.useContext(ContactsContext) as ContactsType)
-      : (React.useContext(AppealsContext) as AppealsType);
+  const accountListId = useAccountListId();
+  const { closePanel: onClose } = useContactPanel();
 
   const {
     referralsModalOpen,
