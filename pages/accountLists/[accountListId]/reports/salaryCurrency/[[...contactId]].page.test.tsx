@@ -91,13 +91,20 @@ describe('salaryCurrency page', () => {
   });
 
   it('closes contact panel', async () => {
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <TestingComponent routerContactId={'contact-1'} />,
     );
 
-    userEvent.click(getByTestId('ContactDetailsHeaderClose'));
+    userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/salaryCurrency/',
+      expect.objectContaining({
+        query: {
+          accountListId: 'account-list-1',
+          contactId: [],
+        },
+      }),
+      undefined,
+      { shallow: true },
     );
   });
 });
