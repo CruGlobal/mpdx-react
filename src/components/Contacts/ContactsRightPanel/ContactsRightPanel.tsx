@@ -1,15 +1,11 @@
 import React from 'react';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactDetails } from '../ContactDetails/ContactDetails';
 
-interface Props {
-  contextType?: ContactContextTypesEnum;
-}
-export const ContactsRightPanel: React.FC<Props> = ({ contextType }) => {
+export const ContactsRightPanel: React.FC = () => {
   return (
     <ContactDetailProvider>
-      <ContactDetails contextType={contextType} />
+      <ContactDetails />
     </ContactDetailProvider>
   );
 };
