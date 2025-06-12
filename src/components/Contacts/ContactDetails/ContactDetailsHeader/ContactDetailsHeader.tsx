@@ -15,7 +15,6 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 import { EditIcon } from '../ContactDetailsTab/StyledComponents';
@@ -33,7 +32,6 @@ interface Props {
   contactId: string;
   setContactDetailsLoaded: (value: boolean) => void;
   contactDetailsLoaded: boolean;
-  contextType?: ContactContextTypesEnum;
 }
 
 const DuplicateAlert = styled(Alert)(({ theme }) => ({
@@ -84,7 +82,6 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   contactId,
   setContactDetailsLoaded,
   contactDetailsLoaded,
-  contextType,
 }: Props) => {
   const { pathname } = useRouter();
   const { data } = useGetContactDetailsHeaderQuery({
@@ -203,7 +200,6 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           <ContactDetailsMoreActions
             contactId={contactId}
             status={data?.contact.status ?? StatusEnum.Unresponsive}
-            contextType={contextType}
           />
           <IconButton onClick={onClose}>
             <CloseButtonIcon
