@@ -7,7 +7,6 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import theme from '../../../theme';
 import {
   ContactDetailContext,
@@ -31,10 +30,6 @@ import {
   preloadContactReferralTab,
 } from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
-
-interface ContactDetailsProps {
-  contextType?: ContactContextTypesEnum;
-}
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
@@ -86,9 +81,7 @@ export enum TabKey {
   Notes = 'Notes',
 }
 
-export const ContactDetails: React.FC<ContactDetailsProps> = ({
-  contextType = ContactContextTypesEnum.Contacts,
-}) => {
+export const ContactDetails: React.FC = () => {
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
   const accountListId = useAccountListId();
@@ -106,7 +99,6 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
           contactId={contactId}
           contactDetailsLoaded={contactDetailsLoaded}
           setContactDetailsLoaded={setContactDetailsLoaded}
-          contextType={contextType}
         />
       )}
       <TabContext value={selectedTabKey}>

@@ -26,7 +26,6 @@ import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -66,7 +65,6 @@ const MenuContainer = styled(Menu)(({ theme }) => ({
 interface ContactDetailsMoreActionsProps {
   contactId: string;
   status: StatusEnum;
-  contextType?: ContactContextTypesEnum;
 }
 
 export const ContactDetailsMoreActions: React.FC<
