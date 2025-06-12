@@ -10,7 +10,6 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import theme from '../../../../theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsTab } from './ContactDetailsTab';
@@ -96,14 +95,12 @@ const TestComponent: React.FC<TestComponentProps> = (props) => (
           <GqlMockedProvider<Mocks>
             mocks={(props.mocks ?? mocks) as ApolloErgonoMockMap}
           >
-            <ContactsWrapper>
-              <ContactDetailProvider>
-                <ContactDetailsTab
-                  accountListId={accountListId}
-                  contactId={contactId}
-                />
-              </ContactDetailProvider>
-            </ContactsWrapper>
+            <ContactDetailProvider>
+              <ContactDetailsTab
+                accountListId={accountListId}
+                contactId={contactId}
+              />
+            </ContactDetailProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </LocalizationProvider>

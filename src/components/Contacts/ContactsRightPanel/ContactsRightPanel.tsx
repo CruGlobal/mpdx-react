@@ -4,16 +4,12 @@ import { ContactDetailProvider } from '../ContactDetails/ContactDetailContext';
 import { ContactDetails } from '../ContactDetails/ContactDetails';
 
 interface Props {
-  onClose: () => void;
   contextType?: ContactContextTypesEnum;
 }
-export const ContactsRightPanel: React.FC<Props> = ({
-  onClose,
-  contextType,
-}) => {
+export const ContactsRightPanel: React.FC<Props> = ({ contextType }) => {
   return (
     <ContactDetailProvider>
-      <ContactDetails onClose={onClose} contextType={contextType} />
+      <ContactDetails contextType={contextType} />
     </ContactDetailProvider>
   );
 };

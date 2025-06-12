@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';
@@ -68,17 +68,16 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }}
             onCall={mutationSpy}
           >
-            <ContactsWrapper>
+            <ContactPanelProvider>
               <ContactDetailProvider>
                 <ContactDetailsHeader
                   accountListId={accountListId}
                   contactId={contactId}
-                  onClose={() => {}}
                   setContactDetailsLoaded={() => {}}
                   contactDetailsLoaded={false}
                 />
               </ContactDetailProvider>
-            </ContactsWrapper>
+            </ContactPanelProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>
