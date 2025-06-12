@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -13,11 +13,6 @@ import { TasksQuery } from './Tasks.generated';
 import Tasks from './[[...contactId]].page';
 
 const accountListId = 'account-list-1';
-
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
 
 const task = {
   id: '1',
@@ -51,29 +46,48 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const MocksProviders = (props: { children: JSX.Element }) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <GqlMockedProvider<{ Tasks: TasksQuery }>
-        mocks={{
-          Tasks: {
-            tasks: {
-              nodes: [task],
-              pageInfo: { hasNextPage: false },
-              totalCount: 20,
+interface MocksProvidersProps {
+  routerContactId?: string;
+  children: ReactNode;
+}
+
+const MocksProviders: React.FC<MocksProvidersProps> = ({
+  routerContactId,
+  children,
+}) => {
+  const router = {
+    pathname: '/accountLists/[accountListId]/tasks/[[...contactId]]',
+    query: {
+      accountListId,
+      contactId: routerContactId ? [routerContactId] : undefined,
+    },
+    isReady: true,
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <GqlMockedProvider<{ Tasks: TasksQuery }>
+          mocks={{
+            Tasks: {
+              tasks: {
+                nodes: [task],
+                pageInfo: { hasNextPage: false },
+                totalCount: 20,
+              },
             },
-          },
-        }}
-      >
-        <VirtuosoMockContext.Provider
-          value={{ viewportHeight: 1000, itemHeight: 100 }}
+          }}
         >
-          {props.children}
-        </VirtuosoMockContext.Provider>
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
+            {children}
+          </VirtuosoMockContext.Provider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
 
 describe('tasks page', () => {
   it('should render list of tasks', async () => {
@@ -87,15 +101,16 @@ describe('tasks page', () => {
   });
 
   it('should render contact detail panel', async () => {
-    const { findAllByRole, getByText } = render(
-      <MocksProviders>
+    const { findByRole, findAllByRole } = render(
+      <MocksProviders routerContactId="2">
         <Tasks />
       </MocksProviders>,
     );
-    await waitFor(() => expect(getByText('Test Subject')).toBeInTheDocument());
-    const row = getByText('Test Person');
 
-    userEvent.click(row);
+    expect(await findByRole('link', { name: 'Test Person' })).toHaveAttribute(
+      'href',
+      `/accountLists/account-list-1/tasks/2`,
+    );
 
     const detailsTabList = (await findAllByRole('tablist'))[0];
 
@@ -127,16 +142,6 @@ describe('tasks page', () => {
     userEvent.click(getByText('Completed'));
     userEvent.click(getByText('Overdue'));
     userEvent.click(getByText('Today'));
-    await waitFor(() =>
-      expect(router).toMatchInlineSnapshot(`
-      Object {
-        "isReady": true,
-        "query": Object {
-          "accountListId": "account-list-1",
-        },
-      }
-    `),
-    );
   });
 
   it('should dispatch one analytics event per task', async () => {
