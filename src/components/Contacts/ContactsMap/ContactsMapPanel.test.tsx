@@ -4,7 +4,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import { ContactsMapPanel } from './ContactsMapPanel';
@@ -50,15 +49,13 @@ describe('ContactsMapPanel', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <ContactsWrapper>
-              <ContactsMapPanel
-                data={data}
-                selected={selected}
-                setSelected={setSelected}
-                panTo={panTo}
-                onClose={onClose}
-              />
-            </ContactsWrapper>
+            <ContactsMapPanel
+              data={data}
+              selected={selected}
+              setSelected={setSelected}
+              panTo={panTo}
+              onClose={onClose}
+            />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -77,15 +74,13 @@ describe('ContactsMapPanel', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <ContactsWrapper>
-              <ContactsMapPanel
-                data={data}
-                selected={selected}
-                setSelected={setSelected}
-                panTo={panTo}
-                onClose={onClose}
-              />
-            </ContactsWrapper>
+            <ContactsMapPanel
+              data={data}
+              selected={selected}
+              setSelected={setSelected}
+              panTo={panTo}
+              onClose={onClose}
+            />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
