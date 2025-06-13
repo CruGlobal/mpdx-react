@@ -8,6 +8,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
@@ -89,14 +90,16 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                   } as unknown as ContactsType
                 }
               >
-                <ContactFlowColumn
-                  accountListId={accountListId}
-                  selectedFilters={{}}
-                  color={theme.palette.mpdxBlue.main}
-                  title={title}
-                  changeContactStatus={changeContactStatus}
-                  statuses={[StatusEnum.PartnerFinancial]}
-                />
+                <ContactPanelProvider>
+                  <ContactFlowColumn
+                    accountListId={accountListId}
+                    selectedFilters={{}}
+                    color={theme.palette.mpdxBlue.main}
+                    title={title}
+                    changeContactStatus={changeContactStatus}
+                    statuses={[StatusEnum.PartnerFinancial]}
+                  />
+                </ContactPanelProvider>
               </ContactsContext.Provider>
             </VirtuosoMockContext.Provider>
           </GqlMockedProvider>

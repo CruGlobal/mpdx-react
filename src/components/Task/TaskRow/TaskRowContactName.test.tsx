@@ -15,8 +15,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <TestRouter
     router={{
-      pathname: '/tasks',
-      query: { contactId: 'contact-0', key: 'value' },
+      pathname: '/accountLists/[accountListId]/tasks/[[...contactId]]',
+      query: {
+        accountListId: 'account-list-1',
+        contactId: ['00000000-0000-0000-0000-000000000000'],
+        key: 'value',
+      },
     }}
   >
     <ThemeProvider theme={theme}>
@@ -37,7 +41,7 @@ describe('TaskRowContactName', () => {
 
     expect(getByRole('link', { name: 'John Doe,' })).toHaveAttribute(
       'href',
-      '/tasks?contactId=contact-1&key=value',
+      '/accountLists/account-list-1/tasks/contact-1?key=value',
     );
   });
 
