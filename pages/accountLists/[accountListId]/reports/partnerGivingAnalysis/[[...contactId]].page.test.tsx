@@ -18,16 +18,18 @@ interface Mocks {
 }
 
 interface TestingComponentProps {
-  routerContactId?: string;
+  routerHasContactId?: boolean;
 }
 
 const TestingComponent: React.FC<TestingComponentProps> = ({
-  routerContactId,
+  routerHasContactId = false,
 }) => {
   const router = {
     query: {
       accountListId: 'account-list-1',
-      contactId: routerContactId ? [routerContactId] : undefined,
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
     },
     isReady: true,
     push,
@@ -97,9 +99,7 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('renders contact panel', async () => {
-    const { findByRole } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByRole } = render(<TestingComponent routerHasContactId />);
 
     expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
@@ -144,9 +144,7 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('closes contact panel', async () => {
-    const { findByTestId } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByTestId } = render(<TestingComponent routerHasContactId />);
 
     userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(
@@ -163,7 +161,7 @@ describe('partnerGivingAnalysis page', () => {
 
   it('calls clearSearchInput', async () => {
     const { findByRole, getByRole, getByPlaceholderText } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
+      <TestingComponent routerHasContactId />,
     );
     const searchBar = getByPlaceholderText('Search Contacts');
     userEvent.type(searchBar, 'John');

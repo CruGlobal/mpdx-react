@@ -47,19 +47,21 @@ jest.mock('notistack', () => ({
 }));
 
 interface MocksProvidersProps {
-  routerContactId?: string;
+  routerHasContactId?: boolean;
   children: ReactNode;
 }
 
 const MocksProviders: React.FC<MocksProvidersProps> = ({
-  routerContactId,
+  routerHasContactId = false,
   children,
 }) => {
   const router = {
     pathname: '/accountLists/[accountListId]/tasks/[[...contactId]]',
     query: {
       accountListId,
-      contactId: routerContactId ? [routerContactId] : undefined,
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
     },
     isReady: true,
   };
@@ -102,7 +104,7 @@ describe('tasks page', () => {
 
   it('should render contact detail panel', async () => {
     const { findByRole, findAllByRole } = render(
-      <MocksProviders routerContactId="2">
+      <MocksProviders routerHasContactId>
         <Tasks />
       </MocksProviders>,
     );
