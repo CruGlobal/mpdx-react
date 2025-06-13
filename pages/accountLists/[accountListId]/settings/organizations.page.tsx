@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
-import { Autocomplete, Box, Skeleton, TextField } from '@mui/material';
+import { Box, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
@@ -8,6 +8,7 @@ import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/I
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
+import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { SettingsWrapper } from './Wrapper';
 import {
   SettingsOrganizationFragment,
@@ -87,34 +88,17 @@ const Organizations = (): ReactElement => {
               </h2>
             </Box>
             <Box>
-              <Autocomplete
+              <OrganizationAutocomplete
                 style={{
                   width: '250px',
                 }}
                 autoSelect
                 autoHighlight
                 disableClearable
-                options={organizations?.map((org) => org?.id) || []}
-                getOptionLabel={(orgId) =>
-                  organizations.find((org) => org?.id === orgId)?.name ?? ''
-                }
-                renderInput={(params): ReactElement => (
-                  <TextField
-                    {...params}
-                    label={t('Organization')}
-                    InputProps={{
-                      ...params.InputProps,
-                    }}
-                  />
-                )}
-                value={selectedOrganization?.id}
-                onChange={(_, organization): void => {
-                  const org = organizations?.find(
-                    (org) => org?.id === organization,
-                  );
-                  if (org) {
-                    setSelectedOrganization(org);
-                  }
+                organizations={organizations}
+                value={selectedOrganization ?? undefined}
+                onChange={(_, organization) => {
+                  setSelectedOrganization(organization);
                 }}
               />
             </Box>
