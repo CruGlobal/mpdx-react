@@ -4,7 +4,6 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -74,21 +73,19 @@ const Components = () => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
-        <ContactsWrapper>
-          <ContactsContext.Provider
-            value={
-              {
-                accountListId,
-                getContactHrefObject,
-                contactDetailsOpen,
-                toggleSelectionById,
-                isRowChecked,
-              } as unknown as ContactsType
-            }
-          >
-            <ContactRow contact={contact} />
-          </ContactsContext.Provider>
-        </ContactsWrapper>
+        <ContactsContext.Provider
+          value={
+            {
+              accountListId,
+              getContactHrefObject,
+              contactDetailsOpen,
+              toggleSelectionById,
+              isRowChecked,
+            } as unknown as ContactsType
+          }
+        >
+          <ContactRow contact={contact} />
+        </ContactsContext.Provider>
       </ThemeProvider>
     </GqlMockedProvider>
   </TestRouter>
