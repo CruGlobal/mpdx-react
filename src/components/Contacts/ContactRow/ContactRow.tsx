@@ -17,6 +17,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
@@ -60,9 +61,9 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     accountListId,
     isRowChecked: isChecked,
     contactDetailsOpen,
-    getContactHrefObject,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
+  const { buildContactUrl } = useContactPanel();
 
   const {
     id: contactId,
@@ -78,12 +79,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     uncompletedTasksCount,
   } = contact;
 
-  const contactHrefObject = getContactHrefObject(contactId);
-
   return (
     <ListItemButton
       component={NextLink}
-      href={contactHrefObject}
+      href={buildContactUrl(contactId)}
       scroll={false}
       prefetch={false}
       shallow
