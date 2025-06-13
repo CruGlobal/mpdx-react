@@ -2,15 +2,17 @@ import React, { useContext } from 'react';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
+import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 import { AppealsLeftPanel } from './AppealLeftPanel/AppealsLeftPanel';
 import { AppealsMainPanel } from './AppealsMainPanel/AppealsMainPanel';
 
-const AppealsDetailsPage: React.FC = () => {
-  const { filterPanelOpen, setContactFocus, contactDetailsOpen } = useContext(
-    AppealsContext,
-  ) as AppealsType;
+const PageContent: React.FC = () => {
+  const { isOpen } = useContactPanel();
+  const { filterPanelOpen } = useContext(AppealsContext) as AppealsType;
 
   return (
     <SidePanelsLayout
@@ -18,17 +20,18 @@ const AppealsDetailsPage: React.FC = () => {
       leftOpen={filterPanelOpen}
       leftWidth="290px"
       mainContent={<AppealsMainPanel />}
-      rightPanel={
-        <DynamicContactsRightPanel
-          onClose={() => setContactFocus(undefined)}
-          contextType={ContactContextTypesEnum.Appeals}
-        />
-      }
-      rightOpen={contactDetailsOpen}
+      rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
+      rightOpen={isOpen}
       rightWidth="60%"
       headerHeight={headerHeight}
     />
   );
 };
+
+const AppealsDetailsPage: React.FC = () => (
+  <ContactPanelProvider contactIdParam="appealId">
+    <PageContent />
+  </ContactPanelProvider>
+);
 
 export default AppealsDetailsPage;

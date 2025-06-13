@@ -97,7 +97,14 @@ describe('Expected Monthly Total Report page', () => {
 
     userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/expectedMonthlyTotal/',
+      expect.objectContaining({
+        query: {
+          accountListId: 'account-list-1',
+          contactId: [],
+        },
+      }),
+      undefined,
+      { shallow: true },
     );
   });
 });

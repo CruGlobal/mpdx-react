@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
 import {
   ContactDetailContext,
@@ -40,11 +40,11 @@ const renderWithProviders = (
       <TestRouter router={router}>
         <GqlMockedProvider>
           <ThemeProvider theme={theme}>
-            <ContactsWrapper>
+            <ContactPanelProvider>
               <ContactDetailProvider>
                 <Component />
               </ContactDetailProvider>
-            </ContactsWrapper>
+            </ContactPanelProvider>
           </ThemeProvider>
         </GqlMockedProvider>
       </TestRouter>
@@ -56,7 +56,7 @@ describe('ContactDetails', () => {
     const router = createRouter();
 
     const { getAllByRole } = renderWithProviders(router, () => (
-      <ContactDetails onClose={() => {}} />
+      <ContactDetails />
     ));
 
     const tasksPanel = getAllByRole('tabpanel')[0];
@@ -110,11 +110,9 @@ describe('ContactDetails', () => {
         <TestRouter router={updatedRouter}>
           <GqlMockedProvider>
             <ThemeProvider theme={theme}>
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <TestComponent />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <TestComponent />
+              </ContactDetailProvider>
             </ThemeProvider>
           </GqlMockedProvider>
         </TestRouter>

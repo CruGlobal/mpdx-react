@@ -24,11 +24,12 @@ interface Props {
 }
 
 /*
- * Extract the contact id from the contactId query param, which is an array that may also contain
- * the view mode.
+ * Extract the contact id from a query param, which is an array that may also contain the view mode.
  */
-export const extractContactId = (query: ParsedUrlQuery): string | undefined => {
-  const contactId = query.contactId?.at(-1);
+export const extractContactId = (
+  queryParam: string | string[] | undefined,
+): string | undefined => {
+  const contactId = queryParam?.at(-1);
   if (
     !contactId ||
     (Object.values(TableViewModeEnum) as string[]).includes(contactId)
@@ -49,11 +50,11 @@ export const ContactsWrapper: React.FC<Props> = ({
 
   // Extract the initial contact id from the URL
   const [contactId, setContactId] = useState<string | undefined>(() =>
-    extractContactId(query),
+    extractContactId(query.contactId),
   );
   // Update the contact id when the URL changes
   useEffect(() => {
-    setContactId(extractContactId(query));
+    setContactId(extractContactId(query.contactId));
   }, [query]);
 
   // Extract the initial view mode from the URL
@@ -112,7 +113,7 @@ export const ContactsWrapper: React.FC<Props> = ({
       // if they are empty and Next.js will still add them to the URL query even if they are undefined.
       // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm
 
-      const currentContactId = extractContactId(query);
+      const currentContactId = extractContactId(query.contactId);
 
       const keysToOmit = ['filters', 'searchTerm'];
 

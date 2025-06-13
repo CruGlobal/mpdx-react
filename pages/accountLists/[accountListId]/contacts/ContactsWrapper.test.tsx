@@ -294,26 +294,14 @@ it('updates personId in URL when a different person is selected', async () => {
 
 describe('extractContactId', () => {
   it('returns the last item in the contactId query param', () => {
-    expect(
-      extractContactId({
-        contactId: ['flows', 'contact-1'],
-      }),
-    ).toBe('contact-1');
+    expect(extractContactId(['flows', 'contact-1'])).toBe('contact-1');
   });
 
   it('returns undefined when the last item in the contactId query param is the view mode', () => {
-    expect(
-      extractContactId({
-        contactId: ['flows'],
-      }),
-    ).toBeUndefined();
+    expect(extractContactId(['flows'])).toBeUndefined();
   });
 
   it('returns undefined when the last item in the contactId query param is empty', () => {
-    expect(
-      extractContactId({
-        contactId: [],
-      }),
-    ).toBeUndefined();
+    expect(extractContactId([])).toBeUndefined();
   });
 });
