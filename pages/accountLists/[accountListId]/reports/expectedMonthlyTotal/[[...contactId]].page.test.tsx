@@ -11,14 +11,18 @@ import ExpectedMonthlyTotalReportPage from './[[...contactId]].page';
 const push = jest.fn();
 
 interface TestComponentProps {
-  routerContactId?: string;
+  routerHasContactId?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ routerContactId }) => {
+const TestComponent: React.FC<TestComponentProps> = ({
+  routerHasContactId = false,
+}) => {
   const router = {
     query: {
       accountListId: 'account-list-1',
-      contactId: routerContactId ? [routerContactId] : undefined,
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
     },
     isReady: true,
     push,
@@ -61,9 +65,7 @@ describe('Expected Monthly Total Report page', () => {
   });
 
   it('renders contact panel', async () => {
-    const { findByRole } = render(
-      <TestComponent routerContactId={'contact-1'} />,
-    );
+    const { findByRole } = render(<TestComponent routerHasContactId />);
 
     expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
@@ -91,9 +93,7 @@ describe('Expected Monthly Total Report page', () => {
   });
 
   it('closes contact panel', async () => {
-    const { findByTestId } = render(
-      <TestComponent routerContactId={'contact-1'} />,
-    );
+    const { findByTestId } = render(<TestComponent routerHasContactId />);
 
     userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(

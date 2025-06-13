@@ -1,3 +1,5 @@
+import { ParsedUrlQuery } from 'node:querystring';
+import { UrlObject } from 'node:url';
 import { useRouter } from 'next/router';
 import {
   ReactNode,
@@ -7,8 +9,54 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { omit } from 'lodash';
 import { extractContactId } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Given a set of router query params, return new query params with the contact modified or removed.
+ *
+ * @param query The query params from the router
+ * @param contactIdParam The name of the query param that holds the contact id (usually `'contactId'`)
+ * @param contactId The new contact id (`undefined` closes the panel)
+ * @returns The updated query params
+ */
+export const setQueryContactId = (
+  query: ParsedUrlQuery,
+  contactIdParam: string,
+  contactId: string | undefined,
+): ParsedUrlQuery => {
+  // The contact id param is always an array because it corresponds to a router segment like
+  // `[[...contactId]]`. The array can contain multiple elements, for example, on the contacts page
+  // for routes like ".../contacts/map/:contactId". Regardless of the number of elements in the
+  // array, if the contact id is present it is always the last element in the array. Note that the
+  // last element may not be the contact id if the contact id is not present: (e.g. ["map"] on the
+  // contact map page). See the test cases for more examples.
+
+  // Clone the existing contact id array and remove the existing contact id if it is present
+  const contactIdValue = Array.isArray(query[contactIdParam])
+    ? [...query[contactIdParam]]
+    : [];
+  // The last element is probably the existing current contact id, but it could also be part of the
+  // route (e.g. `'flows'`)
+  const lastElement = contactIdValue.pop();
+  if (typeof lastElement === 'string' && !uuidRegex.test(lastElement)) {
+    // The last element is part of the route, not a contact id, so put it back
+    contactIdValue.push(lastElement);
+  }
+
+  // Now, add the new contact id
+  if (typeof contactId === 'string') {
+    contactIdValue.push(contactId);
+  }
+
+  // Leave all other query params unmodified
+  return {
+    ...query,
+    [contactIdParam]: contactIdValue,
+  };
+};
 
 export interface ContactPanel {
   /** The id of the contact currently open in the panel, or `undefined` if the panel is closed */
@@ -22,6 +70,12 @@ export interface ContactPanel {
 
   /** Clear the contact id and close the panel */
   closePanel: () => void;
+
+  /**
+   * Generate a url object that can be passed to `router.push` or `next/link`'s `href` prop as a
+   * to link the specified contact. It will preserve the `pathname` and all other query params.
+   */
+  buildContactUrl: (contactId: string) => UrlObject;
 }
 
 const ContactPanelContext = createContext<ContactPanel | null>(null);
@@ -62,21 +116,21 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
 
   const updateContactAndUrl = useCallback(
     (contactId: string | undefined) => {
-      const newQuery = omit(query, contactIdParam);
-      // The contact id is the last item in the contactId query param
-      newQuery[contactIdParam] = Array.isArray(query[contactIdParam])
-        ? query[contactIdParam].slice(0, -1)
-        : [];
-      if (typeof contactId === 'string') {
-        newQuery[contactIdParam].push(contactId);
-      }
-
+      const newQuery = setQueryContactId(query, contactIdParam, contactId);
       push({ pathname, query: newQuery }, undefined, { shallow: true });
 
       // Optimistically set the contact id
       setContactId(contactId);
     },
-    [query, pathname, push],
+    [query, pathname, contactIdParam, push],
+  );
+
+  const buildContactUrl = useCallback(
+    (contactId: string): UrlObject => ({
+      pathname,
+      query: setQueryContactId(query, contactIdParam, contactId),
+    }),
+    [query, pathname, contactIdParam],
   );
 
   const closePanel = useCallback(() => {
@@ -90,6 +144,7 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
         isOpen: typeof contactId === 'string',
         openContact: updateContactAndUrl,
         closePanel,
+        buildContactUrl,
       }}
     >
       {children}
