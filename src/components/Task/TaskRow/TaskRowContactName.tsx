@@ -1,8 +1,8 @@
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { Link, Theme, Typography, TypographyProps } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { TaskRowFragment } from './TaskRow.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -34,25 +34,16 @@ export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
   ...props
 }) => {
   const { classes } = useStyles();
-  const router = useRouter();
+  const { buildContactUrl } = useContactPanel();
 
   const { name } = contact;
   const contactName = itemIndex !== contactsLength - 1 ? `${name},` : name;
-
-  // TODO: Refactor to pull this from context
-  const contactHrefObject = {
-    pathname: router.pathname,
-    query: {
-      accountListId: router.query.accountListId,
-      contactId: [contact.id],
-    },
-  };
 
   return (
     <Link
       key={contact.id}
       component={NextLink}
-      href={contactHrefObject}
+      href={buildContactUrl(contact.id)}
       onClick={(event) => event.stopPropagation()}
       shallow
     >

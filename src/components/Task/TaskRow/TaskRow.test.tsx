@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { ActivityTypeEnum, ResultEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../hooks/useTaskModal';
 import theme from '../../../theme';
@@ -49,14 +50,16 @@ const TestComponent: React.FC<TestComponentProps> = ({ task }) => (
   <TestRouter>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
-        <TaskRow
-          accountListId={accountListId}
-          task={task}
-          onTaskCheckToggle={onTaskCheckSelected}
-          onContactSelected={onContactSelected}
-          isChecked={false}
-          filterPanelOpen={false}
-        />
+        <ContactPanelProvider>
+          <TaskRow
+            accountListId={accountListId}
+            task={task}
+            onTaskCheckToggle={onTaskCheckSelected}
+            onContactSelected={onContactSelected}
+            isChecked={false}
+            filterPanelOpen={false}
+          />
+        </ContactPanelProvider>
       </ThemeProvider>
     </GqlMockedProvider>
   </TestRouter>
