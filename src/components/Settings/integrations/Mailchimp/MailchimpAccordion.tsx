@@ -120,7 +120,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
       onCompleted: () => {
         enqueueSnackbar(
           t(
-            'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',
+            'Your Mailchimp sync has been started. This process may take up to 4 hours to complete.',
           ),
           {
             variant: 'success',
@@ -141,7 +141,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
     });
     enqueueSnackbar(
       t(
-        'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',
+        'Your Mailchimp sync has been started. This process may take up to 4 hours to complete.',
       ),
       {
         variant: 'success',
@@ -169,28 +169,28 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
       accordion={IntegrationAccordion.Mailchimp}
       onAccordionChange={handleAccordionChange}
       expandedAccordion={expandedAccordion}
-      label={t('MailChimp')}
+      label={t('Mailchimp')}
       value={''}
       disabled={disabled}
       image={
         <img
           src="/images/settings-preferences-integrations-mailchimp.svg"
-          alt="MailChimp"
+          alt="Mailchimp"
         />
       }
     >
       {loading && <Skeleton height="90px" />}
       {!loading && !mailchimpAccount && (
         <>
-          <StyledFormLabel>{t('MailChimp Overview')}</StyledFormLabel>
+          <StyledFormLabel>{t('Mailchimp Overview')}</StyledFormLabel>
           <Typography>
-            {t(`MailChimp makes keeping in touch with your ministry partners easy
+            {t(`Mailchimp makes keeping in touch with your ministry partners easy
             and streamlined. Here's how it works:`)}
           </Typography>
           <StyledList sx={{ listStyleType: 'number' }}>
             <StyledListItem>
               {t(
-                `If you have an existing MailChimp list you'd like to use, Great!
+                `If you have an existing Mailchimp list you'd like to use, Great!
               Or, create a new one for your {{appName}} connection.`,
                 {
                   appName,
@@ -199,7 +199,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
             </StyledListItem>
             <StyledListItem>
               {t(
-                'Select your {{appName}} MailChimp list to stream your {{appName}} contacts into.',
+                'Select your {{appName}} Mailchimp list to stream your {{appName}} contacts into.',
                 {
                   appName,
                 },
@@ -208,7 +208,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
           </StyledList>
           <Typography>
             {t(
-              `That's it! Set it and leave it! Now your MailChimp list is
+              `That's it! Set it and leave it! Now your Mailchimp list is
             continuously up to date with your {{appName}} Contacts. That's just
             the surface. Click over to the {{appName}} Help site for more in-depth
             details.`,
@@ -218,7 +218,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
             )}
           </Typography>
           <StyledServicesButton variant="contained" href={getOauthUrl()}>
-            {t('Connect MailChimp')}
+            {t('Connect Mailchimp')}
           </StyledServicesButton>
         </>
       )}
@@ -227,7 +227,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
           showSettings) && (
           <Box>
             <Alert severity="warning" style={{ marginBottom: '20px' }}>
-              {t('Please choose a list to sync with MailChimp.')}
+              {t('Please choose a list to sync with Mailchimp.')}
             </Alert>
 
             {mailchimpAccount?.listsPresent && (
@@ -284,7 +284,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
                           />
                         }
                         label={t(
-                          'Automatically log sent MailChimp campaigns in contact task history',
+                          'Automatically log sent Mailchimp campaigns in contact task history',
                         )}
                       />
 
@@ -315,7 +315,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
               <Box>
                 <Typography>
                   {t(
-                    'You need to create a list on MailChimp that {{appName}} can use for your newsletter.',
+                    'You need to create a list on Mailchimp that {{appName}} can use for your newsletter.',
                     {
                       appName,
                     },
@@ -323,7 +323,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
                 </Typography>
                 {mailchimpAccount?.listsLink && (
                   <Button href={mailchimpAccount.listsLink} target="_blank">
-                    {t('Go to MailChimp to create a list.')}
+                    {t('Go to Mailchimp to create a list.')}
                   </Button>
                 )}
               </Box>
@@ -338,8 +338,8 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
           <Box>
             <Alert severity="success" style={{ marginBottom: '20px' }}>
               {t(
-                `Your contacts are now automatically syncing with MailChimp. Changes 
-                to MailChimp contacts and tags should only be done in {{appName}}.`,
+                `Your contacts are now automatically syncing with Mailchimp. Changes
+                to Mailchimp contacts and tags should only be done in {{appName}}.`,
                 { appName },
               )}
             </Alert>
@@ -353,7 +353,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
             >
               <ListItem>
                 <ListItemText
-                  primary={t('MailChimp list to use for your newsletter:')}
+                  primary={t('Mailchimp list to use for your newsletter:')}
                   secondary={mailchimpAccount?.primaryListName}
                 />
               </ListItem>
@@ -386,7 +386,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
         <Box>
           <Alert severity="error">
             {t(
-              'There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.',
+              'There is an error with your Mailchimp connection. Please disconnect and reconnect to Mailchimp.',
             )}
           </Alert>
           <StyledServicesButton

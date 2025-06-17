@@ -103,7 +103,7 @@ describe('MailchimpAccount', () => {
         mailchimpAccount={standardMailchimpAccount}
       />,
     );
-    expect(getByText('MailChimp')).toBeInTheDocument();
+    expect(getByText('Mailchimp')).toBeInTheDocument();
     const mailchimpImage = queryByRole('img', {
       name: /mailchimp/i,
     });
@@ -123,7 +123,7 @@ describe('MailchimpAccount', () => {
   });
 
   describe('Not Connected', () => {
-    it('should render MailChimp Overview', async () => {
+    it('should render Mailchimp Overview', async () => {
       const { getByText } = render(
         <Components
           expandedAccordion={IntegrationAccordion.Mailchimp}
@@ -132,11 +132,11 @@ describe('MailchimpAccount', () => {
       );
 
       await waitFor(() => {
-        expect(getByText('MailChimp Overview')).toBeInTheDocument();
+        expect(getByText('Mailchimp Overview')).toBeInTheDocument();
       });
-      userEvent.click(getByText('Connect MailChimp'));
+      userEvent.click(getByText('Connect Mailchimp'));
 
-      expect(getByText('Connect MailChimp')).toHaveAttribute(
+      expect(getByText('Connect Mailchimp')).toHaveAttribute(
         'href',
         `https://auth.mpdx.org/auth/user/mailchimp?account_list_id=account-list-1&redirect_to=https%3A%2F%2Fmpdx.org%2FaccountLists%2Faccount-list-1%2Fsettings%2Fintegrations%3FselectedTab%3Dmailchimp&access_token=apiToken`,
       );
@@ -160,7 +160,7 @@ describe('MailchimpAccount', () => {
 
       expect(
         await findByText(
-          'There is an error with your MailChimp connection. Please disconnect and reconnect to MailChimp.',
+          'There is an error with your Mailchimp connection. Please disconnect and reconnect to Mailchimp.',
         ),
       ).toBeInTheDocument();
 
@@ -186,15 +186,15 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(
-          queryByText('Please choose a list to sync with MailChimp.'),
+          queryByText('Please choose a list to sync with Mailchimp.'),
         ).toBeInTheDocument();
         expect(
           queryByText(
-            'You need to create a list on MailChimp that {{appName}} can use for your newsletter.',
+            'You need to create a list on Mailchimp that {{appName}} can use for your newsletter.',
           ),
         ).toBeInTheDocument();
         expect(
-          queryByText('Go to MailChimp to create a list.'),
+          queryByText('Go to Mailchimp to create a list.'),
         ).toBeInTheDocument();
       });
 
@@ -216,13 +216,13 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'You need to create a list on MailChimp that {{appName}} can use for your newsletter.',
+            'You need to create a list on Mailchimp that {{appName}} can use for your newsletter.',
           ),
         ).toBeInTheDocument();
       });
 
       expect(
-        queryByText('Go to MailChimp to create a list.'),
+        queryByText('Go to Mailchimp to create a list.'),
       ).not.toBeInTheDocument();
     });
 
@@ -262,7 +262,7 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',
+          'Your Mailchimp sync has been started. This process may take up to 4 hours to complete.',
           {
             variant: 'success',
           },
@@ -301,7 +301,7 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(
-          getByText('Confirm to Disconnect MailChimp Account'),
+          getByText('Confirm to Disconnect Mailchimp Account'),
         ).toBeInTheDocument();
       });
 
@@ -313,7 +313,7 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          '{{appName}} removed your integration with MailChimp',
+          '{{appName}} removed your integration with Mailchimp',
           {
             variant: 'success',
           },
@@ -343,7 +343,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Your contacts are now automatically syncing with MailChimp. Changes to MailChimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).toBeInTheDocument();
       });
@@ -365,7 +365,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Your contacts are now automatically syncing with MailChimp. Changes to MailChimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).toBeInTheDocument();
       });
@@ -381,7 +381,7 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          'Your MailChimp sync has been started. This process may take up to 4 hours to complete.',
+          'Your Mailchimp sync has been started. This process may take up to 4 hours to complete.',
           {
             variant: 'success',
           },
@@ -408,7 +408,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'Your contacts are now automatically syncing with MailChimp. Changes to MailChimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).toBeInTheDocument();
       });
@@ -424,7 +424,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'Your contacts are now automatically syncing with MailChimp. Changes to MailChimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
           ),
         ).not.toBeInTheDocument();
         expect(
