@@ -103,7 +103,9 @@ const OrganizationsContacts = (): ReactElement => {
                 textFieldLabel={t('Filter by Organization')}
                 value={selectedOrganization ?? undefined}
                 onChange={(_, organization) => {
-                  setSelectedOrganization(organization);
+                  setSelectedOrganization(
+                    organization as SettingsOrganizationFragment,
+                  );
                 }}
               />
             </Box>
