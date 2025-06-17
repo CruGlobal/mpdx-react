@@ -89,13 +89,18 @@ const Organizations = (): ReactElement => {
             </Box>
             <Box>
               <OrganizationAutocomplete
+                style={{
+                  width: '250px',
+                }}
                 autoSelect
                 autoHighlight
                 disableClearable
                 organizations={organizations}
                 value={selectedOrganization ?? undefined}
-                onChange={(_, organization) => {
-                  setSelectedOrganization(organization);
+                onChange={(_, organization): void => {
+                  setSelectedOrganization(
+                    organization as SettingsOrganizationFragment,
+                  );
                 }}
               />
             </Box>
