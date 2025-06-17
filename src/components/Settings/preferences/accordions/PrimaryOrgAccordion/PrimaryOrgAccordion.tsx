@@ -4,6 +4,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { SettingsOrganizationFragment } from 'pages/accountLists/[accountListId]/settings/organizations.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
@@ -120,7 +121,7 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
                   orgs.find(
                     ({ organization }) =>
                       organization.id === salaryOrganizationId,
-                  )?.organization
+                  )?.organization as SettingsOrganizationFragment
                 }
                 onChange={(_, value) => {
                   setFieldValue('salaryOrganizationId', value);

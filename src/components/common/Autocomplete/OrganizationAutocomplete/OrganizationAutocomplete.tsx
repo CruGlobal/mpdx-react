@@ -5,15 +5,13 @@ import { GetOrganizationsQuery } from 'src/components/Settings/integrations/Orga
 import { Organization, Organizations } from 'src/graphql/types.generated';
 
 // Create a union type that can handle both organization types
-type OrganizationType = Organizations | Organization;
+type OrganizationType = Organization | Organizations;
 type OrganizationsArray =
   | OrganizationsQuery['getOrganizations']['organizations']
   | GetOrganizationsQuery['organizations'];
 
 interface OrganizationAutocompleteProps
-  extends Partial<
-    AutocompleteProps<OrganizationsArray, false, boolean, false>
-  > {
+  extends Partial<AutocompleteProps<OrganizationType, false, boolean, false>> {
   organizations: OrganizationsArray;
   textFieldLabel?: string;
   textFieldFocusRef?: (instance: HTMLInputElement | null) => void;
@@ -30,8 +28,10 @@ export const OrganizationAutocomplete = ({
   return (
     <Autocomplete
       {...props}
-      options={organizations?.filter((org): org is OrganizationType => !!org)}
-      getOptionLabel={(org) => org?.name}
+      options={
+        organizations?.filter((org): org is OrganizationType => !!org) || []
+      }
+      getOptionLabel={(org) => org.name}
       renderInput={(params) => (
         <TextField
           {...params}
