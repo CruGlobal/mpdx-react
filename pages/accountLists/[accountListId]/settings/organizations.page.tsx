@@ -9,11 +9,9 @@ import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organ
 import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
+import { Organizations as OrganizationsType } from 'src/graphql/types.generated';
 import { SettingsWrapper } from './Wrapper';
-import {
-  SettingsOrganizationFragment,
-  useOrganizationsQuery,
-} from './organizations.generated';
+import { useOrganizationsQuery } from './organizations.generated';
 
 export type OrganizationsContextType = {
   selectedOrganizationId: string;
@@ -53,7 +51,7 @@ const Organizations = (): ReactElement => {
     );
 
   const [selectedOrganization, setSelectedOrganization] = useState<
-    SettingsOrganizationFragment | null | undefined
+    OrganizationsType | null | undefined
   >();
   const { data } = useOrganizationsQuery();
 
@@ -98,9 +96,7 @@ const Organizations = (): ReactElement => {
                 organizations={organizations}
                 value={selectedOrganization ?? undefined}
                 onChange={(_, organization): void => {
-                  setSelectedOrganization(
-                    organization as SettingsOrganizationFragment,
-                  );
+                  setSelectedOrganization(organization as OrganizationsType);
                 }}
               />
             </Box>
