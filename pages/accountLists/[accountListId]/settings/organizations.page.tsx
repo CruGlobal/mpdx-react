@@ -89,9 +89,6 @@ const Organizations = (): ReactElement => {
             </Box>
             <Box>
               <OrganizationAutocomplete
-                style={{
-                  width: '250px',
-                }}
                 autoSelect
                 autoHighlight
                 disableClearable

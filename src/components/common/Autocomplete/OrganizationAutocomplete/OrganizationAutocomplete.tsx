@@ -7,7 +7,6 @@ interface OrganizationAutocompleteProps
   extends Partial<AutocompleteProps<Organizations, false, boolean, false>> {
   organizations: OrganizationsQuery['getOrganizations']['organizations'];
   textFieldLabel?: string;
-  disableClearable?: boolean;
 }
 
 export const OrganizationAutocomplete = ({
@@ -22,9 +21,6 @@ export const OrganizationAutocomplete = ({
       style={{
         width: '250px',
       }}
-      autoSelect
-      autoHighlight
-      disableClearable
       {...props}
       options={
         organizations?.filter((org): org is Organizations => !!org) || []
