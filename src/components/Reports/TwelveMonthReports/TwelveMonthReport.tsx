@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, CircularProgress, useMediaQuery } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { mapTwelveMonthReport } from 'pages/api/Schema/reports/twelveMonth/datahandler';
 import { TwelveMonthReport as TwelveMonthReportQueryResponse } from 'pages/api/graphql-rest.page.generated';
@@ -9,6 +8,7 @@ import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
 import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { getTwelveMonthReportDateRange } from 'src/lib/dateRangeHelpers';
 import { TwelveMonthReportHeader as Header } from './Layout/Header/Header';
 import {
   TwelveMonthReportTable as Table,
@@ -77,9 +77,7 @@ export const TwelveMonthReport: React.FC<Props> = ({
           currencyType === 'salary'
             ? 'salary_currency_donations'
             : 'donor_currency_donations'
-        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
-          .minus({ months: 11 })
-          .toISODate()}...${DateTime.now().toISODate()}`;
+        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${getTwelveMonthReportDateRange()}`;
 
         const response = await fetch(
           `${process.env.REST_API_URL}reports/${requestUrl}`,
