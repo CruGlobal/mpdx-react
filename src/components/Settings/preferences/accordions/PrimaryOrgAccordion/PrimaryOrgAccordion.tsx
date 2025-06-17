@@ -1,5 +1,4 @@
 import React, { ReactElement, useMemo } from 'react';
-import { TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -124,13 +123,9 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
                   )?.organization as SettingsOrganizationFragment
                 }
                 onChange={(_, value) => {
-                  setFieldValue('salaryOrganizationId', value);
+                  setFieldValue('salaryOrganizationId', value?.id);
                 }}
                 fullWidth
-                renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
-                )}
               />
             </FieldWrapper>
           </FormWrapper>

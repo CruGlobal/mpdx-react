@@ -14,12 +14,14 @@ interface OrganizationAutocompleteProps
   extends Partial<AutocompleteProps<OrganizationType, false, boolean, false>> {
   organizations: OrganizationsArray;
   textFieldLabel?: string;
+  textFieldPlaceholder?: string;
   textFieldFocusRef?: (instance: HTMLInputElement | null) => void;
 }
 
 export const OrganizationAutocomplete = ({
   organizations,
   textFieldLabel,
+  textFieldPlaceholder,
   textFieldFocusRef,
   ...props
 }: OrganizationAutocompleteProps) => {
@@ -36,6 +38,7 @@ export const OrganizationAutocomplete = ({
         <TextField
           {...params}
           label={textFieldLabel ?? t('Organization')}
+          placeholder={textFieldPlaceholder}
           inputRef={textFieldFocusRef}
           InputProps={{
             ...params.InputProps,
