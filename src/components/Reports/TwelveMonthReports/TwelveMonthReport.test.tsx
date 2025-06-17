@@ -209,7 +209,7 @@ describe('TwelveMonthReport', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        `https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[designation_account_id]=${designationAccount}&filter[month_range]=2019-02-01...2020-01-01`,
+        `https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[designation_account_id]=${designationAccount}&filter[month_range]=2019-01-01...2019-12-31`,
         {
           headers: {
             'Content-Type': 'application/vnd.api+json',
@@ -236,7 +236,7 @@ describe('TwelveMonthReport', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        'https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[month_range]=2019-02-01...2020-01-01',
+        'https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[month_range]=2019-01-01...2019-12-31',
         {
           headers: {
             'Content-Type': 'application/vnd.api+json',
