@@ -117,9 +117,9 @@ const AccountListsOrganizations = (): ReactElement => {
                 autoSelect
                 organizations={organizations}
                 textFieldLabel={t('Filter by Organization')}
-                value={selectedOrganization ?? undefined}
+                value={selectedOrganization}
                 onChange={(_, organization): void =>
-                  handleSelectedOrgChange(organization)
+                  handleSelectedOrgChange(organization?.id)
                 }
               />
             </Box>
