@@ -2,20 +2,20 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReportActions } from './Actions';
+import { TwelveMonthReportActions } from './Actions';
 
 const onExpandToggle = jest.fn();
 const onPrint = jest.fn();
 
-describe('FourteenMonthReportActions', () => {
+describe('TwelveMonthReportActions', () => {
   it('default', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportActions
+        <TwelveMonthReportActions
           csvData={[]}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isExpanded={false}
           isMobile={true}
           onExpandToggle={onExpandToggle}
@@ -38,9 +38,9 @@ describe('FourteenMonthReportActions', () => {
   it('expand toggle event', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportActions
+        <TwelveMonthReportActions
           csvData={[]}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           onExpandToggle={onExpandToggle}
@@ -56,9 +56,9 @@ describe('FourteenMonthReportActions', () => {
   it('print event', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportActions
+        <TwelveMonthReportActions
           csvData={[]}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           onExpandToggle={onExpandToggle}
