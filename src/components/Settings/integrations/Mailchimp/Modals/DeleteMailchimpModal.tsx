@@ -42,7 +42,7 @@ export const DeleteMailchimpAccountModal: React.FC<
       update: () => refetchMailchimpAccount(),
       onCompleted: () => {
         enqueueSnackbar(
-          t('{{appName}} removed your integration with MailChimp', { appName }),
+          t('{{appName}} removed your integration with Mailchimp', { appName }),
           {
             variant: 'success',
           },
@@ -52,7 +52,7 @@ export const DeleteMailchimpAccountModal: React.FC<
       onError: () => {
         enqueueSnackbar(
           t(
-            "{{appName}} couldn't save your configuration changes for MailChimp",
+            "{{appName}} couldn't save your configuration changes for Mailchimp",
             { appName },
           ),
           {
@@ -67,13 +67,13 @@ export const DeleteMailchimpAccountModal: React.FC<
   return (
     <Modal
       isOpen={true}
-      title={t('Confirm to Disconnect MailChimp Account')}
+      title={t('Confirm to Disconnect Mailchimp Account')}
       handleClose={handleClose}
       size={'sm'}
     >
       <DialogContent>
         <Typography>
-          {t(`Are you sure you wish to disconnect your MailChimp account?`)}
+          {t(`Are you sure you wish to disconnect your Mailchimp account?`)}
         </Typography>
       </DialogContent>
 
