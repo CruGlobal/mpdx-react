@@ -101,7 +101,7 @@ const OrganizationsContacts = (): ReactElement => {
                 autoHighlight
                 organizations={organizations}
                 textFieldLabel={t('Filter by Organization')}
-                value={selectedOrganization ?? undefined}
+                value={selectedOrganization}
                 onChange={(_, organization) => {
                   setSelectedOrganization(
                     organization as SettingsOrganizationFragment,
