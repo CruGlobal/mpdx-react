@@ -3,7 +3,6 @@ import { AugmentedRequest, RESTDataSource } from '@apollo/datasource-rest';
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { GraphQLError } from 'graphql';
-import { DateTime } from 'luxon';
 import Cors from 'micro-cors';
 import {
   ExportFormatEnum,
@@ -12,6 +11,7 @@ import {
   MergeContactsInput,
   MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
+import { getTwelveMonthReportDateRange } from 'src/lib/dateRangeHelpers';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
@@ -485,14 +485,13 @@ class MpdxRestApi extends RESTDataSource {
       designationAccountId && designationAccountId.length > 0
         ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
+    const { startDate, endDate } = getTwelveMonthReportDateRange();
     const { data }: { data: TwelveMonthReportResponse } = await this.get(
       `reports/${
         currencyType === 'salary'
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
-      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
-        .minus({ months: 11 })
-        .toISODate()}...${DateTime.now().toISODate()}`,
+      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${startDate}...${endDate}`,
     );
     return mapTwelveMonthReport(data, currencyType);
   }
