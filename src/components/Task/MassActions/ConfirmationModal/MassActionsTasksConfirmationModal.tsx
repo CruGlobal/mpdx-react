@@ -30,13 +30,15 @@ export const MassActionsTasksConfirmationModal: React.FC<
   // KG: useState for checkbox
   const [checked, setChecked] = useState(false);
 
+  const shouldConfirmDeletion = action === 'delete' && idsCount > 5;
+
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
 
   // KG: get correct task message based on action
   function renderMessage() {
-    if (action === 'complete' || (action === 'delete' && idsCount < 5)) {
+    if (action === 'complete' || (action === 'delete' && idsCount)) {
       return (
         <Typography>
           {t(
@@ -84,7 +86,7 @@ export const MassActionsTasksConfirmationModal: React.FC<
       <DialogActions>
         <CancelButton onClick={() => setOpen(false)}>{t('No')}</CancelButton>
         <SubmitButton
-          disabled={!checked}
+          disabled={!checked && shouldConfirmDeletion}
           //color="error"
           onClick={onConfirm}
           type="button"
