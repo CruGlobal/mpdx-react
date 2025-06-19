@@ -38,7 +38,7 @@ export const MassActionsTasksConfirmationModal: React.FC<
 
   // KG: get correct task message based on action
   function renderMessage() {
-    if (action === 'complete' || (action === 'delete' && idsCount)) {
+    if (action === 'complete' || !shouldConfirmDeletion) {
       return (
         <Typography>
           {t(
