@@ -68,6 +68,7 @@ export const MassActionsTasksConfirmationModal: React.FC<
               'Yes, I want to {{action}} the {{count}} selected tasks.',
               { action, count: idsCount },
             )}
+            data-testid="confirmDeletionCheckbox"
           />
         </Typography>
       );
