@@ -13,7 +13,7 @@ import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from './TasksMassActionsDropdown';
 
-const selectedIds: string[] = ['abc'];
+const selectedIds = ['abc'];
 const massDeselectAll = jest.fn();
 const mockEnqueue = jest.fn();
 const mocks = {
@@ -50,23 +50,29 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const TaskComponents = () => (
-  <I18nextProvider i18n={i18n}>
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <TasksMassActionsDropdown
-              selectedIdCount={selectedIds?.length ?? 0}
-              selectedIds={selectedIds}
-              massDeselectAll={massDeselectAll}
-            />
-          </SnackbarProvider>
-        </LocalizationProvider>
-      </GqlMockedProvider>
-    </ThemeProvider>
-  </I18nextProvider>
-);
+interface TaskComponentsProps {
+  ids?: string[];
+}
+
+const TaskComponents = ({ ids = selectedIds }: TaskComponentsProps) => {
+  return (
+    <I18nextProvider i18n={i18n}>
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <SnackbarProvider>
+              <TasksMassActionsDropdown
+                selectedIdCount={ids?.length ?? 0}
+                selectedIds={ids}
+                massDeselectAll={massDeselectAll}
+              />
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </GqlMockedProvider>
+      </ThemeProvider>
+    </I18nextProvider>
+  );
+};
 
 beforeEach(() => {
   (useAccountListId as jest.Mock).mockReturnValue('123456789');
@@ -155,6 +161,33 @@ describe('TasksMassActionsDropdown', () => {
       expect(
         queryByTestId('CompleteAndDeleteTasksModal') as HTMLInputElement,
       ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should prevent the user from clicking "yes" until checkbox is checked', async () => {
+    const { getByText, getByTestId } = render(
+      <TaskComponents ids={['abc', 'def', 'g', 'h', 'i', 'j']} />,
+    );
+
+    const actionsButton = getByText('Actions') as HTMLInputElement;
+    userEvent.click(actionsButton);
+    userEvent.click(getByText('Delete Tasks'));
+    expect(getByTestId('CompleteAndDeleteTasksModal')).toBeInTheDocument();
+    const yesButton = getByText('Yes');
+    expect(yesButton).toBeDisabled();
+
+    const checkbox = getByTestId('confirmDeletionCheckbox');
+    expect(checkbox).toBeInTheDocument();
+    expect(getByText(/Deleting these tasks is permanent/i)).toBeInTheDocument();
+
+    userEvent.click(checkbox);
+    expect(yesButton).not.toBeDisabled();
+
+    userEvent.click(yesButton);
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Task(s) deleted successfully', {
+        variant: 'success',
+      }),
     );
   });
 
