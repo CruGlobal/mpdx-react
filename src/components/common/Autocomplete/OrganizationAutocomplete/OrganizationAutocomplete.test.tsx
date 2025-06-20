@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from '../../../../theme';
 import { OrganizationAutocomplete } from './OrganizationAutocomplete';
@@ -24,13 +24,11 @@ const setSelectedOrganization = jest.fn();
 
 describe('OrganizationAutocomplete', () => {
   it('shows the selected organization', () => {
-    const selectedOrganization = organizations[0];
-
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <OrganizationAutocomplete
           organizations={organizations}
-          value={selectedOrganization}
+          value={organizations[0]}
           onChange={(_, organization): void => {
             setSelectedOrganization(organization);
           }}
@@ -42,28 +40,27 @@ describe('OrganizationAutocomplete', () => {
   });
 
   it('changes the selected organization', () => {
-    const selectedOrganization = organizations[1];
-
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <OrganizationAutocomplete
           organizations={organizations}
-          value={selectedOrganization}
+          value={organizations[1]}
           onChange={(_, organization): void => {
             setSelectedOrganization(organization);
           }}
         />
       </ThemeProvider>,
     );
+
     expect(getByRole('combobox')).toHaveValue('Testalapogus');
-    userEvent.type(getByRole('combobox'), 'Agape Bulgaria');
+    userEvent.type(getByRole('combobox'), 'Agape Bulg');
     userEvent.click(getByRole('option', { name: 'Agape Bulgaria' }));
     expect(setSelectedOrganization).toHaveBeenCalled();
     expect(getByRole('combobox')).toHaveValue('Agape Bulgaria');
   });
 
   it('filters organizations based on input', async () => {
-    const { getByRole, findByRole, findAllByRole } = render(
+    const { getByRole, findByRole, findAllByRole, queryByRole } = render(
       <ThemeProvider theme={theme}>
         <OrganizationAutocomplete
           organizations={organizations}
@@ -79,11 +76,14 @@ describe('OrganizationAutocomplete', () => {
     expect(
       await findByRole('option', { name: 'Testington' }),
     ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        queryByRole('option', { name: 'Agape Bulgaria' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('passes the correct props to mui autocomplete', () => {
-    const selectedOrganization = organizations[2];
-
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <OrganizationAutocomplete
@@ -93,7 +93,7 @@ describe('OrganizationAutocomplete', () => {
           autoSelect
           autoHighlight
           organizations={organizations}
-          value={selectedOrganization}
+          value={organizations[2]}
           onChange={(_, organization): void => {
             setSelectedOrganization(organization);
           }}
