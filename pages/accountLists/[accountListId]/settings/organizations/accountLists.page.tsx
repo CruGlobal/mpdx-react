@@ -114,7 +114,7 @@ const AccountListsOrganizations = (): ReactElement => {
                 style={{
                   width: isNarrowScreen ? '150px' : '350px',
                 }}
-                autoSelect
+                autoHighlight
                 organizations={organizations}
                 textFieldLabel={t('Filter by Organization')}
                 value={selectedOrganization}
