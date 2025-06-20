@@ -14,7 +14,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from '../../../common/Modal/Modal';
 
-enum Action {
+export enum Action {
   Complete = 'complete',
   Delete = 'delete',
 }
