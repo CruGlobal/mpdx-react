@@ -1,0 +1,28 @@
+query StaffExpenseReport($accountId: ID!, $fundTypes: [String!]) {
+  reportsStaffExpenses(accountId: $accountId, fundTypes: $fundTypes) {
+    name
+    status
+    funds {
+      total
+      fundType
+      categories {
+        averagePerMonth
+        category
+        total
+        subcategories {
+          averagePerMonth
+          breakdownByMonth {
+            month
+            total
+          }
+          subCategory
+          total
+        }
+        breakdownByMonth {
+          month
+          total
+        }
+      }
+    }
+  }
+}
