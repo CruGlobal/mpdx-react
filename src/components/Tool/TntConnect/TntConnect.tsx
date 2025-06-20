@@ -3,7 +3,6 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
   Alert,
   AlertTitle,
-  Autocomplete,
   Box,
   Button,
   Card,
@@ -27,6 +26,7 @@ import * as yup from 'yup';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { ContactTagInput } from 'src/components/Tags/Tags';
+import { TagsAutocomplete } from 'src/components/common/Autocomplete/TagsAutocomplete/TagsAutocomplete';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
@@ -274,7 +274,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
                     <BoldTypography>
                       {t('Tags for all imported TntConnect contacts')}
                     </BoldTypography>
-                    <Autocomplete
+                    <TagsAutocomplete
                       multiple
                       freeSolo
                       autoSelect
@@ -283,16 +283,10 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
                       loading={contactTagsListLoading}
                       filterSelectedOptions
                       value={selectedTags}
-                      options={
-                        contactTagsList?.accountList?.contactTagList || []
-                      }
-                      renderInput={(params): ReactElement => (
-                        <ContactTagInput
-                          {...params}
-                          placeholder={t('add tag')}
-                          disabled={isSubmitting}
-                        />
-                      )}
+                      tags={contactTagsList?.accountList?.contactTagList || []}
+                      textFieldPlaceholder={t('add tag')}
+                      inputComponent={ContactTagInput}
+                      textFieldDisabled={isSubmitting}
                       onChange={(_, selectedTags): void =>
                         setFieldValue('selectedTags', selectedTags)
                       }
