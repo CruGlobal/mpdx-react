@@ -2,7 +2,7 @@ import NextLink from 'next/link';
 import React from 'react';
 import { Link, Theme, Typography, TypographyProps } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { TaskRowFragment } from './TaskRow.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -21,72 +21,40 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
 }));
 
-type OnClickFunction = (
-  event: React.MouseEvent<HTMLElement, MouseEvent>,
-  contactId: string,
-) => void;
-
 type TaskRowContactNameProps = {
   contact: TaskRowFragment['contacts']['nodes'][0];
   itemIndex: number;
   contactsLength: number;
-  selectContact: OnClickFunction;
-  getContactHrefObject?: GetContactHrefObject;
 } & TypographyProps;
 
 export const TaskRowContactName: React.FC<TaskRowContactNameProps> = ({
   contact,
   itemIndex,
   contactsLength,
-  selectContact,
-  getContactHrefObject,
   ...props
 }) => {
   const { classes } = useStyles();
+  const { buildContactUrl } = useContactPanel();
 
-  const { id, name } = contact;
+  const { name } = contact;
   const contactName = itemIndex !== contactsLength - 1 ? `${name},` : name;
 
-  const contactHrefObject =
-    getContactHrefObject && getContactHrefObject(contact.id);
-
-  const handleOnContactClick = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-  ) => {
-    selectContact(event, id);
-    event.stopPropagation();
-  };
   return (
-    <>
-      {contactHrefObject && (
-        <Link
-          key={contact.id}
-          component={NextLink}
-          href={contactHrefObject}
-          shallow
-        >
-          <Typography
-            {...props}
-            noWrap
-            display="inline"
-            onClick={handleOnContactClick}
-            className={classes.contactName}
-          >
-            {contactName}
-          </Typography>
-        </Link>
-      )}
-      {!contactHrefObject && (
-        <Typography
-          {...props}
-          noWrap
-          display="inline"
-          onClick={handleOnContactClick}
-          className={classes.contactName}
-        >
-          {contactName}
-        </Typography>
-      )}
-    </>
+    <Link
+      key={contact.id}
+      component={NextLink}
+      href={buildContactUrl(contact.id)}
+      onClick={(event) => event.stopPropagation()}
+      shallow
+    >
+      <Typography
+        {...props}
+        noWrap
+        display="inline"
+        className={classes.contactName}
+      >
+        {contactName}
+      </Typography>
+    </Link>
   );
 };
