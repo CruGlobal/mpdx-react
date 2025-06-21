@@ -3,7 +3,6 @@ import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   AlertTitle,
-  Autocomplete,
   Box,
   Button,
   ButtonGroup,
@@ -35,6 +34,7 @@ import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetail
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { ContactTagInput } from 'src/components/Tags/Tags';
+import { TagsAutocomplete } from 'src/components/common/Autocomplete/TagsAutocomplete/TagsAutocomplete';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import Modal from 'src/components/common/Modal/Modal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -411,7 +411,7 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                             />
                                           </Grid>
                                           <Grid item xs={6}>
-                                            <Autocomplete
+                                            <TagsAutocomplete
                                               multiple
                                               freeSolo
                                               key={idx}
@@ -421,25 +421,21 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                               size="small"
                                               loading={contactTagsListLoading}
                                               filterSelectedOptions
+                                              tags={
+                                                contactTagsList?.accountList
+                                                  ?.contactTagList || []
+                                              }
                                               value={
                                                 group?.id &&
                                                 groupTags[group?.id]
                                                   ? groupTags[group?.id]
                                                   : []
                                               }
-                                              options={
-                                                contactTagsList?.accountList
-                                                  ?.contactTagList || []
-                                              }
-                                              renderInput={(
-                                                params,
-                                              ): ReactElement => (
-                                                <ContactTagInput
-                                                  {...params}
-                                                  placeholder={t('add tag')}
-                                                  disabled={isSubmitting}
-                                                />
+                                              textFieldDisabled={isSubmitting}
+                                              textFieldPlaceholder={t(
+                                                'add tag',
                                               )}
+                                              inputComponent={ContactTagInput}
                                               onChange={(_, value): void =>
                                                 setFieldValue(
                                                   `groupTags.${group?.id}`,
@@ -480,26 +476,21 @@ const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
                                 <BoldTypography>
                                   {t('Tags for all imported Google contacts')}
                                 </BoldTypography>
-                                <Autocomplete
+                                <TagsAutocomplete
                                   multiple
                                   freeSolo
                                   autoSelect
                                   autoHighlight
                                   fullWidth
                                   loading={contactTagsListLoading}
-                                  filterSelectedOptions
-                                  value={tagsForAllList}
-                                  options={
+                                  textFieldPlaceholder={t('add tag')}
+                                  tags={
                                     contactTagsList?.accountList
                                       ?.contactTagList || []
                                   }
-                                  renderInput={(params): ReactElement => (
-                                    <ContactTagInput
-                                      {...params}
-                                      placeholder={t('add tag')}
-                                      disabled={isSubmitting}
-                                    />
-                                  )}
+                                  value={tagsForAllList}
+                                  inputComponent={ContactTagInput}
+                                  textFieldDisabled={isSubmitting}
                                   onChange={(_, tagsForAllList): void =>
                                     setFieldValue(
                                       'tagsForAllList',

@@ -1,6 +1,5 @@
-import React, { ReactElement, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
-  Autocomplete,
   Box,
   Button,
   Card,
@@ -20,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
+import { TagsAutocomplete } from 'src/components/common/Autocomplete/TagsAutocomplete/TagsAutocomplete';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import {
@@ -131,7 +131,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
         <Box>
           <h4>{t('Add Tags to all imported contacts')}</h4>
           <Box display="flex" alignItems="center">
-            <Autocomplete
+            <TagsAutocomplete
               multiple
               freeSolo
               autoSelect
@@ -140,6 +140,8 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
               loading={contactTagsListLoading}
               popupIcon={<ContactTagIcon />}
               filterSelectedOptions
+              textFieldPlaceholder={t('add tag')}
+              tags={contactTagsList?.accountList?.contactTagList || []}
               value={
                 uploadData.tagList
                   ? Array.isArray(uploadData.tagList)
@@ -147,10 +149,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
                     : uploadData.tagList.split(',')
                   : []
               }
-              options={contactTagsList?.accountList?.contactTagList || []}
-              renderInput={(params): ReactElement => (
-                <ContactTagInput {...params} placeholder={t('add tag')} />
-              )}
+              inputComponent={ContactTagInput}
               onChange={(_, tagList): void => {
                 const newUploadData = {
                   ...uploadData,

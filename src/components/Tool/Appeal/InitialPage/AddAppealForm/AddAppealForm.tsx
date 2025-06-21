@@ -22,6 +22,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
+import { TagsAutocomplete } from 'src/components/common/Autocomplete/TagsAutocomplete/TagsAutocomplete';
 import {
   AppealCreateInput,
   ContactFilterStatusEnum,
@@ -613,26 +614,20 @@ const AddAppealForm: React.FC<AddAppealFormProps> = ({
             )}
 
             {loadingTags && <Skeleton height={40} />}
-
             {contactTagsList && !loadingTags && (
-              <Autocomplete
+              <TagsAutocomplete
                 multiple
                 autoHighlight
                 data-testid="contactTagsSelect"
                 id="tags-standard"
                 filterSelectedOptions
-                options={contactTagsList}
-                getOptionLabel={(option) => option}
+                tags={contactTagsList}
                 value={tags}
+                textFieldVariant="outlined"
+                textFieldSize="small"
+                textFieldPlaceholder={t('Select Some Options')}
+                inputComponent={TextField}
                 onChange={(_event, values) => setFieldValue('tags', values)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    size="small"
-                    placeholder={t('Select Some Options')}
-                  />
-                )}
               />
             )}
           </Box>

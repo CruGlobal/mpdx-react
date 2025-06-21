@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react';
 import Add from '@mui/icons-material/Add';
 import {
-  Autocomplete,
   Button,
   CircularProgress,
   DialogActions,
@@ -19,6 +18,7 @@ import {
   ContactsDocument,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
+import { TagsAutocomplete } from 'src/components/common/Autocomplete/TagsAutocomplete/TagsAutocomplete';
 import {
   CancelButton,
   SubmitButton,
@@ -181,7 +181,7 @@ export const MassActionsAddTagsModal: React.FC<
                     'Create New Tags (separate multiple tags with Enter key) *',
                   )}
                 </NewTagInstructions>
-                <Autocomplete
+                <TagsAutocomplete
                   multiple
                   autoSelect
                   autoHighlight
@@ -191,14 +191,9 @@ export const MassActionsAddTagsModal: React.FC<
                   popupIcon={<ContactTagIcon />}
                   filterSelectedOptions
                   value={tagList ?? []}
-                  options={[]}
-                  renderInput={(params): ReactElement => (
-                    <ContactTagInput
-                      {...params}
-                      placeholder={t('add tag')}
-                      //   disabled={isSubmitting || updating}
-                    />
-                  )}
+                  tags={[]}
+                  inputComponent={ContactTagInput}
+                  textFieldPlaceholder={t('add tag')}
                   onChange={(_, tagList): void =>
                     setFieldValue('tagList', tagList)
                   }
