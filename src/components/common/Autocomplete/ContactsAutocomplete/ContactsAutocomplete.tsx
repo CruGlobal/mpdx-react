@@ -1,27 +1,47 @@
 import { ChangeEventHandler, useCallback, useMemo, useState } from 'react';
-import { Autocomplete, CircularProgress, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  AutocompleteProps,
+  CircularProgress,
+  TextField,
+} from '@mui/material';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useContactOptionsQuery } from './ContactsAutocomplete.generated';
 
-interface ContactsAutocompleteProps {
+type AutocompletePropsOverride = Omit<
+  AutocompleteProps<string, boolean, boolean, boolean>,
+  'onChange' | 'multiple' | 'value'
+>;
+
+interface ContactsAutocompleteProps extends Partial<AutocompletePropsOverride> {
   accountListId: string;
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: string[] | string;
+  onChange: (value: string[] | string) => void;
+  multiple?: boolean;
+  textFieldLabel?: string;
   excludeContactIds?: string[];
   disabled?: boolean;
+  referral?:
+    | { id: string; referredBy: { id: string; name: string } }
+    | undefined;
 }
 
 export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
   accountListId,
   value,
   onChange,
+  referral,
+  textFieldLabel,
   excludeContactIds = [],
+  multiple = true,
   disabled = false,
+  ...props
 }) => {
   const { t } = useTranslation();
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
+
   const handleSearchTermChange = useCallback<
     ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
   >(
@@ -64,9 +84,9 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
   } = useContactOptionsQuery({
     variables: {
       accountListId,
-      first: value.length,
+      first: Array.isArray(value) ? value.length : 1,
       contactsFilters: {
-        ids: value,
+        ids: Array.isArray(value) ? value : [value],
         // When the status filter is omitted, only contacts with an active status are loaded. But
         // we need to load hidden contacts as well in case the user is adding a task to a hidden
         // contact. Setting status to an empty array overrides the default status filter and loads
@@ -74,7 +94,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
         status: [],
       },
     },
-    skip: value.length === 0,
+    skip: Array.isArray(value) ? value.length === 0 : !value,
   });
   const selectedContacts =
     (currentSelectedContacts || previousSelectedContacts)?.contacts.nodes ?? [];
@@ -93,10 +113,12 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
 
   return (
     <Autocomplete
-      multiple
       openOnFocus
+      {...props}
       autoSelect
+      multiple={multiple}
       disabled={disabled}
+      loading={loading}
       options={options
         .slice()
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -108,7 +130,7 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
         <TextField
           {...params}
           onChange={handleSearchTermChange}
-          label={t('Contacts')}
+          label={t(textFieldLabel ?? 'Contacts')}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
@@ -122,13 +144,18 @@ export const ContactsAutocomplete: React.FC<ContactsAutocompleteProps> = ({
       )}
       value={value}
       onChange={(event, newValue) => {
-        if (event.type === 'blur' && newValue.length < value.length) {
+        if (
+          multiple &&
+          Array.isArray(newValue) &&
+          event.type === 'blur' &&
+          newValue.length < value.length
+        ) {
           // Prevent tabbing out of the field from deselecting an item, while still
           // allowing tab to select the highlighted item
           return;
         }
 
-        onChange(newValue);
+        onChange(newValue ?? (multiple ? [] : ''));
       }}
     />
   );

@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
-import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
+import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   DeleteButton,
