@@ -12,8 +12,8 @@ import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { dispatch } from 'src/lib/analytics';
 import theme from 'src/theme';
+import { ContactOptionsQuery } from '../../../../common/Autocomplete/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TaskModalEnum } from '../../TaskModal';
-import { ContactOptionsQuery } from '../Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from '../Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalLogForm from './TaskModalLogForm';
 
