@@ -137,9 +137,9 @@ describe('Connect Services page', () => {
       // Start with Google
       expect(await findByText(/Add Account/i)).toBeInTheDocument();
 
-      // Moves to MailChimp
+      // Moves to Mailchimp
       userEvent.click(nextButton);
-      expect(await findByText(/Connect MailChimp/i)).toBeInTheDocument();
+      expect(await findByText(/Connect Mailchimp/i)).toBeInTheDocument();
 
       // PrayerLetters.com
       await waitFor(() => userEvent.click(nextButton));
