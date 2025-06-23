@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useMemo, useState } from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import {
   Autocomplete,
   Box,
@@ -15,12 +15,11 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
-import { debounce } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
-import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
+import { ContactsAutocomplete } from 'src/components/common/Autocomplete/ContactsAutocomplete/ContactsAutocomplete';
 import {
   CancelButton,
   SubmitButton,
@@ -110,14 +109,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
   const timezones = useGetTimezones();
 
   const [selectedId, setSelectedId] = useState(referral?.referredBy.id ?? '');
-  const [searchTerm, setSearchTerm] = useState(referral?.referredBy.name ?? '');
-
-  const handleSearchTermChange = useCallback(
-    debounce((event) => {
-      setSearchTerm(event.target.value);
-    }, 500),
-    [],
-  );
 
   const { data: dataChurchOptions, loading: loadingChurchOptions } =
     useChurchOptionsQuery({
@@ -140,38 +131,6 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
         .sort((a, b) => userName(a).localeCompare(userName(b))) ?? [],
     [dataAssigneeOptions],
   );
-
-  const { data: dataFilteredByName, loading: loadingFilteredByName } =
-    useContactOptionsQuery({
-      variables: {
-        accountListId,
-        first: 10,
-        contactsFilters: searchTerm ? { wildcardSearch: searchTerm } : {},
-      },
-    });
-
-  const { data: dataFilteredById, loading: loadingFilteredById } =
-    useContactOptionsQuery({
-      variables: {
-        accountListId,
-        first: 1,
-        contactsFilters: selectedId ? { ids: [selectedId] } : {},
-      },
-      skip: !selectedId,
-    });
-
-  const mergedContacts =
-    dataFilteredByName && dataFilteredById
-      ? dataFilteredByName?.contacts.nodes
-          .concat(dataFilteredById?.contacts.nodes)
-          .filter(
-            (contact1, index, self) =>
-              self.findIndex((contact2) => contact2.id === contact1.id) ===
-              index,
-          )
-      : dataFilteredById?.contacts.nodes ||
-        dataFilteredByName?.contacts.nodes ||
-        [];
 
   const contactOtherSchema: yup.ObjectSchema<
     Pick<
@@ -533,51 +492,20 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                   </Grid>
                   <Grid item xs={12}>
                     <ContactInputWrapper>
-                      <Autocomplete
-                        loading={loadingFilteredById || loadingFilteredByName}
-                        autoSelect
+                      <ContactsAutocomplete
+                        accountListId={accountListId}
+                        multiple={false}
+                        openOnFocus={false}
                         autoHighlight
-                        options={
-                          (
-                            mergedContacts &&
-                            [...mergedContacts].sort((a, b) =>
-                              a.name.localeCompare(b.name),
-                            )
-                          )?.map(({ id }) => id) || []
-                        }
-                        getOptionLabel={(contactId) =>
-                          mergedContacts.find(({ id }) => id === contactId)
-                            ?.name ?? ''
-                        }
-                        renderInput={(params): ReactElement => (
-                          <TextField
-                            {...params}
-                            onChange={handleSearchTermChange}
-                            label={t('Connecting Partner')}
-                            InputProps={{
-                              ...params.InputProps,
-                              endAdornment: (
-                                <>
-                                  {(loadingFilteredById ||
-                                    loadingFilteredByName) && (
-                                    <CircularProgress
-                                      color="primary"
-                                      size={20}
-                                    />
-                                  )}
-                                  {params.InputProps.endAdornment}
-                                </>
-                              ),
-                            }}
-                          />
-                        )}
-                        value={referredById || null}
-                        onChange={(_, referredBy): void => {
+                        textFieldLabel={t('Connecting Partner')}
+                        value={referredById || ''}
+                        referral={referral}
+                        onChange={(referredBy): void => {
                           setFieldValue('referredById', referredBy);
-                          setSelectedId(referredBy || '');
+                          setSelectedId((referredBy as string) || '');
                         }}
                         isOptionEqualToValue={(option, value): boolean =>
-                          option === value
+                          value === option
                         }
                       />
                     </ContactInputWrapper>
