@@ -25,6 +25,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   CancelButton,
@@ -40,7 +41,6 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { nullableDateTime } from 'src/lib/formikHelpers';
-import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import {
   amountFormat,
   parseNumberFromCurrencyString,
@@ -145,7 +145,6 @@ export const EditPartnershipInfoModal: React.FC<
 
   const [updateContactPartnership, { loading: updating }] =
     useUpdateContactPartnershipMutation();
-  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
     // When the pledgeAmount field is blank, the value will be an empty string, even though TypeScript says the type is `number | null | undefined`
@@ -511,38 +510,16 @@ export const EditPartnershipInfoModal: React.FC<
                 <Grid item xs={12} sm={6}>
                   <ContactInputWrapper>
                     <FormControl fullWidth>
-                      <InputLabel id="currency-select-label">
-                        {t('Currency')}
-                      </InputLabel>
-                      {pledgeCurrencies && (
-                        <Select
-                          label={t('Currency')}
-                          labelId="currency-select-label"
-                          value={pledgeCurrency ?? ''}
-                          onChange={(e) =>
-                            setFieldValue('pledgeCurrency', e.target.value)
-                          }
-                          MenuProps={{
-                            anchorOrigin: {
-                              vertical: 'bottom',
-                              horizontal: 'left',
-                            },
-                            transformOrigin: {
-                              vertical: 'top',
-                              horizontal: 'left',
-                            },
-                            PaperProps: {
-                              style: {
-                                maxHeight: '300px',
-                                overflow: 'auto',
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem value={''} disabled></MenuItem>
-                          {getPledgeCurrencyOptions(pledgeCurrencies)}
-                        </Select>
-                      )}
+                      <CurrencyAutocomplete
+                        disabled={isSubmitting}
+                        value={pledgeCurrency}
+                        onChange={(_, id) => {
+                          setFieldValue('pledgeCurrency', id);
+                        }}
+                        textFieldPlaceholder={t('Currency')}
+                        textFieldLabel={t('Currency')}
+                        textFieldAutoFocus={false}
+                      />
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
