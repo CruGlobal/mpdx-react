@@ -27,6 +27,7 @@ import { ResultEnum } from 'src/graphql/types.generated';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { useAccountListId } from '../../../hooks/useAccountListId';
+import { Action } from '../../Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
 import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface TasksMassActionsDropdownProps {
@@ -191,7 +192,7 @@ export const TasksMassActionsDropdown: React.FC<
       {completeTasksModalOpen && (
         <DynamicMassActionsTasksConfirmationModal
           open={completeTasksModalOpen}
-          action="complete"
+          action={Action.Complete}
           idsCount={selectedIds.length}
           setOpen={setCompleteTasksModalOpen}
           onConfirm={completeTasks}
@@ -208,7 +209,7 @@ export const TasksMassActionsDropdown: React.FC<
       {deleteTasksModalOpen && (
         <DynamicMassActionsTasksConfirmationModal
           open={deleteTasksModalOpen}
-          action="delete"
+          action={Action.Delete}
           idsCount={selectedIds.length}
           setOpen={setDeleteTasksModalOpen}
           onConfirm={deleteTasks}
