@@ -27,16 +27,13 @@ import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import {
-  PledgeCurrencyOptionFormatEnum,
-  getPledgeCurrencyOptions,
-} from 'src/lib/getCurrencyOptions';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
@@ -196,7 +193,6 @@ const Contact: React.FC<Props> = ({
   avatar,
   suggestedChanges,
 }) => {
-  const { pledgeCurrency: pledgeCurrencies } = useApiConstants() || {};
   const locale = useLocale();
   const { classes } = useStyles();
   const { t } = useTranslation();
@@ -287,6 +283,7 @@ const Contact: React.FC<Props> = ({
           values: { status, pledgeCurrency, pledgeAmount, pledgeFrequency },
           handleSubmit,
           setFieldValue,
+          isSubmitting,
           errors,
         }): ReactElement => {
           const modalContact = {
@@ -384,38 +381,18 @@ const Contact: React.FC<Props> = ({
                         <Grid item xs={12} md={6} lg={4}>
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
-                              <InputLabel id="currency-label">
-                                {t('Currency')}
-                              </InputLabel>
-                              <Select
-                                className={classes.select}
-                                labelId="currency-label"
-                                size="small"
-                                label={t('Currency')}
-                                placeholder="Currency"
-                                data-testid="pledgeCurrency"
-                                inputProps={{
-                                  'data-testid': 'pledgeCurrency-input',
-                                }}
+                              <CurrencyAutocomplete
+                                disabled={isSubmitting}
                                 value={pledgeCurrency}
-                                onChange={(e) =>
-                                  setFieldValue(
-                                    'pledgeCurrency',
-                                    e.target.value,
-                                  )
-                                }
-                              >
-                                {pledgeCurrencies ? (
-                                  getPledgeCurrencyOptions(
-                                    pledgeCurrencies,
-                                    PledgeCurrencyOptionFormatEnum.Short,
-                                  )
-                                ) : (
-                                  <MenuItem key={''} value={''}>
-                                    {t('Loading')}
-                                  </MenuItem>
-                                )}
-                              </Select>
+                                onChange={(_, id) => {
+                                  setFieldValue('pledgeCurrency', id);
+                                }}
+                                textFieldAutoFocus={false}
+                                textFieldPlaceholder={t('Currency')}
+                                textFieldLabel={t('Currency')}
+                                textFieldError={!!errors.pledgeCurrency}
+                                size="small"
+                              />
                             </FormControl>
                             <FormHelperText
                               error={true}
