@@ -485,13 +485,12 @@ class MpdxRestApi extends RESTDataSource {
       designationAccountId && designationAccountId.length > 0
         ? `&filter[designation_account_id]=${designationAccountId.join(',')}`
         : '';
-    const { startDate, endDate } = getTwelveMonthReportDateRange();
     const { data }: { data: TwelveMonthReportResponse } = await this.get(
       `reports/${
         currencyType === 'salary'
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
-      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${startDate}...${endDate}`,
+      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${getTwelveMonthReportDateRange()}`,
     );
     return mapTwelveMonthReport(data, currencyType);
   }

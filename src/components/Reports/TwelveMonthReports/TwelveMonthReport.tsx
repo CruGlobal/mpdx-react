@@ -73,12 +73,11 @@ export const TwelveMonthReport: React.FC<Props> = ({
         const designationAccountFilter = designationAccounts?.length
           ? `&filter[designation_account_id]=${designationAccounts.join(',')}`
           : '';
-        const { startDate, endDate } = getTwelveMonthReportDateRange();
         const requestUrl = `${
           currencyType === 'salary'
             ? 'salary_currency_donations'
             : 'donor_currency_donations'
-        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${startDate}...${endDate}`;
+        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${getTwelveMonthReportDateRange()}`;
 
         const response = await fetch(
           `${process.env.REST_API_URL}reports/${requestUrl}`,
