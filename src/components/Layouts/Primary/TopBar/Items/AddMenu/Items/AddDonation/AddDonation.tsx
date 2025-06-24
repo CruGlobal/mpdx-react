@@ -246,6 +246,7 @@ export const AddDonation = ({
                         }}
                         textFieldAutoFocus={false}
                         textFieldError={!!errors.currency}
+                        textFieldLabel={t('Currency')}
                         size="small"
                       />
                       <FormHelperText

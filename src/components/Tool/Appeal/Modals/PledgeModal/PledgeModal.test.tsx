@@ -141,7 +141,7 @@ describe('PledgeModal', () => {
     expect(getByText('Currency')).toBeInTheDocument();
 
     expect(
-      await findByRole('combobox', { name: 'Currency' }),
+      await findByRole('combobox', { name: 'Amount Currency' }),
     ).toBeInTheDocument();
 
     expect(getByRole('textbox', { name: 'Expected Date' })).toBeInTheDocument();
