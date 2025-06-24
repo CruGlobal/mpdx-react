@@ -129,7 +129,7 @@ describe('WeeklyActivity', () => {
           <MockedProvider
             mocks={[
               ...GetWeeklyActivityQueryDefaultMocks(),
-              ...CurrentCoachingAnswerSetDefaultMocks(),
+              CurrentCoachingAnswerSetDefaultMocks()[0],
             ]}
             addTypename={false}
           >
@@ -152,7 +152,7 @@ describe('WeeklyActivity', () => {
           <MockedProvider
             mocks={[
               ...GetWeeklyActivityQueryDefaultMocks(),
-              ...CurrentCoachingAnswerSetDefaultMocks(),
+              CurrentCoachingAnswerSetDefaultMocks()[1],
             ]}
             addTypename={false}
           >
