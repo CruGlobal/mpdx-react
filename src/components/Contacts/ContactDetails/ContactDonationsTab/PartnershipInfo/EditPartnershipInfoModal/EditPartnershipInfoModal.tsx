@@ -145,7 +145,6 @@ export const EditPartnershipInfoModal: React.FC<
 
   const [updateContactPartnership, { loading: updating }] =
     useUpdateContactPartnershipMutation();
-  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
     // When the pledgeAmount field is blank, the value will be an empty string, even though TypeScript says the type is `number | null | undefined`
@@ -511,18 +510,16 @@ export const EditPartnershipInfoModal: React.FC<
                 <Grid item xs={12} sm={6}>
                   <ContactInputWrapper>
                     <FormControl fullWidth>
-                      {pledgeCurrencies && (
-                        <CurrencyAutocomplete
-                          disabled={isSubmitting}
-                          value={pledgeCurrency}
-                          onChange={(_, id) => {
-                            setFieldValue('pledgeCurrency', id);
-                          }}
-                          textFieldPlaceholder={t('Currency')}
-                          textFieldLabel={t('Currency')}
-                          textFieldAutoFocus={false}
-                        />
-                      )}
+                      <CurrencyAutocomplete
+                        disabled={isSubmitting}
+                        value={pledgeCurrency}
+                        onChange={(_, id) => {
+                          setFieldValue('pledgeCurrency', id);
+                        }}
+                        textFieldPlaceholder={t('Currency')}
+                        textFieldLabel={t('Currency')}
+                        textFieldAutoFocus={false}
+                      />
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
