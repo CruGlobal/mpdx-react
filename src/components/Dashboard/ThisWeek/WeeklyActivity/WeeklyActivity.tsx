@@ -267,7 +267,10 @@ const WeeklyActivity = ({ accountListId }: Props): ReactElement => {
           </TableContainer>
         </CardContent>
         <CardActions
-          sx={{ justifyContent: questions ? 'space-between' : 'flex-start' }}
+          sx={{
+            justifyContent:
+              questions.length > 0 ? 'space-between' : 'flex-start',
+          }}
         >
           <Button
             LinkComponent={NextLink}
