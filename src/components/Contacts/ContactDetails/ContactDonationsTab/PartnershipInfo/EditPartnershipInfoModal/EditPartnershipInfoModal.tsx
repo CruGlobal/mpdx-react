@@ -145,7 +145,6 @@ export const EditPartnershipInfoModal: React.FC<
 
   const [updateContactPartnership, { loading: updating }] =
     useUpdateContactPartnershipMutation();
-  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const onSubmit = async (attributes: Attributes) => {
     // When the pledgeAmount field is blank, the value will be an empty string, even though TypeScript says the type is `number | null | undefined`
