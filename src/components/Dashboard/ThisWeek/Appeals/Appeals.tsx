@@ -144,7 +144,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
               component={NextLink}
               href={
                 appeal
-                  ? `/accountLists/${accountListId}/tools/appeals/appeal/${appeal.id}`
+                  ? `/accountLists/${accountListId}/tools/appeals/appeal/${appeal.id}/list`
                   : `/accountLists/${accountListId}/tools/appeals`
               }
               className={classes.appealsHeader}
