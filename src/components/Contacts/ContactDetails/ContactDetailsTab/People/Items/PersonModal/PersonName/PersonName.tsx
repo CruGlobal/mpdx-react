@@ -71,6 +71,9 @@ export const PersonName: React.FC<PersonNameProps> = ({
     if (personId && file) {
       setAvatar(file);
     }
+    // Please do not remove this line
+    // It is essential for the file size validation alert on repeated uploads
+    event.target.value = '';
   };
 
   return (
