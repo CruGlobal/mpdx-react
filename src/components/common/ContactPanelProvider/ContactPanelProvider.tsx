@@ -9,10 +9,36 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { extractContactId } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Extract the contact id from a query param.
+ *
+ * @param query The query params from the router
+ * @param contactIdParam The name of the query param that holds the contact id (usually `'contactId'`)
+ * @returns The contact id from the query param
+ */
+export const getQueryContactId = (
+  query: ParsedUrlQuery,
+  contactIdParam: string,
+): string | undefined => {
+  const queryParam = query[contactIdParam];
+
+  if (!Array.isArray(queryParam)) {
+    return undefined;
+  }
+
+  // The contact id is the last item in the query param array, but it must be a UUID, not "map". See
+  // the comment in setQueryContactId for more details.
+  const contactId = queryParam.at(-1);
+  if (typeof contactId === 'string' && uuidRegex.test(contactId)) {
+    return contactId;
+  } else {
+    return undefined;
+  }
+};
 
 /**
  * Given a set of router query params, return new query params with the contact modified or removed.
@@ -107,11 +133,11 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
 
   // Extract the initial contact id from the URL
   const [contactId, setContactId] = useState<string | undefined>(() =>
-    extractContactId(query[contactIdParam]),
+    getQueryContactId(query, contactIdParam),
   );
   // Update the contact id when the URL changes
   useEffect(() => {
-    setContactId(extractContactId(query[contactIdParam]));
+    setContactId(getQueryContactId(query, contactIdParam));
   }, [query, contactIdParam]);
 
   const updateContactAndUrl = useCallback(
