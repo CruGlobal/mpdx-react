@@ -47,7 +47,7 @@ describe('OrganizationAutocomplete', () => {
         name: 'Euro - EUR (€)',
       }),
     );
-    expect(setSelectedCurrency).toHaveBeenCalled();
+    expect(setSelectedCurrency).toHaveBeenCalledWith(setSelectedCurrency);
     expect(getByRole('combobox')).toHaveValue('Euro - EUR (€)');
   });
 
