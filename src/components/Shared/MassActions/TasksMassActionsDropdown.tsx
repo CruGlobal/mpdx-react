@@ -27,7 +27,7 @@ import { ResultEnum } from 'src/graphql/types.generated';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { useAccountListId } from '../../../hooks/useAccountListId';
-import { Action } from '../../Task/MassActions/ConfirmationModal/MassActionsTasksConfirmationModal';
+import { Action } from '../../Task/MassActions/ConfirmationModal/ActionEnum';
 import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface TasksMassActionsDropdownProps {
