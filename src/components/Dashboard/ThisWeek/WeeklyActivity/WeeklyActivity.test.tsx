@@ -9,7 +9,10 @@ import {
   GetWeeklyActivityQueryDefaultMocks,
   GetWeeklyActivityQueryLoadingMocks,
 } from './WeeklyActivity.mock';
-import { CurrentCoachingAnswerSetDefaultMocks } from './WeeklyReportModal/WeeklyReport.mock';
+import {
+  EmptyCoachingAnswerSetMock,
+  PopulateCoachingAnswerSetMock,
+} from './WeeklyReportModal/WeeklyReport.mock';
 import WeeklyActivity from '.';
 
 // Mock the useOrganizationId hook
@@ -129,7 +132,7 @@ describe('WeeklyActivity', () => {
           <MockedProvider
             mocks={[
               ...GetWeeklyActivityQueryDefaultMocks(),
-              ...CurrentCoachingAnswerSetDefaultMocks(),
+              PopulateCoachingAnswerSetMock(),
             ]}
             addTypename={false}
           >
@@ -152,7 +155,7 @@ describe('WeeklyActivity', () => {
           <MockedProvider
             mocks={[
               ...GetWeeklyActivityQueryDefaultMocks(),
-              ...CurrentCoachingAnswerSetDefaultMocks(),
+              EmptyCoachingAnswerSetMock(),
             ]}
             addTypename={false}
           >
