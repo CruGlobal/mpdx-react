@@ -13,11 +13,8 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from '../../../common/Modal/Modal';
+import { Action } from './ActionEnum';
 
-export enum Action {
-  Complete = 'complete',
-  Delete = 'delete',
-}
 interface MassActionsTasksConfirmationModalProps {
   open: boolean;
   action: Action;
