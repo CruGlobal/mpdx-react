@@ -194,6 +194,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth required>
                     <CurrencyAutocomplete
+                      disableClearable={true}
                       disabled={isSubmitting}
                       value={currency}
                       onChange={(_, currencyCode) => {
@@ -202,6 +203,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       textFieldProps={{
                         label: t('Currency'),
                         autoFocus: false,
+                        error: !!errors.currency,
+                        required: true,
                       }}
                     />
                   </FormControl>
