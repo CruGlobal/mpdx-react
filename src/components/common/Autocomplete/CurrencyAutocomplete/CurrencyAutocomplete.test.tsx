@@ -9,7 +9,7 @@ import { CurrencyAutocomplete } from './CurrencyAutocomplete';
 
 const setSelectedCurrency = jest.fn();
 
-describe('OrganizationAutocomplete', () => {
+describe('CurrencyAutocomplete', () => {
   it('shows the selected currency', () => {
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
