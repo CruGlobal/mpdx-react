@@ -106,10 +106,12 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                 onChange={(_, id) => {
                   setFieldValue('currency', id);
                 }}
-                textFieldPlaceholder={label}
-                textFieldLabel={label}
-                textFieldAutoFocus={true}
-                textFieldStyles={{ marginTop: 1 }}
+                textFieldProps={{
+                  placeholder: label,
+                  label: label,
+                  sx: { marginTop: 1 },
+                }}
+
               />
             </FieldWrapper>
           </FormWrapper>

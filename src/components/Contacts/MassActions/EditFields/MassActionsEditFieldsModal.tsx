@@ -323,9 +323,10 @@ export const MassActionsEditFieldsModal: React.FC<
                       onChange={(_, id) => {
                         setFieldValue('pledgeCurrency', id);
                       }}
-                      textFieldPlaceholder={t('Commitment Currency')}
-                      textFieldLabel={t('Commitment Currency')}
-                      textFieldAutoFocus={false}
+                      textFieldProps={{
+                        label: t('Commitment Currency'),
+                        autoFocus: false,
+                      }}
                     />
                   </FormControl>
                 </Grid>

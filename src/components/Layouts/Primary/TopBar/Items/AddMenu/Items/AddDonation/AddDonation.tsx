@@ -241,12 +241,14 @@ export const AddDonation = ({
                       <CurrencyAutocomplete
                         disabled={isSubmitting}
                         value={currency}
-                        onChange={(_, id) => {
-                          setFieldValue('currency', id);
+                        onChange={(_, currencyCode) => {
+                          setFieldValue('currency', currencyCode);
                         }}
-                        textFieldAutoFocus={false}
-                        textFieldError={!!errors.currency}
-                        textFieldLabel={t('Currency')}
+                        textFieldProps={{
+                          error: !!errors.currency,
+                          autoFocus: false,
+                          label: t('Currency'),
+                        }}
                         size="small"
                       />
                       <FormHelperText

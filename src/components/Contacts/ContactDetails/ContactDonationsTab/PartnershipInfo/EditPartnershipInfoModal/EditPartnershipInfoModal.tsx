@@ -516,9 +516,12 @@ export const EditPartnershipInfoModal: React.FC<
                         onChange={(_, currencyCode) => {
                           setFieldValue('pledgeCurrency', currencyCode);
                         }}
-                        textFieldPlaceholder={t('Currency')}
-                        textFieldLabel={t('Currency')}
-                        textFieldAutoFocus={false}
+                        textFieldProps={{
+                          'aria-label': t('Currency'),
+                          label: t('Currency'),
+                          placeholder: t('Currency'),
+                          autoFocus: false,
+                        }}
                       />
                     </FormControl>
                   </ContactInputWrapper>

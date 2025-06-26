@@ -199,9 +199,10 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       onChange={(_, id) => {
                         setFieldValue('currency', id);
                       }}
-                      textFieldPlaceholder={t('Currency')}
-                      textFieldLabel={t('Currency')}
-                      textFieldAutoFocus={false}
+                      textFieldProps={{
+                        label: t('Currency'),
+                        autoFocus: false,
+                      }}
                     />
                   </FormControl>
                 </Grid>

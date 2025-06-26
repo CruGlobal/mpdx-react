@@ -387,10 +387,12 @@ const Contact: React.FC<Props> = ({
                                 onChange={(_, id) => {
                                   setFieldValue('pledgeCurrency', id);
                                 }}
-                                textFieldAutoFocus={false}
-                                textFieldPlaceholder={t('Currency')}
-                                textFieldLabel={t('Currency')}
-                                textFieldError={!!errors.pledgeCurrency}
+                                textFieldProps={{
+                                  autoFocus: false,
+                                  placeholder: t('Currency'),
+                                  label: t('Currency'),
+                                  error: !!errors.pledgeCurrency,
+                                }}
                                 size="small"
                               />
                             </FormControl>
