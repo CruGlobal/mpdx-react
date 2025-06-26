@@ -41,31 +41,32 @@ const emptyCoachingAnswerSet: CurrentCoachingAnswerSetQuery = {
   },
 };
 
-export const CurrentCoachingAnswerSetDefaultMocks = (): MockedResponse[] => {
-  return [
-    {
-      request: {
-        query: CurrentCoachingAnswerSetDocument,
-        variables: {
-          accountListId: 'abc',
-          organizationId: 'org-123',
-        },
-      },
-      result: {
-        data: populatedCoachingAnswerSet,
+export const PopulateCoachingAnswerSetMock = (): MockedResponse => {
+  return {
+    request: {
+      query: CurrentCoachingAnswerSetDocument,
+      variables: {
+        accountListId: 'abc',
+        organizationId: 'org-123',
       },
     },
-    {
-      request: {
-        query: CurrentCoachingAnswerSetDocument,
-        variables: {
-          accountListId: 'abc',
-          organizationId: 'org-123',
-        },
-      },
-      result: {
-        data: emptyCoachingAnswerSet,
+    result: {
+      data: populatedCoachingAnswerSet,
+    },
+  };
+};
+
+export const EmptyCoachingAnswerSetMock = (): MockedResponse => {
+  return {
+    request: {
+      query: CurrentCoachingAnswerSetDocument,
+      variables: {
+        accountListId: 'abc',
+        organizationId: 'org-123',
       },
     },
-  ];
+    result: {
+      data: emptyCoachingAnswerSet,
+    },
+  };
 };
