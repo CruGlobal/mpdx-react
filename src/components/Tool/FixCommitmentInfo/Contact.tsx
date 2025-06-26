@@ -382,6 +382,7 @@ const Contact: React.FC<Props> = ({
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <CurrencyAutocomplete
+                                className={classes.select}
                                 disabled={isSubmitting}
                                 value={pledgeCurrency}
                                 onChange={(_, id) => {
