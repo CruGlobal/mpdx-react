@@ -292,8 +292,8 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                         <CurrencyAutocomplete
                           disabled={isSubmitting}
                           value={amountCurrency}
-                          onChange={(_, id) => {
-                            setFieldValue('amountCurrency', id);
+                          onChange={(_, currencyCode) => {
+                            setFieldValue('amountCurrency', currencyCode);
                           }}
                           textFieldProps={{
                             autoFocus: false,

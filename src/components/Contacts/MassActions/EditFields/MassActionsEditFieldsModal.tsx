@@ -320,8 +320,8 @@ export const MassActionsEditFieldsModal: React.FC<
                     <CurrencyAutocomplete
                       disabled={isSubmitting}
                       value={pledgeCurrency}
-                      onChange={(_, id) => {
-                        setFieldValue('pledgeCurrency', id);
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('pledgeCurrency', currencyCode);
                       }}
                       textFieldProps={{
                         label: t('Commitment Currency'),

@@ -103,15 +103,14 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
               <CurrencyAutocomplete
                 disabled={isSubmitting}
                 value={currency}
-                onChange={(_, id) => {
-                  setFieldValue('currency', id);
+                onChange={(_, currencyCode) => {
+                  setFieldValue('currency', currencyCode);
                 }}
                 textFieldProps={{
                   placeholder: label,
                   label: label,
                   sx: { marginTop: 1 },
                 }}
-
               />
             </FieldWrapper>
           </FormWrapper>

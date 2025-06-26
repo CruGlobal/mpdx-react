@@ -385,8 +385,8 @@ const Contact: React.FC<Props> = ({
                                 className={classes.select}
                                 disabled={isSubmitting}
                                 value={pledgeCurrency}
-                                onChange={(_, id) => {
-                                  setFieldValue('pledgeCurrency', id);
+                                onChange={(_, currencyCode) => {
+                                  setFieldValue('pledgeCurrency', currencyCode);
                                 }}
                                 textFieldProps={{
                                   autoFocus: false,

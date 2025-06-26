@@ -196,8 +196,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     <CurrencyAutocomplete
                       disabled={isSubmitting}
                       value={currency}
-                      onChange={(_, id) => {
-                        setFieldValue('currency', id);
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('currency', currencyCode);
                       }}
                       textFieldProps={{
                         label: t('Currency'),
