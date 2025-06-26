@@ -28,6 +28,9 @@ export const MassActionsTasksConfirmationModal: React.FC<
 > = ({ open, idsCount, action, setOpen, onConfirm }) => {
   const { t } = useTranslation();
 
+  const translatedAction =
+    action === Action.Complete ? t('complete') : t('delete');
+
   const [hasConfirmedDeletion, setHasConfirmedDeletion] = useState(false);
 
   const shouldConfirmDeletion = useMemo(() => {
@@ -51,7 +54,7 @@ export const MassActionsTasksConfirmationModal: React.FC<
           <Typography>
             {t(
               'Are you sure you wish to {{action}} the {{count}} selected tasks?',
-              { action, count: idsCount },
+              { action: translatedAction, count: idsCount },
             )}
           </Typography>
         ) : (
@@ -71,7 +74,7 @@ export const MassActionsTasksConfirmationModal: React.FC<
               }
               label={t(
                 'Yes, I want to {{action}} the {{count}} selected tasks.',
-                { action, count: idsCount },
+                { action: translatedAction, count: idsCount },
               )}
               data-testid="confirmDeletionCheckbox"
             />
