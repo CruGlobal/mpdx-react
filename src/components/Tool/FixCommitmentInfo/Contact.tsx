@@ -382,15 +382,18 @@ const Contact: React.FC<Props> = ({
                           <Box className={classes.boxBottom}>
                             <FormControl fullWidth size="small">
                               <CurrencyAutocomplete
+                                className={classes.select}
                                 disabled={isSubmitting}
                                 value={pledgeCurrency}
-                                onChange={(_, id) => {
-                                  setFieldValue('pledgeCurrency', id);
+                                onChange={(_, currencyCode) => {
+                                  setFieldValue('pledgeCurrency', currencyCode);
                                 }}
-                                textFieldAutoFocus={false}
-                                textFieldPlaceholder={t('Currency')}
-                                textFieldLabel={t('Currency')}
-                                textFieldError={!!errors.pledgeCurrency}
+                                textFieldProps={{
+                                  autoFocus: false,
+                                  placeholder: t('Currency'),
+                                  label: t('Currency'),
+                                  error: !!errors.pledgeCurrency,
+                                }}
                                 size="small"
                               />
                             </FormControl>

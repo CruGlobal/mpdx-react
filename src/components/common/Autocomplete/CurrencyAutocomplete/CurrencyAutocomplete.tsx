@@ -1,21 +1,18 @@
-import { Autocomplete, AutocompleteProps, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  AutocompleteProps,
+  TextField,
+  TextFieldProps,
+} from '@mui/material';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
 interface CurrencyAutocompleteProps
-  extends Partial<AutocompleteProps<any, boolean, boolean, boolean>> {
-  textFieldLabel?: string;
-  textFieldPlaceholder?: string;
-  textFieldStyles?: React.CSSProperties;
-  textFieldAutoFocus?: boolean;
-  textFieldError?: boolean;
+  extends Partial<AutocompleteProps<string, boolean, boolean, boolean>> {
+  textFieldProps?: Partial<TextFieldProps>;
 }
 
 export const CurrencyAutocomplete = ({
-  textFieldLabel,
-  textFieldPlaceholder,
-  textFieldStyles,
-  textFieldError = false,
-  textFieldAutoFocus = true,
+  textFieldProps,
   ...props
 }: CurrencyAutocompleteProps) => {
   const constants = useApiConstants();
@@ -26,7 +23,9 @@ export const CurrencyAutocomplete = ({
       fullWidth
       autoHighlight
       {...props}
-      options={currencies.map((cur) => cur.code) || []}
+      options={currencies
+        .map((cur) => cur.code)
+        .filter((code): code is string => typeof code === 'string')}
       getOptionLabel={(currency): string => {
         const selectedCurrency = currencies.find(
           ({ code }) => code === currency,
@@ -39,12 +38,9 @@ export const CurrencyAutocomplete = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          placeholder={textFieldPlaceholder}
           // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus={textFieldAutoFocus}
-          error={textFieldError}
-          label={textFieldLabel}
-          sx={textFieldStyles}
+          autoFocus
+          {...textFieldProps}
         />
       )}
     />

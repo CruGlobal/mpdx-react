@@ -292,12 +292,14 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                         <CurrencyAutocomplete
                           disabled={isSubmitting}
                           value={amountCurrency}
-                          onChange={(_, id) => {
-                            setFieldValue('amountCurrency', id);
+                          onChange={(_, currencyCode) => {
+                            setFieldValue('amountCurrency', currencyCode);
                           }}
-                          textFieldAutoFocus={false}
-                          textFieldLabel={t('Amount Currency')}
-                          textFieldError={!!errors.amountCurrency}
+                          textFieldProps={{
+                            autoFocus: false,
+                            label: t('Amount Currency'),
+                            error: !!errors.amountCurrency,
+                          }}
                           size="small"
                         />
                       )}

@@ -9,8 +9,8 @@ import { CurrencyAutocomplete } from './CurrencyAutocomplete';
 
 const setSelectedCurrency = jest.fn();
 
-describe('OrganizationAutocomplete', () => {
-  it('shows the selected organization', () => {
+describe('CurrencyAutocomplete', () => {
+  it('shows the selected currency', () => {
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
@@ -26,7 +26,7 @@ describe('OrganizationAutocomplete', () => {
     expect(getByRole('combobox')).toHaveValue('US Dollar - USD ($)');
   });
 
-  it('changes the selected organization', async () => {
+  it('changes the selected currency', async () => {
     const { getByRole, findByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
@@ -47,11 +47,11 @@ describe('OrganizationAutocomplete', () => {
         name: 'Euro - EUR (€)',
       }),
     );
-    expect(setSelectedCurrency).toHaveBeenCalled();
+    expect(setSelectedCurrency).toHaveBeenCalledWith('EUR');
     expect(getByRole('combobox')).toHaveValue('Euro - EUR (€)');
   });
 
-  it('filters organizations based on input', async () => {
+  it('filters currency based on input', async () => {
     const { getByRole, findByRole, findAllByRole, queryByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>

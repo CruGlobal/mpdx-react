@@ -320,12 +320,13 @@ export const MassActionsEditFieldsModal: React.FC<
                     <CurrencyAutocomplete
                       disabled={isSubmitting}
                       value={pledgeCurrency}
-                      onChange={(_, id) => {
-                        setFieldValue('pledgeCurrency', id);
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('pledgeCurrency', currencyCode);
                       }}
-                      textFieldPlaceholder={t('Commitment Currency')}
-                      textFieldLabel={t('Commitment Currency')}
-                      textFieldAutoFocus={false}
+                      textFieldProps={{
+                        label: t('Commitment Currency'),
+                        autoFocus: false,
+                      }}
                     />
                   </FormControl>
                 </Grid>

@@ -194,14 +194,18 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth required>
                     <CurrencyAutocomplete
+                      disableClearable={true}
                       disabled={isSubmitting}
                       value={currency}
-                      onChange={(_, id) => {
-                        setFieldValue('currency', id);
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('currency', currencyCode);
                       }}
-                      textFieldPlaceholder={t('Currency')}
-                      textFieldLabel={t('Currency')}
-                      textFieldAutoFocus={false}
+                      textFieldProps={{
+                        label: t('Currency'),
+                        autoFocus: false,
+                        error: !!errors.currency,
+                        required: true,
+                      }}
                     />
                   </FormControl>
                 </Grid>
