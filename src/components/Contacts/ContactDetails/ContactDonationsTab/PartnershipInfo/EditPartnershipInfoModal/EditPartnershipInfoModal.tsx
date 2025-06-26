@@ -513,8 +513,8 @@ export const EditPartnershipInfoModal: React.FC<
                       <CurrencyAutocomplete
                         disabled={isSubmitting}
                         value={pledgeCurrency}
-                        onChange={(_, id) => {
-                          setFieldValue('pledgeCurrency', id);
+                        onChange={(_, currencyCode) => {
+                          setFieldValue('pledgeCurrency', currencyCode);
                         }}
                         textFieldPlaceholder={t('Currency')}
                         textFieldLabel={t('Currency')}
