@@ -240,6 +240,8 @@ export const AddDonation = ({
                     <Box width="100%">
                       <CurrencyAutocomplete
                         disabled={isSubmitting}
+                        id="currency-select"
+                        disableClearable
                         value={currency}
                         onChange={(_, currencyCode) => {
                           setFieldValue('currency', currencyCode);
@@ -247,7 +249,6 @@ export const AddDonation = ({
                         textFieldProps={{
                           error: !!errors.currency,
                           autoFocus: false,
-                          label: t('Currency'),
                         }}
                         size="small"
                       />
