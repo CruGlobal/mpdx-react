@@ -8,7 +8,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
 interface CurrencyAutocompleteProps
   extends Partial<AutocompleteProps<string, boolean, boolean, boolean>> {
-  textFieldProps: Partial<TextFieldProps>;
+  textFieldProps?: Partial<TextFieldProps>;
 }
 
 export const CurrencyAutocomplete = ({
