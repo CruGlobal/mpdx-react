@@ -9,7 +9,16 @@ import {
   GetWeeklyActivityQueryDefaultMocks,
   GetWeeklyActivityQueryLoadingMocks,
 } from './WeeklyActivity.mock';
+import {
+  EmptyCoachingAnswerSetMock,
+  PopulateCoachingAnswerSetMock,
+} from './WeeklyReportModal/WeeklyReport.mock';
 import WeeklyActivity from '.';
+
+// Mock the useOrganizationId hook
+jest.mock('src/hooks/useOrganizationId', () => ({
+  useOrganizationId: () => 'org-123',
+}));
 
 const accountListId = 'abc';
 
@@ -121,7 +130,10 @@ describe('WeeklyActivity', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <MockedProvider
-            mocks={GetWeeklyActivityQueryDefaultMocks()}
+            mocks={[
+              ...GetWeeklyActivityQueryDefaultMocks(),
+              PopulateCoachingAnswerSetMock(),
+            ]}
             addTypename={false}
           >
             <WeeklyActivity accountListId={accountListId} />
@@ -134,5 +146,33 @@ describe('WeeklyActivity', () => {
       await findByRole('button', { name: 'Fill out weekly report' }),
     );
     expect(await findByLabelText('Weekly Report')).toBeInTheDocument();
+  });
+
+  it('should not show Fill out weekly report button', async () => {
+    const { queryByRole, findByRole } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <MockedProvider
+            mocks={[
+              ...GetWeeklyActivityQueryDefaultMocks(),
+              EmptyCoachingAnswerSetMock(),
+            ]}
+            addTypename={false}
+          >
+            <WeeklyActivity accountListId={accountListId} />
+          </MockedProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(
+      await findByRole('link', { name: 'View Activity Detail' }),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        queryByRole('button', { name: 'Fill out weekly report' }),
+      ).not.toBeInTheDocument();
+    });
   });
 });
