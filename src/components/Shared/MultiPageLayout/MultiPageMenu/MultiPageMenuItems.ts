@@ -16,12 +16,12 @@ export const reportNavItems: NavItems[] = [
   },
   {
     id: 'partnerCurrency',
-    title: i18n.t('14 Month Partner Report'),
+    title: i18n.t('12 Month Partner Report'),
     subTitle: i18n.t('Partner Currency'),
   },
   {
     id: 'salaryCurrency',
-    title: i18n.t('14 Month Salary Report'),
+    title: i18n.t('12 Month Salary Report'),
     subTitle: i18n.t('Salary Currency'),
   },
   {
@@ -43,6 +43,11 @@ export const reportNavItems: NavItems[] = [
   {
     id: 'coaching',
     title: i18n.t('Coaching'),
+  },
+  {
+    id: 'staffExpense',
+    title: i18n.t('Staff Expense Report'),
+    subTitle: i18n.t('Staff Web Reports'),
   },
 ];
 

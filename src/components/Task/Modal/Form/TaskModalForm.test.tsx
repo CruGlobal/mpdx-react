@@ -12,8 +12,8 @@ import { AssigneeOptionsQuery } from 'src/components/Contacts/ContactDetails/Con
 import { ActivityTypeEnum, PhaseEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';
+import { ContactOptionsQuery } from '../../../common/Autocomplete/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TaskModalEnum } from '../TaskModal';
-import { ContactOptionsQuery } from './Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { TagOptionsQuery } from './Inputs/TagsAutocomplete/TagsAutocomplete.generated';
 import TaskModalForm, { TaskModalFormProps } from './TaskModalForm';
 import {

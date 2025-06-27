@@ -5,7 +5,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { ContactsAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete';
+import { ContactsAutocomplete } from 'src/components/common/Autocomplete/ContactsAutocomplete/ContactsAutocomplete';
 import {
   CancelButton,
   SubmitButton,

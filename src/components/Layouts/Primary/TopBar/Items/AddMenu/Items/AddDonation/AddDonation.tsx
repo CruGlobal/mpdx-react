@@ -8,8 +8,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  MenuItem,
-  Select,
   TextField,
   Theme,
   useMediaQuery,
@@ -20,15 +18,14 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
-import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { requiredDateTime } from 'src/lib/formikHelpers';
-import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
-import { useApiConstants } from '../../../../../../../Constants/UseApiConstants';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
@@ -88,7 +85,6 @@ export const AddDonation = ({
 }: AddDonationProps): ReactElement<AddDonationProps> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const constants = useApiConstants();
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
   );
@@ -113,8 +109,6 @@ export const AddDonation = ({
       'GetDonationsTable',
     ],
   });
-
-  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const designationAccounts =
     designationAccountsData?.designationAccounts?.flatMap(
@@ -180,7 +174,7 @@ export const AddDonation = ({
       validateOnMount
     >
       {({
-        values: { appealId },
+        values: { appealId, currency },
         handleBlur,
         setFieldValue,
         isSubmitting,
@@ -242,44 +236,29 @@ export const AddDonation = ({
                     >
                       {t('Currency')}
                     </LogFormLabel>
-                    {pledgeCurrencies && (
-                      <FastField name="currency">
-                        {({ field }: FieldProps) => (
-                          <Box width="100%">
-                            <Select
-                              {...field}
-                              fullWidth
-                              id="currency-select"
-                              variant="outlined"
-                              labelId="currency-select-label"
-                              inputProps={{
-                                'aria-labelledby': 'currency-select-label',
-                              }}
-                              value={field.value}
-                              MenuProps={{
-                                anchorOrigin: {
-                                  vertical: 'bottom',
-                                  horizontal: 'left',
-                                },
-                                transformOrigin: {
-                                  vertical: 'top',
-                                  horizontal: 'left',
-                                },
-                                PaperProps: {
-                                  style: {
-                                    maxHeight: '300px',
-                                    overflow: 'auto',
-                                  },
-                                },
-                              }}
-                            >
-                              <MenuItem value={''} disabled></MenuItem>
-                              {getPledgeCurrencyOptions(pledgeCurrencies)}
-                            </Select>
-                          </Box>
-                        )}
-                      </FastField>
-                    )}
+
+                    <Box width="100%">
+                      <CurrencyAutocomplete
+                        disabled={isSubmitting}
+                        id="currency-select"
+                        disableClearable
+                        value={currency}
+                        onChange={(_, currencyCode) => {
+                          setFieldValue('currency', currencyCode);
+                        }}
+                        textFieldProps={{
+                          error: !!errors.currency,
+                          autoFocus: false,
+                        }}
+                        size="small"
+                      />
+                      <FormHelperText
+                        error={true}
+                        data-testid="pledgeCurrencyError"
+                      >
+                        {errors.currency && errors.currency}
+                      </FormHelperText>
+                    </Box>
                   </FormControl>
                 </Grid>
               </Grid>
