@@ -71,6 +71,7 @@ export const PersonName: React.FC<PersonNameProps> = ({
     if (personId && file) {
       setAvatar(file);
     }
+    event.target.value = '';
   };
 
   return (

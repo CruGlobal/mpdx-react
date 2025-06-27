@@ -390,12 +390,13 @@ describe('PersonModal', () => {
       const file2 = new File(['contents2'], 'image2.png', {
         type: 'image/png',
       });
-      const fileInput = getByTestId('PersonNameUpload');
+      const fileInput = getByTestId('PersonNameUpload') as HTMLInputElement;
       userEvent.upload(fileInput, file1);
+      expect(fileInput.value).toBe('');
       expect(revokeObjectURL).not.toHaveBeenCalledWith('blob:1');
       userEvent.upload(fileInput, file2);
+      expect(fileInput.value).toBe('');
       expect(revokeObjectURL).toHaveBeenCalledWith('blob:1');
-
       userEvent.click(getByRole('button', { name: 'Save' }));
 
       await waitFor(() =>
