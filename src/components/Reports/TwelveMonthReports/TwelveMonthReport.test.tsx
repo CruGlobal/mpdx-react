@@ -2,10 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReport } from './FourteenMonthReport';
-import { fourteenMonthReportRestMock } from './FourteenMonthReportMock';
+import { TwelveMonthReport } from './TwelveMonthReport';
+import { twelveMonthReportRestMock } from './TwelveMonthReportMock';
 
 const accountListId = '111';
 const title = 'test title';
@@ -19,12 +19,12 @@ const defaultProps = {
   isNavListOpen: false,
 };
 
-describe('FourteenMonthReport', () => {
+describe('TwelveMonthReport', () => {
   fetchMock.enableMocks();
   beforeEach(() => {
     fetchMock.resetMocks();
     fetchMock.mockResponses([
-      JSON.stringify(fourteenMonthReportRestMock),
+      JSON.stringify(twelveMonthReportRestMock),
       { status: 200 },
     ]);
     process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
@@ -33,9 +33,9 @@ describe('FourteenMonthReport', () => {
   it('salary report loading', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isNavListOpen={true}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -45,16 +45,16 @@ describe('FourteenMonthReport', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
+    expect(getByTestId('LoadingTwelveMonthReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
   it('salary report loaded', async () => {
     const { getAllByTestId, queryByTestId, getAllByRole } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isNavListOpen={true}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -64,22 +64,20 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
     });
 
     expect(getAllByRole('table')).toHaveLength(2);
-    expect(getAllByTestId('FourteenMonthReportTableRow')).toHaveLength(3);
-    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
+    expect(getAllByTestId('TwelveMonthReportTableRow')).toHaveLength(3);
+    expect(getAllByTestId('TwelveMonthReport')).toHaveLength(2);
   });
 
   it('partner report loading', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
+          currencyType={TwelveMonthReportCurrencyType.Donor}
           isNavListOpen={true}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -89,16 +87,16 @@ describe('FourteenMonthReport', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
+    expect(getByTestId('LoadingTwelveMonthReport')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
   it('partner report loaded', async () => {
     const { getAllByTestId, queryByTestId, getByText } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
+          currencyType={TwelveMonthReportCurrencyType.Donor}
           isNavListOpen={true}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -108,13 +106,11 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
+    expect(getAllByTestId('TwelveMonthReport')).toHaveLength(2);
   });
 
   describe('Errors', () => {
@@ -126,9 +122,9 @@ describe('FourteenMonthReport', () => {
     it('salary report error', async () => {
       const { queryByTestId, getByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <FourteenMonthReport
+          <TwelveMonthReport
             accountListId={accountListId}
-            currencyType={FourteenMonthReportCurrencyType.Salary}
+            currencyType={TwelveMonthReportCurrencyType.Salary}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -139,7 +135,7 @@ describe('FourteenMonthReport', () => {
 
       await waitFor(() => {
         expect(
-          queryByTestId('LoadingFourteenMonthReport'),
+          queryByTestId('LoadingTwelveMonthReport'),
         ).not.toBeInTheDocument();
       });
 
@@ -150,9 +146,9 @@ describe('FourteenMonthReport', () => {
     it('partner report error', async () => {
       const { queryByTestId, getByTestId, getByText } = render(
         <ThemeProvider theme={theme}>
-          <FourteenMonthReport
+          <TwelveMonthReport
             accountListId={accountListId}
-            currencyType={FourteenMonthReportCurrencyType.Donor}
+            currencyType={TwelveMonthReportCurrencyType.Donor}
             isNavListOpen={true}
             title={title}
             onNavListToggle={onNavListToggle}
@@ -163,7 +159,7 @@ describe('FourteenMonthReport', () => {
 
       await waitFor(() => {
         expect(
-          queryByTestId('LoadingFourteenMonthReport'),
+          queryByTestId('LoadingTwelveMonthReport'),
         ).not.toBeInTheDocument();
       });
 
@@ -175,9 +171,9 @@ describe('FourteenMonthReport', () => {
   it('nav list closed', async () => {
     const { getAllByTestId, getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
+          currencyType={TwelveMonthReportCurrencyType.Donor}
           isNavListOpen={false}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -187,13 +183,11 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
+    expect(getAllByTestId('TwelveMonthReport')).toHaveLength(2);
     expect(queryByTestId('MultiPageMenu')).not.toBeInTheDocument();
   });
 
@@ -201,10 +195,10 @@ describe('FourteenMonthReport', () => {
     const designationAccount = 'account-1';
     render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
           designationAccounts={[designationAccount]}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
+          currencyType={TwelveMonthReportCurrencyType.Donor}
           isNavListOpen={false}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -215,7 +209,7 @@ describe('FourteenMonthReport', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        `https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[designation_account_id]=${designationAccount}&filter[month_range]=2018-12-01...2020-01-01`,
+        `https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[designation_account_id]=${designationAccount}&filter[month_range]=2019-01-01...2019-12-31`,
         {
           headers: {
             'Content-Type': 'application/vnd.api+json',
@@ -229,9 +223,9 @@ describe('FourteenMonthReport', () => {
   it('does not filter report by designation account', async () => {
     render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
+          currencyType={TwelveMonthReportCurrencyType.Donor}
           isNavListOpen={false}
           title={title}
           onNavListToggle={onNavListToggle}
@@ -242,7 +236,7 @@ describe('FourteenMonthReport', () => {
 
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
-        'https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[month_range]=2018-12-01...2020-01-01',
+        'https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[month_range]=2019-01-01...2019-12-31',
         {
           headers: {
             'Content-Type': 'application/vnd.api+json',
@@ -256,18 +250,16 @@ describe('FourteenMonthReport', () => {
   it('can click on a contact name', async () => {
     const { findAllByRole, getAllByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReport
+        <TwelveMonthReport
           {...defaultProps}
           isNavListOpen={true}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
+          currencyType={TwelveMonthReportCurrencyType.Donor}
         />
       </ThemeProvider>,
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
     });
 
     expect(getContactUrl).toHaveBeenCalledWith('contact-1');
@@ -280,15 +272,15 @@ describe('FourteenMonthReport', () => {
     it('should render one table for each partner currency', async () => {
       const { findAllByRole } = render(
         <ThemeProvider theme={theme}>
-          <FourteenMonthReport
+          <TwelveMonthReport
             {...defaultProps}
-            currencyType={FourteenMonthReportCurrencyType.Donor}
+            currencyType={TwelveMonthReportCurrencyType.Donor}
           />
         </ThemeProvider>,
       );
 
       const tables = await findAllByRole('table', {
-        name: 'Fourteen month report table',
+        name: 'Twelve month report table',
       });
       expect(tables).toHaveLength(2);
 

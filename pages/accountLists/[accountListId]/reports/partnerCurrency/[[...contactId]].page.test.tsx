@@ -5,7 +5,7 @@ import fetchMock from 'jest-fetch-mock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { fourteenMonthReportMock } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReportMock';
+import { twelveMonthReportMock } from 'src/components/Reports/TwelveMonthReports/TwelveMonthReportMock';
 import theme from 'src/theme';
 import PartnerCurrencyReportPage from './[[...contactId]].page';
 
@@ -45,7 +45,7 @@ describe('partnerCurrency page', () => {
   beforeEach(() => {
     fetchMock.resetMocks();
     fetchMock.mockResponses([
-      JSON.stringify(fourteenMonthReportMock),
+      JSON.stringify(twelveMonthReportMock),
       { status: 200 },
     ]);
     process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
