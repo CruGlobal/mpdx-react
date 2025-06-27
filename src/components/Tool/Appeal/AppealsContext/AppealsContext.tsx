@@ -186,6 +186,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   // In the flows view, we need the total count of all contacts in every column, but the API
   // filters out contacts excluded from an appeal. We have to load excluded contacts also and
   // manually merge them with the other contacts.
+  const inFlowsView = viewMode === TableViewModeEnum.Flows;
   const {
     data: allExcludedContacts,
     previousData: allExcludedContactsPrevious,
@@ -194,25 +195,28 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       accountListId,
       contactsFilters: { ...contactsFilters, appealStatus: 'excluded' },
     },
-    // Skip this query when there is an appealStatus filter from the list view
-    skip: !!contactsFilters.appealStatus,
+    // Only load this query in the flows view
+    skip: !inFlowsView,
   });
   // When the next batch of contact ids is loading, use the previous batch of contact ids in the
   // meantime to avoid throwing out the selected contact ids.
-  const allContactIds = useMemo(
-    () =>
-      [
-        ...((allContacts ?? allContactsPrevious)?.contacts.nodes ?? []),
-        ...((allExcludedContacts ?? allExcludedContactsPrevious)?.contacts
-          .nodes ?? []),
-      ].map((contact) => contact.id),
-    [
-      allContacts,
-      allContactsPrevious,
-      allExcludedContacts,
-      allExcludedContactsPrevious,
-    ],
-  );
+  const allContactIds = useMemo(() => {
+    const regularContacts =
+      (allContacts ?? allContactsPrevious)?.contacts.nodes ?? [];
+    const excludedContacts =
+      (allExcludedContacts ?? allExcludedContactsPrevious)?.contacts.nodes ??
+      [];
+
+    // Only merge in the excluded contacts in the flows view
+    return [...regularContacts, ...(inFlowsView ? excludedContacts : [])].map(
+      (contact) => contact.id,
+    );
+  }, [
+    allContacts,
+    allContactsPrevious,
+    allExcludedContacts,
+    allExcludedContactsPrevious,
+  ]);
 
   const {
     ids,
