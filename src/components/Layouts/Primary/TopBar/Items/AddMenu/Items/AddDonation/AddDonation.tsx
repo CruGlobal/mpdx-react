@@ -20,8 +20,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
-import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   SubmitButton,
