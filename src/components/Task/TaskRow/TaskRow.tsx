@@ -12,7 +12,6 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { StyledCheckbox } from 'src/components/Contacts/ContactRow/ContactRow';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -70,11 +69,6 @@ const ContactRowButton = styled(Box, {
   marginTop: useTopMargin ? '20px' : '0',
 }));
 
-type OnContactClickFunction = (
-  event: React.MouseEvent<HTMLElement, MouseEvent>,
-  contactId: string,
-) => void;
-
 interface TaskRowProps {
   accountListId: string;
   task: TaskRowFragment;
@@ -82,7 +76,6 @@ interface TaskRowProps {
   onContactSelected: (taskId: string) => void;
   onTaskCheckToggle: (taskId: string) => void;
   useTopMargin?: boolean;
-  getContactHrefObject?: GetContactHrefObject;
   removeSelectedIds?: (id: string[]) => void;
   filterPanelOpen: boolean;
 }
@@ -91,10 +84,8 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   accountListId,
   task,
   isChecked,
-  onContactSelected,
   onTaskCheckToggle,
   useTopMargin,
-  getContactHrefObject,
   removeSelectedIds,
   filterPanelOpen,
 }) => {
@@ -119,10 +110,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
   const condensed = (filterPanelOpen && isLarge) || isMedium;
 
   const { openTaskModal, preloadTaskModal } = useTaskModal();
-  const onContactClick: OnContactClickFunction = (event, contactId) => {
-    event.preventDefault();
-    onContactSelected(contactId);
-  };
 
   const handleCompleteButtonPressed = () => {
     openTaskModal({ taskId: task?.id, view: TaskModalEnum.Complete });
@@ -253,8 +240,6 @@ export const TaskRow: React.FC<TaskRowProps> = ({
                       contact={contact}
                       itemIndex={index}
                       contactsLength={contacts.nodes.length}
-                      selectContact={onContactClick}
-                      getContactHrefObject={getContactHrefObject}
                       key={contact.id}
                     />
                   );

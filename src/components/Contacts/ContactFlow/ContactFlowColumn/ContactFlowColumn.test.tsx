@@ -8,7 +8,7 @@ import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
@@ -78,19 +78,19 @@ const Components = ({ starredFilter }: ComponentsProps) => (
             }}
             onCall={mutationSpy}
           >
-            <ContactsWrapper>
-              <VirtuosoMockContext.Provider
-                value={{ viewportHeight: 300, itemHeight: 100 }}
+            <VirtuosoMockContext.Provider
+              value={{ viewportHeight: 300, itemHeight: 100 }}
+            >
+              <ContactsContext.Provider
+                value={
+                  {
+                    sanitizedFilters: {},
+                    starredFilter,
+                    getContactHrefObject,
+                  } as unknown as ContactsType
+                }
               >
-                <ContactsContext.Provider
-                  value={
-                    {
-                      sanitizedFilters: {},
-                      starredFilter,
-                      getContactHrefObject,
-                    } as unknown as ContactsType
-                  }
-                >
+                <ContactPanelProvider>
                   <ContactFlowColumn
                     accountListId={accountListId}
                     selectedFilters={{}}
@@ -99,9 +99,9 @@ const Components = ({ starredFilter }: ComponentsProps) => (
                     changeContactStatus={changeContactStatus}
                     statuses={[StatusEnum.PartnerFinancial]}
                   />
-                </ContactsContext.Provider>
-              </VirtuosoMockContext.Provider>
-            </ContactsWrapper>
+                </ContactPanelProvider>
+              </ContactsContext.Provider>
+            </VirtuosoMockContext.Provider>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>
