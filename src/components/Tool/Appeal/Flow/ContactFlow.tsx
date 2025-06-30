@@ -35,12 +35,12 @@ export interface ContactFlowOption {
   color: string;
 }
 
-export const colorMap: { [key: string]: string } = {
+export const colorMap = {
   'color-danger': theme.palette.error.main,
   'color-text': theme.palette.cruGrayDark.main,
   'color-committed': theme.palette.progressBarGray.main,
   'color-given': theme.palette.progressBarYellow.main,
-  'color-received‌⁠': theme.palette.progressBarOrange.main,
+  'color-received': theme.palette.progressBarOrange.main,
 };
 
 const flowOptions: ContactFlowOption[] = [
@@ -78,7 +78,6 @@ const flowOptions: ContactFlowOption[] = [
 
 export const ContactFlow: React.FC<ContactFlowProps> = ({
   accountListId,
-  searchTerm,
   appealInfo,
   appealInfoLoading,
 }: ContactFlowProps) => {
@@ -217,7 +216,6 @@ export const ContactFlow: React.FC<ContactFlowProps> = ({
                 color={column.color}
                 appealStatus={column.status}
                 changeContactStatus={changeContactStatus}
-                searchTerm={searchTerm}
               />
             </Box>
           ))}

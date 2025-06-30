@@ -11,11 +11,11 @@ import {
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useContactsQuery } from './contacts.generated';
 import { useContactsCountQuery } from './contactsCount.generated';
 
@@ -100,15 +100,10 @@ export interface AppealsContextProps
 
 export const AppealsProvider: React.FC<AppealsContextProps> = ({
   children,
-  activeFilters,
-  setActiveFilters,
-  starredFilter,
-  setStarredFilter,
   filterPanelOpen,
   setFilterPanelOpen,
   appealId,
   contactId,
-  searchTerm,
   page,
 }) => {
   const accountListId = useAccountListId() ?? '';
@@ -121,10 +116,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
   const [tour, setTour] = useState<AppealTourEnum | null>(null);
 
-  const sanitizedFilters = useMemo(
-    () => sanitizeFilters(activeFilters),
-    [activeFilters],
-  );
+  const { activeFilters, setActiveFilters, searchTerm } = useUrlFilters();
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
@@ -156,13 +148,11 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...sanitizedFilters,
-      ...starredFilter,
+      ...activeFilters,
       wildcardSearch: searchTerm as string,
-      ids: [],
       appeal: [appealId || ''],
     }),
-    [sanitizedFilters, starredFilter, searchTerm, appealId],
+    [activeFilters, searchTerm, appealId],
   );
 
   const contactsQueryResult = useContactsQuery({
@@ -512,7 +502,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       value={{
         accountListId: accountListId ?? '',
         contactId: contactId,
-        searchTerm: searchTerm,
         contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
@@ -527,13 +516,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
         getContactUrl: getContactUrl,
-        setSearchTerm: setSearchTerm,
         handleViewModeChange: handleViewModeChange,
         activeFilters: activeFilters,
-        sanitizedFilters,
-        setActiveFilters: setActiveFilters,
-        starredFilter: starredFilter,
-        setStarredFilter: setStarredFilter,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
         contactDetailsOpen: contactDetailsId !== null,
