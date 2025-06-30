@@ -32,7 +32,6 @@ interface Props {
   panelOpen: Panel | null;
   onNavListToggle: () => void;
   onFilterListToggle: () => void;
-  activeFilters?: ReportContactFilterSetInput;
   contactDetailsOpen: boolean;
   title: string;
   contactFilters?: ReportContactFilterSetInput;
@@ -53,7 +52,6 @@ export const PartnerGivingAnalysisReport = forwardRef<
       panelOpen,
       onNavListToggle,
       onFilterListToggle,
-      activeFilters,
       contactDetailsOpen,
       title,
       contactFilters: filters,
@@ -84,10 +82,6 @@ export const PartnerGivingAnalysisReport = forwardRef<
         nameLike: `%${search}%`,
       }),
     };
-
-    const isActiveFilters = activeFilters
-      ? Object.keys(activeFilters).length > 0
-      : false;
 
     const { data, previousData, loading } =
       useGetPartnerGivingAnalysisReportQuery({
@@ -177,14 +171,11 @@ export const PartnerGivingAnalysisReport = forwardRef<
         />
         <ListHeader
           page={PageEnum.Report}
-          activeFilters={isActiveFilters}
           filterPanelOpen={panelOpen === Panel.Filters}
           toggleFilterPanel={onFilterListToggle}
           contactDetailsOpen={contactDetailsOpen}
           onCheckAllItems={toggleSelectAll}
           showShowingCount={false}
-          onSearchTermChanged={(string) => setQuery(string)}
-          searchTerm={query}
           totalItems={contactCount}
           headerCheckboxState={selectionType}
           selectedIds={ids}

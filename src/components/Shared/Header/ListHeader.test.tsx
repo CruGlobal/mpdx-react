@@ -71,8 +71,6 @@ interface ComponentsProps {
 const Components = ({
   selectedIds = defaultSelectedIds,
   page = PageEnum.Contact,
-  activeFilters = false,
-  starredFilter = {},
   contactsView,
   headerCheckboxState = ListHeaderCheckBoxState.Unchecked,
   filterPanelOpen = false,
@@ -88,8 +86,6 @@ const Components = ({
           <ListHeader
             selectedIds={selectedIds}
             page={page}
-            activeFilters={activeFilters}
-            starredFilter={starredFilter as StarredFilter}
             contactsView={contactsView}
             headerCheckboxState={headerCheckboxState}
             filterPanelOpen={filterPanelOpen}

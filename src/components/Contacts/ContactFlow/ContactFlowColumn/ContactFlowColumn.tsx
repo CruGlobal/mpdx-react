@@ -9,12 +9,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
-  ContactsContext,
-  ContactsType,
-} from 'src/components/Contacts/ContactsContext/ContactsContext';
-import {
-  ContactFilterSetInput,
   ContactFilterStatusEnum,
   PhaseEnum,
   StatusEnum,
@@ -63,11 +59,9 @@ export const CardContentInner = styled(Box, {
 export interface ContactFlowColumnProps {
   data?: ContactRowFragment[];
   statuses: StatusEnum[];
-  selectedFilters: ContactFilterSetInput;
   title: string;
   color: string;
   accountListId: string;
-  searchTerm?: string | string[];
   changeContactStatus: (
     id: string,
     status: StatusEnum,
@@ -84,19 +78,15 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
   title,
   color,
   accountListId,
-  searchTerm,
   changeContactStatus,
 }) => {
-  const { sanitizedFilters, starredFilter } = React.useContext(
-    ContactsContext,
-  ) as ContactsType;
+  const { activeFilters, searchTerm } = useUrlFilters();
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...sanitizedFilters,
-        ...starredFilter,
+        ...activeFilters,
         status: statuses as string[] as ContactFilterStatusEnum[],
         wildcardSearch: searchTerm as string,
       },

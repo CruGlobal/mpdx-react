@@ -69,9 +69,7 @@ describe('ContactsWrapper', () => {
                 <FilterPanel
                   filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
                   savedFilters={[savedFiltersMock]}
-                  selectedFilters={{}}
                   onClose={onClose}
-                  onSelectedFiltersChanged={onSelectedFiltersChanged}
                 />
               </ContactsWrapper>
             </GqlMockedProvider>
@@ -130,29 +128,17 @@ describe('ContactsWrapper', () => {
       isReady: true,
     };
 
-    const ComponentWrapper: React.FC = () => {
-      const { activeFilters, setActiveFilters } = useContext(
-        ContactsContext,
-      ) as ContactsType;
-
-      return (
-        <FilterPanel
-          filters={[filterPanelTagsMock]}
-          savedFilters={[savedFiltersMock]}
-          selectedFilters={activeFilters}
-          onClose={onClose}
-          onSelectedFiltersChanged={setActiveFilters}
-        />
-      );
-    };
-
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
               <ContactsWrapper>
-                <ComponentWrapper />
+                <FilterPanel
+                  filters={[filterPanelTagsMock]}
+                  savedFilters={[savedFiltersMock]}
+                  onClose={onClose}
+                />
               </ContactsWrapper>
             </GqlMockedProvider>
           </ThemeProvider>

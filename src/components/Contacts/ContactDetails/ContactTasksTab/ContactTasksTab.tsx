@@ -14,7 +14,6 @@ import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
-import { TaskFilterSetInput } from 'src/graphql/types.generated';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -105,18 +104,23 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   contactDetailsLoaded,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
-  const [starredFilter, setStarredFilter] = useState<TaskFilterSetInput>({});
+  const [starredFilter, setStarredFilter] = useState(false);
   const [infiniteListRectTop, setInfiniteListRectTop] = useState(260);
   const infiniteListRef = useRef<HTMLInputElement>(null);
+
+  const tasksFilter = useMemo(
+    () => ({
+      contactIds: [contactId],
+      ...(starredFilter ? { starred: true } : {}),
+      wildcardSearch: searchTerm,
+    }),
+    [contactId, starredFilter, searchTerm],
+  );
 
   const { data, loading, fetchMore } = useContactTasksTabQuery({
     variables: {
       accountListId,
-      tasksFilter: {
-        contactIds: [contactId],
-        ...starredFilter,
-        wildcardSearch: searchTerm,
-      },
+      tasksFilter,
     },
   });
 
@@ -128,14 +132,6 @@ export const ContactTasksTab: React.FC<ContactTasksTabProps> = ({
   });
   const contactPhase = phaseData?.contact?.contactPhase;
 
-  const tasksFilter = useMemo(
-    () => ({
-      contactIds: [contactId],
-      ...starredFilter,
-      wildcardSearch: searchTerm,
-    }),
-    [starredFilter, searchTerm],
-  );
   const taskCount = data?.tasks.totalCount ?? 0;
   const { data: allTasks, previousData: allTasksPrevious } =
     useGetTaskIdsForMassSelectionQuery({

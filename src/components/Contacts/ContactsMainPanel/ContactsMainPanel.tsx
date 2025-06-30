@@ -10,14 +10,9 @@ import { DynamicContactsMap } from '../ContactsMap/DynamicContactsMap';
 import { ContactsMainPanelHeader } from './ContactsMainPanelHeader';
 
 export const ContactsMainPanel: React.FC = () => {
-  const {
-    accountListId,
-    activeFilters,
-    starredFilter,
-    searchTerm,
-    viewMode,
-    userOptionsLoading,
-  } = React.useContext(ContactsContext) as ContactsType;
+  const { accountListId, viewMode, userOptionsLoading } = React.useContext(
+    ContactsContext,
+  ) as ContactsType;
 
   return (
     <>
@@ -26,14 +21,7 @@ export const ContactsMainPanel: React.FC = () => {
         (viewMode === TableViewModeEnum.List ? (
           <DynamicContactsList />
         ) : viewMode === TableViewModeEnum.Flows ? (
-          <DynamicContactFlow
-            accountListId={accountListId ?? ''}
-            selectedFilters={{
-              ...activeFilters,
-              ...starredFilter,
-            }}
-            searchTerm={searchTerm}
-          />
+          <DynamicContactFlow accountListId={accountListId ?? ''} />
         ) : (
           <DynamicContactsMap />
         ))}
