@@ -45,8 +45,15 @@ export const useUrlFilters = (): UrlFilters => {
  * @param query The query params from the router
  * @returns The URL filters
  */
-export const getQueryFilters = (query: ParsedUrlQuery) =>
-  JSON.parse(decodeURIComponent(getQueryParam(query, 'filters') ?? '{}'));
+export const getQueryFilters = (query: ParsedUrlQuery) => {
+  try {
+    return JSON.parse(
+      decodeURIComponent(getQueryParam(query, 'filters') ?? ''),
+    );
+  } catch {
+    return {};
+  }
+};
 
 export interface UrlFiltersProviderProps {
   children: ReactNode;
