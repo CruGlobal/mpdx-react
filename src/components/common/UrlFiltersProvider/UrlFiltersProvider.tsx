@@ -24,6 +24,7 @@ export interface UrlFilters {
   setActiveFilters: (newFilters: Filter) => void;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
+  clearSearchTerm: () => void;
 }
 
 const UrlFiltersContext = createContext<UrlFilters | null>(null);
@@ -71,6 +72,10 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
 
   const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
 
+  const clearSearchTerm = useCallback(() => {
+    setSearchTerm('');
+  }, []);
+
   // Update the URL when the active filters or the search term changes
   useEffect(() => {
     // Omit the filters and searchTerm from the previous query because we don't want them in the URL
@@ -110,6 +115,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
         setActiveFilters,
         searchTerm,
         setSearchTerm: setSearchTermDebounced,
+        clearSearchTerm,
       }}
     >
       {children}
