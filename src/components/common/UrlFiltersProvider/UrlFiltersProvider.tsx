@@ -99,7 +99,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
 
     const sanitizedFilters = sanitizeFilters(activeFilters);
     if (Object.keys(sanitizedFilters).length) {
-      urlQuery.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
+      urlQuery.filters = JSON.stringify(sanitizedFilters);
     }
     if (searchTerm) {
       urlQuery.searchTerm = searchTerm;
