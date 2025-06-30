@@ -116,7 +116,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
   const [tour, setTour] = useState<AppealTourEnum | null>(null);
 
-  const { activeFilters, setActiveFilters, searchTerm } = useUrlFilters();
+  const { activeFilters, setActiveFilters, searchTerm, combinedFilters } =
+    useUrlFilters();
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
@@ -148,11 +149,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...activeFilters,
-      wildcardSearch: searchTerm as string,
+      ...combinedFilters,
       appeal: [appealId || ''],
     }),
-    [activeFilters, searchTerm, appealId],
+    [combinedFilters, appealId],
   );
 
   const contactsQueryResult = useContactsQuery({

@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { omit } from 'lodash';
@@ -22,8 +23,11 @@ type Filter = ContactFilterSetInput & TaskFilterSetInput;
 export interface UrlFilters {
   activeFilters: Filter;
   setActiveFilters: (newFilters: Filter) => void;
+  combinedFilters: Filter;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
+  starred: boolean;
+  setStarred: (starred: boolean) => void;
   clearSearchTerm: () => void;
 }
 
@@ -72,6 +76,9 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     getQueryParam(query, 'searchTerm') ?? '',
   );
 
+  // The starred filter is not added to the URL
+  const [starred, setStarred] = useState(false);
+
   // Update the filters when the URL changes
   useEffect(() => {
     setActiveFilters(getQueryFilters(query));
@@ -90,10 +97,9 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm=
     const urlQuery = omit(query, ['filters', 'searchTerm']);
 
-    if (Object.keys(activeFilters).length) {
-      urlQuery.filters = encodeURIComponent(
-        JSON.stringify(sanitizeFilters(activeFilters)),
-      );
+    const sanitizedFilters = sanitizeFilters(activeFilters);
+    if (Object.keys(sanitizedFilters).length) {
+      urlQuery.filters = encodeURIComponent(JSON.stringify(sanitizedFilters));
     }
     if (searchTerm) {
       urlQuery.searchTerm = searchTerm;
@@ -115,6 +121,15 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     }
   }, [activeFilters, searchTerm]);
 
+  const combinedFilters = useMemo(
+    () => ({
+      ...activeFilters,
+      ...(starred && { starred: true }),
+      wildcardSearch: searchTerm,
+    }),
+    [activeFilters, searchTerm, starred],
+  );
+
   return (
     <UrlFiltersContext.Provider
       value={{
@@ -122,7 +137,10 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
         setActiveFilters,
         searchTerm,
         setSearchTerm: setSearchTermDebounced,
+        starred,
+        setStarred,
         clearSearchTerm,
+        combinedFilters,
       }}
     >
       {children}

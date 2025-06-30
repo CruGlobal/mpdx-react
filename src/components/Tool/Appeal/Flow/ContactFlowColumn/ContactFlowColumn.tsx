@@ -72,7 +72,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
   const { appealId, selectMultipleIds, deselectMultipleIds } = React.useContext(
     AppealsContext,
   ) as AppealsType;
-  const { searchTerm, activeFilters } = useUrlFilters();
+  const { combinedFilters: appealsFilters } = useUrlFilters();
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -81,12 +81,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...activeFilters,
+      ...appealsFilters,
       appeal: [appealId ?? ''],
       appealStatus,
-      wildcardSearch: searchTerm,
     }),
-    [activeFilters, appealId, appealStatus, searchTerm],
+    [appealsFilters, appealId, appealStatus],
   );
 
   const { data, loading, fetchMore } = useContactsQuery({
