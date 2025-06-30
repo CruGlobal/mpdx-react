@@ -17,6 +17,7 @@ import {
   PageEnum,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   AppealStatusEnum,
   AppealsContext,
@@ -59,9 +60,8 @@ export const AppealsMainPanelHeader: React.FC = () => {
     viewMode,
     handleViewModeChange,
     selectedIds,
-    activeFilters,
   } = React.useContext(AppealsContext) as AppealsType;
-
+  const { activeFilters } = useUrlFilters();
   const isExcludedPage =
     activeFilters.appealStatus === AppealStatusEnum.Excluded;
 

@@ -19,6 +19,7 @@ import {
   preloadMassActionsExportEmailsModal,
 } from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
 import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   AppealStatusEnum,
   AppealTourEnum,
@@ -66,7 +67,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const {
     accountListId,
     activeFilters,
-    setActiveFilters,
     selectedIds,
     deselectAll,
     tour,
@@ -76,6 +76,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     givenCountQueryResult,
     receivedCountQueryResult,
   } = React.useContext(AppealsContext) as AppealsType;
+  const { setActiveFilters } = useUrlFilters();
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);

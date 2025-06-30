@@ -10,7 +10,7 @@ import { useAppealQuery } from './AppealInfo.generated';
 import { AppealsMainPanelHeader } from './AppealsMainPanelHeader';
 
 export const AppealsMainPanel: React.FC = () => {
-  const { accountListId, appealId, searchTerm, viewMode, userOptionsLoading } =
+  const { accountListId, appealId, viewMode, userOptionsLoading } =
     React.useContext(AppealsContext) as AppealsType;
 
   const { data: appealInfo, loading: appealInfoLoading } = useAppealQuery({
@@ -33,7 +33,6 @@ export const AppealsMainPanel: React.FC = () => {
         ) : (
           <DynamicContactFlow
             accountListId={accountListId ?? ''}
-            searchTerm={searchTerm}
             appealInfo={appealInfo}
             appealInfoLoading={appealInfoLoading}
           />
