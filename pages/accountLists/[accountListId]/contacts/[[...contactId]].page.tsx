@@ -19,7 +19,6 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from './ContactsWrapper';
 
@@ -63,13 +62,11 @@ const Contacts: React.FC = () => {
 };
 
 const ContactsPage: React.FC = () => (
-  <UrlFiltersProvider>
-    <ContactPanelProvider>
-      <ContactsWrapper>
-        <Contacts />
-      </ContactsWrapper>
-    </ContactPanelProvider>
-  </UrlFiltersProvider>
+  <ContactPanelProvider>
+    <ContactsWrapper>
+      <Contacts />
+    </ContactsWrapper>
+  </ContactPanelProvider>
 );
 
 export default ContactsPage;

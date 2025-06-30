@@ -83,7 +83,7 @@ const TestWrapper: React.FC<TestWrapper> = ({
             },
           }}
         >
-          <ContactsWrapper addViewMode>{children}</ContactsWrapper>
+          <ContactsWrapper>{children}</ContactsWrapper>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
