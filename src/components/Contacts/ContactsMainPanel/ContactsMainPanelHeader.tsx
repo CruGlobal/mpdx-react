@@ -46,14 +46,9 @@ export const ContactsMainPanelHeader: React.FC = () => {
 
   const {
     accountListId,
-    sanitizedFilters,
     contactsQueryResult,
     toggleFilterPanel,
     toggleSelectAll,
-    setSearchTerm,
-    searchTerm,
-    starredFilter,
-    setStarredFilter,
     selectionType,
     filterPanelOpen,
     contactDetailsOpen,
@@ -66,17 +61,12 @@ export const ContactsMainPanelHeader: React.FC = () => {
   return (
     <ListHeader
       page={PageEnum.Contact}
-      activeFilters={Object.keys(sanitizedFilters).length > 0}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
       contactDetailsOpen={contactDetailsOpen}
       onCheckAllItems={toggleSelectAll}
       contactsView={viewMode}
-      onSearchTermChanged={setSearchTerm}
-      searchTerm={searchTerm}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
-      starredFilter={starredFilter}
-      toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}

@@ -19,10 +19,11 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from './ContactsWrapper';
 
-const Contacts: React.FC = ({}) => {
+const Contacts: React.FC = () => {
   const { t } = useTranslation();
   const { accountListId, filterPanelOpen, viewMode } = useContext(
     ContactsContext,
@@ -62,11 +63,13 @@ const Contacts: React.FC = ({}) => {
 };
 
 const ContactsPage: React.FC = () => (
-  <ContactsWrapper addViewMode>
+  <UrlFiltersProvider>
     <ContactPanelProvider>
-      <Contacts />
+      <ContactsWrapper>
+        <Contacts />
+      </ContactsWrapper>
     </ContactPanelProvider>
-  </ContactsWrapper>
+  </UrlFiltersProvider>
 );
 
 export default ContactsPage;

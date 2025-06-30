@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PhaseEnum } from 'pages/api/graphql-rest.page.generated';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { ContactFilterSetInput, StatusEnum } from 'src/graphql/types.generated';
+import { StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import useTaskModal from 'src/hooks/useTaskModal';
@@ -23,8 +23,6 @@ import { useFlowOptions } from './useFlowOptions';
 
 interface Props {
   accountListId: string;
-  selectedFilters: ContactFilterSetInput;
-  searchTerm?: string | string[];
 }
 
 export interface ContactFlowOption {
@@ -42,11 +40,7 @@ export const colorMap: { [key: string]: string } = {
   'color-text': theme.palette.cruGrayDark.main,
 };
 
-export const ContactFlow: React.FC<Props> = ({
-  accountListId,
-  selectedFilters,
-  searchTerm,
-}: Props) => {
+export const ContactFlow: React.FC<Props> = ({ accountListId }: Props) => {
   const [userFlowOptions, _, { loading: loadingUserOptions }] =
     useFlowOptions();
 
@@ -190,11 +184,9 @@ export const ContactFlow: React.FC<Props> = ({
               <ContactFlowColumn
                 accountListId={accountListId}
                 title={column.name}
-                selectedFilters={selectedFilters}
                 color={colorMap[column.color]}
                 statuses={column.statuses}
                 changeContactStatus={changeContactStatus}
-                searchTerm={searchTerm}
               />
             </Box>
           ))}

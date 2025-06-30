@@ -21,14 +21,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import {
-  FinancialAccountContext,
-  FinancialAccountType,
-} from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
-import {
-  AppealsContext,
-  AppealsType,
-} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,
@@ -43,10 +36,6 @@ import {
 } from 'src/graphql/types.generated';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { convertStatus } from 'src/utils/functions/convertContactStatus';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../../Contacts/ContactsContext/ContactsContext';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterListItem } from './FilterListItem';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
@@ -118,9 +107,7 @@ export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
-  selectedFilters: FilterInput;
   onClose: () => void;
-  onSelectedFiltersChanged: (selectedFilters: FilterInput) => void;
   onHandleClearSearch?: () => void;
   contextType?: ContextTypesEnum;
   showSaveButton?: boolean;
@@ -131,10 +118,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   defaultExpandedFilterGroups = new Set(),
   savedFilters,
   onClose,
-  selectedFilters,
-  onSelectedFiltersChanged,
   onHandleClearSearch,
-  contextType = ContextTypesEnum.Contacts,
   showSaveButton = true,
   ...boxProps
 }) => {
@@ -147,12 +131,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const [filterToBeDeleted, setFilterToBeDeleted] =
     useState<UserOptionFragment | null>(null);
 
-  const contactsContext = React.useContext(ContactsContext) as ContactsType;
-  const appealsContext = React.useContext(AppealsContext) as AppealsType;
-  const financialAccountContext = React.useContext(
-    FinancialAccountContext,
-  ) as FinancialAccountType;
-
   const matchFilterContactStatuses = (status: string | null | undefined) => {
     return (
       Object.values(ContactFilterStatusEnum).find(
@@ -161,12 +139,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     );
   };
 
-  const handleClearAll =
-    contextType === ContextTypesEnum.Contacts
-      ? contactsContext.handleClearAll
-      : contextType === ContextTypesEnum.Appeals
-      ? appealsContext.handleClearAll
-      : financialAccountContext.handleClearAll;
+  const { activeFilters: selectedFilters, setActiveFilters } = useUrlFilters();
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
@@ -178,18 +151,18 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
         ...selectedFilters,
         [name]: filterValue,
       };
-      onSelectedFiltersChanged(newFilters);
+      setActiveFilters(newFilters);
     } else {
       const newFilters: FilterInput = {
         ...selectedFilters,
       };
       delete newFilters[name];
 
-      onSelectedFiltersChanged(newFilters);
+      setActiveFilters(newFilters);
     }
   };
   const clearSelectedFilter = () => {
-    onSelectedFiltersChanged({});
+    setActiveFilters({});
   };
   const getSelectedFilters = (group: FilterGroup) =>
     group.filters.filter((value) => {
@@ -233,7 +206,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
             return { ...res, [key]: parsedFilter[key] };
           }, {});
         // Set the selected filter with our saved filter data
-        onSelectedFiltersChanged(newFilter);
+        setActiveFilters(newFilter);
         return;
       }
       // Map through keys to convert key to camel from snake
@@ -574,7 +547,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       }, {});
 
       // Set the selected filter with our saved filter data
-      onSelectedFiltersChanged(newFilter);
+      setActiveFilters(newFilter);
     }
   };
 
@@ -585,7 +558,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const handleClearAllClick = () => {
     onHandleClearSearch && onHandleClearSearch();
-    handleClearAll();
     clearSelectedFilter();
   };
 
@@ -614,7 +586,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 justifyContent="space-between"
                 alignItems="center"
               >
-                <Typography variant="h6" id="left-panel-header">
+                <Typography
+                  variant="h6"
+                  id="left-panel-header"
+                  data-testid="FilterPanelActiveFilters"
+                >
                   {selectedFilterCount > 0
                     ? t('Filter ({{count}} active)', {
                         count: selectedFilterCount,
@@ -652,7 +628,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               <FilterPanelTagsSection
                 filterOptions={tagsFilters}
                 selectedFilters={selectedFilters}
-                onSelectedFiltersChanged={onSelectedFiltersChanged}
+                onSelectedFiltersChanged={setActiveFilters}
               />
             )}
             <FilterList dense sx={{ paddingY: 0 }}>
