@@ -108,7 +108,6 @@ export interface FilterPanelProps {
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
   onClose: () => void;
-  onHandleClearSearch?: () => void;
   contextType?: ContextTypesEnum;
   showSaveButton?: boolean;
 }
@@ -118,7 +117,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   defaultExpandedFilterGroups = new Set(),
   savedFilters,
   onClose,
-  onHandleClearSearch,
   showSaveButton = true,
   ...boxProps
 }) => {
@@ -139,7 +137,11 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     );
   };
 
-  const { activeFilters: selectedFilters, setActiveFilters } = useUrlFilters();
+  const {
+    activeFilters: selectedFilters,
+    setActiveFilters,
+    clearSearchTerm,
+  } = useUrlFilters();
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {
@@ -557,7 +559,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   };
 
   const handleClearAllClick = () => {
-    onHandleClearSearch && onHandleClearSearch();
+    clearSearchTerm();
     clearSelectedFilter();
   };
 

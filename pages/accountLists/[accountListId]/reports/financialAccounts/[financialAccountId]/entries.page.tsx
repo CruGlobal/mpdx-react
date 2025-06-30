@@ -36,7 +36,6 @@ const FinancialAccountEntries = (): ReactElement => {
     financialAccountQuery,
     panelOpen,
     setPanelOpen,
-    setSearchTerm,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
   const { data } = financialAccountQuery;
@@ -96,10 +95,6 @@ const FinancialAccountEntries = (): ReactElement => {
     ];
   }, [data]);
 
-  const handleClearSearch = () => {
-    setSearchTerm('');
-  };
-
   return (
     <>
       <Head>
@@ -134,7 +129,6 @@ const FinancialAccountEntries = (): ReactElement => {
                   }
                   savedFilters={[]}
                   onClose={() => setPanelOpen(null)}
-                  onHandleClearSearch={handleClearSearch}
                   contextType={ContextTypesEnum.FinancialAccountReport}
                   showSaveButton={false}
                 />

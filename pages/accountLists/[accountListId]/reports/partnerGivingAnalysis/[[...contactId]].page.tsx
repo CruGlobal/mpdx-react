@@ -1,15 +1,12 @@
 import Head from 'next/head';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import {
-  PartnerGivingAnalysisReport,
-  PartnerGivingAnalysisReportRef,
-} from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
+import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   MultiPageMenu,
@@ -19,10 +16,7 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import {
-  UrlFiltersProvider,
-  useUrlFilters,
-} from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
@@ -43,8 +37,6 @@ const PageContent: React.FC = () => {
   const accountListId = useAccountListId();
   const { isOpen } = useContactPanel();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
-  const reportRef = useRef<PartnerGivingAnalysisReportRef>(null);
-  const { activeFilters } = useUrlFilters();
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -83,10 +75,6 @@ const PageContent: React.FC = () => {
     return [reportFilterGroup, ...groups];
   }, [filterData, t]);
 
-  const handleClearSearch = () => {
-    reportRef.current?.clearSearchInput();
-  };
-
   return accountListId ? (
     <SidePanelsLayout
       isScrollBox={true}
@@ -107,7 +95,6 @@ const PageContent: React.FC = () => {
               defaultExpandedFilterGroups={new Set(['Report Filters'])}
               savedFilters={[]}
               onClose={() => setPanelOpen(null)}
-              onHandleClearSearch={handleClearSearch}
             />
           )
         ) : undefined
@@ -116,13 +103,11 @@ const PageContent: React.FC = () => {
       leftWidth="290px"
       mainContent={
         <PartnerGivingAnalysisReport
-          ref={reportRef}
           accountListId={accountListId}
           panelOpen={panelOpen}
           onFilterListToggle={handleFilterListToggle}
           onNavListToggle={handleNavListToggle}
           title={t('Partner Giving Analysis')}
-          contactFilters={activeFilters}
           contactDetailsOpen={isOpen}
         />
       }
