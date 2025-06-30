@@ -110,7 +110,12 @@ const PageContent: React.FC = () => {
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { appName } = useGetAppSettings();
 
-  const { activeFilters, setActiveFilters, searchTerm } = useUrlFilters();
+  const {
+    activeFilters,
+    setActiveFilters,
+    searchTerm,
+    combinedFilters: tasksFilter,
+  } = useUrlFilters();
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
     key: 'tasks_filters_collapse',
     defaultValue: false,
@@ -133,14 +138,6 @@ const PageContent: React.FC = () => {
       ...typeDetails?.activeFiltersOptions,
     });
   };
-
-  const tasksFilter = useMemo(
-    () => ({
-      ...activeFilters,
-      wildcardSearch: searchTerm as string,
-    }),
-    [activeFilters, searchTerm],
-  );
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {

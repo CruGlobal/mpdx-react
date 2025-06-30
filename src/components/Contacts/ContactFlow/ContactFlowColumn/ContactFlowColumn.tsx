@@ -80,15 +80,14 @@ export const ContactFlowColumn: React.FC<ContactFlowColumnProps> = ({
   accountListId,
   changeContactStatus,
 }) => {
-  const { activeFilters, searchTerm } = useUrlFilters();
+  const { combinedFilters } = useUrlFilters();
 
   const { data, loading, fetchMore } = useContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters: {
-        ...activeFilters,
+        ...combinedFilters,
         status: statuses as string[] as ContactFilterStatusEnum[],
-        wildcardSearch: searchTerm as string,
       },
     },
     skip: !accountListId || statuses.length === 0,

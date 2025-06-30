@@ -121,16 +121,12 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     }
   }, [contactsView]);
 
-  const { activeFilters, setActiveFilters, searchTerm, setSearchTerm } =
-    useUrlFilters();
-
-  const contactsFilters = useMemo(
-    () => ({
-      ...activeFilters,
-      wildcardSearch: searchTerm,
-    }),
-    [activeFilters, searchTerm],
-  );
+  const {
+    activeFilters,
+    setActiveFilters,
+    setSearchTerm,
+    combinedFilters: contactsFilters,
+  } = useUrlFilters();
 
   const contactsQueryResult = useContactsQuery({
     variables: {

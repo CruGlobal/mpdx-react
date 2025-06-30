@@ -105,7 +105,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   showShowingCount = false,
   isExcludedAppealPage = false,
 }) => {
-  const { activeFilters, setActiveFilters, searchTerm, setSearchTerm } =
+  const { activeFilters, searchTerm, setSearchTerm, starred, setStarred } =
     useUrlFilters();
 
   const { t } = useTranslation();
@@ -204,10 +204,8 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {/* This hidden doesn't remove from document */}
         <Hidden smDown>
           <StarFilterButton
-            starredFilter={activeFilters.starred ?? false}
-            toggleStarredFilter={(starred) =>
-              setActiveFilters({ ...activeFilters, starred })
-            }
+            starredFilter={starred}
+            toggleStarredFilter={setStarred}
           />
         </Hidden>
       </HeaderWrapInner>
