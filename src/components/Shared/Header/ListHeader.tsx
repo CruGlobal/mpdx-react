@@ -201,13 +201,15 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           />
         )}
 
-        {/* This hidden doesn't remove from document */}
-        <Hidden smDown>
-          <StarFilterButton
-            starredFilter={starred}
-            toggleStarredFilter={setStarred}
-          />
-        </Hidden>
+        {page !== PageEnum.Report && (
+          // This hidden doesn't remove from document
+          <Hidden smDown>
+            <StarFilterButton
+              starredFilter={starred}
+              toggleStarredFilter={setStarred}
+            />
+          </Hidden>
+        )}
       </HeaderWrapInner>
     </HeaderWrap>
   );
