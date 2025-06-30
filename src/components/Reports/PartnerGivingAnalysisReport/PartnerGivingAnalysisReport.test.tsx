@@ -2,36 +2,21 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  GetPartnerGivingAnalysisIdsForMassSelectionQuery,
-  GetTaskIdsForMassSelectionQuery,
-} from 'src/hooks/GetIdsForMassSelection.generated';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
-import {
-  PartnerGivingAnalysisReport,
-  PartnerGivingAnalysisReportRef,
-} from './PartnerGivingAnalysisReport';
+import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
 import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
 const onFilterListToggle = jest.fn();
-const onSelectContact = jest.fn();
-const activeFilters = {};
-const defaultProps = {
-  accountListId,
-  title,
-  panelOpen: null,
-  onNavListToggle,
-  onFilterListToggle,
-  onSelectContact,
-  contactDetailsOpen: false,
-  activeFilters,
-};
 
 const mockEnqueue = jest.fn();
+const mutationSpy = jest.fn();
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -44,14 +29,54 @@ jest.mock('notistack', () => ({
   },
 }));
 
-jest.mock('next/router', () => ({
-  useRouter: () => {
-    return {
-      query: { accountListId: 'abc' },
-      isReady: true,
-    };
-  },
-}));
+const router = {
+  query: { accountListId: 'abc' },
+  isReady: true,
+};
+
+interface TestComponentProps {
+  noContacts?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  noContacts = false,
+}) => (
+  <TestRouter router={router}>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<{
+        GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+      }>
+        mocks={
+          noContacts
+            ? {
+                GetPartnerGivingAnalysisReport: {
+                  partnerGivingAnalysisReport: {
+                    contacts: [],
+                    pagination:
+                      mocks.GetPartnerGivingAnalysisReport
+                        .partnerGivingAnalysisReport.pagination,
+                    totalContacts: 300,
+                  },
+                },
+              }
+            : mocks
+        }
+        onCall={mutationSpy}
+      >
+        <UrlFiltersProvider>
+          <PartnerGivingAnalysisReport
+            accountListId={accountListId}
+            title={title}
+            panelOpen={null}
+            onNavListToggle={onNavListToggle}
+            onFilterListToggle={onFilterListToggle}
+            contactDetailsOpen={false}
+          />
+        </UrlFiltersProvider>
+      </GqlMockedProvider>
+    </ThemeProvider>
+  </TestRouter>
+);
 
 type Mocks = {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -224,17 +249,8 @@ const mocks: Mocks = {
 };
 
 describe('PartnerGivingAnalysisReport', () => {
-  beforeEach(() => {
-    onNavListToggle.mockClear();
-  });
   it('loading', async () => {
-    const { queryByTestId, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { queryByTestId, queryByText } = render(<TestComponent />);
 
     expect(queryByText(title)).toBeInTheDocument();
     expect(
@@ -245,15 +261,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
   it('loaded', async () => {
     const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestComponent />,
     );
 
     await waitFor(() => {
@@ -270,27 +278,8 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
-    const mocksWithZeroContacts: Mocks = {
-      GetPartnerGivingAnalysisReport: {
-        partnerGivingAnalysisReport: {
-          contacts: [],
-          pagination:
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .pagination,
-          totalContacts: 300,
-        },
-      },
-    };
     const { queryByTestId, queryByText, queryByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocksWithZeroContacts}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestComponent noContacts />,
     );
 
     await waitFor(() => {
@@ -304,19 +293,7 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('fields are sortable', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByText, queryByTestId } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(
@@ -367,19 +344,7 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('filters contacts by name', async () => {
-    const mutationSpy = jest.fn();
-    const { getByPlaceholderText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByPlaceholderText, queryByTestId } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(
@@ -405,18 +370,8 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('sets the pagination limit', async () => {
-    const mutationSpy = jest.fn();
     const { getByRole, queryByTestId, getByTestId, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
+      <TestComponent />,
     );
 
     await waitFor(() => {
@@ -448,18 +403,7 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('selects and unselects all', async () => {
-    const { getAllByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-          GetTaskIdsForMassSelection: GetTaskIdsForMassSelectionQuery;
-        }>
-          mocks={mocks}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getAllByRole, queryByTestId } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(
@@ -512,19 +456,7 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('should show contact name as a link', async () => {
-    const mutationSpy = jest.fn();
-    const { getByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByRole, queryByTestId } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(
@@ -540,19 +472,7 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('formats currencies', async () => {
-    const mutationSpy = jest.fn();
-    const { getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-          onCall={mutationSpy}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByText, queryByTestId } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(
@@ -570,55 +490,16 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('renders nav list icon and onClick triggers onNavListToggle', async () => {
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Toggle Navigation Panel' }));
     expect(onNavListToggle).toHaveBeenCalled();
   });
 
   it('renders filter list icon and onClick triggers onFilterListToggle', async () => {
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-        >
-          <PartnerGivingAnalysisReport {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
     expect(onFilterListToggle).toHaveBeenCalled();
-  });
-
-  it('Clears search input when useImperativeHook is called', async () => {
-    const ref = React.createRef<PartnerGivingAnalysisReportRef>();
-    const { getByPlaceholderText } = render(
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider<{
-          GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-        }>
-          mocks={mocks}
-        >
-          <PartnerGivingAnalysisReport ref={ref} {...defaultProps} />
-        </GqlMockedProvider>
-      </ThemeProvider>,
-    );
-
-    expect(ref.current).not.toBeNull();
-    waitFor(() => ref?.current?.clearSearchInput());
-    expect(getByPlaceholderText('Search Contacts')).toHaveValue('');
   });
 });

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -10,10 +10,6 @@ import {
   ContactDetailContext,
   ContactDetailProvider,
 } from 'src/components/Contacts/ContactDetails/ContactDetailContext';
-import {
-  ContactsContext,
-  ContactsType,
-} from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
@@ -23,9 +19,8 @@ import {
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { ContactsWrapper, extractContactId } from './ContactsWrapper';
+import { ContactsWrapper } from './ContactsWrapper';
 
-const onSelectedFiltersChanged = jest.fn();
 const onClose = jest.fn();
 
 const mockEnqueue = jest.fn();
@@ -41,16 +36,18 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const deserializeFilters = (filters: string) =>
+  JSON.parse(decodeURIComponent(filters));
+
 describe('ContactsWrapper', () => {
   it('opens and selects a saved filter X2', async () => {
-    const routeReplace = jest.fn();
+    const routerReplace = jest.fn();
     const router = {
       pathname: '/contacts',
       query: {
         accountListId: 'account-list-1',
-        filters: '%7B%22status%22:%5B%22ASK_IN_FUTURE%22%5D%7D',
       },
-      replace: routeReplace,
+      replace: routerReplace,
       isReady: true,
     };
 
@@ -109,11 +106,13 @@ describe('ContactsWrapper', () => {
       ),
     );
     expect(getByTestId('multiSelectFilter')).toBeInTheDocument();
-    expect(onSelectedFiltersChanged).toHaveBeenCalledWith({
+    expect(
+      deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
+    ).toEqual({
       status: [ContactFilterStatusEnum.ContactForAppointment],
     });
     userEvent.click(getByText('Saved Filters'));
-    expect(routeReplace).toHaveBeenCalled();
+    expect(routerReplace).toHaveBeenCalled();
   });
 
   it('tags any/all toggle does not update the URL if no tags are selected', () => {
@@ -153,85 +152,22 @@ describe('ContactsWrapper', () => {
     );
 
     userEvent.click(getByRole('button', { name: 'Any' }));
-    expect(routeReplace).toHaveBeenLastCalledWith({
-      pathname: '/contacts',
-      query: {
-        accountListId: 'account-list-1',
-        contactId: [],
-      },
-    });
+    expect(routeReplace.mock.lastCall[0].query.filters).toBeUndefined();
 
     userEvent.click(getByRole('button', { name: 'Tag 1' }));
-    expect(routeReplace).toHaveBeenLastCalledWith({
-      pathname: '/contacts',
-      query: {
-        accountListId: 'account-list-1',
-        filters: encodeURIComponent('{"tags":["Tag 1"],"anyTags":true}'),
-        contactId: [],
-      },
+    expect(
+      deserializeFilters(routeReplace.mock.lastCall[0].query.filters),
+    ).toEqual({
+      tags: ['Tag 1'],
+      anyTags: true,
     });
 
     userEvent.click(getByRole('button', { name: 'All' }));
-    expect(routeReplace).toHaveBeenLastCalledWith({
-      pathname: '/contacts',
-      query: {
-        accountListId: 'account-list-1',
-        filters: encodeURIComponent('{"tags":["Tag 1"]}'),
-        contactId: [],
-      },
+    expect(
+      deserializeFilters(routeReplace.mock.lastCall[0].query.filters),
+    ).toEqual({
+      tags: ['Tag 1'],
     });
-  });
-  it('removes personId from URL when a different contact is selected', async () => {
-    const routeReplace = jest.fn();
-    const router = {
-      pathname: '/contacts',
-      query: {
-        accountListId: 'account-list-1',
-        contactId: ['contact-1'],
-        personId: 'person-123',
-      },
-      replace: routeReplace,
-      isReady: true,
-    };
-
-    const hrefRef = {
-      current: null as ReturnType<ContactsType['getContactHrefObject']> | null,
-    };
-
-    const CaptureHrefComponent: React.FC = () => {
-      const { getContactHrefObject } = useContext(
-        ContactsContext,
-      ) as ContactsType;
-
-      useEffect(() => {
-        hrefRef.current = getContactHrefObject('contact-2');
-      }, [getContactHrefObject]);
-
-      return null;
-    };
-
-    render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider>
-              <ContactsWrapper>
-                <CaptureHrefComponent />
-              </ContactsWrapper>
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </LocalizationProvider>,
-    );
-
-    await waitFor(() => {
-      expect(hrefRef.current).not.toBeNull();
-    });
-
-    const result = hrefRef.current;
-
-    expect(result?.query.personId).toBeUndefined();
-    expect(result?.query.contactId).toEqual(['contact-2']);
   });
 });
 
@@ -276,30 +212,4 @@ it('updates personId in URL when a different person is selected', async () => {
 
   const [[replaceCall]] = routeReplace.mock.calls;
   expect(replaceCall.query.personId).toBe('person-2');
-});
-
-describe('extractContactId', () => {
-  it('returns the last item in the contactId query param', () => {
-    expect(
-      extractContactId({
-        contactId: ['flows', 'contact-1'],
-      }),
-    ).toBe('contact-1');
-  });
-
-  it('returns undefined when the last item in the contactId query param is the view mode', () => {
-    expect(
-      extractContactId({
-        contactId: ['flows'],
-      }),
-    ).toBeUndefined();
-  });
-
-  it('returns undefined when the last item in the contactId query param is empty', () => {
-    expect(
-      extractContactId({
-        contactId: [],
-      }),
-    ).toBeUndefined();
-  });
 });

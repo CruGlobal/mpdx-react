@@ -37,10 +37,7 @@ describe('ContactFlow', () => {
             <ThemeProvider theme={theme}>
               <ContactsWrapper>
                 <DndProvider backend={HTML5Backend}>
-                  <ContactFlow
-                    accountListId={accountListId}
-                    selectedFilters={{}}
-                  />
+                  <ContactFlow accountListId={accountListId} />
                 </DndProvider>
               </ContactsWrapper>
             </ThemeProvider>
@@ -62,10 +59,7 @@ describe('ContactFlow', () => {
             <ThemeProvider theme={theme}>
               <ContactsWrapper>
                 <DndProvider backend={HTML5Backend}>
-                  <ContactFlow
-                    accountListId={accountListId}
-                    selectedFilters={{}}
-                  />
+                  <ContactFlow accountListId={accountListId} />
                 </DndProvider>
               </ContactsWrapper>
             </ThemeProvider>
@@ -99,10 +93,7 @@ describe('ContactFlow', () => {
             <ThemeProvider theme={theme}>
               <ContactsWrapper>
                 <DndProvider backend={HTML5Backend}>
-                  <ContactFlow
-                    accountListId={accountListId}
-                    selectedFilters={{}}
-                  />
+                  <ContactFlow accountListId={accountListId} />
                 </DndProvider>
               </ContactsWrapper>
             </ThemeProvider>
