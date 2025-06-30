@@ -178,7 +178,7 @@ describe('partnerGivingAnalysis page', () => {
     await waitFor(() =>
       expect(replace.mock.lastCall[0].query).toEqual(
         expect.objectContaining({
-          filters: '%7B%22designationAccountId%22%3A%5B%22Sandwich%22%5D%7D',
+          filters: '{"designationAccountId":["Sandwich"]}',
           searchTerm: 'John',
         }),
       ),
