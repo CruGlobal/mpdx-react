@@ -8,12 +8,12 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
+import { TwelveMonthReport } from 'src/components/Reports/TwelveMonthReports/TwelveMonthReport';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -62,10 +62,10 @@ const PartnerCurrencyReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <FourteenMonthReport
+              <TwelveMonthReport
                 accountListId={accountListId}
                 designationAccounts={designationAccounts}
-                currencyType={FourteenMonthReportCurrencyType.Donor}
+                currencyType={TwelveMonthReportCurrencyType.Donor}
                 getContactUrl={getContactUrl}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}

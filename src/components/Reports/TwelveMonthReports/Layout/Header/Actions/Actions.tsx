@@ -7,19 +7,19 @@ import { Button, ButtonGroup, SvgIcon } from '@mui/material';
 import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 
-interface FourteenMonthReportActionsProps {
+interface TwelveMonthReportActionsProps {
   csvData: (string | number)[][];
-  currencyType: FourteenMonthReportCurrencyType;
+  currencyType: TwelveMonthReportCurrencyType;
   isExpanded: boolean;
   isMobile: boolean;
   onExpandToggle: () => void;
   onPrint: (event: React.MouseEvent<unknown>) => void;
 }
 
-export const FourteenMonthReportActions: React.FC<
-  FourteenMonthReportActionsProps
+export const TwelveMonthReportActions: React.FC<
+  TwelveMonthReportActionsProps
 > = ({
   csvData,
   currencyType,

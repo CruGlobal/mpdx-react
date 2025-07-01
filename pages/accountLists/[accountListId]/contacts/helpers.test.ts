@@ -134,7 +134,7 @@ describe('getRedirectPathname', () => {
     );
   });
 
-  it('should return the partner currency URL when user is on the partnerCurrency 14 month report page', () => {
+  it('should return the partner currency URL when user is on the partnerCurrency 12 month report page', () => {
     const pathname = getRedirectPathname({
       routerPathname:
         '/accountLists/[accountListId]/reports/partnerCurrency/[[...contactId]]',
@@ -146,7 +146,7 @@ describe('getRedirectPathname', () => {
     );
   });
 
-  it('should return the salary currency URL when user is on the salaryCurrency 14 month report page', () => {
+  it('should return the salary currency URL when user is on the salaryCurrency 12 month report page', () => {
     const pathname = getRedirectPathname({
       routerPathname:
         '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]',

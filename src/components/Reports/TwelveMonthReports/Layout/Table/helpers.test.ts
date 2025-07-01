@@ -2,16 +2,16 @@ import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
-  FourteenMonthReportContactFragment,
-  FourteenMonthReportContactFragmentDoc,
-} from '../../GetFourteenMonthReport.generated';
+  TwelveMonthReportContactFragment,
+  TwelveMonthReportContactFragmentDoc,
+} from '../../GetTwelveMonthReport.generated';
 import { calculateTotals, extractSortKey, sortContacts } from './helpers';
 
 const mockContact = (
-  mocks: ErgonoMockShape & DeepPartial<FourteenMonthReportContactFragment>,
+  mocks: ErgonoMockShape & DeepPartial<TwelveMonthReportContactFragment>,
 ) =>
-  gqlMock<FourteenMonthReportContactFragment>(
-    FourteenMonthReportContactFragmentDoc,
+  gqlMock<TwelveMonthReportContactFragment>(
+    TwelveMonthReportContactFragmentDoc,
     {
       mocks,
     },
