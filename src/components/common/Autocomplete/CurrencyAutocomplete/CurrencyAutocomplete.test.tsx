@@ -5,7 +5,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from '../../../../theme';
-import { CurrencyAutocomplete } from './CurrencyAutocomplete';
+import {
+  CurrencyAutocomplete,
+  PledgeCurrencyOptionFormatEnum,
+} from './CurrencyAutocomplete';
 
 const setSelectedCurrency = jest.fn();
 
@@ -71,5 +74,23 @@ describe('CurrencyAutocomplete', () => {
         queryByRole('option', { name: 'US Dollar - USD ($)' }),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('should show currency in short format', async () => {
+    const { getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <CurrencyAutocomplete
+            value={'USD'}
+            format={PledgeCurrencyOptionFormatEnum.Short}
+            onChange={(_, currency): void => {
+              setSelectedCurrency(currency);
+            }}
+          />
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+
+    expect(getByRole('combobox')).toHaveValue('USD ($)');
   });
 });
