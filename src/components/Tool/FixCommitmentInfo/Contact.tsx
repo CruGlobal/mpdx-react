@@ -27,7 +27,10 @@ import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
-import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import {
+  CurrencyAutocomplete,
+  PledgeCurrencyOptionFormatEnum,
+} from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactLinks } from 'src/hooks/useContactLinks';
@@ -385,6 +388,7 @@ const Contact: React.FC<Props> = ({
                                 className={classes.select}
                                 disabled={isSubmitting}
                                 value={pledgeCurrency}
+                                format={PledgeCurrencyOptionFormatEnum.Short}
                                 onChange={(_, currencyCode) => {
                                   setFieldValue('pledgeCurrency', currencyCode);
                                 }}
