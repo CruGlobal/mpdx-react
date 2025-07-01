@@ -296,7 +296,6 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                             setFieldValue('amountCurrency', currencyCode);
                           }}
                           textFieldProps={{
-                            autoFocus: false,
                             label: t('Amount Currency'),
                             error: !!errors.amountCurrency,
                           }}

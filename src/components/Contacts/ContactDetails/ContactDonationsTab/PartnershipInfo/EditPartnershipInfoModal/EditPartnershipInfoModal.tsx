@@ -520,7 +520,6 @@ export const EditPartnershipInfoModal: React.FC<
                           'aria-label': t('Currency'),
                           label: t('Currency'),
                           placeholder: t('Currency'),
-                          autoFocus: false,
                         }}
                       />
                     </FormControl>
