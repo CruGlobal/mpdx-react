@@ -35,14 +35,7 @@ export const CurrencyAutocomplete = ({
         }
         return `${selectedCurrency.name} - ${selectedCurrency.codeSymbolString}`;
       }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-          {...textFieldProps}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} {...textFieldProps} />}
     />
   );
 };
