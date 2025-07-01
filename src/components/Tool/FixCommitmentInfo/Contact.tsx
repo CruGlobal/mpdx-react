@@ -390,7 +390,6 @@ const Contact: React.FC<Props> = ({
                                 }}
                                 textFieldProps={{
                                   autoFocus: false,
-                                  placeholder: t('Currency'),
                                   label: t('Currency'),
                                   error: !!errors.pledgeCurrency,
                                 }}
