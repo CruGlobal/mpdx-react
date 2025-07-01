@@ -325,7 +325,6 @@ export const MassActionsEditFieldsModal: React.FC<
                       }}
                       textFieldProps={{
                         label: t('Commitment Currency'),
-                        autoFocus: false,
                       }}
                     />
                   </FormControl>

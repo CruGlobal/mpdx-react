@@ -110,6 +110,7 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                   placeholder: label,
                   label: label,
                   sx: { marginTop: 1 },
+                  autoFocus: true,
                 }}
               />
             </FieldWrapper>

@@ -248,7 +248,6 @@ export const AddDonation = ({
                         }}
                         textFieldProps={{
                           error: !!errors.currency,
-                          autoFocus: false,
                         }}
                         size="small"
                       />

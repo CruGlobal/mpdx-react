@@ -6,13 +6,20 @@ import {
 } from '@mui/material';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 
+export enum PledgeCurrencyOptionFormatEnum {
+  Long = 'long',
+  Short = 'short',
+}
+
 interface CurrencyAutocompleteProps
   extends Partial<AutocompleteProps<string, boolean, boolean, boolean>> {
   textFieldProps?: Partial<TextFieldProps>;
+  format?: PledgeCurrencyOptionFormatEnum;
 }
 
 export const CurrencyAutocomplete = ({
   textFieldProps,
+  format = PledgeCurrencyOptionFormatEnum.Long,
   ...props
 }: CurrencyAutocompleteProps) => {
   const constants = useApiConstants();
@@ -33,16 +40,15 @@ export const CurrencyAutocomplete = ({
         if (!selectedCurrency) {
           return '';
         }
-        return `${selectedCurrency.name} - ${selectedCurrency.codeSymbolString}`;
+
+        if (format === PledgeCurrencyOptionFormatEnum.Long) {
+          return (
+            selectedCurrency.name + ' - ' + selectedCurrency.codeSymbolString
+          );
+        }
+        return selectedCurrency.codeSymbolString ?? '';
       }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-          {...textFieldProps}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} {...textFieldProps} />}
     />
   );
 };
