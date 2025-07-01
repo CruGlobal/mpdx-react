@@ -2,22 +2,22 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReportHeader } from './Header';
+import { TwelveMonthReportHeader } from './Header';
 
 const title = 'test title';
 const onExpandToggle = jest.fn();
 const onNavListToggle = jest.fn();
 const onPrint = jest.fn();
 
-describe('FourteenMonthReportHeader', () => {
+describe('TwelveMonthReportHeader', () => {
   it('default', async () => {
     const { getByText, queryByTestId } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportHeader
+        <TwelveMonthReportHeader
           csvData={[]}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           isNavListOpen={true}
@@ -30,15 +30,15 @@ describe('FourteenMonthReportHeader', () => {
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(queryByTestId('FourteenMonthReportHeader')).toBeInTheDocument();
+    expect(queryByTestId('TwelveMonthReportHeader')).toBeInTheDocument();
   });
 
   it('expand toggle event', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportHeader
+        <TwelveMonthReportHeader
           csvData={[]}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           isNavListOpen={true}
@@ -57,9 +57,9 @@ describe('FourteenMonthReportHeader', () => {
   it('toggle nav list event', async () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <FourteenMonthReportHeader
+        <TwelveMonthReportHeader
           csvData={[]}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
+          currencyType={TwelveMonthReportCurrencyType.Salary}
           isExpanded={true}
           isMobile={true}
           isNavListOpen={true}
