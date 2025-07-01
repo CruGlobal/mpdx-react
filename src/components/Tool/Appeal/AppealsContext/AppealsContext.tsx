@@ -517,7 +517,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         setContactFocus: setContactFocus,
         getContactUrl: getContactUrl,
         handleViewModeChange: handleViewModeChange,
-        activeFilters: activeFilters,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
         contactDetailsOpen: contactDetailsId !== null,

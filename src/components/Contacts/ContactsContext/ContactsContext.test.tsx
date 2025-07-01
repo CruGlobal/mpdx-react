@@ -7,6 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from '../../../theme';
@@ -96,8 +97,8 @@ const InnerComponent: React.FC = () => {
     handleViewModeChange,
     userOptionsLoading,
     toggleSelectionById,
-    activeFilters,
   } = useContext(ContactsContext) as ContactsType;
+  const { activeFilters } = useUrlFilters();
 
   return (
     <div>

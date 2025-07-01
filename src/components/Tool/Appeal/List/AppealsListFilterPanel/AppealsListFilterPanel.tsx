@@ -66,7 +66,6 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const { t } = useTranslation();
   const {
     accountListId,
-    activeFilters,
     selectedIds,
     deselectAll,
     tour,
@@ -76,7 +75,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     givenCountQueryResult,
     receivedCountQueryResult,
   } = React.useContext(AppealsContext) as AppealsType;
-  const { setActiveFilters } = useUrlFilters();
+  const { activeFilters, setActiveFilters } = useUrlFilters();
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);

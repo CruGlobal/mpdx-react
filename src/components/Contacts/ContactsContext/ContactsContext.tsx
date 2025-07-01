@@ -14,10 +14,6 @@ import {
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useUserPreference } from 'src/hooks/useUserPreference';
@@ -53,7 +49,6 @@ export type ContactsType = {
   mapRef: React.MutableRefObject<google.maps.Map | null>;
   panTo: (coords: { lat: number; lng: number }) => void;
   mapData: Coordinates[] | undefined;
-  activeFilters: ContactFilterSetInput & TaskFilterSetInput;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   contactDetailsOpen: boolean;
@@ -266,7 +261,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
         mapRef: mapRef,
         mapData: mapData,
         panTo: panTo,
-        activeFilters: activeFilters,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
         contactDetailsOpen: false,

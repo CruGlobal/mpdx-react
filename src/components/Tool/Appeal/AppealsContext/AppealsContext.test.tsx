@@ -14,6 +14,7 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
 import { AppealTourEnum, AppealsContext, AppealsType } from './AppealsContext';
@@ -81,13 +82,13 @@ const AppealStatusFilterTestComponent: React.FC<
 const TestRender: React.FC = () => {
   const {
     viewMode,
-    activeFilters,
     handleViewModeChange,
     userOptionsLoading,
     appealId,
     contactDetailsId,
     setContactFocus,
   } = useContext(AppealsContext) as AppealsType;
+  const { activeFilters } = useUrlFilters();
   return (
     <Box>
       {!userOptionsLoading ? (

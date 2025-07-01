@@ -57,10 +57,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     tour,
     contactsQueryResult,
     isFiltered,
-    activeFilters,
     contactDetailsOpen,
   } = React.useContext(AppealsContext) as AppealsType;
-  const { searchTerm, setActiveFilters } = useUrlFilters();
+  const { searchTerm, activeFilters, setActiveFilters } = useUrlFilters();
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
