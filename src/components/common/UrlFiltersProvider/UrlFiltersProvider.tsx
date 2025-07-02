@@ -66,7 +66,12 @@ export interface UrlFiltersProviderProps {
 export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   children,
 }) => {
-  const { query, pathname, replace } = useRouter();
+  const router = useRouter();
+  const query = useMemo(
+    () => router.query,
+    // Memoize by the JSON string to ensure stability when the query changes to an equivalent object
+    [JSON.stringify(router.query)],
+  );
 
   // Extract the initial filters from the URL
   const [activeFilters, setActiveFilters] = useState<Filter>(
@@ -110,9 +115,9 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
       urlQuery.filters !== query.filters ||
       urlQuery.searchTerm !== query.searchTerm
     ) {
-      replace(
+      router.replace(
         {
-          pathname,
+          pathname: router.pathname,
           query: urlQuery,
         },
         undefined,

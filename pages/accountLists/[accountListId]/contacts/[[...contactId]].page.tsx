@@ -15,10 +15,7 @@ import {
   TableViewModeEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from './ContactsWrapper';
 
@@ -62,11 +59,9 @@ const Contacts: React.FC = () => {
 };
 
 const ContactsPage: React.FC = () => (
-  <ContactPanelProvider>
-    <ContactsWrapper>
-      <Contacts />
-    </ContactsWrapper>
-  </ContactPanelProvider>
+  <ContactsWrapper>
+    <Contacts />
+  </ContactsWrapper>
 );
 
 export default ContactsPage;

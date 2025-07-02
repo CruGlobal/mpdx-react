@@ -1,8 +1,9 @@
 import { ParsedUrlQuery } from 'node:querystring';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 
@@ -23,8 +24,7 @@ interface Props {
 }
 
 export const ContactsWrapper: React.FC<Props> = ({ children }) => {
-  const router = useRouter();
-  const { pathname, query, replace } = router;
+  const { query } = useRouter();
 
   const [viewMode, setViewMode, { loading: userOptionsLoading }] =
     useUserPreference({
@@ -32,37 +32,29 @@ export const ContactsWrapper: React.FC<Props> = ({ children }) => {
       defaultValue: getQueryViewMode(query),
     });
 
-  // Add the view mode to the URL
-  useEffect(() => {
-    replace(
-      {
-        pathname,
-        query: {
-          ...query,
-          contactId: viewMode === TableViewModeEnum.List ? [] : [viewMode],
-        },
-      },
-      undefined,
-      { shallow: true },
-    );
-  }, [viewMode]);
-
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
     key: 'contact_filters_collapse',
     defaultValue: false,
   });
 
+  const contactIdPrefix = useMemo(
+    () => (viewMode === TableViewModeEnum.List ? [] : [viewMode]),
+    [viewMode],
+  );
+
   return (
-    <UrlFiltersProvider>
-      <ContactsProvider
-        filterPanelOpen={filterPanelOpen}
-        setFilterPanelOpen={setFilterPanelOpen}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        userOptionsLoading={userOptionsLoading}
-      >
-        {children}
-      </ContactsProvider>
-    </UrlFiltersProvider>
+    <ContactPanelProvider contactIdPrefix={contactIdPrefix}>
+      <UrlFiltersProvider>
+        <ContactsProvider
+          filterPanelOpen={filterPanelOpen}
+          setFilterPanelOpen={setFilterPanelOpen}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          userOptionsLoading={userOptionsLoading}
+        >
+          {children}
+        </ContactsProvider>
+      </UrlFiltersProvider>
+    </ContactPanelProvider>
   );
 };

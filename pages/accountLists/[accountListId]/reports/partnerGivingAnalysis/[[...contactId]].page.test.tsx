@@ -156,7 +156,6 @@ describe('partnerGivingAnalysis page', () => {
       expect.objectContaining({
         query: {
           accountListId: 'account-list-1',
-          contactId: [],
         },
       }),
       undefined,
