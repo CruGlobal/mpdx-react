@@ -1,24 +1,22 @@
-import { MenuItem, MenuItemProps, Select, SelectProps } from '@mui/material';
+import { MenuItem, Select, SelectProps } from '@mui/material';
 import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 
 type PledgeFrequencySelectProps = Partial<SelectProps> & {
-  MenuItemProps?: Partial<MenuItemProps> & { [testid: string]: string };
-  getFunctionLabel: (label: string) => React.ReactNode;
   children?: React.ReactNode;
 };
 
 export const PledgeFrequencySelect = ({
-  MenuItemProps,
-  getFunctionLabel,
   children,
   ...props
 }: PledgeFrequencySelectProps) => {
+  const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   return (
     <Select {...props}>
       {children}
       {Object.values(PledgeFrequencyEnum).map((value) => (
-        <MenuItem key={value} value={value} {...MenuItemProps}>
-          {getFunctionLabel(value)}
+        <MenuItem key={value} value={value}>
+          {getLocalizedPledgeFrequency(value)}
         </MenuItem>
       ))}
     </Select>

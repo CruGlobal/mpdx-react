@@ -491,10 +491,6 @@ const Contact: React.FC<Props> = ({
                                     event.target.value,
                                   )
                                 }
-                                MenuItemProps={{
-                                  'data-testid': 'pledgeFrequencyOptions',
-                                }}
-                                getFunctionLabel={getLocalizedPledgeFrequency}
                               />
                             </FormControl>
                           </Box>

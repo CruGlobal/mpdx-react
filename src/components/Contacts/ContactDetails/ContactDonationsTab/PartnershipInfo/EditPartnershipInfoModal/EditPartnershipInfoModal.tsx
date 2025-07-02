@@ -129,8 +129,7 @@ export const EditPartnershipInfoModal: React.FC<
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const { enqueueSnackbar } = useSnackbar();
-  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
-    useLocalizedConstants();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const phases = constants?.phases;
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
@@ -498,7 +497,6 @@ export const EditPartnershipInfoModal: React.FC<
                               )
                             : undefined
                         }
-                        getFunctionLabel={getLocalizedPledgeFrequency}
                       >
                         <MenuItem value={''} disabled></MenuItem>
                       </PledgeFrequencySelectInteractive>
