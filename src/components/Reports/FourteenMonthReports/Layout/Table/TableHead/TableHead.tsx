@@ -172,7 +172,7 @@ export const FourteenMonthReportTableHead: FC<
           direction={orderBy === 'total' ? order : 'asc'}
           onClick={createSortHandler('total')}
         >
-          {t('Total')}
+          {t('12 Month Total')}
         </TableHeadCell>
       </TableRow>
     </TableHead>
