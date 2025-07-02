@@ -25,6 +25,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
+import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
@@ -472,12 +473,11 @@ const Contact: React.FC<Props> = ({
                               <InputLabel id="frequency-label">
                                 {t('Frequency')}
                               </InputLabel>
-                              <Select
+                              <PledgeFrequencySelect
                                 className={classes.select}
                                 inputProps={{
                                   'data-testid': 'pledgeFrequency-input',
                                 }}
-                                data-testid="pledgeFrequency"
                                 label={t('Frequency')}
                                 labelId="frequency-label"
                                 placeholder="Frequency"
@@ -490,19 +490,7 @@ const Contact: React.FC<Props> = ({
                                     event.target.value,
                                   )
                                 }
-                              >
-                                {Object.values(PledgeFrequencyEnum).map(
-                                  (value) => (
-                                    <MenuItem
-                                      key={value}
-                                      value={value}
-                                      data-testid="pledgeFrequencyOptions"
-                                    >
-                                      {getLocalizedPledgeFrequency(value)}
-                                    </MenuItem>
-                                  ),
-                                )}
-                              </Select>
+                              />
                             </FormControl>
                           </Box>
                         </Grid>
