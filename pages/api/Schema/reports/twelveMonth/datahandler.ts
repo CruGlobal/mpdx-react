@@ -112,7 +112,11 @@ export const mapTwelveMonthReport = (
             return {
               id: contactDonationInfo.contact_id,
               name: contact?.contact_name ?? '',
-              total: Number(contactDonationInfo.total),
+              total: contactDonationInfo.months.reduce(
+                (accumulator, currentValue) =>
+                  accumulator + Number(currentValue.total),
+                0,
+              ),
               average: Number(contactDonationInfo.average),
               minimum: Number(contactDonationInfo.minimum),
               months: contactDonationInfo.months.map((month, index) => {
