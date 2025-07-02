@@ -99,6 +99,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               setFilterPanelOpen={jest.fn()}
               viewMode={TableViewModeEnum.List}
               setViewMode={jest.fn()}
+              userOptionsLoading={false}
             >
               <FilterPanel
                 filters={filters}
