@@ -108,20 +108,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   const {
     activeFilters,
-    setActiveFilters,
     setSearchTerm,
     combinedFilters: contactsFilters,
   } = useUrlFilters();
-
-  const contactsQueryResult = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters,
-      first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
-    },
-    skip: !accountListId,
-  });
-  const { data, fetchMore } = contactsQueryResult;
 
   //#region Mass Actions
 
@@ -151,6 +140,21 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     deselectAll,
   } = useMassSelection(allContactIds);
   //#endregion
+
+  const contactsQueryResult = useContactsQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      contactsFilters:
+        // In the map view, ignore all filters and only show the selected contacts
+        // If no contacts were selected, show all contacts
+        viewMode === TableViewModeEnum.Map
+          ? { ids: ids.length ? ids : undefined }
+          : contactsFilters,
+      first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
+    },
+    skip: !accountListId,
+  });
+  const { data, fetchMore } = contactsQueryResult;
 
   // Load all pages of contacts on the map view
   useEffect(() => {
@@ -197,12 +201,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     _: React.MouseEvent<HTMLElement>,
     view: string,
   ) => {
-    const newViewMode = view as TableViewModeEnum;
-    setViewMode(viewMode);
-    if (newViewMode === TableViewModeEnum.Map && ids.length) {
-      // When switching to the map, make the filter only show the selected contacts, if any
-      setActiveFilters({ ...activeFilters, ids });
-    }
+    setViewMode(view as TableViewModeEnum);
   };
   //#endregion
 

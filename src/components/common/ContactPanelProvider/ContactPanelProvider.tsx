@@ -15,74 +15,38 @@ const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Extract the contact id from a query param.
+ * Split a contact id query param into the prefix and the contact id. For example, a contact id
+ * param value of `['map', '00000000-0000-0000-0000-000000000000']` would be split into
+ * `{ prefix: ['map'], contactId: '00000000-0000-0000-0000-000000000000' }`.
  *
- * @param query The query params from the router
- * @param contactIdParam The name of the query param that holds the contact id (usually `'contactId'`)
- * @returns The contact id from the query param
+ * @param paramValue The of the contact id query param from the router
+ * @returns The prefix and contact id from the query param
  */
-export const getQueryContactId = (
-  query: ParsedUrlQuery,
-  contactIdParam: string,
-): string | undefined => {
-  const queryParam = query[contactIdParam];
-
-  if (!Array.isArray(queryParam)) {
-    return undefined;
-  }
-
-  // The contact id is the last item in the query param array, but it must be a UUID, not "map". See
-  // the comment in setQueryContactId for more details.
-  const contactId = queryParam.at(-1);
-  if (typeof contactId === 'string' && uuidRegex.test(contactId)) {
-    return contactId;
-  } else {
-    return undefined;
-  }
-};
-
-/**
- * Given a set of router query params, return new query params with the contact modified or removed.
- *
- * @param query The query params from the router
- * @param contactIdParam The name of the query param that holds the contact id (usually `'contactId'`)
- * @param contactId The new contact id (`undefined` closes the panel)
- * @returns The updated query params
- */
-export const setQueryContactId = (
-  query: ParsedUrlQuery,
-  contactIdParam: string,
-  contactId: string | undefined,
-): ParsedUrlQuery => {
+export const splitContactIdParam = (
+  paramValue: ParsedUrlQuery[string],
+): {
+  prefix: string[];
+  contactId: string | undefined;
+} => {
   // The contact id param is always an array because it corresponds to a router segment like
   // `[[...contactId]]`. The array can contain multiple elements, for example, on the contacts page
   // for routes like ".../contacts/map/:contactId". Regardless of the number of elements in the
   // array, if the contact id is present it is always the last element in the array. Note that the
-  // last element may not be the contact id if the contact id is not present: (e.g. ["map"] on the
+  // last element may not be the contact id if the contact id is not present: (e.g. ['map'] on the
   // contact map page). See the test cases for more examples.
 
-  // Clone the existing contact id array and remove the existing contact id if it is present
-  const contactIdValue = Array.isArray(query[contactIdParam])
-    ? [...query[contactIdParam]]
-    : [];
-  // The last element is probably the existing current contact id, but it could also be part of the
-  // route (e.g. `'flows'`)
-  const lastElement = contactIdValue.pop();
-  if (typeof lastElement === 'string' && !uuidRegex.test(lastElement)) {
-    // The last element is part of the route, not a contact id, so put it back
-    contactIdValue.push(lastElement);
+  if (!Array.isArray(paramValue)) {
+    return { prefix: [], contactId: undefined };
   }
 
-  // Now, add the new contact id
-  if (typeof contactId === 'string') {
-    contactIdValue.push(contactId);
+  // The contact id is the last item in the query param array, but it must be a UUID, not 'map', for
+  // example. The prefix is the rest of the param value, e.g. ['map'].
+  const contactId = paramValue.at(-1);
+  if (typeof contactId === 'string' && uuidRegex.test(contactId)) {
+    return { prefix: paramValue.slice(0, -1), contactId };
+  } else {
+    return { prefix: paramValue, contactId: undefined };
   }
-
-  // Leave all other query params unmodified
-  return {
-    ...query,
-    [contactIdParam]: contactIdValue,
-  };
 };
 
 export interface ContactPanel {
@@ -123,41 +87,99 @@ export interface ContactPanelProviderProps {
    * is `appealId` on the appeal page.
    **/
   contactIdParam?: string;
+
+  /**
+   * The initial part of the contact id param before the contact id. It is `['map']` in the contacts
+   * map view, for example.
+   */
+  contactIdPrefix?: string[];
+
   children: ReactNode;
 }
 
 export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
   contactIdParam = 'contactId',
+  contactIdPrefix: manualContactIdPrefix,
   children,
 }) => {
-  const { query, pathname, push } = useRouter();
+  // The router object is stable across renders, so we don't need to add it to dependency arrays
+  const router = useRouter();
+
+  const contactIdParamValue = useMemo(
+    () => router.query[contactIdParam],
+    // Memoize by the JSON string to ensure stability when the query changes to an equivalent object
+    [JSON.stringify(router.query[contactIdParam])],
+  );
+
+  const { prefix: urlContactIdPrefix, contactId: urlContactId } = useMemo(
+    () => splitContactIdParam(contactIdParamValue),
+    [contactIdParamValue],
+  );
 
   // Extract the initial contact id from the URL
-  const [contactId, setContactId] = useState<string | undefined>(() =>
-    getQueryContactId(query, contactIdParam),
-  );
+  const [contactId, setContactId] = useState(() => urlContactId);
   // Update the contact id when the URL changes
   useEffect(() => {
-    setContactId(getQueryContactId(query, contactIdParam));
-  }, [query, contactIdParam]);
+    setContactId(urlContactId);
+  }, [contactIdParamValue]);
 
-  const updateContactAndUrl = useCallback(
-    (contactId: string | undefined) => {
-      const newQuery = setQueryContactId(query, contactIdParam, contactId);
-      push({ pathname, query: newQuery }, undefined, { shallow: true });
-
-      // Optimistically set the contact id
-      setContactId(contactId);
-    },
-    [query, pathname, contactIdParam, push],
+  const contactIdPrefix = useMemo(
+    () => manualContactIdPrefix ?? urlContactIdPrefix,
+    [manualContactIdPrefix, contactIdParamValue],
   );
 
+  // Update the URL when the prefix changes
+  useEffect(() => {
+    updateContactAndUrl(contactId);
+    // Memoize by the JSON string to ensure stability when the prefix changes to an equivalent array
+  }, [JSON.stringify(contactIdPrefix)]);
+
   const buildContactUrl = useCallback(
-    (contactId: string): UrlObject => ({
-      pathname,
-      query: setQueryContactId(query, contactIdParam, contactId),
-    }),
-    [query, pathname, contactIdParam],
+    (newContactId: string | undefined): UrlObject => {
+      const newContactIdParamValue =
+        typeof newContactId === 'string'
+          ? [...contactIdPrefix, newContactId]
+          : contactIdPrefix;
+
+      const newQuery = {
+        ...router.query,
+        [contactIdParam]: newContactIdParamValue,
+      };
+      // Remove the contact id from the URL entirely if it is empty
+      if (!newContactIdParamValue.length) {
+        delete newQuery[contactIdParam];
+      }
+
+      return {
+        pathname: router.pathname,
+        query: newQuery,
+      };
+    },
+    [
+      router.pathname,
+      // Memoize by the JSON string to reduce rerenders when the query changes to an equivalent object
+      JSON.stringify(router.query),
+      contactIdPrefix,
+      contactIdParam,
+    ],
+  );
+
+  const updateContactAndUrl = useCallback(
+    (newContactId: string | undefined) => {
+      const url = buildContactUrl(newContactId);
+      const newContactIdParamValue = url.query?.[contactIdParam];
+      // Avoid unnecessarily changing the route if the contact id didn't actually change
+      if (
+        JSON.stringify(contactIdParamValue) !==
+        JSON.stringify(newContactIdParamValue)
+      ) {
+        router.push(url, undefined, { shallow: true });
+      }
+
+      // Optimistically set the contact id
+      setContactId(newContactId);
+    },
+    [buildContactUrl, contactIdParamValue],
   );
 
   const closePanel = useCallback(() => {
