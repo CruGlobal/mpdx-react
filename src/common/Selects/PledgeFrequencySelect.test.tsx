@@ -12,7 +12,7 @@ const value = '';
 
 describe('PledgeFrequencySelect', () => {
   it('should render the select', async () => {
-    const { getByRole, getByTestId, findByText } = render(
+    const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <PledgeFrequencySelect
@@ -20,20 +20,14 @@ describe('PledgeFrequencySelect', () => {
             value={value}
             onChange={onChange}
           />
-          ,
         </ThemeProvider>
       </LocalizationProvider>,
     );
 
-    const select = getByTestId('pledgeFrequency');
-    expect(select).toBeInTheDocument();
+    const openDropdown = getByRole('combobox');
+    expect(openDropdown).toBeInTheDocument();
 
-    const open = getByRole('combobox');
-    await userEvent.click(open);
-
-    const option = await findByText('Annual');
-    userEvent.click(option);
-
-    expect(option).toBeInTheDocument();
+    userEvent.click(openDropdown);
+    userEvent.click(await getByRole('option', { name: 'Annual' }));
   });
 });
