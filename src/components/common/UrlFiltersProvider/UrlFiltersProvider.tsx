@@ -135,19 +135,29 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     [activeFilters, searchTerm, starred],
   );
 
+  const contextValue = useMemo(
+    () => ({
+      activeFilters,
+      setActiveFilters,
+      searchTerm,
+      setSearchTerm: setSearchTermDebounced,
+      starred,
+      setStarred,
+      clearSearchTerm,
+      combinedFilters,
+    }),
+    [
+      activeFilters,
+      searchTerm,
+      setSearchTermDebounced,
+      starred,
+      clearSearchTerm,
+      combinedFilters,
+    ],
+  );
+
   return (
-    <UrlFiltersContext.Provider
-      value={{
-        activeFilters,
-        setActiveFilters,
-        searchTerm,
-        setSearchTerm: setSearchTermDebounced,
-        starred,
-        setStarred,
-        clearSearchTerm,
-        combinedFilters,
-      }}
-    >
+    <UrlFiltersContext.Provider value={contextValue}>
       {children}
     </UrlFiltersContext.Provider>
   );

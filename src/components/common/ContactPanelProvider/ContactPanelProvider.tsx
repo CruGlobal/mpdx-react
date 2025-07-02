@@ -186,16 +186,19 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
     updateContactAndUrl(undefined);
   }, [updateContactAndUrl]);
 
+  const contextValue = useMemo(
+    () => ({
+      openContactId: contactId,
+      isOpen: typeof contactId === 'string',
+      openContact: updateContactAndUrl,
+      closePanel,
+      buildContactUrl,
+    }),
+    [contactId, updateContactAndUrl, closePanel, buildContactUrl],
+  );
+
   return (
-    <ContactPanelContext.Provider
-      value={{
-        openContactId: contactId,
-        isOpen: typeof contactId === 'string',
-        openContact: updateContactAndUrl,
-        closePanel,
-        buildContactUrl,
-      }}
-    >
+    <ContactPanelContext.Provider value={contextValue}>
       {children}
     </ContactPanelContext.Provider>
   );
