@@ -26,6 +26,7 @@ export interface FourteenMonthReportResponse {
           contact_id: string;
           maximum: number | string;
           minimum: number | string;
+          complete_months_total: number | string;
           months: {
             total: number | string;
             donations: {
@@ -113,6 +114,9 @@ export const mapFourteenMonthReport = (
               id: contactDonationInfo.contact_id,
               name: contact?.contact_name ?? '',
               total: Number(contactDonationInfo.total),
+              completeMonthsTotal: Number(
+                contactDonationInfo.complete_months_total,
+              ),
               average: Number(contactDonationInfo.average),
               minimum: Number(contactDonationInfo.minimum),
               months: contactDonationInfo.months.map((month, index) => {
