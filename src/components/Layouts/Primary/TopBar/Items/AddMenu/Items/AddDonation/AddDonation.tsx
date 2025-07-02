@@ -255,7 +255,7 @@ export const AddDonation = ({
                         error={true}
                         data-testid="pledgeCurrencyError"
                       >
-                        {errors.currency && errors.currency}
+                        {touched.currency && errors.currency}
                       </FormHelperText>
                     </Box>
                   </FormControl>
