@@ -70,6 +70,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
         page={page}
         viewMode={TableViewModeEnum.List}
         setViewMode={doNothing}
+        userOptionsLoading={false}
       >
         {children}
       </AppealsProvider>

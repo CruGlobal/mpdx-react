@@ -17,6 +17,7 @@ describe('ContactsMap', () => {
               setFilterPanelOpen={jest.fn()}
               viewMode={TableViewModeEnum.Map}
               setViewMode={jest.fn()}
+              userOptionsLoading={false}
             >
               <ContactsMap />
             </ContactsProvider>

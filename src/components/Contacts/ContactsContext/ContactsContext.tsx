@@ -16,7 +16,6 @@ import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/cont
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { useUserPreference } from 'src/hooks/useUserPreference';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
@@ -68,7 +67,8 @@ export interface ContactsContextProps {
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   viewMode: TableViewModeEnum;
-  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
+  setViewMode: (newViewMode: TableViewModeEnum) => void;
+  userOptionsLoading: boolean;
 }
 
 export const ContactsContextSavedFilters = (
@@ -101,20 +101,10 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   setFilterPanelOpen,
   viewMode,
   setViewMode,
+  userOptionsLoading,
 }) => {
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
-
-  const [contactsView, saveContactsView, { loading: userOptionsLoading }] =
-    useUserPreference({
-      key: 'contacts_view',
-      defaultValue: TableViewModeEnum.List,
-    });
-  useEffect(() => {
-    if (contactsView) {
-      setViewMode(contactsView);
-    }
-  }, [contactsView]);
 
   const {
     activeFilters,
@@ -208,7 +198,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     view: string,
   ) => {
     const newViewMode = view as TableViewModeEnum;
-    saveContactsView(newViewMode);
+    setViewMode(viewMode);
     if (newViewMode === TableViewModeEnum.Map && ids.length) {
       // When switching to the map, make the filter only show the selected contacts, if any
       setActiveFilters({ ...activeFilters, ids });
