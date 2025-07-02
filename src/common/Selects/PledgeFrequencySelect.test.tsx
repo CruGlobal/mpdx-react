@@ -6,28 +6,28 @@ import userEvent from '@testing-library/user-event';
 import theme from '../../theme';
 import { PledgeFrequencySelect } from './PledgeFrequencySelect';
 
-const onChange = jest.fn();
+const mockOnChange = jest.fn();
 const label = '';
 const value = '';
 
 describe('PledgeFrequencySelect', () => {
-  it('should render the select', async () => {
+  it('should render the select', () => {
     const { getByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <PledgeFrequencySelect
             label={label}
             value={value}
-            onChange={onChange}
+            onChange={mockOnChange}
           />
         </ThemeProvider>
       </LocalizationProvider>,
     );
 
-    const openDropdown = getByRole('combobox');
-    expect(openDropdown).toBeInTheDocument();
+    userEvent.click(getByRole('combobox'));
+    userEvent.click(getByRole('option', { name: 'Annual' }));
 
-    userEvent.click(openDropdown);
-    userEvent.click(await getByRole('option', { name: 'Annual' }));
+    const mockValue = mockOnChange.mock.calls[0][0];
+    expect(mockValue.target.value).toEqual('ANNUAL');
   });
 });
