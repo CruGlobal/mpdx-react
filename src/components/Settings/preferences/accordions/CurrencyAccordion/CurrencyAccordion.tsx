@@ -1,14 +1,13 @@
 import React, { ReactElement } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
@@ -35,8 +34,6 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
-  const constants = useApiConstants();
-  const currencies = constants?.pledgeCurrency ?? [];
   const label = t('Default Currency');
 
   const onSubmit = async (
@@ -103,34 +100,18 @@ export const CurrencyAccordion: React.FC<CurrencyAccordionProps> = ({
                 'This should be the currency that you receive your paychecks in. This will be used when converting donations in other currencies.',
               )}
             >
-              <Autocomplete
+              <CurrencyAutocomplete
                 disabled={isSubmitting}
-                autoHighlight
                 value={currency}
-                onChange={(_, id) => {
-                  setFieldValue('currency', id);
+                onChange={(_, currencyCode) => {
+                  setFieldValue('currency', currencyCode);
                 }}
-                options={currencies.map((cur) => cur.code) || []}
-                getOptionLabel={(currency): string => {
-                  const selectedCurrency = currencies.find(
-                    ({ code }) => code === currency,
-                  );
-                  if (!selectedCurrency) {
-                    return '';
-                  }
-                  return `${selectedCurrency.name} - ${selectedCurrency.codeSymbolString}`;
+                textFieldProps={{
+                  placeholder: label,
+                  label: label,
+                  sx: { marginTop: 1 },
+                  autoFocus: true,
                 }}
-                fullWidth
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder={label}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus
-                    label={label}
-                    sx={{ marginTop: 1 }}
-                  />
-                )}
               />
             </FieldWrapper>
           </FormWrapper>
