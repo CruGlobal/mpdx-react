@@ -478,7 +478,6 @@ const Contact: React.FC<Props> = ({
                                 inputProps={{
                                   'data-testid': 'pledgeFrequency-input',
                                 }}
-                                data-testid="pledgeFrequency"
                                 label={t('Frequency')}
                                 labelId="frequency-label"
                                 placeholder="Frequency"
