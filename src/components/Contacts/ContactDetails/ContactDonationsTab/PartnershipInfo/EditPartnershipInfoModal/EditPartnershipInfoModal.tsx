@@ -470,6 +470,7 @@ export const EditPartnershipInfoModal: React.FC<
                         {t('Frequency')}
                       </InputLabel>
                       <PledgeFrequencySelectInteractive
+                        //data-testid="pledgeFrequency"
                         label={t('Frequency')}
                         labelId="frequency-select-label"
                         value={pledgeFrequency ?? ''}

@@ -12,7 +12,7 @@ export const PledgeFrequencySelect = ({
 }: PledgeFrequencySelectProps) => {
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   return (
-    <Select {...props}>
+    <Select data-testid="pledgeFrequency" {...props}>
       {children}
       {Object.values(PledgeFrequencyEnum).map((value) => (
         <MenuItem key={value} value={value}>
