@@ -19,7 +19,9 @@ import {
 } from './ContactsContext';
 
 const accountListId = 'account-list-1';
-const replace = jest.fn();
+const contactId = '00000000-0000-0000-0000-000000000000';
+const push = jest.fn();
+const mutationSpy = jest.fn();
 
 const mockEnqueue = jest.fn();
 
@@ -54,7 +56,7 @@ const TestWrapper: React.FC<TestWrapper> = ({
           query: { accountListId, contactId },
           pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
           isReady: true,
-          replace,
+          push,
         }}
       >
         <GqlMockedProvider<{
@@ -83,6 +85,7 @@ const TestWrapper: React.FC<TestWrapper> = ({
               ],
             },
           }}
+          onCall={mutationSpy}
         >
           <ContactsWrapper>{children}</ContactsWrapper>
         </GqlMockedProvider>
@@ -153,7 +156,7 @@ const TestRenderContactsFilters: React.FC = () => {
 describe('ContactsPageContext', () => {
   it('has a contact id and switches from list to flows', async () => {
     const { getByText, findByText } = render(
-      <TestWrapper contactId={['list', 'abc']}>
+      <TestWrapper contactId={['list', contactId]}>
         <InnerComponent />
       </TestWrapper>,
     );
@@ -162,19 +165,23 @@ describe('ContactsPageContext', () => {
     userEvent.click(await findByText('Flows Button'));
     expect(await findByText('flows')).toBeInTheDocument();
     await waitFor(() =>
-      expect(replace).toHaveBeenCalledWith({
-        pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-        query: {
-          accountListId: 'account-list-1',
-          contactId: ['flows', 'abc'],
+      expect(push).toHaveBeenCalledWith(
+        {
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          query: {
+            accountListId: 'account-list-1',
+            contactId: ['flows', contactId],
+          },
         },
-      }),
+        undefined,
+        { shallow: true },
+      ),
     );
   });
 
   it('has a contact id and switches twice', async () => {
     const { getByText, findByText } = render(
-      <TestWrapper contactId={['list', 'abc']} contactView="flows">
+      <TestWrapper contactId={['list', contactId]} contactView="flows">
         <InnerComponent />
       </TestWrapper>,
     );
@@ -183,25 +190,33 @@ describe('ContactsPageContext', () => {
     userEvent.click(await findByText('Map Button'));
     expect(await findByText('map')).toBeInTheDocument();
     await waitFor(() =>
-      expect(replace).toHaveBeenCalledWith({
-        pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-        query: {
-          accountListId: 'account-list-1',
-          contactId: ['map', 'abc'],
+      expect(push).toHaveBeenLastCalledWith(
+        {
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          query: {
+            accountListId: 'account-list-1',
+            contactId: ['map', contactId],
+          },
         },
-      }),
+        undefined,
+        { shallow: true },
+      ),
     );
 
     userEvent.click(getByText('List Button'));
     expect(await findByText('list')).toBeInTheDocument();
     await waitFor(() =>
-      expect(replace).toHaveBeenCalledWith({
-        pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-        query: {
-          accountListId: 'account-list-1',
-          contactId: ['abc'],
+      expect(push).toHaveBeenLastCalledWith(
+        {
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          query: {
+            accountListId: 'account-list-1',
+            contactId: [contactId],
+          },
         },
-      }),
+        undefined,
+        { shallow: true },
+      ),
     );
   });
 
@@ -216,13 +231,17 @@ describe('ContactsPageContext', () => {
     userEvent.click(await findByText('Map Button'));
     expect(await findByText('map')).toBeInTheDocument();
     await waitFor(() =>
-      expect(replace).toHaveBeenCalledWith({
-        pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
-        query: {
-          accountListId: 'account-list-1',
-          contactId: [],
+      expect(push).toHaveBeenCalledWith(
+        {
+          pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+          query: {
+            accountListId: 'account-list-1',
+            contactId: ['map'],
+          },
         },
-      }),
+        undefined,
+        { shallow: true },
+      ),
     );
   });
 
@@ -235,8 +254,10 @@ describe('ContactsPageContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Select contact' }));
     userEvent.click(await findByRole('button', { name: 'Map Button' }));
-    expect(getByTestId('active-filters')).toHaveTextContent(
-      '{"ids":["contact-1"]}',
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+        contactsFilters: { ids: ['contact-1'] },
+      }),
     );
 
     userEvent.click(getByRole('button', { name: 'List Button' }));
