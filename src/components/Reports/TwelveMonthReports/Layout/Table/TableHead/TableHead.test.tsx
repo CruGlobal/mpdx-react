@@ -59,7 +59,7 @@ describe('TwelveMonthReportTableHead', () => {
       </ThemeProvider>,
     );
 
-    userEvent.click(getByText('Total'));
+    userEvent.click(getByText('12 Month Total'));
     expect(onRequestSort).toHaveBeenCalled();
   });
   it('Confirm months headers are not showing with no data', async () => {
