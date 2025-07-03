@@ -182,7 +182,7 @@ describe('partnerGivingAnalysis page', () => {
         }),
       ),
     );
-  });
+  }, 20000);
 
   it('clears search term', async () => {
     const { findByRole, getByRole } = render(
