@@ -32,6 +32,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { NewsletterSelect } from 'src/components/common/NewsletterSelect/NewsletterSelect';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -47,7 +48,6 @@ import {
   parseNumberFromCurrencyString,
 } from 'src/lib/intlFormat';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';
@@ -362,7 +362,7 @@ export const EditPartnershipInfoModal: React.FC<
                       <InputLabel id="newsletter-select-label">
                         {t('Newsletter')}
                       </InputLabel>
-                      <Select
+                      <NewsletterSelect
                         label={t('Newsletter')}
                         labelId="newsletter-select-label"
                         value={sendNewsletter}
@@ -372,18 +372,7 @@ export const EditPartnershipInfoModal: React.FC<
                             e.target.value as SendNewsletterEnum,
                           )
                         }
-                      >
-                        {[
-                          SendNewsletterEnum.None,
-                          SendNewsletterEnum.Email,
-                          SendNewsletterEnum.Physical,
-                          SendNewsletterEnum.Both,
-                        ].map((value) => (
-                          <MenuItem key={value} value={value}>
-                            {getLocalizedSendNewsletter(t, value)}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      />
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
