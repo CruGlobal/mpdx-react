@@ -21,7 +21,11 @@ const activeFilters = { status: [AppealStatusEnum.Asked] };
 const selectedIds = ['1', '2'];
 const routerReplace = jest.fn();
 const router = {
-  query: { accountListId, appealId: ['1', 'list'] },
+  query: {
+    accountListId,
+    appealId: ['1', 'list'],
+    filters: JSON.stringify(activeFilters),
+  },
   replace: routerReplace,
   isReady: true,
 };
@@ -59,7 +63,6 @@ const Components = ({ ids = selectedIds }) => (
                 {
                   accountListId,
                   appealId,
-                  activeFilters,
                   selectedIds: ids,
                   deselectAll,
                   askedCountQueryResult: defaultContactCountMock,
