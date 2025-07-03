@@ -24,15 +24,7 @@ export const LanguageAutocomplete = ({
       {...props}
       options={languages.map((language) => language.id) || []}
       getOptionLabel={(locale) => formatLanguage(locale)}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          {...TextFieldProps}
-          InputProps={{
-            ...params.InputProps,
-          }}
-        />
-      )}
+      renderInput={(params) => <TextField {...params} {...TextFieldProps} />}
     />
   );
 };

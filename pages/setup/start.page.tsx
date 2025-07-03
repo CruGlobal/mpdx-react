@@ -66,7 +66,6 @@ const StartPage = (): ReactElement => {
             setLocale(value);
           }}
           TextFieldProps={{
-            placeholder: t('Language'),
             label: t('Language'),
           }}
         />
