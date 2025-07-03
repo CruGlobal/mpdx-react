@@ -207,12 +207,8 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
                           {t('Location')}
                         </InputLabel>
                         <AddressLocationSelect
-                          name="location"
-                          label={t('Location')}
-                          labelId="location-select-label"
                           value={location}
                           onChange={handleChange}
-                          fullWidth
                         />
                       </FormControl>
                     </Grid>

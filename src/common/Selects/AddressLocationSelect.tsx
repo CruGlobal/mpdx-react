@@ -12,7 +12,13 @@ export const AddressLocationSelect = ({
 }: AddressLocationSelectProps) => {
   const { t } = useTranslation();
   return (
-    <Select {...props}>
+    <Select
+      name="location"
+      label={t('Location')}
+      labelId="location-select-label"
+      fullWidth
+      {...props}
+    >
       {Object.values(AddressLocationEnum).map((value) => (
         <MenuItem
           key={value}
