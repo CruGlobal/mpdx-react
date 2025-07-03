@@ -6,8 +6,6 @@ import {
   DialogContent,
   FormControl,
   InputLabel,
-  MenuItem,
-  Select,
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -19,13 +17,13 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { NewsletterSelect } from 'src/components/common/NewsletterSelect/NewsletterSelect';
 import {
   Contact,
   ContactUpdateInput,
   SendNewsletterEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../../../common/Modal/Modal';
 import { useEditMailingInfoMutation } from './EditMailingInfoModal.generated';
 
@@ -151,7 +149,7 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                     <InputLabel id="send-newsletter-select-label">
                       {t('Newsletter')}
                     </InputLabel>
-                    <Select
+                    <NewsletterSelect
                       label={t('Newsletter')}
                       labelId="send-newsletter-select-label"
                       value={sendNewsletter}
@@ -161,18 +159,7 @@ export const EditMailingInfoModal: React.FC<EditMailingInfoModalProps> = ({
                           e.target.value as SendNewsletterEnum,
                         )
                       }
-                    >
-                      {[
-                        SendNewsletterEnum.None,
-                        SendNewsletterEnum.Email,
-                        SendNewsletterEnum.Physical,
-                        SendNewsletterEnum.Both,
-                      ].map((value) => (
-                        <MenuItem key={value} value={value}>
-                          {getLocalizedSendNewsletter(t, value)}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                    />
                   </FormControl>
                 </ContactInputWrapper>
               </ContactEditContainer>
