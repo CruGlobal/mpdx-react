@@ -17,11 +17,6 @@ import { ContactsList } from './ContactsList';
 const accountListId = 'account-list-1';
 const appealId = 'appealId';
 
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
-
 const getContactUrl = jest.fn().mockReturnValue({
   contactUrl: `/contacts/123`,
 });
@@ -49,41 +44,44 @@ const Components = ({
   tour = false,
   appealStatus = AppealStatusEnum.Asked,
   contactsQueryResult = defaultContactsQueryResult,
-}: ComponentsProps) => (
-  <TestRouter router={router}>
-    <GqlMockedProvider>
-      <ThemeProvider theme={theme}>
-        <AppealsWrapper>
-          <AppealsContext.Provider
-            value={
-              {
-                appealId,
-                accountListId,
-                tour,
-                isFiltered: true,
-                searchTerm: '',
-                setActiveFilters: jest.fn(),
-                activeFilters: {
-                  appealStatus,
-                },
-                contactsQueryResult,
-                getContactUrl,
-                isRowChecked,
-                contactDetailsOpen,
-                toggleSelectionById,
-              } as unknown as AppealsType
-            }
-          >
-            <ContactsList
-              appealInfo={defaultAppealQuery}
-              appealInfoLoading={appealInfoLoading}
-            />
-          </AppealsContext.Provider>
-        </AppealsWrapper>
-      </ThemeProvider>
-    </GqlMockedProvider>
-  </TestRouter>
-);
+}: ComponentsProps) => {
+  const activeFilters = { appealStatus };
+  const router = {
+    query: { accountListId, filters: JSON.stringify(activeFilters) },
+    isReady: true,
+  };
+
+  return (
+    <TestRouter router={router}>
+      <GqlMockedProvider>
+        <ThemeProvider theme={theme}>
+          <AppealsWrapper>
+            <AppealsContext.Provider
+              value={
+                {
+                  appealId,
+                  accountListId,
+                  tour,
+                  isFiltered: true,
+                  contactsQueryResult,
+                  getContactUrl,
+                  isRowChecked,
+                  contactDetailsOpen,
+                  toggleSelectionById,
+                } as unknown as AppealsType
+              }
+            >
+              <ContactsList
+                appealInfo={defaultAppealQuery}
+                appealInfoLoading={appealInfoLoading}
+              />
+            </AppealsContext.Provider>
+          </AppealsWrapper>
+        </ThemeProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  );
+};
 
 describe('ContactsRow', () => {
   describe('NullState Message', () => {
