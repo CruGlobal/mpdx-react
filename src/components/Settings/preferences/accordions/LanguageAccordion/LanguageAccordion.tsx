@@ -1,5 +1,4 @@
 import React, { ReactElement, useMemo } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -8,9 +7,10 @@ import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/Acco
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
+import { LanguageAutocomplete } from 'src/components/common/Autocomplete/LanguageAutocomplete/LanguageAutocomplete';
 import { Preference } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { formatLanguage, languages } from 'src/lib/data/languages';
+import { languages } from 'src/lib/data/languages';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
@@ -103,26 +103,17 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
                 { appName },
               )}
             >
-              <Autocomplete
+              <LanguageAutocomplete
                 disabled={isSubmitting}
-                autoHighlight
                 value={locale}
                 onChange={(_, value) => {
                   setFieldValue('locale', value);
                 }}
-                options={languages.map((language) => language.id) || []}
-                getOptionLabel={(locale): string => formatLanguage(locale)}
-                fullWidth
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder={label}
-                    label={label}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus
-                    sx={{ marginTop: 1 }}
-                  />
-                )}
+                TextFieldProps={{
+                  label,
+                  placeholder: label,
+                  sx: { marginTop: 1 },
+                }}
               />
             </FieldWrapper>
           </FormWrapper>
