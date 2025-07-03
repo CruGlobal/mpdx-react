@@ -63,6 +63,7 @@ export const LevelOfEffort: React.FC<LevelOfEffortProps> = ({
         'followUpPhoneCall',
         'followUpSocialMedia',
         'followUpTextMessage',
+        'followUpLetterCard',
         'followUpToDo',
         'initiationEmail',
         'initiationInPerson',
