@@ -88,20 +88,19 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           'No gifts have been received and not yet processed to this appeal',
         );
     }
-  }, [appealStatus]);
+  }, [t, appealStatus]);
 
   const columnName = useMemo(() => {
-    let name = t('Regular Giving');
     if (
       appealStatus === AppealStatusEnum.NotReceived ||
       appealStatus === AppealStatusEnum.ReceivedNotProcessed
     ) {
-      name = t('Amount Committed');
+      return t('Amount Committed');
     } else if (appealStatus === AppealStatusEnum.Processed) {
-      name = t('Donation(s)');
+      return t('Donation(s)');
     }
-    return name;
-  }, [activeFilters]);
+    return t('Regular Giving');
+  }, [t, activeFilters]);
 
   const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
 
