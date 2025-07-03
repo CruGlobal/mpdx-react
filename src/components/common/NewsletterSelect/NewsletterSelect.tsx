@@ -12,7 +12,12 @@ export const NewsletterSelect: React.FC<SelectProps> = ({
   return (
     <Select {...props}>
       {children}
-      {Object.values(SendNewsletterEnum).map((value) => (
+      {[
+        SendNewsletterEnum.None,
+        SendNewsletterEnum.Email,
+        SendNewsletterEnum.Physical,
+        SendNewsletterEnum.Both,
+      ].map((value) => (
         <MenuItem key={value} value={value}>
           {getLocalizedSendNewsletter(t, value)}
         </MenuItem>
@@ -20,5 +25,3 @@ export const NewsletterSelect: React.FC<SelectProps> = ({
     </Select>
   );
 };
-
-export default NewsletterSelect;
