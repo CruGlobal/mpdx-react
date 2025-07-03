@@ -1,6 +1,13 @@
 import { ParsedUrlQueryInput } from 'querystring';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { debounce, omit } from 'lodash';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
@@ -72,6 +79,8 @@ export interface AppealsType
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   page: PageEnum | undefined;
+  listAppealStatus: AppealStatusEnum;
+  setListAppealStatus: Dispatch<SetStateAction<AppealStatusEnum>>;
   tour: AppealTourEnum | null;
   nextTourStep: () => void;
   hideTour: () => void;
@@ -115,9 +124,11 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     TableViewModeEnum.Flows,
   );
   const [tour, setTour] = useState<AppealTourEnum | null>(null);
+  const [listAppealStatus, setListAppealStatus] = useState<AppealStatusEnum>(
+    AppealStatusEnum.Asked,
+  );
 
-  const { activeFilters, setActiveFilters, searchTerm, combinedFilters } =
-    useUrlFilters();
+  const { activeFilters, searchTerm, combinedFilters } = useUrlFilters();
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
@@ -135,12 +146,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
       ) {
         setViewMode(TableViewModeEnum.List);
         setFilterPanelOpen(true);
-        // Default to showing the asked contacts
-        if (!activeFilters.appealStatus) {
-          setActiveFilters({
-            appealStatus: AppealStatusEnum.Asked,
-          });
-        }
+        setListAppealStatus(AppealStatusEnum.Asked);
       } else {
         setViewMode(defaultView);
       }
@@ -149,10 +155,14 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...combinedFilters,
+      // In list mode, always filter by the selected appeal status
+      // In flows mode, filter by the filters the user selected
+      ...(viewMode === TableViewModeEnum.List
+        ? { appealStatus: listAppealStatus }
+        : combinedFilters),
       appeal: [appealId || ''],
     }),
-    [combinedFilters, appealId],
+    [viewMode, listAppealStatus, combinedFilters, appealId],
   );
 
   const contactsQueryResult = useContactsQuery({
@@ -433,11 +443,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     updateOptions(view);
     if (view === TableViewModeEnum.List) {
       setFilterPanelOpen(true);
-      setActiveFilters({
-        appealStatus: AppealStatusEnum.Asked,
-      });
-    } else {
-      setActiveFilters({});
+      setListAppealStatus(AppealStatusEnum.Asked);
     }
   };
   //#endregion
@@ -459,30 +465,22 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     switch (tour) {
       case AppealTourEnum.Start:
         setTour(AppealTourEnum.ReviewExcluded);
-        setActiveFilters({
-          appealStatus: AppealStatusEnum.Excluded,
-        });
+        setListAppealStatus(AppealStatusEnum.Excluded);
         break;
       case AppealTourEnum.ReviewExcluded:
         setTour(AppealTourEnum.ReviewAsked);
-        setActiveFilters({
-          appealStatus: AppealStatusEnum.Asked,
-        });
+        setListAppealStatus(AppealStatusEnum.Asked);
         break;
       case AppealTourEnum.ReviewAsked:
         setFilterPanelOpen(true);
         setTour(AppealTourEnum.ExportContacts);
-        setActiveFilters({
-          appealStatus: AppealStatusEnum.Asked,
-        });
+        setListAppealStatus(AppealStatusEnum.Asked);
         deselectAll();
         toggleSelectAll();
         break;
       case AppealTourEnum.ExportContacts:
         setTour(AppealTourEnum.Finish);
-        setActiveFilters({
-          appealStatus: AppealStatusEnum.Asked,
-        });
+        setListAppealStatus(AppealStatusEnum.Asked);
         break;
       default:
         setTour(null);
@@ -530,6 +528,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         appealId,
         page,
         tour,
+        listAppealStatus,
+        setListAppealStatus,
         nextTourStep,
         hideTour,
         askedCountQueryResult,

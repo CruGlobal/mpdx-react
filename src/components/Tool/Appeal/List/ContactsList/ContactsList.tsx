@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
@@ -49,13 +49,13 @@ export const ContactsList: React.FC<ContactsListProps> = ({
 }) => {
   const { t } = useTranslation();
   const { classes } = useStyles();
-  const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const {
     appealId,
     accountListId,
     tour,
     contactsQueryResult,
+    listAppealStatus: appealStatus,
     isFiltered,
     contactDetailsOpen,
   } = React.useContext(AppealsContext) as AppealsType;
@@ -68,54 +68,36 @@ export const ContactsList: React.FC<ContactsListProps> = ({
       appealId: appealId ?? '',
       accountListId: accountListId ?? '',
     },
-    skip: activeFilters.appealStatus !== AppealStatusEnum.Excluded,
+    skip: appealStatus !== AppealStatusEnum.Excluded,
   });
 
-  const appealStatus =
-    (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
-
-  useEffect(() => {
-    if (!activeFilters.appealStatus) {
-      return;
+  const nullStateTitle = useMemo(() => {
+    switch (appealStatus) {
+      case AppealStatusEnum.Processed:
+        return t('No donations yet towards this appeal');
+      case AppealStatusEnum.Excluded:
+        return t('No contacts have been excluded from this appeal');
+      case AppealStatusEnum.Asked:
+        return t('All contacts for this appeal have committed to this appeal');
+      case AppealStatusEnum.NotReceived:
+        return t(
+          'There are no contacts for this appeal that have not been received.',
+        );
+      case AppealStatusEnum.ReceivedNotProcessed:
+        return t(
+          'No gifts have been received and not yet processed to this appeal',
+        );
     }
-    switch (activeFilters.appealStatus.toLowerCase()) {
-      case 'processed':
-        setNullStateTitle(t('No donations yet towards this appeal'));
-        break;
-      case 'excluded':
-        setNullStateTitle(t('No contacts have been excluded from this appeal'));
-        break;
-      case 'asked':
-        setNullStateTitle(
-          t('All contacts for this appeal have committed to this appeal'),
-        );
-        break;
-      case 'not_received':
-        setNullStateTitle(
-          t(
-            'There are no contacts for this appeal that have not been received.',
-          ),
-        );
-        break;
-      case 'received_not_processed':
-        setNullStateTitle(
-          t('No gifts have been received and not yet processed to this appeal'),
-        );
-        break;
-      default:
-        setNullStateTitle('');
-        break;
-    }
-  }, [activeFilters]);
+  }, [appealStatus]);
 
   const columnName = useMemo(() => {
     let name = t('Regular Giving');
     if (
-      activeFilters.appealStatus === AppealStatusEnum.NotReceived ||
-      activeFilters.appealStatus === AppealStatusEnum.ReceivedNotProcessed
+      appealStatus === AppealStatusEnum.NotReceived ||
+      appealStatus === AppealStatusEnum.ReceivedNotProcessed
     ) {
       name = t('Amount Committed');
-    } else if (activeFilters.appealStatus === AppealStatusEnum.Processed) {
+    } else if (appealStatus === AppealStatusEnum.Processed) {
       name = t('Donation(s)');
     }
     return name;

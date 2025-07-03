@@ -14,16 +14,21 @@ import {
   ListHeaderCheckBoxState,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
-import { AppealTourEnum, AppealsContext, AppealsType } from './AppealsContext';
+import {
+  AppealStatusEnum,
+  AppealTourEnum,
+  AppealsContext,
+  AppealsType,
+} from './AppealsContext';
 
 const accountListId = 'account-list-1';
 const appealIdentifier = 'appeal-Id-1';
 const contactId = 'contact-id';
 const push = jest.fn();
 const isReady = true;
+const mutationSpy = jest.fn();
 const deselectAll = jest.fn();
 const toggleSelectAll = jest.fn();
 
@@ -70,7 +75,7 @@ const AppealStatusFilterTestComponent: React.FC<
         push,
       }}
     >
-      <GqlMockedProvider>
+      <GqlMockedProvider onCall={mutationSpy}>
         <AppealsWrapper>
           <TestRender />
         </AppealsWrapper>
@@ -88,7 +93,6 @@ const TestRender: React.FC = () => {
     contactDetailsId,
     setContactFocus,
   } = useContext(AppealsContext) as AppealsType;
-  const { activeFilters } = useUrlFilters();
   return (
     <Box>
       {!userOptionsLoading ? (
@@ -96,7 +100,6 @@ const TestRender: React.FC = () => {
           <Typography>appealId: {appealId}</Typography>
           <Typography>contactDetailsId: {contactDetailsId}</Typography>
           <Typography>{viewMode}</Typography>
-          <Typography>appealStatus: {activeFilters.appealStatus}</Typography>
           <Button
             onClick={(event) =>
               handleViewModeChange(event, TableViewModeEnum.List)
@@ -301,36 +304,33 @@ describe('ContactsPageContext', () => {
 
   describe('activeFilters.appealStatus', () => {
     it('should default to showing asked contacts in list view', async () => {
-      const { findByText } = render(
+      render(
         <AppealStatusFilterTestComponent
           query={{ appealId: [appealIdentifier, 'list', contactId] }}
         />,
       );
 
-      expect(await findByText('appealStatus: asked')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+          contactsFilters: { appealStatus: AppealStatusEnum.Asked },
+        }),
+      );
     });
 
-    it('should not override the appeal status filter in list view', async () => {
-      const { findByText } = render(
+    it('should not filter by appeal status in flows view', async () => {
+      render(
         <AppealStatusFilterTestComponent
           query={{
-            appealId: [appealIdentifier, 'list', contactId],
-            filters: encodeURI('{"appealStatus":"given"}'),
+            appealId: [appealIdentifier, 'flows', contactId],
           }}
         />,
       );
 
-      expect(await findByText('appealStatus: given')).toBeInTheDocument();
-    });
-
-    it('should not change the appeal status filter in flows view', async () => {
-      const { findByText } = render(
-        <AppealStatusFilterTestComponent
-          query={{ appealId: [appealIdentifier, 'flows', contactId] }}
-        />,
+      await waitFor(() =>
+        expect(mutationSpy).not.toHaveGraphqlOperation('Contacts', {
+          contactsFilters: { appealStatus: AppealStatusEnum.Asked },
+        }),
       );
-
-      expect(await findByText('appealStatus:')).toBeInTheDocument();
     });
   });
 

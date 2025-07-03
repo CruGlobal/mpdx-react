@@ -19,7 +19,6 @@ import {
   preloadMassActionsExportEmailsModal,
 } from 'src/components/Contacts/MassActions/Exports/Emails/DynamicMassActionsExportEmailsModal';
 import { DynamicMailMergedLabelModal } from 'src/components/Contacts/MassActions/Exports/MailMergedLabelModal/DynamicMailMergedLabelModal';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   AppealStatusEnum,
   AppealTourEnum,
@@ -69,13 +68,14 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     selectedIds,
     deselectAll,
     tour,
+    listAppealStatus,
+    setListAppealStatus,
     askedCountQueryResult,
     excludedCountQueryResult,
     committedCountQueryResult,
     givenCountQueryResult,
     receivedCountQueryResult,
   } = React.useContext(AppealsContext) as AppealsType;
-  const { activeFilters, setActiveFilters } = useUrlFilters();
   const [exportsModalOpen, setExportsModalOpen] = useState(false);
   const [labelModalOpen, setLabelModalOpen] = useState(false);
   const [exportEmailsModalOpen, setExportEmailsModalOpen] = useState(false);
@@ -106,13 +106,9 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const handleFilterItemClick = (newAppealListView: AppealStatusEnum) => {
     deselectAll();
-    setActiveFilters({
-      ...activeFilters,
-      appealStatus: newAppealListView,
-    });
+    setListAppealStatus(newAppealListView);
   };
 
-  const appealListView = activeFilters.appealStatus;
   const noContactsSelected = !selectedIds.length;
 
   return (
@@ -145,7 +141,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   title={t('Given')}
                   count={givenCount?.contacts.totalCount}
                   loading={givenLoading}
-                  isSelected={appealListView === AppealStatusEnum.Processed}
+                  isSelected={listAppealStatus === AppealStatusEnum.Processed}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
@@ -154,7 +150,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   count={receivedCount?.contacts.totalCount}
                   loading={receivedLoading}
                   isSelected={
-                    appealListView === AppealStatusEnum.ReceivedNotProcessed
+                    listAppealStatus === AppealStatusEnum.ReceivedNotProcessed
                   }
                   onClick={handleFilterItemClick}
                 />
@@ -163,7 +159,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   title={t('Committed')}
                   count={committedCount?.contacts.totalCount}
                   loading={committedLoading}
-                  isSelected={appealListView === AppealStatusEnum.NotReceived}
+                  isSelected={listAppealStatus === AppealStatusEnum.NotReceived}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
@@ -171,7 +167,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   title={t('Asked')}
                   count={askedCount?.contacts.totalCount}
                   loading={askedLoading}
-                  isSelected={appealListView === AppealStatusEnum.Asked}
+                  isSelected={listAppealStatus === AppealStatusEnum.Asked}
                   onClick={handleFilterItemClick}
                 />
                 <AppealsListFilterPanelItem
@@ -179,7 +175,7 @@ export const AppealsListFilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   title={t('Excluded')}
                   count={excludedCount?.contacts.totalCount}
                   loading={excludedLoading}
-                  isSelected={appealListView === AppealStatusEnum.Excluded}
+                  isSelected={listAppealStatus === AppealStatusEnum.Excluded}
                   onClick={handleFilterItemClick}
                 />
 
