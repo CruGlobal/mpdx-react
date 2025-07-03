@@ -22,6 +22,7 @@ import {
   FormTextField,
   LogFormLabel,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/StyledComponents';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   CancelButton,
@@ -30,7 +31,6 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import { requiredDateTime } from 'src/lib/formikHelpers';
-import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import i18n from 'src/lib/i18n';
 import {
   AppealStatusEnum,
@@ -210,7 +210,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
         onSubmit={onSubmit}
       >
         {({
-          values: { status },
+          values: { status, amountCurrency },
           setFieldValue,
           handleSubmit,
           isSubmitting,
@@ -232,74 +232,145 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
               </Grid>
 
               {/* Amount and Currency Row */}
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={isMobile ? 12 : 8}>
-                  <FormControl
-                    size="small"
-                    fullWidth
-                    error={!!errors.amount && touched.amount}
-                  >
-                    <LogFormLabel
-                      htmlFor="amount-input"
-                      id="amount-input-label"
-                      required
+              <Grid container item xs={12} spacing={isMobile ? 1 : 0}>
+                <Grid container item xs={12} spacing={1}>
+                  <Grid item xs={isMobile ? 12 : 6}>
+                    <FormControl
+                      size="small"
+                      fullWidth
+                      error={!!errors.amount && touched.amount}
                     >
-                      {t('Amount')}
-                    </LogFormLabel>
-                    <FastField name="amount">
-                      {({ field, meta }: FieldProps) => (
-                        <Box width="100%">
-                          <FormTextField
-                            {...field}
-                            size="small"
-                            variant="outlined"
-                            fullWidth
-                            disabled={
-                              pledge?.status === PledgeStatusEnum.Processed
-                            }
-                            type="text"
-                            inputProps={{
-                              'aria-labelledby': 'amount-input-label',
-                            }}
-                            id="amount-input"
-                            error={!!errors.amount && touched.amount}
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
-                            autoFocus
-                          />
-                          <FormHelperText>
-                            {meta.touched && meta.error}
-                          </FormHelperText>
-                        </Box>
+                      <LogFormLabel
+                        htmlFor="amount-input"
+                        id="amount-input-label"
+                        required
+                      >
+                        {t('Amount')}
+                      </LogFormLabel>
+                      <FastField name="amount">
+                        {({ field, meta }: FieldProps) => (
+                          <Box width="100%">
+                            <FormTextField
+                              {...field}
+                              size="small"
+                              variant="outlined"
+                              fullWidth
+                              disabled={
+                                pledge?.status === PledgeStatusEnum.Processed
+                              }
+                              type="text"
+                              inputProps={{
+                                'aria-labelledby': 'amount-input-label',
+                              }}
+                              id="amount-input"
+                              error={!!errors.amount && touched.amount}
+                              // eslint-disable-next-line jsx-a11y/no-autofocus
+                              autoFocus
+                            />
+                            <FormHelperText>
+                              {meta.touched && meta.error}
+                            </FormHelperText>
+                          </Box>
+                        )}
+                      </FastField>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={isMobile ? 12 : 6}>
+                    <FormControl
+                      size="small"
+                      fullWidth
+                      error={!!errors.amountCurrency && touched.amountCurrency}
+                    >
+                      <LogFormLabel
+                        htmlFor="amountCurrency-select"
+                        required
+                        id="amountCurrency-select-label"
+                      >
+                        {t('Currency')}
+                      </LogFormLabel>
+                      {pledgeCurrencies && (
+                        <CurrencyAutocomplete
+                          disabled={isSubmitting}
+                          id="amountCurrency-select"
+                          value={amountCurrency}
+                          onChange={(_, currencyCode) => {
+                            setFieldValue('amountCurrency', currencyCode);
+                          }}
+                          textFieldProps={{
+                            error: !!errors.amountCurrency,
+                          }}
+                          size="small"
+                        />
                       )}
-                    </FastField>
-                  </FormControl>
+                      {errors.amountCurrency && (
+                        <FormHelperText error={true}>
+                          {t('This field is required')}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  </Grid>
                 </Grid>
-                <Grid item xs={isMobile ? 12 : 4}>
-                  <FormControl
-                    size="small"
-                    fullWidth
-                    error={!!errors.amountCurrency && touched.amountCurrency}
-                  >
-                    <LogFormLabel
-                      htmlFor="amountCurrency-select"
-                      required
-                      id="amountCurrency-select-label"
+
+                <Grid container item xs={12} spacing={1}>
+                  <Grid item xs={isMobile ? 12 : 6}>
+                    <FormControl
+                      size="small"
+                      fullWidth
+                      error={Boolean(
+                        errors.expectedDate && touched.expectedDate,
+                      )}
                     >
-                      {t('Currency')}
-                    </LogFormLabel>
-                    {pledgeCurrencies && (
-                      <FastField name="amountCurrency">
+                      <LogFormLabel
+                        htmlFor="date-input"
+                        id="date-label"
+                        required
+                      >
+                        {t('Expected Date')}
+                      </LogFormLabel>
+                      <FastField name="expectedDate">
+                        {({ field }: FieldProps) => (
+                          <CustomDateField
+                            id="date-input"
+                            size="small"
+                            inputProps={{
+                              'aria-labelledby': 'date-label',
+                            }}
+                            {...field}
+                            onChange={(date) =>
+                              setFieldValue('expectedDate', date)
+                            }
+                          />
+                        )}
+                      </FastField>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={isMobile ? 12 : 6}>
+                    <FormControl
+                      size="small"
+                      fullWidth
+                      error={!!errors.status && touched.status}
+                    >
+                      <LogFormLabel
+                        htmlFor="status-select"
+                        required
+                        id="status-select-label"
+                      >
+                        {t('Status')}
+                      </LogFormLabel>
+                      <FastField name="status">
                         {({ field }: FieldProps) => (
                           <Box width="100%">
                             <Select
                               {...field}
                               fullWidth
-                              id="amountCurrency-select"
+                              id="status-select"
                               variant="outlined"
-                              labelId="amountCurrency-select-label"
+                              disabled={
+                                pledge?.status === PledgeStatusEnum.Processed
+                              }
+                              labelId="status-select-label"
                               inputProps={{
-                                'aria-labelledby':
-                                  'amountCurrency-select-label',
+                                'aria-labelledby': 'status-select-label',
                               }}
                               value={field.value}
                               MenuProps={{
@@ -318,114 +389,28 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                                   },
                                 },
                               }}
-                              error={
-                                !!errors.amountCurrency &&
-                                touched.amountCurrency
-                              }
+                              error={!!errors.status && touched.status}
                             >
-                              <MenuItem value={''} disabled></MenuItem>
-                              {getPledgeCurrencyOptions(pledgeCurrencies)}
+                              <MenuItem value={PledgeStatusEnum.NotReceived}>
+                                {t('Committed')}
+                              </MenuItem>
+                              <MenuItem
+                                value={PledgeStatusEnum.ReceivedNotProcessed}
+                              >
+                                {t('Received')}
+                              </MenuItem>
+                              {pledge?.status ===
+                                PledgeStatusEnum.Processed && (
+                                <MenuItem value={PledgeStatusEnum.Processed}>
+                                  {t('Given')}
+                                </MenuItem>
+                              )}
                             </Select>
                           </Box>
                         )}
                       </FastField>
-                    )}
-                  </FormControl>
-                </Grid>
-              </Grid>
-
-              <Grid container item xs={12} spacing={1}>
-                <Grid item xs={isMobile ? 12 : 6}>
-                  <FormControl
-                    size="small"
-                    fullWidth
-                    error={Boolean(errors.expectedDate && touched.expectedDate)}
-                  >
-                    <LogFormLabel htmlFor="date-input" id="date-label" required>
-                      {t('Expected Date')}
-                    </LogFormLabel>
-                    <FastField name="expectedDate">
-                      {({ field }: FieldProps) => (
-                        <CustomDateField
-                          id="date-input"
-                          size="small"
-                          inputProps={{
-                            'aria-labelledby': 'date-label',
-                          }}
-                          {...field}
-                          onChange={(date) =>
-                            setFieldValue('expectedDate', date)
-                          }
-                        />
-                      )}
-                    </FastField>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={isMobile ? 12 : 6}>
-                  <FormControl
-                    size="small"
-                    fullWidth
-                    error={!!errors.status && touched.status}
-                  >
-                    <LogFormLabel
-                      htmlFor="status-select"
-                      required
-                      id="status-select-label"
-                    >
-                      {t('Status')}
-                    </LogFormLabel>
-                    <FastField name="status">
-                      {({ field }: FieldProps) => (
-                        <Box width="100%">
-                          <Select
-                            {...field}
-                            fullWidth
-                            id="status-select"
-                            variant="outlined"
-                            disabled={
-                              pledge?.status === PledgeStatusEnum.Processed
-                            }
-                            labelId="status-select-label"
-                            inputProps={{
-                              'aria-labelledby': 'status-select-label',
-                            }}
-                            value={field.value}
-                            MenuProps={{
-                              anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                              },
-                              transformOrigin: {
-                                vertical: 'top',
-                                horizontal: 'left',
-                              },
-                              PaperProps: {
-                                style: {
-                                  maxHeight: '300px',
-                                  overflow: 'auto',
-                                },
-                              },
-                            }}
-                            error={!!errors.status && touched.status}
-                          >
-                            <MenuItem value={PledgeStatusEnum.NotReceived}>
-                              {t('Committed')}
-                            </MenuItem>
-                            <MenuItem
-                              value={PledgeStatusEnum.ReceivedNotProcessed}
-                            >
-                              {t('Received')}
-                            </MenuItem>
-                            {pledge?.status === PledgeStatusEnum.Processed && (
-                              <MenuItem value={PledgeStatusEnum.Processed}>
-                                {t('Given')}
-                              </MenuItem>
-                            )}
-                          </Select>
-                        </Box>
-                      )}
-                    </FastField>
-                  </FormControl>
+                    </FormControl>
+                  </Grid>
                 </Grid>
               </Grid>
               {status === PledgeStatusEnum.ReceivedNotProcessed &&

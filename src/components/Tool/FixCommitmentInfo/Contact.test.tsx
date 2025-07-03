@@ -74,11 +74,11 @@ describe('FixCommitmentContact', () => {
   });
 
   it('default', async () => {
-    const { getByText, findByTestId } = render(<TestComponent />);
+    const { getByText, getByRole } = render(<TestComponent />);
     expect(getByText(testData.name)).toBeInTheDocument();
     expect(getByText('Current: Partner - Financial')).toBeInTheDocument();
     expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
-    expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
+    expect(getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
   });
 
   it('should call hide and update functions', async () => {
@@ -105,7 +105,7 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should should render select field options and inputs', async () => {
-    const { getByTestId, findByTestId } = render(<TestComponent />);
+    const { getByTestId, getByRole } = render(<TestComponent />);
 
     const frequency = getByTestId('pledgeFrequency-input');
     fireEvent.change(frequency, {
@@ -113,7 +113,7 @@ describe('FixCommitmentContact', () => {
     });
     expect(frequency).toHaveValue('WEEKLY');
 
-    const currency = await findByTestId('pledgeCurrency-input');
+    const currency = getByRole('combobox', { name: 'Currency' });
     fireEvent.select(currency, {
       target: { value: 'USD ($)' },
     });
@@ -191,15 +191,15 @@ describe('FixCommitmentContact', () => {
   });
 
   it('changes pledgeCurrencies', async () => {
-    const { findByTestId, getByRole, findByRole } = render(
+    const { getByRole, findByRole } = render(
       <TestRouter router={router}>
         <TestComponent />
       </TestRouter>,
     );
-    expect(await findByTestId('pledgeCurrency-input')).toBeInTheDocument();
     const CurrencyField = getByRole('combobox', { name: 'Currency' });
-    userEvent.click(CurrencyField);
-    userEvent.click(await findByRole('option', { name: 'CDF (CDF)' })),
-      expect(CurrencyField).toHaveTextContent('CDF (CDF)');
+    expect(CurrencyField).toBeInTheDocument();
+    userEvent.type(CurrencyField, 'usd');
+    userEvent.click(await findByRole('option', { name: 'USD ($)' }));
+    expect(CurrencyField).toHaveValue('USD ($)');
   });
 });

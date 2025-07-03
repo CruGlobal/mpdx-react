@@ -15,8 +15,8 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
@@ -27,7 +27,6 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { requiredDateTime } from 'src/lib/formikHelpers';
-import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
 import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
@@ -66,9 +65,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
   const { t } = useTranslation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const accountListId = useAccountListId() ?? '';
-  const constants = useApiConstants();
-
-  const pledgeCurrencies = constants?.pledgeCurrency;
 
   const {
     data: appeals,
@@ -197,36 +193,19 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth required>
-                    <InputLabel id="currency-select-label">
-                      {t('Currency')}
-                    </InputLabel>
-                    <Select
-                      label={t('Currency')}
-                      labelId="currency-select-label"
-                      value={currency ?? ''}
-                      onChange={(e) =>
-                        setFieldValue('currency', e.target.value)
-                      }
-                      MenuProps={{
-                        anchorOrigin: {
-                          vertical: 'bottom',
-                          horizontal: 'left',
-                        },
-                        transformOrigin: {
-                          vertical: 'top',
-                          horizontal: 'left',
-                        },
-                        PaperProps: {
-                          style: {
-                            maxHeight: '300px',
-                            overflow: 'auto',
-                          },
-                        },
+                    <CurrencyAutocomplete
+                      disableClearable
+                      disabled={isSubmitting}
+                      value={currency}
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('currency', currencyCode);
                       }}
-                    >
-                      <MenuItem value={''} disabled></MenuItem>
-                      {getPledgeCurrencyOptions(pledgeCurrencies)}
-                    </Select>
+                      textFieldProps={{
+                        label: t('Currency'),
+                        error: !!errors.currency,
+                        required: true,
+                      }}
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
