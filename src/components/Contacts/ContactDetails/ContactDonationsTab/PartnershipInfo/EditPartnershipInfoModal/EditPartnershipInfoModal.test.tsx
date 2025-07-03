@@ -384,9 +384,11 @@ describe('EditPartnershipInfoModal', () => {
   });
 
   it('should handle editing currency', async () => {
-    const { findByLabelText, getByText } = render(<Components />);
+    const { findByRole, getByText } = render(<Components />);
 
-    const currencyInput = await findByLabelText('Currency');
+    const currencyInput = await findByRole('combobox', {
+      name: 'Currency',
+    });
 
     userEvent.click(currencyInput);
     userEvent.click(getByText('Congolese Franc - CDF (CDF)'));

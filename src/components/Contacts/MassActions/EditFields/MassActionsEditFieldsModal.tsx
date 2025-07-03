@@ -18,6 +18,7 @@ import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Co
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
+import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
   CancelButton,
@@ -28,7 +29,6 @@ import {
   SendNewsletterEnum,
 } from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { getPledgeCurrencyOptions } from 'src/lib/getCurrencyOptions';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../common/Modal/Modal';
@@ -317,25 +317,16 @@ export const MassActionsEditFieldsModal: React.FC<
                 </Grid>
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
-                    <InputLabel id="pledgeCurrency">
-                      {t('Commitment Currency')}
-                    </InputLabel>
-                    <Select
-                      label={t('Commitment Currency')}
-                      labelId="pledgeCurrency"
+                    <CurrencyAutocomplete
+                      disabled={isSubmitting}
                       value={pledgeCurrency}
-                      onChange={(e) =>
-                        setFieldValue('pledgeCurrency', e.target.value)
-                      }
-                    >
-                      <MenuItem value={''}>
-                        <em>{t("Don't change")}</em>
-                      </MenuItem>
-                      {!loadingConstants &&
-                        getPledgeCurrencyOptions(
-                          constants?.constant?.pledgeCurrency,
-                        )}
-                    </Select>
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('pledgeCurrency', currencyCode);
+                      }}
+                      textFieldProps={{
+                        label: t('Commitment Currency'),
+                      }}
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>
