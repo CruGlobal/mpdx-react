@@ -9,10 +9,7 @@ import {
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useTaskModal from 'src/hooks/useTaskModal';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -71,14 +68,12 @@ interface Props {
   filtered: boolean;
   title?: string;
   paragraph?: string;
-  changeFilters: (filters: ContactFilterSetInput & TaskFilterSetInput) => void;
 }
 
 const NullState: React.FC<Props> = ({
   page,
   totalCount,
   filtered,
-  changeFilters,
   title = i18n.t('You have {{count}} total {{page}}s', {
     count: totalCount,
     page,
@@ -88,6 +83,7 @@ const NullState: React.FC<Props> = ({
   ),
 }: Props) => {
   const { t } = useTranslation();
+  const { setActiveFilters } = useUrlFilters();
 
   return (
     <NullStateBox data-testid={`${page}-null-state`}>
@@ -100,7 +96,7 @@ const NullState: React.FC<Props> = ({
           <Typography variant="h5">{title}</Typography>
           <Typography>{paragraph}</Typography>
           <Box display="flex" mt={1}>
-            <Button variant="contained" onClick={() => changeFilters({})}>
+            <Button variant="contained" onClick={() => setActiveFilters({})}>
               {t('Reset All Search Filters')}
             </Button>
             <CreateButton page={page} />

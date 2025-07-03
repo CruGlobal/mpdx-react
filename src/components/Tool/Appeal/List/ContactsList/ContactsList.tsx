@@ -59,7 +59,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     isFiltered,
     contactDetailsOpen,
   } = React.useContext(AppealsContext) as AppealsType;
-  const { searchTerm, activeFilters, setActiveFilters } = useUrlFilters();
+  const { searchTerm, activeFilters } = useUrlFilters();
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
@@ -202,7 +202,6 @@ export const ContactsList: React.FC<ContactsListProps> = ({
               page="contact"
               totalCount={data?.contacts.totalCount || 0}
               filtered={isFiltered || !!searchTerm}
-              changeFilters={setActiveFilters}
               title={nullStateTitle}
               paragraph={''}
             />

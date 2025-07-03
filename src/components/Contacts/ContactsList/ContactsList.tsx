@@ -16,7 +16,7 @@ export const ContactsList: React.FC = () => {
     contactsQueryResult: { data, loading, fetchMore },
     isFiltered,
   } = React.useContext(ContactsContext) as ContactsType;
-  const { searchTerm, setActiveFilters } = useUrlFilters();
+  const { searchTerm } = useUrlFilters();
 
   return (
     <InfiniteList
@@ -45,7 +45,6 @@ export const ContactsList: React.FC = () => {
             page="contact"
             totalCount={data?.allContacts.totalCount || 0}
             filtered={isFiltered || !!searchTerm}
-            changeFilters={setActiveFilters}
           />
         </Box>
       }

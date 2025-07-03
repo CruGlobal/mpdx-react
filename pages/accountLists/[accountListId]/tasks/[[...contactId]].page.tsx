@@ -346,7 +346,6 @@ const PageContent: React.FC = () => {
                           page="task"
                           totalCount={data?.allTasks?.totalCount || 0}
                           filtered={isFiltered || !!searchTerm}
-                          changeFilters={setActiveFilters}
                         />
                       </Box>
                     }

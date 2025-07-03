@@ -9,7 +9,7 @@ import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import NullState from './NullState';
 
-const changeFilters = jest.fn();
+const setActiveFilters = jest.fn();
 const openTaskModal = jest.fn();
 
 jest.mock('src/hooks/useTaskModal');
@@ -27,12 +27,7 @@ describe('NullState', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
-            <NullState
-              page="contact"
-              totalCount={0}
-              filtered={false}
-              changeFilters={changeFilters}
-            />
+            <NullState page="contact" totalCount={0} filtered={false} />
           </TestWrapper>
         </ThemeProvider>
       </SnackbarProvider>,
@@ -58,12 +53,7 @@ describe('NullState', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
-            <NullState
-              page="contact"
-              totalCount={10}
-              filtered={true}
-              changeFilters={changeFilters}
-            />
+            <NullState page="contact" totalCount={10} filtered={true} />
           </TestWrapper>
         </ThemeProvider>
       </SnackbarProvider>,
@@ -78,7 +68,7 @@ describe('NullState', () => {
       ),
     ).toBeInTheDocument();
     userEvent.click(getByText('Reset All Search Filters'));
-    expect(changeFilters).toHaveBeenCalled();
+    expect(setActiveFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new contact'));
     expect(getByText('Save')).toBeInTheDocument();
   });
@@ -88,12 +78,7 @@ describe('NullState', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
-            <NullState
-              page="task"
-              totalCount={0}
-              filtered={false}
-              changeFilters={changeFilters}
-            />
+            <NullState page="task" totalCount={0} filtered={false} />
           </TestWrapper>
         </ThemeProvider>
       </SnackbarProvider>,
@@ -119,12 +104,7 @@ describe('NullState', () => {
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
           <TestWrapper>
-            <NullState
-              page="task"
-              totalCount={10}
-              filtered={true}
-              changeFilters={changeFilters}
-            />
+            <NullState page="task" totalCount={10} filtered={true} />
           </TestWrapper>
         </ThemeProvider>
       </SnackbarProvider>,
@@ -139,7 +119,7 @@ describe('NullState', () => {
       ),
     ).toBeInTheDocument();
     userEvent.click(getByText('Reset All Search Filters'));
-    expect(changeFilters).toHaveBeenCalled();
+    expect(setActiveFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new task'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Add }),
