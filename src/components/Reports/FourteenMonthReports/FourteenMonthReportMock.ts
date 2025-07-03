@@ -1,6 +1,6 @@
-import { TwelveMonthReportQuery } from './GetTwelveMonthReport.generated';
+import { FourteenMonthReportQuery } from './GetFourteenMonthReport.generated';
 
-export const twelveMonthReportMock = {
+export const fourteenMonthReportMock = {
   data: {
     attributes: {
       currency_groups: {
@@ -92,6 +92,14 @@ export const twelveMonthReportMock = {
                     },
                   ],
                 },
+                {
+                  total: 0,
+                  donations: [],
+                },
+                {
+                  total: 0,
+                  donations: [],
+                },
               ],
             },
           ],
@@ -124,6 +132,8 @@ export const twelveMonthReportMock = {
         '2024-02-01',
         '2024-01-01',
         '2023-12-01',
+        '2023-11-01',
+        '2023-10-01',
       ],
       salary_currency: 'USD',
       updated_at: null,
@@ -140,7 +150,7 @@ export const twelveMonthReportMock = {
   },
 };
 
-export const twelveMonthReportRestMock = {
+export const fourteenMonthReportRestMock = {
   data: {
     id: '',
     type: 'reports_donor_currency_donations',
@@ -436,8 +446,8 @@ export const twelveMonthReportRestMock = {
   },
 };
 
-export const defaultTwelveMonthReport = {
-  twelveMonthReport: {
+export const defaultFourteenMonthReport = {
+  fourteenMonthReport: {
     currencyGroups: [
       {
         contacts: [
@@ -502,6 +512,7 @@ export const defaultTwelveMonthReport = {
             pledgeAmount: null,
             status: null,
             total: 3366,
+            completeMonthsTotal: 1020,
           },
           {
             accountNumbers: ['11610'],
@@ -565,6 +576,7 @@ export const defaultTwelveMonthReport = {
             pledgeCurrency: 'USD',
             status: null,
             total: 3366,
+            completeMonthsTotal: 1020,
           },
         ],
         currency: 'cad',
@@ -594,4 +606,4 @@ export const defaultTwelveMonthReport = {
       },
     ],
   },
-} as unknown as TwelveMonthReportQuery;
+} as unknown as FourteenMonthReportQuery;
