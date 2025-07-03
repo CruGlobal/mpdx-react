@@ -11,6 +11,7 @@ query LevelOfEffort($accountListId: ID!, $range: String!) {
       followUpEmail
       followUpTextMessage
       followUpSocialMedia
+      followUpLetterCard
       followUpInPerson
       followUpToDo
       partnerCareUpdateInformation
