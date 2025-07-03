@@ -24,14 +24,11 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import {
-  LikelyToGiveEnum,
-  SendNewsletterEnum,
-} from 'src/graphql/types.generated';
+import { LikelyToGiveEnum } from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import Modal from '../../../common/Modal/Modal';
+import { NewsletterSelect } from '../../../common/NewsletterSelect/NewsletterSelect';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 
 interface MassActionsEditFieldsModalProps {
@@ -258,7 +255,7 @@ export const MassActionsEditFieldsModal: React.FC<
                     <InputLabel id="sendNewsletter">
                       {t('Newsletter')}
                     </InputLabel>
-                    <Select
+                    <NewsletterSelect
                       label={t('Newsletter')}
                       labelId="sendNewsletter"
                       value={sendNewsletter}
@@ -269,17 +266,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {[
-                        SendNewsletterEnum.None,
-                        SendNewsletterEnum.Email,
-                        SendNewsletterEnum.Physical,
-                        SendNewsletterEnum.Both,
-                      ].map((value) => (
-                        <MenuItem key={value} value={value}>
-                          {getLocalizedSendNewsletter(t, value)}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                    </NewsletterSelect>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>
