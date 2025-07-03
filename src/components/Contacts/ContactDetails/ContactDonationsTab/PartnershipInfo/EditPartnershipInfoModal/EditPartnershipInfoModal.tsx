@@ -25,6 +25,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {
@@ -84,7 +85,7 @@ const RemoveCommitmentActions = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const SelectInteractive = styled(Select, {
+const PledgeFrequencySelectInteractive = styled(PledgeFrequencySelect, {
   shouldForwardProp: (prop) => prop !== 'isDisabled',
 })<{ isDisabled?: boolean }>(({ isDisabled }) => ({
   '& MuiSelect-select, & fieldset': {
@@ -128,8 +129,7 @@ export const EditPartnershipInfoModal: React.FC<
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const { enqueueSnackbar } = useSnackbar();
-  const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
-    useLocalizedConstants();
+  const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const phases = constants?.phases;
   const [showRemoveCommitmentWarning, setShowRemoveCommitmentWarning] =
@@ -468,7 +468,7 @@ export const EditPartnershipInfoModal: React.FC<
                       <InputLabel id="frequency-select-label">
                         {t('Frequency')}
                       </InputLabel>
-                      <SelectInteractive
+                      <PledgeFrequencySelectInteractive
                         label={t('Frequency')}
                         labelId="frequency-select-label"
                         value={pledgeFrequency ?? ''}
@@ -498,12 +498,7 @@ export const EditPartnershipInfoModal: React.FC<
                         }
                       >
                         <MenuItem value={''} disabled></MenuItem>
-                        {Object.values(PledgeFrequencyEnum).map((value) => (
-                          <MenuItem key={value} value={value}>
-                            {getLocalizedPledgeFrequency(value)}
-                          </MenuItem>
-                        ))}
-                      </SelectInteractive>
+                      </PledgeFrequencySelectInteractive>
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>

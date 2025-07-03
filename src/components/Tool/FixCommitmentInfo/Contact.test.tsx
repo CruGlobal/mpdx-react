@@ -199,9 +199,7 @@ describe('FixCommitmentContact', () => {
     const CurrencyField = getByRole('combobox', { name: 'Currency' });
     expect(CurrencyField).toBeInTheDocument();
     userEvent.type(CurrencyField, 'usd');
-    userEvent.click(
-      await findByRole('option', { name: 'US Dollar - USD ($)' }),
-    );
-    expect(CurrencyField).toHaveValue('US Dollar - USD ($)');
+    userEvent.click(await findByRole('option', { name: 'USD ($)' }));
+    expect(CurrencyField).toHaveValue('USD ($)');
   });
 });
