@@ -15,6 +15,38 @@ fragment ContactDetailsHeader on Contact {
   ...ContactHeaderNewsletter
 }
 
+fragment ContactDetails on Contact {
+  id
+  name
+  primaryPerson {
+    ...ContactPerson
+  }
+  people(first: 25) {
+    nodes {
+      ...ContactPerson
+    }
+  }
+  addresses(first: 25) {
+    nodes {
+      city
+      country
+      historic
+      id
+      location
+      metroArea
+      postalCode
+      primaryMailingAddress
+      region
+      source
+      state
+      street
+    }
+  }
+  greeting
+  envelopeGreeting
+  sendNewsletter
+}
+
 query GetContactDetailsHeader(
   $accountListId: ID!
   $contactId: ID!
