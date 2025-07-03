@@ -61,7 +61,7 @@ const PageContent: React.FC = () => {
           />
         }
         rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
-        rightOpen={typeof isOpen !== 'undefined'}
+        rightOpen={isOpen}
         rightWidth="60%"
       />
     </ExpectedMonthlyTotalReportPageWrapper>
