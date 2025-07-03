@@ -19,7 +19,10 @@ const accountListId = '111';
 const contactId = 'contact-1';
 const push = jest.fn();
 const router = {
-  query: { searchTerm: undefined, accountListId: accountListId },
+  query: {
+    accountListId: accountListId,
+    contactId: ['00000000-0000-0000-0000-000000000000'],
+  },
   push,
 };
 
@@ -190,8 +193,6 @@ describe('ContactDetailsMoreActions', () => {
       expect.objectContaining({
         query: {
           accountListId,
-          contactId: [],
-          searchTerm: undefined,
         },
       }),
       undefined,
