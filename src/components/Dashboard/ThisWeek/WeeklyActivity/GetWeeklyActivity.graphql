@@ -14,6 +14,8 @@ query GetWeeklyActivity(
         INITIATION_SOCIAL_MEDIA
         INITIATION_SPECIAL_GIFT_APPEAL
         INITIATION_TEXT_MESSAGE
+        INITIATION_EMAIL
+        INITIATION_TO_DO
       ]
       result: [COMPLETED, DONE]
     }
@@ -47,6 +49,8 @@ query GetWeeklyActivity(
         FOLLOW_UP_TEXT_MESSAGE
         FOLLOW_UP_IN_PERSON
         FOLLOW_UP_PHONE_CALL
+        FOLLOW_UP_LETTER_CARD
+        FOLLOW_UP_TO_DO
       ]
       result: [COMPLETED, DONE]
     }
@@ -101,6 +105,8 @@ query GetWeeklyActivity(
         PARTNER_CARE_DIGITAL_NEWSLETTER
         PARTNER_CARE_PHYSICAL_NEWSLETTER
         PARTNER_CARE_THANK
+        PARTNER_CARE_LETTER_CARD
+        PARTNER_CARE_PRAYER_REQUEST
       ]
       result: [COMPLETED, DONE]
     }
