@@ -1,17 +1,17 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import {
-  ContactsContextSavedFilters as AppealsContextSavedFilters,
   ContactsContextProps,
   ContactsType,
+  parseSavedFilters,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
-import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -269,13 +269,13 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     skip,
   });
 
-  const toggleFilterPanel = () => {
-    setFilterPanelOpen(!filterPanelOpen);
-  };
+  const toggleFilterPanel = useCallback(() => {
+    setFilterPanelOpen((filterPanelOpen) => !filterPanelOpen);
+  }, []);
 
-  const savedFilters: UserOptionFragment[] = AppealsContextSavedFilters(
-    filterData,
-    accountListId,
+  const savedFilters = useMemo(
+    () => parseSavedFilters(filterData, accountListId),
+    [filterData, accountListId],
   );
 
   const isFiltered = Object.keys(activeFilters).length > 0;
@@ -283,7 +283,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
 
   //#region JSX
 
-  const nextTourStep = () => {
+  const nextTourStep = useCallback(() => {
     switch (tour) {
       case AppealTourEnum.Start:
         setTour(AppealTourEnum.ReviewExcluded);
@@ -308,47 +308,82 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         setTour(null);
         break;
     }
-  };
-  const hideTour = () => {
+  }, [tour]);
+  const hideTour = useCallback(() => {
     setTour(null);
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      accountListId: accountListId ?? '',
+      contactsQueryResult,
+      selectionType,
+      isRowChecked,
+      toggleSelectAll,
+      toggleSelectionById,
+      selectMultipleIds,
+      deselectMultipleIds,
+      filterData,
+      filtersLoading,
+      toggleFilterPanel,
+      savedFilters,
+      filterPanelOpen,
+      setFilterPanelOpen,
+      viewMode,
+      setViewMode,
+      isFiltered,
+      selectedIds: ids,
+      deselectAll,
+      appealId,
+      tour,
+      setTour,
+      listAppealStatus,
+      setListAppealStatus,
+      nextTourStep,
+      hideTour,
+      askedCountQueryResult,
+      excludedCountQueryResult,
+      committedCountQueryResult,
+      givenCountQueryResult,
+      receivedCountQueryResult,
+    }),
+    [
+      accountListId,
+      contactsQueryResult,
+      selectionType,
+      isRowChecked,
+      toggleSelectAll,
+      toggleSelectionById,
+      selectMultipleIds,
+      deselectMultipleIds,
+      filterData,
+      filtersLoading,
+      toggleFilterPanel,
+      savedFilters,
+      filterPanelOpen,
+      setFilterPanelOpen,
+      viewMode,
+      setViewMode,
+      isFiltered,
+      ids,
+      deselectAll,
+      appealId,
+      tour,
+      setTour,
+      listAppealStatus,
+      setListAppealStatus,
+      nextTourStep,
+      hideTour,
+      askedCountQueryResult,
+      excludedCountQueryResult,
+      committedCountQueryResult,
+      givenCountQueryResult,
+      receivedCountQueryResult,
+    ],
+  );
 
   return (
-    <AppealsContext.Provider
-      value={{
-        accountListId: accountListId ?? '',
-        contactsQueryResult: contactsQueryResult,
-        selectionType: selectionType,
-        isRowChecked: isRowChecked,
-        toggleSelectAll: toggleSelectAll,
-        toggleSelectionById: toggleSelectionById,
-        selectMultipleIds: selectMultipleIds,
-        deselectMultipleIds: deselectMultipleIds,
-        filterData: filterData,
-        filtersLoading: filtersLoading,
-        toggleFilterPanel: toggleFilterPanel,
-        savedFilters: savedFilters,
-        filterPanelOpen: filterPanelOpen,
-        setFilterPanelOpen: setFilterPanelOpen,
-        viewMode: viewMode,
-        setViewMode: setViewMode,
-        isFiltered: isFiltered,
-        selectedIds: ids,
-        deselectAll: deselectAll,
-        appealId,
-        tour,
-        setTour,
-        listAppealStatus,
-        setListAppealStatus,
-        nextTourStep,
-        hideTour,
-        askedCountQueryResult,
-        excludedCountQueryResult,
-        committedCountQueryResult,
-        givenCountQueryResult,
-        receivedCountQueryResult,
-      }}
-    >
+    <AppealsContext.Provider value={contextValue}>
       {children}
     </AppealsContext.Provider>
   );

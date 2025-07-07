@@ -9,7 +9,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
-import { ContactsContextSavedFilters as AppealsContextSavedFilters } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { parseSavedFilters } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
@@ -110,7 +110,7 @@ const TestRender: React.FC = () => {
 
 const TestRenderContactsFilters: React.FC = () => {
   const { filterData } = useContext(AppealsContext) as AppealsType;
-  const savedFilters = AppealsContextSavedFilters(filterData, accountListId);
+  const savedFilters = parseSavedFilters(filterData, accountListId);
 
   return (
     <Box>

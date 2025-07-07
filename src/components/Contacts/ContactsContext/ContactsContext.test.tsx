@@ -14,8 +14,8 @@ import theme from '../../../theme';
 import { TableViewModeEnum } from '../../Shared/Header/ListHeader';
 import {
   ContactsContext,
-  ContactsContextSavedFilters,
   ContactsType,
+  parseSavedFilters,
 } from './ContactsContext';
 
 const accountListId = 'account-list-1';
@@ -127,7 +127,7 @@ const InnerComponent: React.FC = () => {
 
 const TestRenderContactsFilters: React.FC = () => {
   const { filterData } = useContext(ContactsContext) as ContactsType;
-  const savedFilters = ContactsContextSavedFilters(filterData, accountListId);
+  const savedFilters = parseSavedFilters(filterData, accountListId);
   return (
     <Box>
       {savedFilters.length && (
