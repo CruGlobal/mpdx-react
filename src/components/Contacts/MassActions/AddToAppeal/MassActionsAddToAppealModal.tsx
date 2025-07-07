@@ -1,22 +1,20 @@
 import React, { ReactElement } from 'react';
 import {
-  Autocomplete,
   CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
-  TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import Modal from '../../../common/Modal/Modal';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 import { useGetAppealsForMassActionQuery } from './GetAppealsForMassAction.generated';
@@ -65,19 +63,10 @@ export const MassActionsAddToAppealModal: React.FC<
     handleClose();
   };
 
-  const {
-    data: appeals,
-    error,
-    fetchMore,
-  } = useGetAppealsForMassActionQuery({
+  const { data: appeals } = useGetAppealsForMassActionQuery({
     variables: {
       accountListId,
     },
-  });
-  const { loading: loadingAppeals } = useFetchAllPages({
-    fetchMore,
-    error,
-    pageInfo: appeals?.appeals.pageInfo,
   });
 
   return (
@@ -103,46 +92,16 @@ export const MassActionsAddToAppealModal: React.FC<
           >
             <DialogContent dividers>
               <FormControl fullWidth>
-                <Autocomplete
+                <AppealAutocomplete
                   id="appeal"
                   value={appeal}
-                  autoSelect
-                  autoHighlight
-                  options={
-                    (appeals?.appeals.nodes &&
-                      appeals?.appeals.nodes.map((appeal) => appeal.id)) ||
-                    []
-                  }
-                  getOptionLabel={(appealId): string => {
-                    const currentAppeal = appeals?.appeals?.nodes.find(
-                      (appeal) => appeal.id === appealId,
-                    )?.name;
-                    return currentAppeal ?? '';
-                  }}
                   onChange={(_, appealId): void =>
                     setFieldValue('appeal', appealId)
                   }
-                  isOptionEqualToValue={(option, value): boolean =>
-                    option === value
-                  }
-                  renderInput={(params): ReactElement => (
-                    <TextField
-                      {...params}
-                      label={t('Appeal')}
-                      data-testid="appealTextInput"
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {loadingAppeals && (
-                              <CircularProgress color="primary" size={20} />
-                            )}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
-                      }}
-                    />
-                  )}
+                  accountListId={accountListId}
+                  TextFieldProps={{
+                    label: t('Appeal'),
+                  }}
                 />
               </FormControl>
             </DialogContent>
