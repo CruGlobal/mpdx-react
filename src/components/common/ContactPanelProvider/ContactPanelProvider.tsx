@@ -19,11 +19,13 @@ const uuidRegex =
  * param value of `['map', '00000000-0000-0000-0000-000000000000']` would be split into
  * `{ prefix: ['map'], contactId: '00000000-0000-0000-0000-000000000000' }`.
  *
- * @param paramValue The of the contact id query param from the router
+ * @param paramValue The contact id query param from the router
+ * @param prefixMinLength The minimum length of the prefix section
  * @returns The prefix and contact id from the query param
  */
 export const splitContactIdParam = (
   paramValue: ParsedUrlQuery[string],
+  prefixMinLength: number,
 ): {
   prefix: string[];
   contactId: string | undefined;
@@ -33,15 +35,18 @@ export const splitContactIdParam = (
   // for routes like ".../contacts/map/:contactId". Regardless of the number of elements in the
   // array, if the contact id is present it is always the last element in the array. Note that the
   // last element may not be the contact id if the contact id is not present: (e.g. ['map'] on the
-  // contact map page). See the test cases for more examples.
+  // contact map page or when `prefixMinLength` is 1 on the appeal page). See the test cases for
+  // more examples.
 
   if (!Array.isArray(paramValue)) {
     return { prefix: [], contactId: undefined };
   }
 
   // The contact id is the last item in the query param array, but it must be a UUID, not 'map', for
-  // example. The prefix is the rest of the param value, e.g. ['map'].
-  const contactId = paramValue.at(-1);
+  // example. Also, it must not be part of the first `prefixMinLength` items. The prefix is the rest
+  // of the param value, e.g. ['map'].
+  const contactId =
+    paramValue.length > prefixMinLength ? paramValue.at(-1) : undefined;
   if (typeof contactId === 'string' && uuidRegex.test(contactId)) {
     return { prefix: paramValue.slice(0, -1), contactId };
   } else {
@@ -94,12 +99,21 @@ export interface ContactPanelProviderProps {
    */
   contactIdPrefix?: string[];
 
+  /**
+   * The prefix has at least this many elements. Only elements after the prefix can be interpreted
+   * as the contactId. For example, on the appeals page, the prefix can be `[appealId]` when a view
+   * mode is not specified. Setting `prefixMinLength` to `1` avoids the appeal id be interpreted as
+   * the contactId.
+   */
+  prefixMinLength?: number;
+
   children: ReactNode;
 }
 
 export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
   contactIdParam = 'contactId',
   contactIdPrefix: manualContactIdPrefix,
+  prefixMinLength = 0,
   children,
 }) => {
   // The router object is stable across renders, so we don't need to add it to dependency arrays
@@ -112,8 +126,8 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
   );
 
   const { prefix: urlContactIdPrefix, contactId: urlContactId } = useMemo(
-    () => splitContactIdParam(contactIdParamValue),
-    [contactIdParamValue],
+    () => splitContactIdParam(contactIdParamValue, prefixMinLength),
+    [contactIdParamValue, prefixMinLength],
   );
 
   // Extract the initial contact id from the URL

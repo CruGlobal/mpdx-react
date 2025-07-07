@@ -1,5 +1,12 @@
 import { useRouter } from 'next/router';
-import React, { useMemo, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useGetUserOptionsLazyQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
   AppealTourEnum,
   AppealsProvider,
@@ -7,6 +14,23 @@ import {
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+
+/**
+ * Extract the view mode from a string.
+ */
+const parseViewMode = (
+  viewMode: string | null | undefined,
+): TableViewModeEnum | null => {
+  if (typeof viewMode !== 'string') {
+    return null;
+  }
+
+  if (viewMode === TableViewModeEnum.List) {
+    return TableViewModeEnum.List;
+  }
+  // Default to flows if the view mode value is invalid
+  return TableViewModeEnum.Flows;
+};
 
 interface Props {
   children?: React.ReactNode;
@@ -21,27 +45,47 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const appealIdParams = Array.isArray(query.appealId) ? query.appealId : [];
   const appealId = appealIdParams[0];
 
-  // TODO: Pull the default value from preferences
-  const [viewMode, setViewMode] = useState(
-    appealIdParams[1] === 'list'
-      ? TableViewModeEnum.List
-      : TableViewModeEnum.Flows,
-  );
+  const [viewMode, setViewMode] = useState(parseViewMode(appealIdParams[1]));
   const [tour, setTour] = useState<AppealTourEnum | null>(
     appealIdParams[2] === 'tour' ? AppealTourEnum.Start : null,
   );
 
+  // Load the initial view mode from preferences if it was not explicitly provided
+  const [loadUserOptions] = useGetUserOptionsLazyQuery();
+  useEffect(() => {
+    if (viewMode === null) {
+      loadUserOptions().then(({ data }) => {
+        if (!data) {
+          return;
+        }
+
+        const defaultView = parseViewMode(
+          data.userOptions.find((option) => option.key === 'contacts_view')
+            ?.value,
+        );
+        if (defaultView) {
+          setViewMode(defaultView);
+        }
+      });
+    }
+  }, [viewMode]);
+
   const appealIdPrefix = useMemo(() => {
-    const appealIdPrefix = [appealId, viewMode];
-    return viewMode === TableViewModeEnum.List && tour
-      ? [...appealIdPrefix, 'tour']
-      : appealIdPrefix;
+    const appealIdPrefix = [appealId];
+    if (viewMode !== null) {
+      appealIdPrefix.push(viewMode);
+    }
+    if (viewMode === TableViewModeEnum.List && tour) {
+      appealIdPrefix.push('tour');
+    }
+    return appealIdPrefix;
   }, [appealId, viewMode, tour]);
 
   return (
     <ContactPanelProvider
       contactIdParam="appealId"
       contactIdPrefix={appealIdPrefix}
+      prefixMinLength={1}
     >
       <UrlFiltersProvider>
         <AppealsProvider
@@ -49,7 +93,9 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
           setFilterPanelOpen={setFilterPanelOpen}
           appealId={appealId}
           viewMode={viewMode}
-          setViewMode={setViewMode}
+          setViewMode={
+            setViewMode as Dispatch<SetStateAction<TableViewModeEnum>>
+          }
           tour={tour}
           setTour={setTour}
           userOptionsLoading={false}

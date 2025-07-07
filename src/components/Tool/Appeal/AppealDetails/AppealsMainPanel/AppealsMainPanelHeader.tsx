@@ -72,7 +72,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
       toggleFilterPanel={toggleFilterPanel}
       contactDetailsOpen={contactDetailsOpen}
       onCheckAllItems={toggleSelectAll}
-      contactsView={viewMode}
+      contactsView={viewMode ?? undefined}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}

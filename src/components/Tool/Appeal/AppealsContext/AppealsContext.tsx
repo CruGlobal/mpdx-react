@@ -1,6 +1,11 @@
-import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
   ContactsContextSavedFilters as AppealsContextSavedFilters,
   ContactsContextProps,
@@ -55,10 +60,11 @@ export interface AppealsType
     | 'viewMode'
     | 'setViewMode'
     | 'getContactHrefObject'
+    | 'userOptionsLoading'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
-  viewMode: TableViewModeEnum;
+  viewMode: TableViewModeEnum | null;
   setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
@@ -87,7 +93,7 @@ export enum AppealTourEnum {
 export interface AppealsContextProps
   extends Omit<ContactsContextProps, 'viewMode' | 'setViewMode'> {
   appealId: string | undefined;
-  viewMode: TableViewModeEnum;
+  viewMode: TableViewModeEnum | null;
   setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
   tour: AppealTourEnum | null;
   setTour: Dispatch<SetStateAction<AppealTourEnum | null>>;
@@ -118,25 +124,12 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     useUrlFilters();
 
   //User options for display view
-  const { loading: userOptionsLoading } = useGetUserOptionsQuery({
-    onCompleted: ({ userOptions }) => {
-      const defaultView =
-        userOptions.find((option) => option.key === 'contacts_view')?.value ===
-        TableViewModeEnum.List
-          ? TableViewModeEnum.List
-          : TableViewModeEnum.Flows;
-      if (
-        contactId?.includes('list') ||
-        defaultView === TableViewModeEnum.List
-      ) {
-        setViewMode(TableViewModeEnum.List);
-        setFilterPanelOpen(true);
-        setListAppealStatus(AppealStatusEnum.Asked);
-      } else {
-        setViewMode(defaultView);
-      }
-    },
-  });
+  useEffect(() => {
+    if (viewMode === TableViewModeEnum.List) {
+      setFilterPanelOpen(true);
+      setListAppealStatus(AppealStatusEnum.Asked);
+    }
+  }, [viewMode]);
 
   const contactsFilters = useMemo(
     () => ({
@@ -312,10 +305,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
-    if (view === TableViewModeEnum.List) {
-      setFilterPanelOpen(true);
-      setListAppealStatus(AppealStatusEnum.Asked);
-    }
   };
   //#endregion
 
@@ -389,7 +378,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         setViewMode: setViewMode,
         selectedIds: ids,
         deselectAll: deselectAll,
-        userOptionsLoading: userOptionsLoading,
         appealId,
         tour,
         setTour,
