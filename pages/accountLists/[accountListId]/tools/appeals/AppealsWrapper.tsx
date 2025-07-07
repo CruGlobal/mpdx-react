@@ -1,11 +1,5 @@
 import { useRouter } from 'next/router';
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGetUserOptionsLazyQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
   AppealTourEnum,
@@ -14,6 +8,7 @@ import {
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 
 /**
  * Extract the view mode from a string.
@@ -70,6 +65,17 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     }
   }, [viewMode]);
 
+  const [updateUserOption] = useUpdateUserOptionMutation();
+  const setAndSaveViewMode = useCallback((newViewMode: TableViewModeEnum) => {
+    setViewMode(newViewMode);
+    updateUserOption({
+      variables: {
+        key: 'contacts_view',
+        value: newViewMode,
+      },
+    });
+  }, []);
+
   const appealIdPrefix = useMemo(() => {
     const appealIdPrefix = [appealId];
     if (viewMode !== null) {
@@ -93,9 +99,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
           setFilterPanelOpen={setFilterPanelOpen}
           appealId={appealId}
           viewMode={viewMode}
-          setViewMode={
-            setViewMode as Dispatch<SetStateAction<TableViewModeEnum>>
-          }
+          setViewMode={setAndSaveViewMode}
           tour={tour}
           setTour={setTour}
           userOptionsLoading={false}

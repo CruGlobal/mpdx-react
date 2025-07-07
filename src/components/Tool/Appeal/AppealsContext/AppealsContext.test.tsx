@@ -10,10 +10,7 @@ import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { ContactsContextSavedFilters as AppealsContextSavedFilters } from 'src/components/Contacts/ContactsContext/ContactsContext';
-import {
-  ListHeaderCheckBoxState,
-  TableViewModeEnum,
-} from 'src/components/Shared/Header/ListHeader';
+import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
 import {
@@ -21,6 +18,7 @@ import {
   AppealTourEnum,
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from './AppealsContext';
 
 const accountListId = 'account-list-1';
@@ -87,7 +85,7 @@ const AppealStatusFilterTestComponent: React.FC<
 );
 
 const TestRender: React.FC = () => {
-  const { viewMode, handleViewModeChange, appealId } = useContext(
+  const { viewMode, setViewMode, appealId } = useContext(
     AppealsContext,
   ) as AppealsType;
   return (
@@ -96,18 +94,10 @@ const TestRender: React.FC = () => {
         <>
           <Typography>appealId: {appealId}</Typography>
           <Typography>{viewMode}</Typography>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.List)
-            }
-          >
+          <Button onClick={() => setViewMode(TableViewModeEnum.List)}>
             List Button
           </Button>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.Flows)
-            }
-          >
+          <Button onClick={() => setViewMode(TableViewModeEnum.Flows)}>
             Flows Button
           </Button>
         </>

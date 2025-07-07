@@ -52,7 +52,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
     selectionType,
     filterPanelOpen,
     viewMode,
-    handleViewModeChange,
+    setViewMode,
     selectedIds,
   } = React.useContext(ContactsContext) as ContactsType;
 
@@ -83,7 +83,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
             <StyledToggleButtonGroup
               exclusive
               value={viewMode}
-              onChange={handleViewModeChange}
+              onChange={(_event, value) => setViewMode(value)}
             >
               <ToggleButton
                 value={TableViewModeEnum.List}

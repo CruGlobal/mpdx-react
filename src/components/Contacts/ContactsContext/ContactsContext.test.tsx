@@ -95,12 +95,8 @@ const TestWrapper: React.FC<TestWrapper> = ({
 };
 
 const InnerComponent: React.FC = () => {
-  const {
-    viewMode,
-    handleViewModeChange,
-    userOptionsLoading,
-    toggleSelectionById,
-  } = useContext(ContactsContext) as ContactsType;
+  const { viewMode, setViewMode, userOptionsLoading, toggleSelectionById } =
+    useContext(ContactsContext) as ContactsType;
   const { activeFilters } = useUrlFilters();
 
   return (
@@ -108,25 +104,13 @@ const InnerComponent: React.FC = () => {
       {!userOptionsLoading ? (
         <>
           <Typography>{viewMode}</Typography>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.List)
-            }
-          >
+          <Button onClick={() => setViewMode(TableViewModeEnum.List)}>
             List Button
           </Button>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.Flows)
-            }
-          >
+          <Button onClick={() => setViewMode(TableViewModeEnum.Flows)}>
             Flows Button
           </Button>
-          <Button
-            onClick={(event) =>
-              handleViewModeChange(event, TableViewModeEnum.Map)
-            }
-          >
+          <Button onClick={() => setViewMode(TableViewModeEnum.Map)}>
             Map Button
           </Button>
         </>

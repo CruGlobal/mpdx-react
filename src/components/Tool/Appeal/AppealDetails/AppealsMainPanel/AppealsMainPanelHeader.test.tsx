@@ -30,7 +30,7 @@ jest.mock('notistack', () => ({
 }));
 
 const accountListId = 'accountListId';
-const handleViewModeChange = jest.fn();
+const setViewMode = jest.fn();
 const toggleFilterPanel = jest.fn();
 const toggleSelectAll = jest.fn();
 const routerReplace = jest.fn();
@@ -66,7 +66,7 @@ const Components = ({
                     selectionType: ListHeaderCheckBoxState.Unchecked,
                     filterPanelOpen: false,
                     viewMode: TableViewModeEnum.List,
-                    handleViewModeChange,
+                    setViewMode,
                     selectedIds: [],
                     contactsQueryResult,
                   } as unknown as AppealsType
@@ -153,10 +153,7 @@ describe('AppealsMainPanelHeader', () => {
 
     expect(getByRole('button', { name: 'List View' })).toBeDisabled();
     userEvent.click(getByRole('button', { name: 'Flows View' }));
-    expect(handleViewModeChange).toHaveBeenCalledWith(
-      expect.objectContaining({}),
-      'flows',
-    );
+    expect(setViewMode).toHaveBeenCalledWith('flows');
   });
 
   it('should allow select all to be checked', () => {
