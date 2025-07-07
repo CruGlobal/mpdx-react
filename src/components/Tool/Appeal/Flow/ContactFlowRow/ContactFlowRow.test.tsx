@@ -4,10 +4,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { I18nextProvider } from 'react-i18next';
-import TestWrapper from '__tests__/util/TestWrapper';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
@@ -25,9 +28,17 @@ const accountListId = 'account-list-1';
 const appealId = 'appealId';
 const toggleSelectionById = jest.fn();
 const isChecked = jest.fn().mockImplementation(() => false);
-const getContactUrl = jest.fn().mockReturnValue({
-  contactUrl: `/contacts/${defaultContact.id}`,
-});
+
+const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+  query: {
+    accountListId,
+    appealId: [appealId, 'list'],
+  },
+  isReady: true,
+};
+const contactUrl = `/accountLists/${accountListId}/tools/appeals/appeal/${appealId}/list/${defaultContact.id}`;
 
 type ComponentsProps = {
   appealStatus?: AppealStatusEnum;
@@ -43,25 +54,30 @@ const Components = ({
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <DndProvider backend={HTML5Backend}>
         <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <AppealsContext.Provider
-              value={
-                {
-                  appealId,
-                  isRowChecked: isChecked,
-                  toggleSelectionById,
-                  getContactUrl,
-                } as unknown as AppealsType
-              }
-            >
-              <ContactFlowRow
-                accountListId={accountListId}
-                contact={contact}
-                appealStatus={appealStatus}
-                excludedContacts={excludedContacts}
-              />
-            </AppealsContext.Provider>
-          </TestWrapper>
+          <TestRouter router={router}>
+            <GqlMockedProvider>
+              <SnackbarProvider>
+                <AppealsWrapper>
+                  <AppealsContext.Provider
+                    value={
+                      {
+                        appealId,
+                        isRowChecked: isChecked,
+                        toggleSelectionById,
+                      } as unknown as AppealsType
+                    }
+                  >
+                    <ContactFlowRow
+                      accountListId={accountListId}
+                      contact={contact}
+                      appealStatus={appealStatus}
+                      excludedContacts={excludedContacts}
+                    />
+                  </AppealsContext.Provider>
+                </AppealsWrapper>
+              </SnackbarProvider>
+            </GqlMockedProvider>
+          </TestRouter>
         </ThemeProvider>
       </DndProvider>
     </LocalizationProvider>
@@ -92,7 +108,7 @@ describe('ContactFlowRow', () => {
     const { getByRole } = render(<Components />);
     const contact = getByRole('link', { name: defaultContact.name });
     expect(contact).toBeInTheDocument();
-    expect(contact).toHaveAttribute('href', `/contacts/${defaultContact.id}`);
+    expect(contact).toHaveAttribute('href', contactUrl);
   });
 
   it('should call check contact', async () => {

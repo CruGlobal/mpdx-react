@@ -2,10 +2,7 @@ import React, { useContext } from 'react';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 import { AppealsLeftPanel } from './AppealLeftPanel/AppealsLeftPanel';
 import { AppealsMainPanel } from './AppealsMainPanel/AppealsMainPanel';
@@ -28,10 +25,6 @@ const PageContent: React.FC = () => {
   );
 };
 
-const AppealsDetailsPage: React.FC = () => (
-  <ContactPanelProvider contactIdParam="appealId">
-    <PageContent />
-  </ContactPanelProvider>
-);
+const AppealsDetailsPage: React.FC = () => <PageContent />;
 
 export default AppealsDetailsPage;
