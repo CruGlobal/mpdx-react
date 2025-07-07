@@ -15,6 +15,7 @@ import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPl
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
+  pledgeStartDate: ContactRowFragment['pledgeStartDate'];
   contactDetailsOpen: boolean;
   pledgeAmount: ContactRowFragment['pledgeAmount'];
   pledgeCurrency: ContactRowFragment['pledgeCurrency'];
@@ -27,6 +28,7 @@ export const ContactPartnershipStatus: React.FC<
   ContactPartnershipStatusProps
 > = ({
   lateAt,
+  pledgeStartDate,
   contactDetailsOpen,
   pledgeAmount,
   pledgeCurrency,
@@ -37,8 +39,11 @@ export const ContactPartnershipStatus: React.FC<
   const locale = useLocale();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   const lateStatusEnum: number | undefined = useMemo(() => {
-    if (lateAt) {
-      const diff = DateTime.now().diff(DateTime.fromISO(lateAt), 'days')?.days;
+    if (lateAt && pledgeStartDate) {
+      const lateDate = DateTime.fromISO(lateAt);
+      const pledgeDate = DateTime.fromISO(pledgeStartDate);
+      const compareDate = lateDate > pledgeDate ? lateDate : pledgeDate;
+      const diff = DateTime.now().diff(compareDate, 'days')?.days;
 
       if (diff < 0) {
         return ContactLateStatusEnum.OnTime;

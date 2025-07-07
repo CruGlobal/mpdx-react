@@ -68,6 +68,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     id: contactId,
     lateAt,
     name,
+    pledgeStartDate,
     pledgeAmount,
     pledgeCurrency,
     pledgeFrequency,
@@ -147,6 +148,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
           <ContactPartnershipStatus
             contactDetailsOpen={contactDetailsOpen}
             lateAt={lateAt}
+            pledgeStartDate={pledgeStartDate}
             pledgeAmount={pledgeAmount}
             pledgeCurrency={pledgeCurrency}
             pledgeFrequency={pledgeFrequency}

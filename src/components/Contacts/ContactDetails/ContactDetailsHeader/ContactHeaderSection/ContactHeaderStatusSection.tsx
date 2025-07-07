@@ -37,13 +37,26 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
+
   const lateStatusEnum: number | undefined = useMemo(() => {
-    if (contact?.lateAt) {
+    let dateToUse: string | null | undefined;
+
+    if (contact?.lateAt && contact?.pledgeStartDate) {
+      const pledgeStartDate = DateTime.fromISO(contact.pledgeStartDate);
+      const lateAtDate = DateTime.fromISO(contact.lateAt);
+      dateToUse =
+        lateAtDate > pledgeStartDate ? contact.lateAt : contact.pledgeStartDate;
+    } else if (contact?.pledgeStartDate) {
+      dateToUse = contact.pledgeStartDate;
+    } else if (contact?.lateAt) {
+      dateToUse = contact.lateAt;
+    }
+
+    if (dateToUse) {
       const diff = DateTime.now().diff(
-        DateTime.fromISO(contact.lateAt),
+        DateTime.fromISO(dateToUse),
         'days',
       )?.days;
-
       if (diff < 0) {
         return ContactLateStatusEnum.OnTime;
       } else if (diff < 30) {
@@ -54,7 +67,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
         return ContactLateStatusEnum.LateMoreSixty;
       }
     }
-  }, [contact?.lateAt]);
+  }, [contact?.lateAt, contact?.pledgeStartDate]);
 
   if (loading) {
     return (
