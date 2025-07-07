@@ -87,19 +87,14 @@ const AppealStatusFilterTestComponent: React.FC<
 );
 
 const TestRender: React.FC = () => {
-  const {
-    viewMode,
-    handleViewModeChange,
-    appealId,
-    contactDetailsId,
-    setContactFocus,
-  } = useContext(AppealsContext) as AppealsType;
+  const { viewMode, handleViewModeChange, appealId } = useContext(
+    AppealsContext,
+  ) as AppealsType;
   return (
     <Box>
       {viewMode !== null ? (
         <>
           <Typography>appealId: {appealId}</Typography>
-          <Typography>contactDetailsId: {contactDetailsId}</Typography>
           <Typography>{viewMode}</Typography>
           <Button
             onClick={(event) =>
@@ -114,10 +109,6 @@ const TestRender: React.FC = () => {
             }
           >
             Flows Button
-          </Button>
-
-          <Button onClick={() => setContactFocus(undefined)}>
-            Close Contact
           </Button>
         </>
       ) : (
@@ -227,61 +218,6 @@ describe('ContactsPageContext', () => {
           query: {
             accountListId,
             appealId: [appealId, 'list'],
-          },
-        }),
-        undefined,
-        { shallow: true },
-      ),
-    );
-  });
-
-  it('should redirect back to flows view on contact page', async () => {
-    const { getByText, findByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            query: {
-              accountListId,
-              appealId: [appealId, 'flows', contactId],
-            },
-            pathname,
-            isReady,
-            push,
-          }}
-        >
-          <GqlMockedProvider<{ GetUserOptions: GetUserOptionsQuery }>
-            mocks={{
-              GetUserOptions: {
-                userOptions: [
-                  {
-                    id: 'test-id',
-                    key: 'contacts_view',
-                    value: 'flows',
-                  },
-                ],
-              },
-            }}
-          >
-            <AppealsWrapper>
-              <TestRender />
-            </AppealsWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
-
-    expect(
-      await findByText(`contactDetailsId: ${contactId}`),
-    ).toBeInTheDocument();
-    expect(await findByText('Close Contact')).toBeInTheDocument();
-    userEvent.click(getByText('Close Contact'));
-
-    await waitFor(() =>
-      expect(push).toHaveBeenCalledWith(
-        expect.objectContaining({
-          query: {
-            accountListId: 'account-list-1',
-            appealId: [appealId, 'flows'],
           },
         }),
         undefined,

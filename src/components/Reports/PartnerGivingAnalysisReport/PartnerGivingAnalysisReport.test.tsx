@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
@@ -63,16 +64,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }
         onCall={mutationSpy}
       >
-        <UrlFiltersProvider>
-          <PartnerGivingAnalysisReport
-            accountListId={accountListId}
-            title={title}
-            panelOpen={null}
-            onNavListToggle={onNavListToggle}
-            onFilterListToggle={onFilterListToggle}
-            contactDetailsOpen={false}
-          />
-        </UrlFiltersProvider>
+        <ContactPanelProvider>
+          <UrlFiltersProvider>
+            <PartnerGivingAnalysisReport
+              accountListId={accountListId}
+              title={title}
+              panelOpen={null}
+              onNavListToggle={onNavListToggle}
+              onFilterListToggle={onFilterListToggle}
+            />
+          </UrlFiltersProvider>
+        </ContactPanelProvider>
       </GqlMockedProvider>
     </ThemeProvider>
   </TestRouter>

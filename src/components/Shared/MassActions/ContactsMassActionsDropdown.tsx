@@ -43,6 +43,7 @@ import {
   DynamicAddExcludedContactModal,
   preloadAddExcludedContactModal,
 } from 'src/components/Tool/Appeal/Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';
@@ -55,7 +56,6 @@ import { MassActionsDropdown } from './MassActionsDropdown';
 
 interface ContactsMassActionsDropdownProps {
   filterPanelOpen: boolean;
-  contactDetailsOpen: boolean;
   contactsView?: TableViewModeEnum;
   buttonGroup?: ReactElement;
   selectedIds: string[];
@@ -67,7 +67,6 @@ export const ContactsMassActionsDropdown: React.FC<
   ContactsMassActionsDropdownProps
 > = ({
   filterPanelOpen,
-  contactDetailsOpen,
   contactsView,
   buttonGroup,
   selectedIds,
@@ -77,6 +76,7 @@ export const ContactsMassActionsDropdown: React.FC<
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() ?? '';
+  const { isOpen: contactPanelOpen } = useContactPanel();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -134,7 +134,7 @@ export const ContactsMassActionsDropdown: React.FC<
           {selectedIds?.length > 0 && (
             <>
               <MassActionsDropdown handleClick={handleClick} open={open}>
-                {filterPanelOpen && contactDetailsOpen ? (
+                {filterPanelOpen && contactPanelOpen ? (
                   <MoreHoriz />
                 ) : (
                   t('Actions')

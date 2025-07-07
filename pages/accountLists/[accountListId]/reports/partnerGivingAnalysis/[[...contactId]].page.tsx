@@ -108,7 +108,6 @@ const PageContent: React.FC = () => {
           onFilterListToggle={handleFilterListToggle}
           onNavListToggle={handleNavListToggle}
           title={t('Partner Giving Analysis')}
-          contactDetailsOpen={isOpen}
         />
       }
       rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}

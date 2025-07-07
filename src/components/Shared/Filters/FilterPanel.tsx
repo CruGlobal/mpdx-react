@@ -98,17 +98,11 @@ export type FilterInput = ContactFilterSetInput &
   TaskFilterSetInput &
   ReportContactFilterSetInput;
 
-export enum ContextTypesEnum {
-  Contacts = 'contacts',
-  Appeals = 'appeals',
-  FinancialAccountReport = 'financialAccountReport',
-}
 export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
   onClose: () => void;
-  contextType?: ContextTypesEnum;
   showSaveButton?: boolean;
 }
 

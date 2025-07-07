@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -12,7 +13,6 @@ import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPl
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
   pledgeStartDate: ContactRowFragment['pledgeStartDate'];
-  contactDetailsOpen: boolean;
   pledgeAmount: ContactRowFragment['pledgeAmount'];
   pledgeCurrency: ContactRowFragment['pledgeCurrency'];
   pledgeFrequency: ContactRowFragment['pledgeFrequency'];
@@ -25,7 +25,6 @@ export const ContactPartnershipStatus: React.FC<
 > = ({
   lateAt,
   pledgeStartDate,
-  contactDetailsOpen,
   pledgeAmount,
   pledgeCurrency,
   pledgeFrequency,
@@ -33,13 +32,14 @@ export const ContactPartnershipStatus: React.FC<
   status,
 }) => {
   const locale = useLocale();
+  const { isOpen: contactPanelOpen } = useContactPanel();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
 
   return (
     <Box
       display="flex"
       alignItems="center"
-      justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
+      justifyContent={contactPanelOpen ? 'flex-end' : undefined}
     >
       <Box display="flex" alignItems="center" width={32}>
         {status === ContactPartnershipStatusEnum.PartnerFinancial && (

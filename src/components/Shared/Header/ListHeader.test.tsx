@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
@@ -89,6 +90,9 @@ const Components = ({
       ...router,
       query: {
         ...router.query,
+        contactId: contactDetailsOpen
+          ? ['00000000-0000-0000-0000-000000000000']
+          : undefined,
         filters: activeFilters
           ? '%7B%22status%22%3A%5B%22APPOINTMENT_SCHEDULED%22%5D%7D'
           : undefined,
@@ -99,20 +103,21 @@ const Components = ({
       <I18nextProvider i18n={i18n}>
         <GqlMockedProvider>
           <SnackbarProvider>
-            <UrlFiltersProvider>
-              <ListHeader
-                selectedIds={selectedIds}
-                page={page}
-                contactsView={contactsView}
-                headerCheckboxState={headerCheckboxState}
-                filterPanelOpen={filterPanelOpen}
-                contactDetailsOpen={contactDetailsOpen}
-                buttonGroup={buttonGroup}
-                totalItems={totalItems}
-                showShowingCount={showShowingCount}
-                {...mockedProps}
-              />
-            </UrlFiltersProvider>
+            <ContactPanelProvider>
+              <UrlFiltersProvider>
+                <ListHeader
+                  selectedIds={selectedIds}
+                  page={page}
+                  contactsView={contactsView}
+                  headerCheckboxState={headerCheckboxState}
+                  filterPanelOpen={filterPanelOpen}
+                  buttonGroup={buttonGroup}
+                  totalItems={totalItems}
+                  showShowingCount={showShowingCount}
+                  {...mockedProps}
+                />
+              </UrlFiltersProvider>
+            </ContactPanelProvider>
           </SnackbarProvider>
         </GqlMockedProvider>
       </I18nextProvider>

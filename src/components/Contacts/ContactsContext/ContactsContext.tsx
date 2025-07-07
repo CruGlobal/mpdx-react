@@ -27,7 +27,6 @@ import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
   accountListId: string | undefined;
-  contactId: string | string[] | undefined;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -36,9 +35,7 @@ export type ContactsType = {
   filterData: ContactFiltersQuery | undefined;
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
-  handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
-  setContactFocus: (id: string | undefined) => void;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
     view: string,
@@ -50,8 +47,6 @@ export type ContactsType = {
   mapData: Coordinates[] | undefined;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
-  contactDetailsOpen: boolean;
-  contactDetailsId: string | undefined;
   viewMode: TableViewModeEnum | undefined;
   setViewMode: (mode: TableViewModeEnum) => void;
   selectedIds: string[];
@@ -105,7 +100,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
 
-  const { setSearchTerm, combinedFilters: contactsFilters } = useUrlFilters();
+  const { combinedFilters: contactsFilters } = useUrlFilters();
 
   //#region Mass Actions
 
@@ -177,10 +172,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setFilterPanelOpen((open) => !open);
   }, [setFilterPanelOpen]);
 
-  const handleClearAll = useCallback(() => {
-    setSearchTerm('');
-  }, [setSearchTerm]);
-
   const savedFilters: UserOptionFragment[] = useMemo(
     () => ContactsContextSavedFilters(filterData, accountListId),
     [filterData, accountListId],
@@ -217,12 +208,9 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [data],
   );
 
-  const setContactFocus = useCallback(() => {}, []);
-
   const contextValue = useMemo(
     () => ({
       accountListId: accountListId ?? '',
-      contactId: undefined,
       contactsQueryResult,
       selectionType,
       isRowChecked,
@@ -233,9 +221,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filterData,
       filtersLoading,
       toggleFilterPanel,
-      handleClearAll,
       savedFilters,
-      setContactFocus,
       handleViewModeChange,
       selected,
       setSelected,
@@ -244,8 +230,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       panTo,
       filterPanelOpen,
       setFilterPanelOpen,
-      contactDetailsOpen: false,
-      contactDetailsId: undefined,
       viewMode,
       setViewMode,
       userOptionsLoading,
@@ -262,9 +246,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filterData,
       filtersLoading,
       toggleFilterPanel,
-      handleClearAll,
       savedFilters,
-      setContactFocus,
       handleViewModeChange,
       selected,
       setSelected,
