@@ -61,7 +61,7 @@ export interface ContactsContextProps {
   userOptionsLoading: boolean;
 }
 
-export const ContactsContextSavedFilters = (
+export const parseSavedFilters = (
   filterData: ContactFiltersQuery | undefined,
   accountListId: string | undefined,
 ): UserOptionFragment[] => {
@@ -169,7 +169,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   }, [setFilterPanelOpen]);
 
   const savedFilters: UserOptionFragment[] = useMemo(
-    () => ContactsContextSavedFilters(filterData, accountListId),
+    () => parseSavedFilters(filterData, accountListId),
     [filterData, accountListId],
   );
   //#endregion
