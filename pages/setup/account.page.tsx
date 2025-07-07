@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
 import {
@@ -12,6 +11,7 @@ import {
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
 import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
+import { AccountListAutocomplete } from 'src/components/common/Autocomplete/AccountListAutocomplete/AccountListAutocomplete';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
@@ -65,16 +65,13 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
           'Which account would you like to see by default when you open {{appName}}?',
           { appName },
         )}
-        <Autocomplete
-          autoHighlight
+        <AccountListAutocomplete
           value={defaultAccountList}
           onChange={(_, value) => setDefaultAccountList(value)}
           options={accountListOptions.accountLists.nodes}
-          getOptionLabel={(accountList) => accountList.name ?? ''}
-          fullWidth
-          renderInput={(params) => (
-            <TextField {...params} label={t('Account')} />
-          )}
+          textFieldProps={{
+            label: t('Account'),
+          }}
         />
         <LargeButton
           variant="contained"
