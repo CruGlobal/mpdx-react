@@ -66,7 +66,7 @@ export interface ContactsContextProps {
   filterPanelOpen: boolean;
   setFilterPanelOpen: Dispatch<SetStateAction<boolean>>;
   viewMode: TableViewModeEnum;
-  setViewMode: (newViewMode: TableViewModeEnum) => void;
+  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
   userOptionsLoading: boolean;
 }
 

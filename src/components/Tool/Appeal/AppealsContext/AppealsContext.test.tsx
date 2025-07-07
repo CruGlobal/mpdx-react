@@ -24,8 +24,10 @@ import {
 } from './AppealsContext';
 
 const accountListId = 'account-list-1';
-const appealIdentifier = 'appeal-Id-1';
-const contactId = 'contact-id';
+const pathname =
+  '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]';
+const appealId = 'appeal-Id-1';
+const contactId = '00000000-0000-0000-0000-000000000000';
 const push = jest.fn();
 const isReady = true;
 const mutationSpy = jest.fn();
@@ -115,10 +117,6 @@ const TestRender: React.FC = () => {
             Flows Button
           </Button>
 
-          <Button onClick={() => setContactFocus(contactId)}>
-            Open Contact
-          </Button>
-
           <Button onClick={() => setContactFocus(undefined)}>
             Close Contact
           </Button>
@@ -144,14 +142,13 @@ const TestRenderContactsFilters: React.FC = () => {
 };
 
 describe('ContactsPageContext', () => {
-  it('should open a contact and the URL should reflect the opened contact', async () => {
-    const { getByText, findByText } = render(
+  it('should switch views to flows', async () => {
+    const { findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
-            query: { accountListId, appealId: [appealIdentifier, 'flows'] },
-            pathname:
-              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+            query: { accountListId, appealId: [appealId, 'list'] },
+            pathname,
             isReady,
             push,
           }}
@@ -176,34 +173,29 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-
-    expect(getByText('Loading')).toBeInTheDocument();
-
-    expect(
-      await findByText(`appealId: ${appealIdentifier}`),
-    ).toBeInTheDocument(),
-      userEvent.click(getByText('Open Contact'));
-
-    expect(
-      await findByText(`contactDetailsId: ${contactId}`),
-    ).toBeInTheDocument();
+    userEvent.click(await findByText('Flows Button'));
+    expect(await findByText('flows')).toBeInTheDocument();
     await waitFor(() =>
-      expect(push).toHaveBeenCalledWith({
-        pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/flows/contact-id',
-        query: {},
-      }),
+      expect(push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: {
+            accountListId,
+            appealId: [appealId, 'flows'],
+          },
+        }),
+        undefined,
+        { shallow: true },
+      ),
     );
   });
 
-  it('should switch views to flows and back to list', async () => {
-    const { getByText, findByText } = render(
+  it('should switch views to list', async () => {
+    const { findByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter
           router={{
-            query: { accountListId, appealId: [appealIdentifier, 'list'] },
-            pathname:
-              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+            query: { accountListId, appealId: [appealId, 'flows'] },
+            pathname,
             isReady,
             push,
           }}
@@ -228,25 +220,19 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    expect(await findByText('Flows Button')).toBeInTheDocument();
-    userEvent.click(getByText('Flows Button'));
-    expect(await findByText('flows')).toBeInTheDocument();
-    await waitFor(() =>
-      expect(push).toHaveBeenCalledWith({
-        pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/flows',
-        query: {},
-      }),
-    );
-
-    userEvent.click(getByText('List Button'));
+    userEvent.click(await findByText('List Button'));
     expect(await findByText('list')).toBeInTheDocument();
     await waitFor(() =>
-      expect(push).toHaveBeenCalledWith({
-        pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/list',
-        query: {},
-      }),
+      expect(push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: {
+            accountListId,
+            appealId: [appealId, 'list'],
+          },
+        }),
+        undefined,
+        { shallow: true },
+      ),
     );
   });
 
@@ -257,10 +243,9 @@ describe('ContactsPageContext', () => {
           router={{
             query: {
               accountListId,
-              appealId: [appealIdentifier, 'flows', contactId],
+              appealId: [appealId, 'flows', contactId],
             },
-            pathname:
-              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+            pathname,
             isReady,
             push,
           }}
@@ -285,7 +270,6 @@ describe('ContactsPageContext', () => {
         </TestRouter>
       </ThemeProvider>,
     );
-    expect(getByText('Loading')).toBeInTheDocument();
 
     expect(
       await findByText(`contactDetailsId: ${contactId}`),
@@ -294,11 +278,16 @@ describe('ContactsPageContext', () => {
     userEvent.click(getByText('Close Contact'));
 
     await waitFor(() =>
-      expect(push).toHaveBeenCalledWith({
-        pathname:
-          '/accountLists/account-list-1/tools/appeals/appeal/appeal-Id-1/flows',
-        query: {},
-      }),
+      expect(push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: {
+            accountListId: 'account-list-1',
+            appealId: [appealId, 'flows'],
+          },
+        }),
+        undefined,
+        { shallow: true },
+      ),
     );
   });
 
@@ -306,7 +295,7 @@ describe('ContactsPageContext', () => {
     it('should default to showing asked contacts in list view', async () => {
       render(
         <AppealStatusFilterTestComponent
-          query={{ appealId: [appealIdentifier, 'list', contactId] }}
+          query={{ appealId: [appealId, 'list', contactId] }}
         />,
       );
 
@@ -321,7 +310,7 @@ describe('ContactsPageContext', () => {
       render(
         <AppealStatusFilterTestComponent
           query={{
-            appealId: [appealIdentifier, 'flows', contactId],
+            appealId: [appealId, 'flows', contactId],
           }}
         />,
       );
@@ -341,10 +330,9 @@ describe('ContactsPageContext', () => {
           router={{
             query: {
               accountListId,
-              appealId: [appealIdentifier, 'flows', contactId],
+              appealId: [appealId, 'flows', contactId],
             },
-            pathname:
-              '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+            pathname,
             isReady,
             push,
           }}
@@ -433,7 +421,7 @@ describe('ContactsPageContext', () => {
         <ThemeProvider theme={theme}>
           <TestRouter
             router={{
-              query: { accountListId, appealId: [appealIdentifier, 'list'] },
+              query: { accountListId, appealId: [appealId, 'list'] },
               pathname:
                 '/accountLists/[accountListId]/tools/appeals/[[...appealId]]',
               isReady,
@@ -458,7 +446,7 @@ describe('ContactsPageContext', () => {
             router={{
               query: {
                 accountListId,
-                appealId: [appealIdentifier, 'list', 'tour'],
+                appealId: [appealId, 'list', 'tour'],
               },
               pathname:
                 '/accountLists/[accountListId]/tools/appeals/[[...appealId]]',

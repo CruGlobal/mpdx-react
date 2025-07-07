@@ -1,16 +1,5 @@
-import { ParsedUrlQueryInput } from 'querystring';
-import { useRouter } from 'next/router';
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { debounce, omit } from 'lodash';
+import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { PageEnum } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { useGetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
   ContactsContextSavedFilters as AppealsContextSavedFilters,
@@ -18,6 +7,7 @@ import {
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
@@ -53,11 +43,6 @@ export const shouldSkipContactCount = (tour, filterPanelOpen, viewMode) => {
   }
 };
 
-type ContactUrl = {
-  pathname: string;
-  filteredQuery: string | ParsedUrlQueryInput;
-  contactUrl: string;
-};
 export interface AppealsType
   extends Omit<
     ContactsType,
@@ -67,21 +52,20 @@ export interface AppealsType
     | 'panTo'
     | 'mapData'
     | 'contactsQueryResult'
-    | 'setContactFocus'
+    | 'viewMode'
     | 'setViewMode'
     | 'getContactHrefObject'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
-  setViewMode: (mode: TableViewModeEnum) => void;
-  setContactFocus: (id: string | undefined) => void;
-  getContactUrl: (id?: string, endTour?: boolean) => ContactUrl;
+  viewMode: TableViewModeEnum;
+  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
-  page: PageEnum | undefined;
   listAppealStatus: AppealStatusEnum;
   setListAppealStatus: Dispatch<SetStateAction<AppealStatusEnum>>;
   tour: AppealTourEnum | null;
+  setTour: Dispatch<SetStateAction<AppealTourEnum | null>>;
   nextTourStep: () => void;
   hideTour: () => void;
   askedCountQueryResult: ReturnType<typeof useContactsCountQuery>;
@@ -101,10 +85,12 @@ export enum AppealTourEnum {
   Finish = 'finish',
 }
 export interface AppealsContextProps
-  extends Omit<ContactsContextProps, 'contactId' | 'getContactUrl'> {
-  contactId: string | string[] | undefined;
+  extends Omit<ContactsContextProps, 'viewMode' | 'setViewMode'> {
   appealId: string | undefined;
-  page?: PageEnum;
+  viewMode: TableViewModeEnum;
+  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
+  tour: AppealTourEnum | null;
+  setTour: Dispatch<SetStateAction<AppealTourEnum | null>>;
 }
 
 export const AppealsProvider: React.FC<AppealsContextProps> = ({
@@ -112,34 +98,33 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   filterPanelOpen,
   setFilterPanelOpen,
   appealId,
-  contactId,
-  page,
+  viewMode,
+  setViewMode,
+  tour,
+  setTour,
 }) => {
   const accountListId = useAccountListId() ?? '';
-  const router = useRouter();
-  const { query, push, replace, pathname } = router;
 
-  const [contactDetailsId, setContactDetailsId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<TableViewModeEnum>(
-    TableViewModeEnum.Flows,
-  );
-  const [tour, setTour] = useState<AppealTourEnum | null>(null);
   const [listAppealStatus, setListAppealStatus] = useState<AppealStatusEnum>(
     AppealStatusEnum.Asked,
   );
 
-  const { activeFilters, searchTerm, combinedFilters } = useUrlFilters();
-
-  if (contactId !== undefined && !Array.isArray(contactId)) {
-    throw new Error('contactId should be an array or undefined');
-  }
+  const {
+    openContactId: contactDetailsId,
+    openContact,
+    closePanel,
+  } = useContactPanel();
+  const { activeFilters, searchTerm, setSearchTerm, combinedFilters } =
+    useUrlFilters();
 
   //User options for display view
   const { loading: userOptionsLoading } = useGetUserOptionsQuery({
     onCompleted: ({ userOptions }) => {
       const defaultView =
-        (userOptions.find((option) => option.key === 'contacts_view')
-          ?.value as TableViewModeEnum) || TableViewModeEnum.Flows;
+        userOptions.find((option) => option.key === 'contacts_view')?.value ===
+        TableViewModeEnum.List
+          ? TableViewModeEnum.List
+          : TableViewModeEnum.Flows;
       if (
         contactId?.includes('list') ||
         defaultView === TableViewModeEnum.List
@@ -230,38 +215,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   } = useMassSelection(allContactIds);
   //#endregion
 
-  useEffect(() => {
-    if (contactId) {
-      if (
-        contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'list' &&
-        contactId[contactId.length - 1] !== 'tour'
-      ) {
-        setContactDetailsId(contactId[contactId.length - 1]);
-      }
-      if (contactId.includes('tour') && !tour) {
-        setTour(AppealTourEnum.Start);
-      }
-    } else {
-      setContactDetailsId(null);
-    }
-  }, [contactId]);
-
-  useEffect(() => {
-    if (userOptionsLoading) {
-      return;
-    }
-
-    setContactFocus(
-      contactId &&
-        contactId[contactId.length - 1] !== 'flows' &&
-        contactId[contactId.length - 1] !== 'list' &&
-        contactId[contactId.length - 1] !== 'tour'
-        ? contactId[contactId.length - 1]
-        : undefined,
-      contactId ? true : false,
-    );
-  }, [viewMode]);
+  const { openContactId: contactId } = useContactPanel();
 
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
@@ -271,10 +225,9 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     },
   });
 
-  const nameSearch = searchTerm ? { wildcardSearch: searchTerm as string } : {};
   const defaultFilters = {
     appeal: [appealId || ''],
-    ...nameSearch,
+    ...(searchTerm ? { wildcardSearch: searchTerm } : {}),
   };
   const skip = shouldSkipContactCount(tour, filterPanelOpen, viewMode);
 
@@ -348,93 +301,13 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   //#region User Actions
-
-  const getContactUrl = (id?: string, endTour = false) => {
-    const {
-      accountListId: _accountListId,
-      contactId: _contactId,
-      appealId: _appealId,
-      ...filteredQuery
-    } = query;
-    if (activeFilters && activeFilters.ids) {
-      const newFilters = omit(activeFilters, 'ids');
-      if (Object.keys(newFilters).length > 0) {
-        filteredQuery.filters = encodeURI(JSON.stringify(newFilters));
-      } else {
-        delete filteredQuery['filters'];
-      }
+  const setContactFocus = (id: string | undefined) => {
+    if (typeof id === 'string') {
+      openContact(id);
+    } else {
+      closePanel();
     }
-
-    let pathname = '';
-    pathname = `/accountLists/${accountListId}/tools/appeals/appeal`;
-    if (appealId) {
-      pathname += `/${appealId}`;
-    }
-    if (viewMode === TableViewModeEnum.Flows) {
-      pathname += '/flows';
-    } else if (viewMode === TableViewModeEnum.List) {
-      pathname += '/list';
-    }
-    if (tour && !endTour) {
-      pathname += '/tour';
-    }
-    if (id) {
-      pathname += `/${id}`;
-    }
-
-    const filterParams =
-      Object.keys(filteredQuery).length > 0
-        ? `?${new URLSearchParams(
-            filteredQuery as Record<string, string>,
-          ).toString()}`
-        : '';
-
-    return {
-      pathname,
-      filteredQuery,
-      contactUrl: pathname + filterParams,
-    };
   };
-  const setContactFocus = (id?: string, endTour = false) => {
-    const { pathname, filteredQuery } = getContactUrl(id, endTour);
-    push({
-      pathname,
-      query: filteredQuery,
-    });
-    setContactDetailsId(id ?? null);
-  };
-  const setSearchTerm = useCallback(
-    debounce((searchTerm: string) => {
-      const { searchTerm: _, ...oldQuery } = query;
-      if (searchTerm !== '') {
-        replace(
-          {
-            pathname,
-            query: {
-              ...oldQuery,
-              accountListId,
-              ...(searchTerm && { searchTerm }),
-            },
-          },
-          undefined,
-          { shallow: true },
-        );
-      } else {
-        replace(
-          {
-            pathname,
-            query: {
-              ...oldQuery,
-              accountListId,
-            },
-          },
-          undefined,
-          { shallow: true },
-        );
-      }
-    }, 500),
-    [accountListId],
-  );
 
   const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
@@ -482,15 +355,11 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         break;
       default:
         setTour(null);
-        // Need to remove tour from URL
-        setContactFocus(undefined, true);
         break;
     }
   };
   const hideTour = () => {
     setTour(null);
-    // Need to remove tour from URL
-    setContactFocus(undefined, true);
   };
 
   return (
@@ -511,20 +380,19 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         handleClearAll: handleClearAll,
         savedFilters: savedFilters,
         setContactFocus: setContactFocus,
-        getContactUrl: getContactUrl,
         handleViewModeChange: handleViewModeChange,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
-        contactDetailsOpen: contactDetailsId !== null,
-        contactDetailsId: contactDetailsId ?? undefined,
+        contactDetailsOpen: typeof contactDetailsId === 'string',
+        contactDetailsId: contactDetailsId,
         viewMode: viewMode,
         setViewMode: setViewMode,
         selectedIds: ids,
         deselectAll: deselectAll,
         userOptionsLoading: userOptionsLoading,
         appealId,
-        page,
         tour,
+        setTour,
         listAppealStatus,
         setListAppealStatus,
         nextTourStep,

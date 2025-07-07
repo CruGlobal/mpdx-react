@@ -23,6 +23,8 @@ import AppealsDetailsPage from './AppealsDetailsPage';
 const accountListId = 'account-list-1';
 
 const defaultRouter = {
+  pathname:
+    '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
   query: { accountListId },
   isReady: true,
 };
