@@ -14,7 +14,6 @@ import {
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { useContactsQuery } from './contacts.generated';
@@ -64,7 +63,7 @@ export interface AppealsType
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
   viewMode: TableViewModeEnum | null;
-  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
+  setViewMode: (viewMode: TableViewModeEnum) => void;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   listAppealStatus: AppealStatusEnum;
@@ -93,7 +92,7 @@ export interface AppealsContextProps
   extends Omit<ContactsContextProps, 'viewMode' | 'setViewMode'> {
   appealId: string | undefined;
   viewMode: TableViewModeEnum | null;
-  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
+  setViewMode: (viewMode: TableViewModeEnum) => void;
   tour: AppealTourEnum | null;
   setTour: Dispatch<SetStateAction<AppealTourEnum | null>>;
 }
@@ -280,25 +279,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
   //#endregion
 
-  //#region User Actions
-  const handleViewModeChange = (_, view: string) => {
-    setViewMode(view as TableViewModeEnum);
-    updateOptions(view);
-  };
-  //#endregion
-
   //#region JSX
-
-  const [updateUserOption] = useUpdateUserOptionMutation();
-
-  const updateOptions = async (view: string): Promise<void> => {
-    await updateUserOption({
-      variables: {
-        key: 'contacts_view',
-        value: view,
-      },
-    });
-  };
 
   const nextTourStep = () => {
     switch (tour) {
@@ -345,7 +326,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         filtersLoading: filtersLoading,
         toggleFilterPanel: toggleFilterPanel,
         savedFilters: savedFilters,
-        handleViewModeChange: handleViewModeChange,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
         viewMode: viewMode,

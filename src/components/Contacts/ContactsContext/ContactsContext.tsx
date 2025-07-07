@@ -36,10 +36,6 @@ export type ContactsType = {
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
   savedFilters: UserOptionFragment[];
-  handleViewModeChange: (
-    event: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => void;
   selected: Coordinates | null;
   setSelected: Dispatch<SetStateAction<Coordinates | null>>;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
@@ -178,16 +174,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   );
   //#endregion
 
-  //#region User Actions
-
-  const handleViewModeChange = useCallback(
-    (_: React.MouseEvent<HTMLElement>, view: string) => {
-      setViewMode(view as TableViewModeEnum);
-    },
-    [setViewMode],
-  );
-  //#endregion
-
   //#region JSX
 
   // map states and functions
@@ -222,7 +208,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filtersLoading,
       toggleFilterPanel,
       savedFilters,
-      handleViewModeChange,
       selected,
       setSelected,
       mapRef,
@@ -247,7 +232,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filtersLoading,
       toggleFilterPanel,
       savedFilters,
-      handleViewModeChange,
       selected,
       setSelected,
       mapData,
