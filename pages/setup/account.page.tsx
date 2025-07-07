@@ -19,8 +19,6 @@ import {
   AccountListOptionsQuery,
 } from './Account.generated';
 
-type AccountList = AccountListOptionsQuery['accountLists']['nodes'][number];
-
 interface PageProps {
   accountListOptions: AccountListOptionsQuery;
 }
@@ -35,11 +33,10 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
   const [updateUserDefaultAccount, { loading: isSubmitting }] =
     useUpdateUserDefaultAccountMutation();
 
-  const [defaultAccountList, setDefaultAccountList] =
-    useState<AccountList | null>(null);
+  const [defaultAccountListId, setDefaultAccountListId] = useState<string>('');
 
   const handleSave = async () => {
-    if (!defaultAccountList) {
+    if (!defaultAccountListId) {
       return;
     }
 
@@ -47,7 +44,7 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
       variables: {
         input: {
           attributes: {
-            defaultAccountList: defaultAccountList.id,
+            defaultAccountList: defaultAccountListId,
           },
         },
       },
@@ -66,8 +63,8 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
           { appName },
         )}
         <AccountListAutocomplete
-          value={defaultAccountList}
-          onChange={(_, value) => setDefaultAccountList(value)}
+          value={defaultAccountListId}
+          onChange={(_, value) => setDefaultAccountListId(value || '')}
           options={accountListOptions.accountLists.nodes}
           textFieldProps={{
             label: t('Account'),
@@ -77,7 +74,7 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
           variant="contained"
           fullWidth
           onClick={handleSave}
-          disabled={!defaultAccountList || isSubmitting}
+          disabled={!defaultAccountListId || isSubmitting}
         >
           {t('Continue Tour')}
         </LargeButton>
