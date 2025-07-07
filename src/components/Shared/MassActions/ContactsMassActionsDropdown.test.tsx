@@ -37,23 +37,26 @@ jest.mock('notistack', () => ({
 }));
 
 const ContactComponents = () => (
-  <AppSettingsProvider>
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <ContactsMassActionsDropdown
-              filterPanelOpen={false}
-              contactDetailsOpen={false}
-              contactsView={TableViewModeEnum.List}
-              selectedIds={selectedIds}
-              page={PageEnum.Contact}
-            />
-          </SnackbarProvider>
-        </LocalizationProvider>
-      </GqlMockedProvider>
-    </ThemeProvider>
-  </AppSettingsProvider>
+  <TestRouter>
+    <AppSettingsProvider>
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <SnackbarProvider>
+              <ContactsWrapper>
+                <ContactsMassActionsDropdown
+                  filterPanelOpen={false}
+                  contactsView={TableViewModeEnum.List}
+                  selectedIds={selectedIds}
+                  page={PageEnum.Contact}
+                />
+              </ContactsWrapper>
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </GqlMockedProvider>
+      </ThemeProvider>
+    </AppSettingsProvider>
+  </TestRouter>
 );
 
 describe('ContactsMassActionsDropdown', () => {
@@ -267,7 +270,6 @@ describe('ContactsMassActionsDropdown', () => {
                 <ContactsWrapper>
                   <ContactsMassActionsDropdown
                     filterPanelOpen={false}
-                    contactDetailsOpen={false}
                     contactsView={TableViewModeEnum.List}
                     selectedIds={selectedIdsMerge}
                     page={PageEnum.Contact}
@@ -327,7 +329,6 @@ describe('ContactsMassActionsDropdown', () => {
                 <AppealsWrapper>
                   <ContactsMassActionsDropdown
                     filterPanelOpen={false}
-                    contactDetailsOpen={false}
                     contactsView={TableViewModeEnum.List}
                     selectedIds={selectedIdsMerge}
                     page={PageEnum.Appeal}

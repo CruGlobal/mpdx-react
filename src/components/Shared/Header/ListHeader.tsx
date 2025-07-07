@@ -4,6 +4,7 @@ import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
@@ -15,8 +16,8 @@ import { FilterButton } from './styledComponents';
 export const headerHeight = theme.spacing(12);
 
 const HeaderWrap = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'contactDetailsOpen',
-})<{ contactDetailsOpen?: boolean }>(({}) => ({
+  shouldForwardProp: (prop) => prop !== 'contactPanelOpen',
+})<{ contactPanelOpen?: boolean }>(({}) => ({
   paddingLeft: theme.spacing(0.5),
   paddingRight: theme.spacing(0.5),
   height: headerHeight,
@@ -78,7 +79,6 @@ interface ListHeaderProps {
   filterPanelOpen: boolean;
   contactsView?: TableViewModeEnum;
   toggleFilterPanel: () => void;
-  contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
   totalItems?: number;
   leftButtonGroup?: ReactElement;
@@ -93,7 +93,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   page,
   headerCheckboxState,
   filterPanelOpen,
-  contactDetailsOpen,
   toggleFilterPanel,
   onCheckAllItems,
   totalItems,
@@ -105,13 +104,14 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   showShowingCount = false,
   isExcludedAppealPage = false,
 }) => {
+  const { isOpen: contactPanelOpen } = useContactPanel();
   const { activeFilters, searchTerm, setSearchTerm, starred, setStarred } =
     useUrlFilters();
 
   const { t } = useTranslation();
 
   return (
-    <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
+    <HeaderWrap contactPanelOpen={contactPanelOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
         {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
@@ -168,7 +168,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
           <ContactsMassActionsDropdown
             filterPanelOpen={filterPanelOpen}
-            contactDetailsOpen={contactDetailsOpen}
             buttonGroup={buttonGroup}
             contactsView={contactsView}
             selectedIds={selectedIds}
@@ -180,7 +179,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           <Box mr={2}>
             <ContactsMassActionsDropdown
               filterPanelOpen={filterPanelOpen}
-              contactDetailsOpen={contactDetailsOpen}
               buttonGroup={buttonGroup}
               contactsView={contactsView}
               selectedIds={selectedIds}

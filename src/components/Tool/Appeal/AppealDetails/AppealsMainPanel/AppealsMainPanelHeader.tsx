@@ -56,7 +56,6 @@ export const AppealsMainPanelHeader: React.FC = () => {
     toggleSelectAll,
     selectionType,
     filterPanelOpen,
-    contactDetailsOpen,
     viewMode,
     handleViewModeChange,
     selectedIds,
@@ -70,7 +69,6 @@ export const AppealsMainPanelHeader: React.FC = () => {
       page={PageEnum.Appeal}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
-      contactDetailsOpen={contactDetailsOpen}
       onCheckAllItems={toggleSelectAll}
       contactsView={viewMode ?? undefined}
       totalItems={contactsQueryResult.data?.contacts.totalCount}

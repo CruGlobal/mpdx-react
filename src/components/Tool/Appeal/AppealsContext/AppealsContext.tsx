@@ -12,7 +12,6 @@ import {
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
@@ -116,14 +115,8 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   );
 
   const {
-    openContactId: contactDetailsId,
-    openContact,
-    closePanel,
-  } = useContactPanel();
-  const {
     activeFilters,
     searchTerm,
-    setSearchTerm,
     combinedFilters: appealsFilters,
   } = useUrlFilters();
 
@@ -208,8 +201,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   } = useMassSelection(allContactIds);
   //#endregion
 
-  const { openContactId: contactId } = useContactPanel();
-
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
@@ -283,10 +274,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     setFilterPanelOpen(!filterPanelOpen);
   };
 
-  const handleClearAll = () => {
-    setSearchTerm('');
-  };
-
   const savedFilters: UserOptionFragment[] = AppealsContextSavedFilters(
     filterData,
     accountListId,
@@ -296,14 +283,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
   //#endregion
 
   //#region User Actions
-  const setContactFocus = (id: string | undefined) => {
-    if (typeof id === 'string') {
-      openContact(id);
-    } else {
-      closePanel();
-    }
-  };
-
   const handleViewModeChange = (_, view: string) => {
     setViewMode(view as TableViewModeEnum);
     updateOptions(view);
@@ -357,7 +336,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     <AppealsContext.Provider
       value={{
         accountListId: accountListId ?? '',
-        contactId: contactId,
         contactsQueryResult: contactsQueryResult,
         selectionType: selectionType,
         isRowChecked: isRowChecked,
@@ -368,14 +346,10 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         filterData: filterData,
         filtersLoading: filtersLoading,
         toggleFilterPanel: toggleFilterPanel,
-        handleClearAll: handleClearAll,
         savedFilters: savedFilters,
-        setContactFocus: setContactFocus,
         handleViewModeChange: handleViewModeChange,
         filterPanelOpen: filterPanelOpen,
         setFilterPanelOpen: setFilterPanelOpen,
-        contactDetailsOpen: typeof contactDetailsId === 'string',
-        contactDetailsId: contactDetailsId,
         viewMode: viewMode,
         setViewMode: setViewMode,
         isFiltered: isFiltered,

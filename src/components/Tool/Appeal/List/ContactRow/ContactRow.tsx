@@ -92,7 +92,7 @@ export const ContactRow: React.FC<Props> = ({
     isRowChecked: isChecked,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(AppealsContext) as AppealsType;
-  const { isOpen: contactDetailsOpen, buildContactUrl } = useContactPanel();
+  const { isOpen: contactPanelOpen, buildContactUrl } = useContactPanel();
   const [createPledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
   const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
@@ -211,7 +211,7 @@ export const ContactRow: React.FC<Props> = ({
             <Box
               display="flex"
               alignItems="center"
-              justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
+              justifyContent={contactPanelOpen ? 'flex-end' : undefined}
             >
               <Box
                 display="flex"
