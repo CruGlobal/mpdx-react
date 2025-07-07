@@ -68,17 +68,18 @@ describe('AddDonation', () => {
             }>
               onCall={mutationSpy}
               mocks={{
-                GetDonationModal: {
-                  accountList: {
-                    id: '123',
-                    currency: 'USD',
-                    appeals: [
+                GetAppealsForMassAction: {
+                  appeals: {
+                    nodes: [
                       {
-                        active: true,
-                        name: 'Cool appeal',
                         id: 'appeal-1',
+                        name: 'Cool appeal',
+                        contactIds: ['contactIdOne', 'contactIdTwo'],
                       },
                     ],
+                    pageInfo: {
+                      hasNextPage: false,
+                    },
                   },
                 },
                 GetDesignationAccounts: {
@@ -147,7 +148,6 @@ describe('AddDonation', () => {
           amount: 500.5,
           appealAmount: null,
           appealId: 'appeal-1',
-          currency: 'USD',
           designationAccountId: '321',
           donationDate: '2020-01-01',
           donorAccountId: 'donor-acc-1',
