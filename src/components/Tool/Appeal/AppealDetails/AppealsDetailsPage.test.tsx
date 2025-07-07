@@ -184,27 +184,19 @@ describe('AppealsDetailsPage', () => {
         />,
       );
 
-      expect(
-        await findByRole('img', { name: /toggle filter panel/i }),
-      ).toBeInTheDocument();
-
-      expect(
-        queryByRole('heading', { name: /export to csv/i }),
-      ).not.toBeInTheDocument();
-
-      userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
-
-      expect(
-        await findByRole('heading', { name: /export to csv/i }),
-      ).toBeInTheDocument();
-
-      userEvent.click(getByRole('img', { name: 'Close' }));
+      userEvent.click(await findByRole('img', { name: 'Close' }));
 
       await waitFor(() =>
         expect(
           queryByRole('heading', { name: /export to csv/i }),
         ).not.toBeInTheDocument(),
       );
+
+      userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
+
+      expect(
+        await findByRole('heading', { name: /export to csv/i }),
+      ).toBeInTheDocument();
     });
 
     it('should open and close on Flows view', async () => {
