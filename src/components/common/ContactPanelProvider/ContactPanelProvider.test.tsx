@@ -12,44 +12,56 @@ const newContactId = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
 
 describe('splitContactIdParam', () => {
   it('should handle contactId is undefined', () => {
-    expect(splitContactIdParam(undefined)).toEqual({
+    expect(splitContactIdParam(undefined, 0)).toEqual({
       prefix: [],
       contactId: undefined,
     });
   });
 
   it('should handle contactId is a string', () => {
-    expect(splitContactIdParam(contactId)).toEqual({
+    expect(splitContactIdParam(contactId, 0)).toEqual({
       prefix: [],
       contactId: undefined,
     });
   });
 
   it('should handle contactId is an empty array', () => {
-    expect(splitContactIdParam([])).toEqual({
+    expect(splitContactIdParam([], 0)).toEqual({
       prefix: [],
       contactId: undefined,
     });
   });
 
   it('should handle contactId is not a UUID', () => {
-    expect(splitContactIdParam(['flows'])).toEqual({
+    expect(splitContactIdParam(['flows'], 0)).toEqual({
       prefix: ['flows'],
       contactId: undefined,
     });
   });
 
   it('should handle contactId is a UUID', () => {
-    expect(splitContactIdParam([contactId])).toEqual({
+    expect(splitContactIdParam([contactId], 0)).toEqual({
       prefix: [],
       contactId,
     });
   });
 
   it('should handle contactId is an array ending with a UUID', () => {
-    expect(splitContactIdParam(['flows', contactId])).toEqual({
+    expect(splitContactIdParam(['flows', contactId], 0)).toEqual({
       prefix: ['flows'],
       contactId,
+    });
+  });
+
+  it('should handle custom prefix length', () => {
+    expect(splitContactIdParam([contactId], 1)).toEqual({
+      prefix: [contactId],
+      contactId: undefined,
+    });
+
+    expect(splitContactIdParam([contactId, newContactId], 1)).toEqual({
+      prefix: [contactId],
+      contactId: newContactId,
     });
   });
 });

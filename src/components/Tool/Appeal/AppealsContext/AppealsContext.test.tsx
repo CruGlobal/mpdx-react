@@ -90,14 +90,13 @@ const TestRender: React.FC = () => {
   const {
     viewMode,
     handleViewModeChange,
-    userOptionsLoading,
     appealId,
     contactDetailsId,
     setContactFocus,
   } = useContext(AppealsContext) as AppealsType;
   return (
     <Box>
-      {!userOptionsLoading ? (
+      {viewMode !== null ? (
         <>
           <Typography>appealId: {appealId}</Typography>
           <Typography>contactDetailsId: {contactDetailsId}</Typography>

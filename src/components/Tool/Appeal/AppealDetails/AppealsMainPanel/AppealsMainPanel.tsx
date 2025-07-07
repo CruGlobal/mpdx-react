@@ -10,8 +10,9 @@ import { useAppealQuery } from './AppealInfo.generated';
 import { AppealsMainPanelHeader } from './AppealsMainPanelHeader';
 
 export const AppealsMainPanel: React.FC = () => {
-  const { accountListId, appealId, viewMode, userOptionsLoading } =
-    React.useContext(AppealsContext) as AppealsType;
+  const { accountListId, appealId, viewMode } = React.useContext(
+    AppealsContext,
+  ) as AppealsType;
 
   const { data: appealInfo, loading: appealInfoLoading } = useAppealQuery({
     variables: {
@@ -24,19 +25,18 @@ export const AppealsMainPanel: React.FC = () => {
   return (
     <>
       <AppealsMainPanelHeader />
-      {!userOptionsLoading &&
-        (viewMode === TableViewModeEnum.List ? (
-          <DynamicContactsList
-            appealInfo={appealInfo}
-            appealInfoLoading={appealInfoLoading}
-          />
-        ) : (
-          <DynamicContactFlow
-            accountListId={accountListId ?? ''}
-            appealInfo={appealInfo}
-            appealInfoLoading={appealInfoLoading}
-          />
-        ))}
+      {viewMode === TableViewModeEnum.List ? (
+        <DynamicContactsList
+          appealInfo={appealInfo}
+          appealInfoLoading={appealInfoLoading}
+        />
+      ) : viewMode === TableViewModeEnum.Flows ? (
+        <DynamicContactFlow
+          accountListId={accountListId ?? ''}
+          appealInfo={appealInfo}
+          appealInfoLoading={appealInfoLoading}
+        />
+      ) : null}
     </>
   );
 };
