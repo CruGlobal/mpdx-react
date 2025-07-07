@@ -19,14 +19,10 @@ import {
   AccountListOptionsQuery,
 } from './Account.generated';
 
-interface PageProps {
-  accountListOptions: AccountListOptionsQuery;
-}
-
 // This is the third page page of the setup tour. It lets users choose their
 // default account list. It will be shown if the user has more than one account
 // list and don't have a default chosen yet.
-const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
+const AccountPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { next } = useNextSetupPage();
@@ -63,9 +59,8 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
           { appName },
         )}
         <AccountListAutocomplete
-          value={defaultAccountListId}
+          accountListId={defaultAccountListId}
           onChange={(_, value) => setDefaultAccountListId(value)}
-          options={accountListOptions.accountLists.nodes}
           textFieldProps={{
             label: t('Account'),
           }}
@@ -83,51 +78,49 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
   );
 };
 
-export const getServerSideProps = makeGetServerSideProps<PageProps>(
-  async (session) => {
-    const ssrClient = makeSsrClient(session.user.apiToken);
-    const { data: accountListOptions } =
-      await ssrClient.query<AccountListOptionsQuery>({
-        query: AccountListOptionsDocument,
-      });
+export const getServerSideProps = makeGetServerSideProps(async (session) => {
+  const ssrClient = makeSsrClient(session.user.apiToken);
+  const { data: accountListOptions } =
+    await ssrClient.query<AccountListOptionsQuery>({
+      query: AccountListOptionsDocument,
+    });
 
-    if (accountListOptions.accountLists.nodes.length === 1) {
-      // The user has exactly one account list, so set it as the default and go to preferences
-      const defaultAccountListId = accountListOptions.accountLists.nodes[0].id;
-      try {
-        await ssrClient.mutate<
-          UpdateUserDefaultAccountMutation,
-          UpdateUserDefaultAccountMutationVariables
-        >({
-          mutation: UpdateUserDefaultAccountDocument,
-          variables: {
-            input: {
-              attributes: {
-                defaultAccountList: defaultAccountListId,
-              },
+  if (accountListOptions.accountLists.nodes.length === 1) {
+    // The user has exactly one account list, so set it as the default and go to preferences
+    const defaultAccountListId = accountListOptions.accountLists.nodes[0].id;
+    try {
+      await ssrClient.mutate<
+        UpdateUserDefaultAccountMutation,
+        UpdateUserDefaultAccountMutationVariables
+      >({
+        mutation: UpdateUserDefaultAccountDocument,
+        variables: {
+          input: {
+            attributes: {
+              defaultAccountList: defaultAccountListId,
             },
           },
-        });
-        return {
-          redirect: {
-            destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
-            permanent: false,
-          },
-        };
-      } catch {
-        // If setting the account list failed, silently swallow the error and let
-        // the user view the page. If the error is persistent, the mutation will
-        // fail there when they try to choose a default account list, and they
-        // will at least get an error message.
-      }
+        },
+      });
+      return {
+        redirect: {
+          destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
+          permanent: false,
+        },
+      };
+    } catch {
+      // If setting the account list failed, silently swallow the error and let
+      // the user view the page. If the error is persistent, the mutation will
+      // fail there when they try to choose a default account list, and they
+      // will at least get an error message.
     }
+  }
 
-    return {
-      props: {
-        accountListOptions,
-      },
-    };
-  },
-);
+  return {
+    props: {
+      accountListOptions,
+    },
+  };
+});
 
 export default AccountPage;

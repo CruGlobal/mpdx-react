@@ -111,11 +111,10 @@ export const DefaultAccountAccordion: React.FC<
             >
               <AccountListAutocomplete
                 disabled={isSubmitting}
-                value={defaultAccountList}
+                defaultAccountList={defaultAccountList}
                 onChange={(_, value) => {
                   setFieldValue('defaultAccountList', value);
                 }}
-                options={accounts}
                 textFieldProps={{
                   placeholder: label,
                   // eslint-disable-next-line jsx-a11y/no-autofocus
