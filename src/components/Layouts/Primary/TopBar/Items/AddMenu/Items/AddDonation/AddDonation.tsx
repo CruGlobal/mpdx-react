@@ -18,7 +18,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
-import { DesignationAccountAutoselect } from 'src/common/Autoselect/DesignationAccountAutoselect';
+import { DesignationAccountAutocomplete } from 'src/common/Autocomplete/DesignationAccountAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
@@ -28,6 +28,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
@@ -71,7 +72,9 @@ const donationSchema = yup.object({
     ),
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation Account is required')),
   donationDate: requiredDateTime(),
   donorAccountId: yup.string().required(),
   memo: yup.string().nullable(),
@@ -378,12 +381,12 @@ export const AddDonation = ({
                     <FastField name="designationAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <DesignationAccountAutoselect
+                          <DesignationAccountAutocomplete
                             {...field}
                             id="designation-account-input"
                             accountListId={accountListId}
-                            componentType="autocomplete"
                             loading={designationAccountsLoading}
+                            onBlur={handleBlur('designationAccountId')}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
                               setFieldValue(
@@ -391,9 +394,15 @@ export const AddDonation = ({
                                 designationAccountId,
                               )
                             }
-                            TextFieldProps={{
+                            textFieldProps={{
                               size: 'small',
                               variant: 'outlined',
+                              error:
+                                !!errors.designationAccountId &&
+                                touched.designationAccountId,
+                              helperText:
+                                touched.designationAccountId &&
+                                errors.designationAccountId,
                             }}
                           />
                         </Box>
