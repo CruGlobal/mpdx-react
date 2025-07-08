@@ -113,7 +113,6 @@ const PageContent: React.FC = () => {
   const {
     activeFilters,
     setActiveFilters,
-    searchTerm,
     combinedFilters: tasksFilter,
   } = useUrlFilters();
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
@@ -345,7 +344,7 @@ const PageContent: React.FC = () => {
                         <NullState
                           page="task"
                           totalCount={data?.allTasks?.totalCount || 0}
-                          filtered={isFiltered || !!searchTerm}
+                          isFiltered={isFiltered}
                         />
                       </Box>
                     }

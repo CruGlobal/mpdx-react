@@ -65,7 +65,7 @@ const CreateButton: React.FC<CreateButtonProps> = ({ page }) => {
 interface Props {
   page: 'contact' | 'task';
   totalCount: number;
-  filtered: boolean;
+  isFiltered: boolean;
   title?: string;
   paragraph?: string;
 }
@@ -73,7 +73,7 @@ interface Props {
 const NullState: React.FC<Props> = ({
   page,
   totalCount,
-  filtered,
+  isFiltered,
   title = i18n.t('You have {{count}} total {{page}}s', {
     count: totalCount,
     page,
@@ -83,7 +83,7 @@ const NullState: React.FC<Props> = ({
   ),
 }: Props) => {
   const { t } = useTranslation();
-  const { setActiveFilters } = useUrlFilters();
+  const { setActiveFilters, searchTerm } = useUrlFilters();
 
   return (
     <NullStateBox data-testid={`${page}-null-state`}>
@@ -91,7 +91,7 @@ const NullState: React.FC<Props> = ({
         path={page === 'contact' ? mdiHome : mdiFormatListBulleted}
         size={1.5}
       />
-      {filtered ? (
+      {isFiltered || !!searchTerm ? (
         <>
           <Typography variant="h5">{title}</Typography>
           <Typography>{paragraph}</Typography>

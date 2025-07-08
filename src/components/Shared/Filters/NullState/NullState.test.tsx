@@ -18,13 +18,13 @@ jest.mock('src/hooks/useTaskModal');
 interface TestComponentProps {
   page: 'contact' | 'task';
   totalCount: number;
-  filtered: boolean;
+  isFiltered: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   page,
   totalCount,
-  filtered,
+  isFiltered,
 }) => (
   <TestRouter>
     <UrlFiltersProvider>
@@ -34,7 +34,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             <NullState
               page={page}
               totalCount={totalCount}
-              filtered={filtered}
+              isFiltered={isFiltered}
             />
           </TestWrapper>
         </ThemeProvider>
@@ -53,7 +53,7 @@ describe('NullState', () => {
 
   it('render text for unfiltered null contact state', async () => {
     const { getByText, getByTestId, findByText } = render(
-      <TestComponent page="contact" totalCount={0} filtered={false} />,
+      <TestComponent page="contact" totalCount={0} isFiltered={false} />,
     );
 
     await waitFor(() =>
@@ -73,7 +73,7 @@ describe('NullState', () => {
 
   it('render text filtered contacts', async () => {
     const { getByText } = render(
-      <TestComponent page="contact" totalCount={10} filtered={true} />,
+      <TestComponent page="contact" totalCount={10} isFiltered={true} />,
     );
 
     await waitFor(() =>
@@ -91,7 +91,7 @@ describe('NullState', () => {
 
   it('render text for unfiltered null tasks state', async () => {
     const { getByText, getByTestId } = render(
-      <TestComponent page="task" totalCount={0} filtered={false} />,
+      <TestComponent page="task" totalCount={0} isFiltered={false} />,
     );
 
     await waitFor(() =>
@@ -111,7 +111,7 @@ describe('NullState', () => {
 
   it('render text filtered tasks', async () => {
     const { getByText } = render(
-      <TestComponent page="task" totalCount={10} filtered={true} />,
+      <TestComponent page="task" totalCount={10} isFiltered={true} />,
     );
 
     await waitFor(() =>
