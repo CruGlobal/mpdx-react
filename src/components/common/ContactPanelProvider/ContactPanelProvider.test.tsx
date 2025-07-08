@@ -3,66 +3,46 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
 import {
   ContactPanelProvider,
-  splitContactIdParam,
+  extractContactId,
   useContactPanel,
 } from './ContactPanelProvider';
 
 const contactId = '00000000-0000-0000-0000-000000000000';
 const newContactId = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
 
-describe('splitContactIdParam', () => {
-  it('should handle contactId is undefined', () => {
-    expect(splitContactIdParam(undefined, 0)).toEqual({
-      prefix: [],
-      contactId: undefined,
-    });
+describe('extractContactId', () => {
+  it('should return undefined when contactId is undefined', () => {
+    expect(extractContactId(undefined, 0)).toEqual(undefined);
   });
 
-  it('should handle contactId is a string', () => {
-    expect(splitContactIdParam(contactId, 0)).toEqual({
-      prefix: [],
-      contactId: undefined,
-    });
+  it('should return undefined when contactId is a string', () => {
+    expect(extractContactId(contactId, 0)).toEqual(undefined);
   });
 
-  it('should handle contactId is an empty array', () => {
-    expect(splitContactIdParam([], 0)).toEqual({
-      prefix: [],
-      contactId: undefined,
-    });
+  it('should return undefined when contactId is an empty array', () => {
+    expect(extractContactId([], 0)).toEqual(undefined);
   });
 
-  it('should handle contactId is not a UUID', () => {
-    expect(splitContactIdParam(['flows'], 0)).toEqual({
-      prefix: ['flows'],
-      contactId: undefined,
-    });
+  it('should return undefined when contactId is not a UUID', () => {
+    expect(extractContactId(['flows'], 0)).toEqual(undefined);
   });
 
-  it('should handle contactId is a UUID', () => {
-    expect(splitContactIdParam([contactId], 0)).toEqual({
-      prefix: [],
-      contactId,
-    });
+  it('should return the id when contactId is a UUID', () => {
+    expect(extractContactId([contactId], 0)).toEqual(contactId);
   });
 
-  it('should handle contactId is an array ending with a UUID', () => {
-    expect(splitContactIdParam(['flows', contactId], 0)).toEqual({
-      prefix: ['flows'],
-      contactId,
-    });
+  it('should return the id when contactId is an array ending with a UUID', () => {
+    expect(extractContactId(['flows', contactId], 0)).toEqual(contactId);
   });
 
-  it('should handle custom prefix length', () => {
-    expect(splitContactIdParam([contactId], 1)).toEqual({
-      prefix: [contactId],
-      contactId: undefined,
-    });
+  it('should return undefined when the entire array is the prefix', () => {
+    expect(extractContactId([contactId], 1)).toEqual(undefined);
+  });
 
-    expect(splitContactIdParam([contactId, newContactId], 1)).toEqual({
-      prefix: [contactId],
-      contactId: newContactId,
-    });
+  it('should return the id when the entire array is longer than the prefix', () => {
+    expect(extractContactId([contactId, newContactId], 1)).toEqual(
+      newContactId,
+    );
   });
 });
 
@@ -152,7 +132,7 @@ describe('useContactPanel', () => {
           push,
           pathname,
           query: {
-            appealId: ['appeals', 'appeal-1', contactId],
+            appealId: [contactId],
           },
         }}
       >
@@ -176,7 +156,7 @@ describe('useContactPanel', () => {
     expect(push).toHaveBeenLastCalledWith(
       {
         pathname,
-        query: { appealId: ['appeals', 'appeal-1', newContactId] },
+        query: { appealId: [newContactId] },
       },
       undefined,
       { shallow: true },
@@ -191,7 +171,7 @@ describe('useContactPanel', () => {
     expect(push).toHaveBeenLastCalledWith(
       {
         pathname,
-        query: { appealId: ['appeals', 'appeal-1'] },
+        query: {},
       },
       undefined,
       { shallow: true },
@@ -201,8 +181,52 @@ describe('useContactPanel', () => {
 
     expect(result.current.buildContactUrl(newContactId)).toEqual({
       pathname,
-      query: { appealId: ['appeals', 'appeal-1', newContactId] },
+      query: { appealId: [newContactId] },
     });
+  });
+
+  it('should support customizing contactIdPrefix and prefixMinLength', () => {
+    const contactIdPrefix = [contactId];
+    const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+      <TestRouter
+        router={{
+          push,
+          pathname,
+          query: {
+            contactId: [contactId],
+          },
+        }}
+      >
+        <ContactPanelProvider
+          contactIdPrefix={contactIdPrefix}
+          prefixMinLength={1}
+        >
+          {children}
+        </ContactPanelProvider>
+      </TestRouter>
+    );
+
+    const { result } = renderHook(() => useContactPanel(), {
+      wrapper: Wrapper,
+    });
+
+    expect(result.current.openContactId).toBeUndefined();
+    expect(result.current.isOpen).toBe(false);
+
+    act(() => {
+      result.current.openContact(newContactId);
+    });
+
+    expect(push).toHaveBeenLastCalledWith(
+      {
+        pathname,
+        query: { contactId: [contactId, newContactId] },
+      },
+      undefined,
+      { shallow: true },
+    );
+    expect(result.current.openContactId).toBe(newContactId);
+    expect(result.current.isOpen).toBe(true);
   });
 
   it('should throw if used outside of <ContactPanelContext>', () => {
