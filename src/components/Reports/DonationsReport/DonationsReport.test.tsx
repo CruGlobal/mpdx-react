@@ -10,12 +10,14 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { DonationTableQuery } from 'src/components/DonationTable/DonationTable.generated';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { GetDonationsGraphQuery } from '../../Contacts/ContactDetails/ContactDonationsTab/DonationsGraph/DonationsGraph.generated';
 import { DonationsReport } from './DonationsReport';
 
 const title = 'test title';
 const onNavListToggle = jest.fn();
+const mutationSpy = jest.fn();
 
 const push = jest.fn();
 
@@ -77,10 +79,60 @@ const mocks = {
     },
   },
 };
-interface Mocks {
-  GetDonationsGraph: GetDonationsGraphQuery;
-  DonationTable: DonationTableQuery;
+
+const emptyMocks = {
+  ...mocks,
+  GetDonationGraph: {
+    ...mocks.GetDonationGraph,
+    reportsDonationHistories: {
+      ...mocks.GetDonationGraph.reportsDonationHistories,
+      periods: [],
+    },
+  },
+};
+
+interface TestComponentProps {
+  designationAccounts?: string[];
+  empty?: boolean;
+  routerMonth?: string;
 }
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  designationAccounts,
+  empty,
+  routerMonth,
+}) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter
+      router={
+        routerMonth
+          ? {
+              ...router,
+              query: { ...router.query, month: '2024-02-01' },
+            }
+          : router
+      }
+    >
+      <GqlMockedProvider<{
+        GetDonationsGraph: GetDonationsGraphQuery;
+        DonationTable: DonationTableQuery;
+      }>
+        mocks={empty ? emptyMocks : mocks}
+        onCall={mutationSpy}
+      >
+        <ContactPanelProvider>
+          <DonationsReport
+            accountListId={'abc'}
+            designationAccounts={designationAccounts}
+            isNavListOpen={true}
+            onNavListToggle={onNavListToggle}
+            title={title}
+          />
+        </ContactPanelProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
 
 describe('DonationsReport', () => {
   beforeEach(() => {
@@ -98,31 +150,7 @@ describe('DonationsReport', () => {
       queryByRole,
       queryAllByRole,
       queryByTestId,
-    } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<Mocks>
-            mocks={{
-              ...mocks,
-              GetDonationGraph: {
-                ...mocks.GetDonationGraph,
-                reportsDonationHistories: {
-                  ...mocks.GetDonationGraph.reportsDonationHistories,
-                  periods: [],
-                },
-              },
-            }}
-          >
-            <DonationsReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    } = render(<TestComponent empty />);
 
     await waitFor(() =>
       expect(queryByRole('progressbar')).not.toBeInTheDocument(),
@@ -137,18 +165,7 @@ describe('DonationsReport', () => {
 
   it('renders with data', async () => {
     const { getByTestId, findByRole, queryByRole, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<Mocks> mocks={mocks}>
-            <DonationsReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent />,
     );
 
     await waitFor(() =>
@@ -164,104 +181,34 @@ describe('DonationsReport', () => {
   });
 
   it('initializes with month from query', () => {
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter
-          router={{
-            ...router,
-            query: { ...router.query, month: '2024-02-01' },
-          }}
-        >
-          <GqlMockedProvider<Mocks> mocks={mocks}>
-            <DonationsReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByRole } = render(<TestComponent routerMonth="2024-02-01" />);
 
     expect(getByRole('heading', { name: 'February 2024' })).toBeInTheDocument();
   });
 
   it('filters report by designation account', async () => {
-    const mutationSpy = jest.fn();
-    render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<Mocks> mocks={mocks} onCall={mutationSpy}>
-            <DonationsReport
-              accountListId={'abc'}
-              designationAccounts={['account-1']}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    render(<TestComponent designationAccounts={['account-1']} />);
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[2][0]).toMatchObject({
-        operation: {
-          operationName: 'GetDonationGraph',
-          variables: {
-            designationAccountIds: ['account-1'],
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('GetDonationGraph', {
+        designationAccountIds: ['account-1'],
       }),
     );
   });
 
   it('does not filter report by designation account', async () => {
-    const mutationSpy = jest.fn();
-    render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<Mocks> mocks={mocks} onCall={mutationSpy}>
-            <DonationsReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    render(<TestComponent />);
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[2][0]).toMatchObject({
-        operation: {
-          operationName: 'GetDonationGraph',
-          variables: {
-            designationAccountIds: null,
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('GetDonationGraph', {
+        designationAccountIds: null,
       }),
     );
   });
 
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {
     onNavListToggle.mockClear();
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<Mocks> mocks={mocks}>
-            <DonationsReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsFilterIcon'));
