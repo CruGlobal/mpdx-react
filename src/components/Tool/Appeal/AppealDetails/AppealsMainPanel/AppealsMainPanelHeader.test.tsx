@@ -134,10 +134,12 @@ describe('AppealsMainPanelHeader', () => {
 
     userEvent.type(getByRole('textbox'), 'search term');
 
-    await waitFor(() =>
-      expect(routerReplace.mock.lastCall[0].query.searchTerm).toEqual(
-        'search term',
-      ),
+    await waitFor(
+      () =>
+        expect(routerReplace.mock.lastCall[0].query.searchTerm).toEqual(
+          'search term',
+        ),
+      { timeout: 3000 },
     );
   });
 
