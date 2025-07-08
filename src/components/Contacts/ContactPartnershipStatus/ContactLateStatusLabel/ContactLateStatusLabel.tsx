@@ -2,26 +2,30 @@ import React, { useMemo } from 'react';
 import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import {
+  ContactLateStatusEnum,
+  getDonationLateStatus,
+} from './getDonationLateStatus';
 import type { Theme } from '@mui/material/styles/createTheme';
 
-export enum ContactLateStatusEnum {
-  OnTime,
-  LateLessThirty,
-  LateMoreThirty,
-  LateMoreSixty,
-}
-
 interface ContactLateStatusProps {
-  lateStatusEnum: ContactLateStatusEnum;
+  lateAt?: string | null;
+  pledgeStartDate?: string | null;
   isDetail?: boolean;
 }
 
 export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
-  lateStatusEnum,
+  lateAt,
+  pledgeStartDate,
   isDetail,
 }) => {
   const theme = useTheme<Theme>();
   const { t } = useTranslation();
+
+  const lateStatusEnum = useMemo(
+    () => getDonationLateStatus(lateAt, pledgeStartDate),
+    [lateAt, pledgeStartDate],
+  );
 
   const lateStatusLabel: string | undefined = useMemo(() => {
     switch (lateStatusEnum) {
