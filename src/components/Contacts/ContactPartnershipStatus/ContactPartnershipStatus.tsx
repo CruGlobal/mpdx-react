@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
-import { DateTime } from 'luxon';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getDonationLateStatus } from 'src/utils/functions/getDonationLateStatus';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import {
   ContactLateStatusEnum,
@@ -38,35 +38,10 @@ export const ContactPartnershipStatus: React.FC<
 }) => {
   const locale = useLocale();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
-  const lateStatusEnum: number | undefined = useMemo(() => {
-    let dateToUse: string | null | undefined;
-
-    if (lateAt && pledgeStartDate) {
-      const pledgeStart = DateTime.fromISO(pledgeStartDate);
-      const lateAtDate = DateTime.fromISO(lateAt);
-      dateToUse = lateAtDate > pledgeStart ? lateAt : pledgeStartDate;
-    } else if (pledgeStartDate) {
-      dateToUse = pledgeStartDate;
-    } else if (lateAt) {
-      dateToUse = lateAt;
-    }
-
-    if (dateToUse) {
-      const diff = DateTime.now().diff(
-        DateTime.fromISO(dateToUse),
-        'days',
-      )?.days;
-      if (diff < 0) {
-        return ContactLateStatusEnum.OnTime;
-      } else if (diff < 30) {
-        return ContactLateStatusEnum.LateLessThirty;
-      } else if (diff < 60) {
-        return ContactLateStatusEnum.LateMoreThirty;
-      } else {
-        return ContactLateStatusEnum.LateMoreSixty;
-      }
-    }
-  }, [lateAt, pledgeStartDate]);
+  const lateStatusEnum: ContactLateStatusEnum | undefined = useMemo(
+    () => getDonationLateStatus(lateAt, pledgeStartDate),
+    [lateAt, pledgeStartDate],
+  );
 
   return (
     <Box
