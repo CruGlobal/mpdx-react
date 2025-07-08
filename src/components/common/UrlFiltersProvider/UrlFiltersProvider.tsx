@@ -29,6 +29,7 @@ export interface UrlFilters {
   starred: boolean;
   setStarred: (starred: boolean) => void;
   clearSearchTerm: () => void;
+  isFiltered: boolean;
 }
 
 const UrlFiltersContext = createContext<UrlFilters | null>(null);
@@ -95,6 +96,11 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     setSearchTerm('');
   }, []);
 
+  const isFiltered = useMemo(
+    () => Object.keys(activeFilters).length > 0,
+    [activeFilters],
+  );
+
   // Update the URL when the active filters or the search term changes
   useEffect(() => {
     // Omit the filters and searchTerm from the previous query because we don't want them in the URL
@@ -145,6 +151,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
       setStarred,
       clearSearchTerm,
       combinedFilters,
+      isFiltered,
     }),
     [
       activeFilters,
@@ -153,6 +160,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
       starred,
       clearSearchTerm,
       combinedFilters,
+      isFiltered,
     ],
   );
 
