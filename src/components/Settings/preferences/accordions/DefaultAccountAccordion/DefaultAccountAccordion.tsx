@@ -1,9 +1,9 @@
 import React, { ReactElement, useMemo } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { AccountListAutocomplete } from 'src/common/Autocompletes/AccountListAutocomplete';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
@@ -109,29 +109,20 @@ export const DefaultAccountAccordion: React.FC<
                 { appName },
               )}
             >
-              <Autocomplete
+              <AccountListAutocomplete
                 disabled={isSubmitting}
-                autoHighlight
-                value={defaultAccountList}
+                options={accounts}
                 onChange={(_, value) => {
                   setFieldValue('defaultAccountList', value);
                 }}
-                options={accounts.map((account) => account.id) || []}
-                getOptionLabel={(defaultAccountList): string =>
-                  accounts.find(({ id }) => id === defaultAccountList)?.name ??
-                  ''
-                }
-                fullWidth
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder={label}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus
-                    label={label}
-                    sx={{ marginTop: 1 }}
-                  />
-                )}
+                value={defaultAccountList}
+                textFieldProps={{
+                  placeholder: label,
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus: true,
+                  label: label,
+                  sx: { marginTop: 1 },
+                }}
               />
             </FieldWrapper>
           </FormWrapper>
