@@ -15,6 +15,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { DesignationAccountAutoselect } from 'src/common/Autoselect/DesignationAccountAutoselect';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
@@ -79,7 +80,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
     pageInfo: appeals?.appeals.pageInfo,
   });
 
-  const { data: designationAccounts, loading: loadingDesignationAccounts } =
+  const { loading: loadingDesignationAccounts } =
     useGetDesignationAccountsQuery({ variables: { accountListId } });
 
   const [updateDonation, { loading: updatingDonation }] =
@@ -259,9 +260,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     <InputLabel id="designationAccountId">
                       {t('Designation Account')}
                     </InputLabel>
-                    <Select
+                    <DesignationAccountAutoselect
                       labelId="designationAccountId"
                       label={t('Designation Account')}
+                      accountListId={accountListId}
+                      componentType="select"
                       value={designationAccountId}
                       onChange={(e) =>
                         setFieldValue('designationAccountId', e.target.value)
@@ -271,18 +274,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                           <SmallLoadingSpinner spacing="25px" />
                         )
                       }
-                    >
-                      {designationAccounts?.designationAccounts
-                        .flatMap(
-                          (designationAccount) =>
-                            designationAccount.designationAccounts,
-                        )
-                        .map((account) => (
-                          <MenuItem key={account.id} value={account.id}>
-                            {account.name || account.designationNumber}
-                          </MenuItem>
-                        ))}
-                    </Select>
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} md={6}>
