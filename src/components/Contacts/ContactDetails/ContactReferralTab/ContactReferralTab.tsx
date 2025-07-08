@@ -22,8 +22,8 @@ import {
   DynamicCreateMultipleContacts,
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import Modal from 'src/components/common/Modal/Modal';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
@@ -59,9 +59,7 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
   accountListId,
   contactId,
 }) => {
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/contacts/`,
-  });
+  const { buildContactUrl } = useContactPanel();
 
   const { data, error, fetchMore } = useContactReferralTabQuery({
     variables: {
@@ -119,30 +117,26 @@ export const ContactReferralTab: React.FC<ContactReferralTabProps> = ({
                 {data?.contact &&
                 data.contact.contactReferralsByMe.nodes.length > 0 ? (
                   data?.contact.contactReferralsByMe.nodes.map(
-                    ({ id, referredTo, createdAt }) => {
-                      const contactUrl = getContactUrl(referredTo.id);
-
-                      return (
-                        <TableRow key={id}>
-                          <TableCell>
-                            <ReferralName>
-                              <Link
-                                component={NextLink}
-                                href={contactUrl}
-                                shallow
-                              >
-                                {referredTo.name}
-                              </Link>
-                            </ReferralName>
-                          </TableCell>
-                          <TableCell>
-                            <Typography>
-                              {dateFormat(DateTime.fromISO(createdAt), locale)}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    },
+                    ({ id, referredTo, createdAt }) => (
+                      <TableRow key={id}>
+                        <TableCell>
+                          <ReferralName>
+                            <Link
+                              component={NextLink}
+                              href={buildContactUrl(referredTo.id)}
+                              shallow
+                            >
+                              {referredTo.name}
+                            </Link>
+                          </ReferralName>
+                        </TableCell>
+                        <TableCell>
+                          <Typography>
+                            {dateFormat(DateTime.fromISO(createdAt), locale)}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ),
                   )
                 ) : (
                   <TableRow key="no_data">
