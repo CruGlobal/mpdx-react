@@ -17,6 +17,7 @@ import {
   PageEnum,
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   AppealStatusEnum,
   AppealsContext,
@@ -50,40 +51,29 @@ export const AppealsMainPanelHeader: React.FC = () => {
 
   const {
     accountListId,
-    sanitizedFilters,
     contactsQueryResult,
     toggleFilterPanel,
     toggleSelectAll,
-    setSearchTerm,
-    searchTerm,
-    starredFilter,
-    setStarredFilter,
     selectionType,
     filterPanelOpen,
     contactDetailsOpen,
     viewMode,
     handleViewModeChange,
     selectedIds,
-    activeFilters,
   } = React.useContext(AppealsContext) as AppealsType;
-
+  const { activeFilters } = useUrlFilters();
   const isExcludedPage =
     activeFilters.appealStatus === AppealStatusEnum.Excluded;
 
   return (
     <ListHeader
       page={PageEnum.Appeal}
-      activeFilters={Object.keys(sanitizedFilters).length > 0}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
       contactDetailsOpen={contactDetailsOpen}
       onCheckAllItems={toggleSelectAll}
       contactsView={viewMode}
-      onSearchTermChanged={setSearchTerm}
-      searchTerm={searchTerm}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
-      starredFilter={starredFilter}
-      toggleStarredFilter={setStarredFilter}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
       showShowingCount={viewMode === TableViewModeEnum.List}

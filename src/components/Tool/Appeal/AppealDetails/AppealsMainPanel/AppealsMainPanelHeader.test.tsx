@@ -1,16 +1,18 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
+import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import theme from 'src/theme';
 import {
   AppealsContext,
   AppealsType,
+  TableViewModeEnum,
 } from '../../AppealsContext/AppealsContext';
 import { AppealsMainPanelHeader } from './AppealsMainPanelHeader';
 
@@ -31,9 +33,10 @@ const accountListId = 'accountListId';
 const handleViewModeChange = jest.fn();
 const toggleFilterPanel = jest.fn();
 const toggleSelectAll = jest.fn();
-const setSearchTerm = jest.fn();
+const routerReplace = jest.fn();
 const defaultRouter = {
   query: { accountListId },
+  replace: routerReplace,
   isReady: true,
 };
 const defaultContactsQueryResult = {
@@ -60,17 +63,12 @@ const Components = ({
                   {
                     toggleFilterPanel,
                     toggleSelectAll,
-                    setSearchTerm,
-                    searchTerm: '',
-                    selectionType: 'none',
+                    selectionType: ListHeaderCheckBoxState.Unchecked,
                     filterPanelOpen: false,
-                    viewMode: 'list',
+                    viewMode: TableViewModeEnum.List,
                     handleViewModeChange,
-                    sanitizedFilters: {},
-                    contactDetailsOpen: false,
                     selectedIds: [],
                     contactsQueryResult,
-                    activeFilters: {},
                   } as unknown as AppealsType
                 }
               >
@@ -124,7 +122,7 @@ describe('AppealsMainPanelHeader', () => {
     expect(getByRole('checkbox')).toBeDisabled();
   });
 
-  it('should search contacts', () => {
+  it('should search contacts', async () => {
     const { getByRole } = render(
       <Components
         router={{
@@ -136,7 +134,11 @@ describe('AppealsMainPanelHeader', () => {
 
     userEvent.type(getByRole('textbox'), 'search term');
 
-    expect(setSearchTerm).toHaveBeenCalledWith('search term');
+    await waitFor(() =>
+      expect(routerReplace.mock.lastCall[0].query.searchTerm).toEqual(
+        'search term',
+      ),
+    );
   });
 
   it('should change view', async () => {

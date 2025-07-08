@@ -12,9 +12,7 @@ export const ContactsLeftPanel: React.FC = () => {
     filterData,
     filtersLoading,
     savedFilters,
-    activeFilters,
     toggleFilterPanel,
-    setActiveFilters,
     mapData,
     panTo,
     selected,
@@ -34,9 +32,7 @@ export const ContactsLeftPanel: React.FC = () => {
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
       savedFilters={savedFilters}
-      selectedFilters={activeFilters}
       onClose={toggleFilterPanel}
-      onSelectedFiltersChanged={setActiveFilters}
     />
   ) : null;
 };

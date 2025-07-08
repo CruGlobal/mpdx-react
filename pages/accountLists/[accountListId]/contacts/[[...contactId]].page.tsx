@@ -15,14 +15,11 @@ import {
   TableViewModeEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from './ContactsWrapper';
 
-const Contacts: React.FC = ({}) => {
+const Contacts: React.FC = () => {
   const { t } = useTranslation();
   const { accountListId, filterPanelOpen, viewMode } = useContext(
     ContactsContext,
@@ -62,10 +59,8 @@ const Contacts: React.FC = ({}) => {
 };
 
 const ContactsPage: React.FC = () => (
-  <ContactsWrapper addViewMode>
-    <ContactPanelProvider>
-      <Contacts />
-    </ContactPanelProvider>
+  <ContactsWrapper>
+    <Contacts />
   </ContactsWrapper>
 );
 
