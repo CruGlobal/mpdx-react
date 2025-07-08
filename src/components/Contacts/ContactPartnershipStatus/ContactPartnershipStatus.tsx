@@ -39,12 +39,23 @@ export const ContactPartnershipStatus: React.FC<
   const locale = useLocale();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   const lateStatusEnum: number | undefined = useMemo(() => {
-    if (lateAt && pledgeStartDate) {
-      const lateDate = DateTime.fromISO(lateAt);
-      const pledgeDate = DateTime.fromISO(pledgeStartDate);
-      const compareDate = lateDate > pledgeDate ? lateDate : pledgeDate;
-      const diff = DateTime.now().diff(compareDate, 'days')?.days;
+    let dateToUse: string | null | undefined;
 
+    if (lateAt && pledgeStartDate) {
+      const pledgeStart = DateTime.fromISO(pledgeStartDate);
+      const lateAtDate = DateTime.fromISO(lateAt);
+      dateToUse = lateAtDate > pledgeStart ? lateAt : pledgeStartDate;
+    } else if (pledgeStartDate) {
+      dateToUse = pledgeStartDate;
+    } else if (lateAt) {
+      dateToUse = lateAt;
+    }
+
+    if (dateToUse) {
+      const diff = DateTime.now().diff(
+        DateTime.fromISO(dateToUse),
+        'days',
+      )?.days;
       if (diff < 0) {
         return ContactLateStatusEnum.OnTime;
       } else if (diff < 30) {
@@ -55,7 +66,7 @@ export const ContactPartnershipStatus: React.FC<
         return ContactLateStatusEnum.LateMoreSixty;
       }
     }
-  }, [lateAt]);
+  }, [lateAt, pledgeStartDate]);
 
   return (
     <Box
