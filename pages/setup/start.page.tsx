@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import React, { ReactElement, useState } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useUpdatePersonalPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdatePersonalPreferences.generated';
 import { SetupPage } from 'src/components/Setup/SetupPage';
@@ -10,8 +9,8 @@ import {
   PrivacyPolicyLink,
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
+import { LanguageAutocomplete } from 'src/components/common/Autocomplete/LanguageAutocomplete/LanguageAutocomplete';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { formatLanguage, languages } from 'src/lib/data/languages';
 import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 
 // This is the first page of the tour, and it lets users choose their language. It is always shown.
@@ -21,7 +20,7 @@ const StartPage = (): ReactElement => {
   const { next } = useNextSetupPage();
   const [savePreferences] = useUpdatePersonalPreferencesMutation();
 
-  const [locale, setLocale] = useState<string>(
+  const [locale, setLocale] = useState<string | null | undefined>(
     (typeof window === 'undefined'
       ? null
       : window.navigator.language.toLowerCase()) || 'en-us',
@@ -60,23 +59,15 @@ const StartPage = (): ReactElement => {
           )}
         </p>
         <p>{t('It looks like you speak')}</p>
-        <Autocomplete
-          autoHighlight
+        <LanguageAutocomplete
           disableClearable
           value={locale}
           onChange={(_, value) => {
             setLocale(value);
           }}
-          options={languages.map((language) => language.id) || []}
-          getOptionLabel={(locale) => formatLanguage(locale)}
-          fullWidth
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder={t('Language')}
-              label={t('Language')}
-            />
-          )}
+          TextFieldProps={{
+            label: t('Language'),
+          }}
         />
         <p>
           {t('By Clicking "Let\'s Begin!" you have read and agree to the ')}

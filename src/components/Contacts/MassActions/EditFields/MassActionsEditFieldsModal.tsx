@@ -20,13 +20,12 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { LikelyToGiveSelect } from 'src/components/common/LikelyToGiveSelect/LikelyToGiveSelect';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { LikelyToGiveEnum } from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import Modal from '../../../common/Modal/Modal';
 import { NewsletterSelect } from '../../../common/NewsletterSelect/NewsletterSelect';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
@@ -189,7 +188,7 @@ export const MassActionsEditFieldsModal: React.FC<
                     <InputLabel id="activityType">
                       {t('Likely To Give')}
                     </InputLabel>
-                    <Select
+                    <LikelyToGiveSelect
                       label={t('Likely To Give')}
                       labelId="likelyToGive"
                       value={likelyToGive}
@@ -200,12 +199,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {Object.values(LikelyToGiveEnum).map((val) => (
-                        <MenuItem key={val} value={val}>
-                          {getLocalizedLikelyToGive(t, val)}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                    </LikelyToGiveSelect>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>

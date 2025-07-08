@@ -28,6 +28,7 @@ import * as yup from 'yup';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { LikelyToGiveSelect } from 'src/components/common/LikelyToGiveSelect/LikelyToGiveSelect';
 import {
   CancelButton,
   SubmitButton,
@@ -47,7 +48,6 @@ import {
   amountFormat,
   parseNumberFromCurrencyString,
 } from 'src/lib/intlFormat';
-import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
 import Modal from '../../../../../common/Modal/Modal';
@@ -526,7 +526,7 @@ export const EditPartnershipInfoModal: React.FC<
                       <InputLabel id="likely-to-give-select-label">
                         {t('Likely To Give')}
                       </InputLabel>
-                      <Select
+                      <LikelyToGiveSelect
                         label={t('Likely To Give')}
                         labelId="likely-to-give-select-label"
                         value={likelyToGive ?? ''}
@@ -536,13 +536,7 @@ export const EditPartnershipInfoModal: React.FC<
                             e.target.value as LikelyToGiveEnum,
                           )
                         }
-                      >
-                        {Object.values(LikelyToGiveEnum).map((val) => (
-                          <MenuItem key={val} value={val}>
-                            {getLocalizedLikelyToGive(t, val)}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      />
                     </FormControl>
                   </ContactInputWrapper>
                 </Grid>
