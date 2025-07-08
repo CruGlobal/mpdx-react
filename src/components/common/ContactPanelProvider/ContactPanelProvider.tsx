@@ -15,21 +15,16 @@ const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Split a contact id query param into the prefix and the contact id. For example, a contact id
- * param value of `['map', '00000000-0000-0000-0000-000000000000']` would be split into
- * `{ prefix: ['map'], contactId: '00000000-0000-0000-0000-000000000000' }`.
+ * Extract the contact id from a query param
  *
  * @param paramValue The contact id query param from the router
  * @param prefixMinLength The minimum length of the prefix section
- * @returns The prefix and contact id from the query param
+ * @returns The contact id from the query param
  */
-export const splitContactIdParam = (
+export const extractContactId = (
   paramValue: ParsedUrlQuery[string],
   prefixMinLength: number,
-): {
-  prefix: string[];
-  contactId: string | undefined;
-} => {
+): string | undefined => {
   // The contact id param is always an array because it corresponds to a router segment like
   // `[[...contactId]]`. The array can contain multiple elements, for example, on the contacts page
   // for routes like ".../contacts/map/:contactId". Regardless of the number of elements in the
@@ -39,18 +34,21 @@ export const splitContactIdParam = (
   // more examples.
 
   if (!Array.isArray(paramValue)) {
-    return { prefix: [], contactId: undefined };
+    return undefined;
+  }
+
+  // The contact id must not be part of the first `prefixMinLength` items
+  if (paramValue.length <= prefixMinLength) {
+    return undefined;
   }
 
   // The contact id is the last item in the query param array, but it must be a UUID, not 'map', for
-  // example. Also, it must not be part of the first `prefixMinLength` items. The prefix is the rest
-  // of the param value, e.g. ['map'].
-  const contactId =
-    paramValue.length > prefixMinLength ? paramValue.at(-1) : undefined;
+  // example.
+  const contactId = paramValue.slice(prefixMinLength).at(-1);
   if (typeof contactId === 'string' && uuidRegex.test(contactId)) {
-    return { prefix: paramValue.slice(0, -1), contactId };
+    return contactId;
   } else {
-    return { prefix: paramValue, contactId: undefined };
+    return undefined;
   }
 };
 
@@ -96,6 +94,8 @@ export interface ContactPanelProviderProps {
   /**
    * The initial part of the contact id param before the contact id. It is `['map']` in the contacts
    * map view, for example.
+   *
+   * **IMPORTANT**: If provided, the prefix must be stable across renders.
    */
   contactIdPrefix?: string[];
 
@@ -112,7 +112,7 @@ export interface ContactPanelProviderProps {
 
 export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
   contactIdParam = 'contactId',
-  contactIdPrefix: manualContactIdPrefix,
+  contactIdPrefix,
   prefixMinLength = 0,
   children,
 }) => {
@@ -125,8 +125,8 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
     [JSON.stringify(router.query[contactIdParam])],
   );
 
-  const { prefix: urlContactIdPrefix, contactId: urlContactId } = useMemo(
-    () => splitContactIdParam(contactIdParamValue, prefixMinLength),
+  const urlContactId = useMemo(
+    () => extractContactId(contactIdParamValue, prefixMinLength),
     [contactIdParamValue, prefixMinLength],
   );
 
@@ -137,23 +137,19 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
     setContactId(urlContactId);
   }, [contactIdParamValue]);
 
-  const contactIdPrefix = useMemo(
-    () => manualContactIdPrefix ?? urlContactIdPrefix,
-    [manualContactIdPrefix, contactIdParamValue],
-  );
-
   // Update the URL when the prefix changes
   useEffect(() => {
     updateContactAndUrl(contactId);
-    // Memoize by the JSON string to ensure stability when the prefix changes to an equivalent array
-  }, [JSON.stringify(contactIdPrefix)]);
+  }, [contactIdPrefix]);
 
   const buildContactUrl = useCallback(
     (newContactId: string | undefined): UrlObject => {
-      const newContactIdParamValue =
-        typeof newContactId === 'string'
-          ? [...contactIdPrefix, newContactId]
-          : contactIdPrefix;
+      const newContactIdParamValue = contactIdPrefix
+        ? [...contactIdPrefix]
+        : [];
+      if (typeof newContactId === 'string') {
+        newContactIdParamValue.push(newContactId);
+      }
 
       const newQuery = {
         ...router.query,
