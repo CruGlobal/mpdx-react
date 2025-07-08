@@ -27,7 +27,6 @@ import { Coordinates } from '../ContactsMap/coordinates';
 
 export type ContactsType = {
   accountListId: string | undefined;
-  contactId: string | string[] | undefined;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -36,13 +35,7 @@ export type ContactsType = {
   filterData: ContactFiltersQuery | undefined;
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
-  handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
-  setContactFocus: (id: string | undefined) => void;
-  handleViewModeChange: (
-    event: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => void;
   selected: Coordinates | null;
   setSelected: Dispatch<SetStateAction<Coordinates | null>>;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
@@ -50,8 +43,6 @@ export type ContactsType = {
   mapData: Coordinates[] | undefined;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
-  contactDetailsOpen: boolean;
-  contactDetailsId: string | undefined;
   viewMode: TableViewModeEnum | undefined;
   setViewMode: (mode: TableViewModeEnum) => void;
   isFiltered: boolean;
@@ -67,11 +58,11 @@ export interface ContactsContextProps {
   filterPanelOpen: boolean;
   setFilterPanelOpen: Dispatch<SetStateAction<boolean>>;
   viewMode: TableViewModeEnum;
-  setViewMode: (newViewMode: TableViewModeEnum) => void;
+  setViewMode: Dispatch<SetStateAction<TableViewModeEnum>>;
   userOptionsLoading: boolean;
 }
 
-export const ContactsContextSavedFilters = (
+export const parseSavedFilters = (
   filterData: ContactFiltersQuery | undefined,
   accountListId: string | undefined,
 ): UserOptionFragment[] => {
@@ -106,11 +97,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
 
-  const {
-    activeFilters,
-    setSearchTerm,
-    combinedFilters: contactsFilters,
-  } = useUrlFilters();
+  const { activeFilters, combinedFilters: contactsFilters } = useUrlFilters();
 
   //#region Mass Actions
 
@@ -182,27 +169,13 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setFilterPanelOpen((open) => !open);
   }, [setFilterPanelOpen]);
 
-  const handleClearAll = useCallback(() => {
-    setSearchTerm('');
-  }, [setSearchTerm]);
-
   const savedFilters: UserOptionFragment[] = useMemo(
-    () => ContactsContextSavedFilters(filterData, accountListId),
+    () => parseSavedFilters(filterData, accountListId),
     [filterData, accountListId],
   );
 
   const isFiltered = Object.keys(activeFilters).length > 0;
 
-  //#endregion
-
-  //#region User Actions
-
-  const handleViewModeChange = useCallback(
-    (_: React.MouseEvent<HTMLElement>, view: string) => {
-      setViewMode(view as TableViewModeEnum);
-    },
-    [setViewMode],
-  );
   //#endregion
 
   //#region JSX
@@ -228,7 +201,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const contextValue = useMemo(
     () => ({
       accountListId: accountListId ?? '',
-      contactId: undefined,
       contactsQueryResult,
       selectionType,
       isRowChecked,
@@ -239,10 +211,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filterData,
       filtersLoading,
       toggleFilterPanel,
-      handleClearAll,
       savedFilters,
-      setContactFocus: () => {},
-      handleViewModeChange,
       selected,
       setSelected,
       mapRef,
@@ -250,8 +219,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       panTo,
       filterPanelOpen,
       setFilterPanelOpen,
-      contactDetailsOpen: false,
-      contactDetailsId: undefined,
       viewMode,
       setViewMode,
       isFiltered,
@@ -269,9 +236,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filterData,
       filtersLoading,
       toggleFilterPanel,
-      handleClearAll,
       savedFilters,
-      handleViewModeChange,
       selected,
       setSelected,
       mapData,

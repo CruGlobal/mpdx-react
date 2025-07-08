@@ -60,7 +60,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const {
     accountListId,
     isRowChecked: isChecked,
-    contactDetailsOpen,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
   const { buildContactUrl } = useContactPanel();
@@ -144,7 +143,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </Grid>
         <Grid item xs={2} md={6}>
           <ContactPartnershipStatus
-            contactDetailsOpen={contactDetailsOpen}
             lateAt={lateAt}
             pledgeAmount={pledgeAmount}
             pledgeCurrency={pledgeCurrency}

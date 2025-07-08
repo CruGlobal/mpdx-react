@@ -24,14 +24,16 @@ const accountListId = 'account-list-1';
 const appealId = 'appealId';
 
 const router = {
-  query: { accountListId },
+  pathname:
+    '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
+  query: {
+    accountListId,
+    appealId: [appealId, 'list'],
+  },
   isReady: true,
 };
-const contactUrl = `/accountLists/${accountListId}/tools/appeals/${appealId}/${defaultContact.id}`;
+const contactUrl = `/accountLists/${accountListId}/tools/appeals/appeal/${appealId}/list/${defaultContact.id}`;
 
-const getContactUrl = jest.fn().mockReturnValue({
-  contactUrl,
-});
 const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
@@ -56,7 +58,6 @@ const Components = ({
                 value={
                   {
                     appealId,
-                    getContactUrl,
                     isRowChecked,
                     contactDetailsOpen,
                     toggleSelectionById,

@@ -26,7 +26,6 @@ interface Props {
   panelOpen: Panel | null;
   onNavListToggle: () => void;
   onFilterListToggle: () => void;
-  contactDetailsOpen: boolean;
   title: string;
 }
 
@@ -37,7 +36,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   panelOpen,
   onNavListToggle,
   onFilterListToggle,
-  contactDetailsOpen,
   title,
 }) => {
   const { t } = useTranslation();
@@ -144,7 +142,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         page={PageEnum.Report}
         filterPanelOpen={panelOpen === Panel.Filters}
         toggleFilterPanel={onFilterListToggle}
-        contactDetailsOpen={contactDetailsOpen}
         onCheckAllItems={toggleSelectAll}
         showShowingCount={false}
         totalItems={contactCount}

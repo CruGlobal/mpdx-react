@@ -418,7 +418,7 @@ export const Activity: React.FC<ActivityProps> = ({
                 component={NextLink}
                 href={
                   primaryAppeal
-                    ? `/accountLists/${accountListId}/tools/appeals/appeal/${primaryAppeal.id}/list`
+                    ? `/accountLists/${accountListId}/tools/appeals/appeal/${primaryAppeal.id}`
                     : `/accountLists/${accountListId}/tools/appeals`
                 }
                 underline="none"

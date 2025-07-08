@@ -51,19 +51,16 @@ export const ContactsMainPanelHeader: React.FC = () => {
     toggleSelectAll,
     selectionType,
     filterPanelOpen,
-    contactDetailsOpen,
     viewMode,
-    handleViewModeChange,
+    setViewMode,
     selectedIds,
   } = React.useContext(ContactsContext) as ContactsType;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (
     <ListHeader
       page={PageEnum.Contact}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
-      contactDetailsOpen={contactDetailsOpen}
       onCheckAllItems={toggleSelectAll}
       contactsView={viewMode}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
@@ -86,7 +83,7 @@ export const ContactsMainPanelHeader: React.FC = () => {
             <StyledToggleButtonGroup
               exclusive
               value={viewMode}
-              onChange={handleViewModeChange}
+              onChange={(_event, value) => setViewMode(value)}
             >
               <ToggleButton
                 value={TableViewModeEnum.List}
