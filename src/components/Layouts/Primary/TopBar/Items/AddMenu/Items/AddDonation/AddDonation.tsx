@@ -17,6 +17,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { DesignationAccountAutoselect } from 'src/common/Autoselect/DesignationAccountAutoselect';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -376,46 +377,12 @@ export const AddDonation = ({
                     <FastField name="designationAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <Autocomplete
+                          <DesignationAccountAutoselect
                             {...field}
                             id="designation-account-input"
+                            accountListId={accountListId}
+                            componentType="autocomplete"
                             loading={designationAccountsLoading}
-                            autoSelect
-                            autoHighlight
-                            options={
-                              designationAccounts?.map(({ id }) => id) ?? []
-                            }
-                            getOptionLabel={(accountId): string => {
-                              const account = designationAccounts?.find(
-                                ({ id }) => id === accountId,
-                              );
-                              return account
-                                ? `${account?.name} (${account.id})`
-                                : '';
-                            }}
-                            renderInput={(params): ReactElement => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                variant="outlined"
-                                InputProps={{
-                                  ...params.InputProps,
-                                  'aria-labelledby':
-                                    'designation-account-label',
-                                  endAdornment: (
-                                    <>
-                                      {designationAccountsLoading && (
-                                        <CircularProgress
-                                          color="primary"
-                                          size={20}
-                                        />
-                                      )}
-                                      {params.InputProps.endAdornment}
-                                    </>
-                                  ),
-                                }}
-                              />
-                            )}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
                               setFieldValue(
@@ -423,6 +390,10 @@ export const AddDonation = ({
                                 designationAccountId,
                               )
                             }
+                            TextFieldProps={{
+                              size: 'small',
+                              variant: 'outlined',
+                            }}
                           />
                         </Box>
                       )}
