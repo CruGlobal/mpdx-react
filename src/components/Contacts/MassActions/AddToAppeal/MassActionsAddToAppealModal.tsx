@@ -95,6 +95,7 @@ export const MassActionsAddToAppealModal: React.FC<
                 <AppealAutocomplete
                   id="appeal"
                   value={appeal}
+                  data-testid="appealTextInput"
                   onChange={(_, appealId): void =>
                     setFieldValue('appeal', appealId)
                   }

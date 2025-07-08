@@ -9,11 +9,10 @@ import {
 import { useGetAppealsForMassActionQuery } from 'src/components/Contacts/MassActions/AddToAppeal/GetAppealsForMassAction.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 
-type Appeal = any;
 interface AppealAutocompleteProps
-  extends Partial<AutocompleteProps<Appeal, boolean, boolean, false>> {
-  TextFieldProps?: Partial<TextFieldProps>;
+  extends Partial<AutocompleteProps<string, boolean, boolean, false>> {
   accountListId: string;
+  TextFieldProps?: TextFieldProps;
 }
 
 export const AppealAutocomplete = ({
@@ -21,11 +20,7 @@ export const AppealAutocomplete = ({
   accountListId,
   ...props
 }: AppealAutocompleteProps) => {
-  const {
-    data: appeals,
-    error,
-    fetchMore,
-  } = useGetAppealsForMassActionQuery({
+  const { data, error, fetchMore } = useGetAppealsForMassActionQuery({
     variables: {
       accountListId,
     },
@@ -33,7 +28,7 @@ export const AppealAutocomplete = ({
   const { loading: loadingAppeals } = useFetchAllPages({
     fetchMore,
     error,
-    pageInfo: appeals?.appeals.pageInfo,
+    pageInfo: data?.appeals.pageInfo,
   });
 
   return (
@@ -41,22 +36,19 @@ export const AppealAutocomplete = ({
       {...props}
       autoSelect
       autoHighlight
-      options={appeals?.appeals.nodes.map((appeal) => appeal.id) || []}
+      options={data?.appeals.nodes.map((appeal) => appeal.id) || []}
       getOptionLabel={(appealId): string => {
-        const currentAppeal = appeals?.appeals?.nodes.find(
+        const appealName = data?.appeals?.nodes.find(
           (appeal) => appeal.id === appealId,
         )?.name;
-        return currentAppeal ?? '';
+        return appealName ?? '';
       }}
-      isOptionEqualToValue={(option, value): boolean => option === value}
       renderInput={(params): ReactElement => (
         <TextField
           {...params}
           {...TextFieldProps}
-          data-testid="appealTextInput"
           InputProps={{
             ...params.InputProps,
-            'aria-labelledby': 'appeal-label',
             endAdornment: (
               <>
                 {loadingAppeals && (
