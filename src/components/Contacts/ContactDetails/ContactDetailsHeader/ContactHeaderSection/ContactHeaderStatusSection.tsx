@@ -1,15 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { getDonationLateStatus } from 'src/utils/functions/getDonationLateStatus';
 import { currencyFormat } from '../../../../../lib/intlFormat';
-import {
-  ContactLateStatusEnum,
-  ContactLateStatusLabel,
-} from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
+import { ContactLateStatusLabel } from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
 import { EditPartnershipInfoModal } from '../../ContactDonationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
@@ -38,36 +35,14 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
 
-  const lateStatusEnum: number | undefined = useMemo(() => {
-    let dateToUse: string | null | undefined;
-
-    if (contact?.lateAt && contact?.pledgeStartDate) {
-      const pledgeStartDate = DateTime.fromISO(contact.pledgeStartDate);
-      const lateAtDate = DateTime.fromISO(contact.lateAt);
-      dateToUse =
-        lateAtDate > pledgeStartDate ? contact.lateAt : contact.pledgeStartDate;
-    } else if (contact?.pledgeStartDate) {
-      dateToUse = contact.pledgeStartDate;
-    } else if (contact?.lateAt) {
-      dateToUse = contact.lateAt;
-    }
-
-    if (dateToUse) {
-      const diff = DateTime.now().diff(
-        DateTime.fromISO(dateToUse),
-        'days',
-      )?.days;
-      if (diff < 0) {
-        return ContactLateStatusEnum.OnTime;
-      } else if (diff < 30) {
-        return ContactLateStatusEnum.LateLessThirty;
-      } else if (diff < 60) {
-        return ContactLateStatusEnum.LateMoreThirty;
-      } else {
-        return ContactLateStatusEnum.LateMoreSixty;
-      }
-    }
-  }, [contact?.lateAt, contact?.pledgeStartDate]);
+  const lateStatusEnum = useMemo(
+    () =>
+      getDonationLateStatus(
+        contact?.lateAt || null,
+        contact?.pledgeStartDate || null,
+      ),
+    [contact?.lateAt, contact?.pledgeStartDate],
+  );
 
   if (loading) {
     return (
