@@ -113,7 +113,6 @@ const PageContent: React.FC = () => {
   const {
     activeFilters,
     setActiveFilters,
-    searchTerm,
     combinedFilters: tasksFilter,
   } = useUrlFilters();
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
@@ -170,8 +169,6 @@ const PageContent: React.FC = () => {
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
-
-  const isFiltered = Object.keys(activeFilters).length > 0;
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -345,8 +342,6 @@ const PageContent: React.FC = () => {
                         <NullState
                           page="task"
                           totalCount={data?.allTasks?.totalCount || 0}
-                          filtered={isFiltered || !!searchTerm}
-                          changeFilters={setActiveFilters}
                         />
                       </Box>
                     }
