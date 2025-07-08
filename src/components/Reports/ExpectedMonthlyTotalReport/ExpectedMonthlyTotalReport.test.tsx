@@ -5,11 +5,12 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 
-const title = 'test title';
 const onNavListToggle = jest.fn();
+const mutationSpy = jest.fn();
 
 const router = {
   query: { accountListId: 'aaa' },
@@ -51,25 +52,57 @@ const mockedDonations = {
   },
 };
 
+const emptyMockedDonations = {
+  GetExpectedMonthlyTotals: {
+    expectedMonthlyTotalReport: {
+      received: {
+        donations: [],
+      },
+      likely: {
+        donations: [],
+      },
+      unlikely: {
+        donations: [],
+      },
+    },
+  },
+};
+
+interface TestComponentProps {
+  designationAccounts?: string[];
+  empty?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  designationAccounts,
+  empty,
+}) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <GqlMockedProvider<{
+        GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
+      }>
+        mocks={empty ? emptyMockedDonations : mockedDonations}
+        onCall={mutationSpy}
+      >
+        <ContactPanelProvider>
+          <ExpectedMonthlyTotalReport
+            accountListId="abc"
+            designationAccounts={designationAccounts}
+            isNavListOpen
+            onNavListToggle={onNavListToggle}
+            title="test title"
+          />
+        </ContactPanelProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
+
 describe('ExpectedMonthlyTotalReport', () => {
   it('renders with data', async () => {
     const { getAllByTestId, queryByRole, queryAllByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
-          }>
-            mocks={mockedDonations}
-          >
-            <ExpectedMonthlyTotalReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+      <TestComponent />,
     );
 
     await waitFor(() =>
@@ -82,40 +115,7 @@ describe('ExpectedMonthlyTotalReport', () => {
   });
 
   it('renders empty', async () => {
-    const mocks = {
-      GetExpectedMonthlyTotals: {
-        expectedMonthlyTotalReport: {
-          received: {
-            donations: [],
-          },
-          likely: {
-            donations: [],
-          },
-          unlikely: {
-            donations: [],
-          },
-        },
-      },
-    };
-
-    const { getByText, queryByRole } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetExpectedMonthlyTotals: GetExpectedMonthlyTotalsQuery;
-          }>
-            mocks={mocks}
-          >
-            <ExpectedMonthlyTotalReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByText, queryByRole } = render(<TestComponent empty />);
 
     await waitFor(() =>
       expect(queryByRole('progressbar')).not.toBeInTheDocument(),
@@ -127,79 +127,26 @@ describe('ExpectedMonthlyTotalReport', () => {
   });
 
   it('filters report by designation account', async () => {
-    const mutationSpy = jest.fn();
-    render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy} mocks={mockedDonations}>
-            <ExpectedMonthlyTotalReport
-              accountListId={'abc'}
-              designationAccounts={['account-1']}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    render(<TestComponent designationAccounts={['account-1']} />);
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
-        operation: {
-          operationName: 'GetExpectedMonthlyTotals',
-          variables: {
-            designationAccountIds: ['account-1'],
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('GetExpectedMonthlyTotals', {
+        designationAccountIds: ['account-1'],
       }),
     );
   });
 
   it('does not filter report by designation account', async () => {
-    const mutationSpy = jest.fn();
-    render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy} mocks={mockedDonations}>
-            <ExpectedMonthlyTotalReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    render(<TestComponent />);
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[0][0]).toMatchObject({
-        operation: {
-          operationName: 'GetExpectedMonthlyTotals',
-          variables: {
-            designationAccountIds: null,
-          },
-        },
+      expect(mutationSpy).toHaveGraphqlOperation('GetExpectedMonthlyTotals', {
+        designationAccountIds: null,
       }),
     );
   });
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {
-    onNavListToggle.mockClear();
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider mocks={mockedDonations}>
-            <ExpectedMonthlyTotalReport
-              accountListId={'abc'}
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsFilterIcon'));
