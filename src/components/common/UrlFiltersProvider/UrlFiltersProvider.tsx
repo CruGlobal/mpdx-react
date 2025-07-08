@@ -22,6 +22,7 @@ type Filter = ContactFilterSetInput & TaskFilterSetInput;
 export interface UrlFilters {
   activeFilters: Filter;
   setActiveFilters: (newFilters: Filter) => void;
+  isFiltered: boolean;
   combinedFilters: Filter;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
@@ -102,6 +103,11 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     setSearchTerm('');
   }, []);
 
+  const isFiltered = useMemo(
+    () => Object.keys(activeFilters).length > 0,
+    [activeFilters],
+  );
+
   // Update the URL when the active filters or the search term changes
   useEffect(() => {
     // Omit the filters and searchTerm from the previous query because we don't want them in the URL
@@ -148,6 +154,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     () => ({
       activeFilters,
       setActiveFilters,
+      isFiltered,
       searchTerm,
       setSearchTerm: setSearchTermDebounced,
       starred,
@@ -157,6 +164,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     }),
     [
       activeFilters,
+      isFiltered,
       searchTerm,
       setSearchTermDebounced,
       starred,

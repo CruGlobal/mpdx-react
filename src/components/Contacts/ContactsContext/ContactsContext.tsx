@@ -54,7 +54,6 @@ export type ContactsType = {
   contactDetailsId: string | undefined;
   viewMode: TableViewModeEnum | undefined;
   setViewMode: (mode: TableViewModeEnum) => void;
-  isFiltered: boolean;
   selectedIds: string[];
   deselectAll: () => void;
   userOptionsLoading: boolean;
@@ -106,11 +105,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
 
-  const {
-    activeFilters,
-    setSearchTerm,
-    combinedFilters: contactsFilters,
-  } = useUrlFilters();
+  const { setSearchTerm, combinedFilters: contactsFilters } = useUrlFilters();
 
   //#region Mass Actions
 
@@ -190,9 +185,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     () => ContactsContextSavedFilters(filterData, accountListId),
     [filterData, accountListId],
   );
-
-  const isFiltered = Object.keys(activeFilters).length > 0;
-
   //#endregion
 
   //#region User Actions
@@ -256,7 +248,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       contactDetailsId: undefined,
       viewMode,
       setViewMode,
-      isFiltered,
       userOptionsLoading,
     }),
     [
@@ -283,7 +274,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       setFilterPanelOpen,
       viewMode,
       setViewMode,
-      isFiltered,
       userOptionsLoading,
     ],
   );

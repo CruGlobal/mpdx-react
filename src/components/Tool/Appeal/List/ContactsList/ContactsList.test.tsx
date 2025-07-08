@@ -44,42 +44,44 @@ const Components = ({
   tour = false,
   appealStatus = AppealStatusEnum.Asked,
   contactsQueryResult = defaultContactsQueryResult,
-}: ComponentsProps) => (
-  <TestRouter
-    router={{
-      query: { accountListId },
-      isReady: true,
-    }}
-  >
-    <GqlMockedProvider>
-      <ThemeProvider theme={theme}>
-        <AppealsWrapper>
-          <AppealsContext.Provider
-            value={
-              {
-                appealId,
-                accountListId,
-                tour,
-                isFiltered: true,
-                contactsQueryResult,
-                listAppealStatus: appealStatus,
-                getContactUrl,
-                isRowChecked,
-                contactDetailsOpen,
-                toggleSelectionById,
-              } as unknown as AppealsType
-            }
-          >
-            <ContactsList
-              appealInfo={defaultAppealQuery}
-              appealInfoLoading={appealInfoLoading}
-            />
-          </AppealsContext.Provider>
-        </AppealsWrapper>
-      </ThemeProvider>
-    </GqlMockedProvider>
-  </TestRouter>
-);
+}: ComponentsProps) => {
+  const activeFilters = { appealStatus };
+  const router = {
+    query: { accountListId, filters: JSON.stringify(activeFilters) },
+    isReady: true,
+  };
+  return (
+    <TestRouter router={router}>
+      <GqlMockedProvider>
+        <ThemeProvider theme={theme}>
+          <AppealsWrapper>
+            <AppealsContext.Provider
+              value={
+                {
+                  appealId,
+                  accountListId,
+                  tour,
+                  isFiltered: true,
+                  contactsQueryResult,
+                  listAppealStatus: appealStatus,
+                  getContactUrl,
+                  isRowChecked,
+                  contactDetailsOpen,
+                  toggleSelectionById,
+                } as unknown as AppealsType
+              }
+            >
+              <ContactsList
+                appealInfo={defaultAppealQuery}
+                appealInfoLoading={appealInfoLoading}
+              />
+            </AppealsContext.Provider>
+          </AppealsWrapper>
+        </ThemeProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  );
+};
 
 describe('ContactsRow', () => {
   describe('NullState Message', () => {
