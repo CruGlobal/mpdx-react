@@ -18,14 +18,13 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { useContactLinks } from 'src/hooks/useContactLinks';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../../theme';
 
 interface Props {
-  accountListId: string;
   title: string;
   data: ExpectedDonationRowFragment[];
   donations: boolean;
@@ -34,7 +33,6 @@ interface Props {
 }
 
 export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
-  accountListId,
   title,
   data,
   donations,
@@ -47,9 +45,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
 
   const [visible, setVisible] = useState(true);
 
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/reports/expectedMonthlyTotal/`,
-  });
+  const { buildContactUrl } = useContactPanel();
 
   const showTotalPartners = () => {
     if (visible) {
@@ -120,7 +116,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                     <TableCell align="left">
                       <Link
                         component={NextLink}
-                        href={getContactUrl(row.contactId ?? '')}
+                        href={buildContactUrl(row.contactId ?? '')}
                         shallow
                       >
                         {row.contactName}

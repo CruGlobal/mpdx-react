@@ -14,6 +14,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
@@ -31,7 +32,6 @@ export interface TwelveMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[];
   totals: MonthTotal[];
-  getContactUrl: (contactId: string) => string;
 }
 
 const NameTypography = styled(Typography, {
@@ -88,12 +88,12 @@ export const TwelveMonthReportTable: React.FC<TwelveMonthReportTableProps> = ({
   orderedContacts,
   onRequestSort,
   salaryCurrency,
-  getContactUrl,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const apiConstants = useApiConstants();
   const { getLocalizedContactStatus } = useLocalizedConstants();
+  const { buildContactUrl } = useContactPanel();
 
   const totalAverage = useMemo(
     () =>
@@ -132,89 +132,84 @@ export const TwelveMonthReportTable: React.FC<TwelveMonthReportTableProps> = ({
           onRequestSort={onRequestSort}
         />
         <TableBody>
-          {orderedContacts?.map((contact) => {
-            const contactUrl = getContactUrl(contact.id);
-            return (
-              <TableRow
-                key={contact.id}
-                hover
-                data-testid="TwelveMonthReportTableRow"
-              >
-                <StyledTableCell>
-                  <Box display="flex" flexDirection="column">
-                    <Box display="flex" alignItems="center">
-                      {!isExpanded && <StyledInfoIcon fontSize="small" />}
-                      <NameTypography variant="body1" expanded={isExpanded}>
-                        <Link
-                          component={NextLink}
-                          href={contactUrl}
-                          onMouseEnter={preloadContactsRightPanel}
-                        >
-                          {contact.name}
-                        </Link>
-                      </NameTypography>
-                      {(contact.lateBy30Days || contact.lateBy60Days) && (
-                        <Tooltip
-                          title={t('{{daysLate}}+ days late', {
-                            daysLate: contact.lateBy60Days ? '60' : '30',
-                          })}
-                          arrow
-                        >
-                          <CircleBox
-                            lateBy60Days={contact.lateBy60Days}
-                            data-testid={`lateCircle${
-                              contact.lateBy60Days ? '60' : '30'
-                            }`}
-                          />
-                        </Tooltip>
-                      )}
-                    </Box>
-                    {isExpanded && (
-                      <Typography variant="body2" color="textSecondary">
-                        {contact.accountNumbers.join(', ')}
-                      </Typography>
+          {orderedContacts.map((contact) => (
+            <TableRow
+              key={contact.id}
+              hover
+              data-testid="TwelveMonthReportTableRow"
+            >
+              <StyledTableCell>
+                <Box display="flex" flexDirection="column">
+                  <Box display="flex" alignItems="center">
+                    {!isExpanded && <StyledInfoIcon fontSize="small" />}
+                    <NameTypography variant="body1" expanded={isExpanded}>
+                      <Link
+                        component={NextLink}
+                        href={buildContactUrl(contact.id)}
+                        onMouseEnter={preloadContactsRightPanel}
+                      >
+                        {contact.name}
+                      </Link>
+                    </NameTypography>
+                    {(contact.lateBy30Days || contact.lateBy60Days) && (
+                      <Tooltip
+                        title={t('{{daysLate}}+ days late', {
+                          daysLate: contact.lateBy60Days ? '60' : '30',
+                        })}
+                        arrow
+                      >
+                        <CircleBox
+                          lateBy60Days={contact.lateBy60Days}
+                          data-testid={`lateCircle${
+                            contact.lateBy60Days ? '60' : '30'
+                          }`}
+                        />
+                      </Tooltip>
                     )}
                   </Box>
-                </StyledTableCell>
-                {isExpanded && (
-                  <>
-                    <StyledTableCell>
-                      {getLocalizedContactStatus(
-                        contact?.status?.toUpperCase(),
-                      )}
-                    </StyledTableCell>
-                    <StyledTableCell data-testid="pledgeAmount">
-                      {contact.pledgeAmount &&
-                        `${numberFormat(
-                          Math.round(contact.pledgeAmount),
-                          locale,
-                        )} ${contact.pledgeCurrency} ${
-                          apiConstants?.pledgeFrequency?.find(
-                            ({ key }) => key === contact.pledgeFrequency,
-                          )?.value ?? ''
-                        }`}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {numberFormat(Math.round(contact.average), locale)}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {numberFormat(Math.round(contact.minimum), locale)}
-                    </StyledTableCell>
-                  </>
-                )}
-                {contact.months.map((month) => (
-                  <StyledTableCell key={month.month} align="center">
-                    {numberFormat(Math.round(month.total), locale)}
+                  {isExpanded && (
+                    <Typography variant="body2" color="textSecondary">
+                      {contact.accountNumbers.join(', ')}
+                    </Typography>
+                  )}
+                </Box>
+              </StyledTableCell>
+              {isExpanded && (
+                <>
+                  <StyledTableCell>
+                    {getLocalizedContactStatus(contact?.status?.toUpperCase())}
                   </StyledTableCell>
-                ))}
-                <StyledTableCell align="right">
-                  <strong data-testid="totalGivenByContact">
-                    {numberFormat(Math.round(contact.total), locale)}
-                  </strong>
+                  <StyledTableCell data-testid="pledgeAmount">
+                    {contact.pledgeAmount &&
+                      `${numberFormat(
+                        Math.round(contact.pledgeAmount),
+                        locale,
+                      )} ${contact.pledgeCurrency} ${
+                        apiConstants?.pledgeFrequency?.find(
+                          ({ key }) => key === contact.pledgeFrequency,
+                        )?.value ?? ''
+                      }`}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {numberFormat(Math.round(contact.average), locale)}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {numberFormat(Math.round(contact.minimum), locale)}
+                  </StyledTableCell>
+                </>
+              )}
+              {contact.months.map((month) => (
+                <StyledTableCell key={month.month} align="center">
+                  {numberFormat(Math.round(month.total), locale)}
                 </StyledTableCell>
-              </TableRow>
-            );
-          })}
+              ))}
+              <StyledTableCell align="right">
+                <strong data-testid="totalGivenByContact">
+                  {numberFormat(Math.round(contact.total), locale)}
+                </strong>
+              </StyledTableCell>
+            </TableRow>
+          ))}
           <StyledTotalsRow>
             <StyledTableCell>{t('Totals')}</StyledTableCell>
             {isExpanded && (

@@ -1,8 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { TwelveMonthReportQuery } from '../../GetTwelveMonthReport.generated';
 import { defaultTwelveMonthReport } from '../../TwelveMonthReportMock';
@@ -10,6 +10,8 @@ import { TwelveMonthReportTable } from './Table';
 import { OrderBy } from './TableHead/TableHead';
 
 const router = {
+  pathname:
+    '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]',
   query: {
     accountListId: 'account-list-1',
   },
@@ -17,7 +19,6 @@ const router = {
   push: jest.fn(),
 };
 const onRequestSort = jest.fn();
-const getContactUrl = jest.fn().mockReturnValue('contact-url');
 
 const totals = [
   {
@@ -48,16 +49,17 @@ const Components: React.FC<ComponentsProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <TwelveMonthReportTable
-        isExpanded={true}
-        order="asc"
-        orderBy={orderBy}
-        orderedContacts={mocks.twelveMonthReport.currencyGroups[0].contacts}
-        salaryCurrency={mocks.twelveMonthReport.currencyGroups[0].currency}
-        onRequestSort={onRequestSort}
-        getContactUrl={getContactUrl}
-        totals={totals}
-      />
+      <ContactPanelProvider>
+        <TwelveMonthReportTable
+          isExpanded={true}
+          order="asc"
+          orderBy={orderBy}
+          orderedContacts={mocks.twelveMonthReport.currencyGroups[0].contacts}
+          salaryCurrency={mocks.twelveMonthReport.currencyGroups[0].currency}
+          onRequestSort={onRequestSort}
+          totals={totals}
+        />
+      </ContactPanelProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -117,7 +119,10 @@ describe('TwelveMonthReportTable', () => {
       expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
     });
 
-    userEvent.click(getByRole('link', { name: 'name again' }));
+    expect(getByRole('link', { name: 'name again' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCurrency/contact-2',
+    );
 
     await waitFor(() => {
       expect(getAllByTestId('pledgeAmount')[1]).toHaveTextContent('16 USD');
