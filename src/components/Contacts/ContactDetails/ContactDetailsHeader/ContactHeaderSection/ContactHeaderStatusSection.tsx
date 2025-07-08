@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import { getDonationLateStatus } from 'src/utils/functions/getDonationLateStatus';
 import { currencyFormat } from '../../../../../lib/intlFormat';
 import { ContactLateStatusLabel } from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
 import { EditPartnershipInfoModal } from '../../ContactDonationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
@@ -34,15 +33,6 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
-
-  const lateStatusEnum = useMemo(
-    () =>
-      getDonationLateStatus(
-        contact?.lateAt || null,
-        contact?.pledgeStartDate || null,
-      ),
-    [contact?.lateAt, contact?.pledgeStartDate],
-  );
 
   if (loading) {
     return (
@@ -83,12 +73,11 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                     )}
 
                     <Typography variant="subtitle1">
-                      {lateStatusEnum !== undefined && (
-                        <ContactLateStatusLabel
-                          lateStatusEnum={lateStatusEnum}
-                          isDetail={true}
-                        />
-                      )}
+                      <ContactLateStatusLabel
+                        lateAt={contact.lateAt}
+                        pledgeStartDate={contact.pledgeStartDate}
+                        isDetail={true}
+                      />
                     </Typography>
                   </>
                 )}

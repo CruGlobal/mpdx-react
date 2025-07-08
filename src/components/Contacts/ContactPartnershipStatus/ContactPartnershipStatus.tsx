@@ -1,15 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getDonationLateStatus } from 'src/utils/functions/getDonationLateStatus';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
-import {
-  ContactLateStatusEnum,
-  ContactLateStatusLabel,
-} from './ContactLateStatusLabel/ContactLateStatusLabel';
+import { ContactLateStatusLabel } from './ContactLateStatusLabel/ContactLateStatusLabel';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
 import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
@@ -38,10 +34,6 @@ export const ContactPartnershipStatus: React.FC<
 }) => {
   const locale = useLocale();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
-  const lateStatusEnum: ContactLateStatusEnum | undefined = useMemo(
-    () => getDonationLateStatus(lateAt, pledgeStartDate),
-    [lateAt, pledgeStartDate],
-  );
 
   return (
     <Box
@@ -62,10 +54,12 @@ export const ContactPartnershipStatus: React.FC<
               ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
               : pledgeAmount || ''}{' '}
             {pledgeFrequency && getLocalizedPledgeFrequency(pledgeFrequency)}{' '}
-            {status === ContactPartnershipStatusEnum.PartnerFinancial &&
-              lateStatusEnum !== undefined && (
-                <ContactLateStatusLabel lateStatusEnum={lateStatusEnum} />
-              )}
+            {status === ContactPartnershipStatusEnum.PartnerFinancial && (
+              <ContactLateStatusLabel
+                lateAt={lateAt}
+                pledgeStartDate={pledgeStartDate}
+              />
+            )}
           </Typography>
         </Box>
       </Hidden>
