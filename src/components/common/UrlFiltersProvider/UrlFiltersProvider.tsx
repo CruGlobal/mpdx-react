@@ -20,9 +20,20 @@ import { getQueryParam } from 'src/utils/queryParam';
 
 type Filter = ContactFilterSetInput & TaskFilterSetInput;
 
+interface DateRangeFilter {
+  min: string;
+  max: string;
+}
+
+interface ActiveFilters {
+  dateRange?: DateRangeFilter;
+  categoryId?: string;
+  [key: string]: any; // Allow for additional filters
+}
+
 export interface UrlFilters {
-  activeFilters: Filter;
-  setActiveFilters: (newFilters: Filter) => void;
+  activeFilters: ActiveFilters;
+  setActiveFilters: (newFilters: ActiveFilters) => void;
   combinedFilters: Filter;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
@@ -75,7 +86,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   );
 
   // Extract the initial filters from the URL
-  const [activeFilters, setActiveFilters] = useState<Filter>(
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>(
     getQueryFilters(query),
   );
   const [searchTerm, setSearchTerm] = useState(
