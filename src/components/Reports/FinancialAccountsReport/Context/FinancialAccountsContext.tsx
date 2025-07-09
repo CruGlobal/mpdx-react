@@ -1,34 +1,12 @@
-import { ParsedUrlQueryInput } from 'querystring';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { FinancialAccountTransactionFilters } from 'pages/accountLists/[accountListId]/reports/financialAccounts/[financialAccountId]/Wrapper';
+import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFinancialAccountQuery } from './FinancialAccount.generated';
 
-interface SetFinancialAccountProps {
-  id?: string;
-  viewTransactions?: boolean;
-  transactionFilters?: ParsedUrlQueryInput;
-}
-
-export type SetFinancialAccountFunction = ({
-  id,
-  viewTransactions,
-  transactionFilters,
-}: SetFinancialAccountProps) => void;
-
 export interface FinancialAccountType {
   accountListId: string;
   financialAccountId: string | undefined;
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
   financialAccountQuery: ReturnType<typeof useFinancialAccountQuery>;
-  activeFilters: FinancialAccountTransactionFilters;
-  hasActiveFilters: boolean;
-  setActiveFilters: Dispatch<
-    SetStateAction<FinancialAccountTransactionFilters>
-  >;
-  urlFilters: any;
   isNavListOpen: boolean;
   designationAccounts: string[];
   setDesignationAccounts: Dispatch<SetStateAction<string[]>>;
@@ -36,7 +14,6 @@ export interface FinancialAccountType {
   setPanelOpen: Dispatch<SetStateAction<Panel | null>>;
   handleNavListToggle: () => void;
   handleFilterListToggle: () => void;
-  handleClearAll: () => void;
 }
 
 export const FinancialAccountContext =
@@ -44,32 +21,16 @@ export const FinancialAccountContext =
 
 interface FinancialAccountProviderProps {
   children?: React.ReactNode;
-  urlFilters?: any;
-  activeFilters: FinancialAccountTransactionFilters;
-  setActiveFilters: Dispatch<
-    SetStateAction<FinancialAccountTransactionFilters>
-  >;
   financialAccountId: string | undefined;
-  search: string | string[] | undefined;
 }
 
 export const FinancialAccountProvider: React.FC<
   FinancialAccountProviderProps
-> = ({
-  children,
-  urlFilters,
-  activeFilters,
-  setActiveFilters,
-  financialAccountId,
-  search,
-}) => {
+> = ({ children, financialAccountId }) => {
   const accountListId = useAccountListId() ?? '';
 
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
-  const [searchTerm, setSearchTerm] = useState(
-    typeof search === 'string' ? search : '',
-  );
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -77,10 +38,6 @@ export const FinancialAccountProvider: React.FC<
 
   const handleFilterListToggle = () => {
     setPanelOpen(panelOpen === Panel.Filters ? null : Panel.Filters);
-  };
-
-  const handleClearAll = () => {
-    setSearchTerm('');
   };
 
   const financialAccountQuery = useFinancialAccountQuery({
@@ -91,31 +48,35 @@ export const FinancialAccountProvider: React.FC<
     skip: !financialAccountId,
   });
 
-  const hasActiveFilters = !!Object.keys(activeFilters).length;
   const isNavListOpen = !!panelOpen;
 
+  const contextValue = useMemo(
+    () => ({
+      accountListId: accountListId ?? '',
+      financialAccountId,
+      financialAccountQuery,
+      isNavListOpen,
+      designationAccounts,
+      setDesignationAccounts,
+      panelOpen,
+      setPanelOpen,
+      handleNavListToggle,
+      handleFilterListToggle,
+    }),
+    [
+      accountListId,
+      financialAccountId,
+      financialAccountQuery,
+      isNavListOpen,
+      designationAccounts,
+      panelOpen,
+      handleNavListToggle,
+      handleFilterListToggle,
+    ],
+  );
+
   return (
-    <FinancialAccountContext.Provider
-      value={{
-        accountListId: accountListId ?? '',
-        financialAccountId,
-        financialAccountQuery,
-        searchTerm,
-        setSearchTerm,
-        activeFilters,
-        hasActiveFilters,
-        setActiveFilters,
-        urlFilters,
-        isNavListOpen,
-        designationAccounts,
-        setDesignationAccounts,
-        handleNavListToggle,
-        handleFilterListToggle,
-        panelOpen,
-        setPanelOpen,
-        handleClearAll,
-      }}
-    >
+    <FinancialAccountContext.Provider value={contextValue}>
       {children}
     </FinancialAccountContext.Provider>
   );

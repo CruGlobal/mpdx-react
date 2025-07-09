@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Table,
@@ -11,14 +11,11 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import {
-  FinancialAccountContext,
-  FinancialAccountType,
-} from '../../Context/FinancialAccountsContext';
 import { formatTransactionAmount } from '../AccountTransactionsHelper';
 import { FinancialAccountEntriesQuery } from '../financialAccountTransactions.generated';
 
@@ -145,9 +142,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  const { activeFilters } = useContext(
-    FinancialAccountContext,
-  ) as FinancialAccountType;
+  const { activeFilters = {} } = useUrlFilters();
 
   const { entries, metaData } = financialAccountEntries;
   const {
@@ -162,7 +157,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
   const transactions = useMemo(() => {
     const transactionRows = entries.map((entry) => createTransactionRow(entry));
 
-    if (!!activeFilters.categoryId) {
+    if (!!activeFilters?.categoryId) {
       return transactionRows;
     } else {
       return [
@@ -172,7 +167,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
           description: t('Closing Balance'),
           incomeAmount: closingBalance,
           entryDate: DateTime.fromISO(
-            activeFilters.dateRange?.max ?? defaultEndDate,
+            activeFilters?.dateRange?.max ?? defaultEndDate,
           ),
         }),
         ...transactionRows,
@@ -182,7 +177,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
           description: t('Opening Balance'),
           incomeAmount: openingBalance,
           entryDate: DateTime.fromISO(
-            activeFilters.dateRange?.min ?? defaultStartDate,
+            activeFilters?.dateRange?.min ?? defaultStartDate,
           ),
         }),
       ];
@@ -196,12 +191,14 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
         : dateFormatShort(row.entryDate, locale)}
     </Typography>
   );
+
   const Category: RenderCell = ({ row }) => (
     <Box>
       <Typography sx={{ textWrap: 'wrap' }}>{row.categoryName}</Typography>
       <Typography variant="body2">{row.categoryCode}</Typography>
     </Box>
   );
+
   const Details: RenderCell = ({ row }) => (
     <Box>
       <Typography
@@ -215,6 +212,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
       <Typography variant="body2">{row.code}</Typography>
     </Box>
   );
+
   const Expenses: RenderCell = ({ row }) => {
     if (row.type === FinancialAccountEntryTypeEnum.Debit) {
       return (
@@ -233,6 +231,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
     }
     return '';
   };
+
   const Income: RenderCell = ({ row }) => {
     if (row.type === FinancialAccountEntryTypeEnum.Credit) {
       return (
