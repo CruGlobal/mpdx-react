@@ -25,14 +25,14 @@ interface DateRangeFilter {
   max: string;
 }
 
-interface ActiveFilters {
+export interface ActiveFilters {
   dateRange?: DateRangeFilter;
   categoryId?: string;
-  [key: string]: any; // Allow for additional filters
+  [key: string]: any;
 }
 
 export interface UrlFilters {
-  activeFilters: ActiveFilters;
+  activeFilters: ActiveFilters | Filter;
   setActiveFilters: (newFilters: ActiveFilters) => void;
   combinedFilters: Filter;
   searchTerm: string;
@@ -148,6 +148,9 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
       ...activeFilters,
       ...(starred && { starred: true }),
       wildcardSearch: searchTerm,
+      dateRange: activeFilters.dateRange
+        ? `${activeFilters.dateRange.min},${activeFilters.dateRange.max}`
+        : undefined,
     }),
     [activeFilters, searchTerm, starred],
   );
