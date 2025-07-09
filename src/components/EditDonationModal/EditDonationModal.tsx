@@ -15,7 +15,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { DesignationAccountAutoselect } from 'src/common/Autoselect/DesignationAccountAutoselect';
+import { DesignationAccountAutocomplete } from 'src/common/Autocomplete/DesignationAccountAutocomplete';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
@@ -256,26 +256,24 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="designationAccountId">
-                      {t('Designation Account')}
-                    </InputLabel>
-                    <DesignationAccountAutoselect
-                      labelId="designationAccountId"
-                      label={t('Designation Account')}
-                      accountListId={accountListId}
-                      componentType="select"
-                      value={designationAccountId}
-                      onChange={(e) =>
-                        setFieldValue('designationAccountId', e.target.value)
-                      }
-                      endAdornment={
-                        loadingDesignationAccounts && (
-                          <SmallLoadingSpinner spacing="25px" />
-                        )
-                      }
-                    />
-                  </FormControl>
+                  <DesignationAccountAutocomplete
+                    id="designationAccountId"
+                    accountListId={accountListId}
+                    loading={loadingDesignationAccounts}
+                    value={designationAccountId}
+                    onChange={(_, designationAccountId) =>
+                      setFieldValue(
+                        'designationAccountId',
+                        designationAccountId,
+                      )
+                    }
+                    TextFieldProps={{
+                      label: t('Designation Account'),
+                      size: 'medium',
+                      variant: 'outlined',
+                      required: true,
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>

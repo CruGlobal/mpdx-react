@@ -17,7 +17,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { DesignationAccountAutoselect } from 'src/common/Autoselect/DesignationAccountAutoselect';
+import { DesignationAccountAutocomplete } from 'src/common/Autocomplete/DesignationAccountAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -377,11 +377,10 @@ export const AddDonation = ({
                     <FastField name="designationAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <DesignationAccountAutoselect
+                          <DesignationAccountAutocomplete
                             {...field}
                             id="designation-account-input"
                             accountListId={accountListId}
-                            componentType="autocomplete"
                             loading={designationAccountsLoading}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
@@ -393,6 +392,9 @@ export const AddDonation = ({
                             TextFieldProps={{
                               size: 'small',
                               variant: 'outlined',
+                            }}
+                            inputProps={{
+                              'aria-labelledby': 'designation-account-label',
                             }}
                           />
                         </Box>

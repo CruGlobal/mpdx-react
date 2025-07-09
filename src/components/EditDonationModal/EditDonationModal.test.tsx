@@ -42,7 +42,7 @@ const mocks = {
         designationAccounts: [
           {
             id: '12345',
-            name: '',
+            name: 'Test',
             designationNumber: '808080',
           },
           {
@@ -150,10 +150,18 @@ describe('EditDonationModal', () => {
     );
 
     expect(getByText('Edit Donation')).toBeInTheDocument();
+    expect(
+      getByRole('combobox', { name: 'Designation Account' }),
+    ).toBeInTheDocument();
 
-    expect(await findByText('808080')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        getByRole('combobox', { name: 'Designation Account' }),
+      ).toHaveValue('Test (12345)'),
+    );
+
     userEvent.click(getByRole('combobox', { name: 'Designation Account' }));
-    expect(await findByText('Tony Starks Account')).toBeInTheDocument();
+    expect(await findByText('Tony Starks Account (123)')).toBeInTheDocument();
   });
 
   it('renders with appeal', async () => {
