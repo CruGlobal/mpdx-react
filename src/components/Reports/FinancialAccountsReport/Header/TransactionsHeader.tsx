@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { FilterButton } from 'src/components/Shared/Header/styledComponents';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   FinancialAccountContext,
   FinancialAccountType,
@@ -15,17 +16,20 @@ import { StickyHeader } from './styledComponents';
 const HeaderFilterAction = styled(Box)(() => ({
   width: '50px',
 }));
+
 const FilterIcon = styled(FilterList)(({ theme }) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
 }));
+
 const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   paddingTop: theme.spacing(2),
 }));
+
 const HeaderActions = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -38,6 +42,7 @@ interface TransactionsHeaderProps {
   disableExportCSV: boolean;
   handleExportCSV: () => void;
 }
+
 export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
   disableExportCSV = false,
   handleExportCSV,
@@ -48,11 +53,10 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
     accountListId,
     financialAccountId,
     handleNavListToggle,
-    hasActiveFilters,
     handleFilterListToggle,
-    searchTerm,
-    setSearchTerm,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
+
+  const { searchTerm, setSearchTerm } = useUrlFilters();
 
   const handleSearchTermChange = (search: string) => {
     setSearchTerm(search);
@@ -68,10 +72,7 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
       <Divider />
       <Header>
         <HeaderFilterAction>
-          <FilterButton
-            activeFilters={hasActiveFilters}
-            onClick={handleFilterListToggle}
-          >
+          <FilterButton onClick={handleFilterListToggle}>
             <FilterIcon titleAccess={t('Toggle Filter Panel')} />
           </FilterButton>
         </HeaderFilterAction>

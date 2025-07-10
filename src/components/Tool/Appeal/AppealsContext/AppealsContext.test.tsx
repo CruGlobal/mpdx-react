@@ -15,6 +15,7 @@ import {
   TableViewModeEnum,
 } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
 import { AppealTourEnum, AppealsContext, AppealsType } from './AppealsContext';
@@ -88,7 +89,7 @@ const TestRender: React.FC = () => {
     contactDetailsId,
     setContactFocus,
   } = useContext(AppealsContext) as AppealsType;
-  const { activeFilters } = useUrlFilters();
+  const { activeFilters } = useUrlFilters<ContactFilterSetInput>();
   return (
     <Box>
       {!userOptionsLoading ? (

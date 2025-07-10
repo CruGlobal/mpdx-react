@@ -7,7 +7,7 @@ import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -28,6 +28,17 @@ const Container = styled(Box)(() => ({
   overflowY: 'auto',
 }));
 
+export interface DateRangeFilter {
+  min: string;
+  max: string;
+}
+
+export interface FinancialAccountsFilters {
+  dateRange?: DateRangeFilter;
+  categoryId?: string;
+  [key: string]: unknown;
+}
+
 const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
   const minDate =
     startDate ?? DateTime.local().minus({ months: 1 }).plus({ days: 1 });
@@ -39,36 +50,34 @@ export const AccountTransactions: React.FC = () => {
   const { query } = useRouter();
   const { t } = useTranslation();
   const locale = useLocale();
+  const { accountListId, financialAccountId, setPanelOpen } = useContext(
+    FinancialAccountContext,
+  ) as FinancialAccountType;
+
   const {
-    accountListId,
-    financialAccountId,
-    activeFilters,
+    activeFilters = {},
     setActiveFilters,
-    hasActiveFilters,
-    searchTerm,
-    setPanelOpen,
-  } = useContext(FinancialAccountContext) as FinancialAccountType;
+    isFiltered,
+    searchTerm = '',
+  } = useUrlFilters<FinancialAccountsFilters>();
+
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
-    // On loading the transactions page, open the filters panel and reset the active filters.
-    // We need to reset the active filters to ensure the date range is set to the date range in the URL if it exists.
-    const urlFilters =
-      query?.filters && JSON.parse(decodeURI(query.filters as string));
     setPanelOpen(Panel.Filters);
-    setActiveFilters(urlFilters ?? {});
+
     return () => {
       setPanelOpen(null);
       setActiveFilters({});
     };
-  }, [query?.filters]);
+  }, []);
 
   const defaultDateRange = useMemo(() => formatDateRange(), []);
   const defaultStartDate = defaultDateRange.split('..')[0];
   const defaultEndDate = defaultDateRange.split('..')[1];
 
   useEffect(() => {
-    if (!hasActiveFilters && !query?.filters) {
+    if (!isFiltered && !query?.filters) {
       setActiveFilters({
         dateRange: {
           min: defaultStartDate,
@@ -76,7 +85,13 @@ export const AccountTransactions: React.FC = () => {
         },
       });
     }
-  }, [hasActiveFilters]);
+  }, [
+    isFiltered,
+    query?.filters,
+    setActiveFilters,
+    defaultStartDate,
+    defaultEndDate,
+  ]);
 
   const dateRange = useMemo(() => {
     if (!activeFilters?.dateRange?.min || !activeFilters?.dateRange?.max) {
@@ -86,12 +101,12 @@ export const AccountTransactions: React.FC = () => {
       DateTime.fromISO(activeFilters.dateRange.min),
       DateTime.fromISO(activeFilters.dateRange.max),
     );
-  }, [activeFilters]);
+  }, [activeFilters?.dateRange, defaultDateRange]);
+
   const categoryId =
     activeFilters?.categoryId && activeFilters?.categoryId !== 'all-categories'
       ? activeFilters?.categoryId
       : '';
-  const wildcardSearch = useDebouncedValue(searchTerm, 500);
 
   const { data, loading } = useFinancialAccountEntriesQuery({
     variables: {
@@ -100,7 +115,7 @@ export const AccountTransactions: React.FC = () => {
         financialAccountId: financialAccountId ?? '',
         dateRange,
         categoryId,
-        wildcardSearch,
+        wildcardSearch: searchTerm,
       },
     },
   });

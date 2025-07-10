@@ -10,20 +10,18 @@ import {
   useState,
 } from 'react';
 import { omit } from 'lodash';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { getQueryParam } from 'src/utils/queryParam';
 
-type Filter = ContactFilterSetInput & TaskFilterSetInput;
+type DefaultFilters = Record<string, unknown>;
 
-export interface UrlFilters {
-  activeFilters: Filter;
-  setActiveFilters: (newFilters: Filter) => void;
-  combinedFilters: Filter;
+export interface UrlFilters<
+  Filters extends Record<string, unknown> = DefaultFilters,
+> {
+  activeFilters: Filters;
+  setActiveFilters: (newFilters: Filters) => void;
+  combinedFilters: Filters;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
   starred: boolean;
@@ -34,14 +32,16 @@ export interface UrlFilters {
 
 const UrlFiltersContext = createContext<UrlFilters | null>(null);
 
-export const useUrlFilters = (): UrlFilters => {
+export const useUrlFilters = <
+  Filters extends Record<string, unknown> = DefaultFilters,
+>(): UrlFilters<Filters> => {
   const context = useContext(UrlFiltersContext);
   if (context === null) {
     throw new Error(
       'Could not find UrlFiltersContext. Make sure that your component is inside <UrlFiltersProvider>.',
     );
   }
-  return context;
+  return context as UrlFilters<Filters>;
 };
 
 /**
@@ -75,7 +75,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   );
 
   // Extract the initial filters from the URL
-  const [activeFilters, setActiveFilters] = useState<Filter>(
+  const [activeFilters, setActiveFilters] = useState<DefaultFilters>(
     getQueryFilters(query),
   );
   const [searchTerm, setSearchTerm] = useState(

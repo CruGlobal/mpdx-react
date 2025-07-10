@@ -12,6 +12,7 @@ import {
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -121,7 +122,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     setActiveFilters,
     searchTerm,
     combinedFilters: appealsFilters,
-  } = useUrlFilters();
+  } = useUrlFilters<ContactFilterSetInput>();
 
   if (contactId !== undefined && !Array.isArray(contactId)) {
     throw new Error('contactId should be an array or undefined');
