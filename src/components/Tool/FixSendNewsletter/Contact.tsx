@@ -20,9 +20,8 @@ import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SmallLoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -100,11 +99,8 @@ const Contact = ({
   const [updatingSingle, setUpdatingSingle] = useState(false);
   const { classes } = useStyles();
   const locale = useLocale();
-  const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/tools/fix/sendNewsletter/`,
-  });
-  const contactUrl = getContactUrl(contact.id);
+  const { buildContactUrl } = useContactPanel();
+  const contactUrl = buildContactUrl(contact.id);
   const { getLocalizedContactStatus } = useLocalizedConstants();
 
   const matches = useMediaQuery('(min-width:600px)');

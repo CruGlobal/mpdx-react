@@ -125,6 +125,17 @@ describe('useContactPanel', () => {
     });
   });
 
+  it('buildContactUrl should add the contact tab', () => {
+    const { result } = renderHook(() => useContactPanel(), {
+      wrapper: Wrapper,
+    });
+
+    expect(result.current.buildContactUrl(newContactId, 'Donations')).toEqual({
+      pathname,
+      query: { contactId: [newContactId], tab: 'Donations' },
+    });
+  });
+
   it('should support customizing contactIdParam', () => {
     const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <TestRouter

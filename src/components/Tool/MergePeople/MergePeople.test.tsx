@@ -6,6 +6,7 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { TypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -14,6 +15,10 @@ import MergePeople from './MergePeople';
 import { getPersonDuplicatesMocks } from './PersonDuplicatesMock';
 
 const accountListId = '123';
+const router = {
+  pathname: '/accountLists/[accountListId]/tools/merge/people/[[...contactId]]',
+  query: { accountListId },
+};
 
 const mockEnqueue = jest.fn();
 
@@ -40,14 +45,16 @@ const MergePeopleWrapper: React.FC<MergePeopleWrapperProps> = ({
 }) => {
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
+      <TestRouter router={router}>
         <GqlMockedProvider<{
           GetPersonDuplicates: GetPersonDuplicatesQuery;
         }>
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <MergePeople accountListId={accountListId} />
+          <ContactPanelProvider>
+            <MergePeople accountListId={accountListId} />
+          </ContactPanelProvider>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
