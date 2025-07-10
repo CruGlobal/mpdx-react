@@ -62,7 +62,6 @@ const Components = ({
                   appealId,
                   accountListId,
                   tour,
-                  isFiltered: true,
                   contactsQueryResult,
                   getContactUrl,
                   isRowChecked,

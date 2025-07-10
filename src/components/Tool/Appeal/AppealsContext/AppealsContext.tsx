@@ -335,8 +335,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     filterData,
     accountListId,
   );
-
-  const isFiltered = Object.keys(activeFilters).length > 0;
   //#endregion
 
   //#region User Actions
@@ -523,7 +521,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
         contactDetailsId: contactDetailsId ?? undefined,
         viewMode: viewMode,
         setViewMode: setViewMode,
-        isFiltered: isFiltered,
         selectedIds: ids,
         deselectAll: deselectAll,
         userOptionsLoading: userOptionsLoading,

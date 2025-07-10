@@ -8,15 +8,12 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { ContactRow } from '../ContactRow/ContactRow';
 
 export const ContactsList: React.FC = () => {
   const {
     contactsQueryResult: { data, loading, fetchMore },
-    isFiltered,
   } = React.useContext(ContactsContext) as ContactsType;
-  const { searchTerm, setActiveFilters } = useUrlFilters();
 
   return (
     <InfiniteList
@@ -44,8 +41,6 @@ export const ContactsList: React.FC = () => {
           <NullState
             page="contact"
             totalCount={data?.allContacts.totalCount || 0}
-            filtered={isFiltered || !!searchTerm}
-            changeFilters={setActiveFilters}
           />
         </Box>
       }
