@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFinancialAccountQuery } from './FinancialAccount.generated';
@@ -32,13 +38,13 @@ export const FinancialAccountProvider: React.FC<
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [panelOpen, setPanelOpen] = useState<Panel | null>(null);
 
-  const handleNavListToggle = () => {
+  const handleNavListToggle = useCallback(() => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
-  };
+  }, [panelOpen]);
 
-  const handleFilterListToggle = () => {
+  const handleFilterListToggle = useCallback(() => {
     setPanelOpen(panelOpen === Panel.Filters ? null : Panel.Filters);
-  };
+  }, [panelOpen]);
 
   const financialAccountQuery = useFinancialAccountQuery({
     variables: {
