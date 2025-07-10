@@ -1,5 +1,6 @@
 import { Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 
 export const StickyBox = styled(Box)(({ theme }) => ({
   position: 'sticky',
@@ -34,9 +35,11 @@ export const StickyButtonHeaderBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const FilterButton = styled(IconButton, {
-  shouldForwardProp: (prop) => prop !== 'activeFilters',
-})<{ activeFilters?: boolean }>(({ theme, activeFilters }) => ({
-  marginRight: theme.spacing(2),
-  backgroundColor: activeFilters ? theme.palette.cruYellow.main : 'transparent',
-}));
+export const FilterButton = styled(IconButton)(({ theme }) => {
+  const { isFiltered } = useUrlFilters();
+
+  return {
+    marginRight: theme.spacing(2),
+    backgroundColor: isFiltered ? theme.palette.cruYellow.main : 'transparent',
+  };
+});

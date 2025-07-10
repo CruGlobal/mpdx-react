@@ -56,7 +56,7 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
     handleFilterListToggle,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
-  const { searchTerm = '', setSearchTerm, isFiltered } = useUrlFilters();
+  const { searchTerm, setSearchTerm } = useUrlFilters();
 
   const handleSearchTermChange = (search: string) => {
     setSearchTerm(search);
@@ -72,10 +72,7 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
       <Divider />
       <Header>
         <HeaderFilterAction>
-          <FilterButton
-            activeFilters={isFiltered}
-            onClick={handleFilterListToggle}
-          >
+          <FilterButton onClick={handleFilterListToggle}>
             <FilterIcon titleAccess={t('Toggle Filter Panel')} />
           </FilterButton>
         </HeaderFilterAction>

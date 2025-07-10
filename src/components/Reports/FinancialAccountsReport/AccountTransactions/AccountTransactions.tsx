@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -28,6 +27,17 @@ const Container = styled(Box)(() => ({
   height: `calc(100vh - ${headerHeight})`,
   overflowY: 'auto',
 }));
+
+export interface DateRangeFilter {
+  min: string;
+  max: string;
+}
+
+export interface FinancialAccountsFilters {
+  dateRange?: DateRangeFilter;
+  categoryId?: string;
+  [key: string]: unknown;
+}
 
 const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
   const minDate =
@@ -49,7 +59,7 @@ export const AccountTransactions: React.FC = () => {
     setActiveFilters,
     isFiltered,
     searchTerm = '',
-  } = useUrlFilters();
+  } = useUrlFilters<FinancialAccountsFilters>();
 
   const { appName } = useGetAppSettings();
 
@@ -60,7 +70,7 @@ export const AccountTransactions: React.FC = () => {
       setPanelOpen(null);
       setActiveFilters({});
     };
-  }, [setPanelOpen]);
+  }, []);
 
   const defaultDateRange = useMemo(() => formatDateRange(), []);
   const defaultStartDate = defaultDateRange.split('..')[0];
@@ -98,8 +108,6 @@ export const AccountTransactions: React.FC = () => {
       ? activeFilters?.categoryId
       : '';
 
-  const wildcardSearch = useDebouncedValue(searchTerm, 500);
-
   const { data, loading } = useFinancialAccountEntriesQuery({
     variables: {
       input: {
@@ -107,7 +115,7 @@ export const AccountTransactions: React.FC = () => {
         financialAccountId: financialAccountId ?? '',
         dateRange,
         categoryId,
-        wildcardSearch,
+        wildcardSearch: searchTerm,
       },
     },
   });

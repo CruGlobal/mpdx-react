@@ -16,6 +16,7 @@ import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { FinancialAccountsFilters } from '../AccountTransactions';
 import { formatTransactionAmount } from '../AccountTransactionsHelper';
 import { FinancialAccountEntriesQuery } from '../financialAccountTransactions.generated';
 
@@ -142,7 +143,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  const { activeFilters = {} } = useUrlFilters();
+  const { activeFilters } = useUrlFilters<FinancialAccountsFilters>();
 
   const { entries, metaData } = financialAccountEntries;
   const {

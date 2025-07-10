@@ -105,8 +105,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
   showShowingCount = false,
   isExcludedAppealPage = false,
 }) => {
-  const { activeFilters, searchTerm, setSearchTerm, starred, setStarred } =
-    useUrlFilters();
+  const { searchTerm, setSearchTerm, starred, setStarred } = useUrlFilters();
 
   const { t } = useTranslation();
 
@@ -130,10 +129,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton
-          activeFilters={Object.keys(activeFilters).length > 0}
-          onClick={toggleFilterPanel}
-        >
+        <FilterButton onClick={toggleFilterPanel}>
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (
