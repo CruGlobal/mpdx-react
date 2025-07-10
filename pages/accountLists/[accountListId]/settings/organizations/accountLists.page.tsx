@@ -1,7 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import {
-  Autocomplete,
   Box,
   InputAdornment,
   Skeleton,
@@ -13,6 +12,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { AccountLists } from 'src/components/Settings/Organization/AccountLists/AccountLists';
+import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { SettingsWrapper } from '../Wrapper';
 import {
@@ -110,27 +110,16 @@ const AccountListsOrganizations = (): ReactElement => {
               )}
             </Box>
             <Box>
-              <Autocomplete
+              <OrganizationAutocomplete
                 style={{
                   width: isNarrowScreen ? '150px' : '350px',
                 }}
                 autoHighlight
-                options={organizations?.map((org) => org?.id) || []}
-                getOptionLabel={(orgId) =>
-                  organizations.find((org) => org?.id === orgId)?.name ?? ''
-                }
-                renderInput={(params): ReactElement => (
-                  <TextField
-                    {...params}
-                    label={t('Filter by Organization')}
-                    InputProps={{
-                      ...params.InputProps,
-                    }}
-                  />
-                )}
-                value={selectedOrganization?.id ?? null}
+                organizations={organizations}
+                textFieldLabel={t('Filter by Organization')}
+                value={selectedOrganization}
                 onChange={(_, organization): void =>
-                  handleSelectedOrgChange(organization)
+                  handleSelectedOrgChange(organization?.id)
                 }
               />
             </Box>
