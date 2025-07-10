@@ -2,12 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import FixPhoneNumbers from 'src/components/Tool/FixPhoneNumbers/FixPhoneNumbers';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsWrapper } from '../../ToolsWrapper';
-import { useToolsHelper } from '../../useToolsHelper';
 
 const FixPhoneNumbersPage: React.FC = () => {
   const { t } = useTranslation();
-  const { accountListId } = useToolsHelper();
+  const accountListId = useAccountListId();
   const pageUrl = 'tools/fix/phoneNumbers';
 
   return (
