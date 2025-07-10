@@ -129,24 +129,23 @@ describe('useUrlFilters', () => {
     });
   });
 
-  it('should clear the search term', async () => {
+  it('should clear the filters and search term', async () => {
     const { result } = renderHook(() => useUrlFilters(), {
       wrapper: Wrapper,
     });
 
     act(() => {
-      result.current.clearSearchTerm();
+      result.current.clearFilters();
     });
 
+    expect(result.current.activeFilters).toEqual({});
     expect(result.current.searchTerm).toBe('');
 
     await waitFor(() => {
       expect(replace).toHaveBeenCalledWith(
         {
           pathname,
-          query: {
-            filters: '{"key":"value"}',
-          },
+          query: {},
         },
         undefined,
         { shallow: true },

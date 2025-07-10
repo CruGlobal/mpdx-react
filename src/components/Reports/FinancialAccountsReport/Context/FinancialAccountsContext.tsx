@@ -36,7 +36,6 @@ export interface FinancialAccountType {
   setPanelOpen: Dispatch<SetStateAction<Panel | null>>;
   handleNavListToggle: () => void;
   handleFilterListToggle: () => void;
-  handleClearAll: () => void;
 }
 
 export const FinancialAccountContext =
@@ -79,10 +78,6 @@ export const FinancialAccountProvider: React.FC<
     setPanelOpen(panelOpen === Panel.Filters ? null : Panel.Filters);
   };
 
-  const handleClearAll = () => {
-    setSearchTerm('');
-  };
-
   const financialAccountQuery = useFinancialAccountQuery({
     variables: {
       accountListId,
@@ -113,7 +108,6 @@ export const FinancialAccountProvider: React.FC<
         handleFilterListToggle,
         panelOpen,
         setPanelOpen,
-        handleClearAll,
       }}
     >
       {children}
