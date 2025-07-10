@@ -3,14 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 
-type ContactStatusSelectProps = Partial<SelectProps> & {
-  children?: React.ReactNode;
-};
-
-export const ContactStatusSelect = ({
-  children,
-  ...props
-}: ContactStatusSelectProps) => {
+export const ContactStatusSelect = ({ children, ...props }: SelectProps) => {
   const { t } = useTranslation();
   const phases = useApiConstants()?.phases;
   const { getLocalizedContactStatus } = useLocalizedConstants();
