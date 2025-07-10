@@ -8,14 +8,9 @@ import { ToolsWrapper } from '../../ToolsWrapper';
 const MergePeoplePage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/merge/people';
 
   return (
-    <ToolsWrapper
-      pageTitle={t('Merge People')}
-      pageUrl={pageUrl}
-      selectedMenuId="mergePeople"
-    >
+    <ToolsWrapper pageTitle={t('Merge People')} selectedMenuId="mergePeople">
       <MergePeople accountListId={accountListId || ''} />
     </ToolsWrapper>
   );

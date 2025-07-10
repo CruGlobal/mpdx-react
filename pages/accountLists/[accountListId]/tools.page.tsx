@@ -21,7 +21,7 @@ const ToolsPage = (): ReactElement => {
     push(`/accountLists/${accountListId}`);
   };
   return (
-    <ToolsWrapper pageUrl={'tools'} pageTitle={t('Tools')}>
+    <ToolsWrapper pageTitle={t('Tools')}>
       <>
         {onSetupTour && (
           <StickyBox>

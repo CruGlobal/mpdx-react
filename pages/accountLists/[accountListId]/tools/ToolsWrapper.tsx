@@ -20,7 +20,6 @@ import { PageContentWrapper } from '../settings/styledComponents';
 
 interface ToolsWrapperProps {
   pageTitle?: string;
-  pageUrl: string;
   selectedMenuId?: string;
   showToolsHeader?: boolean;
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;

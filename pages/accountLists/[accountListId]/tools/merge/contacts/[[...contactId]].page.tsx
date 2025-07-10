@@ -10,12 +10,10 @@ const MergeContactsPage: React.FC = () => {
   const { t } = useTranslation();
   const { query } = useRouter();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/merge/contacts';
 
   return (
     <ToolsWrapper
       pageTitle={t('Merge Contacts')}
-      pageUrl={pageUrl}
       selectedMenuId="mergeContacts"
     >
       <MergeContacts
