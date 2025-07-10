@@ -23,13 +23,13 @@ type Filter = ContactFilterSetInput & TaskFilterSetInput;
 export interface UrlFilters {
   activeFilters: Filter;
   setActiveFilters: (newFilters: Filter) => void;
+  isFiltered: boolean;
   combinedFilters: Filter;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
   starred: boolean;
   setStarred: (starred: boolean) => void;
   clearSearchTerm: () => void;
-  isFiltered: boolean;
 }
 
 const UrlFiltersContext = createContext<UrlFilters | null>(null);
@@ -145,22 +145,22 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     () => ({
       activeFilters,
       setActiveFilters,
+      isFiltered,
       searchTerm,
       setSearchTerm: setSearchTermDebounced,
       starred,
       setStarred,
       clearSearchTerm,
       combinedFilters,
-      isFiltered,
     }),
     [
       activeFilters,
+      isFiltered,
       searchTerm,
       setSearchTermDebounced,
       starred,
       clearSearchTerm,
       combinedFilters,
-      isFiltered,
     ],
   );
 
