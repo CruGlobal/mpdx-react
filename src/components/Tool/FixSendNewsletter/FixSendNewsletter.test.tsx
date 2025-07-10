@@ -8,6 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import FixSendNewsletter from './FixSendNewsletter';
@@ -57,7 +58,9 @@ const TestComponent = ({
           cache={cache}
           onCall={onCall}
         >
-          <FixSendNewsletter accountListId={accountListId} />
+          <ContactPanelProvider>
+            <FixSendNewsletter accountListId={accountListId} />
+          </ContactPanelProvider>
         </GqlMockedProvider>
       </ThemeProvider>
     </TestRouter>

@@ -29,8 +29,7 @@ import {
   EditIcon,
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -131,11 +130,8 @@ const Contact: React.FC<Props> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();
-  const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/tools/fix/mailingAddresses/`,
-  });
-  const contactUrl = getContactUrl(id);
+  const { buildContactUrl } = useContactPanel();
+  const contactUrl = buildContactUrl(id);
 
   const newAddress = { ...emptyAddress, newAddress: true };
   const { getLocalizedContactStatus } = useLocalizedConstants();

@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import FixMailingAddresses from './FixMailingAddresses';
 import {
@@ -19,11 +19,12 @@ import {
 import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 
 jest.mock('next-auth/react');
-jest.mock('src/hooks/useAccountListId');
 const accountListId = 'account-list-1';
 const contactId = 'contactId';
 const router = {
-  isReady: true,
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/mailingAddresses/[[...contactId]]',
+  query: { accountListId },
 };
 
 const mockEnqueue = jest.fn();
@@ -56,7 +57,9 @@ const Components = ({
             mocks={mocks}
             cache={cache}
           >
-            <FixMailingAddresses accountListId={accountListId} />
+            <ContactPanelProvider>
+              <FixMailingAddresses accountListId={accountListId} />
+            </ContactPanelProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>
@@ -65,10 +68,6 @@ const Components = ({
 );
 
 describe('FixMailingAddresses', () => {
-  beforeEach(() => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
-  });
-
   it('should show noData component', async () => {
     const { queryByTestId, getByText } = render(
       <Components

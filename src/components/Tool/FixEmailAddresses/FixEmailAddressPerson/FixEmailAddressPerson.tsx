@@ -29,8 +29,8 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
@@ -151,9 +151,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   const locale = useLocale();
   const { classes } = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/tools/fix/emailAddresses/`,
-  });
+  const { buildContactUrl } = useContactPanel();
   const [updateEmailAddressesMutation] = useUpdateEmailAddressesMutation();
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [emailToDelete, setEmailToDelete] =
@@ -161,7 +159,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
 
   const { id, contactId } = person;
   const name = `${person.firstName} ${person.lastName}`;
-  const contactUrl = getContactUrl(contactId);
+  const contactUrl = buildContactUrl(contactId);
 
   const emails: Email[] = useMemo(() => {
     if (!dataState[id]?.emailAddresses.length) {
