@@ -267,11 +267,12 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                         designationAccountId,
                       )
                     }
-                    TextFieldProps={{
+                    textFieldProps={{
                       label: t('Designation Account'),
                       size: 'medium',
                       variant: 'outlined',
                       required: true,
+                      error: !!errors.designationAccountId,
                     }}
                   />
                 </Grid>

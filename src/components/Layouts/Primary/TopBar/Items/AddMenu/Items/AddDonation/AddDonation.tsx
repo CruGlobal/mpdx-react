@@ -389,12 +389,9 @@ export const AddDonation = ({
                                 designationAccountId,
                               )
                             }
-                            TextFieldProps={{
+                            textFieldProps={{
                               size: 'small',
                               variant: 'outlined',
-                            }}
-                            inputProps={{
-                              'aria-labelledby': 'designation-account-label',
                             }}
                           />
                         </Box>

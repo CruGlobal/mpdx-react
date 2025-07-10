@@ -11,14 +11,12 @@ import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal
 interface DesignationAccountAutocompleteProps
   extends Partial<AutocompleteProps<string, boolean, boolean, false>> {
   accountListId: string;
-  TextFieldProps?: Partial<TextFieldProps>;
-  inputProps?: Partial<React.InputHTMLAttributes<HTMLInputElement>>;
+  textFieldProps?: Partial<TextFieldProps>;
 }
 
 export const DesignationAccountAutocomplete = ({
   accountListId,
-  TextFieldProps,
-  inputProps,
+  textFieldProps,
   ...props
 }: DesignationAccountAutocompleteProps) => {
   const { data: designationAccountsData, loading: designationAccountsLoading } =
@@ -35,9 +33,9 @@ export const DesignationAccountAutocomplete = ({
 
   return (
     <Autocomplete
-      {...props}
       autoSelect
       autoHighlight
+      {...props}
       options={designationAccounts?.map(({ id }) => id) ?? []}
       getOptionLabel={(accountId): string => {
         const account = designationAccounts?.find(({ id }) => id === accountId);
@@ -46,13 +44,9 @@ export const DesignationAccountAutocomplete = ({
       renderInput={(params): ReactElement => (
         <TextField
           {...params}
-          {...TextFieldProps}
+          {...textFieldProps}
           InputProps={{
             ...params.InputProps,
-            inputProps: {
-              ...params.inputProps,
-              ...inputProps,
-            },
             endAdornment: (
               <>
                 {designationAccountsLoading && (
