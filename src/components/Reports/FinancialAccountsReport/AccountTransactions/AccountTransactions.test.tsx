@@ -10,7 +10,7 @@ import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { FinancialAccountQuery } from '../Context/FinancialAccount.generated';
@@ -21,7 +21,6 @@ import { financialAccountEntriesMock } from './AccountTransactionsMocks';
 import { FinancialAccountEntriesQuery } from './financialAccountTransactions.generated';
 
 jest.mock('react-csv/lib/core');
-jest.mock('src/components/common/UrlFiltersProvider/UrlFiltersProvider');
 
 const accountListId = 'account-list-1';
 const financialAccountId = 'financialAccountId';
@@ -32,80 +31,49 @@ const defaultRouter = {
 };
 const mutationSpy = jest.fn();
 
-// Mock useUrlFilters hook
-const mockUseUrlFilters = useUrlFilters as jest.MockedFunction<
-  typeof useUrlFilters
->;
-
 interface ComponentsProps {
-  activeFilters?: Record<string, any>;
-  searchTerm?: string;
-  isFiltered?: boolean;
   router?: object;
-  setActiveFilters?: jest.Mock; // Add this
-  setSearchTerm?: jest.Mock; // Add this
 }
 
-const Components = ({
-  searchTerm = '',
-  activeFilters = {},
-  isFiltered = false,
-  router = defaultRouter,
-  setActiveFilters, // Accept as prop
-  setSearchTerm, // Accept as prop
-}: ComponentsProps) => {
-  // Only set up default mocks if not provided
-  const defaultSetActiveFilters = jest.fn();
-  const defaultSetSearchTerm = jest.fn();
-
-  mockUseUrlFilters.mockReturnValue({
-    activeFilters,
-    setActiveFilters: setActiveFilters || defaultSetActiveFilters,
-    isFiltered,
-    searchTerm,
-    setSearchTerm: setSearchTerm || defaultSetSearchTerm,
-    combinedFilters: {},
-    starred: false,
-    setStarred: jest.fn(),
-    clearSearchTerm: jest.fn(),
-  });
-
+const Components = ({ router = defaultRouter }: ComponentsProps) => {
   return (
     <I18nextProvider i18n={i18n}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <SnackbarProvider>
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
-              <GqlMockedProvider<{
-                FinancialAccount: FinancialAccountQuery;
-                FinancialAccountEntries: FinancialAccountEntriesQuery;
-              }>
-                mocks={{
-                  FinancialAccount: defaultFinancialAccount,
-                  FinancialAccountEntries: financialAccountEntriesMock,
-                }}
-                onCall={mutationSpy}
-              >
-                <FinancialAccountContext.Provider
-                  value={{
-                    accountListId,
-                    financialAccountId,
-                    financialAccountQuery: {
-                      data: defaultFinancialAccount,
-                      loading: false,
-                    } as any, // Add 'as any' if there are type mismatches with the query
-                    isNavListOpen: false,
-                    designationAccounts: [],
-                    setDesignationAccounts: jest.fn(),
-                    panelOpen: null,
-                    setPanelOpen,
-                    handleNavListToggle: jest.fn(),
-                    handleFilterListToggle: jest.fn(),
+              <UrlFiltersProvider>
+                <GqlMockedProvider<{
+                  FinancialAccount: FinancialAccountQuery;
+                  FinancialAccountEntries: FinancialAccountEntriesQuery;
+                }>
+                  mocks={{
+                    FinancialAccount: defaultFinancialAccount,
+                    FinancialAccountEntries: financialAccountEntriesMock,
                   }}
+                  onCall={mutationSpy}
                 >
-                  <AccountTransactions />
-                </FinancialAccountContext.Provider>
-              </GqlMockedProvider>
+                  <FinancialAccountContext.Provider
+                    value={{
+                      accountListId,
+                      financialAccountId,
+                      financialAccountQuery: {
+                        data: defaultFinancialAccount,
+                        loading: false,
+                      } as unknown as any, // TODO: Fix this type issue
+                      isNavListOpen: false,
+                      designationAccounts: [],
+                      setDesignationAccounts: jest.fn(),
+                      panelOpen: null,
+                      setPanelOpen,
+                      handleNavListToggle: jest.fn(),
+                      handleFilterListToggle: jest.fn(),
+                    }}
+                  >
+                    <AccountTransactions />
+                  </FinancialAccountContext.Provider>
+                </GqlMockedProvider>
+              </UrlFiltersProvider>
             </TestRouter>
           </ThemeProvider>
         </SnackbarProvider>
@@ -124,13 +92,11 @@ describe('Financial Account Transactions', () => {
     it('should reset the activeFilters with the filters from the url filters', () => {
       render(
         <Components
-          activeFilters={{ categoryId: 'newCategoryId' }}
-          isFiltered={true}
           router={{
             ...defaultRouter,
             query: {
               ...defaultRouter.query,
-              filters: '{"categoryId":"newCategoryId"}',
+              filters: JSON.stringify({ categoryId: 'newCategoryId' }),
             },
           }}
         />,
@@ -140,13 +106,8 @@ describe('Financial Account Transactions', () => {
     });
 
     it('should set filters to default date range if no activeFilters or url filters', async () => {
-      const setActiveFilters = jest.fn();
-
       render(
         <Components
-          activeFilters={{}}
-          isFiltered={false}
-          setActiveFilters={setActiveFilters} // Pass the mock
           router={{
             ...defaultRouter,
             query: { accountListId },
@@ -154,11 +115,16 @@ describe('Financial Account Transactions', () => {
         />,
       );
 
+      // The component should set default filters internally
+      // We can verify this by checking that the GraphQL query is called with default date range
       await waitFor(() => {
-        expect(setActiveFilters).toHaveBeenCalledWith({
-          dateRange: {
-            min: '2024-08-01',
-            max: '2024-08-31',
+        expect(mutationSpy).toHaveGraphqlOperation('FinancialAccountEntries', {
+          input: {
+            accountListId,
+            financialAccountId,
+            dateRange: '2024-08-01..2024-08-31',
+            categoryId: '',
+            wildcardSearch: '',
           },
         });
       });
@@ -168,10 +134,16 @@ describe('Financial Account Transactions', () => {
   it('should render data correctly', async () => {
     const { findAllByText, getAllByText, getByText } = render(
       <Components
-        activeFilters={{
-          dateRange: {
-            min: '2024-08-01',
-            max: '2024-08-31',
+        router={{
+          ...defaultRouter,
+          query: {
+            ...defaultRouter.query,
+            filters: JSON.stringify({
+              dateRange: {
+                min: '2024-08-01',
+                max: '2024-08-31',
+              },
+            }),
           },
         }}
       />,
@@ -222,10 +194,16 @@ describe('Financial Account Transactions', () => {
   it('should render closing and opening dates correctly when using filtered dates', async () => {
     const { getByText, findByText } = render(
       <Components
-        activeFilters={{
-          dateRange: {
-            min: '2024-08-01',
-            max: '2024-09-30',
+        router={{
+          ...defaultRouter,
+          query: {
+            ...defaultRouter.query,
+            filters: JSON.stringify({
+              dateRange: {
+                min: '2024-08-01',
+                max: '2024-09-30',
+              },
+            }),
           },
         }}
       />,
@@ -241,10 +219,16 @@ describe('Financial Account Transactions', () => {
     it('should use date filters', async () => {
       render(
         <Components
-          activeFilters={{
-            dateRange: {
-              min: '2024-08-01',
-              max: '2024-09-30',
+          router={{
+            ...defaultRouter,
+            query: {
+              ...defaultRouter.query,
+              filters: JSON.stringify({
+                dateRange: {
+                  min: '2024-08-01',
+                  max: '2024-09-30',
+                },
+              }),
             },
           }}
         />,
@@ -266,12 +250,18 @@ describe('Financial Account Transactions', () => {
     it('should use date and category filters', async () => {
       render(
         <Components
-          activeFilters={{
-            dateRange: {
-              min: '2024-08-01',
-              max: '2024-09-30',
+          router={{
+            ...defaultRouter,
+            query: {
+              ...defaultRouter.query,
+              filters: JSON.stringify({
+                dateRange: {
+                  min: '2024-08-01',
+                  max: '2024-09-30',
+                },
+                categoryId: 'test123',
+              }),
             },
-            categoryId: 'test123',
           }}
         />,
       );
@@ -292,14 +282,20 @@ describe('Financial Account Transactions', () => {
     it('should use date, category and search filters', async () => {
       render(
         <Components
-          activeFilters={{
-            dateRange: {
-              min: '2024-08-01',
-              max: '2024-09-30',
+          router={{
+            ...defaultRouter,
+            query: {
+              ...defaultRouter.query,
+              filters: JSON.stringify({
+                dateRange: {
+                  min: '2024-08-01',
+                  max: '2024-09-30',
+                },
+                categoryId: 'test123',
+              }),
+              searchTerm: 'searchTerm',
             },
-            categoryId: 'test123',
           }}
-          searchTerm="searchTerm"
         />,
       );
 
@@ -334,10 +330,16 @@ describe('Financial Account Transactions', () => {
 
       const { getByRole } = render(
         <Components
-          activeFilters={{
-            dateRange: {
-              min: '2024-08-01',
-              max: '2024-08-31',
+          router={{
+            ...defaultRouter,
+            query: {
+              ...defaultRouter.query,
+              filters: JSON.stringify({
+                dateRange: {
+                  min: '2024-08-01',
+                  max: '2024-08-31',
+                },
+              }),
             },
           }}
         />,
