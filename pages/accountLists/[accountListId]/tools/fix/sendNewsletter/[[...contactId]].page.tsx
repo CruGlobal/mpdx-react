@@ -8,12 +8,10 @@ import { ToolsWrapper } from '../../ToolsWrapper';
 const FixSendNewsletterPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/fix/sendNewsletter';
 
   return (
     <ToolsWrapper
       pageTitle={t('Fix Send Newsletter')}
-      pageUrl={pageUrl}
       selectedMenuId="fixSendNewsletter'"
     >
       <FixSendNewsletter accountListId={accountListId || ''} />

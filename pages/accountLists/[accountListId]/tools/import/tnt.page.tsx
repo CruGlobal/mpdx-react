@@ -9,12 +9,10 @@ import { ToolsWrapper } from '../ToolsWrapper';
 const TntConnectPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/import/tnt';
 
   return (
     <ToolsWrapper
       pageTitle={t('Import from TntConnect')}
-      pageUrl={pageUrl}
       selectedMenuId="import/tnt"
     >
       {accountListId ? (

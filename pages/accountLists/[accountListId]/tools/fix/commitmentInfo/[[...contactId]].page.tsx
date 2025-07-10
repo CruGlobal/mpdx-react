@@ -8,12 +8,10 @@ import { ToolsWrapper } from '../../ToolsWrapper';
 const FixCommitmentInfoPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/fix/commitmentInfo';
 
   return (
     <ToolsWrapper
       pageTitle={t('Fix Commitment Info')}
-      pageUrl={pageUrl}
       selectedMenuId="fixCommitmentInfo"
     >
       <FixCommitmentInfo accountListId={accountListId || ''} />

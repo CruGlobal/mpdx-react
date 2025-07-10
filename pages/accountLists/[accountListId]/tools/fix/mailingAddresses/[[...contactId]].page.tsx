@@ -8,12 +8,10 @@ import { ToolsWrapper } from '../../ToolsWrapper';
 const FixMailingAddressesPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/fix/mailingAddresses';
 
   return (
     <ToolsWrapper
       pageTitle={t('Fix Mailing Addresses')}
-      pageUrl={pageUrl}
       selectedMenuId="fixMailingAddresses"
     >
       <FixMailingAddresses accountListId={accountListId || ''} />
