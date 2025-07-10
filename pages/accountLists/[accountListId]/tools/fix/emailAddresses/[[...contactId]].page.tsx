@@ -2,18 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { FixEmailAddresses } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsWrapper } from '../../ToolsWrapper';
-import { useToolsHelper } from '../../useToolsHelper';
 
 const FixEmailAddressesPage: React.FC = () => {
   const { t } = useTranslation();
-  const { accountListId } = useToolsHelper();
-  const pageUrl = 'tools/fix/emailAddresses';
+  const accountListId = useAccountListId();
 
   return (
     <ToolsWrapper
       pageTitle={t('Fix Email Addresses')}
-      pageUrl={pageUrl}
       selectedMenuId="fixEmailAddresses"
     >
       <FixEmailAddresses accountListId={accountListId || ''} />

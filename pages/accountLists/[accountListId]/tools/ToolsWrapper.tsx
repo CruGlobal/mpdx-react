@@ -14,13 +14,12 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { PageContentWrapper } from '../settings/styledComponents';
-import { useToolsHelper } from './useToolsHelper';
 
 interface ToolsWrapperProps {
   pageTitle?: string;
-  pageUrl: string;
   selectedMenuId?: string;
   showToolsHeader?: boolean;
   children: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
@@ -31,7 +30,7 @@ const ToolsPageContent: React.FC<ToolsWrapperProps> = ({
   selectedMenuId,
   children,
 }) => {
-  const { accountListId } = useToolsHelper();
+  const accountListId = useAccountListId();
   const { isOpen } = useContactPanel();
   const [isToolDrawerOpen, setIsToolDrawerOpen] = useState<boolean>(false);
 

@@ -4,9 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
-import TestWrapper from '__tests__/util/TestWrapper';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import { EmailAddressesMutation } from '../AddEmailAddress.generated';
@@ -49,6 +50,12 @@ const mutationSpy = jest.fn();
 const handleSingleConfirm = jest.fn();
 const mockEnqueue = jest.fn();
 
+const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/emailAddresses/[[...contactId]]',
+  query: { accountListId },
+};
+
 jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -82,7 +89,7 @@ const TestComponent = ({
   return (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
-        <TestWrapper>
+        <TestRouter router={router}>
           <GqlMockedProvider<{
             GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
             EmailAddresses: EmailAddressesMutation;
@@ -90,16 +97,18 @@ const TestComponent = ({
             mocks={mocks}
             onCall={mutationSpy}
           >
-            <FixEmailAddressPerson
-              person={person}
-              dataState={dataState}
-              accountListId={accountListId}
-              handleChange={handleChangeMock}
-              handleChangePrimary={handleChangePrimaryMock}
-              handleSingleConfirm={handleSingleConfirm}
-            />
+            <ContactPanelProvider>
+              <FixEmailAddressPerson
+                person={person}
+                dataState={dataState}
+                accountListId={accountListId}
+                handleChange={handleChangeMock}
+                handleChangePrimary={handleChangePrimaryMock}
+                handleSingleConfirm={handleSingleConfirm}
+              />
+            </ContactPanelProvider>
           </GqlMockedProvider>
-        </TestWrapper>
+        </TestRouter>
       </ThemeProvider>
     </SnackbarProvider>
   );

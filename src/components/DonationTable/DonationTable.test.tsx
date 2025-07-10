@@ -8,6 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { ContactPanelProvider } from '../common/ContactPanelProvider/ContactPanelProvider';
 import { DonationTable, DonationTableProps } from './DonationTable';
 import {
   AccountListCurrencyQuery,
@@ -17,6 +18,7 @@ import {
 const mutationSpy = jest.fn();
 
 const router = {
+  pathname: '/accountLists/[accountListId]/reports/donations/[[...contactId]]',
   query: { accountListId: 'account-list-1' },
   isReady: true,
 };
@@ -113,16 +115,18 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }}
             onCall={mutationSpy}
           >
-            <DonationTable
-              accountListId={'abc'}
-              filter={{
-                designationAccountIds: ['designation-1'],
-              }}
-              visibleColumnsStorageKey=""
-              emptyPlaceholder={<span>Empty Table</span>}
-              hideDisplayName={hideDisplayName}
-              {...tableProps}
-            />
+            <ContactPanelProvider>
+              <DonationTable
+                accountListId={'abc'}
+                filter={{
+                  designationAccountIds: ['designation-1'],
+                }}
+                visibleColumnsStorageKey=""
+                emptyPlaceholder={<span>Empty Table</span>}
+                hideDisplayName={hideDisplayName}
+                {...tableProps}
+              />
+            </ContactPanelProvider>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>
@@ -202,19 +206,20 @@ describe('DonationTable', () => {
     expect(await findByText('Empty Table')).toBeInTheDocument();
   });
 
-  it('contact name is not link when getContactUrl is not provided', async () => {
+  it('contact name is not a link when the contact has no donor account', async () => {
     const { findByText, queryByRole } = render(<TestComponent />);
 
-    expect(await findByText('Donor 1')).toBeInTheDocument();
-    expect(queryByRole('link', { name: 'Donor 1' })).not.toBeInTheDocument();
+    expect(await findByText('Donor 2')).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Donor 2' })).not.toBeInTheDocument();
   });
 
-  it('contact name is a link when getContactUrl is provided', async () => {
-    const { findByRole } = render(
-      <TestComponent tableProps={{ getContactUrl: () => 'contact-1' }} />,
-    );
+  it('contact name is a link when the contact has a donor account', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    expect(await findByRole('link', { name: 'Donor 1' })).toBeInTheDocument();
+    expect(await findByRole('link', { name: 'Donor 1' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/donations/contact-1',
+    );
   });
 
   it('hides currency column when all currencies match the account currency', async () => {

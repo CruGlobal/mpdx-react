@@ -1,44 +1,25 @@
 import React from 'react';
-import { renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { ContactReferralTab } from './ContactReferralTab';
-import {
-  ContactReferralTabQuery,
-  useContactReferralTabQuery,
-} from './ContactReferralTab.generated';
+import { ContactReferralTabQuery } from './ContactReferralTab.generated';
 
 const accountListId = 'accountListId';
 const contactId = 'contactId';
 
+const router = {
+  query: {
+    accountListId,
+  },
+  pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
+};
+
 describe('ContactReferralTab', () => {
-  it('test query', async () => {
-    const { result, waitForNextUpdate } = renderHook(
-      () =>
-        useContactReferralTabQuery({
-          variables: {
-            accountListId,
-            contactId,
-          },
-        }),
-      {
-        wrapper: GqlMockedProvider,
-      },
-    );
-    await waitForNextUpdate();
-
-    expect(result.current.variables).toMatchInlineSnapshot(`
-      Object {
-        "accountListId": "accountListId",
-        "contactId": "contactId",
-      }
-    `);
-  });
-
   it('test render', async () => {
     const { findByText } = render(
-      <TestRouter>
+      <TestRouter router={router}>
         <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
           mocks={{
             ContactReferralTab: {
@@ -52,10 +33,12 @@ describe('ContactReferralTab', () => {
             },
           }}
         >
-          <ContactReferralTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
+          <ContactPanelProvider>
+            <ContactReferralTab
+              accountListId={accountListId}
+              contactId={contactId}
+            />
+          </ContactPanelProvider>
         </GqlMockedProvider>
       </TestRouter>,
     );
@@ -64,7 +47,7 @@ describe('ContactReferralTab', () => {
 
   it('tests render with data and click event', async () => {
     const { findByRole } = render(
-      <TestRouter>
+      <TestRouter router={router}>
         <GqlMockedProvider<{ ContactReferralTab: ContactReferralTabQuery }>
           mocks={{
             ContactReferralTab: {
@@ -87,10 +70,12 @@ describe('ContactReferralTab', () => {
             },
           }}
         >
-          <ContactReferralTab
-            accountListId={accountListId}
-            contactId={contactId}
-          />
+          <ContactPanelProvider>
+            <ContactReferralTab
+              accountListId={accountListId}
+              contactId={contactId}
+            />
+          </ContactPanelProvider>
         </GqlMockedProvider>
       </TestRouter>,
     );

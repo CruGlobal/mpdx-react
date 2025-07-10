@@ -4,10 +4,11 @@ import userEvent from '@testing-library/user-event';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
-import TestWrapper from '__tests__/util/TestWrapper';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import Contact, { PhoneNumberData } from './Contact';
 import { mockInvalidPhoneNumbersResponse } from './FixPhoneNumbersMocks';
@@ -58,6 +59,12 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/phoneNumbers/[[...contactId]]',
+  query: { accountListId },
+};
+
 type TestComponentProps = {
   mocks?: ApolloErgonoMockMap;
   dataState?: { [key: string]: PhoneNumberData };
@@ -68,7 +75,7 @@ const TestComponent = ({ mocks }: TestComponentProps) => {
     <AppSettingsProvider>
       <SnackbarProvider>
         <ThemeProvider theme={theme}>
-          <TestWrapper>
+          <TestRouter router={router}>
             <GqlMockedProvider<{
               GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
               PhoneNumbers: UpdatePhoneNumberMutation;
@@ -76,13 +83,15 @@ const TestComponent = ({ mocks }: TestComponentProps) => {
               mocks={mocks}
               onCall={mutationSpy}
             >
-              <Contact
-                person={person}
-                accountListId={accountListId}
-                submitAll={false}
-              />
+              <ContactPanelProvider>
+                <Contact
+                  person={person}
+                  accountListId={accountListId}
+                  submitAll={false}
+                />
+              </ContactPanelProvider>
             </GqlMockedProvider>
-          </TestWrapper>
+          </TestRouter>
         </ThemeProvider>
       </SnackbarProvider>
     </AppSettingsProvider>

@@ -5,7 +5,6 @@ import { ErgonoMockShape } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
-import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   fireEvent,
@@ -13,14 +12,13 @@ import {
   waitFor,
 } from '__tests__/util/testingLibraryReactMock';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';
 import { mockInvalidStatusesResponse } from './FixCommitmentInfoMocks';
 import { InvalidStatusesQuery } from './GetInvalidStatuses.generated';
 
-jest.mock('src/hooks/useAccountListId');
 const mockEnqueue = jest.fn();
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -35,8 +33,9 @@ jest.mock('notistack', () => ({
 
 const accountListId = 'test121';
 const router = {
-  query: { accountListId: accountListId },
-  push: jest.fn(),
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/commitmentInfo/[[...contactId]]',
+  query: { accountListId },
 };
 
 const mutationSpy = jest.fn();
@@ -50,27 +49,27 @@ const Components = ({
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <TestWrapper>
-            <VirtuosoMockContext.Provider
-              value={{ viewportHeight: 1000, itemHeight: 100 }}
-            >
-              <GqlMockedProvider<{
-                InvalidStatuses: InvalidStatusesQuery;
-              }>
-                mocks={{
-                  InvalidStatuses: {
-                    contacts: {
-                      nodes: mockNodes,
-                      totalCount: 2,
-                    },
+          <VirtuosoMockContext.Provider
+            value={{ viewportHeight: 1000, itemHeight: 100 }}
+          >
+            <GqlMockedProvider<{
+              InvalidStatuses: InvalidStatusesQuery;
+            }>
+              mocks={{
+                InvalidStatuses: {
+                  contacts: {
+                    nodes: mockNodes,
+                    totalCount: 2,
                   },
-                }}
-                onCall={mutationSpy}
-              >
+                },
+              }}
+              onCall={mutationSpy}
+            >
+              <ContactPanelProvider>
                 <FixCommitmentInfo accountListId={accountListId} />
-              </GqlMockedProvider>
-            </VirtuosoMockContext.Provider>
-          </TestWrapper>
+              </ContactPanelProvider>
+            </GqlMockedProvider>
+          </VirtuosoMockContext.Provider>
         </TestRouter>
       </ThemeProvider>
     </SnackbarProvider>
@@ -78,10 +77,6 @@ const Components = ({
 );
 
 describe('FixCommitmentInfo', () => {
-  beforeEach(() => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
-  });
-
   it('default with test data', async () => {
     const { findByText, getAllByText } = render(<Components />);
     // await findByText('You have 2 partner statuses to confirm.');

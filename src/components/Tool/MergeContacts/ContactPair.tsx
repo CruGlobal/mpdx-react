@@ -25,8 +25,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -149,17 +148,11 @@ const ContactItem: React.FC<ContactItemProps> = ({
 
   const { classes } = useStyles();
   const locale = useLocale();
-  const accountListId = useAccountListId();
   const isPersonType = contact.__typename === 'Person';
   const isContactType = contact.__typename === 'Contact';
 
-  const url = isContactType
-    ? `/accountLists/${accountListId}/tools/merge/contacts/`
-    : `/accountLists/${accountListId}/tools/merge/people/`;
-
-  const { getContactUrl } = useContactLinks({ url });
-
-  const contactUrl = getContactUrl(
+  const { buildContactUrl } = useContactPanel();
+  const contactUrl = buildContactUrl(
     isPersonType ? contact.contactId : contact.id,
   );
 

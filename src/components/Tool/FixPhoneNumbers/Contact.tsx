@@ -20,8 +20,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { ContactPhoneNumbers } from './ContactPhoneNumbers';
@@ -146,16 +146,13 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
   const { appName } = useGetAppSettings();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/tools/fix/phoneNumbers/`,
-  });
+  const { buildContactUrl } = useContactPanel();
   const [updatePhoneNumber] = useUpdatePhoneNumberMutation();
   const [numberToDelete, setNumberToDelete] = useState<NumberToDelete | null>(
     null,
   );
   const { id: personId, contactId } = person;
-
-  const contactUrl = getContactUrl(contactId);
+  const contactUrl = buildContactUrl(contactId);
   const [updateInvalidPhoneNumbers] = useUpdateInvalidPhoneNumbersMutation();
 
   const name: string = `${person.firstName} ${person.lastName}`;

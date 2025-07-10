@@ -1,7 +1,5 @@
-import { useRouter } from 'next/router';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
@@ -12,10 +10,6 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import MergePeoplePage from './[[...contactId]].page';
 
-jest.mock('next-auth/react');
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
-}));
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -27,20 +21,15 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const pushFn = jest.fn();
 const accountListId = 'account-list-1';
-const session = {
-  expires: '2021-10-28T14:48:20.897Z',
-  user: {
-    email: 'Chair Library Bed',
-    image: null,
-    name: 'Dung Tapestry',
-    token: 'superLongJwtString',
-  },
+const router = {
+  pathname: '/accountLists/[accountListId]/tools/merge/people/[[...contactId]]',
+  query: { accountListId },
+  isReady: true,
 };
 const Components = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={router}>
       <GqlMockedProvider<{
         GetPersonDuplicates: GetPersonDuplicatesQuery;
       }>
@@ -57,17 +46,6 @@ const Components = () => (
 );
 
 describe('MergePeoplePage', () => {
-  beforeEach(() => {
-    (getSession as jest.Mock).mockResolvedValue(session);
-    (useRouter as jest.Mock).mockReturnValue({
-      query: {
-        accountListId,
-      },
-      isReady: true,
-      push: pushFn,
-    });
-  });
-
   it('should render contact link correctly', async () => {
     const { findByRole } = render(<Components />);
 

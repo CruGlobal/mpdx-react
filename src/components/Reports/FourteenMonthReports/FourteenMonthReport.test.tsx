@@ -2,6 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
+import TestRouter from '__tests__/util/TestRouter';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { FourteenMonthReport } from './FourteenMonthReport';
@@ -10,14 +12,41 @@ import { fourteenMonthReportRestMock } from './FourteenMonthReportMock';
 const accountListId = '111';
 const title = 'test title';
 const onNavListToggle = jest.fn();
-const getContactUrl = jest.fn().mockReturnValue('/test-url');
-const defaultProps = {
-  accountListId,
-  title,
-  onNavListToggle,
-  getContactUrl,
-  isNavListOpen: false,
-};
+
+interface TestComponentProps {
+  currencyType: FourteenMonthReportCurrencyType;
+  isNavListOpen?: boolean;
+  designationAccounts?: string[];
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  currencyType,
+  isNavListOpen = true,
+  designationAccounts,
+}) => (
+  <TestRouter
+    router={{
+      pathname:
+        '/accountLists/[accountListId]/reports/salaryCurrency/[[...contactId]]',
+      query: {
+        accountListId,
+      },
+    }}
+  >
+    <ThemeProvider theme={theme}>
+      <ContactPanelProvider>
+        <FourteenMonthReport
+          accountListId={accountListId}
+          title={title}
+          onNavListToggle={onNavListToggle}
+          currencyType={currencyType}
+          isNavListOpen={isNavListOpen}
+          designationAccounts={designationAccounts}
+        />
+      </ContactPanelProvider>
+    </ThemeProvider>
+  </TestRouter>
+);
 
 describe('FourteenMonthReport', () => {
   fetchMock.enableMocks();
@@ -32,16 +61,7 @@ describe('FourteenMonthReport', () => {
 
   it('salary report loading', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
-          isNavListOpen={true}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
     );
 
     expect(getByText(title)).toBeInTheDocument();
@@ -51,16 +71,7 @@ describe('FourteenMonthReport', () => {
 
   it('salary report loaded', async () => {
     const { getAllByTestId, queryByTestId, getAllByRole } = render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Salary}
-          isNavListOpen={true}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
     );
 
     await waitFor(() => {
@@ -76,16 +87,7 @@ describe('FourteenMonthReport', () => {
 
   it('partner report loading', async () => {
     const { getByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
-          isNavListOpen={true}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
     );
 
     expect(getByText(title)).toBeInTheDocument();
@@ -95,16 +97,7 @@ describe('FourteenMonthReport', () => {
 
   it('partner report loaded', async () => {
     const { getAllByTestId, queryByTestId, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
-          isNavListOpen={true}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
     );
 
     await waitFor(() => {
@@ -125,16 +118,7 @@ describe('FourteenMonthReport', () => {
 
     it('salary report error', async () => {
       const { queryByTestId, getByTestId, getByText } = render(
-        <ThemeProvider theme={theme}>
-          <FourteenMonthReport
-            accountListId={accountListId}
-            currencyType={FourteenMonthReportCurrencyType.Salary}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-            getContactUrl={getContactUrl}
-          />
-        </ThemeProvider>,
+        <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
       );
 
       await waitFor(() => {
@@ -149,16 +133,7 @@ describe('FourteenMonthReport', () => {
 
     it('partner report error', async () => {
       const { queryByTestId, getByTestId, getByText } = render(
-        <ThemeProvider theme={theme}>
-          <FourteenMonthReport
-            accountListId={accountListId}
-            currencyType={FourteenMonthReportCurrencyType.Donor}
-            isNavListOpen={true}
-            title={title}
-            onNavListToggle={onNavListToggle}
-            getContactUrl={getContactUrl}
-          />
-        </ThemeProvider>,
+        <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
       );
 
       await waitFor(() => {
@@ -174,16 +149,10 @@ describe('FourteenMonthReport', () => {
 
   it('nav list closed', async () => {
     const { getAllByTestId, getByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
-          isNavListOpen={false}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent
+        currencyType={FourteenMonthReportCurrencyType.Donor}
+        isNavListOpen={false}
+      />,
     );
 
     await waitFor(() => {
@@ -200,17 +169,11 @@ describe('FourteenMonthReport', () => {
   it('filters report by designation account', async () => {
     const designationAccount = 'account-1';
     render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          designationAccounts={[designationAccount]}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
-          isNavListOpen={false}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent
+        currencyType={FourteenMonthReportCurrencyType.Donor}
+        isNavListOpen={false}
+        designationAccounts={[designationAccount]}
+      />,
     );
 
     await waitFor(() =>
@@ -228,16 +191,10 @@ describe('FourteenMonthReport', () => {
 
   it('does not filter report by designation account', async () => {
     render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
-          isNavListOpen={false}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          getContactUrl={getContactUrl}
-        />
-      </ThemeProvider>,
+      <TestComponent
+        currencyType={FourteenMonthReportCurrencyType.Donor}
+        isNavListOpen={false}
+      />,
     );
 
     await waitFor(() =>
@@ -254,14 +211,8 @@ describe('FourteenMonthReport', () => {
   });
 
   it('can click on a contact name', async () => {
-    const { findAllByRole, getAllByText, queryByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <FourteenMonthReport
-          {...defaultProps}
-          isNavListOpen={true}
-          currencyType={FourteenMonthReportCurrencyType.Donor}
-        />
-      </ThemeProvider>,
+    const { findAllByRole, queryByTestId } = render(
+      <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
     );
 
     await waitFor(() => {
@@ -270,21 +221,17 @@ describe('FourteenMonthReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getContactUrl).toHaveBeenCalledWith('contact-1');
-    await waitFor(() => expect(getAllByText('Totals')[0]).toBeInTheDocument());
     const contactLinks = await findAllByRole('link', { name: 'test name' });
-    expect(contactLinks[0]).toHaveAttribute('href', '/test-url');
+    expect(contactLinks[0]).toHaveAttribute(
+      'href',
+      '/accountLists/111/reports/salaryCurrency/contact-1',
+    );
   });
 
   describe('partner report', () => {
     it('should render one table for each partner currency', async () => {
       const { findAllByRole } = render(
-        <ThemeProvider theme={theme}>
-          <FourteenMonthReport
-            {...defaultProps}
-            currencyType={FourteenMonthReportCurrencyType.Donor}
-          />
-        </ThemeProvider>,
+        <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
       );
 
       const tables = await findAllByRole('table', {
