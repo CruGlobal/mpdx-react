@@ -17,6 +17,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -444,51 +445,18 @@ export const AddDonation = ({
                     <FastField name="appealId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <Autocomplete
+                          <AppealAutocomplete
                             {...field}
                             id="appeal-input"
-                            loading={accountListLoading}
-                            autoSelect
-                            autoHighlight
-                            options={
-                              accountListData?.accountList?.appeals?.map(
-                                ({ id }) => id,
-                              ) ?? []
-                            }
-                            getOptionLabel={(appealId) =>
-                              accountListData?.accountList?.appeals?.find(
-                                ({ id }) => id === appealId,
-                              )?.name ?? ''
-                            }
-                            renderInput={(params): ReactElement => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                variant="outlined"
-                                InputProps={{
-                                  ...params.InputProps,
-                                  'aria-labelledby': 'appeal-label',
-                                  endAdornment: (
-                                    <>
-                                      {accountListLoading && (
-                                        <CircularProgress
-                                          color="primary"
-                                          size={20}
-                                        />
-                                      )}
-                                      {params.InputProps.endAdornment}
-                                    </>
-                                  ),
-                                }}
-                              />
-                            )}
                             value={field.value}
+                            accountListId={accountListId}
                             onChange={(_, appealId): void =>
                               setFieldValue('appealId', appealId)
                             }
-                            isOptionEqualToValue={(option, value): boolean =>
-                              option === value
-                            }
+                            TextFieldProps={{
+                              size: 'small',
+                              variant: 'outlined',
+                            }}
                           />
                         </Box>
                       )}
