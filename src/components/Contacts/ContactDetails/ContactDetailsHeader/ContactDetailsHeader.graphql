@@ -3,11 +3,11 @@ fragment ContactDetailsHeader on Contact {
   avatar
   name
   primaryPerson {
+    id
     firstName
     lastName
   }
   starred
-  ...ContactDetails
   ...ContactHeaderAddress
   ...ContactHeaderEmail
   ...ContactHeaderPhone
