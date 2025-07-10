@@ -15,7 +15,6 @@ import { appealInfo } from '../../appealMockData';
 import { ContactsList } from './ContactsList';
 
 const accountListId = 'account-list-1';
-const appealId = 'appealId';
 
 const getContactUrl = jest.fn().mockReturnValue({
   contactUrl: `/contacts/123`,
@@ -35,13 +34,11 @@ const defaultContactsQueryResult = {
 };
 type ComponentsProps = {
   appealInfoLoading?: boolean;
-  tour?: boolean;
   appealStatus?: AppealStatusEnum;
   contactsQueryResult?: object;
 };
 const Components = ({
   appealInfoLoading = false,
-  tour = false,
   appealStatus = AppealStatusEnum.Asked,
   contactsQueryResult = defaultContactsQueryResult,
 }: ComponentsProps) => {
@@ -58,10 +55,6 @@ const Components = ({
             <AppealsContext.Provider
               value={
                 {
-                  appealId,
-                  accountListId,
-                  tour,
-                  isFiltered: true,
                   contactsQueryResult,
                   listAppealStatus: appealStatus,
                   getContactUrl,

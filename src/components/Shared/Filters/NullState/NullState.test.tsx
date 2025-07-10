@@ -3,10 +3,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import TestWrapper from '__tests__/util/TestWrapper';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import NullState from './NullState';
@@ -14,32 +14,38 @@ import NullState from './NullState';
 const openTaskModal = jest.fn();
 
 jest.mock('src/hooks/useTaskModal');
-jest.mock('src/components/common/UrlFiltersProvider/UrlFiltersProvider');
-
-const mockedUrlFiltersDefaultValues = {
-  activeFilters: {},
-  setActiveFilters: jest.fn(),
-  combinedFilters: {},
-  searchTerm: '',
-  setSearchTerm: jest.fn(),
-  starred: false,
-  setStarred: jest.fn(),
-  clearSearchTerm: jest.fn(),
-};
 
 interface TestComponentProps {
   page: 'contact' | 'task';
   totalCount: number;
-  isFiltered: boolean;
+  filters?: string;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ page, totalCount }) => (
-  <TestRouter>
+const defaultRouter = {
+  query: {},
+  isReady: true,
+};
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  page,
+  totalCount,
+  filters,
+}) => (
+  <TestRouter
+    router={{
+      ...defaultRouter,
+      query: {
+        filters,
+      },
+    }}
+  >
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
-        <TestWrapper>
-          <NullState page={page} totalCount={totalCount} />
-        </TestWrapper>
+        <GqlMockedProvider>
+          <UrlFiltersProvider>
+            <NullState page={page} totalCount={totalCount} />
+          </UrlFiltersProvider>
+        </GqlMockedProvider>
       </ThemeProvider>
     </SnackbarProvider>
   </TestRouter>
@@ -54,14 +60,8 @@ describe('NullState', () => {
   });
 
   it('render text for unfiltered null contact state', async () => {
-    // Mock isFiltered as false for unfiltered state
-    (useUrlFilters as jest.Mock).mockImplementation(() => ({
-      isFiltered: false,
-      ...mockedUrlFiltersDefaultValues,
-    }));
-
     const { getByText, getByTestId, findByText } = render(
-      <TestComponent page="contact" totalCount={0} isFiltered={false} />,
+      <TestComponent page="contact" totalCount={0} />,
     );
 
     await waitFor(() =>
@@ -80,14 +80,12 @@ describe('NullState', () => {
   });
 
   it('render text filtered contacts', async () => {
-    // Mock isFiltered as true for filtered state
-    (useUrlFilters as jest.Mock).mockImplementation(() => ({
-      isFiltered: true,
-      ...mockedUrlFiltersDefaultValues,
-    }));
-
     const { getByText } = render(
-      <TestComponent page="contact" totalCount={10} isFiltered={true} />,
+      <TestComponent
+        page="contact"
+        totalCount={10}
+        filters={JSON.stringify({ categoryId: 'test123' })}
+      />,
     );
 
     await waitFor(() =>
@@ -104,14 +102,8 @@ describe('NullState', () => {
   });
 
   it('render text for unfiltered null tasks state', async () => {
-    // Mock isFiltered as false for unfiltered state
-    (useUrlFilters as jest.Mock).mockImplementation(() => ({
-      isFiltered: false,
-      ...mockedUrlFiltersDefaultValues,
-    }));
-
     const { getByText, getByTestId } = render(
-      <TestComponent page="task" totalCount={0} isFiltered={false} />,
+      <TestComponent page="task" totalCount={0} />,
     );
 
     await waitFor(() =>
@@ -130,14 +122,12 @@ describe('NullState', () => {
   });
 
   it('render text filtered tasks', async () => {
-    // Mock isFiltered as true for filtered state
-    (useUrlFilters as jest.Mock).mockImplementation(() => ({
-      isFiltered: true,
-      ...mockedUrlFiltersDefaultValues,
-    }));
-
     const { getByText } = render(
-      <TestComponent page="task" totalCount={10} isFiltered={true} />,
+      <TestComponent
+        page="task"
+        totalCount={10}
+        filters={JSON.stringify({ categoryId: 'test123' })}
+      />,
     );
 
     await waitFor(() =>
