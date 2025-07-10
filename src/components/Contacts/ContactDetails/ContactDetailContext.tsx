@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TabKey } from './ContactDetails';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
@@ -57,9 +57,12 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [selectedTabKey, setSelectedTabKey] = React.useState(
     query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
   );
-  const handleTabChange = (_event: React.SyntheticEvent, newKey: TabKey) => {
-    setSelectedTabKey(newKey);
-  };
+  const handleTabChange = useCallback(
+    (_event: React.SyntheticEvent, newKey: TabKey) => {
+      setSelectedTabKey(newKey);
+    },
+    [],
+  );
 
   const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
   const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);
@@ -109,39 +112,59 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
     setEditPersonModalOpen(undefined);
   }, [router]);
 
+  const contextValue = useMemo(
+    () => ({
+      editingAddressId,
+      setEditingAddressId,
+      addAddressModalOpen,
+      setAddAddressModalOpen,
+      editModalOpen,
+      setEditModalOpen,
+      editOtherModalOpen,
+      setEditOtherModalOpen,
+      editMailingModalOpen,
+      setEditMailingModalOpen,
+      selectedTabKey,
+      setSelectedTabKey,
+      handleTabChange,
+      editPersonModalOpen,
+      openPersonModal,
+      closePersonModal,
+      createPersonModalOpen,
+      setCreatePersonModalOpen,
+      selectedDonationTabKey,
+      setSelectedDonationTabKey,
+      notes,
+      setNotes,
+      referralsModalOpen,
+      setReferralsModalOpen,
+      deleteModalOpen,
+      setDeleteModalOpen,
+      anchorEl,
+      setAnchorEl,
+    }),
+    [
+      editingAddressId,
+      addAddressModalOpen,
+      editModalOpen,
+      editOtherModalOpen,
+      editMailingModalOpen,
+      selectedTabKey,
+      handleTabChange,
+      editPersonModalOpen,
+      openPersonModal,
+      closePersonModal,
+      createPersonModalOpen,
+      selectedDonationTabKey,
+      notes,
+      referralsModalOpen,
+      deleteModalOpen,
+      anchorEl,
+    ],
+  );
+
   return (
-    <ContactDetailContext.Provider
-      value={{
-        editingAddressId: editingAddressId,
-        setEditingAddressId: setEditingAddressId,
-        addAddressModalOpen: addAddressModalOpen,
-        setAddAddressModalOpen: setAddAddressModalOpen,
-        editModalOpen: editModalOpen,
-        setEditModalOpen: setEditModalOpen,
-        editOtherModalOpen: editOtherModalOpen,
-        setEditOtherModalOpen: setEditOtherModalOpen,
-        editMailingModalOpen: editMailingModalOpen,
-        setEditMailingModalOpen: setEditMailingModalOpen,
-        selectedTabKey: selectedTabKey,
-        setSelectedTabKey: setSelectedTabKey,
-        handleTabChange: handleTabChange,
-        editPersonModalOpen: editPersonModalOpen,
-        openPersonModal,
-        closePersonModal,
-        createPersonModalOpen: createPersonModalOpen,
-        setCreatePersonModalOpen: setCreatePersonModalOpen,
-        selectedDonationTabKey: selectedDonationTabKey,
-        setSelectedDonationTabKey: setSelectedDonationTabKey,
-        notes: notes,
-        setNotes: setNotes,
-        referralsModalOpen: referralsModalOpen,
-        setReferralsModalOpen: setReferralsModalOpen,
-        deleteModalOpen: deleteModalOpen,
-        setDeleteModalOpen: setDeleteModalOpen,
-        anchorEl: anchorEl,
-        setAnchorEl: setAnchorEl,
-      }}
-    >
+    <ContactDetailContext.Provider value={contextValue}>
       {children}
     </ContactDetailContext.Provider>
   );
