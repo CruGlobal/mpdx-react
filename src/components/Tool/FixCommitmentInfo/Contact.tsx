@@ -12,9 +12,6 @@ import {
   IconButton,
   InputLabel,
   Link,
-  ListSubheader,
-  MenuItem,
-  Select,
   TextField,
   Tooltip,
   Typography,
@@ -25,6 +22,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
+import { ContactStatusSelect } from 'src/common/Selects/ContactStatusSelect/ContactStatusSelect';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
@@ -205,7 +203,6 @@ const Contact: React.FC<Props> = ({
   const statusOptions = constants?.status;
   const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
     useLocalizedConstants();
-  const phases = constants?.phases;
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const { getContactUrl } = useContactLinks({
@@ -353,33 +350,21 @@ const Contact: React.FC<Props> = ({
                             <InputLabel id="status-label">
                               {t('Status')}
                             </InputLabel>
-                            <Select
+                            <ContactStatusSelect
                               className={classes.select}
                               size="small"
                               placeholder="Status"
                               labelId="status-label"
-                              label={t('Status')}
                               inputProps={{
                                 'data-testid': 'pledgeStatus-input',
                               }}
                               data-testid="statusSelect"
                               style={{ width: '100%' }}
                               value={status}
-                              onChange={(event) =>
-                                setFieldValue('status', event.target.value)
+                              onChange={(e) =>
+                                setFieldValue('status', e.target.value)
                               }
-                            >
-                              {phases?.map((phase) => [
-                                <ListSubheader key={phase.id}>
-                                  {phase.name}
-                                </ListSubheader>,
-                                phase.contactStatuses.map((status) => (
-                                  <MenuItem key={status} value={status}>
-                                    {getLocalizedContactStatus(status)}
-                                  </MenuItem>
-                                )),
-                              ])}
-                            </Select>
+                            />
                           </FormControl>
                         </Grid>
                         <Grid item xs={12} md={6} lg={4}>
