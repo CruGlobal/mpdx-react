@@ -2,17 +2,46 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useTaskModal from '../../../../hooks/useTaskModal';
 import theme from '../../../../theme';
 import NullState from './NullState';
 
-const changeFilters = jest.fn();
 const openTaskModal = jest.fn();
 
 jest.mock('src/hooks/useTaskModal');
+
+interface TestComponentProps {
+  page: 'contact' | 'task';
+  totalCount: number;
+  isFiltered: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  page,
+  totalCount,
+  isFiltered,
+}) => (
+  <TestRouter>
+    <UrlFiltersProvider>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestWrapper>
+            <NullState
+              page={page}
+              totalCount={totalCount}
+              isFiltered={isFiltered}
+            />
+          </TestWrapper>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </UrlFiltersProvider>
+  </TestRouter>
+);
 
 describe('NullState', () => {
   beforeEach(() => {
@@ -24,18 +53,7 @@ describe('NullState', () => {
 
   it('render text for unfiltered null contact state', async () => {
     const { getByText, getByTestId, findByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <NullState
-              page="contact"
-              totalCount={0}
-              filtered={false}
-              changeFilters={changeFilters}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </SnackbarProvider>,
+      <TestComponent page="contact" totalCount={0} isFiltered={false} />,
     );
 
     await waitFor(() =>
@@ -55,18 +73,7 @@ describe('NullState', () => {
 
   it('render text filtered contacts', async () => {
     const { getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <NullState
-              page="contact"
-              totalCount={10}
-              filtered={true}
-              changeFilters={changeFilters}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </SnackbarProvider>,
+      <TestComponent page="contact" totalCount={10} isFiltered={true} />,
     );
 
     await waitFor(() =>
@@ -78,25 +85,13 @@ describe('NullState', () => {
       ),
     ).toBeInTheDocument();
     userEvent.click(getByText('Reset All Search Filters'));
-    expect(changeFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new contact'));
     expect(getByText('Save')).toBeInTheDocument();
   });
 
   it('render text for unfiltered null tasks state', async () => {
     const { getByText, getByTestId } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <NullState
-              page="task"
-              totalCount={0}
-              filtered={false}
-              changeFilters={changeFilters}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </SnackbarProvider>,
+      <TestComponent page="task" totalCount={0} isFiltered={false} />,
     );
 
     await waitFor(() =>
@@ -116,18 +111,7 @@ describe('NullState', () => {
 
   it('render text filtered tasks', async () => {
     const { getByText } = render(
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestWrapper>
-            <NullState
-              page="task"
-              totalCount={10}
-              filtered={true}
-              changeFilters={changeFilters}
-            />
-          </TestWrapper>
-        </ThemeProvider>
-      </SnackbarProvider>,
+      <TestComponent page="task" totalCount={10} isFiltered={true} />,
     );
 
     await waitFor(() =>
@@ -139,7 +123,6 @@ describe('NullState', () => {
       ),
     ).toBeInTheDocument();
     userEvent.click(getByText('Reset All Search Filters'));
-    expect(changeFilters).toHaveBeenCalled();
     userEvent.click(getByText('Add new task'));
     await waitFor(() =>
       expect(openTaskModal).toHaveBeenCalledWith({ view: TaskModalEnum.Add }),
