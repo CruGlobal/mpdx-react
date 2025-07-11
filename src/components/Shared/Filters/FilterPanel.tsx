@@ -560,7 +560,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
   const handleClearAllClick = () => {
     clearFilters();
-    clearSelectedFilter();
   };
 
   const tagsFilters = useMemo(() => {
