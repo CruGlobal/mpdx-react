@@ -69,11 +69,6 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
           onChange={(_, value) => setDefaultAccountList(value)}
           value={defaultAccountList}
           options={accountListOptions?.accountLists.nodes || []}
-          getOptionLabel={(defaultAccountList): string =>
-            accountListOptions?.accountLists.nodes.find(
-              (accountListId) => accountListId === defaultAccountList,
-            )?.name ?? ''
-          }
           textFieldProps={{
             label: t('Account'),
           }}
