@@ -30,7 +30,7 @@ describe('ContactLateStatusLabel', () => {
     expect(getByText('(On time)')).toBeInTheDocument();
   });
 
-  it('should render 0-30 days late using pledgeStartDate when it is later', () => {
+  it('should render 0-30 days late using pledgeStartDate when it is later and within 30 days', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <ContactLateStatusLabel
@@ -39,28 +39,27 @@ describe('ContactLateStatusLabel', () => {
         />
       </ThemeProvider>,
     );
-    // Should use pledgeStartDate since it's later (46 days ago = LateMoreThirty)
     expect(getByText('(0-30 days late)')).toBeInTheDocument();
+  });
+
+  it('should render 30-60 days late when it is later within 30-60 days', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <ContactLateStatusLabel
+          lateAt="2019-11-10"
+          pledgeStartDate="2019-11-17"
+        />
+      </ThemeProvider>,
+    );
+    expect(getByText('(30-60 days late)')).toBeInTheDocument();
   });
 
   it('should render 60+ days late when lateAt and pledgeStartDate are both 60+ days in the past', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <ContactLateStatusLabel
-          lateAt="2019-05-017"
+          lateAt="2019-05-17"
           pledgeStartDate="2019-05-17"
-        />
-      </ThemeProvider>,
-    );
-    expect(getByText('(60+ days late)')).toBeInTheDocument();
-  });
-
-  it('should render more than 60 days late', () => {
-    const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <ContactLateStatusLabel
-          lateAt="2019-11-01"
-          pledgeStartDate="2019-10-01"
         />
       </ThemeProvider>,
     );
