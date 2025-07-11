@@ -140,7 +140,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const {
     activeFilters: selectedFilters,
     setActiveFilters,
-    clearSearchTerm,
+    clearFilters,
   } = useUrlFilters();
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
@@ -559,8 +559,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   };
 
   const handleClearAllClick = () => {
-    clearSearchTerm();
-    clearSelectedFilter();
+    clearFilters();
   };
 
   const tagsFilters = useMemo(() => {

@@ -28,7 +28,7 @@ export interface UrlFilters {
   setSearchTerm: (newSearchTerm: string) => void;
   starred: boolean;
   setStarred: (starred: boolean) => void;
-  clearSearchTerm: () => void;
+  clearFilters: () => void;
 }
 
 const UrlFiltersContext = createContext<UrlFilters | null>(null);
@@ -91,7 +91,8 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
 
   const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
 
-  const clearSearchTerm = useCallback(() => {
+  const clearFilters = useCallback(() => {
+    setActiveFilters({});
     setSearchTerm('');
   }, []);
 
@@ -143,7 +144,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
       setSearchTerm: setSearchTermDebounced,
       starred,
       setStarred,
-      clearSearchTerm,
+      clearFilters,
       combinedFilters,
     }),
     [
@@ -151,7 +152,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
       searchTerm,
       setSearchTermDebounced,
       starred,
-      clearSearchTerm,
+      clearFilters,
       combinedFilters,
     ],
   );
