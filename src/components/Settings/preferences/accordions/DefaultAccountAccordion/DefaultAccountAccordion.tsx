@@ -17,7 +17,6 @@ import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.gene
 interface DefaultAccountAccordionProps
   extends AccordionProps<PreferenceAccordion> {
   data: GetPersonalPreferencesQuery | undefined;
-  accountListId: string;
   defaultAccountList: string;
   disabled?: boolean;
 }

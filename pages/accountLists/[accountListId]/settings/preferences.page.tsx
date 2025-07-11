@@ -195,7 +195,6 @@ const Preferences: React.FC = () => {
               handleAccordionChange={setExpandedAccordion}
               expandedAccordion={expandedAccordion}
               data={personalPreferencesData}
-              accountListId={accountListId}
               defaultAccountList={
                 personalPreferencesData?.user?.defaultAccountList || ''
               }

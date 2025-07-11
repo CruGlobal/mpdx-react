@@ -7,57 +7,90 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
 import { AccountListAutocomplete } from './AccountListAutocomplete';
+import { AccountListOptionsQuery } from './AccountListOptions.generated';
 
 const setFieldValue = jest.fn();
+
+const defaultMockData = {
+  AccountListOptions: {
+    accountLists: {
+      nodes: [
+        {
+          id: 'account-1',
+          name: 'John Doe Ministry Account',
+        },
+        {
+          id: 'account-2',
+          name: 'Jane Smith Support Account',
+        },
+        {
+          id: 'account-3',
+          name: 'Global Missions Fund',
+        },
+        {
+          id: 'account-4',
+          name: 'Local Church Partnership',
+        },
+        {
+          id: 'account-5',
+          name: 'Student Ministry Account',
+        },
+      ],
+    },
+  },
+};
+
+const TestComponent = ({
+  mockData = defaultMockData,
+  autocompleteProps = {},
+}: {
+  mockData?: { AccountListOptions: AccountListOptionsQuery };
+  autocompleteProps?: React.ComponentProps<typeof AccountListAutocomplete>;
+}) => (
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <GqlMockedProvider<{
+      AccountListOptions: AccountListOptionsQuery;
+    }>
+      mocks={mockData}
+    >
+      <ThemeProvider theme={theme}>
+        <AccountListAutocomplete {...autocompleteProps} />
+      </ThemeProvider>
+    </GqlMockedProvider>
+  </LocalizationProvider>
+);
 
 describe('AccountListAutocomplete', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  it('shows the selected account', async () => {
+    const { getByRole } = render(
+      <TestComponent
+        autocompleteProps={{
+          value: 'account-1',
+          onChange: (_, value) => {
+            setFieldValue(value);
+          },
+        }}
+      />,
+    );
+    await waitFor(() => {
+      expect(getByRole('combobox')).toHaveValue('John Doe Ministry Account');
+    });
+  });
+
   it('changes the selected account', async () => {
     const { getByRole, findByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider
-          mocks={{
-            AccountListOptions: {
-              accountLists: {
-                nodes: [
-                  {
-                    id: 'account-1',
-                    name: 'John Doe Ministry Account',
-                  },
-                  {
-                    id: 'account-2',
-                    name: 'Jane Smith Support Account',
-                  },
-                  {
-                    id: 'account-3',
-                    name: 'Global Missions Fund',
-                  },
-                  {
-                    id: 'account-4',
-                    name: 'Local Church Partnership',
-                  },
-                  {
-                    id: 'account-5',
-                    name: 'Student Ministry Account',
-                  },
-                ],
-              },
-            },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <AccountListAutocomplete
-              value="account-1"
-              onChange={(_, value) => {
-                setFieldValue(value);
-              }}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </LocalizationProvider>,
+      <TestComponent
+        autocompleteProps={{
+          value: 'account-1',
+          onChange: (_, value) => {
+            setFieldValue(value);
+          },
+        }}
+      />,
     );
 
     userEvent.click(getByRole('combobox'));
@@ -71,42 +104,12 @@ describe('AccountListAutocomplete', () => {
 
   it('filters accounts based on input', async () => {
     const { getByRole, findByRole, findAllByRole, queryByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider
-          mocks={{
-            AccountListOptions: {
-              accountLists: {
-                nodes: [
-                  {
-                    id: 'account-1',
-                    name: 'John Doe Ministry Account',
-                  },
-                  {
-                    id: 'account-2',
-                    name: 'Jane Smith Support Account',
-                  },
-                  {
-                    id: 'account-3',
-                    name: 'Global Missions Fund',
-                  },
-                  {
-                    id: 'account-4',
-                    name: 'Local Church Partnership',
-                  },
-                  {
-                    id: 'account-5',
-                    name: 'Student Ministry Account',
-                  },
-                ],
-              },
-            },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <AccountListAutocomplete value={null} onChange={setFieldValue} />
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </LocalizationProvider>,
+      <TestComponent
+        autocompleteProps={{
+          value: null,
+          onChange: setFieldValue,
+        }}
+      />,
     );
 
     const combobox = getByRole('combobox');
@@ -134,21 +137,19 @@ describe('AccountListAutocomplete', () => {
 
   it('handles empty account list', () => {
     const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider
-          mocks={{
-            AccountListOptions: {
-              accountLists: {
-                nodes: [],
-              },
+      <TestComponent
+        mockData={{
+          AccountListOptions: {
+            accountLists: {
+              nodes: [],
             },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <AccountListAutocomplete value={null} onChange={setFieldValue} />
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </LocalizationProvider>,
+          },
+        }}
+        autocompleteProps={{
+          value: null,
+          onChange: setFieldValue,
+        }}
+      />,
     );
 
     expect(getByRole('combobox')).toHaveValue('');
@@ -156,45 +157,12 @@ describe('AccountListAutocomplete', () => {
 
   it('handles invalid account ID', () => {
     const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider
-          mocks={{
-            AccountListOptions: {
-              accountLists: {
-                nodes: [
-                  {
-                    id: 'account-1',
-                    name: 'John Doe Ministry Account',
-                  },
-                  {
-                    id: 'account-2',
-                    name: 'Jane Smith Support Account',
-                  },
-                  {
-                    id: 'account-3',
-                    name: 'Global Missions Fund',
-                  },
-                  {
-                    id: 'account-4',
-                    name: 'Local Church Partnership',
-                  },
-                  {
-                    id: 'account-5',
-                    name: 'Student Ministry Account',
-                  },
-                ],
-              },
-            },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <AccountListAutocomplete
-              value="invalid-id"
-              onChange={setFieldValue}
-            />
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </LocalizationProvider>,
+      <TestComponent
+        autocompleteProps={{
+          value: 'invalid-id',
+          onChange: setFieldValue,
+        }}
+      />,
     );
 
     expect(getByRole('combobox')).toHaveValue('');

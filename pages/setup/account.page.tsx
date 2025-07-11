@@ -19,10 +19,16 @@ import {
   AccountListOptionsQuery,
 } from './Account.generated';
 
+interface PageProps {
+  accountListOptions: AccountListOptionsQuery;
+}
+
 // This is the third page page of the setup tour. It lets users choose their
 // default account list. It will be shown if the user has more than one account
 // list and don't have a default chosen yet.
-const AccountPage: React.FC = () => {
+const AccountPage: React.FC<PageProps> = ({
+  accountListOptions: _accountListOptions,
+}) => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const { next } = useNextSetupPage();

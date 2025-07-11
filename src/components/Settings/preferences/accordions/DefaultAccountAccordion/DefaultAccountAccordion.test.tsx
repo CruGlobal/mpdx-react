@@ -73,12 +73,18 @@ const Components: React.FC<ComponentsProps> = ({
   <SnackbarProvider>
     <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider
+          onCall={mutationSpy}
+          mocks={{
+            AccountListOptions: {
+              accountLists: mockData.accountLists,
+            },
+          }}
+        >
           <DefaultAccountAccordion
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
             data={mockData}
-            accountListId={accountListId}
             defaultAccountList={defaultAccountList}
           />
         </GqlMockedProvider>
@@ -124,16 +130,18 @@ describe('Default Account Accordion', () => {
   });
 
   it('Saves the input', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, findByRole } = render(
       <Components
         defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
         expandedAccordion={PreferenceAccordion.DefaultAccount}
       />,
     );
-    const input = getByRole('combobox');
+    const input = await findByRole('combobox');
     const button = getByRole('button', { name: 'Save' });
 
-    await waitFor(() => expect(input).toHaveValue('Pedro Pérez'));
+    await waitFor(() => {
+      expect(input).toHaveValue('Pedro Pérez');
+    });
 
     userEvent.type(input, 'Clark');
     userEvent.click(getByText('TTM | Clark Kent | MPD Coach'));
