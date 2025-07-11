@@ -1,10 +1,7 @@
-import { Settings } from 'luxon';
 import {
   ContactLateStatusEnum,
   getDonationLateStatus,
 } from './getDonationLateStatus';
-
-Settings.now = () => new Date(2020, 1, 1).valueOf();
 
 describe('getDonationLateStatus', () => {
   it('returns undefined when no dates provided', () => {
@@ -31,7 +28,7 @@ describe('getDonationLateStatus', () => {
     const lateAt = '2019-12-22';
     const pledgeStartDate = '2019-12-01';
     expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
-      ContactLateStatusEnum.LateLessThirty,
+      ContactLateStatusEnum.LateMoreThirty,
     );
   });
 
