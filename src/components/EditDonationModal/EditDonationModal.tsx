@@ -11,10 +11,12 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
+import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { DesignationAccountAutocomplete } from 'src/common/Autocomplete/DesignationAccountAutocomplete';
 import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
@@ -49,7 +51,9 @@ const donationSchema = yup.object({
   currency: yup.string().required(),
   date: requiredDateTime(),
   donorAccountId: yup.string().required(),
-  designationAccountId: yup.string().required(),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation Account is required')),
   appealId: yup.string().optional(),
   appealAmount: yup.number(),
   memo: yup.string().optional(),
@@ -79,7 +83,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
     pageInfo: appeals?.appeals.pageInfo,
   });
 
-  const { data: designationAccounts, loading: loadingDesignationAccounts } =
+  const { loading: loadingDesignationAccounts } =
     useGetDesignationAccountsQuery({ variables: { accountListId } });
 
   const [updateDonation, { loading: updatingDonation }] =
@@ -255,35 +259,31 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                  <FormControl fullWidth required>
-                    <InputLabel id="designationAccountId">
-                      {t('Designation Account')}
-                    </InputLabel>
-                    <Select
-                      labelId="designationAccountId"
-                      label={t('Designation Account')}
-                      value={designationAccountId}
-                      onChange={(e) =>
-                        setFieldValue('designationAccountId', e.target.value)
-                      }
-                      endAdornment={
-                        loadingDesignationAccounts && (
-                          <SmallLoadingSpinner spacing="25px" />
-                        )
-                      }
-                    >
-                      {designationAccounts?.designationAccounts
-                        .flatMap(
-                          (designationAccount) =>
-                            designationAccount.designationAccounts,
-                        )
-                        .map((account) => (
-                          <MenuItem key={account.id} value={account.id}>
-                            {account.name || account.designationNumber}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
+                  <DesignationAccountAutocomplete
+                    id="designationAccountId"
+                    accountListId={accountListId}
+                    loading={loadingDesignationAccounts}
+                    value={designationAccountId}
+                    onBlur={handleBlur('designationAccountId')}
+                    onChange={(_, designationAccountId) =>
+                      setFieldValue(
+                        'designationAccountId',
+                        designationAccountId,
+                      )
+                    }
+                    textFieldProps={{
+                      label: t('Designation Account'),
+                      size: 'medium',
+                      variant: 'outlined',
+                      required: true,
+                      error:
+                        !!errors.designationAccountId &&
+                        touched.designationAccountId,
+                      helperText:
+                        touched.designationAccountId &&
+                        errors.designationAccountId,
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
