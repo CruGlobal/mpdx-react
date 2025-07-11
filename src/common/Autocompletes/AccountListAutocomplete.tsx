@@ -6,7 +6,6 @@ import {
   TextFieldProps,
 } from '@mui/material';
 import { AccountListOptionsQuery } from 'pages/setup/Account.generated';
-// import { AccountList } from 'src/graphql/types.generated';
 
 export type AccountListOption =
   AccountListOptionsQuery['accountLists']['nodes'][number];
