@@ -8,13 +8,13 @@ import {
 import { AccountListOptionsQuery } from 'pages/setup/Account.generated';
 // import { AccountList } from 'src/graphql/types.generated';
 
-export type AccountList =
+export type AccountListOption =
   AccountListOptionsQuery['accountLists']['nodes'][number];
 
 interface AccountListAutocompleteProps
-  extends Partial<AutocompleteProps<AccountList, false, boolean, false>> {
+  extends Partial<AutocompleteProps<AccountListOption, false, boolean, false>> {
   textFieldProps?: Partial<TextFieldProps>;
-  options: AccountList[];
+  options: AccountListOption[];
 }
 
 export const AccountListAutocomplete: React.FC<
@@ -26,7 +26,9 @@ export const AccountListAutocomplete: React.FC<
       autoHighlight
       {...props}
       options={options || []}
-      getOptionLabel={(account: AccountList): string => account?.name ?? ''}
+      getOptionLabel={(account: AccountListOption): string =>
+        account?.name ?? ''
+      }
       renderInput={(params) => <TextField {...params} {...textFieldProps} />}
     />
   );
