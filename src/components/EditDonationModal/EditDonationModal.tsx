@@ -11,6 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
+import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -46,10 +47,13 @@ interface EditDonationModalProps {
 }
 
 const donationSchema = yup.object({
-  convertedAmount: yup.number().required(),
-  currency: yup.string().required(),
-  date: requiredDateTime(),
-  donorAccountId: yup.string().required(),
+  convertedAmount: yup
+    .number()
+    .typeError(i18n.t('Must be a number'))
+    .required(i18n.t('Amount is required')),
+  currency: yup.string().required(i18n.t('Currency is required')),
+  date: requiredDateTime(i18n.t('Date is required')),
+  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   designationAccountId: yup
     .string()
     .required(i18n.t('Designation Account is required')),
@@ -179,14 +183,12 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     value={convertedAmount}
                     label={t('Amount')}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    onBlur={handleBlur('convertedAmount')}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
-                      errors.convertedAmount &&
-                      touched.convertedAmount &&
-                      t('Field is required')
+                      touched.convertedAmount ? errors.convertedAmount : ''
                     }
                     required
                   />
@@ -197,12 +199,14 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       disableClearable
                       disabled={isSubmitting}
                       value={currency}
+                      onBlur={handleBlur('currency')}
                       onChange={(_, currencyCode) => {
                         setFieldValue('currency', currencyCode);
                       }}
                       textFieldProps={{
                         label: t('Currency'),
-                        error: !!errors.currency,
+                        error: !!errors.currency && touched.currency,
+                        helperText: touched.currency && errors.currency,
                         required: true,
                       }}
                     />
@@ -214,6 +218,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       label={t('Date')}
                       value={date}
                       onChange={(date) => setFieldValue('date', date)}
+                      onBlur={handleBlur('date')}
+                      error={!!(errors.date && touched.date)}
+                      helperText={touched.date && (errors.date as string)}
                       required
                     />
                   </FormControl>
@@ -242,6 +249,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   <DonorAccountAutocomplete
                     accountListId={accountListId}
                     value={donorAccountId}
+                    onBlur={handleBlur('donorAccountId')}
                     preloadedDonors={[
                       {
                         id: donation.donorAccount.id,
@@ -252,6 +260,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       setFieldValue('donorAccountId', donorAccountId)
                     }
                     label={t('Partner Account')}
+                    textFieldProps={{
+                      error: !!errors.donorAccountId && touched.donorAccountId,
+                      helperText:
+                        touched.donorAccountId && errors.donorAccountId,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
