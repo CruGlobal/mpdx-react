@@ -49,7 +49,7 @@ const donationSchema = yup.object({
   convertedAmount: yup.number().required(),
   currency: yup.string().required(i18n.t('Currency is required')),
   date: requiredDateTime(),
-  donorAccountId: yup.string().required(),
+  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   designationAccountId: yup.string().required(),
   appealId: yup.string().optional(),
   appealAmount: yup.number(),
@@ -245,6 +245,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   <DonorAccountAutocomplete
                     accountListId={accountListId}
                     value={donorAccountId}
+                    onBlur={handleBlur('donorAccountId')}
                     preloadedDonors={[
                       {
                         id: donation.donorAccount.id,
@@ -255,6 +256,11 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       setFieldValue('donorAccountId', donorAccountId)
                     }
                     label={t('Partner Account')}
+                    textFieldProps={{
+                      error: !!errors.donorAccountId && touched.donorAccountId,
+                      helperText:
+                        touched.donorAccountId && errors.donorAccountId,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
