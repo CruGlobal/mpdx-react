@@ -261,6 +261,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     accountListId={accountListId}
                     loading={loadingDesignationAccounts}
                     value={designationAccountId}
+                    onBlur={handleBlur('designationAccountId')}
                     onChange={(_, designationAccountId) =>
                       setFieldValue(
                         'designationAccountId',
@@ -272,7 +273,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       size: 'medium',
                       variant: 'outlined',
                       required: true,
-                      error: !!errors.designationAccountId,
+                      error:
+                        !!errors.designationAccountId &&
+                        touched.designationAccountId,
+                      helperText:
+                        touched.designationAccountId &&
+                        errors.designationAccountId &&
+                        t('Designation Account is required'),
                     }}
                   />
                 </Grid>

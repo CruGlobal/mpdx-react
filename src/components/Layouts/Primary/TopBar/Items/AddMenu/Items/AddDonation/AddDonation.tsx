@@ -382,6 +382,7 @@ export const AddDonation = ({
                             id="designation-account-input"
                             accountListId={accountListId}
                             loading={designationAccountsLoading}
+                            onBlur={handleBlur('designationAccountId')}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
                               setFieldValue(
@@ -392,6 +393,13 @@ export const AddDonation = ({
                             textFieldProps={{
                               size: 'small',
                               variant: 'outlined',
+                              error:
+                                !!errors.designationAccountId &&
+                                touched.designationAccountId,
+                              helperText:
+                                touched.designationAccountId &&
+                                errors.designationAccountId &&
+                                t('Designation Account is required'),
                             }}
                           />
                         </Box>

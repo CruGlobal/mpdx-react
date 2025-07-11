@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { FocusEventHandler, ReactElement } from 'react';
 import {
   Autocomplete,
   AutocompleteProps,
@@ -11,11 +11,13 @@ import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal
 interface DesignationAccountAutocompleteProps
   extends Partial<AutocompleteProps<string, boolean, boolean, false>> {
   accountListId: string;
+  onBlur?: FocusEventHandler<HTMLDivElement>;
   textFieldProps?: Partial<TextFieldProps>;
 }
 
 export const DesignationAccountAutocomplete = ({
   accountListId,
+  onBlur,
   textFieldProps,
   ...props
 }: DesignationAccountAutocompleteProps) => {
@@ -58,6 +60,7 @@ export const DesignationAccountAutocomplete = ({
           }}
         />
       )}
+      onBlur={onBlur}
     />
   );
 };
