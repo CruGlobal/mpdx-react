@@ -180,14 +180,14 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     value={convertedAmount}
                     label={t('Amount')}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    onBlur={handleBlur('convertedAmount')}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
                       errors.convertedAmount &&
                       touched.convertedAmount &&
-                      t('Field is required')
+                      t('Amount is required')
                     }
                     required
                   />
