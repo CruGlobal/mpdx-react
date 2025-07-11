@@ -26,6 +26,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
@@ -69,7 +70,9 @@ const donationSchema = yup.object({
     ),
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation Account is required')),
   donationDate: requiredDateTime(),
   donorAccountId: yup.string().required(),
   memo: yup.string().nullable(),
@@ -397,8 +400,7 @@ export const AddDonation = ({
                                 touched.designationAccountId,
                               helperText:
                                 touched.designationAccountId &&
-                                errors.designationAccountId &&
-                                t('Designation Account is required'),
+                                errors.designationAccountId,
                             }}
                           />
                         </Box>

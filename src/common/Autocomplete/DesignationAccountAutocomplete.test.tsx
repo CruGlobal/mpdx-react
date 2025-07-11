@@ -54,7 +54,7 @@ describe('DesignationAccountAutocomplete', () => {
       }),
     );
 
-    const mockValue = mockOnChange.mock.calls[0][1];
+    const mockValue = mockOnChange.mock.lastCall[1];
     expect(mockValue).toBe('designation-1');
   });
 });

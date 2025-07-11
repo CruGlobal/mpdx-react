@@ -128,7 +128,7 @@ describe('EditDonationModal', () => {
 
   it('renders designation accounts', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, getByText, findByText } = render(
+    const { getByRole, getByText, findByRole } = render(
       <SnackbarProvider>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <ThemeProvider theme={theme}>
@@ -161,7 +161,9 @@ describe('EditDonationModal', () => {
     );
 
     userEvent.click(getByRole('combobox', { name: 'Designation Account' }));
-    expect(await findByText('Tony Starks Account (123)')).toBeInTheDocument();
+    expect(
+      await findByRole('option', { name: 'Tony Starks Account (123)' }),
+    ).toBeInTheDocument();
   });
 
   it('renders with appeal', async () => {
