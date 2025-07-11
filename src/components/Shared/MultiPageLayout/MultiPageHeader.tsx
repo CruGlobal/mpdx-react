@@ -85,7 +85,11 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
         alignItems="center"
         sx={{ lineHeight: 1.1 }}
       >
-        <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
+        <NavListButton
+          panelOpen={isNavListOpen}
+          onClick={onNavListToggle}
+          disabled={onSetupTour && headerType === HeaderTypeEnum.Settings}
+        >
           {headerType === HeaderTypeEnum.Report && (
             <NavFilterIcon
               titleAccess={titleAccess}
