@@ -11,6 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
+import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -50,7 +51,9 @@ const donationSchema = yup.object({
   currency: yup.string().required(),
   date: requiredDateTime(),
   donorAccountId: yup.string().required(),
-  designationAccountId: yup.string().required(),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation Account is required')),
   appealId: yup.string().optional(),
   appealAmount: yup.number(),
   memo: yup.string().optional(),
@@ -278,8 +281,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                         touched.designationAccountId,
                       helperText:
                         touched.designationAccountId &&
-                        errors.designationAccountId &&
-                        t('Designation Account is required'),
+                        errors.designationAccountId,
                     }}
                   />
                 </Grid>
