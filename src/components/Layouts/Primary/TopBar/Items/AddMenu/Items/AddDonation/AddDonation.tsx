@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  Autocomplete,
   Box,
   CircularProgress,
   DialogActions,
@@ -8,7 +7,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  TextField,
   Theme,
   useMediaQuery,
 } from '@mui/material';
@@ -18,7 +16,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
-import { DesignationAccountAutocomplete } from 'src/common/Autocomplete/DesignationAccountAutocomplete';
+import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
@@ -385,7 +383,6 @@ export const AddDonation = ({
                             {...field}
                             id="designation-account-input"
                             accountListId={accountListId}
-                            loading={designationAccountsLoading}
                             onBlur={handleBlur('designationAccountId')}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
