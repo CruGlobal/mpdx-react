@@ -11,6 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
+import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +47,7 @@ interface EditDonationModalProps {
 
 const donationSchema = yup.object({
   convertedAmount: yup.number().required(),
-  currency: yup.string().required(),
+  currency: yup.string().required(i18n.t('Currency is required')),
   date: requiredDateTime(),
   donorAccountId: yup.string().required(),
   designationAccountId: yup.string().required(),
@@ -197,12 +198,14 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       disableClearable
                       disabled={isSubmitting}
                       value={currency}
+                      onBlur={handleBlur('currency')}
                       onChange={(_, currencyCode) => {
                         setFieldValue('currency', currencyCode);
                       }}
                       textFieldProps={{
                         label: t('Currency'),
-                        error: !!errors.currency,
+                        error: !!errors.currency && touched.currency,
+                        helperText: touched.currency && errors.currency,
                         required: true,
                       }}
                     />
