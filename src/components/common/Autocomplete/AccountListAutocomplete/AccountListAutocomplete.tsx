@@ -11,19 +11,14 @@ interface AccountListAutocompleteProps
   extends Partial<
     AutocompleteProps<string | undefined | null, false, boolean, false>
   > {
-  accountListId: string;
   textFieldProps?: Partial<TextFieldProps>;
 }
 
 export const AccountListAutocomplete: React.FC<
   AccountListAutocompleteProps
-> = ({ textFieldProps, accountListId, ...props }) => {
+> = ({ textFieldProps, ...props }) => {
   const { data: accountListOptions, loading: accountListOptionsLoading } =
-    useAccountListOptionsQuery({
-      variables: {
-        accountListId: accountListId ?? '',
-      },
-    });
+    useAccountListOptionsQuery();
   return (
     <Autocomplete
       fullWidth
@@ -32,13 +27,15 @@ export const AccountListAutocomplete: React.FC<
       {...props}
       loading={accountListOptionsLoading}
       options={
-        accountListOptions.accountLists?.nodes.map((account) => account.id) ||
+        accountListOptions?.accountLists?.nodes.map((account) => account.id) ||
         []
       }
-      getOptionLabel={(id: string): string =>
-        accountListOptions.accountLists?.nodes?.find(
-          (account) => account.id === id,
-        )?.name ?? ''
+      getOptionLabel={(option: string | null | undefined): string =>
+        option
+          ? accountListOptions?.accountLists?.nodes?.find(
+              (account) => account.id === option,
+            )?.name ?? ''
+          : ''
       }
       renderInput={(params) => <TextField {...params} {...textFieldProps} />}
     />

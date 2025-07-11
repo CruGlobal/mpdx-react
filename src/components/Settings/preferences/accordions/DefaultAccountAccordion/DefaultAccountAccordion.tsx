@@ -111,7 +111,7 @@ export const DefaultAccountAccordion: React.FC<
             >
               <AccountListAutocomplete
                 disabled={isSubmitting}
-                defaultAccountList={defaultAccountList}
+                value={defaultAccountList}
                 onChange={(_, value) => {
                   setFieldValue('defaultAccountList', value);
                 }}

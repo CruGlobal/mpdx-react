@@ -59,8 +59,8 @@ const AccountPage: React.FC = () => {
           { appName },
         )}
         <AccountListAutocomplete
-          accountListId={defaultAccountListId}
-          onChange={(_, value) => setDefaultAccountListId(value)}
+          value={defaultAccountListId}
+          onChange={(_, value) => setDefaultAccountListId(value as string)}
           textFieldProps={{
             label: t('Account'),
           }}
