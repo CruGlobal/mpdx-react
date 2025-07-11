@@ -26,7 +26,7 @@ interface DefaultAccountAccordionProps
 const preferencesSchema = yup.object({
   defaultAccountListOption: yup
     .object({
-      id: yup.string(),
+      id: yup.string().required(),
       name: yup.string(),
     })
     .required(),
