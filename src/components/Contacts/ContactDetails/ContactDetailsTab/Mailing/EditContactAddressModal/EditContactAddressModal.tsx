@@ -13,14 +13,13 @@ import {
   Grid,
   InputLabel,
   Link,
-  MenuItem,
-  Select,
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
 import {
   CancelButton,
   DeleteButton,
@@ -33,10 +32,6 @@ import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,
 } from '../../ContactDetailsTab.generated';
-import {
-  AddressLocationEnum,
-  getLocalizedAddressLocation,
-} from '../AddressLocation';
 import { ContactMailingFragment } from '../ContactMailing.generated';
 import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.generated';
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
@@ -293,24 +288,12 @@ export const EditContactAddressModal: React.FC<
                         <InputLabel id="location-select-label">
                           {t('Location')}
                         </InputLabel>
-                        <Select
+                        <AddressLocationSelect
                           name="location"
-                          label={t('Location')}
                           labelId="location-select-label"
                           value={location}
                           onChange={handleChange}
-                          fullWidth
-                        >
-                          {Object.values(AddressLocationEnum).map((value) => (
-                            <MenuItem
-                              key={value}
-                              value={value}
-                              aria-label={getLocalizedAddressLocation(t, value)}
-                            >
-                              {getLocalizedAddressLocation(t, value)}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        />
                       </FormControl>
                     </Grid>
                   </Grid>

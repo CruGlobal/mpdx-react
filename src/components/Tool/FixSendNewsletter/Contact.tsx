@@ -11,8 +11,6 @@ import {
   CardHeader,
   Grid,
   Link,
-  MenuItem,
-  Select,
   Typography,
   useMediaQuery,
 } from '@mui/material';
@@ -20,13 +18,13 @@ import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { SmallLoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
+import { NewsletterSelect } from 'src/components/common/NewsletterSelect/NewsletterSelect';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import { sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
 import { ContactUpdateData } from './FixSendNewsletter';
@@ -283,23 +281,13 @@ const Contact = ({
               />
             </Typography>
 
-            <Select
+            <NewsletterSelect
               className={classes.select}
               value={newsletter}
               onChange={handleChange}
               size="small"
-            >
-              {[
-                SendNewsletterEnum.None,
-                SendNewsletterEnum.Email,
-                SendNewsletterEnum.Physical,
-                SendNewsletterEnum.Both,
-              ].map((value) => (
-                <MenuItem key={value} value={value}>
-                  {getLocalizedSendNewsletter(t, value)}
-                </MenuItem>
-              ))}
-            </Select>
+            />
+
             <Box
               display="flex"
               flexDirection="column"

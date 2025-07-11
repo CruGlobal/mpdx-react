@@ -5,6 +5,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetAppealsForMassActionQuery } from 'src/components/Contacts/MassActions/AddToAppeal/GetAppealsForMassAction.generated';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { GetDonorAccountsQuery } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete.generated';
 import theme from '../../../../../../../../theme';
@@ -60,23 +61,25 @@ describe('AddDonation', () => {
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <GqlMockedProvider<{
+              GetAppealsForMassAction: GetAppealsForMassActionQuery;
               AddDonation: AddDonationMutation;
               GetDesignationAccounts: GetDesignationAccountsQuery;
               GetDonorAccounts: GetDonorAccountsQuery;
             }>
               onCall={mutationSpy}
               mocks={{
-                GetDonationModal: {
-                  accountList: {
-                    id: '123',
-                    currency: 'USD',
-                    appeals: [
+                GetAppealsForMassAction: {
+                  appeals: {
+                    nodes: [
                       {
-                        active: true,
-                        name: 'Cool appeal',
                         id: 'appeal-1',
+                        name: 'Cool appeal',
+                        contactIds: ['contactIdOne', 'contactIdTwo'],
                       },
                     ],
+                    pageInfo: {
+                      hasNextPage: false,
+                    },
                   },
                 },
                 GetDesignationAccounts: {
@@ -145,7 +148,6 @@ describe('AddDonation', () => {
           amount: 500.5,
           appealAmount: null,
           appealId: 'appeal-1',
-          currency: 'USD',
           designationAccountId: '321',
           donationDate: '2020-01-01',
           donorAccountId: 'donor-acc-1',
