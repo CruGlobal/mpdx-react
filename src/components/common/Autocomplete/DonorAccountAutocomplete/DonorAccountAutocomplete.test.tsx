@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from '../../../theme';
+import theme from '../../../../theme';
 import { DonorAccountAutocomplete } from './DonorAccountAutocomplete';
 import { GetDonorAccountsQuery } from './DonorAccountAutocomplete.generated';
 
