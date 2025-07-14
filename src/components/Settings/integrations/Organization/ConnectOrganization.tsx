@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { useApolloClient } from '@apollo/client';
 import {
-  Autocomplete,
   Box,
   Button,
   ButtonProps,
@@ -21,6 +20,8 @@ import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
+import { Organization } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { articles } from 'src/lib/helpjuice';
@@ -173,36 +174,26 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
       }): ReactElement => (
         <StyledForm onSubmit={handleSubmit}>
           <ContentContainer>
-            <Autocomplete
+            <OrganizationAutocomplete
               disabled={isSubmitting}
               autoHighlight
+              fullWidth
               loading={loading}
               value={selectedOrganization}
-              onChange={(_, value) => {
-                setOrganizationType(
-                  getOrganizationType(value?.apiClass, value?.oauth),
-                );
-                setSelectedOrg(value?.name ?? '');
-                setFieldValue('selectedOrganization', value);
-              }}
-              options={
+              organizations={
                 organizations?.organizations?.filter(
                   (organization) => !organization?.disableNewUsers,
-                ) || []
+                ) ?? []
               }
-              getOptionLabel={(option) =>
-                organizations?.organizations?.find(
-                  ({ id }) => String(id) === String(option.id),
-                )?.name ?? ''
-              }
-              fullWidth
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={t('Organization')}
-                  inputRef={focusOnOrganization}
-                />
-              )}
+              onChange={(_, value) => {
+                const org = value as Organization;
+                setOrganizationType(
+                  getOrganizationType(org?.apiClass, org?.oauth),
+                );
+                setSelectedOrg(org?.name ?? '');
+                setFieldValue('selectedOrganization', value);
+              }}
+              textFieldFocusRef={focusOnOrganization}
             />
             {!selectedOrganization &&
               articles.HELP_URL_SETUP_FIND_ORGANIZATION && (
