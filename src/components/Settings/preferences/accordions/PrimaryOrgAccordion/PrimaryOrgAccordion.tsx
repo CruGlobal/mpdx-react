@@ -1,14 +1,15 @@
 import React, { ReactElement, useMemo } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { SettingsOrganizationFragment } from 'pages/accountLists/[accountListId]/settings/organizations.generated';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
+import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { AccountList } from 'src/graphql/types.generated';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
@@ -111,25 +112,20 @@ export const PrimaryOrgAccordion: React.FC<PrimaryOrgAccordionProps> = ({
                 'This should be the organization from which you are paid and most likely correspond to the country in which you are living and serving. This will set your currency conversions for multi-currency accounts to the currency of this organization both on the dashboard and the corresponding contribution reports.',
               )}
             >
-              <Autocomplete
+              <OrganizationAutocomplete
                 disabled={isSubmitting}
                 autoHighlight
-                value={salaryOrganizationId}
-                onChange={(_, value) => {
-                  setFieldValue('salaryOrganizationId', value);
-                }}
-                options={orgs.map((org) => org.organization.id) || []}
-                getOptionLabel={(salaryOrganizationId): string =>
+                organizations={orgs.map((org) => org.organization) || []}
+                value={
                   orgs.find(
                     ({ organization }) =>
                       organization.id === salaryOrganizationId,
-                  )?.organization.name ?? ''
+                  )?.organization as SettingsOrganizationFragment
                 }
+                onChange={(_, value) => {
+                  setFieldValue('salaryOrganizationId', value?.id);
+                }}
                 fullWidth
-                renderInput={(params) => (
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  <TextField {...params} placeholder={label} autoFocus />
-                )}
               />
             </FieldWrapper>
           </FormWrapper>
