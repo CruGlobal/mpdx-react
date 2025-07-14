@@ -20,8 +20,8 @@ import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
-import { DonorAccountAutocomplete } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   SubmitButton,
