@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetAppealsForMassActionQuery } from 'src/components/Contacts/MassActions/AddToAppeal/GetAppealsForMassAction.generated';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
-import { GetDonorAccountsQuery } from 'src/components/common/DonorAccountAutocomplete/DonorAccountAutocomplete.generated';
+import { GetDonorAccountsQuery } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete.generated';
 import theme from '../../../../../../../../theme';
 import { AddDonation } from './AddDonation';
 import { AddDonationMutation } from './AddDonation.generated';
