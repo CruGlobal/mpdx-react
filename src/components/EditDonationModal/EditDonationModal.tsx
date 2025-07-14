@@ -46,9 +46,9 @@ interface EditDonationModalProps {
 }
 
 const donationSchema = yup.object({
-  convertedAmount: yup.number().required(),
+  convertedAmount: yup.number().required(i18n.t('Amount is required')),
   currency: yup.string().required(i18n.t('Currency is required')),
-  date: requiredDateTime(),
+  date: requiredDateTime(i18n.t('Date is required')),
   donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   designationAccountId: yup.string().required(),
   appealId: yup.string().optional(),
@@ -185,9 +185,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
-                      errors.convertedAmount &&
-                      touched.convertedAmount &&
-                      t('Amount is required')
+                      errors.convertedAmount && touched.convertedAmount
                     }
                     required
                   />
@@ -217,6 +215,9 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       label={t('Date')}
                       value={date}
                       onChange={(date) => setFieldValue('date', date)}
+                      onBlur={handleBlur('date')}
+                      error={!!(errors.date && touched.date)}
+                      helperText={touched.date && (errors.date as string)}
                       required
                     />
                   </FormControl>
