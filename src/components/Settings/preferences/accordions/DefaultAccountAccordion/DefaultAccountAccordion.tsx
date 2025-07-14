@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import {
   AccountListAutocomplete,
   AccountListOption,
-} from 'src/common/Autocompletes/AccountListAutocomplete';
+} from 'src/common/Autocompletes/AccountListAutocomplete/AccountListAutocomplete';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';

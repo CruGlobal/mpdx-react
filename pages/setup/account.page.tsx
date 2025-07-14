@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
-import { AccountListAutocomplete } from 'src/common/Autocompletes/AccountListAutocomplete';
+import { AccountListAutocomplete } from 'src/common/Autocompletes/AccountListAutocomplete/AccountListAutocomplete';
 import {
   UpdateUserDefaultAccountDocument,
   UpdateUserDefaultAccountMutation,
