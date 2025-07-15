@@ -1,3 +1,4 @@
+import { FocusEventHandler } from 'react';
 import {
   Autocomplete,
   AutocompleteProps,
