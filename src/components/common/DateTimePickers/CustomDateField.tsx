@@ -11,8 +11,7 @@ export const CustomDateField: React.FC<DesktopDateFieldProps> = (props) => {
   const isDesktop = useMediaQuery(DEFAULT_DESKTOP_MODE_MEDIA_QUERY, {
     defaultMatches: true,
   });
-  const { label, value, invalidDate, onBlur, onChange, ...textFieldProps } =
-    props;
+  const { label, value, invalidDate, onChange, ...textFieldProps } = props;
 
   // If value is not valid render desktop input as it can render invalid value
   if (isDesktop || invalidDate) {
@@ -27,7 +26,6 @@ export const CustomDateField: React.FC<DesktopDateFieldProps> = (props) => {
       slotProps={{
         textField: {
           fullWidth: true,
-          onBlur: onBlur,
           InputProps: {
             endAdornment: (
               <InputAdornment position="end">

@@ -218,9 +218,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       label={t('Date')}
                       value={date}
                       onChange={(date) => setFieldValue('date', date)}
-                      onBlur={handleBlur('date')}
-                      error={!!(errors.date && touched.date)}
-                      helperText={touched.date && (errors.date as string)}
+                      error={!!errors.date}
+                      helperText={errors.date as string}
                       required
                     />
                   </FormControl>
