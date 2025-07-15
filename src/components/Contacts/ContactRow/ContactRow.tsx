@@ -106,57 +106,90 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </ListItemIcon>
       </Hidden>
       <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
-          <ListItemText
-            primary={
-              <Typography component="span" variant="h6" noWrap>
-                <Box
-                  component="span"
-                  sx={{
-                    display: 'block',
-                    alignItems: 'center',
-                    overflow: 'clip',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {name}
-                  <CelebrationIcons contact={contact} />
-                </Box>
-              </Typography>
-            }
-            secondary={
-              primaryAddress && (
-                <Hidden smDown>
-                  <Typography component="span" variant="body2">
-                    {[
-                      primaryAddress.street,
-                      `${primaryAddress.city}${primaryAddress.city && ','}`,
-                      primaryAddress.state,
-                      primaryAddress.postalCode,
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
+        <Grid item xs={10} md={6}>
+          <Box
+            sx={{
+              display: 'grid',
+              alignItems: 'center',
+            }}
+          >
+            <Box
+              sx={{
+                overflow: 'hidden',
+              }}
+            >
+              <ListItemText
+                primary={
+                  <Typography component="span" variant="h6" noWrap>
+                    <Box
+                      component="span"
+                      sx={{
+                        display: 'block',
+                        alignItems: 'center',
+                        overflow: 'clip',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {name}
+                      <CelebrationIcons contact={contact} />
+                    </Box>
                   </Typography>
-                </Hidden>
-              )
-            }
-          />
+                }
+                secondary={
+                  primaryAddress && (
+                    <Hidden smDown>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        sx={{
+                          display: 'block',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {[
+                          primaryAddress.street,
+                          `${primaryAddress.city}${primaryAddress.city && ','}`,
+                          primaryAddress.state,
+                          primaryAddress.postalCode,
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      </Typography>
+                    </Hidden>
+                  )
+                }
+              />
+            </Box>
+          </Box>
         </Grid>
         <Grid item xs={2} md={6}>
-          <ContactPartnershipStatus
-            contactDetailsOpen={contactDetailsOpen}
-            lateAt={lateAt}
-            pledgeAmount={pledgeAmount}
-            pledgeCurrency={pledgeCurrency}
-            pledgeFrequency={pledgeFrequency}
-            pledgeReceived={pledgeReceived}
-            status={status}
-          />
+          <Box
+            sx={{
+              display: 'flex',
+            }}
+          >
+            <ContactPartnershipStatus
+              contactDetailsOpen={contactDetailsOpen}
+              lateAt={lateAt}
+              pledgeAmount={pledgeAmount}
+              pledgeCurrency={pledgeCurrency}
+              pledgeFrequency={pledgeFrequency}
+              pledgeReceived={pledgeReceived}
+              status={status}
+            />
+          </Box>
         </Grid>
       </Grid>
       <Hidden xsDown>
-        <Box onClick={(event) => event.preventDefault()}>
+        <Box
+          onClick={(event) => event.preventDefault()}
+          sx={{
+            minWidth: (theme) => theme.spacing(10),
+          }}
+        >
           <ContactUncompletedTasksCount
             uncompletedTasksCount={uncompletedTasksCount}
             contactId={contactId}
