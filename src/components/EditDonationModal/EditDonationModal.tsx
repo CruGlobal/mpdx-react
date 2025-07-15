@@ -46,7 +46,10 @@ interface EditDonationModalProps {
 }
 
 const donationSchema = yup.object({
-  convertedAmount: yup.number().required(i18n.t('Amount is required')),
+  convertedAmount: yup
+    .number()
+    .typeError(i18n.t('Must be a number'))
+    .required(i18n.t('Amount is required')),
   currency: yup.string().required(i18n.t('Currency is required')),
   date: requiredDateTime(i18n.t('Date is required')),
   donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
@@ -185,7 +188,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
-                      errors.convertedAmount && touched.convertedAmount
+                      touched.convertedAmount ? errors.convertedAmount : ''
                     }
                     required
                   />
