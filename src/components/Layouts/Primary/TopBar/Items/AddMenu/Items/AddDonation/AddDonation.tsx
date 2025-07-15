@@ -13,6 +13,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { FastField, Field, FieldProps, Form, Formik } from 'formik';
+import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -41,38 +42,40 @@ interface AddDonationProps {
 const donationSchema = yup.object({
   amount: yup
     .number()
-    .typeError('Amount must be a valid number')
-    .required()
+    .typeError(i18n.t('Amount must be a valid number'))
+    .required(i18n.t('Amount is required'))
     .test(
       'Is amount in valid currency format?',
-      'Amount must be in valid currency format',
+      i18n.t('Amount must be in valid currency format'),
       (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
     )
     .test(
       'Is positive?',
-      'Must use a positive number for amount',
+      i18n.t('Must use a positive number for amount'),
       (value) => parseFloat(value as unknown as string) > 0,
     ),
   appealAmount: yup
     .number()
-    .typeError('Appeal amount must be a valid number')
+    .typeError(i18n.t('Appeal amount must be a valid number'))
     .nullable()
     .test(
       'Is appeal amount in valid currency format?',
-      'Appeal amount must be in valid currency format',
+      i18n.t('Appeal amount must be in valid currency format'),
       (amount) =>
         !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
     )
     .test(
       'Is positive?',
-      'Must use a positive number for appeal amount',
+      i18n.t('Must use a positive number for appeal amount'),
       (value) => !value || parseFloat(value as unknown as string) > 0,
     ),
   appealId: yup.string().nullable(),
-  currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
-  donationDate: requiredDateTime(),
-  donorAccountId: yup.string().required(),
+  currency: yup.string().required(i18n.t('Currency is required')),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation account is required')),
+  donationDate: requiredDateTime(i18n.t('Date is required')),
+  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   memo: yup.string().nullable(),
   motivation: yup.string().nullable(),
   paymentMethod: yup.string().nullable(),
@@ -208,6 +211,7 @@ export const AddDonation = ({
                             {...field}
                             size="small"
                             variant="outlined"
+                            onBlur={handleBlur('amount')}
                             fullWidth
                             type="text"
                             inputProps={{
@@ -244,11 +248,13 @@ export const AddDonation = ({
                         id="currency-select"
                         disableClearable
                         value={currency}
+                        onBlur={handleBlur('currency')}
                         onChange={(_, currencyCode) => {
                           setFieldValue('currency', currencyCode);
                         }}
                         textFieldProps={{
-                          error: !!errors.currency,
+                          error: !!errors.currency && touched.currency,
+                          helperText: touched.currency && errors.currency,
                         }}
                         size="small"
                       />
@@ -284,6 +290,14 @@ export const AddDonation = ({
                           {...field}
                           onChange={(date) =>
                             setFieldValue('donationDate', date)
+                          }
+                          onBlur={handleBlur('donationDate')}
+                          error={
+                            !!(errors.donationDate && touched.donationDate)
+                          }
+                          helperText={
+                            touched.donationDate &&
+                            (errors.donationDate as string)
                           }
                         />
                       )}
@@ -348,6 +362,13 @@ export const AddDonation = ({
                               setFieldValue('donorAccountId', donorAccountId)
                             }
                             onBlur={handleBlur('donorAccountId')}
+                            textFieldProps={{
+                              error:
+                                !!errors.donorAccountId &&
+                                touched.donorAccountId,
+                              helperText:
+                                touched.donorAccountId && errors.donorAccountId,
+                            }}
                             value={field.value}
                             autocompleteId="partner-account-input"
                             labelId="partner-account-label"
@@ -383,6 +404,7 @@ export const AddDonation = ({
                             loading={designationAccountsLoading}
                             autoSelect
                             autoHighlight
+                            onBlur={handleBlur('designationAccountId')}
                             options={
                               designationAccounts?.map(({ id }) => id) ?? []
                             }
@@ -399,6 +421,14 @@ export const AddDonation = ({
                                 {...params}
                                 size="small"
                                 variant="outlined"
+                                error={
+                                  !!errors.designationAccountId &&
+                                  touched.designationAccountId
+                                }
+                                helperText={
+                                  touched.designationAccountId &&
+                                  errors.designationAccountId
+                                }
                                 InputProps={{
                                   ...params.InputProps,
                                   'aria-labelledby':
