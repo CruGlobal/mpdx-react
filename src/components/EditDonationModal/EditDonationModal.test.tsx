@@ -80,6 +80,10 @@ const donationWithAppeal = gqlMock<EditDonationModalDonationFragment>(
       appealAmount: {
         amount: 50,
       },
+      donorAccount: {
+        id: '67890',
+        displayName: 'Captain Americas Account',
+      },
       designationAccount: {
         id: '12345',
         name: '',
@@ -124,6 +128,38 @@ describe('EditDonationModal', () => {
     await waitFor(() => expect(getByText('Edit Donation')).toBeInTheDocument());
     expect(getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Amount' })).toHaveValue('100');
+  });
+
+  it('renders partner accounts', async () => {
+    const mutationSpy = jest.fn();
+    const { getByRole, getByText, findByText, findAllByRole } = render(
+      <SnackbarProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<{ UpdateDonation: UpdateDonationMutation }>
+                mocks={mocks}
+                onCall={mutationSpy}
+              >
+                <EditDonationModal
+                  donation={donationWithAppeal}
+                  open={true}
+                  handleClose={handleClose}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </LocalizationProvider>
+      </SnackbarProvider>,
+    );
+
+    expect(getByText('Edit Donation')).toBeInTheDocument();
+    userEvent.click(getByRole('combobox', { name: 'Partner Account' }));
+    expect(await findByText('Captain Americas Account')).toBeInTheDocument();
+
+    const options = await findAllByRole('option');
+    await userEvent.click(options[0]);
+    expect(options[0]).toHaveTextContent('Captain Americas Account');
   });
 
   it('renders designation accounts', async () => {
