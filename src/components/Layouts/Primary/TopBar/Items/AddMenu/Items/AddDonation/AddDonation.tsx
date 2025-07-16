@@ -179,8 +179,8 @@ export const AddDonation = ({
     >
       {({
         values: { appealId, currency },
-        handleBlur,
         setFieldValue,
+        setFieldTouched,
         isSubmitting,
         isValid,
         errors,
@@ -211,7 +211,11 @@ export const AddDonation = ({
                             {...field}
                             size="small"
                             variant="outlined"
-                            onBlur={handleBlur('amount')}
+                            onChange={(e) => {
+                              setFieldValue('amount', e.target.value);
+                              setFieldTouched('amount', true, false);
+                            }}
+                            onBlur={() => setFieldTouched('amount', true)}
                             fullWidth
                             type="text"
                             inputProps={{
@@ -248,10 +252,11 @@ export const AddDonation = ({
                         id="currency-select"
                         disableClearable
                         value={currency}
-                        onBlur={handleBlur('currency')}
                         onChange={(_, currencyCode) => {
                           setFieldValue('currency', currencyCode);
+                          setFieldTouched('currency', true, false);
                         }}
+                        onBlur={() => setFieldTouched('currency', true)}
                         textFieldProps={{
                           error: !!errors.currency && touched.currency,
                           helperText: touched.currency && errors.currency,
@@ -288,10 +293,11 @@ export const AddDonation = ({
                             'aria-labelledby': 'date-label',
                           }}
                           {...field}
-                          onChange={(date) =>
-                            setFieldValue('donationDate', date)
-                          }
-                          onBlur={handleBlur('donationDate')}
+                          onChange={(date) => {
+                            setFieldValue('donationDate', date);
+                            setFieldTouched('donationDate', true, false);
+                          }}
+                          onBlur={() => setFieldTouched('donationDate', true)}
                           error={
                             !!(errors.donationDate && touched.donationDate)
                           }
@@ -358,10 +364,13 @@ export const AddDonation = ({
                         <Box width="100%">
                           <DonorAccountAutocomplete
                             accountListId={accountListId}
-                            onChange={(donorAccountId) =>
-                              setFieldValue('donorAccountId', donorAccountId)
+                            onChange={(donorAccountId) => {
+                              setFieldValue('donorAccountId', donorAccountId);
+                              setFieldTouched('donorAccountId', true, false);
+                            }}
+                            onBlur={() =>
+                              setFieldTouched('donorAccountId', true)
                             }
-                            onBlur={handleBlur('donorAccountId')}
                             textFieldProps={{
                               error:
                                 !!errors.donorAccountId &&
@@ -404,7 +413,20 @@ export const AddDonation = ({
                             loading={designationAccountsLoading}
                             autoSelect
                             autoHighlight
-                            onBlur={handleBlur('designationAccountId')}
+                            onChange={(_, designationAccountId) => {
+                              setFieldValue(
+                                'designationAccountId',
+                                designationAccountId,
+                              );
+                              setFieldTouched(
+                                'designationAccountId',
+                                true,
+                                false,
+                              );
+                            }}
+                            onBlur={() =>
+                              setFieldTouched('designationAccountId', true)
+                            }
                             options={
                               designationAccounts?.map(({ id }) => id) ?? []
                             }
@@ -448,12 +470,6 @@ export const AddDonation = ({
                               />
                             )}
                             value={field.value}
-                            onChange={(_, designationAccountId) =>
-                              setFieldValue(
-                                'designationAccountId',
-                                designationAccountId,
-                              )
-                            }
                           />
                         </Box>
                       )}
