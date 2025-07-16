@@ -11,7 +11,6 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
-import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +27,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
 import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
@@ -166,8 +166,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
             memo,
           },
           setFieldValue,
+          setFieldTouched,
           handleChange,
-          handleBlur,
           handleSubmit,
           isSubmitting,
           isValid,
@@ -182,8 +182,13 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange}
-                    onBlur={handleBlur('convertedAmount')}
+                    onChange={(event) => {
+                      setFieldValue('convertedAmount', event.target.value);
+                      setFieldTouched('convertedAmount', true, false);
+                    }}
+                    onBlur={() => {
+                      setFieldTouched('convertedAmount', true);
+                    }}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
@@ -199,9 +204,12 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       disableClearable
                       disabled={isSubmitting}
                       value={currency}
-                      onBlur={handleBlur('currency')}
-                      onChange={(_, currencyCode) => {
-                        setFieldValue('currency', currencyCode);
+                      onChange={(_, value) => {
+                        setFieldValue('currency', value);
+                        setFieldTouched('currency', true, false);
+                      }}
+                      onBlur={() => {
+                        setFieldTouched('currency', true);
                       }}
                       textFieldProps={{
                         label: t('Currency'),
@@ -217,9 +225,12 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     <CustomDateField
                       label={t('Date')}
                       value={date}
-                      onChange={(date) => setFieldValue('date', date)}
-                      error={!!errors.date}
-                      helperText={errors.date as string}
+                      onChange={(date) => {
+                        setFieldValue('date', date);
+                        setFieldTouched('date', true, false);
+                      }}
+                      error={!!(errors.date && touched.date)}
+                      helperText={touched.date && (errors.date as string)}
                       required
                     />
                   </FormControl>
@@ -248,16 +259,19 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   <DonorAccountAutocomplete
                     accountListId={accountListId}
                     value={donorAccountId}
-                    onBlur={handleBlur('donorAccountId')}
                     preloadedDonors={[
                       {
                         id: donation.donorAccount.id,
                         name: donation.donorAccount.displayName,
                       },
                     ]}
-                    onChange={(donorAccountId) =>
-                      setFieldValue('donorAccountId', donorAccountId)
-                    }
+                    onChange={(donorAccountId) => {
+                      setFieldValue('donorAccountId', donorAccountId);
+                      setFieldTouched('donorAccountId', true, false);
+                    }}
+                    onBlur={() => {
+                      setFieldTouched('donorAccountId', true);
+                    }}
                     label={t('Partner Account')}
                     textFieldProps={{
                       error: !!errors.donorAccountId && touched.donorAccountId,
