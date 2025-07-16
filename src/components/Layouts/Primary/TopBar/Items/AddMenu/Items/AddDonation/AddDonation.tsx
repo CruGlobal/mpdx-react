@@ -295,16 +295,9 @@ export const AddDonation = ({
                           {...field}
                           onChange={(date) => {
                             setFieldValue('donationDate', date);
-                            setFieldTouched('donationDate', true, false);
                           }}
-                          onBlur={() => setFieldTouched('donationDate', true)}
-                          error={
-                            !!(errors.donationDate && touched.donationDate)
-                          }
-                          helperText={
-                            touched.donationDate &&
-                            (errors.donationDate as string)
-                          }
+                          error={!!errors.donationDate}
+                          helperText={errors.donationDate as string}
                         />
                       )}
                     </FastField>
