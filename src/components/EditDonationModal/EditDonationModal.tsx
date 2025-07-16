@@ -11,7 +11,6 @@ import {
   TextField,
 } from '@mui/material';
 import { Formik } from 'formik';
-import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -29,6 +28,7 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
 import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';

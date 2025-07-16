@@ -21,7 +21,7 @@ export const DesignationAccountAutocomplete = ({
   textFieldProps,
   ...props
 }: DesignationAccountAutocompleteProps) => {
-  const { data: designationAccountsData, loading: designationAccountsLoading } =
+  const { data: designationAccountsData, error: designationAccountsError } =
     useGetDesignationAccountsQuery({
       variables: {
         accountListId,
@@ -51,7 +51,7 @@ export const DesignationAccountAutocomplete = ({
             ...params.InputProps,
             endAdornment: (
               <>
-                {designationAccountsLoading && (
+                {!designationAccountsData && !designationAccountsError && (
                   <CircularProgress color="primary" size={20} />
                 )}
                 {params.InputProps.endAdornment}
