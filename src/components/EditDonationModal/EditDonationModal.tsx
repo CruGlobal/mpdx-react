@@ -204,12 +204,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       disableClearable
                       disabled={isSubmitting}
                       value={currency}
-                      onChange={(_, value) => {
-                        setFieldValue('currency', value);
-                        setFieldTouched('currency', true, false);
-                      }}
-                      onBlur={() => {
-                        setFieldTouched('currency', true);
+                      onChange={(_, currencyCode) => {
+                        setFieldValue('currency', currencyCode);
                       }}
                       textFieldProps={{
                         label: t('Currency'),
