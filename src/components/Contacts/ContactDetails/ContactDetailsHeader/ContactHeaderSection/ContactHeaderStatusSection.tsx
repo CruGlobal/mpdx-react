@@ -1,15 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Skeleton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from '../../../../../lib/intlFormat';
-import {
-  ContactLateStatusEnum,
-  ContactLateStatusLabel,
-} from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
+import { ContactLateStatusLabel } from '../../../ContactPartnershipStatus/ContactLateStatusLabel/ContactLateStatusLabel';
 import { EditPartnershipInfoModal } from '../../ContactDonationsTab/PartnershipInfo/EditPartnershipInfoModal/EditPartnershipInfoModal';
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
@@ -37,24 +33,6 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
   const status = contact?.status;
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
-  const lateStatusEnum: number | undefined = useMemo(() => {
-    if (contact?.lateAt) {
-      const diff = DateTime.now().diff(
-        DateTime.fromISO(contact.lateAt),
-        'days',
-      )?.days;
-
-      if (diff < 0) {
-        return ContactLateStatusEnum.OnTime;
-      } else if (diff < 30) {
-        return ContactLateStatusEnum.LateLessThirty;
-      } else if (diff < 60) {
-        return ContactLateStatusEnum.LateMoreThirty;
-      } else {
-        return ContactLateStatusEnum.LateMoreSixty;
-      }
-    }
-  }, [contact?.lateAt]);
 
   if (loading) {
     return (
@@ -95,12 +73,11 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                     )}
 
                     <Typography variant="subtitle1">
-                      {lateStatusEnum !== undefined && (
-                        <ContactLateStatusLabel
-                          lateStatusEnum={lateStatusEnum}
-                          isDetail={true}
-                        />
-                      )}
+                      <ContactLateStatusLabel
+                        lateAt={contact.lateAt}
+                        pledgeStartDate={contact.pledgeStartDate}
+                        isDetail={true}
+                      />
                     </Typography>
                   </>
                 )}

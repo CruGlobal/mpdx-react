@@ -20,6 +20,7 @@ describe('ContactPartnershipStatus', () => {
             <ContactPartnershipStatus
               lateAt={null}
               contactDetailsOpen={false}
+              pledgeStartDate={null}
               pledgeAmount={null}
               pledgeCurrency={null}
               pledgeFrequency={null}
@@ -46,6 +47,7 @@ describe('ContactPartnershipStatus', () => {
             <ContactPartnershipStatus
               lateAt={null}
               contactDetailsOpen={false}
+              pledgeStartDate={null}
               pledgeAmount={null}
               pledgeCurrency={null}
               pledgeFrequency={null}
@@ -74,6 +76,7 @@ describe('ContactPartnershipStatus', () => {
               <ContactPartnershipStatus
                 lateAt={null}
                 contactDetailsOpen={false}
+                pledgeStartDate={null}
                 pledgeAmount={100}
                 pledgeCurrency={'USD'}
                 pledgeFrequency={null}
@@ -95,6 +98,7 @@ describe('ContactPartnershipStatus', () => {
               <ContactPartnershipStatus
                 lateAt={null}
                 contactDetailsOpen={false}
+                pledgeStartDate={null}
                 pledgeAmount={0}
                 pledgeCurrency={'USD'}
                 pledgeFrequency={null}

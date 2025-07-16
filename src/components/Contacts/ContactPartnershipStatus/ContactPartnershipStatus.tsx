@@ -1,20 +1,17 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
-import { DateTime } from 'luxon';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
-import {
-  ContactLateStatusEnum,
-  ContactLateStatusLabel,
-} from './ContactLateStatusLabel/ContactLateStatusLabel';
+import { ContactLateStatusLabel } from './ContactLateStatusLabel/ContactLateStatusLabel';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
 import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
+  pledgeStartDate: ContactRowFragment['pledgeStartDate'];
   contactDetailsOpen: boolean;
   pledgeAmount: ContactRowFragment['pledgeAmount'];
   pledgeCurrency: ContactRowFragment['pledgeCurrency'];
@@ -27,6 +24,7 @@ export const ContactPartnershipStatus: React.FC<
   ContactPartnershipStatusProps
 > = ({
   lateAt,
+  pledgeStartDate,
   contactDetailsOpen,
   pledgeAmount,
   pledgeCurrency,
@@ -36,21 +34,6 @@ export const ContactPartnershipStatus: React.FC<
 }) => {
   const locale = useLocale();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
-  const lateStatusEnum: number | undefined = useMemo(() => {
-    if (lateAt) {
-      const diff = DateTime.now().diff(DateTime.fromISO(lateAt), 'days')?.days;
-
-      if (diff < 0) {
-        return ContactLateStatusEnum.OnTime;
-      } else if (diff < 30) {
-        return ContactLateStatusEnum.LateLessThirty;
-      } else if (diff < 60) {
-        return ContactLateStatusEnum.LateMoreThirty;
-      } else {
-        return ContactLateStatusEnum.LateMoreSixty;
-      }
-    }
-  }, [lateAt]);
 
   return (
     <Box
@@ -71,10 +54,12 @@ export const ContactPartnershipStatus: React.FC<
               ? currencyFormat(pledgeAmount, pledgeCurrency, locale)
               : pledgeAmount || ''}{' '}
             {pledgeFrequency && getLocalizedPledgeFrequency(pledgeFrequency)}{' '}
-            {status === ContactPartnershipStatusEnum.PartnerFinancial &&
-              lateStatusEnum !== undefined && (
-                <ContactLateStatusLabel lateStatusEnum={lateStatusEnum} />
-              )}
+            {status === ContactPartnershipStatusEnum.PartnerFinancial && (
+              <ContactLateStatusLabel
+                lateAt={lateAt}
+                pledgeStartDate={pledgeStartDate}
+              />
+            )}
           </Typography>
         </Box>
       </Hidden>
