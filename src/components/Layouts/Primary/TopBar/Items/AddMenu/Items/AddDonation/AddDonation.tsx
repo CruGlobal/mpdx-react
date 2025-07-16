@@ -13,7 +13,6 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { FastField, Field, FieldProps, Form, Formik } from 'formik';
-import i18n from 'i18next';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +27,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
