@@ -67,13 +67,16 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
+  const isReportHeader = headerType === HeaderTypeEnum.Report;
+  const isSettingsHeader = headerType === HeaderTypeEnum.Settings;
+  const isToolsHeader = headerType === HeaderTypeEnum.Tools;
 
   let titleAccess;
-  if (headerType === HeaderTypeEnum.Report) {
+  if (isReportHeader) {
     titleAccess = t('Toggle Navigation Panel');
-  } else if (headerType === HeaderTypeEnum.Settings) {
+  } else if (isSettingsHeader) {
     titleAccess = t('Toggle Preferences Menu');
-  } else if (headerType === HeaderTypeEnum.Tools) {
+  } else if (isToolsHeader) {
     titleAccess = t('Toggle Tools Menu');
   }
 
@@ -88,21 +91,21 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
         <NavListButton
           panelOpen={isNavListOpen}
           onClick={onNavListToggle}
-          disabled={onSetupTour && headerType === HeaderTypeEnum.Settings}
+          disabled={onSetupTour && isSettingsHeader}
         >
-          {headerType === HeaderTypeEnum.Report && (
+          {isReportHeader && (
             <NavFilterIcon
               titleAccess={titleAccess}
               data-testid="ReportsFilterIcon"
             />
           )}
-          {!onSetupTour && headerType === HeaderTypeEnum.Settings && (
+          {!onSetupTour && isSettingsHeader && (
             <NavMenuIcon
               titleAccess={titleAccess}
               data-testid="SettingsMenuIcon"
             />
           )}
-          {headerType === HeaderTypeEnum.Tools && (
+          {isToolsHeader && (
             <NavMenuIcon
               titleAccess={titleAccess}
               data-testid="ToolsMenuIcon"
