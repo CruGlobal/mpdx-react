@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +48,12 @@ export const DefaultAccountAccordion: React.FC<
 
   const label = t('Default Account');
   const accounts = data?.accountLists?.nodes || [];
+
+  const selectedAccount = useMemo(
+    () => accounts.find(({ id }) => id === defaultAccountListId)?.name ?? '',
+    [accounts, defaultAccountListId],
+  );
+
   const onSubmit = async (attributes: {
     defaultAccountListOption: AccountListOption | null;
   }) => {
@@ -96,7 +102,7 @@ export const DefaultAccountAccordion: React.FC<
           onAccordionChange={handleAccordionChange}
           expandedAccordion={expandedAccordion}
           label={label}
-          value={currentSelection?.name || ''}
+          value={selectedAccount}
           fullWidth
           disabled={disabled}
         >
