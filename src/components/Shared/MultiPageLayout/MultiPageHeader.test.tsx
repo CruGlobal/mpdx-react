@@ -61,22 +61,25 @@ describe('MultiPageHeader', () => {
     expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
   });
 
-  it('should render the Settings menu', async () => {
-    const { getByTestId, getByText } = render(
+  it('should render the Settings menu when not on setup tour', async () => {
+    const { getByRole } = render(
       <TestComponent headerType={HeaderTypeEnum.Settings} />,
     );
 
-    expect(getByText('Toggle Preferences Menu')).toBeInTheDocument();
-    expect(getByTestId('SettingsMenuIcon')).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'Toggle Preferences Menu' }),
+    ).toBeInTheDocument();
   });
 
-  it('should not render the Settings menu during the setup tour', async () => {
-    const { queryByTestId, queryByText } = render(
+  it('should not render the Settings NavListButton during the setup tour', async () => {
+    // queryByRole used here instead of getByRole to check for absence of NavListButton
+    const { queryByRole } = render(
       <TestComponent headerType={HeaderTypeEnum.Settings} onSetupTour />,
     );
 
-    expect(queryByText('Toggle Preferences Menu')).not.toBeInTheDocument();
-    expect(queryByTestId('SettingsMenuIcon')).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Toggle Preferences Menu' }),
+    ).not.toBeInTheDocument();
   });
 
   it('should render the Tools menu', async () => {
