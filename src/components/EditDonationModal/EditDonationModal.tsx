@@ -36,7 +36,6 @@ import {
   EditDonationModalDonationFragment,
   useDeleteDonationMutation,
   useEditDonationModalGetAppealsQuery,
-  useGetDesignationAccountsQuery,
   useUpdateDonationMutation,
 } from './EditDonationModal.generated';
 
@@ -82,9 +81,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
     error,
     pageInfo: appeals?.appeals.pageInfo,
   });
-
-  const { loading: loadingDesignationAccounts } =
-    useGetDesignationAccountsQuery({ variables: { accountListId } });
 
   const [updateDonation, { loading: updatingDonation }] =
     useUpdateDonationMutation();
@@ -262,7 +258,6 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                   <DesignationAccountAutocomplete
                     id="designationAccountId"
                     accountListId={accountListId}
-                    loading={loadingDesignationAccounts}
                     value={designationAccountId}
                     onBlur={handleBlur('designationAccountId')}
                     onChange={(_, designationAccountId) =>
