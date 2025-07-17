@@ -2,7 +2,10 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
-import { AccountListAutocomplete } from 'src/common/Autocompletes/AccountListAutocomplete/AccountListAutocomplete';
+import {
+  AccountListAutocomplete,
+  AccountListOption,
+} from 'src/common/Autocompletes/AccountListAutocomplete/AccountListAutocomplete';
 import {
   UpdateUserDefaultAccountDocument,
   UpdateUserDefaultAccountMutation,
@@ -19,8 +22,8 @@ import {
   AccountListOptionsQuery,
 } from './Account.generated';
 
-export type AccountList =
-  AccountListOptionsQuery['accountLists']['nodes'][number];
+export type AccountList = AccountListOption;
+
 interface PageProps {
   accountListOptions: AccountListOptionsQuery;
 }
