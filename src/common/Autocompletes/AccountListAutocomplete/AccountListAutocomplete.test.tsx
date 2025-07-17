@@ -84,10 +84,9 @@ describe('AccountListAutocomplete', () => {
     const combobox = getByRole('combobox');
     userEvent.type(combobox, 'Ministry');
 
-    await waitFor(async () => {
-      const options = await findAllByRole('option');
-      expect(options).toHaveLength(2); // "John Doe Ministry Account" and "Student Ministry Account"
-    });
+    const options = await findAllByRole('option');
+    // "John Doe Ministry Account" and "Student Ministry Account"
+    expect(options).toHaveLength(2);
 
     expect(
       await findByRole('option', { name: 'John Doe Ministry Account' }),
