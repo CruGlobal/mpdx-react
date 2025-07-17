@@ -4,9 +4,7 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
-  ListSubheader,
   MenuItem,
-  Select,
   Table,
   TableBody,
   TableCell,
@@ -21,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { ContactStatusSelect } from 'src/common/Selects/ContactStatusSelect/ContactStatusSelect';
 import { useCreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
 import { useSetContactPrimaryAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/SetPrimaryAddress.generated';
 import {
@@ -35,7 +33,6 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { PersonCreateInput, StatusEnum } from 'src/graphql/types.generated';
-import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from '../../../../../../../../theme';
 import { useCreateContactMutation } from '../CreateContact/CreateContact.generated';
 
@@ -137,9 +134,6 @@ export const CreateMultipleContacts = ({
   const initialContacts: ContactTable = {
     contacts: new Array(rows).fill(defaultContact),
   };
-  const constants = useApiConstants();
-  const phases = constants?.phases;
-  const { getLocalizedContactStatus } = useLocalizedConstants();
   const [createContact] = useCreateContactMutation();
   const [createPerson] = useCreatePersonMutation();
   const [createAddress] = useCreateContactAddressMutation();
@@ -443,9 +437,9 @@ export const CreateMultipleContacts = ({
                           </InputCell>
                           <InputCell>
                             <FormControl size="small" fullWidth>
-                              <Select
-                                aria-label={t('Status')}
+                              <ContactStatusSelect
                                 role="listbox"
+                                aria-label={t('Status')}
                                 value={contact.status}
                                 onChange={(e) =>
                                   setFieldValue(
@@ -454,20 +448,10 @@ export const CreateMultipleContacts = ({
                                   )
                                 }
                               >
-                                <MenuItem>
+                                <MenuItem value={''}>
                                   <em>{t('None')}</em>
                                 </MenuItem>
-                                {phases?.map((phase) => [
-                                  <ListSubheader key={phase?.id}>
-                                    {phase?.name}
-                                  </ListSubheader>,
-                                  phase?.contactStatuses.map((status) => (
-                                    <MenuItem key={status} value={status}>
-                                      {getLocalizedContactStatus(status)}
-                                    </MenuItem>
-                                  )),
-                                ])}
-                              </Select>
+                              </ContactStatusSelect>
                             </FormControl>
                           </InputCell>
                         </InputRow>
