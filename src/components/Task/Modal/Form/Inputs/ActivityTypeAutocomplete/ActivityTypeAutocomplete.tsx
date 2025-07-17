@@ -64,7 +64,7 @@ export const ActivityTypeAutocomplete: React.FC<ActivityTypeProps> = ({
           helperText={
             errors?.activityType &&
             touched?.activityType &&
-            t('Field is required')
+            t('Action is required')
           }
         />
       )}

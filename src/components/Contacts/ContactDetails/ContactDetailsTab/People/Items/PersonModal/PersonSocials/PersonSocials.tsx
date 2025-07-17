@@ -92,7 +92,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     error={getIn(errors, `facebookAccounts.${index}`)}
                     helperText={
                       getIn(errors, `facebookAccounts.${index}`) &&
-                      t('Field is required')
+                      t('Username/URL is required')
                     }
                     fullWidth
                   />
@@ -149,7 +149,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     error={getIn(errors, `twitterAccounts.${index}`)}
                     helperText={
                       getIn(errors, `twitterAccounts.${index}`) &&
-                      t('Field is required')
+                      t('Username/URL is required')
                     }
                     fullWidth
                   />
@@ -206,7 +206,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                     error={getIn(errors, `linkedinAccounts.${index}`)}
                     helperText={
                       getIn(errors, `linkedinAccounts.${index}`) &&
-                      t('Field is required')
+                      t('Username/URL is required')
                     }
                     fullWidth
                   />
@@ -266,7 +266,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                       error={getIn(errors, `websites.${index}`)}
                       helperText={
                         getIn(errors, `websites.${index}`) &&
-                        t('Field is required')
+                        t('Username/URL is required')
                       }
                       disabled={!!account.destroy}
                       fullWidth
@@ -331,7 +331,7 @@ export const PersonSocial: React.FC<PersonSocialProps> = ({ formikProps }) => {
                         error={getIn(errors, `newSocials.${index}`)}
                         helperText={
                           getIn(errors, `newSocials.${index}`) &&
-                          t('Field is required')
+                          t('Username/URL is required')
                         }
                         disabled={!!social.destroy}
                         fullWidth

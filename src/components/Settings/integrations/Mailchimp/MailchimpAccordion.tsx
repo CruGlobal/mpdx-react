@@ -271,7 +271,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
                       </Select>
                       {errors.primaryListId && (
                         <FormHelperText error={true}>
-                          {t('This field is required')}
+                          {t('A list is required')}
                         </FormHelperText>
                       )}
                       <StyledFormControlLabel

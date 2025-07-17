@@ -149,7 +149,9 @@ const CreateContact = ({
                     inputProps={{ 'aria-label': t('Name') }}
                     error={!!errors.name && touched.name}
                     helperText={
-                      errors.name && touched.name && t('Field is required')
+                      errors.name &&
+                      touched.name &&
+                      t('At least one name is required')
                     }
                     variant="outlined"
                     required

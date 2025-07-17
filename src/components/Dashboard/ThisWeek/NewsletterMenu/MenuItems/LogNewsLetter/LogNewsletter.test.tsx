@@ -79,7 +79,7 @@ describe('LogNewsletter', () => {
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
       userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
+      expect(await findByText('Subject is required')).toBeInTheDocument();
 
       userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
@@ -105,7 +105,7 @@ describe('LogNewsletter', () => {
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
       userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
+      expect(await findByText('Subject is required')).toBeInTheDocument();
 
       userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
@@ -132,7 +132,7 @@ describe('LogNewsletter', () => {
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
       userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
+      expect(await findByText('Subject is required')).toBeInTheDocument();
 
       userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());
@@ -167,7 +167,7 @@ describe('LogNewsletter', () => {
       expect(getByText('Log Newsletter')).toBeInTheDocument();
 
       userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
+      expect(await findByText('Subject is required')).toBeInTheDocument();
 
       userEvent.type(getByLabelText('Subject'), accountListId);
       await waitFor(() => expect(getByText('Save')).not.toBeDisabled());

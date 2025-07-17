@@ -76,7 +76,7 @@ const PhoneValidationForm = ({
         t('This field is not a valid phone number'),
         (val) => typeof val === 'string' && /\d/.test(val),
       )
-      .required(t('This field is required')),
+      .required(t('Phone Number is required')),
     isPrimary: yup.bool().default(false),
     updatedAt: yup.string(),
     source: yup.string(),
