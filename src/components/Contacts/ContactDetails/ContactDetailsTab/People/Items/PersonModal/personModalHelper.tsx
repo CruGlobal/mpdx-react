@@ -22,7 +22,7 @@ export const getPersonSchema = (
 ): GetPersonSchemaReturnedValues => {
   const personSchema = yup.object({
     firstName: yup.string().required(),
-    lastName: yup.string().required(),
+    lastName: yup.string().nullable(),
     title: yup.string().nullable(),
     suffix: yup.string().nullable(),
     phoneNumbers: yup.array().of(

@@ -219,7 +219,7 @@ describe('EditGoogleAccountModal', () => {
 
     userEvent.click(getByRole('button', { name: /update/i }));
     await waitFor(() =>
-      expect(getByText(/a calendar is required/i)).toBeInTheDocument(),
+      expect(getByText(/calendar is required/i)).toBeInTheDocument(),
     );
     userEvent.click(getByRole('combobox'));
     userEvent.click(
@@ -229,7 +229,7 @@ describe('EditGoogleAccountModal', () => {
     );
 
     await waitFor(() =>
-      expect(queryByRole(/a calendar is required/i)).not.toBeInTheDocument(),
+      expect(queryByRole(/calendar is required/i)).not.toBeInTheDocument(),
     );
     await waitFor(() =>
       expect(getByRole('button', { name: /update/i })).not.toBeDisabled(),
