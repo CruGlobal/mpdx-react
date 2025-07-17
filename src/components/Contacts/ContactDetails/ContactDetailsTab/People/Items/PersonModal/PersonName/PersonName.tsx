@@ -125,11 +125,19 @@ export const PersonName: React.FC<PersonNameProps> = ({
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
+              name="lastName"
               label={t('Last Name')}
               value={lastName}
               onChange={handleChange('lastName')}
               inputProps={{ 'aria-label': t('Last Name') }}
               fullWidth
+              onBlur={handleBlur}
+              error={touched.lastName && !!errors.lastName}
+              helperText={
+                touched.lastName &&
+                errors.lastName &&
+                t('Last Name is required')
+              }
               required
             />
           </Grid>
