@@ -448,7 +448,7 @@ export const CreateMultipleContacts = ({
                                   )
                                 }
                               >
-                                <MenuItem>
+                                <MenuItem value={''}>
                                   <em>{t('None')}</em>
                                 </MenuItem>
                               </ContactStatusSelect>
