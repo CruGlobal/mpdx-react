@@ -40,6 +40,7 @@ import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
 import { nullableDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import { inPersonActivityTypes } from 'src/utils/phases/taskActivityTypes';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
@@ -74,7 +75,7 @@ import { possibleResults } from '../possibleResults';
 const taskSchema = yup.object({
   taskPhase: yup.mixed<PhaseEnum>().required(),
   activityType: yup.mixed<ActivityTypeEnum>().required(),
-  subject: yup.string().required(),
+  subject: yup.string().required(i18n.t('Task Name is required')),
   contactIds: yup.array().of(yup.string().required()).default([]),
   completedAt: nullableDateTime(),
   userId: yup.string().nullable(),
@@ -423,9 +424,7 @@ const TaskModalLogForm = ({
                   multiline
                   inputProps={{ 'aria-label': t('Subject') }}
                   error={!!errors.subject && touched.subject}
-                  helperText={
-                    errors.subject && touched.subject && t('Field is required')
-                  }
+                  helperText={touched.subject ? errors.subject : ''}
                   required
                 />
               </Grid>
