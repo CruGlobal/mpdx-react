@@ -5,7 +5,6 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  ListSubheader,
   MenuItem,
   Select,
   TextField,
@@ -15,8 +14,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
+import { ContactStatusSelect } from 'src/common/Selects/ContactStatusSelect/ContactStatusSelect';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -25,7 +24,6 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import Modal from '../../../common/Modal/Modal';
 import { NewsletterSelect } from '../../../common/NewsletterSelect/NewsletterSelect';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
@@ -109,9 +107,6 @@ export const MassActionsEditFieldsModal: React.FC<
   const { data: constants, loading: loadingConstants } =
     useLoadConstantsQuery();
 
-  const phases = useApiConstants()?.phases;
-  const { getLocalizedContactStatus } = useLocalizedConstants();
-
   return (
     <Modal title={t('Edit Fields')} isOpen={true} handleClose={handleClose}>
       <Formik
@@ -161,8 +156,7 @@ export const MassActionsEditFieldsModal: React.FC<
                 <Grid item xs={12} lg={6}>
                   <FormControl fullWidth>
                     <InputLabel id="activityType">{t('Status')}</InputLabel>
-                    <Select
-                      label={t('Status')}
+                    <ContactStatusSelect
                       labelId="activityType"
                       value={status}
                       onChange={(e) => setFieldValue('status', e.target.value)}
@@ -170,17 +164,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {phases?.map((phase) => [
-                        <ListSubheader key={phase?.id}>
-                          {phase?.name}
-                        </ListSubheader>,
-                        phase?.contactStatuses.map((status) => (
-                          <MenuItem key={status} value={status}>
-                            {getLocalizedContactStatus(status)}
-                          </MenuItem>
-                        )),
-                      ])}
-                    </Select>
+                    </ContactStatusSelect>
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} lg={6}>
