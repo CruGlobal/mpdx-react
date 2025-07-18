@@ -205,7 +205,7 @@ export const EditGoogleIntegrationForm: React.FC<
                   </Select>
                   {errors.calendarId && (
                     <FormHelperText error={true}>
-                      {t('This field is required')}
+                      {t('A calendar is required')}
                     </FormHelperText>
                   )}
                 </Box>

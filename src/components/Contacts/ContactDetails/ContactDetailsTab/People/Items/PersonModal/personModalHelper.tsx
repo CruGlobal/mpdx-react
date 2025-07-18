@@ -22,7 +22,7 @@ export const getPersonSchema = (
 ): GetPersonSchemaReturnedValues => {
   const personSchema = yup.object({
     firstName: yup.string().required(),
-    lastName: yup.string().nullable(),
+    lastName: yup.string().required(),
     title: yup.string().nullable(),
     suffix: yup.string().nullable(),
     phoneNumbers: yup.array().of(
@@ -34,7 +34,7 @@ export const getPersonSchema = (
             then: (schema) => schema.nullable(),
             otherwise: (schema) =>
               schema
-                .required(t('This field is required'))
+                .required(t('Phone Number is required'))
                 .nullable()
                 .test(
                   'is-phone-number',
@@ -54,7 +54,7 @@ export const getPersonSchema = (
         email: yup
           .string()
           .email(t('Invalid email address'))
-          .required(t('This field is required')),
+          .required(t('Email is required')),
         destroy: yup.boolean().default(false),
         primary: yup.boolean().default(false),
         historic: yup.boolean().default(false),
