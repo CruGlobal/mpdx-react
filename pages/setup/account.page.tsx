@@ -22,8 +22,6 @@ import {
   AccountListOptionsQuery,
 } from './Account.generated';
 
-export type AccountList = AccountListOption;
-
 interface PageProps {
   accountListOptions: AccountListOptionsQuery;
 }
@@ -39,7 +37,7 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
     useUpdateUserDefaultAccountMutation();
 
   const [defaultAccountList, setDefaultAccountList] =
-    useState<AccountList | null>(null);
+    useState<AccountListOption | null>(null);
 
   const handleSave = async () => {
     if (!defaultAccountList) {
@@ -109,7 +107,7 @@ export const getServerSideProps = makeGetServerSideProps<PageProps>(
           variables: {
             input: {
               attributes: {
-                defaultAccountList: defaultAccountList,
+                defaultAccountList,
               },
             },
           },
