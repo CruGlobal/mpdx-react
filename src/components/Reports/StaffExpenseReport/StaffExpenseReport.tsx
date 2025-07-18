@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -53,17 +53,19 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Box mt={2}>
-        <pre>
-          {JSON.stringify(
-            {
-              accountListId,
-              designationAccounts,
-              data,
-            },
-            null,
-            2,
-          )}
-        </pre>
+        <Container>
+          <Box>
+            <Typography variant="h3">Staff Expense Report</Typography>
+            <Box display="flex" flexDirection="row" gap={2}>
+              <Typography>{data?.reportsStaffExpenses.name}</Typography>
+              <Typography>Account List ID: {accountListId}</Typography>
+            </Box>
+          </Box>
+          <Typography>
+            Designation Accounts: {designationAccounts?.join(', ')}
+          </Typography>
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        </Container>
       </Box>
     </Box>
   );
