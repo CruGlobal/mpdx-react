@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
 import { AccountListAutocomplete } from './AccountListAutocomplete';
@@ -69,7 +69,7 @@ describe('AccountListAutocomplete', () => {
   });
 
   it('filters accounts based on input', async () => {
-    const { getByRole, findByRole, findAllByRole, queryByRole } = render(
+    const { getByRole, findAllByRole, queryByRole } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <ThemeProvider theme={theme}>
           <AccountListAutocomplete
@@ -89,18 +89,16 @@ describe('AccountListAutocomplete', () => {
     expect(options).toHaveLength(2);
 
     expect(
-      await findByRole('option', { name: 'John Doe Ministry Account' }),
+      getByRole('option', { name: 'John Doe Ministry Account' }),
     ).toBeInTheDocument();
 
     expect(
-      await findByRole('option', { name: 'Student Ministry Account' }),
+      getByRole('option', { name: 'Student Ministry Account' }),
     ).toBeInTheDocument();
 
-    await waitFor(() => {
-      expect(
-        queryByRole('option', { name: 'Global Missions Fund' }),
-      ).not.toBeInTheDocument();
-    });
+    expect(
+      queryByRole('option', { name: 'Global Missions Fund' }),
+    ).not.toBeInTheDocument();
   });
 
   it('handles empty account list', () => {
