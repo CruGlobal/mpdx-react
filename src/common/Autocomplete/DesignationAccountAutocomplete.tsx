@@ -21,12 +21,15 @@ export const DesignationAccountAutocomplete = ({
   textFieldProps,
   ...props
 }: DesignationAccountAutocompleteProps) => {
-  const { data: designationAccountsData, error: designationAccountsError } =
-    useGetDesignationAccountsQuery({
-      variables: {
-        accountListId,
-      },
-    });
+  const {
+    data: designationAccountsData,
+    error: designationAccountsError,
+    loading,
+  } = useGetDesignationAccountsQuery({
+    variables: {
+      accountListId,
+    },
+  });
 
   const designationAccounts =
     designationAccountsData?.designationAccounts?.flatMap(
@@ -37,6 +40,7 @@ export const DesignationAccountAutocomplete = ({
     <Autocomplete
       autoSelect
       autoHighlight
+      loading={loading}
       {...props}
       options={designationAccounts?.map(({ id }) => id) ?? []}
       getOptionLabel={(accountId): string => {

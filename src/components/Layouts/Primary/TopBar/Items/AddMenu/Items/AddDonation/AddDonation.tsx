@@ -383,7 +383,6 @@ export const AddDonation = ({
                             {...field}
                             id="designation-account-input"
                             accountListId={accountListId}
-                            loading={designationAccountsLoading}
                             onBlur={handleBlur('designationAccountId')}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
