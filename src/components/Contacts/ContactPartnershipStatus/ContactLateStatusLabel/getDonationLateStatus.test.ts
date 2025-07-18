@@ -26,15 +26,15 @@ describe('getDonationLateStatus', () => {
 
   it('uses the later date when both are provided', () => {
     const lateAt = '2019-12-22';
-    const pledgeStartDate = '2019-12-01';
+    const pledgeStartDate = '2019-09-01';
     expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
-      ContactLateStatusEnum.LateMoreThirty,
+      ContactLateStatusEnum.LateLessThirty,
     );
   });
 
   it('works with pledgeStartDate only', () => {
-    expect(getDonationLateStatus(null, '2019-12-22')).toEqual(
-      ContactLateStatusEnum.LateLessThirty,
+    expect(getDonationLateStatus(null, '2019-11-22')).toEqual(
+      ContactLateStatusEnum.LateMoreThirty,
     );
   });
 

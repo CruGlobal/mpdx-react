@@ -24,15 +24,6 @@ const getStatusFromDays = (daysDiff: number): ContactLateStatusEnum => {
   return ContactLateStatusEnum.LateMoreSixty;
 };
 
-const getTotalDaysElapsed = (laterDate: string, daysDiff: number) => {
-  const diffToNow = DateTime.now().diff(
-    DateTime.fromISO(laterDate),
-    'days',
-  ).days;
-  const totalDaysDiff = Math.floor(daysDiff + diffToNow);
-  return totalDaysDiff;
-};
-
 /**
  * lateAt is determined by whether a donation has been received
  * within the expected time frame (Frequency window).
@@ -45,7 +36,6 @@ export const getDonationLateStatus = (
   lateAt?: string | null,
   pledgeStartDate?: string | null,
 ): ContactLateStatusEnum | undefined => {
-  // Determine which date to use
   if (!lateAt && !pledgeStartDate) {
     return undefined;
   }
@@ -55,31 +45,21 @@ export const getDonationLateStatus = (
     return ContactLateStatusEnum.OnTime;
   }
 
-  const laterDate =
-    lateAt && pledgeStartDate
-      ? selectLaterDate(lateAt, pledgeStartDate)
-      : pledgeStartDate ?? lateAt;
+  let laterDate: string;
+  if (lateAt && pledgeStartDate) {
+    laterDate = selectLaterDate(lateAt, pledgeStartDate);
+  } else {
+    laterDate = lateAt || pledgeStartDate!;
+  }
 
   if (!laterDate) {
     return undefined;
   }
 
-  // If only lateAt is provided
-  if (!pledgeStartDate) {
-    const diffToNowSingle = DateTime.now().diff(
-      DateTime.fromISO(laterDate),
-      'days',
-    ).days;
-    return getStatusFromDays(Math.floor(diffToNowSingle));
-  }
-
-  const daysDiff = DateTime.fromISO(laterDate).diff(
-    DateTime.fromISO(pledgeStartDate),
+  const daysSinceDate = DateTime.now().diff(
+    DateTime.fromISO(laterDate),
     'days',
   ).days;
 
-  // Need to consider the current date in our calculation
-  const totalDaysDiff = getTotalDaysElapsed(laterDate, daysDiff);
-
-  return getStatusFromDays(totalDaysDiff);
+  return getStatusFromDays(Math.floor(daysSinceDate));
 };
