@@ -26,16 +26,15 @@ describe('getDonationLateStatus', () => {
 
   it('uses the later date when both are provided', () => {
     const lateAt = '2019-12-22';
-    const pledgeStartDate = '2019-12-01';
+    const pledgeStartDate = '2019-09-01';
     expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
-      ContactLateStatusEnum.LateMoreThirty,
+      ContactLateStatusEnum.LateLessThirty,
     );
   });
 
-  it('works with pledgeStartDate only', () => {
-    expect(getDonationLateStatus(null, '2019-12-22')).toEqual(
-      ContactLateStatusEnum.LateLessThirty,
-    );
+  // in cases of one time gifts and users don't define a give frequency
+  it('returns undefined with pledgeStartDate only', () => {
+    expect(getDonationLateStatus(null, '2019-11-22')).toEqual(undefined);
   });
 
   it('works with lateAt only', () => {

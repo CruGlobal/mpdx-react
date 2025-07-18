@@ -76,14 +76,14 @@ describe('ContactLateStatusLabel', () => {
     expect(getByText('(On time)')).toBeInTheDocument();
   });
 
-  it('should work with only pledgeStartDate is provided', () => {
-    const { getByText } = render(
+  it('should not render with only pledgeStartDate provided', () => {
+    const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <ContactLateStatusLabel pledgeStartDate="2019-12-17" />
       </ThemeProvider>,
     );
 
-    expect(getByText('(0-30 days late)')).toBeInTheDocument();
+    expect(queryByText('(0-30 days late)')).not.toBeInTheDocument();
   });
 
   it('should work when pledgeStartDate is null', () => {
@@ -96,13 +96,13 @@ describe('ContactLateStatusLabel', () => {
     expect(getByText('(On time)')).toBeInTheDocument();
   });
 
-  it('should work when lateAt is null', () => {
-    const { getByText } = render(
+  it('should not render when lateAt is null', () => {
+    const { queryByText } = render(
       <ThemeProvider theme={theme}>
         <ContactLateStatusLabel lateAt={null} pledgeStartDate="2019-12-17" />
       </ThemeProvider>,
     );
 
-    expect(getByText('(0-30 days late)')).toBeInTheDocument();
+    expect(queryByText('(0-30 days late)')).not.toBeInTheDocument();
   });
 });
