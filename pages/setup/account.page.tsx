@@ -1,8 +1,11 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Autocomplete, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeGetServerSideProps } from 'pages/api/utils/pagePropsHelpers';
+import {
+  AccountListAutocomplete,
+  AccountListOption,
+} from 'src/common/Autocompletes/AccountListAutocomplete/AccountListAutocomplete';
 import {
   UpdateUserDefaultAccountDocument,
   UpdateUserDefaultAccountMutation,
@@ -19,8 +22,6 @@ import {
   AccountListOptionsQuery,
 } from './Account.generated';
 
-type AccountList = AccountListOptionsQuery['accountLists']['nodes'][number];
-
 interface PageProps {
   accountListOptions: AccountListOptionsQuery;
 }
@@ -36,7 +37,7 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
     useUpdateUserDefaultAccountMutation();
 
   const [defaultAccountList, setDefaultAccountList] =
-    useState<AccountList | null>(null);
+    useState<AccountListOption | null>(null);
 
   const handleSave = async () => {
     if (!defaultAccountList) {
@@ -65,16 +66,13 @@ const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
           'Which account would you like to see by default when you open {{appName}}?',
           { appName },
         )}
-        <Autocomplete
-          autoHighlight
-          value={defaultAccountList}
+        <AccountListAutocomplete
           onChange={(_, value) => setDefaultAccountList(value)}
-          options={accountListOptions.accountLists.nodes}
-          getOptionLabel={(accountList) => accountList.name ?? ''}
-          fullWidth
-          renderInput={(params) => (
-            <TextField {...params} label={t('Account')} />
-          )}
+          value={defaultAccountList}
+          options={accountListOptions?.accountLists.nodes || []}
+          textFieldProps={{
+            label: t('Account'),
+          }}
         />
         <LargeButton
           variant="contained"
@@ -99,7 +97,7 @@ export const getServerSideProps = makeGetServerSideProps<PageProps>(
 
     if (accountListOptions.accountLists.nodes.length === 1) {
       // The user has exactly one account list, so set it as the default and go to preferences
-      const defaultAccountListId = accountListOptions.accountLists.nodes[0].id;
+      const defaultAccountList = accountListOptions.accountLists.nodes[0].id;
       try {
         await ssrClient.mutate<
           UpdateUserDefaultAccountMutation,
@@ -109,14 +107,14 @@ export const getServerSideProps = makeGetServerSideProps<PageProps>(
           variables: {
             input: {
               attributes: {
-                defaultAccountList: defaultAccountListId,
+                defaultAccountList,
               },
             },
           },
         });
         return {
           redirect: {
-            destination: `/accountLists/${defaultAccountListId}/settings/preferences`,
+            destination: `/accountLists/${defaultAccountList}/settings/preferences`,
             permanent: false,
           },
         };
