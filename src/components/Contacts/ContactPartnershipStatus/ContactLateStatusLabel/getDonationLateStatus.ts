@@ -7,8 +7,20 @@ export enum ContactLateStatusEnum {
   LateMoreSixty,
 }
 
-const selectLaterDate = (lateAt: string, pledgeStartDate: string): string => {
-  return lateAt > pledgeStartDate ? lateAt : pledgeStartDate;
+const selectLaterDate = (
+  lateAt?: string | null,
+  pledgeStartDate?: string | null,
+): string | null => {
+  if (lateAt && !pledgeStartDate) {
+    return lateAt;
+  } else if (!lateAt && pledgeStartDate) {
+    return pledgeStartDate;
+  }
+
+  if (lateAt && pledgeStartDate) {
+    return lateAt > pledgeStartDate ? lateAt : pledgeStartDate;
+  }
+  return null;
 };
 
 const getStatusFromDays = (daysDiff: number): ContactLateStatusEnum => {
@@ -35,8 +47,16 @@ const getStatusFromDays = (daysDiff: number): ContactLateStatusEnum => {
 export const getDonationLateStatus = (
   lateAt?: string | null,
   pledgeStartDate?: string | null,
+  pledgeFrequency?: string | null,
 ): ContactLateStatusEnum | undefined => {
+  // Determine which date to use
   if (!lateAt && !pledgeStartDate) {
+    return undefined;
+  }
+
+  // If pledgeFrequency is not provided, we cannot determine late status
+  // e.g. for one time gifts
+  if (!lateAt && pledgeStartDate && !pledgeFrequency) {
     return undefined;
   }
 
@@ -45,21 +65,16 @@ export const getDonationLateStatus = (
     return ContactLateStatusEnum.OnTime;
   }
 
-  let laterDate: string;
-  if (lateAt && pledgeStartDate) {
-    laterDate = selectLaterDate(lateAt, pledgeStartDate);
-  } else {
-    laterDate = lateAt || pledgeStartDate!;
-  }
+  const laterDate = selectLaterDate(lateAt, pledgeStartDate);
 
   if (!laterDate) {
     return undefined;
   }
 
-  const daysSinceDate = DateTime.now().diff(
+  const daysDiff = DateTime.now().diff(
     DateTime.fromISO(laterDate),
     'days',
   ).days;
 
-  return getStatusFromDays(Math.floor(daysSinceDate));
+  return getStatusFromDays(daysDiff);
 };
