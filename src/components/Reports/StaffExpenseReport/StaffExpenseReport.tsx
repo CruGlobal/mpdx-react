@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -16,7 +16,7 @@ interface StaffExpenseReportProps {
 
 export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   accountListId,
-  designationAccounts,
+  //designationAccounts,
   isNavListOpen,
   onNavListToggle,
   title,
@@ -24,6 +24,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // Temporary dummy data
   const mockData = {
     accountList: {
+      designationAccounts: [
+        {
+          id: 'abc123',
+          name: 'John Smith Ministry',
+          accountNumber: '45678',
+        },
+        {
+          id: 'def456',
+          name: 'General Outreach Fund',
+          accountNumber: '98765',
+        },
+      ],
       transactionReport: {
         startingBalance: 5000.0,
         endingBalance: 7200.0,
@@ -78,74 +90,26 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Box mt={2}>
-        <pre>
-          {JSON.stringify(
-            {
-              accountListId,
-              designationAccounts,
-              mockData,
-            },
-            null,
-            2,
-          )}
-        </pre>
+        <Container>
+          <Box>
+            <Typography variant="h4">Income and Expenses</Typography>
+            <Box display="flex" flexDirection="row" gap={3} mb={2}>
+              <Typography>John Smith</Typography>
+              <Typography>{accountListId}</Typography>
+            </Box>
+            <Box display="flex" flexDirection="column" gap={1}>
+              <Typography>
+                <strong>Starting Balance: </strong>$
+                {mockData.accountList.transactionReport.startingBalance}
+              </Typography>
+              <Typography>
+                <strong>Ending Balance: </strong>$
+                {mockData.accountList.transactionReport.endingBalance}
+              </Typography>
+            </Box>
+          </Box>
+        </Container>
       </Box>
     </Box>
   );
 };
-
-// export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
-//   accountListId,
-//   designationAccounts,
-//   isNavListOpen,
-//   onNavListToggle,
-//   title,
-// }) => {
-//   const { data, loading, error } = useStaffExpenseReportQuery({
-//     variables: {
-//       accountId: '1000000001',
-//       fundTypes:
-//         designationAccounts && designationAccounts.length > 0
-//           ? designationAccounts
-//           : [],
-//     },
-//     onError: (error) => {
-//       console.log('Full error object:', error);
-//       console.log('GraphQL errors:', error.graphQLErrors);
-//       error.graphQLErrors?.forEach((gqlError, index) => {
-//         console.log(`GraphQL Error ${index}:`, {
-//           message: gqlError.message,
-//           extensions: gqlError.extensions,
-//           locations: gqlError.locations,
-//           path: gqlError.path,
-//         });
-//       });
-//     },
-//   });
-
-//   return (
-//     <Box>
-//       <MultiPageHeader
-//         isNavListOpen={isNavListOpen}
-//         onNavListToggle={onNavListToggle}
-//         title={title}
-//         headerType={HeaderTypeEnum.Report}
-//       />
-//       <Box mt={2}>
-//         <Container>
-//           <Box>
-//             <Typography variant="h4">Income and Expenses</Typography>
-//             <Box display="flex" flexDirection="row" gap={2}>
-//               <Typography>{data?.reportsStaffExpenses.name}</Typography>
-//               <Typography>Account ID: {accountListId}</Typography>
-//             </Box>
-//           </Box>
-//           {/* <Typography>
-//             Designation Accounts: {designationAccounts?.join(', ')}
-//           </Typography>
-//           <pre>{JSON.stringify(data, null, 2)}</pre> */}
-//         </Container>
-//       </Box>
-//     </Box>
-//   );
-// };

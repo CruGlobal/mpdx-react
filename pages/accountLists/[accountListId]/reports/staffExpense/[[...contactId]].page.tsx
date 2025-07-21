@@ -43,7 +43,9 @@ const StaffExpenseReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports')} | ${t('Staff Expenses')}`}</title>
+        <title>{`${appName} | ${t('Reports')} | ${t(
+          'Staff Expense Report',
+        )}`}</title>
       </Head>
       {accountListId ? (
         <StaffExpenseReportPageWrapper>
@@ -67,7 +69,7 @@ const StaffExpenseReportPage: React.FC = () => {
                 designationAccounts={designationAccounts}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                title={t('Staff Expenses')}
+                title={t('Staff Expense Report')}
               />
             }
             rightPanel={
