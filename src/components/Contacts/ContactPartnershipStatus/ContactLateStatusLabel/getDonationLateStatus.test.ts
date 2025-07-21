@@ -10,36 +10,50 @@ describe('getDonationLateStatus', () => {
   });
 
   it('returns correct status based on days difference', () => {
-    expect(getDonationLateStatus('2020-01-06', null)).toEqual(
+    let lateAt = '2020-01-06';
+    expect(getDonationLateStatus(lateAt, null)).toEqual(
       ContactLateStatusEnum.OnTime,
     );
-    expect(getDonationLateStatus('2019-12-22', null)).toEqual(
+
+    lateAt = '2019-12-22';
+    expect(getDonationLateStatus(lateAt, null)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
-    expect(getDonationLateStatus('2019-12-01', null)).toEqual(
+
+    lateAt = '2019-12-01';
+    expect(getDonationLateStatus(lateAt, null)).toEqual(
       ContactLateStatusEnum.LateMoreThirty,
     );
-    expect(getDonationLateStatus('2019-11-01', null)).toEqual(
+
+    lateAt = '2019-11-01';
+    expect(getDonationLateStatus(lateAt, null)).toEqual(
       ContactLateStatusEnum.LateMoreSixty,
     );
   });
 
   it('uses the later date when both are provided', () => {
-    expect(getDonationLateStatus('2019-12-22', '2019-09-01')).toEqual(
+    let lateAt = '2019-12-22';
+    let pledgeStartDate = '2019-09-01';
+    expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
-    expect(getDonationLateStatus('2019-09-01', '2019-12-22')).toEqual(
+
+    lateAt = '2019-09-01';
+    pledgeStartDate = '2019-12-22';
+    expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
   });
 
   // in cases of one time gifts and users don't define a give frequency
   it('returns undefined with pledgeStartDate only', () => {
-    expect(getDonationLateStatus(null, '2019-11-22', null)).toEqual(undefined);
+    const pledgeStartDate = '2019-11-22';
+    expect(getDonationLateStatus(null, pledgeStartDate, null)).toBeUndefined();
   });
 
   it('works with lateAt only', () => {
-    expect(getDonationLateStatus('2019-12-22', null, null)).toEqual(
+    const lateAt = '2019-12-22';
+    expect(getDonationLateStatus(lateAt, null, null)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
   });
@@ -49,29 +63,38 @@ describe('getDonationLateStatus', () => {
   });
 
   it('returns undefined when lateAt is null, pledgeFrequency is null, and pledgeStartDate is provided', () => {
-    expect(getDonationLateStatus(null, '2020-01-01', null)).toBeUndefined();
+    const pledgeStartDate = '2020-01-01';
+    expect(getDonationLateStatus(null, pledgeStartDate, null)).toBeUndefined();
   });
 
   it('returns OnTime when lateAt is in the future', () => {
-    expect(getDonationLateStatus('2020-01-17', '2019-12-17')).toEqual(
+    const lateAt = '2020-01-17';
+    const pledgeStartDate = '2019-12-17';
+    expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.OnTime,
     );
   });
 
   it('returns LateLessThirty when the days diff from the later date to now is less than 30', () => {
-    expect(getDonationLateStatus('2020-01-01', '2019-12-01')).toEqual(
+    const lateAt = '2020-01-01';
+    const pledgeStartDate = '2019-12-01';
+    expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
   });
 
   it('returns LateMoreThirty when the days diff from the later date to now is between 30 and 60', () => {
-    expect(getDonationLateStatus('2019-11-29', '2019-10-01')).toEqual(
+    const lateAt = '2019-11-29';
+    const pledgeStartDate = '2019-10-01';
+    expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateMoreThirty,
     );
   });
 
   it('returns LateMoreSixty when the days diff from the later date to now is more than 60', () => {
-    expect(getDonationLateStatus('2019-05-01', '2019-10-01')).toEqual(
+    const lateAt = '2019-05-01';
+    const pledgeStartDate = '2019-10-01';
+    expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateMoreSixty,
     );
   });
