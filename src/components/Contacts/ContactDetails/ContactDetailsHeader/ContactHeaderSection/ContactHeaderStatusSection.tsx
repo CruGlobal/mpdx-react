@@ -76,6 +76,7 @@ export const ContactHeaderStatusSection: React.FC<Props> = ({
                       <ContactLateStatusLabel
                         lateAt={contact.lateAt}
                         pledgeStartDate={contact.pledgeStartDate}
+                        pledgeFrequency={contact.pledgeFrequency}
                         isDetail={true}
                       />
                     </Typography>
