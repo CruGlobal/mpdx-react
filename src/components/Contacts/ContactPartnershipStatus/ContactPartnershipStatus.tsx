@@ -58,6 +58,7 @@ export const ContactPartnershipStatus: React.FC<
               <ContactLateStatusLabel
                 lateAt={lateAt}
                 pledgeStartDate={pledgeStartDate}
+                pledgeFrequency={pledgeFrequency}
               />
             )}
           </Typography>

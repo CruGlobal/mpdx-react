@@ -11,19 +11,21 @@ import type { Theme } from '@mui/material/styles/createTheme';
 interface ContactLateStatusProps {
   lateAt?: string | null;
   pledgeStartDate?: string | null;
+  pledgeFrequency?: string | null;
   isDetail?: boolean;
 }
 
 export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
   lateAt,
   pledgeStartDate,
+  pledgeFrequency,
   isDetail,
 }) => {
   const theme = useTheme<Theme>();
   const { t } = useTranslation();
 
   const lateStatusEnum = useMemo(
-    () => getDonationLateStatus(lateAt, pledgeStartDate),
+    () => getDonationLateStatus(lateAt, pledgeStartDate, pledgeFrequency),
     [lateAt, pledgeStartDate],
   );
 
