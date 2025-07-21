@@ -31,15 +31,17 @@ describe('getDonationLateStatus', () => {
     );
   });
 
-  it('uses the later date when both are provided', () => {
-    let lateAt = '2019-12-22';
-    let pledgeStartDate = '2019-09-01';
+  it('uses pledgeStartDate when pledgeStartDate is later than lateAt', () => {
+    const lateAt = '2019-09-01';
+    const pledgeStartDate = '2019-12-22';
     expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
+  });
 
-    lateAt = '2019-09-01';
-    pledgeStartDate = '2019-12-22';
+  it('uses lateAt when lateAt is later than pledgeStartDate', () => {
+    const lateAt = '2019-12-22';
+    const pledgeStartDate = '2019-09-01';
     expect(getDonationLateStatus(lateAt, pledgeStartDate)).toEqual(
       ContactLateStatusEnum.LateLessThirty,
     );
