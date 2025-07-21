@@ -11,6 +11,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useLocale } from 'src/hooks/useLocale';
 import { ExpensesTable } from './Tables/ExpensesTable';
+import IncomeTable from './Tables/IncomeTable';
 
 interface StaffExpenseReportProps {
   accountListId: string;
@@ -291,6 +292,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Typography>
             </Box>
           </Box>
+          <IncomeTable
+            transactions={mockData.accountList.transactionReport.transactions}
+          />
         </Container>
       </Box>
       <Box mt={2}>
