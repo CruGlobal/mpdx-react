@@ -1,12 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import {
   Box,
+  Button,
   CircularProgress,
   LinearProgress,
-  Table,
-  TableCell,
-  TableHead,
-  TableRow,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -16,6 +13,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { downloadCsv } from '../downloadReport';
 //import { StaffExpenseReportQuery } from '../GetStaffExpense.generated';
 
 type RenderCell = GridColDef<ExpenseRow>['renderCell'];
@@ -59,16 +57,6 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const TotalsTable = styled(Table)({
-  '.MuiTableCell-root': {
-    fontWeight: 'bold',
-  },
-
-  '.MuiTableRow-root .MuiTableCell-root:nth-of-type(1)': {
-    textAlign: 'left',
-  },
-});
-
 export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   height: '0.5rem',
   borderRadius: theme.shape.borderRadius,
@@ -96,12 +84,14 @@ export interface ExpenseRow {
   date: DateTime;
   description: string;
   amount: number;
+  category: string;
 }
 
 export const CreateExpenseRow = (data: Transaction): ExpenseRow => ({
   date: DateTime.fromISO(data.date),
   description: data.description,
   amount: data.amount,
+  category: data.category,
 });
 
 export const ExpensesTable: React.FC<ExpensesTableProps> = ({
@@ -110,7 +100,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(5);
 
   const expenseTransactions = useMemo(() => {
     return transactions.map((data) => CreateExpenseRow(data));
@@ -121,7 +111,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
   };
 
   const description: RenderCell = ({ row }) => (
-    <Tooltip title={row.description}>
+    <Tooltip title={t(row.description)}>
       <Typography variant="body2" noWrap>
         {row.description}
       </Typography>
@@ -142,12 +132,26 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
     return null;
   };
 
+  const category: RenderCell = ({ row }) => (
+    <Tooltip title={t(row.category)}>
+      <Typography variant="body2" noWrap>
+        {row.category}
+      </Typography>
+    </Tooltip>
+  );
+
   const columns: GridColDef[] = [
     {
       field: 'date',
       headerName: t('Date'),
       width: 150,
       renderCell: date,
+    },
+    {
+      field: 'category',
+      headerName: t('Category'),
+      width: 150,
+      renderCell: category,
     },
     {
       field: 'description',
@@ -171,6 +175,13 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
     (tx) => tx.amount < 0,
   );
 
+  const convertedNegativeTransactions: Transaction[] = negativeTransactions.map(
+    (tx) => ({
+      ...tx,
+      date: tx.date.toISODate() ?? '',
+    }),
+  );
+
   const totalExpenses = negativeTransactions.reduce(
     (sum, tx) => sum + tx.amount,
     0,
@@ -179,41 +190,62 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
   return (
     <>
       {negativeTransactions.length > 0 ? (
-        <StyledGrid
-          rows={negativeTransactions}
-          columns={columns}
-          getRowId={(row) => `${row.date}-${row.description}`}
-          sortingOrder={['desc', 'asc']}
-          sortModel={sortModel}
-          onSortModelChange={setSortModel}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-          autoHeight
-        />
+        <>
+          <Box
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            mb={1}
+          >
+            <Typography variant="h6" mb={1}>
+              {t('Expenses')}
+            </Typography>
+            <Button
+              variant="text"
+              size="small"
+              sx={{
+                textDecoration: 'underline',
+                minWidth: 'unset',
+                padding: 0,
+              }}
+              onClick={() =>
+                downloadCsv(convertedNegativeTransactions, 'expense')
+              }
+            >
+              <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                {t('Download Expense Report')}
+              </Typography>
+            </Button>
+          </Box>
+          <StyledGrid
+            rows={negativeTransactions}
+            columns={columns}
+            getRowId={(row) => `${row.date}-${row.description}`}
+            sortingOrder={['desc', 'asc']}
+            sortModel={sortModel}
+            onSortModelChange={setSortModel}
+            rowsPerPageOptions={[5, 10, 25]}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
+            autoHeight
+          />
+        </>
       ) : (
         <Typography>{t('No expenses found')}</Typography>
       )}
 
       {totalExpenses !== 0 && (
-        <TotalsTable aria-label={t('Expense Totals')}>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>{t('Total')}</strong>
-              </TableCell>
-              <TableCell
-                style={{ color: 'red' }}
-                align="right"
-                sx={{ paddingRight: '75px' }}
-              >
-                {totalExpenses.toLocaleString(locale, {
-                  style: 'currency',
-                  currency: 'USD',
-                })}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-        </TotalsTable>
+        <Box display="flex" justifyContent="flex-end" mt={2} mb={2} mr={8.5}>
+          <Typography fontWeight="bold">
+            {t('Total Expenses:')}{' '}
+            <span style={{ color: 'red' }}>
+              {totalExpenses.toLocaleString(locale, {
+                style: 'currency',
+                currency: 'USD',
+              })}
+            </span>
+          </Typography>
+        </Box>
       )}
     </>
   );

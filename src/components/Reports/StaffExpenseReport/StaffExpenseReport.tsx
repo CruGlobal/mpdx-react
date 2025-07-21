@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import React from 'react';
+import React, { useState } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Divider, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,7 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { ExpensesTable } from './Tables/ExpensesTable';
 import IncomeTable from './Tables/IncomeTable';
+import { downloadCsv } from './downloadReport';
 
 interface StaffExpenseReportProps {
   accountListId: string;
@@ -21,6 +22,13 @@ interface StaffExpenseReportProps {
   title: string;
   time: DateTime;
   setTime: (time: DateTime) => void;
+}
+
+export interface Transaction {
+  description: string;
+  date: string;
+  amount: number;
+  category: string;
 }
 
 export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
@@ -37,21 +45,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   //const startDate = time.toISODate();
   //const endDate = time.plus({ months: 1 }).minus({ days: 1 }).toISODate();
-
-  const timeTitle = time.toJSDate().toLocaleDateString(locale, {
-    month: 'long',
-    year: 'numeric',
-  });
-
-  const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
-
-  const setPrevMonth = () => {
-    setTime(time.minus({ months: 1 }));
-  };
-
-  const setNextMonth = () => {
-    setTime(time.plus({ months: 1 }));
-  };
 
   // need query
 
@@ -228,7 +221,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             description: 'Extra Expense Test',
             date: '2025-07-31',
             amount: -100.0,
-            category: 'Benefit',
+            category: 'Contribution',
           },
           {
             description: 'Monthly Salary - July',
@@ -260,10 +253,72 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             amount: 3200.0,
             category: 'Salary',
           },
+          {
+            description: 'Monthly Salary - September',
+            date: '2025-07-30',
+            amount: 1000000.0,
+            category: 'Salary',
+          },
+          {
+            description: 'Monthly Salary - September',
+            date: '2025-08-30',
+            amount: 2.0,
+            category: 'Salary',
+          },
+          {
+            description: 'Monthly Salary - September',
+            date: '2025-07-30',
+            amount: 1.0,
+            category: 'Salary',
+          },
         ],
       },
     },
   };
+
+  const timeTitle = time.toJSDate().toLocaleDateString(locale, {
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
+
+  const setPrevMonth = () => {
+    const prevTime = time.minus({ months: 1 });
+    setTime(prevTime);
+
+    setTransactions(
+      mockData.accountList.transactionReport.transactions.filter((tx) => {
+        const txDate = DateTime.fromISO(tx.date);
+        return (
+          txDate >= prevTime.startOf('month') &&
+          txDate <= prevTime.endOf('month')
+        );
+      }),
+    );
+  };
+
+  const setNextMonth = () => {
+    const nextTime = time.plus({ months: 1 });
+    setTime(nextTime);
+
+    setTransactions(
+      mockData.accountList.transactionReport.transactions.filter((tx) => {
+        const txDate = DateTime.fromISO(tx.date);
+        return (
+          txDate >= nextTime.startOf('month') &&
+          txDate <= nextTime.endOf('month')
+        );
+      }),
+    );
+  };
+
+  const [transactions, setTransactions] = useState<Transaction[]>(
+    mockData.accountList.transactionReport.transactions.filter((tx) => {
+      const txDate = DateTime.fromISO(tx.date);
+      return txDate >= time.startOf('month') && txDate <= time.endOf('month');
+    }),
+  );
 
   return (
     <Box>
@@ -276,25 +331,69 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box mt={2}>
         <Container>
           <Box>
-            <Typography variant="h4">Income and Expenses</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                justifyContent: 'space-between',
+              }}
+            >
+              <Typography variant="h4">{t('Income and Expenses')}</Typography>
+              {transactions && transactions.length > 0 ? (
+                <Button
+                  variant="text"
+                  size="small"
+                  sx={{
+                    textDecoration: 'underline',
+                    minWidth: 'unset',
+                    px: 0,
+                    py: 1,
+                  }}
+                  onClick={() => downloadCsv(transactions, 'full')}
+                >
+                  <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                    {t('Download Full Report')}
+                  </Typography>
+                </Button>
+              ) : null}
+            </Box>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
-              <Typography>John Smith</Typography>
-              <Typography>{accountListId}</Typography>
+              <Typography>{t('John Smith')}</Typography>
+              <Typography>{t(accountListId)}</Typography>
             </Box>
             <Box display="flex" flexDirection="column" gap={1}>
               <Typography>
-                <strong>Starting Balance: </strong>$
-                {mockData.accountList.transactionReport.startingBalance}
+                {t('Starting Balance:')}{' '}
+                <strong>
+                  {mockData.accountList.transactionReport.startingBalance.toLocaleString(
+                    undefined,
+                    {
+                      style: 'currency',
+                      currency: 'USD',
+                    },
+                  )}
+                </strong>
               </Typography>
               <Typography>
-                <strong>Ending Balance: </strong>$
-                {mockData.accountList.transactionReport.endingBalance}
+                {t('Ending Balance:')}{' '}
+                <strong>
+                  {mockData.accountList.transactionReport.endingBalance.toLocaleString(
+                    undefined,
+                    {
+                      style: 'currency',
+                      currency: 'USD',
+                    },
+                  )}
+                </strong>
               </Typography>
             </Box>
           </Box>
-          <IncomeTable
-            transactions={mockData.accountList.transactionReport.transactions}
-          />
+        </Container>
+      </Box>
+      <Box mt={3} mb={3}>
+        <Container>
+          <Divider></Divider>
         </Container>
       </Box>
       <Box mt={2}>
@@ -312,7 +411,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               variant="contained"
               startIcon={<ChevronLeftIcon />}
               size="small"
-              onClick={() => setPrevMonth()}
+              onClick={setPrevMonth}
             >
               {t('Previous Month')}
             </Button>
@@ -321,7 +420,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               variant="contained"
               endIcon={<ChevronRightIcon />}
               size="small"
-              onClick={() => setNextMonth()}
+              onClick={setNextMonth}
               disabled={hasNext}
             >
               {t('Next Month')}
@@ -329,13 +428,20 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           </Box>
         </Container>
       </Box>
-      <Box mt={2}>
-        <Container>
-          <ExpensesTable
-            transactions={mockData.accountList.transactionReport.transactions}
-            designationAccounts={mockData.accountList.designationAccounts}
-          />
-        </Container>
+      <Box>
+        <Box mt={2}>
+          <Container>
+            <IncomeTable transactions={transactions} />
+          </Container>
+        </Box>
+        <Box mt={4}>
+          <Container>
+            <ExpensesTable
+              transactions={transactions}
+              designationAccounts={mockData.accountList.designationAccounts}
+            />
+          </Container>
+        </Box>
       </Box>
     </Box>
   );

@@ -1,18 +1,21 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  LinearProgress,
+  Tooltip,
+  Typography,
+  styled,
+} from '@mui/material';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { dateFormatShort } from 'src/lib/intlFormat';
-
-interface Transaction {
-  description: string;
-  date: string;
-  amount: number;
-  category: string;
-}
+import { downloadCsv } from '../downloadReport';
 
 interface IncomeTableProps {
   // accountListId: string;
@@ -32,29 +35,38 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const getColumns = (locale: string): GridColDef[] => [
-  {
-    field: 'date',
-    headerName: 'Transaction Date',
-    width: 180,
-    valueFormatter: ({ value }) => dateFormatShort(value, locale),
+export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
+  height: '0.5rem',
+  borderRadius: theme.shape.borderRadius,
+  ['& .MuiLinearProgress-bar']: {
+    borderRadius: theme.shape.borderRadius,
   },
-  { field: 'description', headerName: 'Description', width: 300 },
-  {
-    field: 'transactionAmount',
-    headerName: 'Transaction Amount',
-    width: 180,
-    valueFormatter: ({ value }) =>
-      value.toLocaleString(locale, { style: 'currency', currency: 'USD' }),
-  },
-];
+}));
+
+export const LoadingBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.cruGrayLight.main,
+  height: 300,
+  minWidth: 700,
+  margin: 'auto',
+  padding: 4,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
+
+export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+  margin: theme.spacing(0, 1, 0, 0),
+}));
 
 export interface IncomeRow {
   id: string;
   date: DateTime;
   description: string;
   transactionAmount: number;
+  category: string;
 }
+
+type RenderCell = GridColDef<IncomeRow>['renderCell'];
 
 export const createIncomeRow = (
   transaction: {
@@ -69,20 +81,89 @@ export const createIncomeRow = (
   date: DateTime.fromISO(transaction.date),
   description: transaction.description,
   transactionAmount: transaction.amount,
+  category: transaction.category,
 });
 
 const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(5);
 
   const incomeRows = useMemo(
     () =>
-      (transactions ?? []).map((transaction, index) =>
-        createIncomeRow(transaction, index),
-      ),
+      (transactions ?? [])
+        .filter((transaction) => transaction.amount > 0)
+        .map((transaction, index) => createIncomeRow(transaction, index)),
     [transactions],
   );
+
+  const date: RenderCell = ({ row }) => {
+    return dateFormatShort(row.date, locale);
+  };
+
+  const description: RenderCell = ({ row }) => (
+    <Tooltip title={t(row.description)}>
+      <Typography variant="body2" noWrap>
+        {t(row.description)}
+      </Typography>
+    </Tooltip>
+  );
+
+  const category: RenderCell = ({ row }) => (
+    <Tooltip title={t(row.category)}>
+      <Typography variant="body2" noWrap>
+        {t(row.category)}
+      </Typography>
+    </Tooltip>
+  );
+
+  const amount: RenderCell = ({ row }) => {
+    if (row.transactionAmount > 0) {
+      return (
+        <Typography variant="body2" noWrap>
+          {row.transactionAmount.toLocaleString(locale, {
+            style: 'currency',
+            currency: 'USD',
+          })}
+        </Typography>
+      );
+    }
+    return null;
+  };
+
+  const columns: GridColDef[] = [
+    {
+      field: 'date',
+      headerName: t('Date'),
+      width: 150,
+      renderCell: date,
+    },
+    {
+      field: 'category',
+      headerName: t('Category'),
+      flex: 1,
+      renderCell: category,
+    },
+    {
+      field: 'description',
+      headerName: t('Description'),
+      flex: 1,
+      renderCell: description,
+    },
+    {
+      field: 'amount',
+      headerName: t('Amount'),
+      width: 150,
+      renderCell: amount,
+    },
+  ];
+
+  const getTotalIncome = () => {
+    const total =
+      transactions?.reduce((sum, transaction) => sum + transaction.amount, 0) ??
+      0;
+    return total.toLocaleString(locale, { style: 'currency', currency: 'USD' });
+  };
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'date', sort: 'desc' },
@@ -92,15 +173,38 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
 
   return (
     <Box
-      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      sx={{
+        mt: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'space-between',
+      }}
     >
-      <Box display="flex" justifyContent="center" mb={2}>
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        mb={2}
+      >
         <Typography variant="h6">{t('Income')}</Typography>
+        {/* Only display download button if there are existing transactions */}
+        {transactions && transactions.length > 0 ? (
+          <Button
+            variant="text"
+            size="small"
+            sx={{ textDecoration: 'underline', minWidth: 'unset', padding: 0 }}
+            onClick={() => downloadCsv(transactions, 'income')}
+          >
+            <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+              {t('Download Income Report')}
+            </Typography>
+          </Button>
+        ) : null}
       </Box>
-      <Box height={400} width="100%">
+      <Box width="100%">
         <StyledGrid
           rows={incomeRows || []}
-          columns={getColumns(locale)}
+          columns={columns}
           pageSize={pageSize}
           onPageSizeChange={(size) => setPageSize(size)}
           pagination
@@ -112,6 +216,12 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
           disableVirtualization
           localeText={localeText}
         />
+        <Box display="flex" justifyContent="flex-end" mt={2} mr={6}>
+          <Typography fontWeight="bold">
+            {t('Total Income:')}{' '}
+            <span style={{ color: 'green' }}>{getTotalIncome()}</span>
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
