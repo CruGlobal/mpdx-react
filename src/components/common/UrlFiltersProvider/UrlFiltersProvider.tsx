@@ -84,9 +84,10 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   // The starred filter is not added to the URL
   const [starred, setStarred] = useState(false);
 
-  // Update the filters when the URL changes
+  // Update the filters and search term when the URL changes
   useEffect(() => {
     setActiveFilters(getQueryFilters(query));
+    setSearchTerm(getQueryParam(query, 'searchTerm') ?? '');
   }, [query]);
 
   const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
