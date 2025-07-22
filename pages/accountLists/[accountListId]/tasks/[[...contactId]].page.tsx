@@ -47,6 +47,7 @@ import {
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
+import { removeTagsFromFilters } from './sanitizeFilters';
 
 export type ContactUrl = {
   contactUrl: string;
@@ -369,7 +370,7 @@ const PageContent: React.FC = () => {
 };
 
 const TasksPage: React.FC = () => (
-  <UrlFiltersProvider>
+  <UrlFiltersProvider sanitizeFilters={removeTagsFromFilters}>
     <ContactPanelProvider>
       <PageContent />
     </ContactPanelProvider>

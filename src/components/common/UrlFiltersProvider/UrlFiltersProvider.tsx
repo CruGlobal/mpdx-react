@@ -15,7 +15,6 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { getQueryParam } from 'src/utils/queryParam';
 
 type Filter = ContactFilterSetInput & TaskFilterSetInput;
@@ -60,10 +59,17 @@ export const getQueryFilters = (query: ParsedUrlQuery) => {
 };
 
 export interface UrlFiltersProviderProps {
+  /**
+   * Optional function to transform the filters before adding them to the URL. It can be used to
+   * remove fields from the filters, for example.
+   */
+  sanitizeFilters?: (filters: Filter) => Filter;
+
   children: ReactNode;
 }
 
 export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
+  sanitizeFilters,
   children,
 }) => {
   const router = useRouter();
@@ -103,7 +109,9 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
     // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm=
     const urlQuery = omit(query, ['filters', 'searchTerm']);
 
-    const sanitizedFilters = sanitizeFilters(activeFilters);
+    const sanitizedFilters = sanitizeFilters
+      ? sanitizeFilters(activeFilters)
+      : activeFilters;
     if (Object.keys(sanitizedFilters).length) {
       urlQuery.filters = JSON.stringify(sanitizedFilters);
     }

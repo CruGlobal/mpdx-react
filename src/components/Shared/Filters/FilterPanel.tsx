@@ -20,6 +20,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { removeTagsFromFilters } from 'pages/accountLists/[accountListId]/tasks/sanitizeFilters';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
@@ -34,7 +35,6 @@ import {
   ResultEnum,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { convertStatus } from 'src/utils/functions/convertContactStatus';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterListItem } from './FilterListItem';
@@ -575,7 +575,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     return [];
   }, [filter]);
   const noSelectedFilters =
-    Object.keys(sanitizeFilters(selectedFilters)).length === 0;
+    Object.keys(removeTagsFromFilters(selectedFilters)).length === 0;
 
   return (
     <Box {...boxProps}>

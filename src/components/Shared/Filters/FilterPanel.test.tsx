@@ -6,6 +6,7 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { removeTagsFromFilters } from 'pages/accountLists/[accountListId]/tasks/sanitizeFilters';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
@@ -91,7 +92,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
-          <UrlFiltersProvider>
+          <UrlFiltersProvider sanitizeFilters={removeTagsFromFilters}>
             <ContactsProvider
               filterPanelOpen={false}
               setFilterPanelOpen={jest.fn()}

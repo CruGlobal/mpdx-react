@@ -14,7 +14,6 @@ import { FilterPanel } from 'src/components/Shared/Filters/FilterPanel';
 import {
   filterPanelDefaultMock,
   filterPanelFeaturedMock,
-  filterPanelTagsMock,
   savedFiltersMock,
 } from 'src/components/Shared/Filters/FilterPanel.mocks';
 import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
@@ -113,61 +112,6 @@ describe('ContactsWrapper', () => {
     });
     userEvent.click(getByText('Saved Filters'));
     expect(routerReplace).toHaveBeenCalled();
-  });
-
-  it('tags any/all toggle does not update the URL if no tags are selected', () => {
-    const routeReplace = jest.fn();
-    const router = {
-      pathname: '/contacts',
-      query: {
-        accountListId: 'account-list-1',
-        filters: '%7B%7D',
-      },
-      replace: routeReplace,
-      isReady: true,
-    };
-
-    const { getByRole } = render(
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <TestRouter router={router}>
-          <ThemeProvider theme={theme}>
-            <GqlMockedProvider>
-              <ContactsWrapper>
-                <FilterPanel
-                  filters={[filterPanelTagsMock]}
-                  savedFilters={[savedFiltersMock]}
-                  onClose={onClose}
-                />
-              </ContactsWrapper>
-            </GqlMockedProvider>
-          </ThemeProvider>
-        </TestRouter>
-      </LocalizationProvider>,
-    );
-
-    userEvent.click(
-      within(getByRole('button', { name: /^Tags/ })).getByTestId(
-        'ExpandMoreIcon',
-      ),
-    );
-
-    userEvent.click(getByRole('button', { name: 'Any' }));
-    expect(routeReplace.mock.lastCall[0].query.filters).toBeUndefined();
-
-    userEvent.click(getByRole('button', { name: 'Tag 1' }));
-    expect(
-      deserializeFilters(routeReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      tags: ['Tag 1'],
-      anyTags: true,
-    });
-
-    userEvent.click(getByRole('button', { name: 'All' }));
-    expect(
-      deserializeFilters(routeReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      tags: ['Tag 1'],
-    });
   });
 });
 
