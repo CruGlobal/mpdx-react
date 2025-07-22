@@ -7,6 +7,10 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { AccountTransactions } from 'src/components/Reports/FinancialAccountsReport/AccountTransactions/AccountTransactions';
 import {
+  defaultEndDate,
+  defaultStartDate,
+} from 'src/components/Reports/FinancialAccountsReport/AccountTransactions/AccountTransactionsHelper';
+import {
   FinancialAccountContext,
   FinancialAccountType,
 } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
@@ -141,13 +145,23 @@ const FinancialAccountEntries = (): ReactElement => {
   );
 };
 
-const FinancialAccountsPage: React.FC = () => (
-  <UrlFiltersProvider>
-    <FinancialAccountsWrapper>
-      <FinancialAccountEntries />
-    </FinancialAccountsWrapper>
-  </UrlFiltersProvider>
-);
+const FinancialAccountsPage: React.FC = () => {
+  const defaultDateRange = useMemo(
+    () => ({
+      min: defaultStartDate(),
+      max: defaultEndDate(),
+    }),
+    [],
+  );
+
+  return (
+    <UrlFiltersProvider defaultInitialFilters={{ defaultDateRange }}>
+      <FinancialAccountsWrapper>
+        <FinancialAccountEntries />
+      </FinancialAccountsWrapper>
+    </UrlFiltersProvider>
+  );
+};
 
 export const getServerSideProps = ensureSessionAndAccountList;
 
