@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
@@ -40,6 +41,17 @@ const StaffExpenseReportPage: React.FC = () => {
     setIsNavListOpen(!isNavListOpen);
   };
 
+  const { query } = useRouter();
+  const [time, setTime] = useState(() => {
+    if (typeof query.month === 'string') {
+      const date = DateTime.fromISO(query.month);
+      if (date.isValid) {
+        return date.startOf('month');
+      }
+    }
+    return DateTime.now().startOf('month');
+  });
+
   return (
     <>
       <Head>
@@ -70,6 +82,8 @@ const StaffExpenseReportPage: React.FC = () => {
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Staff Expense Report')}
+                time={time}
+                setTime={setTime}
               />
             }
             rightPanel={
