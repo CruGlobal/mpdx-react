@@ -12,6 +12,7 @@ import {
   ContactsType,
   parseSavedFilters,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -27,10 +28,11 @@ export enum AppealStatusEnum {
   Processed = 'processed',
 }
 
-export enum TableViewModeEnum {
-  List = 'list',
-  Flows = 'flows',
-}
+// The map view mode is not available in appeals
+export type AppealsViewModeEnum =
+  | TableViewModeEnum.List
+  | TableViewModeEnum.Flows;
+export { TableViewModeEnum };
 
 export const shouldSkipContactCount = (tour, filterPanelOpen, viewMode) => {
   if (viewMode === TableViewModeEnum.Flows) {
@@ -62,8 +64,8 @@ export interface AppealsType
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
-  viewMode: TableViewModeEnum | null;
-  setViewMode: (viewMode: TableViewModeEnum) => void;
+  viewMode: AppealsViewModeEnum | null;
+  setViewMode: (viewMode: AppealsViewModeEnum) => void;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   appealId: string | undefined;
   listAppealStatus: AppealStatusEnum;
@@ -91,8 +93,8 @@ export enum AppealTourEnum {
 export interface AppealsContextProps
   extends Omit<ContactsContextProps, 'viewMode' | 'setViewMode'> {
   appealId: string | undefined;
-  viewMode: TableViewModeEnum | null;
-  setViewMode: (viewMode: TableViewModeEnum) => void;
+  viewMode: AppealsViewModeEnum | null;
+  setViewMode: (viewMode: AppealsViewModeEnum) => void;
   tour: AppealTourEnum | null;
   setTour: Dispatch<SetStateAction<AppealTourEnum | null>>;
 }

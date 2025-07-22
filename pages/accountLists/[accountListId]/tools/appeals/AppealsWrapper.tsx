@@ -4,6 +4,7 @@ import { useGetUserOptionsLazyQuery } from 'src/components/Contacts/ContactFlow/
 import {
   AppealTourEnum,
   AppealsProvider,
+  AppealsViewModeEnum,
   TableViewModeEnum,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
@@ -15,7 +16,7 @@ import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated'
  */
 const parseViewMode = (
   viewMode: string | null | undefined,
-): TableViewModeEnum | null => {
+): AppealsViewModeEnum | null => {
   if (typeof viewMode !== 'string') {
     return null;
   }
@@ -66,7 +67,7 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   }, [viewMode]);
 
   const [updateUserOption] = useUpdateUserOptionMutation();
-  const setAndSaveViewMode = useCallback((newViewMode: TableViewModeEnum) => {
+  const setAndSaveViewMode = useCallback((newViewMode: AppealsViewModeEnum) => {
     setViewMode(newViewMode);
     updateUserOption({
       variables: {
