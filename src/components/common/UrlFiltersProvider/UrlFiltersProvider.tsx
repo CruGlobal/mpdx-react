@@ -18,12 +18,15 @@ import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { getQueryParam } from 'src/utils/queryParam';
 
 type Filter = ContactFilterSetInput & TaskFilterSetInput;
+type DefaultFilters = Record<string, unknown>;
 
-export interface UrlFilters {
-  activeFilters: Filter;
-  setActiveFilters: (newFilters: Filter) => void;
+export interface UrlFilters<
+  Filters extends Record<string, unknown> = DefaultFilters,
+> {
+  activeFilters: Filters;
+  setActiveFilters: (newFilters: Filters) => void;
   isFiltered: boolean;
-  combinedFilters: Filter;
+  combinedFilters: Filters;
   searchTerm: string;
   setSearchTerm: (newSearchTerm: string) => void;
   starred: boolean;
@@ -33,33 +36,43 @@ export interface UrlFilters {
 
 const UrlFiltersContext = createContext<UrlFilters | null>(null);
 
-export const useUrlFilters = (): UrlFilters => {
+export const useUrlFilters = <
+  Filters extends Record<string, unknown> = DefaultFilters,
+>(): UrlFilters<Filters> => {
   const context = useContext(UrlFiltersContext);
   if (context === null) {
     throw new Error(
       'Could not find UrlFiltersContext. Make sure that your component is inside <UrlFiltersProvider>.',
     );
   }
-  return context;
+  return context as UrlFilters<Filters>;
 };
 
 /**
  * Extract the filters from the URL query params.
  *
  * @param query The query params from the router
- * @returns The URL filters
+ * @returns The URL filters, or null if they are missing or invalid
  */
-export const getQueryFilters = (query: ParsedUrlQuery) => {
+export const getQueryFilters = (
+  query: ParsedUrlQuery,
+): DefaultFilters | null => {
   try {
     return JSON.parse(
       decodeURIComponent(getQueryParam(query, 'filters') ?? ''),
     );
   } catch {
-    return {};
+    // The filters are missing or invalid
+    return null;
   }
 };
 
 export interface UrlFiltersProviderProps {
+  /**
+   * If there are no filters initially set in the URL, use these filters.
+   */
+  defaultInitialFilters?: DefaultFilters;
+
   /**
    * Optional function to transform the filters before adding them to the URL. It can be used to
    * remove fields from the filters, for example.
@@ -71,6 +84,7 @@ export interface UrlFiltersProviderProps {
 
 export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   sanitizeFilters,
+  defaultInitialFilters,
   children,
 }) => {
   const router = useRouter();
@@ -81,8 +95,8 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   );
 
   // Extract the initial filters from the URL
-  const [activeFilters, setActiveFilters] = useState<Filter>(
-    getQueryFilters(query),
+  const [activeFilters, setActiveFilters] = useState<DefaultFilters>(
+    getQueryFilters(query) ?? { defaultInitialFilters },
   );
   const [searchTerm, setSearchTerm] = useState(
     getQueryParam(query, 'searchTerm') ?? '',
@@ -93,7 +107,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
 
   // Update the filters and search term when the URL changes
   useEffect(() => {
-    setActiveFilters(getQueryFilters(query));
+    setActiveFilters(getQueryFilters(query) ?? {});
     setSearchTerm(getQueryParam(query, 'searchTerm') ?? '');
   }, [query]);
 
