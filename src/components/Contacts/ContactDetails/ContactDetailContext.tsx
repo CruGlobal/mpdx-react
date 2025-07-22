@@ -1,12 +1,15 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { TabKey } from './ContactDetails';
+import { ContactDetailTabEnum } from './ContactDetailTab';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
 export type ContactDetailsType = {
-  selectedTabKey: TabKey;
-  setSelectedTabKey: React.Dispatch<React.SetStateAction<TabKey>>;
-  handleTabChange: (event: React.SyntheticEvent, newKey: TabKey) => void;
+  selectedTabKey: ContactDetailTabEnum;
+  setSelectedTabKey: React.Dispatch<React.SetStateAction<ContactDetailTabEnum>>;
+  handleTabChange: (
+    event: React.SyntheticEvent,
+    newKey: ContactDetailTabEnum,
+  ) => void;
   editModalOpen: boolean;
   setEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editOtherModalOpen: boolean;
@@ -55,10 +58,12 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
   const [selectedTabKey, setSelectedTabKey] = React.useState(
-    query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
+    query?.tab
+      ? ContactDetailTabEnum[query.tab.toString()] ?? ContactDetailTabEnum.Tasks
+      : ContactDetailTabEnum.Tasks,
   );
   const handleTabChange = useCallback(
-    (_event: React.SyntheticEvent, newKey: TabKey) => {
+    (_event: React.SyntheticEvent, newKey: ContactDetailTabEnum) => {
       setSelectedTabKey(newKey);
     },
     [],
@@ -81,7 +86,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     const personId = router.query.personId as string;
     if (personId) {
-      setSelectedTabKey(TabKey.ContactDetails);
+      setSelectedTabKey(ContactDetailTabEnum.ContactDetails);
       setEditPersonModalOpen(personId);
     }
   }, [router.query.personId]);

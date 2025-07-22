@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 import {
   ContactPanelProvider,
   extractContactId,
@@ -130,7 +131,12 @@ describe('useContactPanel', () => {
       wrapper: Wrapper,
     });
 
-    expect(result.current.buildContactUrl(newContactId, 'Donations')).toEqual({
+    expect(
+      result.current.buildContactUrl(
+        newContactId,
+        ContactDetailTabEnum.Donations,
+      ),
+    ).toEqual({
       pathname,
       query: { contactId: [newContactId], tab: 'Donations' },
     });

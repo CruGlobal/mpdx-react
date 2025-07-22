@@ -25,6 +25,7 @@ import * as yup from 'yup';
 import { ContactStatusSelect } from 'src/common/Selects/ContactStatusSelect/ContactStatusSelect';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 import {
   CurrencyAutocomplete,
   PledgeCurrencyOptionFormatEnum,
@@ -307,7 +308,10 @@ const Contact: React.FC<Props> = ({
                         <Box display="flex" flexDirection="column" ml={2}>
                           <Link
                             component={NextLink}
-                            href={buildContactUrl(id, 'Donations')}
+                            href={buildContactUrl(
+                              id,
+                              ContactDetailTabEnum.Donations,
+                            )}
                             shallow
                             data-testid="contactSelect"
                           >
