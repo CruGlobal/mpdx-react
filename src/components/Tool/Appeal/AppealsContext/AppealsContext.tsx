@@ -14,6 +14,7 @@ import {
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
