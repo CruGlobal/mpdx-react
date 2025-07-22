@@ -111,7 +111,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const localeText = useTablePaginationLocaleText();
 
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
+    _event: React.MouseEvent<unknown>,
     property: string,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -120,7 +120,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   };
 
   const handlePageChange = (
-    event: React.MouseEvent<unknown> | null,
+    _event: React.MouseEvent<unknown> | null,
     newPage: number,
   ): void => {
     setPage(newPage);
@@ -160,7 +160,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         >
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
-      ) : contacts.length > 0 ? (
+      ) : contacts.length ? (
         <>
           <Table
             onRequestSort={handleRequestSort}
