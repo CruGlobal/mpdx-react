@@ -4,7 +4,7 @@ import { TaskFilterSetInput } from 'src/graphql/types.generated';
 export const removeTagsFromFilters = ({
   anyTags,
   ...filters
-}: TaskFilterSetInput): TaskFilterSetInput => {
+}: any): TaskFilterSetInput => {
   if (filters.tags?.length) {
     return { ...filters, anyTags };
   }
