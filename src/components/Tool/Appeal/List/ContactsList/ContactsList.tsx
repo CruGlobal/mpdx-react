@@ -9,6 +9,7 @@ import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   AppealHeaderInfo,
@@ -59,7 +60,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     listAppealStatus: appealStatus,
   } = React.useContext(AppealsContext) as AppealsType;
   const { isOpen: contactPanelOpen } = useContactPanel();
-  const { activeFilters } = useUrlFilters();
+  const { activeFilters } = useUrlFilters<ContactFilterSetInput>();
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
