@@ -27,6 +27,7 @@ frontend:
         - export PATH=$PATH:$(pwd)/bin && git-lfs install
         - export PATH=$PATH:$(pwd)/bin && git-lfs pull
         # install dependencies
+        - npm install -g yarn
         - yarn config set nodeLinker node-modules
         - yarn -v
         - yarn
