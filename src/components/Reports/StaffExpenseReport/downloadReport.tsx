@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 
-const csvHeader = ['Date', 'Category', 'Description', 'Amount'];
+const csvHeader = ['Date', 'Category', 'Amount'];
 
 export type ReportType = 'income' | 'expense' | 'full';
 
@@ -11,24 +11,19 @@ const makeTable = (
   type: ReportType,
 ) => {
   if (type === 'income') {
-    transactions = transactions.filter((transaction) => transaction.amount > 0);
+    transactions = transactions.filter((transaction) => transaction.total > 0);
   } else if (type === 'expense') {
-    transactions = transactions.filter((transaction) => transaction.amount < 0);
+    transactions = transactions.filter((transaction) => transaction.total < 0);
   }
   const rows = transactions.map((transaction) =>
-    [
-      transaction.date,
-      transaction.category,
-      transaction.description,
-      transaction.amount.toFixed(2),
-    ].join(','),
+    [transaction.month, transaction.category, transaction.total].join(','),
   );
   return [title, csvHeader.join(','), ...rows, ''].join('\n');
 };
 
 export const downloadCsv = (transactions: Transaction[], type?: ReportType) => {
-  const incomeTransactions = transactions.filter((t) => t.amount > 0);
-  const expenseTransactions = transactions.filter((t) => t.amount < 0);
+  const incomeTransactions = transactions.filter((t) => t.total > 0);
+  const expenseTransactions = transactions.filter((t) => t.total < 0);
 
   let csvContent = 'data:text/csv;charset=utf-8,';
   if (type === 'income') {
