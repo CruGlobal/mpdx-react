@@ -9,25 +9,18 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../../ContactsContext/ContactsContext';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
 const accountListId = 'abc';
 const title = 'Test Column';
 const changeContactStatus = jest.fn();
 const mutationSpy = jest.fn();
-const getContactHrefObject = jest.fn().mockReturnValue({
-  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-  query: { accountListId, contactId: 'contactId' },
-});
 const contact = {
   id: '123',
   name: 'Test Person',
@@ -50,11 +43,7 @@ const router = {
   isReady: true,
 };
 
-interface ComponentsProps {
-  starredFilter?: { starred: boolean };
-}
-
-const Components = ({ starredFilter }: ComponentsProps) => (
+const Components: React.FC = () => (
   <SnackbarProvider>
     <DndProvider backend={HTML5Backend}>
       <ThemeProvider theme={theme}>
@@ -78,30 +67,21 @@ const Components = ({ starredFilter }: ComponentsProps) => (
             }}
             onCall={mutationSpy}
           >
-            <VirtuosoMockContext.Provider
-              value={{ viewportHeight: 300, itemHeight: 100 }}
-            >
-              <ContactsContext.Provider
-                value={
-                  {
-                    sanitizedFilters: {},
-                    starredFilter,
-                    getContactHrefObject,
-                  } as unknown as ContactsType
-                }
+            <UrlFiltersProvider>
+              <VirtuosoMockContext.Provider
+                value={{ viewportHeight: 300, itemHeight: 100 }}
               >
                 <ContactPanelProvider>
                   <ContactFlowColumn
                     accountListId={accountListId}
-                    selectedFilters={{}}
                     color={theme.palette.mpdxBlue.main}
                     title={title}
                     changeContactStatus={changeContactStatus}
                     statuses={[StatusEnum.PartnerFinancial]}
                   />
                 </ContactPanelProvider>
-              </ContactsContext.Provider>
-            </VirtuosoMockContext.Provider>
+              </VirtuosoMockContext.Provider>
+            </UrlFiltersProvider>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>
@@ -124,25 +104,6 @@ describe('ContactFlowColumn', () => {
         accountListId,
         contactsFilters: {
           status: [ContactFilterStatusEnum.PartnerFinancial],
-          wildcardSearch: undefined,
-        },
-      });
-    });
-  });
-
-  it('should filter by starred', async () => {
-    const { getByText } = render(
-      <Components starredFilter={{ starred: true }} />,
-    );
-    await waitFor(() => expect(getByText(title)).toBeInTheDocument());
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
-        accountListId,
-        contactsFilters: {
-          starred: true,
-          status: [ContactFilterStatusEnum.PartnerFinancial],
-          wildcardSearch: undefined,
         },
       });
     });

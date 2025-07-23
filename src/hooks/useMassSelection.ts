@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ListHeaderCheckBoxState } from '../components/Shared/Header/ListHeader';
 
 export interface UseMassSelectionResult {
@@ -22,7 +22,7 @@ export const useMassSelection = (idsList: string[]): UseMassSelectionResult => {
     setIds((previousIds) => previousIds.filter((id) => idsList.includes(id)));
   }, [idsList]);
 
-  const toggleSelectionById = (id: string) => {
+  const toggleSelectionById = useCallback((id: string) => {
     setIds((previousIds) => {
       if (previousIds.includes(id)) {
         return previousIds.filter((selectedIds) => selectedIds !== id);
@@ -30,34 +30,34 @@ export const useMassSelection = (idsList: string[]): UseMassSelectionResult => {
         return [...previousIds, id];
       }
     });
-  };
+  }, []);
 
-  const selectMultipleIds = (newIds: string[]) => {
+  const selectMultipleIds = useCallback((newIds: string[]) => {
     setIds((previousIds) => [
       ...previousIds,
-      ...newIds.filter((newId) => !ids.includes(newId)),
+      ...newIds.filter((newId) => !previousIds.includes(newId)),
     ]);
-  };
+  }, []);
 
-  const deselectMultipleIds = (idsToRemove: string[]) => {
+  const deselectMultipleIds = useCallback((idsToRemove: string[]) => {
     setIds((previousIds) =>
       previousIds.filter((id) => !idsToRemove.includes(id)),
     );
-  };
+  }, []);
 
-  const deselectAll = () => {
+  const deselectAll = useCallback(() => {
     setIds([]);
-  };
+  }, []);
 
-  const toggleSelectAll = () => {
+  const toggleSelectAll = useCallback(() => {
     if (ids.length === totalCount) {
       setIds([]);
     } else {
       setIds(idsList);
     }
-  };
+  }, [ids, totalCount, idsList]);
 
-  const isRowChecked = (id: string) => ids.includes(id);
+  const isRowChecked = useCallback((id: string) => ids.includes(id), [ids]);
 
   return {
     ids,

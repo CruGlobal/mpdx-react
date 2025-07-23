@@ -13,9 +13,7 @@ export const AppealsLeftPanel: React.FC = () => {
     filterData,
     filtersLoading,
     savedFilters,
-    activeFilters,
     toggleFilterPanel,
-    setActiveFilters,
     viewMode,
   } = React.useContext(AppealsContext) as AppealsType;
 
@@ -25,9 +23,7 @@ export const AppealsLeftPanel: React.FC = () => {
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
       savedFilters={savedFilters}
-      selectedFilters={activeFilters}
       onClose={toggleFilterPanel}
-      onSelectedFiltersChanged={setActiveFilters}
       contextType={ContextTypesEnum.Appeals}
     />
   ) : null;

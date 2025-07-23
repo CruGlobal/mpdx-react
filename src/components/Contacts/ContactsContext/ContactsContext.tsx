@@ -12,17 +12,10 @@ import {
   useContactFiltersQuery,
   useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { GetContactHrefObject } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
-import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
-import { useUserPreference } from 'src/hooks/useUserPreference';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import { useMassSelection } from '../../../hooks/useMassSelection';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
@@ -35,7 +28,6 @@ import { Coordinates } from '../ContactsMap/coordinates';
 export type ContactsType = {
   accountListId: string | undefined;
   contactId: string | string[] | undefined;
-  searchTerm: string;
   contactsQueryResult: ReturnType<typeof useContactsQuery>;
   selectionType: ListHeaderCheckBoxState;
   isRowChecked: (id: string) => boolean;
@@ -47,8 +39,6 @@ export type ContactsType = {
   handleClearAll: () => void;
   savedFilters: UserOptionFragment[];
   setContactFocus: (id: string | undefined) => void;
-  getContactHrefObject: GetContactHrefObject;
-  setSearchTerm: (searchTerm: string) => void;
   handleViewModeChange: (
     event: React.MouseEvent<HTMLElement>,
     view: string,
@@ -58,15 +48,6 @@ export type ContactsType = {
   mapRef: React.MutableRefObject<google.maps.Map | null>;
   panTo: (coords: { lat: number; lng: number }) => void;
   mapData: Coordinates[] | undefined;
-  activeFilters: ContactFilterSetInput & TaskFilterSetInput;
-  sanitizedFilters: ContactFilterSetInput & TaskFilterSetInput;
-  setActiveFilters: (
-    filters: ContactFilterSetInput & TaskFilterSetInput,
-  ) => void;
-  starredFilter: ContactFilterSetInput & TaskFilterSetInput;
-  setStarredFilter: (
-    filter: ContactFilterSetInput & TaskFilterSetInput,
-  ) => void;
   filterPanelOpen: boolean;
   setFilterPanelOpen: (open: boolean) => void;
   contactDetailsOpen: boolean;
@@ -83,23 +64,11 @@ export const ContactsContext = React.createContext<ContactsType | null>(null);
 
 export interface ContactsContextProps {
   children?: React.ReactNode;
-  activeFilters: ContactFilterSetInput & TaskFilterSetInput;
-  setActiveFilters: (
-    filters: ContactFilterSetInput & TaskFilterSetInput,
-  ) => void;
-  starredFilter: ContactFilterSetInput & TaskFilterSetInput;
-  setStarredFilter: (
-    filter: ContactFilterSetInput & TaskFilterSetInput,
-  ) => void;
   filterPanelOpen: boolean;
-  setFilterPanelOpen: (open: boolean) => void;
-  contactId: string | undefined;
-  setContactId: Dispatch<SetStateAction<string | undefined>>;
-  getContactHrefObject: GetContactHrefObject;
-  viewMode?: TableViewModeEnum;
-  setViewMode?: Dispatch<SetStateAction<TableViewModeEnum>>;
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
+  setFilterPanelOpen: Dispatch<SetStateAction<boolean>>;
+  viewMode: TableViewModeEnum;
+  setViewMode: (newViewMode: TableViewModeEnum) => void;
+  userOptionsLoading: boolean;
 }
 
 export const ContactsContextSavedFilters = (
@@ -128,57 +97,20 @@ export const ContactsContextSavedFilters = (
 
 export const ContactsProvider: React.FC<ContactsContextProps> = ({
   children,
-  activeFilters,
-  setActiveFilters,
-  starredFilter,
-  setStarredFilter,
   filterPanelOpen,
   setFilterPanelOpen,
-  contactId,
-  setContactId,
-  getContactHrefObject,
-  viewMode = TableViewModeEnum.List,
-  setViewMode = () => {},
-  searchTerm,
-  setSearchTerm,
+  viewMode,
+  setViewMode,
+  userOptionsLoading,
 }) => {
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
 
-  const sanitizedFilters = useMemo(
-    () => sanitizeFilters(activeFilters),
-    [activeFilters],
-  );
-
-  const [contactsView, saveContactsView, { loading: userOptionsLoading }] =
-    useUserPreference({
-      key: 'contacts_view',
-      defaultValue: TableViewModeEnum.List,
-    });
-  useEffect(() => {
-    if (contactsView) {
-      setViewMode(contactsView);
-    }
-  }, [contactsView]);
-
-  const contactsFilters = useMemo(
-    () => ({
-      ...sanitizedFilters,
-      ...starredFilter,
-      wildcardSearch: searchTerm as string,
-    }),
-    [sanitizedFilters, starredFilter, searchTerm],
-  );
-
-  const contactsQueryResult = useContactsQuery({
-    variables: {
-      accountListId: accountListId ?? '',
-      contactsFilters,
-      first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
-    },
-    skip: !accountListId,
-  });
-  const { data, fetchMore } = contactsQueryResult;
+  const {
+    activeFilters,
+    setSearchTerm,
+    combinedFilters: contactsFilters,
+  } = useUrlFilters();
 
   //#region Mass Actions
 
@@ -209,6 +141,21 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   } = useMassSelection(allContactIds);
   //#endregion
 
+  const contactsQueryResult = useContactsQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      contactsFilters:
+        // In the map view, ignore all filters and only show the selected contacts
+        // If no contacts were selected, show all contacts
+        viewMode === TableViewModeEnum.Map
+          ? { ids: ids.length ? ids : undefined }
+          : contactsFilters,
+      first: viewMode === TableViewModeEnum.Map ? 20000 : 25,
+    },
+    skip: !accountListId,
+  });
+  const { data, fetchMore } = contactsQueryResult;
+
   // Load all pages of contacts on the map view
   useEffect(() => {
     if (
@@ -231,17 +178,17 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     },
   });
 
-  const toggleFilterPanel = () => {
-    setFilterPanelOpen(!filterPanelOpen);
-  };
+  const toggleFilterPanel = useCallback(() => {
+    setFilterPanelOpen((open) => !open);
+  }, [setFilterPanelOpen]);
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     setSearchTerm('');
-  };
+  }, [setSearchTerm]);
 
-  const savedFilters: UserOptionFragment[] = ContactsContextSavedFilters(
-    filterData,
-    accountListId,
+  const savedFilters: UserOptionFragment[] = useMemo(
+    () => ContactsContextSavedFilters(filterData, accountListId),
+    [filterData, accountListId],
   );
 
   const isFiltered = Object.keys(activeFilters).length > 0;
@@ -250,19 +197,12 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
 
   //#region User Actions
 
-  const setSearchTermDebounced = useDebouncedCallback(setSearchTerm, 500);
-
-  const handleViewModeChange = (
-    _: React.MouseEvent<HTMLElement>,
-    view: string,
-  ) => {
-    const newViewMode = view as TableViewModeEnum;
-    saveContactsView(newViewMode);
-    if (newViewMode === TableViewModeEnum.Map && ids.length) {
-      // When switching to the map, make the filter only show the selected contacts, if any
-      setActiveFilters({ ...activeFilters, ids });
-    }
-  };
+  const handleViewModeChange = useCallback(
+    (_: React.MouseEvent<HTMLElement>, view: string) => {
+      setViewMode(view as TableViewModeEnum);
+    },
+    [setViewMode],
+  );
   //#endregion
 
   //#region JSX
@@ -273,63 +213,83 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  const panTo = useCallback(
-    ({ lat, lng }) => {
-      if (mapRef.current) {
-        mapRef.current.panTo({ lat, lng });
-        mapRef.current.setZoom(14);
-      }
-    },
-    [mapRef.current],
-  );
+  const panTo = useCallback(({ lat, lng }) => {
+    if (mapRef.current) {
+      mapRef.current.panTo({ lat, lng });
+      mapRef.current.setZoom(14);
+    }
+  }, []);
 
   const mapData = useMemo(
     () => data && coordinatesFromContacts(data.contacts, locale),
     [data],
   );
 
+  const setContactFocus = useCallback(() => {}, []);
+
+  const contextValue = useMemo(
+    () => ({
+      accountListId: accountListId ?? '',
+      contactId: undefined,
+      contactsQueryResult,
+      selectionType,
+      isRowChecked,
+      toggleSelectAll,
+      toggleSelectionById,
+      selectedIds: ids,
+      deselectAll,
+      filterData,
+      filtersLoading,
+      toggleFilterPanel,
+      handleClearAll,
+      savedFilters,
+      setContactFocus,
+      handleViewModeChange,
+      selected,
+      setSelected,
+      mapRef,
+      mapData,
+      panTo,
+      filterPanelOpen,
+      setFilterPanelOpen,
+      contactDetailsOpen: false,
+      contactDetailsId: undefined,
+      viewMode,
+      setViewMode,
+      isFiltered,
+      userOptionsLoading,
+    }),
+    [
+      accountListId,
+      contactsQueryResult,
+      selectionType,
+      isRowChecked,
+      toggleSelectAll,
+      toggleSelectionById,
+      ids,
+      deselectAll,
+      filterData,
+      filtersLoading,
+      toggleFilterPanel,
+      handleClearAll,
+      savedFilters,
+      setContactFocus,
+      handleViewModeChange,
+      selected,
+      setSelected,
+      mapData,
+      panTo,
+      filterPanelOpen,
+      setFilterPanelOpen,
+      viewMode,
+      setViewMode,
+      isFiltered,
+      userOptionsLoading,
+    ],
+  );
+
   return (
-    <ContactsContext.Provider
-      value={{
-        accountListId: accountListId ?? '',
-        contactId: contactId,
-        searchTerm: searchTerm,
-        contactsQueryResult: contactsQueryResult,
-        selectionType: selectionType,
-        isRowChecked: isRowChecked,
-        toggleSelectAll: toggleSelectAll,
-        toggleSelectionById: toggleSelectionById,
-        filterData: filterData,
-        filtersLoading: filtersLoading,
-        toggleFilterPanel: toggleFilterPanel,
-        handleClearAll: handleClearAll,
-        savedFilters: savedFilters,
-        setContactFocus: setContactId,
-        setSearchTerm: setSearchTermDebounced,
-        getContactHrefObject: getContactHrefObject,
-        handleViewModeChange: handleViewModeChange,
-        selected: selected,
-        setSelected: setSelected,
-        mapRef: mapRef,
-        mapData: mapData,
-        panTo: panTo,
-        activeFilters: activeFilters,
-        sanitizedFilters,
-        setActiveFilters: setActiveFilters,
-        starredFilter: starredFilter,
-        setStarredFilter: setStarredFilter,
-        filterPanelOpen: filterPanelOpen,
-        setFilterPanelOpen: setFilterPanelOpen,
-        contactDetailsOpen: contactId !== undefined,
-        contactDetailsId: contactId,
-        viewMode: viewMode,
-        setViewMode: setViewMode,
-        isFiltered: isFiltered,
-        selectedIds: ids,
-        deselectAll: deselectAll,
-        userOptionsLoading: userOptionsLoading,
-      }}
-    >
+    <ContactsContext.Provider value={contextValue}>
       {children}
     </ContactsContext.Provider>
   );

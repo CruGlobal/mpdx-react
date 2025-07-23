@@ -65,25 +65,19 @@ describe('Financial Accounts Page', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should open filters on load and set initial date Range filter', async () => {
+  it('should open filters on load', async () => {
     const { findByRole } = render(<Components />);
 
-    expect(
-      await findByRole('heading', { name: 'Filter (1 active)' }),
-    ).toBeInTheDocument();
+    expect(await findByRole('heading', { name: 'Filter' })).toBeInTheDocument();
   });
 
   it('should open and close filters and menu', async () => {
     const { findByRole, getByRole, queryByRole } = render(<Components />);
 
     // Filters
-    expect(
-      await findByRole('heading', { name: 'Filter (1 active)' }),
-    ).toBeInTheDocument();
+    expect(await findByRole('heading', { name: 'Filter' })).toBeInTheDocument();
     userEvent.click(getByRole('img', { name: 'Close' }));
-    expect(
-      queryByRole('heading', { name: 'Filter (1 active)' }),
-    ).not.toBeInTheDocument();
+    expect(queryByRole('heading', { name: 'Filter' })).not.toBeInTheDocument();
 
     // Menu
     userEvent.click(getByRole('img', { name: 'Toggle Menu Panel' }));
