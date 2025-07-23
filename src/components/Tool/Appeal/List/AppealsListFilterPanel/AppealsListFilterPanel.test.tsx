@@ -17,20 +17,19 @@ import { AppealsListFilterPanel } from './AppealsListFilterPanel';
 
 const accountListId = 'accountListId';
 const appealId = 'appealId';
-const activeFilters = { status: [AppealStatusEnum.Asked] };
 const selectedIds = ['1', '2'];
 const routerReplace = jest.fn();
 const router = {
   query: {
     accountListId,
     appealId: ['1', 'list'],
-    filters: JSON.stringify(activeFilters),
   },
   replace: routerReplace,
   isReady: true,
 };
 const onClose = jest.fn();
 const deselectAll = jest.fn();
+const setListAppealStatus = jest.fn();
 
 const defaultContactCountMock = {
   data: {
@@ -40,9 +39,6 @@ const defaultContactCountMock = {
   },
   loading: false,
 };
-
-const deserializeFilters = (filters: string) =>
-  JSON.parse(decodeURIComponent(filters));
 
 const Components = ({ ids = selectedIds }) => (
   <ThemeProvider theme={theme}>
@@ -65,6 +61,7 @@ const Components = ({ ids = selectedIds }) => (
                   appealId,
                   selectedIds: ids,
                   deselectAll,
+                  setListAppealStatus,
                   askedCountQueryResult: defaultContactCountMock,
                   excludedCountQueryResult: defaultContactCountMock,
                   committedCountQueryResult: defaultContactCountMock,
@@ -125,7 +122,7 @@ describe('AppealsListFilterPanel', () => {
     expect(getByRole('button', { name: 'Select Contact' })).toBeInTheDocument();
   });
 
-  it('should filter contacts on appeal status', async () => {
+  it('should change appeal status', async () => {
     const { getByText } = render(<Components />);
 
     expect(deselectAll).not.toHaveBeenCalled();
@@ -133,48 +130,29 @@ describe('AppealsListFilterPanel', () => {
 
     userEvent.click(getByText('Given'));
     expect(deselectAll).toHaveBeenCalled();
-    expect(
-      deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      ...activeFilters,
-      appealStatus: AppealStatusEnum.Processed,
-    });
+    expect(setListAppealStatus).toHaveBeenCalledWith(
+      AppealStatusEnum.Processed,
+    );
 
     userEvent.click(getByText('Received'));
     expect(deselectAll).toHaveBeenCalled();
-    expect(
-      deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      ...activeFilters,
-      appealStatus: AppealStatusEnum.ReceivedNotProcessed,
-    });
+    expect(setListAppealStatus).toHaveBeenCalledWith(
+      AppealStatusEnum.ReceivedNotProcessed,
+    );
 
     userEvent.click(getByText('Committed'));
     expect(deselectAll).toHaveBeenCalled();
-    expect(
-      deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      ...activeFilters,
-      appealStatus: AppealStatusEnum.NotReceived,
-    });
+    expect(setListAppealStatus).toHaveBeenCalledWith(
+      AppealStatusEnum.NotReceived,
+    );
 
     userEvent.click(getByText('Asked'));
     expect(deselectAll).toHaveBeenCalled();
-    expect(
-      deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      ...activeFilters,
-      appealStatus: AppealStatusEnum.Asked,
-    });
+    expect(setListAppealStatus).toHaveBeenCalledWith(AppealStatusEnum.Asked);
 
     userEvent.click(getByText('Excluded'));
     expect(deselectAll).toHaveBeenCalled();
-    expect(
-      deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
-    ).toEqual({
-      ...activeFilters,
-      appealStatus: AppealStatusEnum.Excluded,
-    });
+    expect(setListAppealStatus).toHaveBeenCalledWith(AppealStatusEnum.Excluded);
   });
 
   describe('Modals', () => {
