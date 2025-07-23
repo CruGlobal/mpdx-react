@@ -158,7 +158,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
   const transactions = useMemo(() => {
     const transactionRows = entries.map((entry) => createTransactionRow(entry));
 
-    if (!!activeFilters?.categoryId) {
+    if (!!activeFilters.categoryId) {
       return transactionRows;
     } else {
       return [
@@ -168,7 +168,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
           description: t('Closing Balance'),
           incomeAmount: closingBalance,
           entryDate: DateTime.fromISO(
-            activeFilters?.dateRange?.max ?? defaultEndDate(),
+            activeFilters.dateRange?.max ?? defaultEndDate(),
           ),
         }),
         ...transactionRows,
@@ -178,7 +178,7 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
           description: t('Opening Balance'),
           incomeAmount: openingBalance,
           entryDate: DateTime.fromISO(
-            activeFilters?.dateRange?.min ?? defaultStartDate(),
+            activeFilters.dateRange?.min ?? defaultStartDate(),
           ),
         }),
       ];
