@@ -46,10 +46,13 @@ interface EditDonationModalProps {
 }
 
 const donationSchema = yup.object({
-  convertedAmount: yup.number().required(),
-  currency: yup.string().required(),
-  date: requiredDateTime(),
-  donorAccountId: yup.string().required(),
+  convertedAmount: yup
+    .number()
+    .typeError(i18n.t('Must be a number'))
+    .required(i18n.t('Amount is required')),
+  currency: yup.string().required(i18n.t('Currency is required')),
+  date: requiredDateTime(i18n.t('Date is required')),
+  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   designationAccountId: yup
     .string()
     .required(i18n.t('Designation Account is required')),
@@ -162,6 +165,7 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
             memo,
           },
           setFieldValue,
+          setFieldTouched,
           handleChange,
           handleBlur,
           handleSubmit,
@@ -178,15 +182,16 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     name="convertedAmount"
                     value={convertedAmount}
                     label={t('Amount')}
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      handleChange(event);
+                      setFieldTouched('convertedAmount', true, false);
+                    }}
                     onBlur={handleBlur}
                     fullWidth
                     inputProps={{ 'aria-label': t('Amount') }}
                     error={!!errors.convertedAmount && touched.convertedAmount}
                     helperText={
-                      errors.convertedAmount &&
-                      touched.convertedAmount &&
-                      t('Field is required')
+                      touched.convertedAmount ? errors.convertedAmount : ''
                     }
                     required
                   />
@@ -202,7 +207,8 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                       }}
                       textFieldProps={{
                         label: t('Currency'),
-                        error: !!errors.currency,
+                        error: !!errors.currency && touched.currency,
+                        helperText: touched.currency && errors.currency,
                         required: true,
                       }}
                     />
@@ -213,7 +219,12 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                     <CustomDateField
                       label={t('Date')}
                       value={date}
-                      onChange={(date) => setFieldValue('date', date)}
+                      onChange={(date) => {
+                        setFieldValue('date', date);
+                        setFieldTouched('date', true, false);
+                      }}
+                      error={!!(errors.date && touched.date)}
+                      helperText={touched.date && (errors.date as string)}
                       required
                     />
                   </FormControl>
@@ -248,10 +259,17 @@ export const EditDonationModal: React.FC<EditDonationModalProps> = ({
                         name: donation.donorAccount.displayName,
                       },
                     ]}
-                    onChange={(donorAccountId) =>
-                      setFieldValue('donorAccountId', donorAccountId)
-                    }
+                    onChange={(donorAccountId) => {
+                      setFieldValue('donorAccountId', donorAccountId);
+                      setFieldTouched('donorAccountId', true, false);
+                    }}
+                    onBlur={handleBlur}
                     label={t('Partner Account')}
+                    textFieldProps={{
+                      error: !!errors.donorAccountId && touched.donorAccountId,
+                      helperText:
+                        touched.donorAccountId && errors.donorAccountId,
+                    }}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>

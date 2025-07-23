@@ -4,6 +4,7 @@ import {
   BaseTextFieldProps,
   CircularProgress,
   TextField,
+  TextFieldProps,
 } from '@mui/material';
 import { map, unionBy } from 'lodash';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
@@ -19,6 +20,7 @@ export interface DonorAccountAutocompleteProps {
   labelId?: string;
   label?: string;
   size?: BaseTextFieldProps['size'];
+  textFieldProps?: Partial<TextFieldProps>;
 }
 
 export const DonorAccountAutocomplete: React.FC<
@@ -33,6 +35,7 @@ export const DonorAccountAutocomplete: React.FC<
   labelId,
   label,
   size,
+  textFieldProps,
 }) => {
   const [searchForDonorAccounts, { loading, data: donorAccountData }] =
     useGetDonorAccountsLazyQuery();
@@ -66,6 +69,7 @@ export const DonorAccountAutocomplete: React.FC<
       renderInput={(params) => (
         <TextField
           {...params}
+          {...textFieldProps}
           size={size}
           variant="outlined"
           label={label}
