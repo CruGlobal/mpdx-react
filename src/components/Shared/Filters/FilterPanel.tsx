@@ -134,7 +134,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   const {
     activeFilters: selectedFilters,
     setActiveFilters,
-    clearSearchTerm,
+    clearFilters,
   } = useUrlFilters();
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
@@ -552,11 +552,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
     setDeleteFilterModalOpen(true);
   };
 
-  const handleClearAllClick = () => {
-    clearSearchTerm();
-    clearSelectedFilter();
-  };
-
   const tagsFilters = useMemo(() => {
     const tags = filters.find(
       (filter) => filter?.filters[0]?.filterKey === 'tags',
@@ -615,7 +610,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   marginInlineStart: theme.spacing(showSaveButton ? 2 : -1),
                 }}
                 disabled={noSelectedFilters}
-                onClick={handleClearAllClick}
+                onClick={clearFilters}
               >
                 {t('Clear All')}
               </LinkButton>
