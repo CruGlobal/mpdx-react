@@ -11,35 +11,18 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { Transaction } from '../StaffExpenseReport';
 import { downloadCsv } from '../downloadReport';
 //import { StaffExpenseReportQuery } from '../GetStaffExpense.generated';
 
 type RenderCell = GridColDef<ExpenseRow>['renderCell'];
 
-// interface ExpensesTableProps {
-//   accountListId: string;
-//   designationAccounts?: string[];
-//   loading?: boolean;
-//   data?: StaffExpenseReportQuery | undefined;
-//   error?: ApolloError | undefined;
-// }
-
-// Mock Data for testing purposes
 interface ExpensesTableProps {
   transactions: Transaction[];
-  designationAccounts?: DesignationAccount[];
+  loading?: boolean;
 }
-
-interface DesignationAccount {
-  id: string;
-  name: string;
-  accountNumber: string;
-}
-
-// End of mock data
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
@@ -79,14 +62,12 @@ export interface ExpenseRow {
   date: DateTime;
   description: string;
   amount: number;
-  category: string;
 }
 
 export const CreateExpenseRow = (data: Transaction): ExpenseRow => ({
-  date: DateTime.fromISO(data.date),
-  description: data.description,
-  amount: data.amount,
-  category: data.category,
+  date: DateTime.fromISO(data.month),
+  description: data.category,
+  amount: data.total,
 });
 
 export const ExpensesTable: React.FC<ExpensesTableProps> = ({
@@ -127,26 +108,12 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
     return null;
   };
 
-  const category: RenderCell = ({ row }) => (
-    <Tooltip title={t(row.category)}>
-      <Typography variant="body2" noWrap>
-        {row.category}
-      </Typography>
-    </Tooltip>
-  );
-
   const columns: GridColDef[] = [
     {
       field: 'date',
       headerName: t('Date'),
       width: 150,
       renderCell: date,
-    },
-    {
-      field: 'category',
-      headerName: t('Category'),
-      width: 150,
-      renderCell: category,
     },
     {
       field: 'description',
@@ -172,8 +139,10 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
 
   const convertedNegativeTransactions: Transaction[] = negativeTransactions.map(
     (tx) => ({
-      ...tx,
-      date: tx.date.toISODate() ?? '',
+      fundType: '',
+      category: tx.description,
+      total: tx.amount,
+      month: tx.date.toISODate() ?? '',
     }),
   );
 

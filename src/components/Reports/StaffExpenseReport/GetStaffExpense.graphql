@@ -1,22 +1,33 @@
-query StaffExpenseReport($accountId: ID!, $fundTypes: [String!]) {
-  reportsStaffExpenses(accountId: $accountId, fundTypes: $fundTypes) {
+query ReportsStaffExpenses(
+  $accountId: ID!
+  $startMonth: ISO8601Date
+  $endMonth: ISO8601Date
+) {
+  reportsStaffExpenses(
+    accountId: $accountId
+    startMonth: $startMonth
+    endMonth: $endMonth
+  ) {
+    accountId
     name
     status
+    startBalance
+    endBalance
     funds {
-      total
       fundType
+      total
       categories {
+        total
         averagePerMonth
         category
-        total
         subcategories {
+          subCategory
+          total
           averagePerMonth
           breakdownByMonth {
             month
             total
           }
-          subCategory
-          total
         }
         breakdownByMonth {
           month

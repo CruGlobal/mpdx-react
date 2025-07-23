@@ -11,16 +11,13 @@ import {
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { Transaction } from '../StaffExpenseReport';
 import { downloadCsv } from '../downloadReport';
 
 interface IncomeTableProps {
-  // accountListId: string;
-  // designationAccounts?: string[];
-  // fundTypes?: string[];
   transactions?: Transaction[];
 }
 
@@ -63,7 +60,6 @@ export interface IncomeRow {
   date: DateTime;
   description: string;
   transactionAmount: number;
-  category: string;
 }
 
 type RenderCell = GridColDef<IncomeRow>['renderCell'];
@@ -73,7 +69,6 @@ export const createIncomeRow = (
     description: string;
     date: string;
     amount: number;
-    category: string;
   },
   index: number,
 ): IncomeRow => ({
@@ -81,7 +76,6 @@ export const createIncomeRow = (
   date: DateTime.fromISO(transaction.date),
   description: transaction.description,
   transactionAmount: transaction.amount,
-  category: transaction.category,
 });
 
 const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
@@ -92,8 +86,17 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
   const incomeRows = useMemo(
     () =>
       (transactions ?? [])
-        .filter((transaction) => transaction.amount > 0)
-        .map((transaction, index) => createIncomeRow(transaction, index)),
+        .filter((transaction) => transaction.total > 0)
+        .map((transaction, index) =>
+          createIncomeRow(
+            {
+              date: transaction.month,
+              description: transaction.category,
+              amount: transaction.total,
+            },
+            index,
+          ),
+        ),
     [transactions],
   );
 
@@ -105,14 +108,6 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
     <Tooltip title={t(row.description)}>
       <Typography variant="body2" noWrap>
         {t(row.description)}
-      </Typography>
-    </Tooltip>
-  );
-
-  const category: RenderCell = ({ row }) => (
-    <Tooltip title={t(row.category)}>
-      <Typography variant="body2" noWrap>
-        {t(row.category)}
       </Typography>
     </Tooltip>
   );
@@ -139,12 +134,6 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
       renderCell: date,
     },
     {
-      field: 'category',
-      headerName: t('Category'),
-      flex: 1,
-      renderCell: category,
-    },
-    {
       field: 'description',
       headerName: t('Description'),
       flex: 1,
@@ -160,7 +149,7 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
 
   const getTotalIncome = () => {
     const total =
-      transactions?.reduce((sum, transaction) => sum + transaction.amount, 0) ??
+      transactions?.reduce((sum, transaction) => sum + transaction.total, 0) ??
       0;
     return total.toLocaleString(locale, { style: 'currency', currency: 'USD' });
   };
