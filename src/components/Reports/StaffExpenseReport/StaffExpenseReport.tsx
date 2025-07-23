@@ -10,6 +10,7 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useLocale } from 'src/hooks/useLocale';
+import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { ExpensesTable } from './Tables/ExpensesTable';
 import IncomeTable from './Tables/IncomeTable';
 import { downloadCsv } from './downloadReport';
@@ -179,6 +180,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             description: 'Electric Bill',
             date: '2025-07-19',
             amount: -210.0,
+            category: 'Benefit',
+          },
+          {
+            description: 'Electric Bill',
+            date: '2025-06-19',
+            amount: 210.0,
             category: 'Benefit',
           },
           {
@@ -431,15 +438,23 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box>
         <Box mt={2}>
           <Container>
-            <IncomeTable transactions={transactions} />
+            {transactions.some((tx) => tx.amount > 0) ? (
+              <IncomeTable transactions={transactions} />
+            ) : (
+              <EmptyReportTable title={t('No Income Transactions Found')} />
+            )}
           </Container>
         </Box>
-        <Box mt={4}>
+        <Box mt={2}>
           <Container>
-            <ExpensesTable
-              transactions={transactions}
-              designationAccounts={mockData.accountList.designationAccounts}
-            />
+            {transactions.some((tx) => tx.amount < 0) ? (
+              <ExpensesTable
+                transactions={transactions}
+                designationAccounts={mockData.accountList.designationAccounts}
+              />
+            ) : (
+              <EmptyReportTable title={t('No Expense Transactions Found')} />
+            )}
           </Container>
         </Box>
       </Box>
