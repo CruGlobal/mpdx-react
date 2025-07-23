@@ -3,7 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { Groups, Savings, Wallet } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Button, Container, Divider, Typography } from '@mui/material';
+import PrintIcon from '@mui/icons-material/Print';
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  SvgIcon,
+  Typography,
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
@@ -54,6 +62,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       endMonth: time.endOf('month').toISODate(),
     },
   });
+
+  const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
     month: 'long',
@@ -157,21 +167,45 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             >
               <Typography variant="h4">{t('Income and Expenses')}</Typography>
               {transactions && transactions.length > 0 ? (
-                <Button
-                  variant="text"
-                  size="small"
-                  sx={{
-                    textDecoration: 'underline',
-                    minWidth: 'unset',
-                    px: 0,
-                    py: 1,
-                  }}
-                  onClick={() => downloadCsv(transactions, 'full')}
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="flex-end"
+                  gap={1}
                 >
-                  <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-                    {t('Download Full Report')}
-                  </Typography>
-                </Button>
+                  <Button
+                    variant="text"
+                    size="small"
+                    sx={{
+                      textDecoration: 'underline',
+                      minWidth: 'unset',
+                      px: 0,
+                      py: 1,
+                    }}
+                    onClick={() => downloadCsv(transactions, 'full')}
+                  >
+                    <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                      {t('Download Full Report')}
+                    </Typography>
+                  </Button>
+                  <Button
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PrintIcon titleAccess={t('Print')} />
+                      </SvgIcon>
+                    }
+                    onClick={handlePrint}
+                    sx={{
+                      border: '1px solid',
+                      borderRadius: 1,
+                      ml: 2,
+                      px: 2,
+                      py: 1,
+                    }}
+                  >
+                    {t('Print')}
+                  </Button>
+                </Box>
               ) : null}
             </Box>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
