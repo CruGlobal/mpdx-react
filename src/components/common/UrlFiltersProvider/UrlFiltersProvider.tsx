@@ -69,9 +69,9 @@ export const getQueryFilters = (
 
 export interface UrlFiltersProviderProps {
   /**
-   * If there are no filters initially set in the URL, use these filters.
+   * If there are no filters in the URL, default to these filters.
    */
-  defaultInitialFilters?: DefaultFilters;
+  defaultFilters?: DefaultFilters;
 
   /**
    * Optional function to transform the filters before adding them to the URL. It can be used to
@@ -84,7 +84,7 @@ export interface UrlFiltersProviderProps {
 
 export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
   sanitizeFilters,
-  defaultInitialFilters,
+  defaultFilters: defaultInitialFilters = {},
   children,
 }) => {
   const router = useRouter();
@@ -96,7 +96,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
 
   // Extract the initial filters from the URL
   const [activeFilters, setActiveFilters] = useState<DefaultFilters>(
-    getQueryFilters(query) ?? { defaultInitialFilters },
+    () => getQueryFilters(query) ?? defaultInitialFilters,
   );
   const [searchTerm, setSearchTerm] = useState(
     getQueryParam(query, 'searchTerm') ?? '',
@@ -107,7 +107,7 @@ export const UrlFiltersProvider: React.FC<UrlFiltersProviderProps> = ({
 
   // Update the filters and search term when the URL changes
   useEffect(() => {
-    setActiveFilters(getQueryFilters(query) ?? {});
+    setActiveFilters(getQueryFilters(query) ?? defaultInitialFilters);
     setSearchTerm(getQueryParam(query, 'searchTerm') ?? '');
   }, [query]);
 

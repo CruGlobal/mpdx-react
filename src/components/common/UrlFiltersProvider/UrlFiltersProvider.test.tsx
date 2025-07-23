@@ -18,6 +18,7 @@ describe('useUrlFilters', () => {
       searchTerm: 'Search',
     },
   };
+  const defaultFilters = { default: 'value' };
 
   const sanitizeFilters = (filters: ContactFilterSetInput) =>
     omit(filters, 'contactIds');
@@ -27,7 +28,10 @@ describe('useUrlFilters', () => {
     children?: React.ReactNode;
   }> = ({ query, children }) => (
     <TestRouter router={{ ...router, query: query ?? router.query }}>
-      <UrlFiltersProvider sanitizeFilters={sanitizeFilters}>
+      <UrlFiltersProvider
+        sanitizeFilters={sanitizeFilters}
+        defaultFilters={defaultFilters}
+      >
         {children}
       </UrlFiltersProvider>
     </TestRouter>
@@ -243,5 +247,14 @@ describe('useUrlFilters', () => {
       wildcardSearch: 'Search',
       starred: true,
     });
+  });
+
+  it('should default filters to defaultFilters', () => {
+    const { result } = renderHook(() => useUrlFilters(), {
+      wrapper: Wrapper,
+      initialProps: { query: {} },
+    });
+
+    expect(result.current.activeFilters).toEqual(defaultFilters);
   });
 });

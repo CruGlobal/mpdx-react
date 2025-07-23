@@ -155,7 +155,7 @@ const FinancialAccountsPage: React.FC = () => {
   );
 
   return (
-    <UrlFiltersProvider defaultInitialFilters={{ defaultDateRange }}>
+    <UrlFiltersProvider defaultFilters={{ dateRange: defaultDateRange }}>
       <FinancialAccountsWrapper>
         <FinancialAccountEntries />
       </FinancialAccountsWrapper>
