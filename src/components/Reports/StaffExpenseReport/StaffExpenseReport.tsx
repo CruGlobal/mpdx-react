@@ -146,6 +146,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     }
   }, [selectedFund, time]);
 
+  const handleCardClick = (fundType: Fund['fundType']) => {
+    setSelectedFundType(fundType);
+  };
+
   return (
     <Box>
       <MultiPageHeader
@@ -216,38 +220,33 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 {t(data?.reportsStaffExpenses.accountId ?? '')}
               </Typography>
             </Box>
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-              gap={1}
-              mt={2}
-              mb={2}
-            >
-              <BalanceCard
-                icon={Wallet}
-                iconBgColor="#FF9800"
-                title={t('Staff Account Balance')}
-                transactions={transactions}
-                startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
-                endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
-              />
-              <BalanceCard
-                icon={Groups}
-                iconBgColor="#90CAF9"
-                title={t('Staff Conference Savings Balance')}
-                transactions={transactions}
-                startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
-                endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
-              />
-              <BalanceCard
-                icon={Savings}
-                iconBgColor="#588C87"
-                title={t('Staff Savings Balance')}
-                transactions={transactions}
-                startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
-                endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
-              />
+            <Box display="flex" flexWrap="wrap" gap={2}>
+              {allFunds.map((fund) => (
+                <BalanceCard
+                  key={fund.fundType}
+                  fundType={fund.fundType}
+                  icon={
+                    fund.fundType === 'Primary'
+                      ? Wallet
+                      : fund.fundType === 'Savings'
+                      ? Savings
+                      : Groups
+                  }
+                  iconBgColor={
+                    fund.fundType === 'Primary'
+                      ? '#FF9800'
+                      : fund.fundType === 'Savings'
+                      ? '#90CAF9'
+                      : '#588C87'
+                  }
+                  title={fund.fundType}
+                  transactions={transactions}
+                  isSelected={selectedFundType === fund.fundType}
+                  startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
+                  endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                  onClick={handleCardClick}
+                />
+              ))}
             </Box>
           </Box>
         </Container>

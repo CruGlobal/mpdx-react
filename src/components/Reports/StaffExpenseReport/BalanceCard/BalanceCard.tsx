@@ -1,24 +1,31 @@
 import React from 'react';
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
+import { Fund } from 'src/graphql/types.generated';
 
 type BalanceCardProps = {
+  fundType: Fund['fundType'];
   title: string;
   icon: React.ComponentType;
   transactions: Transaction[];
   iconBgColor?: string;
   startingBalance?: number;
   endingBalance?: number;
+  onClick?: (fundType: Fund['fundType']) => void;
+  isSelected?: boolean;
 };
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
+  fundType,
   title,
   icon: Icon,
   transactions,
   iconBgColor,
   startingBalance,
   endingBalance,
+  onClick,
+  isSelected = false,
 }) => {
   const { t } = useTranslation();
 
@@ -76,6 +83,19 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           {t('Total Transactions: ', { count: transactions.length })}
         </Typography>
       </Box>
+
+      <CardActionArea
+        onClick={() => {
+          onClick?.(fundType);
+        }}
+        sx={{ p: 1 }}
+      >
+        <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2">
+            {isSelected ? t('Selected Account') : t('View Account')}
+          </Typography>
+        </Typography>
+      </CardActionArea>
     </Card>
   );
 };
