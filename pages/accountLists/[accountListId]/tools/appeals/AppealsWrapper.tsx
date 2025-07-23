@@ -1,79 +1,113 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useGetUserOptionsLazyQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import {
+  AppealTourEnum,
   AppealsProvider,
+  AppealsViewModeEnum,
   TableViewModeEnum,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
+
+/**
+ * Extract the view mode from a string.
+ */
+const parseViewMode = (
+  viewMode: string | null | undefined,
+): AppealsViewModeEnum | null => {
+  if (typeof viewMode !== 'string') {
+    return null;
+  }
+
+  if (viewMode === TableViewModeEnum.List) {
+    return TableViewModeEnum.List;
+  }
+  // Default to flows if the view mode value is invalid
+  return TableViewModeEnum.Flows;
+};
 
 interface Props {
   children?: React.ReactNode;
 }
 
-export enum PageEnum {
-  DetailsPage = 'DetailsPage',
-  ContactsPage = 'ContactsPage',
-}
-
 export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, push } = router;
+  const { query } = router;
 
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
-  const [page, setPage] = useState<PageEnum>();
-  const [appealId, setAppealId] = useState<string | undefined>(undefined);
-  const [contactId, setContactId] = useState<string | string[] | undefined>(
-    undefined,
+
+  const appealIdParams = Array.isArray(query.appealId) ? query.appealId : [];
+  const appealId = appealIdParams[0];
+
+  const [viewMode, setViewMode] = useState(parseViewMode(appealIdParams[1]));
+  const [tour, setTour] = useState<AppealTourEnum | null>(
+    appealIdParams[2] === 'tour' ? AppealTourEnum.Start : null,
   );
 
-  const { appealId: appealIdParams, accountListId } = query;
-
+  // Load the initial view mode from preferences if it was not explicitly provided
+  const [loadUserOptions] = useGetUserOptionsLazyQuery();
   useEffect(() => {
-    if (appealIdParams === undefined) {
-      push({
-        pathname: '/accountLists/[accountListId]/tools/appeals',
-        query: {
-          accountListId,
-        },
-      });
-      return;
-    }
-    const length = appealIdParams.length;
-    setAppealId(appealIdParams[0]);
-    if (length === 1) {
-      setPage(PageEnum.DetailsPage);
-    } else if (
-      length === 2 &&
-      (appealIdParams[1].toLowerCase() === 'flows' ||
-        appealIdParams[1].toLowerCase() === 'list')
-    ) {
-      setPage(PageEnum.DetailsPage);
-      setContactId(appealIdParams);
-    } else if (length === 3 && appealIdParams[2].toLowerCase() === 'tour') {
-      setPage(PageEnum.ContactsPage);
-      setContactId(appealIdParams);
-    } else if (length > 2) {
-      setPage(PageEnum.DetailsPage);
-      setContactId(appealIdParams);
-    }
-  }, [appealIdParams, accountListId]);
+    if (viewMode === null) {
+      loadUserOptions().then(({ data }) => {
+        if (!data) {
+          return;
+        }
 
-  const doNothing = () => {};
+        const defaultView = parseViewMode(
+          data.userOptions.find((option) => option.key === 'contacts_view')
+            ?.value,
+        );
+        if (defaultView) {
+          setViewMode(defaultView);
+        }
+      });
+    }
+  }, [viewMode]);
+
+  const [updateUserOption] = useUpdateUserOptionMutation();
+  const setAndSaveViewMode = useCallback((newViewMode: AppealsViewModeEnum) => {
+    setViewMode(newViewMode);
+    updateUserOption({
+      variables: {
+        key: 'contacts_view',
+        value: newViewMode,
+      },
+    });
+  }, []);
+
+  const appealIdPrefix = useMemo(() => {
+    const appealIdPrefix = [appealId];
+    if (viewMode !== null) {
+      appealIdPrefix.push(viewMode);
+    }
+    if (viewMode === TableViewModeEnum.List && tour) {
+      appealIdPrefix.push('tour');
+    }
+    return appealIdPrefix;
+  }, [appealId, viewMode, tour]);
 
   return (
-    <UrlFiltersProvider>
-      <AppealsProvider
-        filterPanelOpen={filterPanelOpen}
-        setFilterPanelOpen={setFilterPanelOpen}
-        appealId={appealId}
-        contactId={contactId}
-        page={page}
-        viewMode={TableViewModeEnum.List}
-        setViewMode={doNothing}
-        userOptionsLoading={false}
-      >
-        {children}
-      </AppealsProvider>
-    </UrlFiltersProvider>
+    <ContactPanelProvider
+      contactIdParam="appealId"
+      contactIdPrefix={appealIdPrefix}
+      prefixMinLength={1}
+    >
+      <UrlFiltersProvider>
+        <AppealsProvider
+          filterPanelOpen={filterPanelOpen}
+          setFilterPanelOpen={setFilterPanelOpen}
+          appealId={appealId}
+          viewMode={viewMode}
+          setViewMode={setAndSaveViewMode}
+          tour={tour}
+          setTour={setTour}
+          userOptionsLoading={false}
+        >
+          {children}
+        </AppealsProvider>
+      </UrlFiltersProvider>
+    </ContactPanelProvider>
   );
 };

@@ -7,6 +7,7 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
 import {
@@ -56,8 +57,8 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     tour,
     contactsQueryResult,
     listAppealStatus: appealStatus,
-    contactDetailsOpen,
   } = React.useContext(AppealsContext) as AppealsType;
+  const { isOpen: contactPanelOpen } = useContactPanel();
   const { activeFilters } = useUrlFilters();
 
   const { data, loading, fetchMore } = contactsQueryResult;
@@ -140,7 +141,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           xs={isExcludedContact ? 4 : 6}
           className={classes.givingHeader}
         >
-          <Box justifyContent={contactDetailsOpen ? 'flex-end' : undefined}>
+          <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
             <Box>
               <Typography variant="subtitle1" fontWeight={800}>
                 {columnName}

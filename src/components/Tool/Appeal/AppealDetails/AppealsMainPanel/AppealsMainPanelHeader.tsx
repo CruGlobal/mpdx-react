@@ -56,9 +56,8 @@ export const AppealsMainPanelHeader: React.FC = () => {
     toggleSelectAll,
     selectionType,
     filterPanelOpen,
-    contactDetailsOpen,
     viewMode,
-    handleViewModeChange,
+    setViewMode,
     selectedIds,
   } = React.useContext(AppealsContext) as AppealsType;
   const { activeFilters } = useUrlFilters();
@@ -70,9 +69,8 @@ export const AppealsMainPanelHeader: React.FC = () => {
       page={PageEnum.Appeal}
       filterPanelOpen={filterPanelOpen}
       toggleFilterPanel={toggleFilterPanel}
-      contactDetailsOpen={contactDetailsOpen}
       onCheckAllItems={toggleSelectAll}
-      contactsView={viewMode}
+      contactsView={viewMode ?? undefined}
       totalItems={contactsQueryResult.data?.contacts.totalCount}
       headerCheckboxState={selectionType}
       selectedIds={selectedIds}
@@ -98,7 +96,7 @@ export const AppealsMainPanelHeader: React.FC = () => {
             <StyledToggleButtonGroup
               exclusive
               value={viewMode}
-              onChange={handleViewModeChange}
+              onChange={(_event, value) => setViewMode(value)}
             >
               <ToggleButton
                 value={TableViewModeEnum.List}

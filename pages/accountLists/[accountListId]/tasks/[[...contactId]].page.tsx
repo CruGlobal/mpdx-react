@@ -232,7 +232,6 @@ const PageContent: React.FC = () => {
                   page={PageEnum.Task}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
-                  contactDetailsOpen={isOpen}
                   onCheckAllItems={toggleSelectAll}
                   totalItems={data?.tasks?.totalCount}
                   headerCheckboxState={selectionType}

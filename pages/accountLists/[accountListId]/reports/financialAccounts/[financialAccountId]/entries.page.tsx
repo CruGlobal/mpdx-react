@@ -11,7 +11,6 @@ import {
   FinancialAccountType,
 } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
-import { ContextTypesEnum } from 'src/components/Shared/Filters/FilterPanel';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import {
   MultiPageMenu,
@@ -129,7 +128,6 @@ const FinancialAccountEntries = (): ReactElement => {
                   }
                   savedFilters={[]}
                   onClose={() => setPanelOpen(null)}
-                  contextType={ContextTypesEnum.FinancialAccountReport}
                   showSaveButton={false}
                 />
               ) : undefined

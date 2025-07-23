@@ -20,6 +20,7 @@ import {
 } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import {
   AppealStatusEnum,
@@ -89,10 +90,9 @@ export const ContactRow: React.FC<Props> = ({
   const {
     appealId,
     isRowChecked: isChecked,
-    contactDetailsOpen,
-    getContactUrl,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(AppealsContext) as AppealsType;
+  const { isOpen: contactPanelOpen, buildContactUrl } = useContactPanel();
   const [createPledgeModalOpen, setPledgeModalOpen] = useState(false);
   const [deletePledgeModalOpen, setDeletePledgeModalOpen] = useState(false);
   const [addExcludedContactModalOpen, setAddExcludedContactModalOpen] =
@@ -103,8 +103,6 @@ export const ContactRow: React.FC<Props> = ({
     excludedContacts,
     contactId: contact.id,
   });
-
-  const contactUrl = getContactUrl(contact.id).contactUrl;
 
   const { id: contactId, name } = contact;
 
@@ -145,7 +143,7 @@ export const ContactRow: React.FC<Props> = ({
     <>
       <ListButton
         component={NextLink}
-        href={contactUrl}
+        href={buildContactUrl(contact.id)}
         scroll={false}
         prefetch={false}
         shallow
@@ -213,7 +211,7 @@ export const ContactRow: React.FC<Props> = ({
             <Box
               display="flex"
               alignItems="center"
-              justifyContent={contactDetailsOpen ? 'flex-end' : undefined}
+              justifyContent={contactPanelOpen ? 'flex-end' : undefined}
             >
               <Box
                 display="flex"
