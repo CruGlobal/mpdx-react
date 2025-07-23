@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState } from 'react';
+import { Groups, Savings, Wallet } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Button, Container, Divider, Typography } from '@mui/material';
@@ -10,6 +11,7 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useLocale } from 'src/hooks/useLocale';
+import { BalanceCard } from './BalanceCard/BalanceCard';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { ExpensesTable } from './Tables/ExpensesTable';
 import IncomeTable from './Tables/IncomeTable';
@@ -369,31 +371,50 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               <Typography>{t('John Smith')}</Typography>
               <Typography>{t(accountListId)}</Typography>
             </Box>
-            <Box display="flex" flexDirection="column" gap={1}>
-              <Typography>
-                {t('Starting Balance:')}{' '}
-                <strong>
-                  {mockData.accountList.transactionReport.startingBalance.toLocaleString(
-                    undefined,
-                    {
-                      style: 'currency',
-                      currency: 'USD',
-                    },
-                  )}
-                </strong>
-              </Typography>
-              <Typography>
-                {t('Ending Balance:')}{' '}
-                <strong>
-                  {mockData.accountList.transactionReport.endingBalance.toLocaleString(
-                    undefined,
-                    {
-                      style: 'currency',
-                      currency: 'USD',
-                    },
-                  )}
-                </strong>
-              </Typography>
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+              gap={1}
+              mt={2}
+              mb={2}
+            >
+              <BalanceCard
+                icon={Wallet}
+                iconBgColor="#FF9800"
+                title={t('Staff Account Balance')}
+                transactions={transactions}
+                startingBalance={
+                  mockData.accountList.transactionReport.startingBalance
+                }
+                endingBalance={
+                  mockData.accountList.transactionReport.endingBalance
+                }
+              />
+              <BalanceCard
+                icon={Groups}
+                iconBgColor="#90CAF9"
+                title={t('Staff Conference Savings Balance')}
+                transactions={transactions}
+                startingBalance={
+                  mockData.accountList.transactionReport.startingBalance
+                }
+                endingBalance={
+                  mockData.accountList.transactionReport.endingBalance
+                }
+              />
+              <BalanceCard
+                icon={Savings}
+                iconBgColor="#588C87"
+                title={t('Staff Savings Balance')}
+                transactions={transactions}
+                startingBalance={
+                  mockData.accountList.transactionReport.startingBalance
+                }
+                endingBalance={
+                  mockData.accountList.transactionReport.endingBalance
+                }
+              />
             </Box>
           </Box>
         </Container>

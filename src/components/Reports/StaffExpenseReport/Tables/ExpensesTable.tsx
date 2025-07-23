@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { downloadCsv } from '../downloadReport';
@@ -36,12 +37,6 @@ interface DesignationAccount {
   id: string;
   name: string;
   accountNumber: string;
-}
-interface Transaction {
-  description: string;
-  date: string;
-  amount: number;
-  category: string;
 }
 
 // End of mock data
