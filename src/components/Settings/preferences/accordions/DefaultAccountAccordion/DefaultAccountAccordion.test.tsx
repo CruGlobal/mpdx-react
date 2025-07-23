@@ -34,7 +34,7 @@ const mutationSpy = jest.fn();
 const mockData = {
   user: {
     id: '1',
-    defaultAccountList: '1',
+    defaultAccountListId: '1',
     preferences: {
       id: '1',
       timeZone: 'us',
@@ -62,12 +62,12 @@ const mockData = {
 };
 
 interface ComponentsProps {
-  defaultAccountList: string;
+  defaultAccountListId: string;
   expandedAccordion: PreferenceAccordion | null;
 }
 
 const Components: React.FC<ComponentsProps> = ({
-  defaultAccountList,
+  defaultAccountListId,
   expandedAccordion,
 }) => (
   <SnackbarProvider>
@@ -78,8 +78,7 @@ const Components: React.FC<ComponentsProps> = ({
             handleAccordionChange={handleAccordionChange}
             expandedAccordion={expandedAccordion}
             data={mockData}
-            accountListId={accountListId}
-            defaultAccountList={defaultAccountList}
+            defaultAccountListId={defaultAccountListId}
           />
         </GqlMockedProvider>
       </ThemeProvider>
@@ -96,7 +95,7 @@ describe('Default Account Accordion', () => {
   it('should render accordion closed', () => {
     const { getByText, queryByRole } = render(
       <Components
-        defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
+        defaultAccountListId={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
         expandedAccordion={null}
       />,
     );
@@ -111,7 +110,7 @@ describe('Default Account Accordion', () => {
 
     const { getByRole } = render(
       <Components
-        defaultAccountList={value}
+        defaultAccountListId={value}
         expandedAccordion={PreferenceAccordion.DefaultAccount}
       />,
     );
@@ -126,7 +125,7 @@ describe('Default Account Accordion', () => {
   it('Saves the input', async () => {
     const { getByRole, getByText } = render(
       <Components
-        defaultAccountList={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
+        defaultAccountListId={'cbe2fe56-1525-4aee-8320-1ca7ccf09703'}
         expandedAccordion={PreferenceAccordion.DefaultAccount}
       />,
     );
