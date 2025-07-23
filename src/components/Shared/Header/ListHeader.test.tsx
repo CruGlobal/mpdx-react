@@ -5,11 +5,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
@@ -32,6 +30,7 @@ const mockedProps = {
   onSearchTermChanged,
 };
 const push = jest.fn();
+const replace = jest.fn();
 const mockEnqueue = jest.fn();
 
 jest.mock('src/hooks/useAccountListId');
@@ -53,12 +52,10 @@ jest.mock('../../Shared/MassActions/TasksMassActionsDropdown', () => ({
   ),
 }));
 
-type StarredFilter = ContactFilterSetInput | TaskFilterSetInput | undefined;
 interface ComponentsProps {
   selectedIds?: string[];
   page?: PageEnum;
   activeFilters?: boolean;
-  starredFilter?: StarredFilter | null;
   contactsView?: TableViewModeEnum;
   headerCheckboxState?: ListHeaderCheckBoxState;
   filterPanelOpen?: boolean;
@@ -68,11 +65,17 @@ interface ComponentsProps {
   showShowingCount?: boolean;
 }
 
+const router = {
+  query: { accountListId: '123' },
+  isReady: true,
+  push,
+  replace,
+};
+
 const Components = ({
   selectedIds = defaultSelectedIds,
   page = PageEnum.Contact,
   activeFilters = false,
-  starredFilter = {},
   contactsView,
   headerCheckboxState = ListHeaderCheckBoxState.Unchecked,
   filterPanelOpen = false,
@@ -81,35 +84,41 @@ const Components = ({
   totalItems,
   showShowingCount,
 }: ComponentsProps) => (
-  <ThemeProvider theme={theme}>
-    <I18nextProvider i18n={i18n}>
-      <GqlMockedProvider>
-        <SnackbarProvider>
-          <ListHeader
-            selectedIds={selectedIds}
-            page={page}
-            activeFilters={activeFilters}
-            starredFilter={starredFilter as StarredFilter}
-            contactsView={contactsView}
-            headerCheckboxState={headerCheckboxState}
-            filterPanelOpen={filterPanelOpen}
-            contactDetailsOpen={contactDetailsOpen}
-            buttonGroup={buttonGroup}
-            totalItems={totalItems}
-            showShowingCount={showShowingCount}
-            {...mockedProps}
-          />
-        </SnackbarProvider>
-      </GqlMockedProvider>
-    </I18nextProvider>
-  </ThemeProvider>
+  <TestRouter
+    router={{
+      ...router,
+      query: {
+        ...router.query,
+        filters: activeFilters
+          ? '%7B%22status%22%3A%5B%22APPOINTMENT_SCHEDULED%22%5D%7D'
+          : undefined,
+      },
+    }}
+  >
+    <ThemeProvider theme={theme}>
+      <I18nextProvider i18n={i18n}>
+        <GqlMockedProvider>
+          <SnackbarProvider>
+            <UrlFiltersProvider>
+              <ListHeader
+                selectedIds={selectedIds}
+                page={page}
+                contactsView={contactsView}
+                headerCheckboxState={headerCheckboxState}
+                filterPanelOpen={filterPanelOpen}
+                contactDetailsOpen={contactDetailsOpen}
+                buttonGroup={buttonGroup}
+                totalItems={totalItems}
+                showShowingCount={showShowingCount}
+                {...mockedProps}
+              />
+            </UrlFiltersProvider>
+          </SnackbarProvider>
+        </GqlMockedProvider>
+      </I18nextProvider>
+    </ThemeProvider>
+  </TestRouter>
 );
-
-const router = {
-  query: { accountListId: '123' },
-  isReady: true,
-  push,
-};
 
 const ButtonGroup: React.FC = () => {
   return (
@@ -285,8 +294,6 @@ describe('ListHeader', () => {
     expect(filterButton).toHaveStyle({
       backgroundColor: 'transparent',
     });
-    expect(toggleFilterPanel).not.toHaveBeenCalled();
-    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('filters button displays for active filters', async () => {
@@ -296,11 +303,11 @@ describe('ListHeader', () => {
       name: 'Toggle Filter Panel',
     });
 
-    expect(filterButton).toHaveStyle({
-      backgroundColor: theme.palette.cruYellow.main,
-    });
-    expect(toggleFilterPanel).not.toHaveBeenCalled();
-    expect(onSearchTermChanged).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(filterButton).toHaveStyle({
+        backgroundColor: theme.palette.cruYellow.main,
+      }),
+    );
   });
 
   it('filters button displays for active filters and filter panel open', async () => {
@@ -315,8 +322,6 @@ describe('ListHeader', () => {
     expect(filterButton).toHaveStyle({
       backgroundColor: theme.palette.cruYellow.main,
     });
-    expect(toggleFilterPanel).not.toHaveBeenCalled();
-    expect(onSearchTermChanged).not.toHaveBeenCalled();
   });
 
   it('filters button pressed', async () => {
@@ -342,36 +347,24 @@ describe('ListHeader', () => {
 
     expect(toggleFilterPanel).not.toHaveBeenCalled();
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    expect(onSearchTermChanged).toHaveBeenCalledWith(searchText);
-  });
-
-  it('press star filter button and set to true', async () => {
-    const { getByTestId } = render(<Components activeFilters={true} />);
-    const starFilterButton = getByTestId('star-filter-button');
-
-    userEvent.click(starFilterButton);
-
-    expect(toggleStarredFilter).toHaveBeenCalledWith({ starred: true });
-  });
-
-  it('reset the star filter', async () => {
-    const { getByTestId } = render(
-      <Components activeFilters={true} starredFilter={{ starred: true }} />,
+    await waitFor(() =>
+      expect(replace.mock.lastCall[0].query.searchTerm).toBe(searchText),
     );
-    const starFilterButton = getByTestId('star-filter-button');
+  });
 
-    userEvent.click(starFilterButton);
+  it('toggles star filter', async () => {
+    const { getByTestId } = render(<Components />);
 
-    expect(toggleStarredFilter).toHaveBeenCalledWith({});
+    userEvent.click(getByTestId('Outline Star Icon'));
+
+    userEvent.click(getByTestId('Filled Star Icon'));
+
+    expect(getByTestId('Outline Star Icon')).toBeInTheDocument();
   });
 
   it('renders the total count', async () => {
     const { getByText } = render(
       <Components
-        activeFilters={true}
-        starredFilter={{ starred: true }}
         contactsView={TableViewModeEnum.List}
         totalItems={100}
         showShowingCount={true}
@@ -382,12 +375,7 @@ describe('ListHeader', () => {
 
   it('does not renders the total count', async () => {
     const { queryByText } = render(
-      <Components
-        activeFilters={true}
-        starredFilter={{ starred: true }}
-        contactsView={TableViewModeEnum.Flows}
-        totalItems={100}
-      />,
+      <Components contactsView={TableViewModeEnum.Flows} totalItems={100} />,
     );
     expect(queryByText('Showing', { exact: false })).not.toBeInTheDocument();
   });
@@ -396,9 +384,7 @@ describe('ListHeader', () => {
     render(
       <Components
         page={PageEnum.Task}
-        activeFilters={true}
         headerCheckboxState={ListHeaderCheckBoxState.Checked}
-        starredFilter={{ starred: true }}
         contactsView={TableViewModeEnum.List}
         totalItems={100}
       />,
@@ -415,12 +401,7 @@ describe('ListHeader', () => {
   describe('Report', () => {
     it('does not render the total count or map/list view icons', async () => {
       const { queryByText, getByPlaceholderText, queryByTestId } = render(
-        <Components
-          selectedIds={[]}
-          starredFilter={null}
-          page={PageEnum.Report}
-          totalItems={100}
-        />,
+        <Components selectedIds={[]} page={PageEnum.Report} totalItems={100} />,
       );
       expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
       expect(queryByText('Actions')).not.toBeInTheDocument();

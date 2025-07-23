@@ -7,6 +7,7 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
 import {
   AppealHeaderInfo,
@@ -56,11 +57,9 @@ export const ContactsList: React.FC<ContactsListProps> = ({
     tour,
     contactsQueryResult,
     isFiltered,
-    searchTerm,
-    setActiveFilters,
-    activeFilters,
     contactDetailsOpen,
   } = React.useContext(AppealsContext) as AppealsType;
+  const { searchTerm, activeFilters, setActiveFilters } = useUrlFilters();
 
   const { data, loading, fetchMore } = contactsQueryResult;
 

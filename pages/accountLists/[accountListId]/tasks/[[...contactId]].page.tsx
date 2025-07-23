@@ -27,6 +27,10 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import {
+  UrlFiltersProvider,
+  useUrlFilters,
+} from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -43,7 +47,7 @@ import {
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
-import { useTasksContactContext } from './useTasksContactContext';
+import { removeTagsFromFilters } from './sanitizeFilters';
 
 export type ContactUrl = {
   contactUrl: string;
@@ -110,11 +114,9 @@ const PageContent: React.FC = () => {
   const {
     activeFilters,
     setActiveFilters,
-    starredFilter,
-    setStarredFilter,
     searchTerm,
-    setSearchTerm,
-  } = useTasksContactContext();
+    combinedFilters: tasksFilter,
+  } = useUrlFilters();
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
     key: 'tasks_filters_collapse',
     defaultValue: false,
@@ -137,15 +139,6 @@ const PageContent: React.FC = () => {
       ...typeDetails?.activeFiltersOptions,
     });
   };
-
-  const tasksFilter = useMemo(
-    () => ({
-      ...activeFilters,
-      ...starredFilter,
-      wildcardSearch: searchTerm as string,
-    }),
-    [activeFilters, starredFilter, searchTerm],
-  );
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
@@ -230,9 +223,7 @@ const PageContent: React.FC = () => {
                 <DynamicFilterPanel
                   filters={filterData?.accountList.taskFilterGroups}
                   savedFilters={savedFilters}
-                  selectedFilters={activeFilters}
                   onClose={toggleFilterPanel}
-                  onSelectedFiltersChanged={setActiveFilters}
                 />
               ) : undefined
             }
@@ -242,16 +233,11 @@ const PageContent: React.FC = () => {
               <>
                 <ListHeader
                   page={PageEnum.Task}
-                  activeFilters={isFiltered}
                   filterPanelOpen={filterPanelOpen}
                   toggleFilterPanel={toggleFilterPanel}
                   contactDetailsOpen={isOpen}
                   onCheckAllItems={toggleSelectAll}
-                  onSearchTermChanged={setSearchTerm}
-                  searchTerm={searchTerm}
                   totalItems={data?.tasks?.totalCount}
-                  starredFilter={starredFilter}
-                  toggleStarredFilter={setStarredFilter}
                   headerCheckboxState={selectionType}
                   massDeselectAll={deselectAll}
                   showShowingCount
@@ -384,9 +370,11 @@ const PageContent: React.FC = () => {
 };
 
 const TasksPage: React.FC = () => (
-  <ContactPanelProvider>
-    <PageContent />
-  </ContactPanelProvider>
+  <UrlFiltersProvider sanitizeFilters={removeTagsFromFilters}>
+    <ContactPanelProvider>
+      <PageContent />
+    </ContactPanelProvider>
+  </UrlFiltersProvider>
 );
 
 export const getServerSideProps = ensureSessionAndAccountList;

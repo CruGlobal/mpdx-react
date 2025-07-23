@@ -1,12 +1,10 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import {
-  AppealsContextProps,
   AppealsProvider,
+  TableViewModeEnum,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
-import { sanitizeFilters } from 'src/lib/sanitizeFilters';
-import { getQueryParam } from 'src/utils/queryParam';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 
 interface Props {
   children?: React.ReactNode;
@@ -19,15 +17,8 @@ export enum PageEnum {
 
 export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, replace, push, pathname } = router;
+  const { query, push } = router;
 
-  const urlFilters =
-    query?.filters && JSON.parse(decodeURI(query.filters as string));
-
-  const [activeFilters, setActiveFiltersRaw] = useState<ContactFilterSetInput>(
-    urlFilters ?? {},
-  );
-  const [starredFilter, setStarredFilter] = useState<ContactFilterSetInput>({});
   const [filterPanelOpen, setFilterPanelOpen] = useState<boolean>(false);
   const [page, setPage] = useState<PageEnum>();
   const [appealId, setAppealId] = useState<string | undefined>(undefined);
@@ -36,7 +27,6 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
   );
 
   const { appealId: appealIdParams, accountListId } = query;
-  const searchTerm = getQueryParam(query, 'searchTerm') ?? '';
 
   useEffect(() => {
     if (appealIdParams === undefined) {
@@ -68,52 +58,22 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
     }
   }, [appealIdParams, accountListId]);
 
-  const updateUrlFilters = (filters: ContactFilterSetInput) => {
-    const { filters: _, ...oldQuery } = query;
-
-    const sanitizedFilters = sanitizeFilters(filters);
-
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(Object.keys(sanitizedFilters).length
-          ? { filters: encodeURI(JSON.stringify(sanitizedFilters)) }
-          : undefined),
-      },
-    });
-  };
-
-  const setActiveFilters: AppealsContextProps['setActiveFilters'] = (
-    filters,
-  ) => {
-    updateUrlFilters(filters);
-    setActiveFiltersRaw(filters);
-  };
-
-  // In the future, we should build the URL based on the view, tour, and contactId like in
-  // ContactsWrapper. But for now, the contactId and search term are extracted from the URL so we
-  // don't need to handle setContactId or setSearchTerm. The contact id and search term are
-  // currently set by directly updating the URL.
   const doNothing = () => {};
 
   return (
-    <AppealsProvider
-      activeFilters={activeFilters}
-      setActiveFilters={setActiveFilters}
-      starredFilter={starredFilter}
-      setStarredFilter={setStarredFilter}
-      filterPanelOpen={filterPanelOpen}
-      setFilterPanelOpen={setFilterPanelOpen}
-      appealId={appealId}
-      contactId={contactId}
-      setContactId={doNothing}
-      getContactHrefObject={() => ({ pathname: '', query: {} })}
-      searchTerm={searchTerm}
-      setSearchTerm={doNothing}
-      page={page}
-    >
-      {children}
-    </AppealsProvider>
+    <UrlFiltersProvider>
+      <AppealsProvider
+        filterPanelOpen={filterPanelOpen}
+        setFilterPanelOpen={setFilterPanelOpen}
+        appealId={appealId}
+        contactId={contactId}
+        page={page}
+        viewMode={TableViewModeEnum.List}
+        setViewMode={doNothing}
+        userOptionsLoading={false}
+      >
+        {children}
+      </AppealsProvider>
+    </UrlFiltersProvider>
   );
 };

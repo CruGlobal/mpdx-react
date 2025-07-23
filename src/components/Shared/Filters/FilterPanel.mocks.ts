@@ -129,18 +129,6 @@ export const filterPanelTagsMock = gqlMock<FilterPanelGroupFragment>(
     },
   },
 );
-export const filterPanelZeroTagsMock = gqlMock<FilterPanelGroupFragment>(
-  FilterPanelGroupFragmentDoc,
-  {
-    mocks: {
-      name: 'Tags',
-      featured: false,
-      filters: [
-        { ...mockTagsFilter, options: [{ name: 'Any', value: '--any--' }] },
-      ],
-    },
-  },
-);
 
 export const filterPanelNoteSearchMock = gqlMock<FilterPanelGroupFragment>(
   FilterPanelGroupFragmentDoc,

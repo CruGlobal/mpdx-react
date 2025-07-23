@@ -29,6 +29,7 @@ import {
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { useContactsQuery } from '../../AppealsContext/contacts.generated';
@@ -66,16 +67,12 @@ export const ContactFlowColumn: React.FC<Props> = ({
   title,
   color,
   accountListId,
-  searchTerm,
   changeContactStatus,
 }) => {
-  const {
-    appealId,
-    sanitizedFilters,
-    starredFilter,
-    selectMultipleIds,
-    deselectMultipleIds,
-  } = React.useContext(AppealsContext) as AppealsType;
+  const { appealId, selectMultipleIds, deselectMultipleIds } = React.useContext(
+    AppealsContext,
+  ) as AppealsType;
+  const { combinedFilters: appealsFilters } = useUrlFilters();
   const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -84,13 +81,11 @@ export const ContactFlowColumn: React.FC<Props> = ({
 
   const contactsFilters = useMemo(
     () => ({
-      ...sanitizedFilters,
-      ...starredFilter,
+      ...appealsFilters,
       appeal: [appealId ?? ''],
       appealStatus,
-      wildcardSearch: searchTerm as string,
     }),
-    [sanitizedFilters, starredFilter, searchTerm, appealId],
+    [appealsFilters, appealId, appealStatus],
   );
 
   const { data, loading, fetchMore } = useContactsQuery({

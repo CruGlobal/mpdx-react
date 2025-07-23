@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -11,6 +11,7 @@ import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
+const replace = jest.fn();
 
 interface Mocks {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -19,10 +20,12 @@ interface Mocks {
 
 interface TestingComponentProps {
   routerHasContactId?: boolean;
+  routerHasSearchTerm?: boolean;
 }
 
 const TestingComponent: React.FC<TestingComponentProps> = ({
   routerHasContactId = false,
+  routerHasSearchTerm = false,
 }) => {
   const router = {
     query: {
@@ -30,9 +33,11 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       contactId: routerHasContactId
         ? ['00000000-0000-0000-0000-000000000000']
         : undefined,
+      searchTerm: routerHasSearchTerm ? 'John' : undefined,
     },
     isReady: true,
     push,
+    replace,
   };
 
   const mocks = {
@@ -151,7 +156,6 @@ describe('partnerGivingAnalysis page', () => {
       expect.objectContaining({
         query: {
           accountListId: 'account-list-1',
-          contactId: [],
         },
       }),
       undefined,
@@ -159,7 +163,7 @@ describe('partnerGivingAnalysis page', () => {
     );
   });
 
-  it('calls clearSearchInput', async () => {
+  it('updates filters', async () => {
     const { findByRole, getByRole, getByPlaceholderText } = render(
       <TestingComponent routerHasContactId />,
     );
@@ -169,7 +173,27 @@ describe('partnerGivingAnalysis page', () => {
       await findByRole('combobox', { name: 'Designation Account' }),
     );
     userEvent.click(getByRole('option', { name: 'Designation Account 1' }));
+
+    await waitFor(() =>
+      expect(replace.mock.lastCall[0].query).toEqual(
+        expect.objectContaining({
+          filters: '{"designationAccountId":["Sandwich"]}',
+          searchTerm: 'John',
+        }),
+      ),
+    );
+  }, 20000);
+
+  it('clears search term', async () => {
+    const { findByRole, getByRole } = render(
+      <TestingComponent routerHasContactId routerHasSearchTerm />,
+    );
+    userEvent.click(
+      await findByRole('combobox', { name: 'Designation Account' }),
+    );
+    userEvent.click(getByRole('option', { name: 'Designation Account 1' }));
     userEvent.click(getByRole('button', { name: 'Clear All' }));
-    expect(searchBar).toHaveValue('');
+
+    expect(replace.mock.lastCall[0].query.searchTerm).toBeUndefined();
   });
 });

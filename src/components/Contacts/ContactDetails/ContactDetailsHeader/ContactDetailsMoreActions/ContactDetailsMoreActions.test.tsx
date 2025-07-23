@@ -193,8 +193,6 @@ describe('ContactDetailsMoreActions', () => {
       expect.objectContaining({
         query: {
           accountListId,
-          contactId: [],
-          searchTerm: undefined,
         },
       }),
       undefined,
@@ -318,8 +316,6 @@ describe('ContactDetailsMoreActions', () => {
       expect.objectContaining({
         query: {
           accountListId,
-          contactId: [],
-          searchTerm: undefined,
         },
       }),
       undefined,

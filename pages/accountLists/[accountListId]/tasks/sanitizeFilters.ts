@@ -1,7 +1,7 @@
 import { TaskFilterSetInput } from 'src/graphql/types.generated';
 
 // Filter out anyTags when there aren't any tag filters present
-export const sanitizeFilters = ({
+export const removeTagsFromFilters = ({
   anyTags,
   ...filters
 }: TaskFilterSetInput): TaskFilterSetInput => {

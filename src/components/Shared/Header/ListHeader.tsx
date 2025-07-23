@@ -4,10 +4,7 @@ import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
@@ -77,22 +74,15 @@ export enum PageEnum {
 
 interface ListHeaderProps {
   page: PageEnum;
-  activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
   contactsView?: TableViewModeEnum;
   toggleFilterPanel: () => void;
   contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchTermChanged: (searchTerm: string) => void;
-  searchTerm?: string | string[];
   totalItems?: number;
   leftButtonGroup?: ReactElement;
   buttonGroup?: ReactElement;
-  starredFilter?: ContactFilterSetInput | TaskFilterSetInput;
-  toggleStarredFilter?: (
-    filter: ContactFilterSetInput | TaskFilterSetInput,
-  ) => void;
   selectedIds: string[];
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
@@ -101,25 +91,23 @@ interface ListHeaderProps {
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
   page,
-  activeFilters,
   headerCheckboxState,
   filterPanelOpen,
   contactDetailsOpen,
   toggleFilterPanel,
   onCheckAllItems,
-  onSearchTermChanged,
-  searchTerm,
   totalItems,
   leftButtonGroup,
   buttonGroup,
-  starredFilter,
-  toggleStarredFilter,
   contactsView,
   selectedIds,
   massDeselectAll,
   showShowingCount = false,
   isExcludedAppealPage = false,
 }) => {
+  const { activeFilters, searchTerm, setSearchTerm, starred, setStarred } =
+    useUrlFilters();
+
   const { t } = useTranslation();
 
   return (
@@ -142,7 +130,10 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton activeFilters={activeFilters} onClick={toggleFilterPanel}>
+        <FilterButton
+          activeFilters={Object.keys(activeFilters).length > 0}
+          onClick={toggleFilterPanel}
+        >
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (
@@ -152,7 +143,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         <SearchBox
           showContactSearchIcon={page === PageEnum.Task ? false : true}
           searchTerm={searchTerm}
-          onChange={onSearchTermChanged}
+          onChange={setSearchTerm}
           placeholder={
             page === PageEnum.Task ? t('Search Tasks') : t('Search Contacts')
           }
@@ -210,12 +201,12 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           />
         )}
 
-        {starredFilter && toggleStarredFilter && (
+        {page !== PageEnum.Report && (
           // This hidden doesn't remove from document
           <Hidden smDown>
             <StarFilterButton
-              starredFilter={starredFilter}
-              toggleStarredFilter={toggleStarredFilter}
+              starredFilter={starred}
+              toggleStarredFilter={setStarred}
             />
           </Hidden>
         )}
