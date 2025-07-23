@@ -64,10 +64,10 @@ export const FinancialAccountProvider: React.FC<
       isNavListOpen,
       designationAccounts,
       setDesignationAccounts,
-      panelOpen,
-      setPanelOpen,
       handleNavListToggle,
       handleFilterListToggle,
+      panelOpen,
+      setPanelOpen,
     }),
     [
       accountListId,
@@ -75,9 +75,10 @@ export const FinancialAccountProvider: React.FC<
       financialAccountQuery,
       isNavListOpen,
       designationAccounts,
-      panelOpen,
       handleNavListToggle,
       handleFilterListToggle,
+      panelOpen,
+      setPanelOpen,
     ],
   );
 

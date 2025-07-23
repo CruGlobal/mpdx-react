@@ -11,7 +11,6 @@ import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals
 import { GetUserOptionsQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
 import { parseSavedFilters } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
-import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import theme from 'src/theme';
 import {
@@ -86,7 +85,7 @@ const AppealStatusFilterTestComponent: React.FC<
 );
 
 const TestRender: React.FC = () => {
-  const { viewMode, setViewMode, appealId } = useContext<ContactFilterSetInput>(
+  const { viewMode, setViewMode, appealId } = useContext(
     AppealsContext,
   ) as AppealsType;
   return (
