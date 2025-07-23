@@ -1,3 +1,4 @@
+import { FocusEventHandler } from 'react';
 import {
   Autocomplete,
   AutocompleteProps,
@@ -15,11 +16,13 @@ interface CurrencyAutocompleteProps
   extends Partial<AutocompleteProps<string, boolean, boolean, boolean>> {
   textFieldProps?: Partial<TextFieldProps>;
   format?: PledgeCurrencyOptionFormatEnum;
+  onBlur?: FocusEventHandler<HTMLDivElement>;
 }
 
 export const CurrencyAutocomplete = ({
   textFieldProps,
   format = PledgeCurrencyOptionFormatEnum.Long,
+  onBlur,
   ...props
 }: CurrencyAutocompleteProps) => {
   const constants = useApiConstants();
@@ -49,6 +52,7 @@ export const CurrencyAutocomplete = ({
         return selectedCurrency.codeSymbolString ?? '';
       }}
       renderInput={(params) => <TextField {...params} {...textFieldProps} />}
+      onBlur={onBlur}
     />
   );
 };

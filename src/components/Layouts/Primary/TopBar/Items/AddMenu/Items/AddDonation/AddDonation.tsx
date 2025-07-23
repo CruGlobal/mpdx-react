@@ -27,6 +27,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
@@ -41,38 +42,40 @@ interface AddDonationProps {
 const donationSchema = yup.object({
   amount: yup
     .number()
-    .typeError('Amount must be a valid number')
-    .required()
+    .typeError(i18n.t('Amount must be a valid number'))
+    .required(i18n.t('Amount is required'))
     .test(
       'Is amount in valid currency format?',
-      'Amount must be in valid currency format',
+      i18n.t('Amount must be in valid currency format'),
       (amount) => /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
     )
     .test(
       'Is positive?',
-      'Must use a positive number for amount',
+      i18n.t('Must use a positive number for amount'),
       (value) => parseFloat(value as unknown as string) > 0,
     ),
   appealAmount: yup
     .number()
-    .typeError('Appeal amount must be a valid number')
+    .typeError(i18n.t('Appeal amount must be a valid number'))
     .nullable()
     .test(
       'Is appeal amount in valid currency format?',
-      'Appeal amount must be in valid currency format',
+      i18n.t('Appeal amount must be in valid currency format'),
       (amount) =>
         !amount || /\$?[0-9][0-9.,]*/.test(amount as unknown as string),
     )
     .test(
       'Is positive?',
-      'Must use a positive number for appeal amount',
+      i18n.t('Must use a positive number for appeal amount'),
       (value) => !value || parseFloat(value as unknown as string) > 0,
     ),
   appealId: yup.string().nullable(),
-  currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
-  donationDate: requiredDateTime(),
-  donorAccountId: yup.string().required(),
+  currency: yup.string().required(i18n.t('Currency is required')),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation account is required')),
+  donationDate: requiredDateTime(i18n.t('Date is required')),
+  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   memo: yup.string().nullable(),
   motivation: yup.string().nullable(),
   paymentMethod: yup.string().nullable(),
@@ -176,8 +179,8 @@ export const AddDonation = ({
     >
       {({
         values: { appealId, currency },
-        handleBlur,
         setFieldValue,
+        setFieldTouched,
         isSubmitting,
         isValid,
         errors,
@@ -208,6 +211,11 @@ export const AddDonation = ({
                             {...field}
                             size="small"
                             variant="outlined"
+                            onChange={(e) => {
+                              setFieldValue('amount', e.target.value);
+                              setFieldTouched('amount', true, false);
+                            }}
+                            onBlur={() => setFieldTouched('amount', true)}
                             fullWidth
                             type="text"
                             inputProps={{
@@ -246,9 +254,12 @@ export const AddDonation = ({
                         value={currency}
                         onChange={(_, currencyCode) => {
                           setFieldValue('currency', currencyCode);
+                          setFieldTouched('currency', true, false);
                         }}
+                        onBlur={() => setFieldTouched('currency', true)}
                         textFieldProps={{
-                          error: !!errors.currency,
+                          error: !!errors.currency && touched.currency,
+                          helperText: touched.currency && errors.currency,
                         }}
                         size="small"
                       />
@@ -282,9 +293,11 @@ export const AddDonation = ({
                             'aria-labelledby': 'date-label',
                           }}
                           {...field}
-                          onChange={(date) =>
-                            setFieldValue('donationDate', date)
-                          }
+                          onChange={(date) => {
+                            setFieldValue('donationDate', date);
+                          }}
+                          error={!!errors.donationDate}
+                          helperText={errors.donationDate as string}
                         />
                       )}
                     </FastField>
@@ -344,10 +357,20 @@ export const AddDonation = ({
                         <Box width="100%">
                           <DonorAccountAutocomplete
                             accountListId={accountListId}
-                            onChange={(donorAccountId) =>
-                              setFieldValue('donorAccountId', donorAccountId)
+                            onChange={(donorAccountId) => {
+                              setFieldValue('donorAccountId', donorAccountId);
+                              setFieldTouched('donorAccountId', true, false);
+                            }}
+                            onBlur={() =>
+                              setFieldTouched('donorAccountId', true)
                             }
-                            onBlur={handleBlur('donorAccountId')}
+                            textFieldProps={{
+                              error:
+                                !!errors.donorAccountId &&
+                                touched.donorAccountId,
+                              helperText:
+                                touched.donorAccountId && errors.donorAccountId,
+                            }}
                             value={field.value}
                             autocompleteId="partner-account-input"
                             labelId="partner-account-label"
@@ -383,6 +406,20 @@ export const AddDonation = ({
                             loading={designationAccountsLoading}
                             autoSelect
                             autoHighlight
+                            onChange={(_, designationAccountId) => {
+                              setFieldValue(
+                                'designationAccountId',
+                                designationAccountId,
+                              );
+                              setFieldTouched(
+                                'designationAccountId',
+                                true,
+                                false,
+                              );
+                            }}
+                            onBlur={() =>
+                              setFieldTouched('designationAccountId', true)
+                            }
                             options={
                               designationAccounts?.map(({ id }) => id) ?? []
                             }
@@ -399,6 +436,14 @@ export const AddDonation = ({
                                 {...params}
                                 size="small"
                                 variant="outlined"
+                                error={
+                                  !!errors.designationAccountId &&
+                                  touched.designationAccountId
+                                }
+                                helperText={
+                                  touched.designationAccountId &&
+                                  errors.designationAccountId
+                                }
                                 InputProps={{
                                   ...params.InputProps,
                                   'aria-labelledby':
@@ -418,12 +463,6 @@ export const AddDonation = ({
                               />
                             )}
                             value={field.value}
-                            onChange={(_, designationAccountId) =>
-                              setFieldValue(
-                                'designationAccountId',
-                                designationAccountId,
-                              )
-                            }
                           />
                         </Box>
                       )}
