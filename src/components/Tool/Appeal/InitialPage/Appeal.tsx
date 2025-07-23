@@ -105,7 +105,7 @@ const Appeal = ({
               className={classes.nameLink}
             >
               <NextLink
-                href={`/accountLists/${accountListId}/tools/appeals/appeal/${id}`}
+                href={`/accountLists/${accountListId}/tools/appeals/appeal/${id}/list`}
                 scroll={false}
               >
                 {name}

@@ -5,16 +5,9 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import {
-  AppealsContext,
-  AppealsType,
-} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../ContactsContext/ContactsContext';
 import {
   ContactDetailContext,
   ContactDetailsType,
@@ -37,11 +30,6 @@ import {
   preloadContactReferralTab,
 } from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
-
-interface ContactDetailsProps {
-  onClose: () => void;
-  contextType?: ContactContextTypesEnum;
-}
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
@@ -93,17 +81,11 @@ export enum TabKey {
   Notes = 'Notes',
 }
 
-export const ContactDetails: React.FC<ContactDetailsProps> = ({
-  onClose,
-  contextType = ContactContextTypesEnum.Contacts,
-}) => {
+export const ContactDetails: React.FC = () => {
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
-
-  const { accountListId, contactDetailsId: contactId } =
-    contextType === ContactContextTypesEnum.Contacts
-      ? (React.useContext(ContactsContext) as ContactsType)
-      : (React.useContext(AppealsContext) as AppealsType);
+  const accountListId = useAccountListId();
+  const { openContactId: contactId } = useContactPanel();
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
@@ -115,10 +97,8 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
         <ContactDetailsHeader
           accountListId={accountListId}
           contactId={contactId}
-          onClose={onClose}
           contactDetailsLoaded={contactDetailsLoaded}
           setContactDetailsLoaded={setContactDetailsLoaded}
-          contextType={contextType}
         />
       )}
       <TabContext value={selectedTabKey}>

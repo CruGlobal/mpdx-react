@@ -6,8 +6,8 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import theme from '../../../../../theme';
@@ -16,12 +16,15 @@ import { UpdateContactOtherMutation } from '../../ContactDetailsTab/Other/EditCo
 import { ContactDetailsMoreActions } from './ContactDetailsMoreActions';
 
 const accountListId = '111';
-const contactId = 'contact-1';
+const contactId = '00000000-0000-0000-0000-000000000000';
+const push = jest.fn();
 const router = {
-  query: { searchTerm: undefined, accountListId: accountListId },
-  push: jest.fn(),
+  query: {
+    accountListId,
+    contactId: [contactId],
+  },
+  push,
 };
-const onClose = jest.fn();
 
 const mockEnqueue = jest.fn();
 
@@ -54,15 +57,14 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -86,15 +88,14 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -119,15 +120,14 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -164,15 +164,14 @@ describe('ContactDetailsMoreActions', () => {
                 },
               }}
             >
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -190,7 +189,17 @@ describe('ContactDetailsMoreActions', () => {
         variant: 'success',
       }),
     );
-    expect(onClose).toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: {
+          accountListId,
+          contactId: [],
+          searchTerm: undefined,
+        },
+      }),
+      undefined,
+      { shallow: true },
+    );
   });
 
   it('should close referral modal', async () => {
@@ -205,15 +214,14 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -244,15 +252,14 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -280,15 +287,14 @@ describe('ContactDetailsMoreActions', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider cache={cache}>
-              <ContactsWrapper>
+              <ContactPanelProvider>
                 <ContactDetailProvider>
                   <ContactDetailsMoreActions
                     status={StatusEnum.AskInFuture}
                     contactId={contactId}
-                    onClose={onClose}
                   />
                 </ContactDetailProvider>
-              </ContactsWrapper>
+              </ContactPanelProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -308,6 +314,16 @@ describe('ContactDetailsMoreActions', () => {
     await waitFor(() =>
       expect(mockEvict).toHaveBeenCalledWith({ id: `Contact:${contactId}` }),
     );
-    expect(onClose).toHaveBeenCalled();
+    expect(push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: {
+          accountListId,
+          contactId: [],
+          searchTerm: undefined,
+        },
+      }),
+      undefined,
+      { shallow: true },
+    );
   });
 });

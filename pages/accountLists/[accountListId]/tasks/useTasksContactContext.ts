@@ -19,19 +19,16 @@ export const extractContactId = (query: ParsedUrlQuery): string | undefined => {
  * related to storing the active filters and the focused contact id and keeping the URL in sync with
  * the filters and contact id.
  */
-export const useTasksContactContext = (): ContactsContextProps => {
+export const useTasksContactContext = (): Omit<
+  ContactsContextProps,
+  'contactId' | 'setContactId'
+> => {
   const router = useRouter();
   const { query, replace, pathname } = router;
   const { accountListId } = query;
 
   // Extract the initial contact id from the URL
-  const [contactId, setContactId] = useState<string | undefined>(() =>
-    extractContactId(query),
-  );
-  // Update the contact id when the URL changes
-  useEffect(() => {
-    setContactId(extractContactId(query));
-  }, [query]);
+  const contactId = extractContactId(query);
 
   const [activeFilters, setActiveFilters] = useState<TaskFilterSetInput>(
     JSON.parse(decodeURIComponent(getQueryParam(query, 'filters') ?? '{}')),
@@ -46,7 +43,7 @@ export const useTasksContactContext = (): ContactsContextProps => {
     (contactId?: string) => {
       // Omit the filters and searchTerm from the previous query because we don't want them in the URL
       // if they are empty and Next.js will still add them to the URL query even if they are undefined.
-      // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm
+      // i.e. { filters: undefined, searchTerm: '' } results in a querystring of ?filters=&searchTerm=
       const { filters: _filters, searchTerm: _searchTerm, ...newQuery } = query;
 
       const queryContactId: string[] = [];
@@ -90,8 +87,6 @@ export const useTasksContactContext = (): ContactsContextProps => {
     setStarredFilter,
     filterPanelOpen,
     setFilterPanelOpen,
-    contactId,
-    setContactId,
     getContactHrefObject,
     searchTerm,
     setSearchTerm,

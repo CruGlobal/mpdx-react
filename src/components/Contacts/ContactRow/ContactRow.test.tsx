@@ -4,8 +4,8 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
 import {
@@ -21,9 +21,11 @@ import {
 const accountListId = 'account-list-1';
 
 const router = {
-  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-  query: { accountListId },
-  isReady: true,
+  pathname: '/accountLists/[accountListId]/contacts/[...contactId]',
+  query: {
+    accountListId,
+    contactId: ['00000000-0000-0000-0000-000000000000'],
+  },
 };
 
 const contactMock = {
@@ -63,10 +65,6 @@ const contact = gqlMock<ContactRowFragment>(ContactRowFragmentDoc, {
 jest.mock('../../../hooks/useTaskModal');
 
 const openTaskModal = jest.fn();
-const getContactHrefObject = jest.fn().mockReturnValue({
-  query: { accountListId, contactId: contact.id },
-});
-const contactDetailsOpen = true;
 const toggleSelectionById = jest.fn();
 const isRowChecked = jest.fn();
 
@@ -74,21 +72,19 @@ const Components = () => (
   <TestRouter router={router}>
     <GqlMockedProvider>
       <ThemeProvider theme={theme}>
-        <ContactsWrapper>
-          <ContactsContext.Provider
-            value={
-              {
-                accountListId,
-                getContactHrefObject,
-                contactDetailsOpen,
-                toggleSelectionById,
-                isRowChecked,
-              } as unknown as ContactsType
-            }
-          >
+        <ContactsContext.Provider
+          value={
+            {
+              accountListId,
+              toggleSelectionById,
+              isRowChecked,
+            } as unknown as ContactsType
+          }
+        >
+          <ContactPanelProvider>
             <ContactRow contact={contact} />
-          </ContactsContext.Provider>
-        </ContactsWrapper>
+          </ContactPanelProvider>
+        </ContactsContext.Provider>
       </ThemeProvider>
     </GqlMockedProvider>
   </TestRouter>
@@ -146,9 +142,7 @@ describe('ContactsRow', () => {
 
     const { getByTestId } = render(<Components />);
 
-    const rowButton = getByTestId('rowButton');
-    expect(rowButton).toBeInTheDocument();
-    expect(rowButton).toHaveAttribute(
+    expect(getByTestId('rowButton')).toHaveAttribute(
       'href',
       `/accountLists/${accountListId}/contacts/${contact.id}`,
     );
