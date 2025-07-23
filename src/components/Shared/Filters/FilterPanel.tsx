@@ -134,7 +134,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   selectedFilters,
   onSelectedFiltersChanged,
   onHandleClearSearch,
-  contextType = ContextTypesEnum.Contacts,
+  contextType,
   showSaveButton = true,
   ...boxProps
 }) => {
@@ -166,7 +166,9 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       ? contactsContext.handleClearAll
       : contextType === ContextTypesEnum.Appeals
       ? appealsContext.handleClearAll
-      : financialAccountContext.handleClearAll;
+      : contextType === ContextTypesEnum.FinancialAccountReport
+      ? financialAccountContext.handleClearAll
+      : () => {};
 
   const updateSelectedFilter = (name: FilterKey, value?: FilterValue) => {
     if (value && (!Array.isArray(value) || value.length > 0)) {

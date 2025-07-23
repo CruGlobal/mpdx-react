@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';
 import { EditIcon } from '../ContactDetailsTab/StyledComponents';
@@ -30,10 +30,8 @@ import { ContactHeaderStatusSection } from './ContactHeaderSection/ContactHeader
 interface Props {
   accountListId: string;
   contactId: string;
-  onClose: () => void;
   setContactDetailsLoaded: (value: boolean) => void;
   contactDetailsLoaded: boolean;
-  contextType?: ContactContextTypesEnum;
 }
 
 const DuplicateAlert = styled(Alert)(({ theme }) => ({
@@ -82,10 +80,8 @@ const HeaderSectionWrap = styled(Box)(({}) => ({
 export const ContactDetailsHeader: React.FC<Props> = ({
   accountListId,
   contactId,
-  onClose,
   setContactDetailsLoaded,
   contactDetailsLoaded,
-  contextType,
 }: Props) => {
   const { pathname } = useRouter();
   const { data } = useGetContactDetailsHeaderQuery({
@@ -100,6 +96,7 @@ export const ContactDetailsHeader: React.FC<Props> = ({
   });
   const loading = !data;
   const { t } = useTranslation();
+  const { closePanel: onClose } = useContactPanel();
 
   const [editPartnershipModalOpen, setEditPartnershipModalOpen] =
     useState(false);
@@ -203,8 +200,6 @@ export const ContactDetailsHeader: React.FC<Props> = ({
           <ContactDetailsMoreActions
             contactId={contactId}
             status={data?.contact.status ?? StatusEnum.Unresponsive}
-            onClose={onClose}
-            contextType={contextType}
           />
           <IconButton onClick={onClose}>
             <CloseButtonIcon

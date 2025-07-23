@@ -8,7 +8,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
@@ -19,16 +18,18 @@ interface Mocks {
 }
 
 interface TestingComponentProps {
-  routerContactId?: string;
+  routerHasContactId?: boolean;
 }
 
 const TestingComponent: React.FC<TestingComponentProps> = ({
-  routerContactId,
+  routerHasContactId = false,
 }) => {
   const router = {
     query: {
       accountListId: 'account-list-1',
-      contactId: routerContactId ? [routerContactId] : undefined,
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
     },
     isReady: true,
     push,
@@ -80,9 +81,7 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       <TestRouter router={router}>
         <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
-            <ContactsWrapper>
-              <PartnerGivingAnalysisPage />
-            </ContactsWrapper>
+            <PartnerGivingAnalysisPage />
           </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>
@@ -100,9 +99,7 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('renders contact panel', async () => {
-    const { findByRole } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByRole } = render(<TestingComponent routerHasContactId />);
 
     expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
@@ -147,19 +144,24 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('closes contact panel', async () => {
-    const { getByTestId } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByTestId } = render(<TestingComponent routerHasContactId />);
 
-    userEvent.click(getByTestId('ContactDetailsHeaderClose'));
+    userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/partnerGivingAnalysis/',
+      expect.objectContaining({
+        query: {
+          accountListId: 'account-list-1',
+          contactId: [],
+        },
+      }),
+      undefined,
+      { shallow: true },
     );
   });
 
   it('calls clearSearchInput', async () => {
     const { findByRole, getByRole, getByPlaceholderText } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
+      <TestingComponent routerHasContactId />,
     );
     const searchBar = getByPlaceholderText('Search Contacts');
     userEvent.type(searchBar, 'John');
