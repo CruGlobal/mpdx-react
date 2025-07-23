@@ -12,6 +12,7 @@ import {
   ContactDetailContext,
   ContactDetailsType,
 } from './ContactDetailContext';
+import { ContactDetailTabEnum } from './ContactDetailTab';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import {
   DynamicContactDetailsTab,
@@ -73,14 +74,6 @@ const ContactTab = styled(Tab)(({}) => ({
   '&:hover': { opacity: 1 },
 }));
 
-export enum TabKey {
-  Tasks = 'Tasks',
-  Donations = 'Donations',
-  Referrals = 'Referrals',
-  ContactDetails = 'ContactDetails',
-  Notes = 'Notes',
-}
-
 export const ContactDetails: React.FC = () => {
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
@@ -107,30 +100,30 @@ export const ContactDetails: React.FC = () => {
             onChange={handleChange}
             TabIndicatorProps={{ children: <span /> }}
           >
-            <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
+            <ContactTab value={ContactDetailTabEnum.Tasks} label={t('Tasks')} />
             <ContactTab
-              value={TabKey.Donations}
+              value={ContactDetailTabEnum.Donations}
               label={t('Donations')}
               onMouseEnter={preloadContactDonationsTab}
             />
             <ContactTab
-              value={TabKey.Referrals}
+              value={ContactDetailTabEnum.Referrals}
               label={t('Connections')}
               onMouseEnter={preloadContactReferralTab}
             />
             <ContactTab
-              value={TabKey.ContactDetails}
+              value={ContactDetailTabEnum.ContactDetails}
               label={t('Contact Details')}
               onMouseEnter={preloadContactDetailsTab}
             />
             <ContactTab
-              value={TabKey.Notes}
+              value={ContactDetailTabEnum.Notes}
               label={t('Notes')}
               onMouseEnter={preloadContactNotesTab}
             />
           </ContactTabs>
         </ContactTabsWrapper>
-        <TabPanelNoBottomPadding value={TabKey.Tasks}>
+        <TabPanelNoBottomPadding value={ContactDetailTabEnum.Tasks}>
           {contactId && accountListId && (
             <ContactTasksTab
               accountListId={accountListId}
@@ -139,7 +132,7 @@ export const ContactDetails: React.FC = () => {
             />
           )}
         </TabPanelNoBottomPadding>
-        <TabPanel value={TabKey.Donations}>
+        <TabPanel value={ContactDetailTabEnum.Donations}>
           {contactId && accountListId && (
             <DynamicContactDonationsTab
               accountListId={accountListId}
@@ -147,7 +140,7 @@ export const ContactDetails: React.FC = () => {
             />
           )}
         </TabPanel>
-        <TabPanel value={TabKey.Referrals}>
+        <TabPanel value={ContactDetailTabEnum.Referrals}>
           {contactId && accountListId && (
             <DynamicContactReferralTab
               accountListId={accountListId}
@@ -155,7 +148,7 @@ export const ContactDetails: React.FC = () => {
             />
           )}
         </TabPanel>
-        <TabPanel value={TabKey.ContactDetails}>
+        <TabPanel value={ContactDetailTabEnum.ContactDetails}>
           {contactId && accountListId && (
             <DynamicContactDetailsTab
               accountListId={accountListId}
@@ -163,7 +156,7 @@ export const ContactDetails: React.FC = () => {
             />
           )}
         </TabPanel>
-        <TabPanel value={TabKey.Notes}>
+        <TabPanel value={ContactDetailTabEnum.Notes}>
           {contactId && accountListId && (
             <DynamicContactNotesTab
               accountListId={accountListId}

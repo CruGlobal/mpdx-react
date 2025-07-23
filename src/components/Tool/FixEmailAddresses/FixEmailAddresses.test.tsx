@@ -6,13 +6,13 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
-import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   GetInvalidEmailAddressesQuery,
   UpdateEmailAddressesMutation,
   UpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
@@ -29,8 +29,9 @@ import {
 
 const accountListId = 'accountListId';
 const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/emailAddresses/[[...contactId]]',
   query: { accountListId },
-  isReady: true,
 };
 
 const mutationSpy = jest.fn();
@@ -65,23 +66,23 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <TestWrapper>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 1000, itemHeight: 100 }}
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 1000, itemHeight: 100 }}
+        >
+          <GqlMockedProvider<{
+            GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
+            EmailAddresses: EmailAddressesMutation;
+            UpdateEmailAddresses: UpdateEmailAddressesMutation;
+            UpdatePeople: UpdatePeopleMutation;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
           >
-            <GqlMockedProvider<{
-              GetInvalidEmailAddresses: GetInvalidEmailAddressesQuery;
-              EmailAddresses: EmailAddressesMutation;
-              UpdateEmailAddresses: UpdateEmailAddressesMutation;
-              UpdatePeople: UpdatePeopleMutation;
-            }>
-              mocks={mocks}
-              onCall={mutationSpy}
-            >
+            <ContactPanelProvider>
               <FixEmailAddresses accountListId={accountListId} />
-            </GqlMockedProvider>
-          </VirtuosoMockContext.Provider>
-        </TestWrapper>
+            </ContactPanelProvider>
+          </GqlMockedProvider>
+        </VirtuosoMockContext.Provider>
       </TestRouter>
     </ThemeProvider>
   </SnackbarProvider>

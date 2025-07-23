@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { DonationsReportTable } from './DonationsReportTable';
 
@@ -15,11 +16,13 @@ describe('DonationsReportTable', () => {
       <TestRouter>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider onCall={jest.fn()}>
-            <DonationsReportTable
-              accountListId={'abc'}
-              time={DateTime.now()}
-              setTime={setTime}
-            />
+            <ContactPanelProvider>
+              <DonationsReportTable
+                accountListId={'abc'}
+                time={DateTime.now()}
+                setTime={setTime}
+              />
+            </ContactPanelProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,

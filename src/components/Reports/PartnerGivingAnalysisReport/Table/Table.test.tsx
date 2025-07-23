@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { PartnerGivingAnalysisReportContact } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
@@ -10,6 +11,8 @@ import { PartnerGivingAnalysisReportTable } from './Table';
 import type { Order } from '../../Reports.type';
 
 const router = {
+  pathname:
+    '/accountLists/[accountListId]/reports/partnerGivingAnalysis/[[...contactId]]',
   query: {
     accountListId: 'account-list-1',
   },
@@ -100,13 +103,15 @@ const defaultProps = {
 const Components = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <PartnerGivingAnalysisReportTable
-        {...defaultProps}
-        contacts={
-          mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-            .contacts
-        }
-      />
+      <ContactPanelProvider>
+        <PartnerGivingAnalysisReportTable
+          {...defaultProps}
+          contacts={
+            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
+              .contacts
+          }
+        />
+      </ContactPanelProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -153,6 +158,9 @@ describe('PartnerGivingAnalysisReportTable', () => {
 
     expect(
       getByRole('link', { name: 'Ababa, Aladdin und Jasmine (Princess)' }),
-    ).toBeInTheDocument();
+    ).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/partnerGivingAnalysis/01',
+    );
   });
 });

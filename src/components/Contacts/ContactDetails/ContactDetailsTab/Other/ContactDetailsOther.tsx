@@ -4,9 +4,8 @@ import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import { formatLanguage } from 'src/lib/data/languages';
 import i18n from 'src/lib/i18n';
 import { ContactOtherFragment } from './ContactOther.generated';
@@ -59,11 +58,8 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   contact,
 }) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/contacts/`,
-  });
   const constants = useApiConstants();
+  const { buildContactUrl } = useContactPanel();
   const languages = constants?.languages || undefined;
   const {
     user,
@@ -78,7 +74,6 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   } = contact;
 
   const referredBy = contactReferralsToMe?.nodes[0]?.referredBy;
-  const contactUrl = getContactUrl(referredBy?.id);
 
   return (
     <Box>
@@ -112,7 +107,11 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
           </ContactOtherTextLabel>
           {referredBy && (
             <ReferralName variant="subtitle1">
-              <Link component={NextLink} href={contactUrl} shallow>
+              <Link
+                component={NextLink}
+                href={buildContactUrl(referredBy.id)}
+                shallow
+              >
                 {referredBy.name}
               </Link>
             </ReferralName>

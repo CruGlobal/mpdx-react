@@ -25,14 +25,13 @@ import * as yup from 'yup';
 import { ContactStatusSelect } from 'src/common/Selects/ContactStatusSelect/ContactStatusSelect';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { TabKey } from 'src/components/Contacts/ContactDetails/ContactDetails';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 import {
   CurrencyAutocomplete,
   PledgeCurrencyOptionFormatEnum,
 } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -204,12 +203,7 @@ const Contact: React.FC<Props> = ({
   const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
     useLocalizedConstants();
   const { appName } = useGetAppSettings();
-  const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/tools/fix/commitmentInfo/`,
-  });
-
-  const contactUrl = `${getContactUrl(id)}?tab=${TabKey.Donations}`;
+  const { buildContactUrl } = useContactPanel();
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';
 
@@ -314,7 +308,10 @@ const Contact: React.FC<Props> = ({
                         <Box display="flex" flexDirection="column" ml={2}>
                           <Link
                             component={NextLink}
-                            href={contactUrl}
+                            href={buildContactUrl(
+                              id,
+                              ContactDetailTabEnum.Donations,
+                            )}
                             shallow
                             data-testid="contactSelect"
                           >

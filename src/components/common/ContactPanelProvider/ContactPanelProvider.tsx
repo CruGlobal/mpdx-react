@@ -10,6 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -69,7 +70,7 @@ export interface ContactPanel {
    * Generate a url object that can be passed to `router.push` or `next/link`'s `href` prop as a
    * to link the specified contact. It will preserve the `pathname` and all other query params.
    */
-  buildContactUrl: (contactId: string) => UrlObject;
+  buildContactUrl: (contactId: string, tab?: ContactDetailTabEnum) => UrlObject;
 }
 
 const ContactPanelContext = createContext<ContactPanel | null>(null);
@@ -143,7 +144,10 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
   }, [contactIdPrefix]);
 
   const buildContactUrl = useCallback(
-    (newContactId: string | undefined): UrlObject => {
+    (
+      newContactId: string | undefined,
+      tab?: ContactDetailTabEnum,
+    ): UrlObject => {
       const newContactIdParamValue = contactIdPrefix
         ? [...contactIdPrefix]
         : [];
@@ -158,6 +162,11 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
       // Remove the contact id from the URL entirely if it is empty
       if (!newContactIdParamValue.length) {
         delete newQuery[contactIdParam];
+      }
+
+      // Add the contact detail tab to the query
+      if (typeof tab === 'string') {
+        newQuery.tab = tab;
       }
 
       return {

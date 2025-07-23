@@ -2,8 +2,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import Contact from './Contact';
 import {
@@ -12,8 +12,13 @@ import {
   InvalidNewsletterContactFragment,
 } from './InvalidNewsletter.generated';
 
-jest.mock('src/hooks/useAccountListId');
 const accountListId = 'accountListId';
+const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/sendNewsletter/[[...contactId]]',
+  query: { accountListId },
+};
+
 const TestComponent = ({
   primaryPerson,
   primaryAddress,
@@ -30,16 +35,18 @@ const TestComponent = ({
     primaryAddress: primaryAddress,
   };
   return (
-    <TestRouter>
+    <TestRouter router={router}>
       <ThemeProvider theme={theme}>
-        <Contact
-          contact={contact}
-          contactUpdates={[
-            { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
-          ]}
-          setContactUpdates={jest.fn()}
-          handleSingleConfirm={jest.fn()}
-        />
+        <ContactPanelProvider>
+          <Contact
+            contact={contact}
+            contactUpdates={[
+              { id: '', sendNewsletter: null as unknown as SendNewsletterEnum },
+            ]}
+            setContactUpdates={jest.fn()}
+            handleSingleConfirm={jest.fn()}
+          />
+        </ContactPanelProvider>
       </ThemeProvider>
     </TestRouter>
   );
@@ -188,8 +195,6 @@ describe('Fix Newsletter - Contact', () => {
   });
 
   it('should render link with correct href', async () => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
-
     const { findByRole } = render(
       <TestComponent
         primaryPerson={primaryPerson}

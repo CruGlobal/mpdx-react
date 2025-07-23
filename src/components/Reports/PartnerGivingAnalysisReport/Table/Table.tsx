@@ -13,8 +13,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -59,10 +58,7 @@ export const PartnerGivingAnalysisReportTable: FC<
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/reports/partnerGivingAnalysis/`,
-  });
+  const { buildContactUrl } = useContactPanel();
 
   return (
     <StickyTableContainer>
@@ -107,72 +103,69 @@ export const PartnerGivingAnalysisReportTable: FC<
           onRequestSort={onRequestSort}
         />
         <TableBody>
-          {contacts?.map((contact) => {
-            const contactUrl = getContactUrl(contact.id);
-            return (
-              <TableRow
-                key={contact.id}
-                hover
-                data-testid="PartnerGivingAnalysisReportTableRow"
-              >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={isRowChecked(contact.id)}
-                    onChange={() => onSelectOne(contact.id)}
-                    value={contact.id}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Link
-                    component={NextLink}
-                    href={contactUrl}
-                    onMouseEnter={preloadContactsRightPanel}
-                    style={{
-                      whiteSpace: 'nowrap',
-                      marginRight: theme.spacing(0.5),
-                    }}
-                  >
-                    {contact.name}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  {currencyFormat(
-                    contact.donationPeriodSum,
-                    contact.pledgeCurrency,
-                    locale,
-                  )}
-                </TableCell>
-                <TableCell>{contact.donationPeriodCount}</TableCell>
-                <TableCell>
-                  {currencyFormat(
-                    contact.donationPeriodAverage,
-                    contact.pledgeCurrency,
-                    locale,
-                  )}
-                </TableCell>
-                <TableCell>
-                  {currencyFormat(
-                    contact.lastDonationAmount,
-                    contact.lastDonationCurrency,
-                    locale,
-                  )}
-                </TableCell>
-                <TableCell>
-                  {dateFormatShort(
-                    DateTime.fromISO(contact.lastDonationDate),
-                    locale,
-                  )}
-                </TableCell>
-                <TableCell>
-                  {currencyFormat(
-                    contact.totalDonations,
-                    contact.pledgeCurrency,
-                    locale,
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {contacts.map((contact) => (
+            <TableRow
+              key={contact.id}
+              hover
+              data-testid="PartnerGivingAnalysisReportTableRow"
+            >
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={isRowChecked(contact.id)}
+                  onChange={() => onSelectOne(contact.id)}
+                  value={contact.id}
+                />
+              </TableCell>
+              <TableCell>
+                <Link
+                  component={NextLink}
+                  href={buildContactUrl(contact.id)}
+                  onMouseEnter={preloadContactsRightPanel}
+                  style={{
+                    whiteSpace: 'nowrap',
+                    marginRight: theme.spacing(0.5),
+                  }}
+                >
+                  {contact.name}
+                </Link>
+              </TableCell>
+              <TableCell>
+                {currencyFormat(
+                  contact.donationPeriodSum,
+                  contact.pledgeCurrency,
+                  locale,
+                )}
+              </TableCell>
+              <TableCell>{contact.donationPeriodCount}</TableCell>
+              <TableCell>
+                {currencyFormat(
+                  contact.donationPeriodAverage,
+                  contact.pledgeCurrency,
+                  locale,
+                )}
+              </TableCell>
+              <TableCell>
+                {currencyFormat(
+                  contact.lastDonationAmount,
+                  contact.lastDonationCurrency,
+                  locale,
+                )}
+              </TableCell>
+              <TableCell>
+                {dateFormatShort(
+                  DateTime.fromISO(contact.lastDonationDate),
+                  locale,
+                )}
+              </TableCell>
+              <TableCell>
+                {currencyFormat(
+                  contact.totalDonations,
+                  contact.pledgeCurrency,
+                  locale,
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </StickyTable>
     </StickyTableContainer>

@@ -18,7 +18,6 @@ import {
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const PartnerCurrencyReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -31,9 +30,6 @@ const PageContent: React.FC = () => {
   const { isOpen } = useContactPanel();
   const [isNavListOpen, setNavListOpen] = useState<boolean>(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/reports/partnerCurrency/`,
-  });
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -60,7 +56,6 @@ const PageContent: React.FC = () => {
             accountListId={accountListId}
             designationAccounts={designationAccounts}
             currencyType={TwelveMonthReportCurrencyType.Donor}
-            getContactUrl={getContactUrl}
             isNavListOpen={isNavListOpen}
             onNavListToggle={handleNavListToggle}
             title={t('Contributions by Partner Currency')}

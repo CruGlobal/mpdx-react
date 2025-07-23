@@ -2,9 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { fireEvent, render } from '__tests__/util/testingLibraryReactMock';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
@@ -36,6 +36,8 @@ let testData = {
 };
 const accountListId = 'accountListId';
 const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/commitmentInfo/[[...contactId]]',
   query: { accountListId: accountListId },
   push: jest.fn(),
 };
@@ -47,24 +49,26 @@ const TestComponent = ({
 }: {
   status?: StatusEnum | undefined;
 }) => (
-  <ThemeProvider theme={theme}>
-    <TestWrapper>
+  <TestRouter router={router}>
+    <ThemeProvider theme={theme}>
       <GqlMockedProvider>
-        <Contact
-          id={testData.id}
-          name={testData.name}
-          donations={testData.donations.nodes}
-          key={testData.name}
-          showModal={handleShowModal}
-          currentStatus={status}
-          amount={testData.amount}
-          amountCurrency={testData.amountCurrency}
-          frequencyValue={testData.frequencyValue}
-          avatar={testData.avatar}
-        />
+        <ContactPanelProvider>
+          <Contact
+            id={testData.id}
+            name={testData.name}
+            donations={testData.donations.nodes}
+            key={testData.name}
+            showModal={handleShowModal}
+            currentStatus={status}
+            amount={testData.amount}
+            amountCurrency={testData.amountCurrency}
+            frequencyValue={testData.frequencyValue}
+            avatar={testData.avatar}
+          />
+        </ContactPanelProvider>
       </GqlMockedProvider>
-    </TestWrapper>
-  </ThemeProvider>
+    </ThemeProvider>
+  </TestRouter>
 );
 
 describe('FixCommitmentContact', () => {
@@ -90,11 +94,7 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should render contact link correctly', async () => {
-    const { findByRole } = render(
-      <TestRouter router={router}>
-        <TestComponent />
-      </TestRouter>,
-    );
+    const { findByRole } = render(<TestComponent />);
 
     const contactName = await findByRole('heading', { name: 'Tester 1' });
 
@@ -133,11 +133,7 @@ describe('FixCommitmentContact', () => {
   });
 
   it('should render with correct styles', async () => {
-    const { getByTestId } = render(
-      <TestRouter router={router}>
-        <TestComponent />
-      </TestRouter>,
-    );
+    const { getByTestId } = render(<TestComponent />);
 
     const boxBottom = getByTestId('BoxBottom');
     expect(boxBottom.className).toEqual(expect.stringContaining('boxBottom'));
@@ -146,9 +142,7 @@ describe('FixCommitmentContact', () => {
 
   it('should render donation data', async () => {
     const { getByTestId, getByText } = render(
-      <TestRouter router={router}>
-        <TestComponent status={undefined} />
-      </TestRouter>,
+      <TestComponent status={undefined} />,
     );
     expect(getByText('ARM 50 Monthly')).toBeInTheDocument();
     const donationDate = getByTestId('donationDate');
@@ -182,20 +176,12 @@ describe('FixCommitmentContact', () => {
       },
     };
 
-    const { findByTestId } = render(
-      <TestRouter router={router}>
-        <TestComponent />
-      </TestRouter>,
-    );
+    const { findByTestId } = render(<TestComponent />);
     expect(await findByTestId('pledgeFrequency-input')).toHaveValue('');
   });
 
   it('changes pledgeCurrencies', async () => {
-    const { getByRole, findByRole } = render(
-      <TestRouter router={router}>
-        <TestComponent />
-      </TestRouter>,
-    );
+    const { getByRole, findByRole } = render(<TestComponent />);
     const CurrencyField = getByRole('combobox', { name: 'Currency' });
     expect(CurrencyField).toBeInTheDocument();
     userEvent.type(CurrencyField, 'usd');

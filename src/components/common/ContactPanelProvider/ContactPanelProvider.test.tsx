@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import TestRouter from '__tests__/util/TestRouter';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 import {
   ContactPanelProvider,
   extractContactId,
@@ -122,6 +123,22 @@ describe('useContactPanel', () => {
     expect(result.current.buildContactUrl(newContactId)).toEqual({
       pathname,
       query: { contactId: [newContactId] },
+    });
+  });
+
+  it('buildContactUrl should add the contact tab', () => {
+    const { result } = renderHook(() => useContactPanel(), {
+      wrapper: Wrapper,
+    });
+
+    expect(
+      result.current.buildContactUrl(
+        newContactId,
+        ContactDetailTabEnum.Donations,
+      ),
+    ).toEqual({
+      pathname,
+      query: { contactId: [newContactId], tab: 'Donations' },
     });
   });
 

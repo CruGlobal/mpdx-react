@@ -93,7 +93,6 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
       ) : !isEmpty ? (
         <>
           <ExpectedMonthlyTotalReportTable
-            accountListId={accountListId}
             title={t('Donations So Far This Month')}
             data={receivedDonations}
             donations={true}
@@ -101,7 +100,6 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
             currency={totalCurrency}
           />
           <ExpectedMonthlyTotalReportTable
-            accountListId={accountListId}
             title={t('Likely Partners This Month')}
             data={likelyDonations}
             donations={false}
@@ -109,7 +107,6 @@ export const ExpectedMonthlyTotalReport: React.FC<Props> = ({
             currency={totalCurrency}
           />
           <ExpectedMonthlyTotalReportTable
-            accountListId={accountListId}
             title={t('Possible Partners This Month')}
             data={unlikelyDonations}
             donations={false}

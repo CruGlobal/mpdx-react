@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDonationsTab } from './ContactDonationsTab';
@@ -31,12 +32,14 @@ describe('ContactDonationsTab', () => {
               },
             }}
           >
-            <ContactDetailProvider>
-              <ContactDonationsTab
-                accountListId={accountListId}
-                contactId={contactId}
-              />
-            </ContactDetailProvider>
+            <ContactPanelProvider>
+              <ContactDetailProvider>
+                <ContactDonationsTab
+                  accountListId={accountListId}
+                  contactId={contactId}
+                />
+              </ContactDetailProvider>
+            </ContactPanelProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,

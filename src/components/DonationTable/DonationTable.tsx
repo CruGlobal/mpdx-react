@@ -33,6 +33,7 @@ import {
   DynamicEditDonationModal,
   preloadEditDonationModal,
 } from '../EditDonationModal/DynamicEditDonationModal';
+import { useContactPanel } from '../common/ContactPanelProvider/ContactPanelProvider';
 import {
   DonationTableQueryVariables,
   DonationTableRowFragment,
@@ -46,7 +47,6 @@ export interface DonationTableProps {
   accountListId: string;
   filter: Partial<DonationTableQueryVariables>;
   loading?: boolean;
-  getContactUrl?: (contactId: string) => string;
   visibleColumnsStorageKey: string;
   emptyPlaceholder: React.ReactElement;
   hideDisplayName?: boolean;
@@ -142,13 +142,13 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   accountListId,
   filter,
   loading: skipped = false,
-  getContactUrl,
   visibleColumnsStorageKey,
   emptyPlaceholder,
   hideDisplayName = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { buildContactUrl } = useContactPanel();
   const [editingDonation, setEditingDonation] = useState<DonationRow | null>(
     null,
   );
@@ -197,21 +197,21 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const date: RenderCell = ({ row }) => dateFormatShort(row.date, locale);
 
-  const donor: RenderCell = ({ row }) => {
-    const contactUrl =
-      getContactUrl && row.contactId && getContactUrl(row.contactId);
-    return (
-      <Tooltip title={row.donorAccountName}>
-        {contactUrl ? (
-          <Link component={NextLink} href={contactUrl} shallow>
-            {row.donorAccountName}
-          </Link>
-        ) : (
-          <span>{row.donorAccountName}</span>
-        )}
-      </Tooltip>
-    );
-  };
+  const donor: RenderCell = ({ row }) => (
+    <Tooltip title={row.donorAccountName}>
+      {row.contactId ? (
+        <Link
+          component={NextLink}
+          href={buildContactUrl(row.contactId)}
+          shallow
+        >
+          {row.donorAccountName}
+        </Link>
+      ) : (
+        <span>{row.donorAccountName}</span>
+      )}
+    </Tooltip>
+  );
 
   const amount: RenderCell = ({ row }) => {
     if (row.currency !== row.foreignCurrency) {
