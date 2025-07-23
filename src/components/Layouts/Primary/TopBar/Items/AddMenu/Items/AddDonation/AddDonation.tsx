@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import {
-  Autocomplete,
   Box,
   CircularProgress,
   DialogActions,
@@ -8,7 +7,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  TextField,
   Theme,
   useMediaQuery,
 } from '@mui/material';
@@ -18,6 +16,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
+import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
@@ -27,6 +26,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { requiredDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
@@ -70,7 +70,9 @@ const donationSchema = yup.object({
     ),
   appealId: yup.string().nullable(),
   currency: yup.string().required(),
-  designationAccountId: yup.string().required(),
+  designationAccountId: yup
+    .string()
+    .required(i18n.t('Designation Account is required')),
   donationDate: requiredDateTime(),
   donorAccountId: yup.string().required(),
   memo: yup.string().nullable(),
@@ -377,46 +379,11 @@ export const AddDonation = ({
                     <FastField name="designationAccountId">
                       {({ field }: FieldProps) => (
                         <Box width="100%">
-                          <Autocomplete
+                          <DesignationAccountAutocomplete
                             {...field}
                             id="designation-account-input"
-                            loading={designationAccountsLoading}
-                            autoSelect
-                            autoHighlight
-                            options={
-                              designationAccounts?.map(({ id }) => id) ?? []
-                            }
-                            getOptionLabel={(accountId): string => {
-                              const account = designationAccounts?.find(
-                                ({ id }) => id === accountId,
-                              );
-                              return account
-                                ? `${account?.name} (${account.id})`
-                                : '';
-                            }}
-                            renderInput={(params): ReactElement => (
-                              <TextField
-                                {...params}
-                                size="small"
-                                variant="outlined"
-                                InputProps={{
-                                  ...params.InputProps,
-                                  'aria-labelledby':
-                                    'designation-account-label',
-                                  endAdornment: (
-                                    <>
-                                      {designationAccountsLoading && (
-                                        <CircularProgress
-                                          color="primary"
-                                          size={20}
-                                        />
-                                      )}
-                                      {params.InputProps.endAdornment}
-                                    </>
-                                  ),
-                                }}
-                              />
-                            )}
+                            accountListId={accountListId}
+                            onBlur={handleBlur('designationAccountId')}
                             value={field.value}
                             onChange={(_, designationAccountId) =>
                               setFieldValue(
@@ -424,6 +391,16 @@ export const AddDonation = ({
                                 designationAccountId,
                               )
                             }
+                            textFieldProps={{
+                              size: 'small',
+                              variant: 'outlined',
+                              error:
+                                !!errors.designationAccountId &&
+                                touched.designationAccountId,
+                              helperText:
+                                touched.designationAccountId &&
+                                errors.designationAccountId,
+                            }}
                           />
                         </Box>
                       )}
