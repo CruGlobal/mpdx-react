@@ -189,64 +189,55 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
 
   return (
     <>
-      {negativeTransactions.length > 0 ? (
-        <>
-          <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            mb={1}
-          >
-            <Typography variant="h6" mb={1}>
-              {t('Expenses')}
-            </Typography>
-            <Button
-              variant="text"
-              size="small"
-              sx={{
-                textDecoration: 'underline',
-                minWidth: 'unset',
-                padding: 0,
-              }}
-              onClick={() =>
-                downloadCsv(convertedNegativeTransactions, 'expense')
-              }
-            >
-              <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-                {t('Download Expense Report')}
-              </Typography>
-            </Button>
-          </Box>
-          <StyledGrid
-            rows={negativeTransactions}
-            columns={columns}
-            getRowId={(row) => `${row.date}-${row.description}`}
-            sortingOrder={['desc', 'asc']}
-            sortModel={sortModel}
-            onSortModelChange={setSortModel}
-            rowsPerPageOptions={[5, 10, 25]}
-            pageSize={pageSize}
-            onPageSizeChange={setPageSize}
-            autoHeight
-          />
-        </>
-      ) : (
-        <Typography>{t('No expenses found')}</Typography>
-      )}
-
-      {totalExpenses !== 0 && (
-        <Box display="flex" justifyContent="flex-end" mt={2} mb={2} mr={8.5}>
-          <Typography fontWeight="bold">
-            {t('Total Expenses:')}{' '}
-            <span style={{ color: 'red' }}>
-              {totalExpenses.toLocaleString(locale, {
-                style: 'currency',
-                currency: 'USD',
-              })}
-            </span>
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        mb={1}
+      >
+        <Typography variant="h6" mb={1}>
+          {t('Expenses')}
+        </Typography>
+        <Button
+          variant="text"
+          size="small"
+          sx={{
+            textDecoration: 'underline',
+            minWidth: 'unset',
+            padding: 0,
+          }}
+          onClick={() => downloadCsv(convertedNegativeTransactions, 'expense')}
+        >
+          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+            {t('Download Expense Report')}
           </Typography>
-        </Box>
-      )}
+        </Button>
+      </Box>
+      <StyledGrid
+        rows={negativeTransactions || []}
+        columns={columns}
+        getRowId={(row) => `${row.date}-${row.description}`}
+        sortingOrder={['desc', 'asc']}
+        sortModel={sortModel}
+        onSortModelChange={(size) => setSortModel(size)}
+        rowsPerPageOptions={[5, 10, 25]}
+        pageSize={pageSize}
+        onPageSizeChange={(model) => setPageSize(model)}
+        autoHeight
+        pagination
+        disableSelectionOnClick
+      />
+      <Box display="flex" justifyContent="flex-end" mt={2} mb={2} mr={8.5}>
+        <Typography fontWeight="bold">
+          {t('Total Expenses:')}{' '}
+          <span style={{ color: 'red' }}>
+            {totalExpenses.toLocaleString(locale, {
+              style: 'currency',
+              currency: 'USD',
+            })}
+          </span>
+        </Typography>
+      </Box>
     </>
   );
 };
