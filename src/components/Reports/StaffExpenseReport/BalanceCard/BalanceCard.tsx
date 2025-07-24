@@ -1,4 +1,5 @@
 import React from 'react';
+import { Visibility } from '@mui/icons-material';
 import { Box, Card, CardActionArea, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Fund } from 'src/graphql/types.generated';
@@ -102,20 +103,36 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         onClick={() => {
           onClick?.(fundType);
         }}
-        sx={{ p: 1, m: 0 }}
+        sx={{
+          p: 1,
+          m: 0,
+          minHeight: 48,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: isSelected ? 'center' : 'flex-start',
+        }}
       >
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          display="flex"
-          alignItems="center"
-          gap={1}
-        >
-          {/* {isSelected ? <Visibility fontSize="small" /> : null} */}
-          <Typography variant="body1" color={'primary.main'}>
-            {isSelected ? t('Currently Viewing') : t('View Account')}
+        {isSelected ? (
+          <Typography
+            variant="h6"
+            color="primary.main"
+            fontWeight={600}
+            textAlign="center"
+          >
+            {t('Currently Viewing')}
           </Typography>
-        </Typography>
+        ) : (
+          <Box display="flex" alignItems="center" gap={1}>
+            <Visibility fontSize="small" color="primary" />
+            <Typography
+              variant="body2"
+              color="primary.main"
+              sx={{ textTransform: 'uppercase', fontWeight: 500 }}
+            >
+              {t('View Account')}
+            </Typography>
+          </Box>
+        )}
       </CardActionArea>
     </Card>
   );
