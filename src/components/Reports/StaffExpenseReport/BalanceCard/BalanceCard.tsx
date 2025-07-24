@@ -1,17 +1,17 @@
 import React from 'react';
 import { Box, Card, CardActionArea, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { Fund } from 'src/graphql/types.generated';
 
 type BalanceCardProps = {
   fundType: Fund['fundType'];
   title: string;
   icon: React.ComponentType;
-  transactions: Transaction[];
   iconBgColor?: string;
-  startingBalance?: number;
-  endingBalance?: number;
+  startingBalance: number;
+  endingBalance: number;
+  transfersIn: number;
+  transfersOut: number;
   onClick?: (fundType: Fund['fundType']) => void;
   isSelected?: boolean;
 };
@@ -20,10 +20,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   fundType,
   title,
   icon: Icon,
-  transactions,
   iconBgColor,
   startingBalance,
   endingBalance,
+  transfersIn,
+  transfersOut,
   onClick,
   isSelected = false,
 }) => {
@@ -68,8 +69,24 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               })
             : ''}
         </Typography>
-        <Typography>{t('+ Transfers in: ')}</Typography>
-        <Typography>{t('- Transfers out: ')}</Typography>
+        <Typography>
+          {t('+ Transfers in: ')}
+          {transfersIn !== undefined
+            ? transfersIn.toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+              })
+            : ''}
+        </Typography>
+        <Typography>
+          {t('- Transfers out: ')}
+          {transfersOut !== undefined
+            ? transfersOut.toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+              })
+            : ''}
+        </Typography>
         <Typography>
           {t('= Ending Balance: ')}
           {endingBalance !== undefined
@@ -78,10 +95,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
                 currency: 'USD',
               })
             : ''}
-        </Typography>
-        {/* This is just here to supply dummy data for now */}
-        <Typography>
-          {t('Total Transactions: ', { count: transactions.length })}
         </Typography>
       </Box>
 

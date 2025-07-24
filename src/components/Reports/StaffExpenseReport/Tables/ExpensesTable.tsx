@@ -18,6 +18,7 @@ type RenderCell = GridColDef<ExpenseRow>['renderCell'];
 
 interface ExpensesTableProps {
   transactions: Transaction[];
+  transfersOut: number;
   loading?: boolean;
 }
 
@@ -69,6 +70,7 @@ export const CreateExpenseRow = (data: Transaction): ExpenseRow => ({
 
 export const ExpensesTable: React.FC<ExpensesTableProps> = ({
   transactions,
+  transfersOut,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -130,15 +132,6 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  const negativeTransactions = expenseTransactions.filter(
-    (tx) => tx.amount < 0,
-  );
-
-  const totalExpenses = negativeTransactions.reduce(
-    (sum, tx) => sum + tx.amount,
-    0,
-  );
-
   return (
     <>
       <Box
@@ -152,7 +145,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
         </Typography>
       </Box>
       <StyledGrid
-        rows={negativeTransactions || []}
+        rows={expenseTransactions || []}
         columns={columns}
         getRowId={(row) => `${row.date}-${row.description}`}
         sortingOrder={['desc', 'asc']}
@@ -169,7 +162,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
         <Typography fontWeight="bold">
           {t('Total Expenses:')}{' '}
           <span style={{ color: 'red' }}>
-            {totalExpenses.toLocaleString(locale, {
+            {transfersOut.toLocaleString(locale, {
               style: 'currency',
               currency: 'USD',
             })}

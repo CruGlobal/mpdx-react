@@ -17,6 +17,7 @@ import { Transaction } from '../StaffExpenseReport';
 
 interface IncomeTableProps {
   transactions?: Transaction[];
+  transfersIn: number;
 }
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
@@ -76,7 +77,10 @@ export const createIncomeRow = (
   transactionAmount: transaction.amount,
 });
 
-const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
+const IncomeTable: React.FC<IncomeTableProps> = ({
+  transactions,
+  transfersIn,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const [pageSize, setPageSize] = useState(5);
@@ -145,13 +149,6 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
     },
   ];
 
-  const getTotalIncome = () => {
-    const total =
-      transactions?.reduce((sum, transaction) => sum + transaction.total, 0) ??
-      0;
-    return total.toLocaleString(locale, { style: 'currency', currency: 'USD' });
-  };
-
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'date', sort: 'desc' },
   ]);
@@ -193,7 +190,12 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
         <Box display="flex" justifyContent="flex-end" mt={2} mr={6}>
           <Typography fontWeight="bold">
             {t('Total Income:')}{' '}
-            <span style={{ color: 'green' }}>{getTotalIncome()}</span>
+            <span style={{ color: 'green' }}>
+              {transfersIn.toLocaleString(locale, {
+                style: 'currency',
+                currency: 'USD',
+              })}
+            </span>
           </Typography>
         </Box>
       </Box>

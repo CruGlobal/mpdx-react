@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Groups, Savings, Settings, Wallet } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -111,14 +111,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // get selected fund based on the selected fund type
   const selectedFund = allFunds.find((f) => f.fundType === selectedFundType);
 
-  // filter transactions based on the selected fund and month
-  const filterTransactionsByTime = (targetTime: DateTime): Transaction[] => {
-    if (!selectedFund) {
-      return [];
-    }
-
+  // filter transactions based on fund and month
+  const filterTransactionsByTime = (
+    fund: Fund,
+    targetTime: DateTime,
+  ): Transaction[] => {
     return (
-      selectedFund.categories?.flatMap((category) =>
+      fund.categories?.flatMap((category) =>
         category.subcategories
           ? category.subcategories.flatMap(
               (subcategory) =>
@@ -132,7 +131,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   })
                   .map((tx) => ({
                     ...tx,
-                    fundType: selectedFund.fundType,
+                    fundType: fund.fundType,
                     category: `${category.category} - ${subcategory.subCategory}`,
                   })) ?? [],
             )
@@ -146,7 +145,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               })
               .map((tx) => ({
                 ...tx,
-                fundType: selectedFund.fundType,
+                fundType: fund.fundType,
                 category: category.category,
               })) ?? [],
       ) ?? []
@@ -156,24 +155,50 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const setPrevMonth = () => {
     const prevTime = time.minus({ months: 1 });
     setTime(prevTime);
-    setTransactions(filterTransactionsByTime(prevTime));
+
+    const newTransactions: Record<Fund['fundType'], Transaction[]> = {};
+
+    allFunds.forEach((fund) => {
+      const txs = filterTransactionsByTime(fund, prevTime);
+      newTransactions[fund.fundType] = txs;
+    });
+
+    setTransactions(newTransactions);
   };
 
   const setNextMonth = () => {
     const nextTime = time.plus({ months: 1 });
     setTime(nextTime);
-    setTransactions(filterTransactionsByTime(nextTime));
+
+    const newTransactions: Record<Fund['fundType'], Transaction[]> = {};
+
+    allFunds.forEach((fund) => {
+      const txs = filterTransactionsByTime(fund, nextTime);
+      newTransactions[fund.fundType] = txs;
+    });
+
+    setTransactions(newTransactions);
   };
 
-  // Filter transactions based on the selected fund and time
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<
+    Record<Fund['fundType'], Transaction[]>
+  >({});
 
-  // update transactions when the selected fund or time changes
+  // update transactions when fund or time changes
   useEffect(() => {
-    if (selectedFund) {
-      setTransactions(filterTransactionsByTime(time));
+    if (allFunds.length === 0) {
+      return;
     }
-  }, [selectedFund, time]);
+
+    const newTransactions: Record<Fund['fundType'], Transaction[]> = {};
+
+    allFunds.forEach((fund) => {
+      const fundTransactions = filterTransactionsByTime(fund, time);
+      newTransactions[fund.fundType] = fundTransactions;
+    });
+
+    setTransactions(newTransactions);
+  }, [allFunds, time]);
 
   const handleCardClick = (fundType: Fund['fundType']) => {
     setSelectedFundType(fundType);
@@ -183,6 +208,41 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     console.log('Settings clicked');
     setIsSettingsOpen(!isSettingsOpen);
   };
+
+  // filter transactions for each table in selected fund
+  const getPosOrNegTransactions = (
+    direction: string,
+    fundType: Fund['fundType'],
+  ) => {
+    const txs = transactions[fundType] ?? [];
+    return txs.filter((tx) =>
+      direction === 'positive' ? tx.total > 0 : tx.total < 0,
+    );
+  };
+
+  // get totals for expenses and income tables
+  const getFilteredTotals = (direction: string, fundType: Fund['fundType']) => {
+    const filtered = getPosOrNegTransactions(direction, fundType);
+    return filtered.reduce((sum, tx) => sum + tx.total, 0);
+  };
+
+  // get totals for transfers in and out
+  const transferTotals = useMemo(() => {
+    const totals: Record<Fund['fundType'], { in: number; out: number }> = {};
+
+    for (const [fundType, txs] of Object.entries(transactions)) {
+      totals[fundType as Fund['fundType']] = {
+        in: txs
+          .filter((tx) => tx.total > 0)
+          .reduce((sum, tx) => sum + tx.total, 0),
+        out: txs
+          .filter((tx) => tx.total < 0)
+          .reduce((sum, tx) => sum + tx.total, 0),
+      };
+    }
+
+    return totals;
+  }, [transactions]);
 
   return (
     <Box>
@@ -204,7 +264,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               }}
             >
               <Typography variant="h4">{t('Income and Expenses')}</Typography>
-              {transactions && transactions.length > 0 ? (
+              {transactions && Object.keys(transactions).length > 0 ? (
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -259,10 +319,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       : '#588C87'
                   }
                   title={fund.fundType}
-                  transactions={transactions}
                   isSelected={selectedFundType === fund.fundType}
                   startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
                   endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                  transfersIn={transferTotals[fund.fundType]?.in ?? 0}
+                  transfersOut={transferTotals[fund.fundType]?.out ?? 0}
                   onClick={handleCardClick}
                 />
               ))}
@@ -314,7 +375,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       </Box>
       <Box>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
-          <DownloadButtonGroup transactions={transactions} />
+          <DownloadButtonGroup
+            transactions={transactions[selectedFundType ?? ''] ?? []}
+          />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end">
             <Button
               variant="outlined"
@@ -351,8 +414,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         />
         <Box mt={2}>
           <Container>
-            {transactions.some((tx) => tx.total > 0) ? (
-              <IncomeTable transactions={transactions} />
+            {selectedFund &&
+            transactions[selectedFund.fundType]?.some((tx) => tx.total > 0) ? (
+              <IncomeTable
+                transactions={getPosOrNegTransactions(
+                  'positive',
+                  selectedFund?.fundType,
+                )}
+                transfersIn={getFilteredTotals(
+                  'positive',
+                  selectedFund?.fundType,
+                )}
+              />
             ) : (
               <EmptyReportTable title={t('No Income Transactions Found')} />
             )}
@@ -360,8 +433,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         </Box>
         <Box mt={2} mb={4}>
           <Container>
-            {transactions.some((tx) => tx.total < 0) ? (
-              <ExpensesTable transactions={transactions} />
+            {selectedFund &&
+            transactions[selectedFund.fundType]?.some((tx) => tx.total < 0) ? (
+              <ExpensesTable
+                transactions={getPosOrNegTransactions(
+                  'negative',
+                  selectedFund?.fundType,
+                )}
+                transfersOut={getFilteredTotals(
+                  'negative',
+                  selectedFund?.fundType,
+                )}
+              />
             ) : (
               <EmptyReportTable title={t('No Expense Transactions Found')} />
             )}
