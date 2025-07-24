@@ -81,7 +81,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         <Typography>
           {t('- Transfers out: ')}
           {transfersOut !== undefined
-            ? transfersOut.toLocaleString(undefined, {
+            ? Math.abs(transfersOut).toLocaleString(undefined, {
                 style: 'currency',
                 currency: 'USD',
               })
