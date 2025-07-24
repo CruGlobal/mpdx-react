@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
-import { Groups, Savings, Wallet } from '@mui/icons-material';
+import { Groups, Savings, Settings, Wallet } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PrintIcon from '@mui/icons-material/Print';
@@ -26,11 +26,11 @@ import {
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { BalanceCard } from './BalanceCard/BalanceCard';
+import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { ExpensesTable } from './Tables/ExpensesTable';
 import IncomeTable from './Tables/IncomeTable';
-import { downloadCsv } from './downloadReport';
 
 export interface Transaction extends BreakdownByMonth {
   fundType: Fund['fundType'];
@@ -201,21 +201,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   gap={1}
                 >
                   <Button
-                    variant="text"
-                    size="small"
-                    sx={{
-                      textDecoration: 'underline',
-                      minWidth: 'unset',
-                      px: 0,
-                      py: 1,
-                    }}
-                    onClick={() => downloadCsv(transactions, 'full')}
-                  >
-                    <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-                      {t('Download Full Report')}
-                    </Typography>
-                  </Button>
-                  <Button
                     startIcon={
                       <SvgIcon fontSize="small">
                         <PrintIcon titleAccess={t('Print')} />
@@ -274,7 +259,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           </Box>
         </Container>
       </Box>
-      <Box mt={3} mb={3}>
+      <Box mt={2} mb={2}>
         <Container>
           <Divider></Divider>
         </Container>
@@ -309,6 +294,38 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               {t('Next Month')}
             </Button>
           </Box>
+        </Container>
+      </Box>
+      <Box mt={2} mb={2}>
+        <Container>
+          <Divider></Divider>
+        </Container>
+      </Box>
+      <Box>
+        <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
+          <DownloadButtonGroup transactions={transactions} />
+          <Box display={'flex'} flexGrow={1} justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              startIcon={<Settings />}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                borderColor: 'black',
+                '&:hover': {
+                  backgroundColor: '#f5f5f5',
+                  borderColor: 'black',
+                },
+              }}
+            >
+              {t('Settings')}
+            </Button>
+          </Box>
+        </Container>
+      </Box>
+      <Box mt={2} mb={2}>
+        <Container>
+          <Divider></Divider>
         </Container>
       </Box>
       <Box>
