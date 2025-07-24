@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Box,
-  Button,
   CircularProgress,
   LinearProgress,
   Tooltip,
@@ -15,7 +14,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { Transaction } from '../StaffExpenseReport';
-import { downloadCsv } from '../downloadReport';
 
 interface IncomeTableProps {
   transactions?: Transaction[];
@@ -176,19 +174,6 @@ const IncomeTable: React.FC<IncomeTableProps> = ({ transactions }) => {
         mb={2}
       >
         <Typography variant="h6">{t('Income')}</Typography>
-        {/* Only display download button if there are existing transactions */}
-        {transactions && transactions.length > 0 ? (
-          <Button
-            variant="text"
-            size="small"
-            sx={{ textDecoration: 'underline', minWidth: 'unset', padding: 0 }}
-            onClick={() => downloadCsv(transactions, 'income')}
-          >
-            <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-              {t('Download Income Report')}
-            </Typography>
-          </Button>
-        ) : null}
       </Box>
       <Box width="100%">
         <StyledGrid

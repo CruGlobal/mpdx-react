@@ -38,7 +38,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         minWidth: 0,
         maxWidth: 'none',
         fontSize: '1.25rem',
-        borderRadius: 1,
+        boxShadow: isSelected ? 3 : 1,
+        transition: 'box-shadow 0.3s ease-in-out',
       }}
     >
       <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
@@ -88,11 +89,18 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         onClick={() => {
           onClick?.(fundType);
         }}
-        sx={{ p: 1 }}
+        sx={{ p: 1, m: 0 }}
       >
-        <Typography variant="body2" color="textSecondary">
-          <Typography variant="body2">
-            {isSelected ? t('Selected Account') : t('View Account')}
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          display="flex"
+          alignItems="center"
+          gap={1}
+        >
+          {/* {isSelected ? <Visibility fontSize="small" /> : null} */}
+          <Typography variant="body1" color={'primary.main'}>
+            {isSelected ? t('Currently Viewing') : t('View Account')}
           </Typography>
         </Typography>
       </CardActionArea>

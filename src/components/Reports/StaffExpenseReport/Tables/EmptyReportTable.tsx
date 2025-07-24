@@ -29,7 +29,7 @@ export const EmptyReportTable: React.FC<Props> = ({ title }) => {
   const { t } = useTranslation();
 
   return (
-    <BoxWrapper boxShadow={3}>
+    <BoxWrapper boxShadow={3} sx={{ marginBottom: 4 }}>
       <StyledLocalAtmIcon fontSize="large" />
       <Typography variant="h5">{t(title)}</Typography>
       <Typography>{t('No data to display for this time period.')}</Typography>
