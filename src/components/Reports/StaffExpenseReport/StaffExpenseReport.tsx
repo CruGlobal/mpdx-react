@@ -1,6 +1,12 @@
 /* eslint-disable no-console */
 import React, { useEffect, useMemo, useState } from 'react';
-import { Groups, Savings, Settings, Wallet } from '@mui/icons-material';
+import {
+  FilterListOff,
+  Groups,
+  Savings,
+  Settings,
+  Wallet,
+} from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PrintIcon from '@mui/icons-material/Print';
@@ -59,6 +65,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const locale = useLocale();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters | null | undefined>(null);
+  const [isFilterDateSelected, setIsFilterDateSelected] = useState(
+    Boolean(
+      filters &&
+        (filters.startDate || filters.endDate || filters.selectedDateRange),
+    ),
+  );
 
   // temporary console log to check filters
   console.log(filters);
@@ -299,7 +311,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 {t(data?.reportsStaffExpenses.accountId ?? '')}
               </Typography>
             </Box>
-            <Box display="flex" flexWrap="wrap" gap={2}>
+            <Box
+              display="flex"
+              flexWrap="wrap"
+              gap={2}
+              sx={{
+                flexDirection: { xs: 'column', sm: 'row' },
+              }}
+            >
               {allFunds.map((fund) => (
                 <BalanceCard
                   key={fund.fundType}
@@ -345,43 +364,72 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               gap: 2,
             }}
           >
-            <Typography variant="h6">{timeTitle}</Typography>
-            <Button
-              style={{ marginLeft: 'auto', maxHeight: 35 }}
-              variant="contained"
-              startIcon={<ChevronLeftIcon />}
-              size="small"
-              onClick={setPrevMonth}
-            >
-              {t('Previous Month')}
-            </Button>
-            <Button
-              style={{ maxHeight: 35 }}
-              variant="contained"
-              endIcon={<ChevronRightIcon />}
-              size="small"
-              onClick={setNextMonth}
-              disabled={hasNext}
-            >
-              {t('Next Month')}
-            </Button>
+            {!filters && <Typography variant="h6">{timeTitle}</Typography>}
+            {!isFilterDateSelected ? (
+              <>
+                <Button
+                  style={{ marginLeft: 'auto', maxHeight: 35 }}
+                  variant="contained"
+                  startIcon={<ChevronLeftIcon />}
+                  size="small"
+                  onClick={setPrevMonth}
+                >
+                  {t('Previous Month')}
+                </Button>
+                <Button
+                  style={{ maxHeight: 35 }}
+                  variant="contained"
+                  endIcon={<ChevronRightIcon />}
+                  size="small"
+                  onClick={setNextMonth}
+                  disabled={hasNext}
+                >
+                  {t('Next Month')}
+                </Button>
+              </>
+            ) : null}
           </Box>
         </Container>
       </Box>
-      <Box mt={2} mb={2}>
-        <Container>
-          <Divider></Divider>
-        </Container>
-      </Box>
+      {!isFilterDateSelected && (
+        <Box mt={2} mb={2}>
+          <Container>
+            <Divider></Divider>
+          </Container>
+        </Box>
+      )}
       <Box>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
             transactions={transactions[selectedFundType ?? ''] ?? []}
           />
-          <Box display={'flex'} flexGrow={1} justifyContent="flex-end">
+          <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
+            {isFilterDateSelected ? (
+              <Button
+                variant="outlined"
+                startIcon={<FilterListOff />}
+                size="small"
+                onClick={() => {
+                  setFilters(null);
+                  setIsFilterDateSelected(false);
+                }}
+                sx={{
+                  backgroundColor: 'white',
+                  color: 'black',
+                  borderColor: 'black',
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                    borderColor: 'black',
+                  },
+                }}
+              >
+                {t('Clear Filters')}
+              </Button>
+            ) : null}
             <Button
               variant="outlined"
               startIcon={<Settings />}
+              size="small"
               sx={{
                 backgroundColor: 'white',
                 color: 'black',
@@ -393,7 +441,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               }}
               onClick={handleSettingsClick}
             >
-              {t('Settings')}
+              {t('Filter Settings')}
             </Button>
           </Box>
         </Container>
@@ -410,6 +458,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           onClose={(filters) => {
             setFilters(filters);
             setIsSettingsOpen(false);
+            setIsFilterDateSelected(
+              Boolean(
+                filters &&
+                  (filters.startDate ||
+                    filters.endDate ||
+                    filters.selectedDateRange),
+              ),
+            );
           }}
         />
         <Box mt={2}>
