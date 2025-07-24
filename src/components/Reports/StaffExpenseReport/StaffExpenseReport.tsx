@@ -21,6 +21,7 @@ import {
 import {
   BreakdownByMonth,
   Fund,
+  SubCategory,
   TransactionCategory,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -34,6 +35,7 @@ import { downloadCsv } from './downloadReport';
 export interface Transaction extends BreakdownByMonth {
   fundType: Fund['fundType'];
   category: TransactionCategory['category'];
+  subcategory?: SubCategory['subCategory'];
 }
 
 interface StaffExpenseReportProps {
@@ -75,9 +77,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // get all funds from the report data
   const allFunds: Fund[] = data?.reportsStaffExpenses?.funds ?? [];
 
-  // gets a default fund type - the first one
+  // gets a default fund type - Primary
   const defaultFundType: Fund['fundType'] | null =
-    allFunds[0]?.fundType ?? null;
+    allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
+    allFunds[0]?.fundType ??
+    null;
 
   // store state of selected fund type
   const [selectedFundType, setSelectedFundType] = useState<
@@ -87,7 +91,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // effect to set the default fund type if not already set
   useEffect(() => {
     if (!selectedFundType && allFunds.length > 0) {
-      const defaultType = allFunds[0]?.fundType ?? null;
+      const defaultType =
+        allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
+        allFunds[0]?.fundType ??
+        null;
 
       if (defaultType) {
         setSelectedFundType(defaultType);
@@ -105,21 +112,37 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     }
 
     return (
-      selectedFund.categories?.flatMap(
-        (category) =>
-          category.breakdownByMonth
-            ?.filter((tx) => {
-              const txDate = DateTime.fromISO(tx.month);
-              return (
-                txDate >= targetTime.startOf('month') &&
-                txDate <= targetTime.endOf('month')
-              );
-            })
-            .map((tx) => ({
-              ...tx,
-              fundType: selectedFund.fundType,
-              category: category.category,
-            })) ?? [],
+      selectedFund.categories?.flatMap((category) =>
+        category.subcategories
+          ? category.subcategories.flatMap(
+              (subcategory) =>
+                subcategory.breakdownByMonth
+                  ?.filter((tx) => {
+                    const txDate = DateTime.fromISO(tx.month);
+                    return (
+                      txDate >= targetTime.startOf('month') &&
+                      txDate <= targetTime.endOf('month')
+                    );
+                  })
+                  .map((tx) => ({
+                    ...tx,
+                    fundType: selectedFund.fundType,
+                    category: `${category.category} - ${subcategory.subCategory}`,
+                  })) ?? [],
+            )
+          : category.breakdownByMonth
+              ?.filter((tx) => {
+                const txDate = DateTime.fromISO(tx.month);
+                return (
+                  txDate >= targetTime.startOf('month') &&
+                  txDate <= targetTime.endOf('month')
+                );
+              })
+              .map((tx) => ({
+                ...tx,
+                fundType: selectedFund.fundType,
+                category: category.category,
+              })) ?? [],
       ) ?? []
     );
   };
@@ -298,7 +321,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             )}
           </Container>
         </Box>
-        <Box mt={2}>
+        <Box mt={2} mb={4}>
           <Container>
             {transactions.some((tx) => tx.total < 0) ? (
               <ExpensesTable transactions={transactions} />
