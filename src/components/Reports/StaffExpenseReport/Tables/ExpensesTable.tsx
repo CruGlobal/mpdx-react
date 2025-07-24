@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Box,
-  Button,
   CircularProgress,
   LinearProgress,
   Tooltip,
@@ -14,8 +13,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { Transaction } from '../StaffExpenseReport';
-import { downloadCsv } from '../downloadReport';
-//import { StaffExpenseReportQuery } from '../GetStaffExpense.generated';
 
 type RenderCell = GridColDef<ExpenseRow>['renderCell'];
 
@@ -137,15 +134,6 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
     (tx) => tx.amount < 0,
   );
 
-  const convertedNegativeTransactions: Transaction[] = negativeTransactions.map(
-    (tx) => ({
-      fundType: '',
-      category: tx.description,
-      total: tx.amount,
-      month: tx.date.toISODate() ?? '',
-    }),
-  );
-
   const totalExpenses = negativeTransactions.reduce(
     (sum, tx) => sum + tx.amount,
     0,
@@ -162,20 +150,6 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
         <Typography variant="h6" mb={1}>
           {t('Expenses')}
         </Typography>
-        <Button
-          variant="text"
-          size="small"
-          sx={{
-            textDecoration: 'underline',
-            minWidth: 'unset',
-            padding: 0,
-          }}
-          onClick={() => downloadCsv(convertedNegativeTransactions, 'expense')}
-        >
-          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-            {t('Download Expense Report')}
-          </Typography>
-        </Button>
       </Box>
       <StyledGrid
         rows={negativeTransactions || []}
