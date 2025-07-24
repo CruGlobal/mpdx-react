@@ -28,6 +28,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
+import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { ExpensesTable } from './Tables/ExpensesTable';
 import IncomeTable from './Tables/IncomeTable';
@@ -56,6 +57,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [filters, setFilters] = useState<Filters | null | undefined>(null);
+
+  // temporary console log to check filters
+  console.log(filters);
 
   const { data } = useReportsStaffExpensesQuery({
     variables: {
@@ -171,6 +177,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const handleCardClick = (fundType: Fund['fundType']) => {
     setSelectedFundType(fundType);
+  };
+
+  const handleSettingsClick = () => {
+    console.log('Settings clicked');
+    setIsSettingsOpen(!isSettingsOpen);
   };
 
   return (
@@ -317,6 +328,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   borderColor: 'black',
                 },
               }}
+              onClick={handleSettingsClick}
             >
               {t('Settings')}
             </Button>
@@ -329,6 +341,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         </Container>
       </Box>
       <Box>
+        <SettingsDialog
+          selectedFilters={filters || undefined}
+          isOpen={isSettingsOpen}
+          onClose={(filters) => {
+            setFilters(filters);
+            setIsSettingsOpen(false);
+          }}
+        />
         <Box mt={2}>
           <Container>
             {transactions.some((tx) => tx.total > 0) ? (
