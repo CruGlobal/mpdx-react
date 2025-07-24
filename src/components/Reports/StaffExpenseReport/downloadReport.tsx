@@ -3,7 +3,7 @@ import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpe
 
 const csvHeader = ['Date', 'Category', 'Amount'];
 
-export type ReportType = 'income' | 'expense' | 'full';
+export type ReportType = 'income' | 'expense' | 'combined';
 
 const makeTable = (
   title: string,
@@ -22,6 +22,10 @@ const makeTable = (
 };
 
 export const downloadCsv = (transactions: Transaction[], type?: ReportType) => {
+  if (!transactions || transactions.length === 0) {
+    alert('No transactions to download');
+    return;
+  }
   const incomeTransactions = transactions.filter((t) => t.total > 0);
   const expenseTransactions = transactions.filter((t) => t.total < 0);
 
