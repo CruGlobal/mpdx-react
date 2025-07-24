@@ -4,7 +4,7 @@ import { Box, Card, CardActionArea, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Fund } from 'src/graphql/types.generated';
 
-type BalanceCardProps = {
+interface BalanceCardProps {
   fundType: Fund['fundType'];
   title: string;
   icon: React.ComponentType;
@@ -15,7 +15,7 @@ type BalanceCardProps = {
   transfersOut: number;
   onClick?: (fundType: Fund['fundType']) => void;
   isSelected?: boolean;
-};
+}
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   fundType,

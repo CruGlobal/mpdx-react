@@ -15,7 +15,6 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
@@ -32,10 +31,6 @@ const StaffExpenseReportPage: React.FC = () => {
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
   const selectedContactId = getQueryParam(router.query, 'contactId');
-
-  const { handleCloseContact } = useContactLinks({
-    url: `/accountLists/${accountListId}/reports/staffExpense/`,
-  });
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -88,7 +83,7 @@ const StaffExpenseReportPage: React.FC = () => {
             rightPanel={
               selectedContactId ? (
                 <ContactsWrapper>
-                  <DynamicContactsRightPanel onClose={handleCloseContact} />
+                  <DynamicContactsRightPanel />
                 </ContactsWrapper>
               ) : undefined
             }
