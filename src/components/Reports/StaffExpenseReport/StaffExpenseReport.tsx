@@ -89,14 +89,24 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     ),
   );
 
+  const getQueryDateRange = () => {
+    return {
+      startMonth: filters?.startDate
+        ? filters.startDate.startOf('month').toISODate()
+        : time.startOf('month').toISODate(),
+      endMonth: filters?.endDate
+        ? filters.endDate.endOf('month').toISODate()
+        : time.endOf('month').toISODate(),
+    };
+  };
+
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
       accountId: '1000000001',
-      startMonth: time.startOf('month').toISODate(),
-      endMonth: time.endOf('month').toISODate(),
+      ...getQueryDateRange(),
     },
   });
-
+  console.log(data);
   const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
@@ -150,6 +160,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 subcategory.breakdownByMonth
                   ?.filter((tx) => {
                     const txDate = DateTime.fromISO(tx.month);
+                    // query filtering is not granular enough (only by month),
+                    // so filtering by date must happen here.
+                    if (filters && (filters.startDate || filters.endDate)) {
+                      return (
+                        (!filters.startDate || txDate >= filters.startDate) &&
+                        (filters.endDate
+                          ? txDate <= filters.endDate
+                          : txDate <= DateTime.now())
+                      );
+                    }
                     return (
                       txDate >= targetTime.startOf('month') &&
                       txDate <= targetTime.endOf('month')
@@ -164,6 +184,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           : category.breakdownByMonth
               ?.filter((tx) => {
                 const txDate = DateTime.fromISO(tx.month);
+                if (filters && (filters.startDate || filters.endDate)) {
+                  return (
+                    (!filters.startDate || txDate >= filters.startDate) &&
+                    (filters.endDate
+                      ? txDate <= filters.endDate
+                      : txDate <= DateTime.now())
+                  );
+                }
                 return (
                   txDate >= targetTime.startOf('month') &&
                   txDate <= targetTime.endOf('month')
@@ -224,7 +252,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     });
 
     setTransactions(newTransactions);
-  }, [allFunds, time]);
+  }, [allFunds, time, filters]);
 
   const handleCardClick = (fundType: Fund['fundType']) => {
     setSelectedFundType(fundType);
