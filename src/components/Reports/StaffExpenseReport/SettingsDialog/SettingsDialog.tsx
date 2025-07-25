@@ -18,12 +18,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
-
-enum DateRange {
-  WeekToDate,
-  MonthToDate,
-  YearToDate,
-}
+import { DateRange } from '../Helpers/StaffReportEnum';
 
 interface SettingsDialogProps {
   isOpen: boolean;
