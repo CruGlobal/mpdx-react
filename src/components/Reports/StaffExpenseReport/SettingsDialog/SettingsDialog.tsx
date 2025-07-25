@@ -195,7 +195,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     setFieldValue('endDate', date);
                     // Clear predefined range when custom date is set
                     if (date) {
-                      setFieldValue('selectedDateRange', null);
+                      setFieldValue('selectedDateRange', undefined);
                     }
                   }}
                   fullWidth
@@ -249,16 +249,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 type="submit"
                 color="primary"
                 variant="contained"
-                disabled={
-                  !dirty ||
-                  !isValid ||
-                  !(
-                    values.selectedDateRange ||
-                    (values.startDate &&
-                      values.endDate &&
-                      values.startDate < values.endDate)
-                  )
-                }
+                disabled={!dirty || !isValid}
               >
                 {t('Apply Filters')}
               </Button>
