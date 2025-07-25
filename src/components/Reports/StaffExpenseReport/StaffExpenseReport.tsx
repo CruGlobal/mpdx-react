@@ -116,21 +116,17 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
 
-  // get all funds from the report data
   const allFunds: Fund[] = data?.reportsStaffExpenses?.funds ?? [];
 
-  // gets a default fund type - Primary
   const defaultFundType: Fund['fundType'] | null =
     allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
     allFunds[0]?.fundType ??
     null;
 
-  // store state of selected fund type
   const [selectedFundType, setSelectedFundType] = useState<
     Fund['fundType'] | null
   >(defaultFundType);
 
-  // effect to set the default fund type if not already set
   useEffect(() => {
     if (!selectedFundType && allFunds.length > 0) {
       const defaultType =
@@ -144,10 +140,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     }
   }, [allFunds, selectedFundType]);
 
-  // get selected fund based on the selected fund type
   const selectedFund = allFunds.find((f) => f.fundType === selectedFundType);
 
-  // filter transactions based on fund and month
   const filterTransactionsByTime = (
     fund: Fund,
     targetTime: DateTime,
@@ -238,7 +232,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     Record<Fund['fundType'], Transaction[]>
   >({});
 
-  // update transactions when fund or time changes
   useEffect(() => {
     if (allFunds.length === 0) {
       return;
@@ -263,7 +256,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  // filter transactions for each table in selected fund
   const getPosOrNegTransactions = (
     tableType: TableType,
     fundType: Fund['fundType'],
@@ -274,7 +266,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     );
   };
 
-  // get totals for expenses and income tables
   const getFilteredTotals = (
     tableType: TableType,
     fundType: Fund['fundType'],
@@ -283,7 +274,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return filtered.reduce((sum, tx) => sum + tx.total, 0);
   };
 
-  // get totals for transfers in and out
   const transferTotals = useMemo(() => {
     const totals: Record<Fund['fundType'], { in: number; out: number }> = {};
 
