@@ -1,22 +1,17 @@
 import { DateTime } from 'luxon';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
+import { ReportType } from '../Helpers/StaffReportEnum';
 
 const csvHeader = ['Date', 'Category', 'Amount'];
-
-export enum ReportType {
-  Income = 'income',
-  Expense = 'expense',
-  Combined = 'combined',
-}
 
 const makeTable = (
   title: string,
   transactions: Transaction[],
   type: ReportType,
 ) => {
-  if (type === 'income') {
+  if (type === ReportType.Income) {
     transactions = transactions.filter((transaction) => transaction.total > 0);
-  } else if (type === 'expense') {
+  } else if (type === ReportType.Expense) {
     transactions = transactions.filter((transaction) => transaction.total < 0);
   }
   const rows = transactions.map((transaction) =>

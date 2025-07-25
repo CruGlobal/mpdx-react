@@ -8,3 +8,9 @@ export enum CategoryType {
   Contribution = 'contribution',
   Salary = 'salary',
 }
+
+export enum ReportType {
+  Income = 'income',
+  Expense = 'expense',
+  Combined = 'combined',
+}
