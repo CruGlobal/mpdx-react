@@ -5,18 +5,10 @@ import theme from 'src/theme';
 
 interface ContinueButtonProps {
   onClick: () => void;
-  show?: boolean;
 }
 
-export const ContinueButton: React.FC<ContinueButtonProps> = ({
-  onClick,
-  show = true,
-}) => {
+export const ContinueButton: React.FC<ContinueButtonProps> = ({ onClick }) => {
   const { t } = useTranslation();
-
-  if (!show) {
-    return null;
-  }
 
   return (
     <Button

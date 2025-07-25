@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import theme from 'src/theme';
+import { ContinueButton } from '../../../SharedComponents/ContinueButton';
 
 interface SettingBoxProps {
   imageNumber: number;
@@ -81,10 +82,12 @@ const SettingBox: React.FC<SettingBoxProps> = ({
 );
 
 interface SettingsStepProps {
-  handlePageChange?: (page: string) => void;
+  handleContinue: () => void;
 }
 
-export const SettingsStep: React.FC<SettingsStepProps> = () => {
+export const SettingsStep: React.FC<SettingsStepProps> = ({
+  handleContinue,
+}) => {
   const settingBoxes = [
     {
       description: 'Create a Goal for Now',
@@ -110,6 +113,11 @@ export const SettingsStep: React.FC<SettingsStepProps> = () => {
       imageAlt: 'Long & Precise',
     },
   ];
+
+  const handleSubmit = () => {
+    handleContinue();
+    //TODO add formik
+  };
 
   return (
     <Box
@@ -181,6 +189,7 @@ export const SettingsStep: React.FC<SettingsStepProps> = () => {
             ))}
           </Box>
         </Box>
+        <ContinueButton onClick={handleSubmit} />
       </Container>
     </Box>
   );

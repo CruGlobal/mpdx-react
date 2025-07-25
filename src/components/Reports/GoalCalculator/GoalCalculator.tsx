@@ -43,32 +43,28 @@ interface GoalCalculatorProps {
 }
 
 export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
-  isNavListOpen: _isNavListOpen,
-  onNavListToggle,
-}) => {
-  const { t } = useTranslation();
-  const [isSubNavListOpen, _setIsSubNavListOpen] = useState<boolean>(false);
-
-// Configuration for all pages
-const pages: PageConfig[] = [
-  {
-    ...CalculatorSettings(),
-  },
-  {
-    ...MinistryExpenses(),
-  },
-  {
-    ...HouseholdExpenses(),
-  },
-  {
-    ...SummaryReport(),
-  },
-];
-
-export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   isNavListOpen,
   onNavListToggle,
 }) => {
+  const { t } = useTranslation();
+  // const [isSubNavListOpen, _setIsSubNavListOpen] = useState<boolean>(false);
+
+  // Configuration for all pages
+  const pages: PageConfig[] = [
+    {
+      ...CalculatorSettings(),
+    },
+    {
+      ...MinistryExpenses(),
+    },
+    {
+      ...HouseholdExpenses(),
+    },
+    {
+      ...SummaryReport(),
+    },
+  ];
+
   const [currentPageId, setCurrentPageId] = useState<string>(
     pages[0]?.id || '',
   );
@@ -80,6 +76,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
 
   // Handle page change
   const handlePageChange = (pageId: string) => {
+    alert(pageId);
     setCurrentPageId(pageId);
     const page = pages.find((p) => p.id === pageId);
     if (page) {
@@ -227,7 +224,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 {steps.find((step) => step.active)?.component ? (
                   React.cloneElement(
                     steps.find((step) => step.active)!.component,
-                    { handlePageChange },
+                    { handleContinue },
                   )
                 ) : (
                   <Box sx={{ p: 2 }}>
@@ -252,12 +249,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 const isLastStep = currentActiveIndex === steps.length - 1;
                 const shouldShowContinue = !(isLastPage && isLastStep);
 
-                return (
-                  <ContinueButton
-                    onClick={handleContinue}
-                    show={shouldShowContinue}
-                  />
-                );
+                return <ContinueButton onClick={handleContinue} />;
               })()}
             </Container>
           </Box>
