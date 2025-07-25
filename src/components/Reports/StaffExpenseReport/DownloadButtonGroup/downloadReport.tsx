@@ -30,12 +30,12 @@ export const downloadCsv = (
   enqueueSnackbar: (message: string, options?: { variant: string }) => void,
   transactions: Transaction[] | undefined,
 ) => {
-  if (!transactions || transactions.length === 0) {
-    enqueueSnackbar('No transactions to download', { variant: 'error' });
+  if (!Object.values(ReportType).includes(type)) {
     return;
   }
 
-  if (!Object.values(ReportType).includes(type)) {
+  if (!transactions || transactions.length === 0) {
+    enqueueSnackbar('No transactions to download', { variant: 'error' });
     return;
   }
 

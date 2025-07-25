@@ -27,110 +27,110 @@ const mockData: Transaction[] = [
 ];
 
 describe('downloadReport', () => {
-  describe('downloadReport', () => {
-    const clickMock = jest.fn();
-    const setAttributeMock = jest.fn();
-    const appendChildMock = jest.spyOn(document.body, 'appendChild');
-    const removeChildMock = jest.spyOn(document.body, 'removeChild');
+  const clickMock = jest.fn();
+  const setAttributeMock = jest.fn();
+  const appendChildMock = jest.spyOn(document.body, 'appendChild');
+  const removeChildMock = jest.spyOn(document.body, 'removeChild');
+  const enqueueSnackbarMock = jest.fn();
 
-    it('downloads an income report when ReportType.Income is passed as an argument', () => {
-      const realLink = document.createElement('a');
-      jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
-      jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+  it('downloads an income report when ReportType.Income is passed as an argument', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
 
-      jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-      downloadCsv(mockData, ReportType.Income);
+    downloadCsv(ReportType.Income, enqueueSnackbarMock, mockData);
 
-      expect(setAttributeMock).toHaveBeenCalledWith(
-        'href',
-        expect.stringContaining('data:text/csv'),
-      );
+    expect(setAttributeMock).toHaveBeenCalledWith(
+      'href',
+      expect.stringContaining('data:text/csv'),
+    );
 
-      const today = DateTime.now().toISODate();
-      expect(setAttributeMock).toHaveBeenCalledWith(
-        'download',
-        expect.stringContaining(`Income Report ${today}.csv`),
-      );
-      expect(appendChildMock).toHaveBeenCalledWith(realLink);
-      expect(clickMock).toHaveBeenCalled();
-      expect(removeChildMock).toHaveBeenCalledWith(realLink);
-    });
+    const today = DateTime.now().toISODate();
+    expect(setAttributeMock).toHaveBeenCalledWith(
+      'download',
+      expect.stringContaining(`Income Report ${today}.csv`),
+    );
+    expect(appendChildMock).toHaveBeenCalledWith(realLink);
+    expect(clickMock).toHaveBeenCalled();
+    expect(removeChildMock).toHaveBeenCalledWith(realLink);
+    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
+  });
 
-    it('downloads an expense report when ReportType.Expense is passed as an argument', () => {
-      const realLink = document.createElement('a');
-      jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
-      jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+  it('downloads an expense report when ReportType.Expense is passed as an argument', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
 
-      jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-      downloadCsv(mockData, ReportType.Expense);
+    downloadCsv(ReportType.Expense, enqueueSnackbarMock, mockData);
 
-      expect(setAttributeMock).toHaveBeenCalledWith(
-        'href',
-        expect.stringContaining('data:text/csv'),
-      );
+    expect(setAttributeMock).toHaveBeenCalledWith(
+      'href',
+      expect.stringContaining('data:text/csv'),
+    );
 
-      const today = DateTime.now().toISODate();
-      expect(setAttributeMock).toHaveBeenCalledWith(
-        'download',
-        expect.stringContaining(`Expense Report ${today}.csv`),
-      );
-      expect(appendChildMock).toHaveBeenCalledWith(realLink);
-      expect(clickMock).toHaveBeenCalled();
-      expect(removeChildMock).toHaveBeenCalledWith(realLink);
-    });
+    const today = DateTime.now().toISODate();
+    expect(setAttributeMock).toHaveBeenCalledWith(
+      'download',
+      expect.stringContaining(`Expense Report ${today}.csv`),
+    );
+    expect(appendChildMock).toHaveBeenCalledWith(realLink);
+    expect(clickMock).toHaveBeenCalled();
+    expect(removeChildMock).toHaveBeenCalledWith(realLink);
+    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
+  });
 
-    it('downloads a combined report when ReportType.Combined is passed as an argument', () => {
-      const realLink = document.createElement('a');
-      jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
-      jest.spyOn(realLink, 'click').mockImplementation(clickMock);
+  it('downloads a combined report when ReportType.Combined is passed as an argument', () => {
+    const realLink = document.createElement('a');
+    jest.spyOn(realLink, 'setAttribute').mockImplementation(setAttributeMock);
+    jest.spyOn(realLink, 'click').mockImplementation(clickMock);
 
-      jest.spyOn(document, 'createElement').mockReturnValue(realLink);
+    jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-      downloadCsv(mockData, ReportType.Combined);
+    downloadCsv(ReportType.Combined, enqueueSnackbarMock, mockData);
 
-      expect(setAttributeMock).toHaveBeenCalledWith(
-        'href',
-        expect.stringContaining('data:text/csv'),
-      );
+    expect(setAttributeMock).toHaveBeenCalledWith(
+      'href',
+      expect.stringContaining('data:text/csv'),
+    );
 
-      const today = DateTime.now().toISODate();
-      expect(setAttributeMock).toHaveBeenCalledWith(
-        'download',
-        expect.stringContaining(`Combined Report ${today}.csv`),
-      );
-      expect(appendChildMock).toHaveBeenCalledWith(realLink);
-      expect(clickMock).toHaveBeenCalled();
-      expect(removeChildMock).toHaveBeenCalledWith(realLink);
-    });
+    const today = DateTime.now().toISODate();
+    expect(setAttributeMock).toHaveBeenCalledWith(
+      'download',
+      expect.stringContaining(`Combined Report ${today}.csv`),
+    );
+    expect(appendChildMock).toHaveBeenCalledWith(realLink);
+    expect(clickMock).toHaveBeenCalled();
+    expect(removeChildMock).toHaveBeenCalledWith(realLink);
+    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
+  });
 
-    // will probably change alert to something more user-friendly in the future
-    it('alerts and returns when no transactions are provided', () => {
-      const alertMock = jest
-        .spyOn(window, 'alert')
-        .mockImplementation(() => {});
+  it('shows snackbar and returns when no transactions are provided', () => {
+    downloadCsv(ReportType.Income, enqueueSnackbarMock, []);
 
-      downloadCsv([], ReportType.Income);
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith(
+      'No transactions to download',
+      { variant: 'error' },
+    );
+  });
 
-      expect(alertMock).toHaveBeenCalledWith('No transactions to download');
-      alertMock.mockRestore();
-    });
+  it('shows snackbar and returns if transactions is undefined', () => {
+    downloadCsv(ReportType.Income, enqueueSnackbarMock, undefined);
 
-    it('alerts and returns if transactions is undefined', () => {
-      const alertMock = jest
-        .spyOn(window, 'alert')
-        .mockImplementation(() => {});
+    expect(enqueueSnackbarMock).toHaveBeenCalledWith(
+      'No transactions to download',
+      { variant: 'error' },
+    );
+  });
 
-      downloadCsv(undefined, ReportType.Income);
+  it('returns early if an invalid ReportType is provided', () => {
+    expect(
+      downloadCsv('invalid' as ReportType, enqueueSnackbarMock, []),
+    ).toBeUndefined();
 
-      expect(alertMock).toHaveBeenCalledWith('No transactions to download');
-      alertMock.mockRestore();
-    });
-
-    it('returns early if an invalid ReportType is provided', () => {
-      // fix test case
-      expect(downloadCsv(mockData, 'invalid' as ReportType)).toBeUndefined();
-    });
+    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
   });
 });
