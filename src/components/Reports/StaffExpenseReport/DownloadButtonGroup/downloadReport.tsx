@@ -3,7 +3,11 @@ import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpe
 
 const csvHeader = ['Date', 'Category', 'Amount'];
 
-export type ReportType = 'income' | 'expense' | 'combined';
+export enum ReportType {
+  Income = 'income',
+  Expense = 'expense',
+  Combined = 'combined',
+}
 
 const makeTable = (
   title: string,
@@ -22,27 +26,40 @@ const makeTable = (
 };
 
 export const downloadCsv = (
-  transactions: Transaction[],
+  type: ReportType,
   enqueueSnackbar: (message: string, options?: { variant: string }) => void,
-  type?: ReportType,
+  transactions: Transaction[] | undefined,
 ) => {
+  if (!Object.values(ReportType).includes(type)) {
+    return;
+  }
+
   if (!transactions || transactions.length === 0) {
     enqueueSnackbar('No transactions to download', { variant: 'error' });
     return;
   }
+
   const incomeTransactions = transactions.filter((t) => t.total > 0);
   const expenseTransactions = transactions.filter((t) => t.total < 0);
 
   let csvContent = 'data:text/csv;charset=utf-8,';
-  if (type === 'income') {
-    csvContent += makeTable('Income Report', incomeTransactions, 'income');
-  } else if (type === 'expense') {
-    csvContent += makeTable('Expense Report', expenseTransactions, 'expense');
-  } else {
+  if (type === ReportType.Income) {
+    csvContent += makeTable(
+      'Income Report',
+      incomeTransactions,
+      ReportType.Income,
+    );
+  } else if (type === ReportType.Expense) {
+    csvContent += makeTable(
+      'Expense Report',
+      expenseTransactions,
+      ReportType.Expense,
+    );
+  } else if (type === ReportType.Combined) {
     csvContent +=
-      makeTable('Income Report', incomeTransactions, 'income') +
+      makeTable('Income Report', incomeTransactions, ReportType.Income) +
       '\n' +
-      makeTable('Expense Report', expenseTransactions, 'expense');
+      makeTable('Expense Report', expenseTransactions, ReportType.Expense);
   }
 
   const encodedUri = encodeURI(csvContent);

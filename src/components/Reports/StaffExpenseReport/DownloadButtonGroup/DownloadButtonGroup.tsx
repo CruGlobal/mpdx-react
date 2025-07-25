@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { Transaction } from '../StaffExpenseReport';
-import { downloadCsv } from '../downloadReport';
+import { ReportType, downloadCsv } from './downloadReport';
 
 export interface DownloadButtonGroupProps {
   transactions: Transaction[];
@@ -49,21 +49,27 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
       <Button
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
-        onClick={() => downloadCsv(transactions, enqueueSnackbar, 'income')}
+        onClick={() =>
+          downloadCsv(transactions, enqueueSnackbar, ReportType.Income)
+        }
       >
         {t('Income Report')}
       </Button>
       <Button
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
-        onClick={() => downloadCsv(transactions, enqueueSnackbar, 'expense')}
+        onClick={() =>
+          downloadCsv(transactions, enqueueSnackbar, ReportType.Expense)
+        }
       >
         {t('Expense Report')}
       </Button>
       <Button
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
-        onClick={() => downloadCsv(transactions, enqueueSnackbar, 'combined')}
+        onClick={() =>
+          downloadCsv(transactions, enqueueSnackbar, ReportType.Combined)
+        }
       >
         {t('Combined Report')}
       </Button>
