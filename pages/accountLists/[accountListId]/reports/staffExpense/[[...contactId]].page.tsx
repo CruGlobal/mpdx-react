@@ -8,7 +8,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { StaffExpenseReport } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
+import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -19,11 +19,11 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getQueryParam } from 'src/utils/queryParam';
 import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 
-const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
+const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const StaffExpenseReportPage: React.FC = () => {
+const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { appName } = useGetAppSettings();
@@ -45,7 +45,7 @@ const StaffExpenseReportPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Staff Expense Report')}`}</title>
       </Head>
       {accountListId ? (
-        <StaffExpenseReportPageWrapper>
+        <GoalCalculatorPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
@@ -61,7 +61,7 @@ const StaffExpenseReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <StaffExpenseReport
+              <GoalCalculator
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
               />
@@ -76,7 +76,7 @@ const StaffExpenseReportPage: React.FC = () => {
             rightOpen={typeof selectedContactId !== 'undefined'}
             rightWidth="60%"
           />
-        </StaffExpenseReportPageWrapper>
+        </GoalCalculatorPageWrapper>
       ) : (
         <Loading loading />
       )}
@@ -86,4 +86,4 @@ const StaffExpenseReportPage: React.FC = () => {
 
 export const getServerSideProps = ensureSessionAndAccountList;
 
-export default StaffExpenseReportPage;
+export default GoalCalculatorPage;

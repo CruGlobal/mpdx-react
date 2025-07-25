@@ -14,11 +14,14 @@ interface ToolbarMixin extends CSSProperties {
 interface FullHeightBoxProps {
   isScrollable?: boolean;
   headerHeight: number | string;
+  absolutePosition?: boolean;
 }
 
 const FullHeightBox = styled(Box, {
   shouldForwardProp: (prop) =>
-    prop !== 'headerHeight' && prop !== 'isScrollable',
+    prop !== 'headerHeight' &&
+    prop !== 'isScrollable' &&
+    prop !== 'absolutePosition',
 })<FullHeightBoxProps>(({ theme, headerHeight, isScrollable = false }) => {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
   return {
@@ -51,18 +54,20 @@ const ExpandingContent = styled(Box)(({ open }: { open: boolean }) => ({
   overflowX: 'hidden',
 }));
 
-const LeftPanelWrapper = styled(FullHeightBox)(({ theme }) => ({
-  flexShrink: 0,
-  borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
-  left: 0,
-  background: theme.palette.common.white,
-  [theme.breakpoints.down('md')]: {
-    transition: 'transform ease-in-out 225ms',
+const LeftPanelWrapper = styled(FullHeightBox)(
+  ({ theme, absolutePosition }) => ({
+    flexShrink: 0,
+    borderRight: `1px solid ${theme.palette.cruGrayLight.main}`,
+    left: 0,
     background: theme.palette.common.white,
-    position: 'absolute',
-    zIndex: 720, // Must be higher than RightPanelWrapper
-  },
-}));
+    [theme.breakpoints.down('md')]: {
+      transition: 'transform ease-in-out 225ms',
+      background: theme.palette.common.white,
+      position: absolutePosition ? 'absolute' : 'relative',
+      zIndex: 720, // Must be higher than RightPanelWrapper
+    },
+  }),
+);
 
 const RightPanelWrapper = styled(FullHeightBox)(({ theme, headerHeight }) => {
   const toolbar = theme.mixins.toolbar as ToolbarMixin;
@@ -95,6 +100,7 @@ interface SidePanelsLayoutProps {
   mainContent: ReactElement;
   rightPanel?: ReactElement;
   rightWidth?: string;
+  absolutePosition?: boolean;
   rightOpen?: boolean;
 
   // The height of any extra header that the right panel should be under, not including the root navbar
@@ -109,6 +115,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
   mainContent,
   rightPanel,
   rightWidth,
+  absolutePosition = true,
   rightOpen = false,
   headerHeight = '0px',
 }) => {
@@ -125,6 +132,7 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
             aria-labelledby="left-panel-header"
             width={leftWidth}
             flexBasis={leftWidth}
+            absolutePosition={absolutePosition}
             headerHeight="0px"
             isScrollable={isScrollBox}
             style={{ transform: leftOpen ? 'none' : 'translate(-100%)' }}

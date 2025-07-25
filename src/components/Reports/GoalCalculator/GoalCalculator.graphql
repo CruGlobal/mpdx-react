@@ -1,4 +1,4 @@
-query StaffExpenseReport($accountId: ID!, $fundTypes: [String!]) {
+query GoalCalculatorReport($accountId: ID!, $fundTypes: [String!]) {
   reportsStaffExpenses(accountId: $accountId, fundTypes: $fundTypes) {
     name
     status
