@@ -88,6 +88,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         (filters.startDate || filters.endDate || filters.selectedDateRange),
     ),
   );
+  const [filterTimeTitle, setFilterTimeTitle] = useState<string | null>(null);
 
   const getQueryDateRange = () => {
     return {
@@ -291,6 +292,52 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return totals;
   }, [transactions]);
 
+  const changeFilterTimeTitle = (newFilters: Filters | undefined) => {
+    let newFilterTimeTitle: string | null = null;
+    if (newFilters?.selectedDateRange) {
+      newFilterTimeTitle = t('Date Range: {{range}}', {
+        range: newFilters.selectedDateRange,
+      });
+    } else if (newFilters?.startDate && newFilters?.endDate) {
+      newFilterTimeTitle = t('{{start}} - {{end}}', {
+        start: newFilters.startDate.toJSDate().toLocaleDateString(locale, {
+          month: 'long',
+          year: 'numeric',
+        }),
+        end: newFilters.endDate.toJSDate().toLocaleDateString(locale, {
+          month: 'long',
+          year: 'numeric',
+        }),
+      });
+    } else if (newFilters?.startDate && !newFilters?.endDate) {
+      newFilterTimeTitle = t('{{start}} - Current Date', {
+        start: newFilters.startDate.toJSDate().toLocaleDateString(locale, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      });
+    } else if (!newFilters?.startDate && newFilters?.endDate) {
+      newFilterTimeTitle = t('{{start}} - {{end}}', {
+        start: DateTime.now()
+          .startOf('month')
+          .toJSDate()
+          .toLocaleDateString(locale, {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+        end: newFilters.endDate.toJSDate().toLocaleDateString(locale, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      });
+    }
+
+    setFilterTimeTitle(newFilterTimeTitle);
+  };
+
   return (
     <Box>
       <ScreenOnly>
@@ -461,7 +508,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               gap: 2,
             }}
           >
-            {!filters && <Typography variant="h6">{timeTitle}</Typography>}
+            {!filters ? (
+              <Typography variant="h6">{timeTitle}</Typography>
+            ) : (
+              <Typography variant="h6">{filterTimeTitle}</Typography>
+            )}
             {!isFilterDateSelected ? (
               <>
                 <Button
@@ -488,13 +539,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           </Box>
         </Container>
       </ScreenOnly>
-      {!isFilterDateSelected && (
-        <Box mt={2} mb={2}>
-          <Container>
-            <Divider></Divider>
-          </Container>
-        </Box>
-      )}
+      <Box mt={2} mb={2}>
+        <Container>
+          <Divider></Divider>
+        </Container>
+      </Box>
       <ScreenOnly>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
@@ -553,17 +602,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         <SettingsDialog
           selectedFilters={filters || undefined}
           isOpen={isSettingsOpen}
-          onClose={(filters) => {
-            setFilters(filters);
+          onClose={(newFilters) => {
+            setFilters(newFilters);
             setIsSettingsOpen(false);
             setIsFilterDateSelected(
               Boolean(
-                filters &&
-                  (filters.startDate ||
-                    filters.endDate ||
-                    filters.selectedDateRange),
+                newFilters &&
+                  (newFilters.startDate ||
+                    newFilters.endDate ||
+                    newFilters.selectedDateRange),
               ),
             );
+            changeFilterTimeTitle(newFilters);
           }}
         />
         <ScreenOnly mt={2}>
