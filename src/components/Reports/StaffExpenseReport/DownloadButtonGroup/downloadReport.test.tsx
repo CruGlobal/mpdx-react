@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
+import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
-import { ReportType, downloadCsv } from './downloadReport';
+import { downloadCsv } from './downloadReport';
 
 const mockData: Transaction[] = [
   {

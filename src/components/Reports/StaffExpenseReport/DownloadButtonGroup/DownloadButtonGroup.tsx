@@ -4,8 +4,9 @@ import { Button, ButtonGroup } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
+import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
-import { ReportType, downloadCsv } from './downloadReport';
+import { downloadCsv } from './downloadReport';
 
 export interface DownloadButtonGroupProps {
   transactions: Transaction[];
