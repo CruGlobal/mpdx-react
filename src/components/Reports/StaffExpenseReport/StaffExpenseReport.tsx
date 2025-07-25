@@ -403,7 +403,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       })}
                     </Typography>
                     <Typography>
-                      {t('- Transfers out: -${{transfersOut}}', {
+                      {t('- Transfers out: ${{transfersOut}}', {
                         transfersOut:
                           Math.abs(
                             transferTotals[selectedFundType]?.out,
