@@ -1,73 +1,87 @@
 import HomeIcon from '@mui/icons-material/Home';
 import { SettingsStep } from '../CalculatorSettings/Steps/SettingsStep/SettingsStep';
 import {
+  GoalCalculatorCategoryEnum,
   GoalCalculatorCategoryReturn,
-  GoalCalculatorCategoryStep,
-} from '../GoalCalculator';
+  GoalCalculatorStepEnum,
+} from '../GoalCalculatorHelper';
 
-export const HouseholdExpenses = (): GoalCalculatorCategoryReturn => {
-  const title = 'Household Expenses';
-  const id = 'household-expenses';
-  const icon = <HomeIcon />;
-  const steps: GoalCalculatorCategoryStep[] = [
+export const HouseholdExpenses = (): GoalCalculatorCategoryReturn => ({
+  title: 'Household Expenses',
+  id: GoalCalculatorCategoryEnum.HouseholdExpenses,
+  icon: <HomeIcon />,
+  steps: [
     {
+      id: GoalCalculatorStepEnum.Giving,
       title: 'Giving',
       active: true,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Saving,
       title: 'Saving',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Housing,
       title: 'Housing',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Utilities,
       title: 'Utilities',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Insurance,
       title: 'Insurance',
       active: false,
       component: <SettingsStep />,
     },
-    { title: 'Debt', active: false, component: <SettingsStep /> },
-    { title: 'Food', active: false, component: <SettingsStep /> },
     {
+      id: GoalCalculatorStepEnum.Debt,
+      title: 'Debt',
+      active: false,
+      component: <SettingsStep />,
+    },
+    {
+      id: GoalCalculatorStepEnum.Food,
+      title: 'Food',
+      active: false,
+      component: <SettingsStep />,
+    },
+    {
+      id: GoalCalculatorStepEnum.Clothing,
       title: 'Clothing',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Transportation,
       title: 'Transportation',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Medical,
       title: 'Medical',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Recreational,
       title: 'Recreational',
       active: false,
       component: <SettingsStep />,
     },
     {
+      id: GoalCalculatorStepEnum.Personal,
       title: 'Personal',
       active: false,
       component: <SettingsStep />,
     },
-  ];
-
-  return {
-    title,
-    id,
-    icon,
-    steps,
-  };
-};
+  ],
+});

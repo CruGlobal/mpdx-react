@@ -1,26 +1,21 @@
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { SettingsStep } from '../CalculatorSettings/Steps/SettingsStep/SettingsStep';
 import {
+  GoalCalculatorCategoryEnum,
   GoalCalculatorCategoryReturn,
-  GoalCalculatorCategoryStep,
-} from '../GoalCalculator';
+  GoalCalculatorStepEnum,
+} from '../GoalCalculatorHelper';
 
-export const SummaryReport = (): GoalCalculatorCategoryReturn => {
-  const title = 'Summary Report';
-  const id = 'summary-report';
-  const icon = <RequestQuoteIcon />;
-  const steps: GoalCalculatorCategoryStep[] = [
+export const SummaryReport = (): GoalCalculatorCategoryReturn => ({
+  title: 'Summary Report',
+  id: GoalCalculatorCategoryEnum.SummaryReport,
+  icon: <RequestQuoteIcon />,
+  steps: [
     {
+      id: GoalCalculatorStepEnum.Overview,
       title: 'Overview',
       active: true,
       component: <SettingsStep />,
     },
-  ];
-
-  return {
-    title,
-    id,
-    icon,
-    steps,
-  };
-};
+  ],
+});

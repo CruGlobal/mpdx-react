@@ -25,19 +25,6 @@ import { HouseholdExpenses } from './HouseholdExpenses/HouseholdExpenses';
 import { MinistryExpenses } from './MinistryExpenses/MinistryExpenses';
 import { SummaryReport } from './SummaryReport/SummaryReport';
 
-export interface GoalCalculatorCategoryStep {
-  title: string;
-  active: boolean;
-  component: JSX.Element;
-}
-
-export interface GoalCalculatorCategoryReturn {
-  title: string;
-  id: string;
-  steps: GoalCalculatorCategoryStep[];
-  icon: JSX.Element;
-}
-
 interface PageConfig {
   id: string;
   title: string;
@@ -54,28 +41,26 @@ interface GoalCalculatorProps {
   onNavListToggle: () => void;
 }
 
+// Configuration for all pages
+const pages: PageConfig[] = [
+  {
+    ...CalculatorSettings(),
+  },
+  {
+    ...MinistryExpenses(),
+  },
+  {
+    ...HouseholdExpenses(),
+  },
+  {
+    ...SummaryReport(),
+  },
+];
+
 export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
-  isNavListOpen: _isNavListOpen,
+  isNavListOpen,
   onNavListToggle,
 }) => {
-  const [isSubNavListOpen, _setIsSubNavListOpen] = useState<boolean>(false);
-
-  // Configuration for all pages
-  const pages: PageConfig[] = [
-    {
-      ...CalculatorSettings(),
-    },
-    {
-      ...MinistryExpenses(),
-    },
-    {
-      ...HouseholdExpenses(),
-    },
-    {
-      ...SummaryReport(),
-    },
-  ];
-
   const [currentPageId, setCurrentPageId] = useState<string>(
     pages[0]?.id || '',
   );
@@ -97,7 +82,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   return (
     <Box>
       <MultiPageHeader
-        isNavListOpen={isSubNavListOpen}
+        isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={'Goal Calculator'}
         headerType={HeaderTypeEnum.Report}
