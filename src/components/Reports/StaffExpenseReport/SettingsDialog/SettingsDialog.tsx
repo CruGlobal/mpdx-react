@@ -58,6 +58,31 @@ const validationSchema = Yup.object({
   categories: Yup.array().of(Yup.string()),
 });
 
+const calculateDateRange = (
+  range: DateRange,
+): { startDate: DateTime; endDate: DateTime } => {
+  const now = DateTime.now();
+
+  switch (range) {
+    case DateRange.WeekToDate:
+      return {
+        startDate: now.startOf('week'),
+        endDate: now.endOf('day'),
+      };
+    case DateRange.MonthToDate:
+      return {
+        startDate: now.startOf('month'),
+        endDate: now.endOf('day'),
+      };
+    case DateRange.YearToDate:
+      return {
+        startDate: now.startOf('year'),
+        endDate: now.endOf('day'),
+      };
+    // consider a default case if needed
+  }
+};
+
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
@@ -80,7 +105,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          onClose(values);
+          const finalValues = values;
+          if (values.selectedDateRange !== null) {
+            const { startDate, endDate } = calculateDateRange(
+              values.selectedDateRange,
+            );
+            finalValues.startDate = startDate;
+            finalValues.endDate = endDate;
+          }
+          onClose(finalValues);
         }}
       >
         {({ values, setFieldValue, isValid, dirty, resetForm }) => (
