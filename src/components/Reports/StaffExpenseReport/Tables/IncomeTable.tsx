@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import {
   Box,
   CircularProgress,
-  LinearProgress,
   Tooltip,
   Typography,
   styled,
@@ -16,8 +15,10 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 import { Transaction } from '../StaffExpenseReport';
 
 interface IncomeTableProps {
-  transactions?: Transaction[];
+  transactions: Transaction[];
   transfersIn: number;
+  emptyPlaceholder: React.ReactElement;
+  loading?: boolean;
 }
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
@@ -28,14 +29,6 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-  },
-}));
-
-export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
-  height: '0.5rem',
-  borderRadius: theme.shape.borderRadius,
-  ['& .MuiLinearProgress-bar']: {
-    borderRadius: theme.shape.borderRadius,
   },
 }));
 
@@ -80,6 +73,8 @@ export const createIncomeRow = (
 const IncomeTable: React.FC<IncomeTableProps> = ({
   transactions,
   transfersIn,
+  emptyPlaceholder,
+  loading,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -155,7 +150,7 @@ const IncomeTable: React.FC<IncomeTableProps> = ({
 
   const localeText = useDataGridLocaleText();
 
-  return (
+  return transactions.length ? (
     <Box
       sx={{
         mt: 2,
@@ -200,6 +195,12 @@ const IncomeTable: React.FC<IncomeTableProps> = ({
         </Box>
       </Box>
     </Box>
+  ) : loading ? (
+    <LoadingBox>
+      <LoadingIndicator data-testid="LoadingBox" color="primary" size={50} />
+    </LoadingBox>
+  ) : (
+    emptyPlaceholder
   );
 };
 

@@ -1,11 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  CircularProgress,
-  LinearProgress,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
@@ -19,6 +13,7 @@ type RenderCell = GridColDef<ExpenseRow>['renderCell'];
 interface ExpensesTableProps {
   transactions: Transaction[];
   transfersOut: number;
+  emptyPlaceholder: React.ReactElement;
   loading?: boolean;
 }
 
@@ -30,14 +25,6 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-  },
-}));
-
-export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
-  height: '0.5rem',
-  borderRadius: theme.shape.borderRadius,
-  ['& .MuiLinearProgress-bar']: {
-    borderRadius: theme.shape.borderRadius,
   },
 }));
 
@@ -71,6 +58,8 @@ export const CreateExpenseRow = (data: Transaction): ExpenseRow => ({
 export const ExpensesTable: React.FC<ExpensesTableProps> = ({
   transactions,
   transfersOut,
+  emptyPlaceholder,
+  loading,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -132,7 +121,7 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  return (
+  return transactions.length ? (
     <>
       <Box
         display="flex"
@@ -170,6 +159,12 @@ export const ExpensesTable: React.FC<ExpensesTableProps> = ({
         </Typography>
       </Box>
     </>
+  ) : loading ? (
+    <LoadingBox>
+      <LoadingIndicator data-testid="LoadingBox" color="primary" size={50} />
+    </LoadingBox>
+  ) : (
+    emptyPlaceholder
   );
 };
 

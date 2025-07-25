@@ -77,7 +77,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   // temporary console log to check filters
   console.log(filters);
 
-  const { data } = useReportsStaffExpensesQuery({
+  const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
       accountId: '1000000001',
       startMonth: time.startOf('month').toISODate(),
@@ -473,8 +473,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         />
         <Box mt={2}>
           <Container>
-            {selectedFund &&
-            transactions[selectedFund.fundType]?.some((tx) => tx.total > 0) ? (
+            {selectedFund && (
               <IncomeTable
                 transactions={getPosOrNegTransactions(
                   'positive',
@@ -484,16 +483,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   'positive',
                   selectedFund?.fundType,
                 )}
+                emptyPlaceholder={
+                  <EmptyReportTable title={t('No Income Transactions Found')} />
+                }
               />
-            ) : (
-              <EmptyReportTable title={t('No Income Transactions Found')} />
             )}
           </Container>
         </Box>
         <Box mt={2} mb={4}>
           <Container>
-            {selectedFund &&
-            transactions[selectedFund.fundType]?.some((tx) => tx.total < 0) ? (
+            {selectedFund && (
               <ExpensesTable
                 transactions={getPosOrNegTransactions(
                   'negative',
@@ -503,9 +502,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   'negative',
                   selectedFund?.fundType,
                 )}
+                loading={loading}
+                emptyPlaceholder={
+                  <EmptyReportTable
+                    title={t('No Expense Transactions Found')}
+                  />
+                }
               />
-            ) : (
-              <EmptyReportTable title={t('No Expense Transactions Found')} />
             )}
           </Container>
         </Box>
