@@ -9,6 +9,12 @@ export enum CategoryType {
   Salary = 'salary',
 }
 
+export enum DateRange {
+  WeekToDate,
+  MonthToDate,
+  YearToDate,
+}
+
 export enum ReportType {
   Income = 'income',
   Expense = 'expense',
