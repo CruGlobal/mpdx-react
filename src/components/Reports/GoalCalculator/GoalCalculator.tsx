@@ -14,6 +14,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
@@ -40,6 +41,13 @@ interface GoalCalculatorProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
 }
+
+export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
+  isNavListOpen: _isNavListOpen,
+  onNavListToggle,
+}) => {
+  const { t } = useTranslation();
+  const [isSubNavListOpen, _setIsSubNavListOpen] = useState<boolean>(false);
 
 // Configuration for all pages
 const pages: PageConfig[] = [
@@ -84,7 +92,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
       <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
-        title={'Goal Calculator'}
+        title={t('Goal Calculator')}
         headerType={HeaderTypeEnum.Report}
       />
 
@@ -115,12 +123,15 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
               <Divider
                 orientation="vertical"
                 flexItem
-                sx={{ height: '100%' }}
+                sx={{
+                  height: '100%',
+                  alignSelf: 'stretch',
+                }}
               />
               <Container disableGutters>
                 <Box flex={1}>
                   <Typography variant="h6" sx={{ mb: 0, mt: 1, pl: 2 }}>
-                    {currentPage?.title || 'Goal Calculator'}
+                    {currentPage?.title || t('Goal Calculator')}
                   </Typography>
                   <List disablePadding>
                     {steps.map((option, index) => (
@@ -182,15 +193,21 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                   component="div"
                 >
                   {steps.find((step) => step.active)?.title ||
-                    'Goal Calculator'}
+                    t('Goal Calculator')}
                 </Typography>
               </Toolbar>
               <Box>
-                {steps.find((step) => step.active)?.component || (
+                {steps.find((step) => step.active)?.component ? (
+                  React.cloneElement(
+                    steps.find((step) => step.active)!.component,
+                    { handlePageChange },
+                  )
+                ) : (
                   <Box sx={{ p: 2 }}>
                     <Typography variant="body1">
-                      Please select a step from the left panel to view its
-                      content.
+                      {t(
+                        'Please select a step from the left panel to view its content.',
+                      )}
                     </Typography>
                   </Box>
                 )}
@@ -248,7 +265,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                       }
                     }}
                   >
-                    Continue
+                    {t('Continue')}
                   </Button>
                 ) : null;
               })()}

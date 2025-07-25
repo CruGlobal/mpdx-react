@@ -80,7 +80,9 @@ const SettingBox: React.FC<SettingBoxProps> = ({
   </Box>
 );
 
-interface SettingsStepProps {}
+interface SettingsStepProps {
+  handlePageChange?: (page: string) => void;
+}
 
 export const SettingsStep: React.FC<SettingsStepProps> = () => {
   const settingBoxes = [
