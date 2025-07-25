@@ -50,7 +50,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
         onClick={() =>
-          downloadCsv(transactions, enqueueSnackbar, ReportType.Income)
+          downloadCsv(ReportType.Income, enqueueSnackbar, transactions)
         }
       >
         {t('Income Report')}
@@ -59,7 +59,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
         onClick={() =>
-          downloadCsv(transactions, enqueueSnackbar, ReportType.Expense)
+          downloadCsv(ReportType.Expense, enqueueSnackbar, transactions)
         }
       >
         {t('Expense Report')}
@@ -68,7 +68,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
         onClick={() =>
-          downloadCsv(transactions, enqueueSnackbar, ReportType.Combined)
+          downloadCsv(ReportType.Combined, enqueueSnackbar, transactions)
         }
       >
         {t('Combined Report')}
