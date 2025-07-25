@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -84,30 +85,46 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
 }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const initialValues = {
-    selectedDateRange: selectedFilters?.selectedDateRange ?? null,
+    selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
     startDate:
-      selectedFilters?.selectedDateRange !== null
+      selectedFilters?.selectedDateRange !== undefined
         ? null
         : selectedFilters?.startDate ?? null,
     endDate:
-      selectedFilters?.selectedDateRange !== null
+      selectedFilters?.selectedDateRange !== undefined
         ? null
         : selectedFilters?.endDate ?? null,
     categories: selectedFilters?.categories ?? [],
   };
 
+  const validateDateRange = (startDate: DateTime, endDate: DateTime) => {
+    if (startDate && endDate && startDate > endDate) {
+      enqueueSnackbar(t('Start date must be earlier than end date'), {
+        variant: 'error',
+      });
+      return false;
+    }
+    return true;
+  };
+
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
+    <Dialog
+      open={isOpen}
+      onClose={() => onClose(selectedFilters)}
+      fullWidth
+      maxWidth="md"
+    >
       <DialogTitle>{t('Report Settings')}</DialogTitle>
 
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          const finalValues = values;
-          if (values.selectedDateRange !== null) {
+          const finalValues = { ...values };
+          if (values.selectedDateRange !== undefined) {
             const { startDate, endDate } = calculateDateRange(
               values.selectedDateRange,
             );
@@ -126,10 +143,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 fullWidth
                 value={values.selectedDateRange ?? ''}
                 onChange={(e) => {
-                  const value = e.target.value === '' ? null : e.target.value;
+                  const value =
+                    e.target.value === '' ? undefined : e.target.value;
                   setFieldValue('selectedDateRange', value);
                   // Clear custom dates when predefined range is selected
-                  if (value !== null) {
+                  if (value !== undefined) {
                     setFieldValue('startDate', null);
                     setFieldValue('endDate', null);
                   }
@@ -156,10 +174,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   label={t('Start Date')}
                   value={values.startDate}
                   onChange={(date) => {
+                    if (date && values.endDate) {
+                      validateDateRange(date, values.endDate);
+                    }
                     setFieldValue('startDate', date);
                     // Clear predefined range when custom date is set
                     if (date) {
-                      setFieldValue('selectedDateRange', null);
+                      setFieldValue('selectedDateRange', undefined);
                     }
                   }}
                   fullWidth
@@ -168,6 +189,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   label={t('End Date')}
                   value={values.endDate}
                   onChange={(date) => {
+                    if (date && values.startDate) {
+                      validateDateRange(values.startDate, date);
+                    }
                     setFieldValue('endDate', date);
                     // Clear predefined range when custom date is set
                     if (date) {
@@ -225,7 +249,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 type="submit"
                 color="primary"
                 variant="contained"
-                disabled={!dirty || !isValid}
+                disabled={
+                  !dirty ||
+                  !isValid ||
+                  !(
+                    values.selectedDateRange ||
+                    (values.startDate &&
+                      values.endDate &&
+                      values.startDate < values.endDate)
+                  )
+                }
               >
                 {t('Apply Filters')}
               </Button>

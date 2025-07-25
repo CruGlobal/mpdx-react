@@ -317,7 +317,24 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           year: 'numeric',
         }),
       });
+    } else if (!newFilters?.startDate && newFilters?.endDate) {
+      newFilterTimeTitle = t('{{start}} - {{end}}', {
+        start: DateTime.now()
+          .startOf('month')
+          .toJSDate()
+          .toLocaleDateString(locale, {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+        end: newFilters.endDate.toJSDate().toLocaleDateString(locale, {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      });
     }
+
     setFilterTimeTitle(newFilterTimeTitle);
   };
 
