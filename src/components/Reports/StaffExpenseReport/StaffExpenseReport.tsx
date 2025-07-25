@@ -19,6 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
@@ -63,6 +64,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters | null | undefined>(null);
   const [isFilterDateSelected, setIsFilterDateSelected] = useState(
@@ -402,6 +404,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
             transactions={transactions[selectedFundType ?? ''] ?? []}
+            enqueueSnackbar={enqueueSnackbar}
           />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
             {isFilterDateSelected ? (

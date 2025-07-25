@@ -21,9 +21,13 @@ const makeTable = (
   return [title, csvHeader.join(','), ...rows, ''].join('\n');
 };
 
-export const downloadCsv = (transactions: Transaction[], type?: ReportType) => {
+export const downloadCsv = (
+  transactions: Transaction[],
+  enqueueSnackbar: (message: string, options?: { variant: string }) => void,
+  type?: ReportType,
+) => {
   if (!transactions || transactions.length === 0) {
-    alert('No transactions to download');
+    enqueueSnackbar('No transactions to download', { variant: 'error' });
     return;
   }
   const incomeTransactions = transactions.filter((t) => t.total > 0);

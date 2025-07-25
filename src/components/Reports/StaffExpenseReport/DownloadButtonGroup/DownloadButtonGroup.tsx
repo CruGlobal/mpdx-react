@@ -9,10 +9,12 @@ import { downloadCsv } from '../downloadReport';
 
 export interface DownloadButtonGroupProps {
   transactions: Transaction[];
+  enqueueSnackbar: (message: string, options?: object) => void;
 }
 
 export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
   transactions,
+  enqueueSnackbar,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -47,21 +49,21 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
       <Button
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
-        onClick={() => downloadCsv(transactions, 'income')}
+        onClick={() => downloadCsv(transactions, enqueueSnackbar, 'income')}
       >
         {t('Income Report')}
       </Button>
       <Button
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
-        onClick={() => downloadCsv(transactions, 'expense')}
+        onClick={() => downloadCsv(transactions, enqueueSnackbar, 'expense')}
       >
         {t('Expense Report')}
       </Button>
       <Button
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
-        onClick={() => downloadCsv(transactions, 'combined')}
+        onClick={() => downloadCsv(transactions, enqueueSnackbar, 'combined')}
       >
         {t('Combined Report')}
       </Button>
