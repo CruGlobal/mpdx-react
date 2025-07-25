@@ -27,7 +27,7 @@ interface SettingsDialogProps {
 }
 
 export interface Filters {
-  selectedDateRange?: DateRange;
+  selectedDateRange: DateRange | undefined;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
   // change to enum array when category data is provided
