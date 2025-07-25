@@ -3,7 +3,6 @@ import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import {
   Box,
-  Button,
   Container,
   Divider,
   IconButton,
@@ -24,6 +23,7 @@ import theme from 'src/theme';
 import { CalculatorSettings } from './CalculatorSettings/CalculatorSettings';
 import { HouseholdExpenses } from './HouseholdExpenses/HouseholdExpenses';
 import { MinistryExpenses } from './MinistryExpenses/MinistryExpenses';
+import { ContinueButton } from './SharedComponents/ContinueButton';
 import { SummaryReport } from './SummaryReport/SummaryReport';
 
 interface PageConfig {
@@ -87,6 +87,32 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     }
   };
 
+  // Handle continue button click
+  const handleContinue = React.useCallback(() => {
+    // Find current active step index
+    const currentActiveIndex = steps.findIndex((step) => step.active);
+
+    if (currentActiveIndex < steps.length - 1) {
+      // Move to next step within current page
+      setSteps((prev) => {
+        const newSteps = prev.map((step, i) => ({
+          ...step,
+          active: i === currentActiveIndex + 1,
+        }));
+        return newSteps;
+      });
+    } else {
+      // Move to next page if at last step
+      const currentPageIndex = pages.findIndex(
+        (page) => page.id === currentPageId,
+      );
+      if (currentPageIndex < pages.length - 1) {
+        const nextPage = pages[currentPageIndex + 1];
+        handlePageChange(nextPage.id);
+      }
+    }
+  }, [steps, pages, currentPageId, handlePageChange]);
+
   return (
     <Box>
       <MultiPageHeader
@@ -124,15 +150,16 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 orientation="vertical"
                 flexItem
                 sx={{
-                  height: '100%',
-                  alignSelf: 'stretch',
+                  height: '100vh',
                 }}
               />
+
               <Container disableGutters>
                 <Box flex={1}>
                   <Typography variant="h6" sx={{ mb: 0, mt: 1, pl: 2 }}>
                     {currentPage?.title || t('Goal Calculator')}
                   </Typography>
+
                   <List disablePadding>
                     {steps.map((option, index) => (
                       <ListItemButton
@@ -225,49 +252,12 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 const isLastStep = currentActiveIndex === steps.length - 1;
                 const shouldShowContinue = !(isLastPage && isLastStep);
 
-                return shouldShowContinue ? (
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: theme.palette.mpdxBlue.main,
-                      color: 'white',
-
-                      px: 4,
-                      py: 1,
-                      '&:hover': {
-                        backgroundColor: theme.palette.mpdxBlue.dark,
-                      },
-                    }}
-                    onClick={() => {
-                      // Find current active step index
-                      const currentActiveIndex = steps.findIndex(
-                        (step) => step.active,
-                      );
-
-                      if (currentActiveIndex < steps.length - 1) {
-                        // Move to next step within current page
-                        setSteps((prev) => {
-                          const newSteps = prev.map((step, i) => ({
-                            ...step,
-                            active: i === currentActiveIndex + 1,
-                          }));
-                          return newSteps;
-                        });
-                      } else {
-                        // Move to next page if at last step
-                        const currentPageIndex = pages.findIndex(
-                          (page) => page.id === currentPageId,
-                        );
-                        if (currentPageIndex < pages.length - 1) {
-                          const nextPage = pages[currentPageIndex + 1];
-                          handlePageChange(nextPage.id);
-                        }
-                      }
-                    }}
-                  >
-                    {t('Continue')}
-                  </Button>
-                ) : null;
+                return (
+                  <ContinueButton
+                    onClick={handleContinue}
+                    show={shouldShowContinue}
+                  />
+                );
               })()}
             </Container>
           </Box>
