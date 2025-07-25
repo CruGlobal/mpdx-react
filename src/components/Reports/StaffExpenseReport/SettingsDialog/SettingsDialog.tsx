@@ -27,7 +27,7 @@ interface SettingsDialogProps {
 }
 
 export interface Filters {
-  selectedDateRange?: DateRange | null;
+  selectedDateRange?: DateRange;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
   // change to enum array when category data is provided
@@ -87,8 +87,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
   const initialValues = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? null,
-    startDate: selectedFilters?.startDate ?? null,
-    endDate: selectedFilters?.endDate ?? null,
+    startDate:
+      selectedFilters?.selectedDateRange !== null
+        ? null
+        : selectedFilters?.startDate ?? null,
+    endDate:
+      selectedFilters?.selectedDateRange !== null
+        ? null
+        : selectedFilters?.endDate ?? null,
     categories: selectedFilters?.categories ?? [],
   };
 
@@ -123,7 +129,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   const value = e.target.value === '' ? null : e.target.value;
                   setFieldValue('selectedDateRange', value);
                   // Clear custom dates when predefined range is selected
-                  if (value) {
+                  if (value !== null) {
                     setFieldValue('startDate', null);
                     setFieldValue('endDate', null);
                   }
