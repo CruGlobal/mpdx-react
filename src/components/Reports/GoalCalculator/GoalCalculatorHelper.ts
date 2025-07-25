@@ -1,13 +1,12 @@
 export interface GoalCalculatorCategoryStep {
   id: GoalCalculatorStepEnum;
   title: string;
-  active: boolean;
   component: JSX.Element;
 }
 
 export interface GoalCalculatorCategoryReturn {
   title: string;
-  id: string;
+  id: GoalCalculatorCategoryEnum;
   steps: GoalCalculatorCategoryStep[];
   icon: JSX.Element;
 }

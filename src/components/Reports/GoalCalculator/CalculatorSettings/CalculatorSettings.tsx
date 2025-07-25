@@ -17,25 +17,21 @@ export const CalculatorSettings = (): GoalCalculatorCategoryReturn => ({
     {
       id: GoalCalculatorStepEnum.Settings,
       title: 'Settings',
-      active: true,
       component: <SettingsStep />,
     },
     {
       id: GoalCalculatorStepEnum.Information,
       title: 'Information',
-      active: false,
       component: <InformationStep />,
     },
     {
       id: GoalCalculatorStepEnum.SpecialIncome,
       title: 'Special Income',
-      active: false,
       component: <SpecialIncomeStep />,
     },
     {
       id: GoalCalculatorStepEnum.OneTimeGoals,
       title: 'One-time Goals',
-      active: false,
       component: <OneTimeGoalsStep />,
     },
   ],

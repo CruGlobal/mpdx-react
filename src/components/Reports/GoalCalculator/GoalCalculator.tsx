@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import {
   Box,
-  Button,
   Container,
   Divider,
   IconButton,
@@ -20,64 +19,32 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
-import { CalculatorSettings } from './CalculatorSettings/CalculatorSettings';
-import { HouseholdExpenses } from './HouseholdExpenses/HouseholdExpenses';
-import { MinistryExpenses } from './MinistryExpenses/MinistryExpenses';
-import { SummaryReport } from './SummaryReport/SummaryReport';
-
-interface PageConfig {
-  id: string;
-  title: string;
-  icon: JSX.Element;
-  steps: Array<{
-    title: string;
-    active: boolean;
-    component: JSX.Element;
-  }>;
-}
+import {
+  GoalCalculatorContext,
+  GoalCalculatorType,
+} from './Shared/GoalCalculatorContext';
 
 interface GoalCalculatorProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
 }
 
-// Configuration for all pages
-const pages: PageConfig[] = [
-  {
-    ...CalculatorSettings(),
-  },
-  {
-    ...MinistryExpenses(),
-  },
-  {
-    ...HouseholdExpenses(),
-  },
-  {
-    ...SummaryReport(),
-  },
-];
-
 export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   isNavListOpen,
   onNavListToggle,
 }) => {
-  const [currentPageId, setCurrentPageId] = useState<string>(
-    pages[0]?.id || '',
-  );
-  const currentPage =
-    pages.find((page) => page.id === currentPageId) || pages[0];
+  const {
+    categories,
+    currentCategory,
+    selectedCategoryID,
+    selectedStepID,
+    currentStep,
+    handleCategoryChange,
+    handleStepChange,
+  } = useContext(GoalCalculatorContext) as GoalCalculatorType;
 
-  const [steps, setSteps] = useState(currentPage?.steps || []);
-  const [open] = React.useState(true);
-
-  // Handle page change
-  const handlePageChange = (pageId: string) => {
-    setCurrentPageId(pageId);
-    const page = pages.find((p) => p.id === pageId);
-    if (page) {
-      setSteps(page.steps);
-    }
-  };
+  const { title: categoryTitle, steps: categorySteps } = currentCategory || {};
+  const { title: stepTitle, component: stepComponent } = currentStep || {};
 
   return (
     <Box>
@@ -96,18 +63,18 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
             <Box display="flex">
               <Box flex={1}>
                 <List>
-                  {pages.map((page) => (
+                  {categories.map((category) => (
                     <IconButton
-                      key={page.id}
-                      onClick={() => handlePageChange(page.id)}
+                      key={category.id}
+                      onClick={() => handleCategoryChange(category.id)}
                       sx={{
                         color:
-                          currentPageId === page.id
+                          selectedCategoryID === category.id
                             ? theme.palette.mpdxBlue.main
                             : theme.palette.cruGrayDark.main,
                       }}
                     >
-                      {page.icon}
+                      {category.icon}
                     </IconButton>
                   ))}
                 </List>
@@ -120,53 +87,48 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
               <Container disableGutters>
                 <Box flex={1}>
                   <Typography variant="h6" sx={{ mb: 0, mt: 1, pl: 2 }}>
-                    {currentPage?.title || 'Goal Calculator'}
+                    {categoryTitle || 'Goal Calculator'}
                   </Typography>
                   <List disablePadding>
-                    {steps.map((option, index) => (
-                      <ListItemButton
-                        key={index}
-                        sx={{ pl: 3, pr: 0, py: 0 }}
-                        onClick={() =>
-                          setSteps((prev) => {
-                            const newSteps = prev.map((step, i) => ({
-                              ...step,
-                              active: i === index ? true : false,
-                            }));
-                            return newSteps;
-                          })
-                        }
-                      >
-                        <ListItemIcon sx={{ minWidth: 'auto', mr: 0.5 }}>
-                          {option.active ? (
-                            <CircleIcon
-                              sx={{
-                                fontSize: '1rem',
-                                color: theme.palette.mpdxBlue.main,
-                              }}
-                            />
-                          ) : (
-                            <RadioButtonUncheckedIcon
-                              sx={{
-                                fontSize: '1rem',
-                                color: theme.palette.cruGrayDark.main,
-                              }}
-                            />
-                          )}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={option.title}
-                          primaryTypographyProps={{ variant: 'body2' }}
-                        />
-                      </ListItemButton>
-                    ))}
+                    {categorySteps?.map((step) => {
+                      const { id, title } = step;
+                      return (
+                        <ListItemButton
+                          key={id}
+                          sx={{ pl: 3, pr: 0, py: 0 }}
+                          onClick={() => handleStepChange(id)}
+                        >
+                          <ListItemIcon sx={{ minWidth: 'auto', mr: 0.5 }}>
+                            {selectedStepID === id ? (
+                              <CircleIcon
+                                sx={{
+                                  fontSize: '1rem',
+                                  color: theme.palette.mpdxBlue.main,
+                                }}
+                              />
+                            ) : (
+                              <RadioButtonUncheckedIcon
+                                sx={{
+                                  fontSize: '1rem',
+                                  color: theme.palette.cruGrayDark.main,
+                                }}
+                              />
+                            )}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={title}
+                            primaryTypographyProps={{ variant: 'body2' }}
+                          />
+                        </ListItemButton>
+                      );
+                    })}
                   </List>
                 </Box>
               </Container>
             </Box>
           </Box>
         }
-        leftOpen={open}
+        leftOpen={true}
         leftWidth="290px"
         mainContent={
           <Box
@@ -181,12 +143,11 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                   variant="h6"
                   component="div"
                 >
-                  {steps.find((step) => step.active)?.title ||
-                    'Goal Calculator'}
+                  {stepTitle || 'Goal Calculator'}
                 </Typography>
               </Toolbar>
               <Box>
-                {steps.find((step) => step.active)?.component || (
+                {stepComponent || (
                   <Box sx={{ p: 2 }}>
                     <Typography variant="body1">
                       Please select a step from the left panel to view its
@@ -196,7 +157,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 )}
               </Box>
 
-              {/* Continue Button */}
+              {/* Continue Button
               {(() => {
                 const currentActiveIndex = steps.findIndex(
                   (step) => step.active,
@@ -251,7 +212,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                     Continue
                   </Button>
                 ) : null;
-              })()}
+              })()} */}
             </Container>
           </Box>
         }

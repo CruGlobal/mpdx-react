@@ -9,6 +9,7 @@ import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
+import { GoalCalculatorProvider } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -61,10 +62,12 @@ const GoalCalculatorPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <GoalCalculator
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-              />
+              <GoalCalculatorProvider>
+                <GoalCalculator
+                  isNavListOpen={isNavListOpen}
+                  onNavListToggle={handleNavListToggle}
+                />
+              </GoalCalculatorProvider>
             }
             rightPanel={
               selectedContactId ? (

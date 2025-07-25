@@ -14,7 +14,6 @@ export const SummaryReport = (): GoalCalculatorCategoryReturn => ({
     {
       id: GoalCalculatorStepEnum.Overview,
       title: 'Overview',
-      active: true,
       component: <SettingsStep />,
     },
   ],
