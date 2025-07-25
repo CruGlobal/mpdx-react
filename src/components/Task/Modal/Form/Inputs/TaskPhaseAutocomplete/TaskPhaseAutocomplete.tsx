@@ -49,7 +49,9 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
           label={label || t('Task Type')}
           error={!!errors?.taskPhase && Boolean(touched?.taskPhase)}
           helperText={
-            errors?.taskPhase && touched?.taskPhase && t('Field is required')
+            errors?.taskPhase &&
+            touched?.taskPhase &&
+            t('Task Type is required')
           }
         />
       )}
