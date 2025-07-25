@@ -36,11 +36,11 @@ import { useLocale } from 'src/hooks/useLocale';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
+import { TableType } from './Helpers/StaffReportEnum';
 import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
-import { ExpensesTable } from './Tables/ExpensesTable';
-import IncomeTable from './Tables/IncomeTable';
 import { PrintTables } from './Tables/PrintTables';
+import { StaffReportTable } from './Tables/StaffReportTable';
 
 export interface Transaction extends BreakdownByMonth {
   fundType: Fund['fundType'];
@@ -237,18 +237,21 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   // filter transactions for each table in selected fund
   const getPosOrNegTransactions = (
-    direction: string,
+    tableType: TableType,
     fundType: Fund['fundType'],
   ) => {
     const txs = transactions[fundType] ?? [];
     return txs.filter((tx) =>
-      direction === 'positive' ? tx.total > 0 : tx.total < 0,
+      tableType === TableType.Income ? tx.total > 0 : tx.total < 0,
     );
   };
 
   // get totals for expenses and income tables
-  const getFilteredTotals = (direction: string, fundType: Fund['fundType']) => {
-    const filtered = getPosOrNegTransactions(direction, fundType);
+  const getFilteredTotals = (
+    tableType: TableType,
+    fundType: Fund['fundType'],
+  ) => {
+    const filtered = getPosOrNegTransactions(tableType, fundType);
     return filtered.reduce((sum, tx) => sum + tx.total, 0);
   };
 
@@ -548,18 +551,20 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         <ScreenOnly mt={2}>
           <Container>
             {selectedFund && (
-              <IncomeTable
+              <StaffReportTable
                 transactions={getPosOrNegTransactions(
-                  'positive',
+                  TableType.Income,
                   selectedFund?.fundType,
                 )}
-                transfersIn={getFilteredTotals(
-                  'positive',
+                transferTotal={getFilteredTotals(
+                  TableType.Income,
                   selectedFund?.fundType,
                 )}
+                loading={loading}
                 emptyPlaceholder={
                   <EmptyReportTable title={t('No Income Transactions Found')} />
                 }
+                tableType={TableType.Income}
               />
             )}
           </Container>
@@ -567,13 +572,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         <ScreenOnly mt={2} mb={4}>
           <Container>
             {selectedFund && (
-              <ExpensesTable
+              <StaffReportTable
                 transactions={getPosOrNegTransactions(
-                  'negative',
+                  TableType.Expenses,
                   selectedFund?.fundType,
                 )}
-                transfersOut={getFilteredTotals(
-                  'negative',
+                transferTotal={getFilteredTotals(
+                  TableType.Expenses,
                   selectedFund?.fundType,
                 )}
                 loading={loading}
@@ -582,6 +587,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     title={t('No Expense Transactions Found')}
                   />
                 }
+                tableType={TableType.Expenses}
               />
             )}
           </Container>
@@ -594,28 +600,28 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Typography>
               <PrintTables
                 transactions={getPosOrNegTransactions(
-                  'positive',
+                  TableType.Income,
                   selectedFund?.fundType,
                 )}
                 transactionTotal={getFilteredTotals(
-                  'positive',
+                  TableType.Income,
                   selectedFund?.fundType,
                 )}
-                type="income"
+                type={TableType.Income}
               />
               <Typography variant="h6" mb={0} mt={2} align="center">
                 {t('Expenses')}
               </Typography>
               <PrintTables
                 transactions={getPosOrNegTransactions(
-                  'negative',
+                  TableType.Expenses,
                   selectedFund?.fundType,
                 )}
                 transactionTotal={getFilteredTotals(
-                  'negative',
+                  TableType.Expenses,
                   selectedFund?.fundType,
                 )}
-                type="expenses"
+                type={TableType.Expenses}
               />
             </>
           )}
