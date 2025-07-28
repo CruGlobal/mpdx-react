@@ -96,7 +96,6 @@ const RAW_RUNTIME_STATE =
           ["formidable", "npm:3.5.4"],\
           ["formik", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.9"],\
           ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.3.6"],\
-          ["full-icu", "npm:1.5.0"],\
           ["graphql", "npm:16.9.0"],\
           ["graphql-ergonomock", [\
             "@cruglobal/graphql-ergonomock",\
@@ -15389,16 +15388,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["full-icu", [\
-      ["npm:1.5.0", {\
-        "packageLocation": "./.yarn/unplugged/full-icu-npm-1.5.0-64ef6b2565/node_modules/full-icu/",\
-        "packageDependencies": [\
-          ["full-icu", "npm:1.5.0"],\
-          ["yauzl", "npm:2.10.0"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["function-bind", [\
       ["npm:1.1.1", {\
         "packageLocation": "./.yarn/cache/function-bind-npm-1.1.1-b56b322ae9-d83f296803.zip/node_modules/function-bind/",\
@@ -19545,7 +19534,6 @@ const RAW_RUNTIME_STATE =
           ["formidable", "npm:3.5.4"],\
           ["formik", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.9"],\
           ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.3.6"],\
-          ["full-icu", "npm:1.5.0"],\
           ["graphql", "npm:16.9.0"],\
           ["graphql-ergonomock", [\
             "@cruglobal/graphql-ergonomock",\
