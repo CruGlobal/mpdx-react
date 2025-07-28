@@ -17,8 +17,10 @@ const SettingBox: React.FC<SettingBoxProps> = ({
 }) => (
   <Box
     sx={{
-      width: { xs: '140px', sm: '160px', md: '200px' }, // Responsive width
-      height: { xs: '140px', sm: '160px', md: '200px' }, // Responsive height
+      // Responsive width
+      width: { xs: '140px', sm: '160px', md: '200px' },
+      // Responsive height
+      height: { xs: '140px', sm: '160px', md: '200px' },
       border: '1px solid',
       borderRadius: 1,
       borderColor: theme.palette.mpdxGray.main,
@@ -26,8 +28,10 @@ const SettingBox: React.FC<SettingBoxProps> = ({
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      m: { xs: 1, sm: 1.5, md: 2 }, // Responsive margin
-      p: { xs: 1, sm: 1.5, md: 2 }, // Responsive padding
+      // Responsive margin
+      m: { xs: 1, sm: 1.5, md: 2 },
+      // Responsive padding
+      p: { xs: 1, sm: 1.5, md: 2 },
       cursor: 'pointer',
       '&:hover': {
         borderColor: theme.palette.mpdxBlue.main,
@@ -41,8 +45,10 @@ const SettingBox: React.FC<SettingBoxProps> = ({
         src={imageSrc}
         alt={imageAlt || `Image ${imageNumber}`}
         sx={{
-          width: { xs: '80px', sm: '100px', md: '120px' }, // Responsive width
-          height: { xs: '80px', sm: '100px', md: '120px' }, // Responsive height
+          // Responsive width
+          width: { xs: '80px', sm: '100px', md: '120px' },
+          // Responsive height
+          height: { xs: '80px', sm: '100px', md: '120px' },
           objectFit: 'cover',
           borderRadius: 1,
           mb: 1,
@@ -51,8 +57,10 @@ const SettingBox: React.FC<SettingBoxProps> = ({
     ) : (
       <Box
         sx={{
-          width: { xs: '80px', sm: '100px', md: '120px' }, // Responsive width
-          height: { xs: '80px', sm: '100px', md: '120px' }, // Responsive height
+          // Responsive width
+          width: { xs: '80px', sm: '100px', md: '120px' },
+          // Responsive height
+          height: { xs: '80px', sm: '100px', md: '120px' },
           backgroundColor: theme.palette.cruGrayLight.main,
           borderRadius: 1,
           display: 'flex',
@@ -80,35 +88,37 @@ const SettingBox: React.FC<SettingBoxProps> = ({
   </Box>
 );
 
-interface SettingsStepProps {}
+const settingBoxes = [
+  {
+    description: 'Create a Goal for Now',
+    // Add your image path here
+    imageSrc: '/images/goal-calculator/goal-calculator-now.png',
+    imageAlt: 'Create a Goal for Now',
+  },
+  {
+    description: 'Create a Goal for the Future',
+    // Add your image path here
+    imageSrc: '/images/goal-calculator/goal-calculator-future.png',
+    imageAlt: 'Create a Goal for the Future',
+  },
+];
 
-export const SettingsStep: React.FC<SettingsStepProps> = () => {
-  const settingBoxes = [
-    {
-      description: 'Create a Goal for Now',
-      imageSrc: '/images/goal-calculator/goal-calculator-now.png', // Add your image path here
-      imageAlt: 'Create a Goal for Now',
-    },
-    {
-      description: 'Create a Goal for the Future',
-      imageSrc: '/images/goal-calculator/goal-calculator-future.png', // Add your image path here
-      imageAlt: 'Create a Goal for the Future',
-    },
-  ];
+const detailBoxes = [
+  {
+    description: 'Short & Simple',
+    // Add your image path here
+    imageSrc: '/images/goal-calculator/goal-calculator-short.png',
+    imageAlt: 'Short & Simple',
+  },
+  {
+    description: 'Long & Precise',
+    // Add your image path here
+    imageSrc: '/images/goal-calculator/goal-calculator-long.png',
+    imageAlt: 'Long & Precise',
+  },
+];
 
-  const detailBoxes = [
-    {
-      description: 'Short & Simple',
-      imageSrc: '/images/goal-calculator/goal-calculator-short.png', // Add your image path here
-      imageAlt: 'Short & Simple',
-    },
-    {
-      description: 'Long & Precise',
-      imageSrc: '/images/goal-calculator/goal-calculator-long.png', // Add your image path here
-      imageAlt: 'Long & Precise',
-    },
-  ];
-
+export const SettingsStep: React.FC = () => {
   return (
     <Box
       sx={{
