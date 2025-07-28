@@ -8,9 +8,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import { Transaction } from '../StaffExpenseReport';
 
-interface PrintTablesProps {
+export interface PrintTablesProps {
   transactions: Transaction[];
   transactionTotal: number;
   type: string;
@@ -22,6 +23,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
   type,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   return (
     <TableContainer>
@@ -47,8 +49,11 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   <TableCell>{row.month}</TableCell>
                   <TableCell>{row.category}</TableCell>
                   <TableCell>
-                    {row.total < 0 ? '-$' : '$'}
-                    {Math.abs(row.total).toLocaleString()}
+                    {row.total < 0 ? '-' : ''}
+                    {Math.abs(row.total).toLocaleString(locale, {
+                      style: 'currency',
+                      currency: 'USD',
+                    })}
                   </TableCell>
                 </TableRow>
               ))}
@@ -62,8 +67,11 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                     <span
                       style={{ color: transactionTotal < 0 ? 'red' : 'green' }}
                     >
-                      {transactionTotal < 0 ? '-$' : '$'}
-                      {Math.abs(transactionTotal).toLocaleString()}
+                      {transactionTotal < 0 ? '-' : ''}
+                      {Math.abs(transactionTotal).toLocaleString(locale, {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
                     </span>
                   </strong>
                 </TableCell>
