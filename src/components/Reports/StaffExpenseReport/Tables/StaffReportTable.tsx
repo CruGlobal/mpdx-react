@@ -11,7 +11,7 @@ import { Transaction } from '../StaffExpenseReport';
 
 type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
-interface StaffReportTableProps {
+export interface StaffReportTableProps {
   transactions: Transaction[];
   tableType: TableType;
   transferTotal: number;
@@ -133,7 +133,15 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  return transactions.length ? (
+  return loading ? (
+    <LoadingBox>
+      <LoadingIndicator
+        data-testid="loading-spinner"
+        color="primary"
+        size={50}
+      />
+    </LoadingBox>
+  ) : transactions.length ? (
     <>
       <Box
         display="flex"
@@ -189,10 +197,6 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         )}
       </Box>
     </>
-  ) : loading ? (
-    <LoadingBox>
-      <LoadingIndicator data-testid="LoadingBox" color="primary" size={50} />
-    </LoadingBox>
   ) : (
     emptyPlaceholder
   );
