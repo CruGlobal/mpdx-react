@@ -398,7 +398,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 </ScreenOnly>
               ) : null}
             </Box>
-            <Box display="flex" flexDirection="row" gap={3} mb={2}>
+            <Box
+              display="flex"
+              flexDirection="row"
+              gap={3}
+              mb={2}
+              data-testid="account-info"
+            >
               <Typography>
                 {t(data?.reportsStaffExpenses.name ?? '')}
               </Typography>
