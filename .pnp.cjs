@@ -83,7 +83,6 @@ const RAW_RUNTIME_STATE =
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
           ["clsx", "npm:2.1.1"],\
           ["concurrently", "npm:8.2.2"],\
-          ["cross-env", "npm:7.0.3"],\
           ["css-mediaquery", "npm:0.1.2"],\
           ["dnd-core", "npm:16.0.1"],\
           ["eslint", "npm:8.57.0"],\
@@ -12579,16 +12578,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["cross-env", [\
-      ["npm:7.0.3", {\
-        "packageLocation": "./.yarn/cache/cross-env-npm-7.0.3-96d81820f4-e99911f0d3.zip/node_modules/cross-env/",\
-        "packageDependencies": [\
-          ["cross-env", "npm:7.0.3"],\
-          ["cross-spawn", "npm:7.0.6"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["cross-fetch", [\
       ["npm:3.1.5", {\
         "packageLocation": "./.yarn/cache/cross-fetch-npm-3.1.5-e414995db9-5d101a3b1e.zip/node_modules/cross-fetch/",\
@@ -19521,7 +19510,6 @@ const RAW_RUNTIME_STATE =
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
           ["clsx", "npm:2.1.1"],\
           ["concurrently", "npm:8.2.2"],\
-          ["cross-env", "npm:7.0.3"],\
           ["css-mediaquery", "npm:0.1.2"],\
           ["dnd-core", "npm:16.0.1"],\
           ["eslint", "npm:8.57.0"],\

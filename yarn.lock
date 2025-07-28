@@ -9098,18 +9098,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-env@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "cross-env@npm:7.0.3"
-  dependencies:
-    cross-spawn: "npm:^7.0.1"
-  bin:
-    cross-env: src/bin/cross-env.js
-    cross-env-shell: src/bin/cross-env-shell.js
-  checksum: 10/e99911f0d31c20e990fd92d6fd001f4b01668a303221227cc5cb42ed155f086351b1b3bd2699b200e527ab13011b032801f8ce638e6f09f854bdf744095e604c
-  languageName: node
-  linkType: hard
-
 "cross-fetch@npm:3.1.5, cross-fetch@npm:^3.1.5":
   version: 3.1.5
   resolution: "cross-fetch@npm:3.1.5"
@@ -9146,7 +9134,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.1, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
+"cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
   dependencies:
@@ -11556,18 +11544,6 @@ __metadata:
   dependencies:
     node-gyp: "npm:latest"
   conditions: os=darwin
-  languageName: node
-  linkType: hard
-
-"full-icu@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "full-icu@npm:1.5.0"
-  dependencies:
-    yauzl: "npm:^2.10.0"
-  bin:
-    full-icu: node-full-icu.js
-    node-full-icu-path: node-icu-data.js
-  checksum: 10/217ede8b2dca0bed6080b0a393d47dc30b73d17932b80762266c384c75eab742c61e4a5907c5d021505f696c7665470ffef8d9d245b31f087fe5ca40e2f069a2
   languageName: node
   linkType: hard
 
@@ -15254,7 +15230,6 @@ __metadata:
     apollo3-cache-persist: "npm:^0.14.1"
     clsx: "npm:^2.1.1"
     concurrently: "npm:^8.2.2"
-    cross-env: "npm:^7.0.3"
     css-mediaquery: "npm:^0.1.2"
     dnd-core: "npm:^16.0.1"
     eslint: "npm:^8.57.0"
@@ -15267,7 +15242,6 @@ __metadata:
     formidable: "npm:^3.5.4"
     formik: "npm:^2.2.9"
     framer-motion: "npm:^7.3.6"
-    full-icu: "npm:^1.5.0"
     graphql: "npm:^16.9.0"
     graphql-ergonomock: "npm:@cruglobal/graphql-ergonomock@^1.2.2"
     graphql-tag: "npm:^2.12.6"

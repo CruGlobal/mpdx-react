@@ -24,8 +24,8 @@
     "gql": "graphql-codegen --config codegen.yml",
     "gql:w": "yarn gql --watch",
     "postinstall": "husky install",
-    "onesky:upload": "cross-env babel-node ./onesky/upload.js",
-    "onesky:download": "cross-env babel-node ./onesky/download.js",
+    "onesky:upload": "babel-node ./onesky/upload.js",
+    "onesky:download": "babel-node ./onesky/download.js",
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
@@ -117,7 +117,6 @@
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^8.17.0",
     "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
     "css-mediaquery": "^0.1.2",
     "dnd-core": "^16.0.1",
     "eslint": "^8.57.0",
