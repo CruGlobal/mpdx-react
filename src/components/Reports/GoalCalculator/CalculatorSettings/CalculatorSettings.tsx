@@ -1,7 +1,7 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import {
+  GoalCalculatorCategory,
   GoalCalculatorCategoryEnum,
-  GoalCalculatorCategoryReturn,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { InformationStep } from './Steps/InformationStep/InformationStep';
@@ -9,7 +9,7 @@ import { OneTimeGoalsStep } from './Steps/OneTimeGoalsStep/OneTimeGoalsStep';
 import { SettingsStep } from './Steps/SettingsStep/SettingsStep';
 import { SpecialIncomeStep } from './Steps/SpecialIncomeStep/SpecialIncomeStep';
 
-export const CalculatorSettings = (): GoalCalculatorCategoryReturn => ({
+export const CalculatorSettings = (): GoalCalculatorCategory => ({
   title: 'Calculator Settings',
   id: GoalCalculatorCategoryEnum.CalculatorSettings,
   icon: <SettingsIcon />,

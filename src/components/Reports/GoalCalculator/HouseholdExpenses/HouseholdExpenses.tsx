@@ -1,12 +1,12 @@
 import HomeIcon from '@mui/icons-material/Home';
 import { SettingsStep } from '../CalculatorSettings/Steps/SettingsStep/SettingsStep';
 import {
+  GoalCalculatorCategory,
   GoalCalculatorCategoryEnum,
-  GoalCalculatorCategoryReturn,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 
-export const HouseholdExpenses = (): GoalCalculatorCategoryReturn => ({
+export const HouseholdExpenses = (): GoalCalculatorCategory => ({
   title: 'Household Expenses',
   id: GoalCalculatorCategoryEnum.HouseholdExpenses,
   icon: <HomeIcon />,

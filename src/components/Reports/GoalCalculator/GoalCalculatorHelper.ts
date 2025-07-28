@@ -4,7 +4,7 @@ export interface GoalCalculatorCategoryStep {
   component: JSX.Element;
 }
 
-export interface GoalCalculatorCategoryReturn {
+export interface GoalCalculatorCategory {
   title: string;
   id: GoalCalculatorCategoryEnum;
   steps: GoalCalculatorCategoryStep[];

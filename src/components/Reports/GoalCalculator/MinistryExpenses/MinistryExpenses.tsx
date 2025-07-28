@@ -1,13 +1,13 @@
 import ChurchIcon from '@mui/icons-material/Church';
 import { SettingsStep } from '../CalculatorSettings/Steps/SettingsStep/SettingsStep';
 import {
+  GoalCalculatorCategory,
   GoalCalculatorCategoryEnum,
-  GoalCalculatorCategoryReturn,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { MileageStep } from './Steps/MileageStep/MileageStep';
 
-export const MinistryExpenses = (): GoalCalculatorCategoryReturn => ({
+export const MinistryExpenses = (): GoalCalculatorCategory => ({
   title: 'Ministry Expenses',
   id: GoalCalculatorCategoryEnum.MinistryExpenses,
   icon: <ChurchIcon />,

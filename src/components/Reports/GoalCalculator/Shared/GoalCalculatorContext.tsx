@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { CalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
 import {
+  GoalCalculatorCategory,
   GoalCalculatorCategoryEnum,
-  GoalCalculatorCategoryReturn,
   GoalCalculatorCategoryStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
@@ -12,10 +12,10 @@ import { MinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
 import { SummaryReport } from '../SummaryReport/SummaryReport';
 
 export type GoalCalculatorType = {
-  categories: GoalCalculatorCategoryReturn[];
+  categories: GoalCalculatorCategory[];
   selectedCategoryID: GoalCalculatorCategoryEnum;
   selectedStepID: GoalCalculatorStepEnum;
-  currentCategory?: GoalCalculatorCategoryReturn;
+  currentCategory?: GoalCalculatorCategory;
   currentStep?: GoalCalculatorCategoryStep;
   handleCategoryChange: (categoryId: GoalCalculatorCategoryEnum) => void;
   handleStepChange: (stepId: GoalCalculatorStepEnum) => void;
