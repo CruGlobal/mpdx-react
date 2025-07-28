@@ -301,10 +301,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     } else if (newFilters?.startDate && newFilters?.endDate) {
       newFilterTimeTitle = t('{{start}} - {{end}}', {
         start: newFilters.startDate.toJSDate().toLocaleDateString(locale, {
+          day: 'numeric',
           month: 'long',
           year: 'numeric',
         }),
         end: newFilters.endDate.toJSDate().toLocaleDateString(locale, {
+          day: 'numeric',
           month: 'long',
           year: 'numeric',
         }),

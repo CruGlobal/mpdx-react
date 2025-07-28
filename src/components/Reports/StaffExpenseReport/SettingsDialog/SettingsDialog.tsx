@@ -38,19 +38,7 @@ export interface Filters {
 const validationSchema = Yup.object({
   selectedDateRange: Yup.mixed().nullable(),
   startDate: Yup.mixed().nullable(),
-  endDate: Yup.mixed()
-    .nullable()
-    .test(
-      'end-after-start',
-      'End date must be after start date',
-      function (value) {
-        const { startDate } = this.parent;
-        if (!startDate || !value) {
-          return true;
-        }
-        return value >= startDate;
-      },
-    ),
+  endDate: Yup.mixed().nullable(),
   categories: Yup.array().of(Yup.string()),
 });
 
@@ -87,6 +75,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
+  const [hasDateRangeError, setHasDateRangeError] = React.useState(false);
+
   const initialValues = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
     startDate:
@@ -100,13 +90,23 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     categories: selectedFilters?.categories ?? [],
   };
 
-  const validateDateRange = (startDate: DateTime, endDate: DateTime) => {
+  /*
+   * Initially, date range validation was handled by Yup,
+   * but it would not properly disable the submit button.
+   * This manual validation function is a temporary solution.
+   */
+  const validateDateRange = (
+    startDate: DateTime | null,
+    endDate: DateTime | null,
+  ) => {
     if (startDate && endDate && startDate > endDate) {
       enqueueSnackbar(t('Start date must be earlier than end date'), {
         variant: 'error',
       });
+      setHasDateRangeError(true);
       return false;
     }
+    setHasDateRangeError(false);
     return true;
   };
 
@@ -123,6 +123,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
+          if (
+            values.startDate &&
+            values.endDate &&
+            !validateDateRange(values.startDate, values.endDate)
+          ) {
+            // Don't submit if validation fails
+            return;
+          }
+
           const finalValues = { ...values };
           if (values.selectedDateRange !== undefined) {
             const { startDate, endDate } = calculateDateRange(
@@ -134,128 +143,145 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           onClose(finalValues);
         }}
       >
-        {({ values, setFieldValue, isValid, dirty, resetForm }) => (
-          <Form>
-            <DialogContent>
-              <TextField
-                select
-                label={t('Select Date Range')}
-                fullWidth
-                value={values.selectedDateRange ?? ''}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === '' ? undefined : e.target.value;
-                  setFieldValue('selectedDateRange', value);
-                  // Clear custom dates when predefined range is selected
-                  if (value !== undefined) {
-                    setFieldValue('startDate', null);
-                    setFieldValue('endDate', null);
-                  }
-                }}
-              >
-                <MenuItem value="">{t('None')}</MenuItem>
-                <MenuItem value={DateRange.WeekToDate}>
-                  {t('Week to Date')}
-                </MenuItem>
-                <MenuItem value={DateRange.MonthToDate}>
-                  {t('Month to Date')}
-                </MenuItem>
-                <MenuItem value={DateRange.YearToDate}>
-                  {t('Year to Date')}
-                </MenuItem>
-              </TextField>
+        {({ values, setFieldValue, isValid, dirty, resetForm }) => {
+          const isDateRangeValid =
+            !values.startDate || !values.endDate
+              ? true
+              : values.endDate >= values.startDate;
 
-              <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
-                {t('Or enter a custom date range:')}
-              </Typography>
+          const isFormValid = isValid && isDateRangeValid && !hasDateRangeError;
 
-              <Box display="flex" gap={2}>
-                <CustomDateField
-                  label={t('Start Date')}
-                  value={values.startDate}
-                  onChange={(date) => {
-                    if (date && values.endDate) {
-                      validateDateRange(date, values.endDate);
-                    }
-                    setFieldValue('startDate', date);
-                    // Clear predefined range when custom date is set
-                    if (date) {
-                      setFieldValue('selectedDateRange', undefined);
+          return (
+            <Form>
+              <DialogContent>
+                <TextField
+                  select
+                  label={t('Select Date Range')}
+                  fullWidth
+                  value={values.selectedDateRange ?? ''}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === '' ? undefined : e.target.value;
+                    setFieldValue('selectedDateRange', value);
+                    // Clear custom dates when predefined range is selected
+                    if (value !== undefined) {
+                      setFieldValue('startDate', null);
+                      setFieldValue('endDate', null);
+                      setHasDateRangeError(false);
                     }
                   }}
-                  fullWidth
-                />
-                <CustomDateField
-                  label={t('End Date')}
-                  value={values.endDate}
-                  onChange={(date) => {
-                    if (date && values.startDate) {
-                      validateDateRange(values.startDate, date);
-                    }
-                    setFieldValue('endDate', date);
-                    // Clear predefined range when custom date is set
-                    if (date) {
-                      setFieldValue('selectedDateRange', undefined);
-                    }
-                  }}
-                  fullWidth
-                />
-              </Box>
+                >
+                  <MenuItem value="">{t('None')}</MenuItem>
+                  <MenuItem value={DateRange.WeekToDate}>
+                    {t('Week to Date')}
+                  </MenuItem>
+                  <MenuItem value={DateRange.MonthToDate}>
+                    {t('Month to Date')}
+                  </MenuItem>
+                  <MenuItem value={DateRange.YearToDate}>
+                    {t('Year to Date')}
+                  </MenuItem>
+                </TextField>
 
-              <Typography sx={{ mt: 2 }}>
-                If you like, you can combine certain categories of data into
-                single rows. This may be useful when using long date ranges,
-                such as &quot;Year to Date.&quot; Select which categories of
-                items you wish to consolidate (each category is still kept
-                separate from the other categories).{' '}
-              </Typography>
+                <Typography variant="body2" sx={{ mt: 2, mb: 2 }}>
+                  {t('Or enter a custom date range:')}
+                </Typography>
 
-              <Typography sx={{ mt: 2, mb: 1 }}>
-                {t('Select Categories:')}
-              </Typography>
+                <Box display="flex" gap={2}>
+                  <CustomDateField
+                    label={t('Start Date')}
+                    value={values.startDate}
+                    onChange={(date) => {
+                      setFieldValue('startDate', date);
+                      if (date && values.endDate) {
+                        validateDateRange(date, values.endDate);
+                      } else {
+                        setHasDateRangeError(false);
+                      }
 
-              <FormGroup row>
-                {['Benefits', 'Contributions', 'Salary'].map((category) => (
-                  <FormControlLabel
-                    key={category}
-                    control={
-                      <Checkbox
-                        checked={values.categories.includes(category)}
-                        onChange={(e) => {
-                          const newCategories = e.target.checked
-                            ? [...values.categories, category]
-                            : values.categories.filter((c) => c !== category);
-                          setFieldValue('categories', newCategories);
-                        }}
-                      />
-                    }
-                    label={t(category)}
+                      // Clear predefined range when custom date is set
+                      if (date) {
+                        setFieldValue('selectedDateRange', undefined);
+                      }
+                    }}
+                    fullWidth
                   />
-                ))}
-              </FormGroup>
-            </DialogContent>
+                  <CustomDateField
+                    label={t('End Date')}
+                    value={values.endDate}
+                    onChange={(date) => {
+                      setFieldValue('endDate', date);
+                      if (date && values.startDate) {
+                        validateDateRange(values.startDate, date);
+                      } else {
+                        setHasDateRangeError(false);
+                      }
 
-            <DialogActions>
-              <Button
-                onClick={() => {
-                  resetForm();
-                  onClose(selectedFilters);
-                }}
-                color="secondary"
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                type="submit"
-                color="primary"
-                variant="contained"
-                disabled={!dirty || !isValid}
-              >
-                {t('Apply Filters')}
-              </Button>
-            </DialogActions>
-          </Form>
-        )}
+                      // Clear predefined range when custom date is set
+                      if (date) {
+                        setFieldValue('selectedDateRange', undefined);
+                      }
+                    }}
+                    fullWidth
+                  />
+                </Box>
+
+                <Typography sx={{ mt: 2 }}>
+                  If you like, you can combine certain categories of data into
+                  single rows. This may be useful when using long date ranges,
+                  such as &quot;Year to Date.&quot; Select which categories of
+                  items you wish to consolidate (each category is still kept
+                  separate from the other categories).{' '}
+                </Typography>
+
+                <Typography sx={{ mt: 2, mb: 1 }}>
+                  {t('Select Categories:')}
+                </Typography>
+
+                <FormGroup row>
+                  {['Benefits', 'Contributions', 'Salary'].map((category) => (
+                    <FormControlLabel
+                      key={category}
+                      control={
+                        <Checkbox
+                          checked={values.categories.includes(category)}
+                          onChange={(e) => {
+                            const newCategories = e.target.checked
+                              ? [...values.categories, category]
+                              : values.categories.filter((c) => c !== category);
+                            setFieldValue('categories', newCategories);
+                          }}
+                        />
+                      }
+                      label={t(category)}
+                    />
+                  ))}
+                </FormGroup>
+              </DialogContent>
+
+              <DialogActions>
+                <Button
+                  onClick={() => {
+                    resetForm();
+                    setHasDateRangeError(false);
+                    onClose(selectedFilters);
+                  }}
+                  color="secondary"
+                >
+                  {t('Cancel')}
+                </Button>
+                <Button
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  disabled={!dirty || !isFormValid}
+                >
+                  {t('Apply Filters')}
+                </Button>
+              </DialogActions>
+            </Form>
+          );
+        }}
       </Formik>
     </Dialog>
   );
