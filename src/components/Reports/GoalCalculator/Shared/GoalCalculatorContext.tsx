@@ -19,6 +19,7 @@ export type GoalCalculatorType = {
   currentStep?: GoalCalculatorCategoryStep;
   handleCategoryChange: (categoryId: GoalCalculatorCategoryEnum) => void;
   handleStepChange: (stepId: GoalCalculatorStepEnum) => void;
+  handleContinue: () => void;
 };
 
 export const GoalCalculatorContext =
@@ -93,6 +94,42 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     [categories, currentCategory, enqueueSnackbar, setSelectedStepID],
   );
 
+  const handleContinue = useCallback(() => {
+    const currentStepIndex = currentCategory?.steps.findIndex(
+      (step) => step.id === selectedStepID,
+    );
+    if (currentStepIndex === undefined || currentStepIndex < 0) {
+      enqueueSnackbar('Current step is not defined or does not exist.', {
+        variant: 'error',
+      });
+      return;
+    }
+    const nextStepIndex = currentStepIndex + 1;
+
+    if (currentCategory?.steps[nextStepIndex]) {
+      // If next step exists, change to that step
+      handleStepChange(currentCategory.steps[nextStepIndex].id);
+    } else {
+      // If no next step, check to find the next category
+      const nextCategoryIndex =
+        categories.findIndex((cat) => cat.id === selectedCategoryID) + 1;
+      const nextCategory = categories[nextCategoryIndex];
+      if (nextCategory) {
+        handleCategoryChange(nextCategory.id);
+      } else {
+        enqueueSnackbar('You have reached the end of the goal calculator.', {
+          variant: 'info',
+        });
+      }
+    }
+  }, [
+    categories,
+    currentCategory,
+    selectedCategoryID,
+    selectedStepID,
+    handleStepChange,
+  ]);
+
   const contextValue = useMemo(
     () => ({
       categories,
@@ -102,6 +139,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       currentStep,
       handleCategoryChange,
       handleStepChange,
+      handleContinue,
     }),
     [categories, selectedCategoryID, selectedStepID],
   );

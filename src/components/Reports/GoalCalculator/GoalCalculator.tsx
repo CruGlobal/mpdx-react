@@ -13,6 +13,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
@@ -23,6 +24,7 @@ import {
   GoalCalculatorContext,
   GoalCalculatorType,
 } from './Shared/GoalCalculatorContext';
+import { ContinueButton } from './SharedComponents/ContinueButton';
 
 interface GoalCalculatorProps {
   isNavListOpen: boolean;
@@ -41,7 +43,9 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     currentStep,
     handleCategoryChange,
     handleStepChange,
+    handleContinue,
   } = useContext(GoalCalculatorContext) as GoalCalculatorType;
+  const { t } = useTranslation();
 
   const { title: categoryTitle, steps: categorySteps } = currentCategory || {};
   const { title: stepTitle, component: stepComponent } = currentStep || {};
@@ -51,7 +55,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
       <MultiPageHeader
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
-        title={'Goal Calculator'}
+        title={t('Goal Calculator')}
         headerType={HeaderTypeEnum.Report}
       />
 
@@ -82,13 +86,17 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
               <Divider
                 orientation="vertical"
                 flexItem
-                sx={{ height: '100%' }}
+                sx={{
+                  height: '100vh',
+                }}
               />
+
               <Container disableGutters>
                 <Box flex={1}>
                   <Typography variant="h6" sx={{ mb: 0, mt: 1, pl: 2 }}>
                     {categoryTitle || 'Goal Calculator'}
                   </Typography>
+
                   <List disablePadding>
                     {categorySteps?.map((step) => {
                       const { id, title } = step;
@@ -150,69 +158,14 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 {stepComponent || (
                   <Box sx={{ p: 2 }}>
                     <Typography variant="body1">
-                      Please select a step from the left panel to view its
-                      content.
+                      {t(
+                        'Please select a step from the left panel to view its content.',
+                      )}
                     </Typography>
                   </Box>
                 )}
               </Box>
-
-              {/* Continue Button
-              {(() => {
-                const currentActiveIndex = steps.findIndex(
-                  (step) => step.active,
-                );
-                const currentPageIndex = pages.findIndex(
-                  (page) => page.id === currentPageId,
-                );
-                const isLastPage = currentPageIndex === pages.length - 1;
-                const isLastStep = currentActiveIndex === steps.length - 1;
-                const shouldShowContinue = !(isLastPage && isLastStep);
-
-                return shouldShowContinue ? (
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: theme.palette.mpdxBlue.main,
-                      color: 'white',
-
-                      px: 4,
-                      py: 1,
-                      '&:hover': {
-                        backgroundColor: theme.palette.mpdxBlue.dark,
-                      },
-                    }}
-                    onClick={() => {
-                      // Find current active step index
-                      const currentActiveIndex = steps.findIndex(
-                        (step) => step.active,
-                      );
-
-                      if (currentActiveIndex < steps.length - 1) {
-                        // Move to next step within current page
-                        setSteps((prev) => {
-                          const newSteps = prev.map((step, i) => ({
-                            ...step,
-                            active: i === currentActiveIndex + 1,
-                          }));
-                          return newSteps;
-                        });
-                      } else {
-                        // Move to next page if at last step
-                        const currentPageIndex = pages.findIndex(
-                          (page) => page.id === currentPageId,
-                        );
-                        if (currentPageIndex < pages.length - 1) {
-                          const nextPage = pages[currentPageIndex + 1];
-                          handlePageChange(nextPage.id);
-                        }
-                      }
-                    }}
-                  >
-                    Continue
-                  </Button>
-                ) : null;
-              })()} */}
+              <ContinueButton onClick={handleContinue} />
             </Container>
           </Box>
         }

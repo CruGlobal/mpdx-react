@@ -5,8 +5,9 @@ import * as Yup from 'yup';
 import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
 import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
 
-interface InformationStepProps {}
-
+interface InformationStepProps {
+  handlePageChange?: (page: string) => void;
+}
 interface InformationFormValues {
   // Financial form fields
   monthlyIncome: number;
@@ -54,7 +55,9 @@ const a11yProps = (index: number) => {
   };
 };
 
-export const InformationStep: React.FC<InformationStepProps> = () => {
+export const InformationStep: React.FC<InformationStepProps> = ({
+  handlePageChange,
+}) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -142,6 +145,8 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
   const handleSubmit = (_values: InformationFormValues) => {
     // Handle form submission here
     // TODO: Implement form submission logic
+
+    handlePageChange?.('next'); // Example of page change after submission
   };
 
   return (
