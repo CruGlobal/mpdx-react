@@ -60,7 +60,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     GoalCalculatorStepEnum.Information,
   );
 
-  // Direct calculations - no memoization
   const currentCategory = useMemo(
     () => categories.find((cat) => cat.id === selectedCategoryID),
     [categories, selectedCategoryID],
@@ -70,7 +69,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     [currentCategory, selectedStepID],
   );
 
-  // Simple functions - no useCallback
   const handleCategoryChange = useCallback(
     (categoryId: GoalCalculatorCategoryEnum) => {
       const category = categories.find((cat) => cat.id === categoryId);
@@ -143,7 +141,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     t,
   ]);
 
-  // Simple context value - no memoization
   const contextValue: GoalCalculatorType = useMemo(
     () => ({
       categories,
