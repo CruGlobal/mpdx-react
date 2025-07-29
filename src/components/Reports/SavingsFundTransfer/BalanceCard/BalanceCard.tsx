@@ -93,11 +93,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         }}
       >
         <Button>
-          <Outbox fontSize="small" />
+          <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('Transfer From').toUpperCase()}
         </Button>
         <Button>
-          <MoveToInbox fontSize="small" />
+          <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('Transfer To').toUpperCase()}
         </Button>
       </Box>
