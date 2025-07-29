@@ -17,6 +17,18 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { BalanceCard } from './BalanceCard/BalanceCard';
+import { TransferHistoryTable } from './Table/TransferHistory';
+
+export interface TransferHistory {
+  transfers: string;
+  amount: number;
+  schedule: string;
+  status: string;
+  transferDate: string;
+  stopDate: string;
+  note: string;
+  actions: string;
+}
 
 interface SavingsFundTransferProps {
   accountListId: string;
@@ -44,7 +56,6 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
       staffConferenceSavings: {
         balance: 500,
         pending: 200,
-        history,
       },
       staffSavings: {
         balance: 2500,
@@ -275,7 +286,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               />
               <BalanceCard
                 title={t('Staff Conference Savings Balance')}
-                icon={Savings}
+                icon={Groups}
                 iconBgColor="#00C0D8"
                 balance={500}
                 pending={200}
@@ -285,11 +296,19 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               />
               <BalanceCard
                 title={t('Staff Savings Balance')}
-                icon={Groups}
+                icon={Savings}
                 iconBgColor="#007890"
                 balance={2500}
                 pending={0}
                 onClick={() => console.log('Staff Savings Fund clicked')}
+              />
+            </Box>
+            <Box sx={{ mt: 2, mb: 3 }}>
+              <TransferHistoryTable
+                history={mockData.history}
+                emptyPlaceholder={
+                  <Typography>{t('No transfer history available')}</Typography>
+                }
               />
             </Box>
           </Container>
