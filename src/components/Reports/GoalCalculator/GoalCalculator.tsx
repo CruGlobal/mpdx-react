@@ -21,14 +21,6 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 
-const StyledCategoryIconButton = styled(IconButton)<{ selected: boolean }>(
-  ({ theme, selected }) => ({
-    color: selected
-      ? theme.palette.mpdxBlue.main
-      : theme.palette.cruGrayDark.main,
-  }),
-);
-
 const StyledCategoryTitle = styled(Typography)(({ theme }) => ({
   marginBottom: 0,
   marginTop: theme.spacing(1),
@@ -46,15 +38,6 @@ const StyledStepListItemIcon = styled(ListItemIcon)(({ theme }) => ({
   minWidth: 'auto',
   marginRight: theme.spacing(0.5),
 }));
-
-const StyledStepIcon = styled('div')<{ selected: boolean }>(
-  ({ theme, selected }) => ({
-    fontSize: '1rem',
-    color: selected
-      ? theme.palette.mpdxBlue.main
-      : theme.palette.cruGrayDark.main,
-  }),
-);
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
@@ -102,13 +85,18 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
       <Stack direction="row" flex={1}>
         <Stack direction="column">
           {categories.map((category) => (
-            <StyledCategoryIconButton
+            <IconButton
               key={category.id}
+              sx={(theme) => ({
+                color:
+                  selectedCategoryID === category.id
+                    ? theme.palette.mpdxBlue.main
+                    : theme.palette.cruGrayDark.main,
+              })}
               onClick={() => handleCategoryChange(category.id)}
-              selected={selectedCategoryID === category.id}
             >
               {category.icon}
-            </StyledCategoryIconButton>
+            </IconButton>
           ))}
         </Stack>
         <Divider orientation="vertical" flexItem />
@@ -120,19 +108,27 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
           <List disablePadding>
             {categorySteps?.map((step) => {
               const { id, title } = step;
+              const selected = selectedStepID === id;
               return (
                 <StyledStepListItemButton
                   key={id}
                   onClick={() => handleStepChange(id)}
                 >
                   <StyledStepListItemIcon>
-                    <StyledStepIcon selected={selectedStepID === id}>
-                      {selectedStepID === id ? (
+                    <Box
+                      sx={(theme) => ({
+                        fontSize: '1rem',
+                        color: selected
+                          ? theme.palette.mpdxBlue.main
+                          : theme.palette.cruGrayDark.main,
+                      })}
+                    >
+                      {selected ? (
                         <CircleIcon sx={{ fontSize: '1rem' }} />
                       ) : (
                         <RadioButtonUncheckedIcon sx={{ fontSize: '1rem' }} />
                       )}
-                    </StyledStepIcon>
+                    </Box>
                   </StyledStepListItemIcon>
                   <ListItemText
                     primary={title}
