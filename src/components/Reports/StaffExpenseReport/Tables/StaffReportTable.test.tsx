@@ -175,7 +175,7 @@ describe('StaffReportTable', () => {
     userEvent.click(getByRole('option', { name: '10' }));
 
     await waitFor(() =>
-      expect(mutationSpy).not.toHaveGraphqlOperation('DonationTable', {
+      expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
         pageSize: 10,
       }),
     );
