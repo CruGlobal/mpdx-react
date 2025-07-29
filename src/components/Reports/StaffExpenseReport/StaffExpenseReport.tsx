@@ -43,7 +43,7 @@ import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
 
 export interface Transaction extends BreakdownByMonth {
-  fundType: Fund['fundType'];
+  fundType: string;
   category: TransactionCategory['category'];
   subcategory?: SubCategory['subCategory'];
 }
@@ -119,14 +119,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const allFunds: Fund[] = data?.reportsStaffExpenses?.funds ?? [];
 
-  const defaultFundType: Fund['fundType'] | null =
+  const defaultFundType: string | null =
     allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
     allFunds[0]?.fundType ??
     null;
 
-  const [selectedFundType, setSelectedFundType] = useState<
-    Fund['fundType'] | null
-  >(defaultFundType);
+  const [selectedFundType, setSelectedFundType] = useState<string | null>(
+    defaultFundType,
+  );
 
   useEffect(() => {
     if (!selectedFundType && allFunds.length > 0) {
@@ -205,7 +205,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     const prevTime = time.minus({ months: 1 });
     setTime(prevTime);
 
-    const newTransactions: Record<Fund['fundType'], Transaction[]> = {};
+    const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
       const txs = filterTransactionsByTime(fund, prevTime);
@@ -219,7 +219,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     const nextTime = time.plus({ months: 1 });
     setTime(nextTime);
 
-    const newTransactions: Record<Fund['fundType'], Transaction[]> = {};
+    const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
       const txs = filterTransactionsByTime(fund, nextTime);
@@ -230,7 +230,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   };
 
   const [transactions, setTransactions] = useState<
-    Record<Fund['fundType'], Transaction[]>
+    Record<string, Transaction[]>
   >({});
 
   useEffect(() => {
@@ -238,7 +238,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       return;
     }
 
-    const newTransactions: Record<Fund['fundType'], Transaction[]> = {};
+    const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
       const fundTransactions = filterTransactionsByTime(fund, time);
@@ -248,7 +248,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     setTransactions(newTransactions);
   }, [allFunds, time, filters]);
 
-  const handleCardClick = (fundType: Fund['fundType']) => {
+  const handleCardClick = (fundType: string) => {
     setSelectedFundType(fundType);
   };
 
@@ -257,29 +257,23 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  const getPosOrNegTransactions = (
-    tableType: TableType,
-    fundType: Fund['fundType'],
-  ) => {
+  const getPosOrNegTransactions = (tableType: TableType, fundType: string) => {
     const txs = transactions[fundType] ?? [];
     return txs.filter((tx) =>
       tableType === TableType.Income ? tx.total > 0 : tx.total < 0,
     );
   };
 
-  const getFilteredTotals = (
-    tableType: TableType,
-    fundType: Fund['fundType'],
-  ) => {
+  const getFilteredTotals = (tableType: TableType, fundType: string) => {
     const filtered = getPosOrNegTransactions(tableType, fundType);
     return filtered.reduce((sum, tx) => sum + tx.total, 0);
   };
 
   const transferTotals = useMemo(() => {
-    const totals: Record<Fund['fundType'], { in: number; out: number }> = {};
+    const totals: Record<string, { in: number; out: number }> = {};
 
     for (const [fundType, txs] of Object.entries(transactions)) {
-      totals[fundType as Fund['fundType']] = {
+      totals[fundType] = {
         in: txs
           .filter((tx) => tx.total > 0)
           .reduce((sum, tx) => sum + tx.total, 0),

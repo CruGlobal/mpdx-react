@@ -2,10 +2,10 @@ import React from 'react';
 import { Visibility } from '@mui/icons-material';
 import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Fund } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
 
 interface BalanceCardProps {
-  fundType: Fund['fundType'];
+  fundType: string;
   title: string;
   icon: React.ComponentType;
   iconBgColor?: string;
@@ -13,15 +13,15 @@ interface BalanceCardProps {
   endingBalance: number;
   transfersIn: number;
   transfersOut: number;
-  onClick?: (fundType: Fund['fundType']) => void;
+  onClick?: (fundType: string) => void;
   isSelected?: boolean;
 }
 
-const ScreenOnly = styled(Box)(() => ({
+const ScreenOnly = styled(Box)({
   '@media print': {
     display: 'none',
   },
-}));
+});
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   fundType,
@@ -36,6 +36,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   isSelected = false,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   return (
     <Card
@@ -69,39 +70,32 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       <Box display="flex" flexDirection="column" mt={3} mb={2}>
         <Typography>
           {t('Starting Balance: ')}
-          {startingBalance !== undefined
-            ? startingBalance.toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {startingBalance.toLocaleString(locale, {
+            style: 'currency',
+            currency: 'USD',
+          })}
         </Typography>
         <Typography>
           {t('+ Transfers in: ')}
-          {transfersIn !== undefined
-            ? transfersIn.toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+
+          {transfersIn.toLocaleString(locale, {
+            style: 'currency',
+            currency: 'USD',
+          })}
         </Typography>
         <Typography>
           {t('- Transfers out: ')}
-          {transfersOut !== undefined
-            ? Math.abs(transfersOut).toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {Math.abs(transfersOut).toLocaleString(locale, {
+            style: 'currency',
+            currency: 'USD',
+          })}
         </Typography>
         <Typography>
           {t('= Ending Balance: ')}
-          {endingBalance !== undefined
-            ? endingBalance.toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {endingBalance.toLocaleString(locale, {
+            style: 'currency',
+            currency: 'USD',
+          })}
         </Typography>
       </Box>
 
