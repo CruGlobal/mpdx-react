@@ -366,7 +366,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               <ScreenOnly>
                 <Typography variant="h4">{t('Income and Expenses')}</Typography>
               </ScreenOnly>
-              {transactions && Object.keys(transactions).length > 0 ? (
+              {Object.values(transactions).some((txs) => txs.length > 0) ? (
                 <ScreenOnly
                   display="flex"
                   flexDirection="column"
