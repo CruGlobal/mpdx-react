@@ -101,42 +101,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           {t('Transfer To').toUpperCase()}
         </Button>
       </Box>
-
-      {/* <CardActionArea
-        onClick={() => {
-          onClick?.(fundType);
-        }}
-        sx={{
-          p: 1,
-          m: 0,
-          minHeight: 48,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: isSelected ? 'center' : 'flex-start',
-        }}
-      >
-        {isSelected ? (
-          <Typography
-            variant="h6"
-            color="primary.main"
-            fontWeight={600}
-            textAlign="center"
-          >
-            {t('Currently Viewing')}
-          </Typography>
-        ) : (
-          <Box display="flex" alignItems="center" gap={1}>
-            <Visibility fontSize="small" color="primary" />
-            <Typography
-              variant="body2"
-              color="primary.main"
-              sx={{ textTransform: 'uppercase', fontWeight: 500 }}
-            >
-              {t('View Account')}
-            </Typography>
-          </Box>
-        )}
-      </CardActionArea> */}
     </Card>
   );
 };
