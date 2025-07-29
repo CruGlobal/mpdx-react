@@ -70,15 +70,9 @@ describe('SettingsDialog', () => {
     fireEvent.mouseDown(getByLabelText('Select Date Range'));
 
     expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
-    expect(
-      getByRole('option', { name: DateRange.WeekToDate }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('option', { name: DateRange.MonthToDate }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('option', { name: DateRange.YearToDate }),
-    ).toBeInTheDocument();
+    expect(getByRole('option', { name: 'Week to Date' })).toBeInTheDocument();
+    expect(getByRole('option', { name: 'Month to Date' })).toBeInTheDocument();
+    expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
   });
 
   it('should render all category checkboxes', () => {
@@ -112,7 +106,7 @@ describe('SettingsDialog', () => {
     const dateRangeDropdown = getByRole('combobox', {
       name: 'Select Date Range',
     });
-    expect(dateRangeDropdown).toHaveTextContent(DateRange.MonthToDate);
+    expect(dateRangeDropdown).toHaveTextContent('Month to Date');
 
     expect(getByRole('checkbox', { name: 'Benefits' })).toBeChecked();
     expect(getByRole('checkbox', { name: 'Salary' })).toBeChecked();
@@ -195,9 +189,9 @@ describe('SettingsDialog', () => {
     // Select predefined range first
     const dropdown = getByRole('combobox', { name: 'Select Date Range' });
     userEvent.click(dropdown);
-    userEvent.click(getByRole('option', { name: DateRange.YearToDate }));
+    userEvent.click(getByRole('option', { name: 'Year to Date' }));
 
-    expect(dropdown).toHaveTextContent(DateRange.YearToDate);
+    expect(dropdown).toHaveTextContent('Year to Date');
 
     // Set custom date
     const startDateField = getByTestId('date-field-Start Date');
