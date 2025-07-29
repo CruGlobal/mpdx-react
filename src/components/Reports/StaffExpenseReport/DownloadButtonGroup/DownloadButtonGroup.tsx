@@ -17,6 +17,7 @@ const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: 'black',
+  backgroundColor: 'white',
   borderColor: 'black',
   fontSize: '0.75rem',
   padding: '4px 8px',
@@ -25,7 +26,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
   '&:hover': {
     backgroundColor: '#f5f5f5',
-    borderColor: 'black',
+    color: theme.palette.primary.main,
   },
   [theme.breakpoints.up('sm')]: {
     fontSize: '1rem',
@@ -58,41 +59,41 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
   const expenses = transactions.filter((transaction) => transaction.total < 0);
   const incomes = transactions.filter((transaction) => transaction.total > 0);
 
-  return transactions.length === 0 ? null : (
+  return (
     <StyledButtonGroup
-      variant="outlined"
+      variant="contained"
       orientation={isMobile ? 'vertical' : 'horizontal'}
+      disabled={!transactions || transactions.length === 0}
     >
-      {incomes.length > 0 ? (
-        <StyledButton
-          startIcon={<StyledDownloadIcon />}
-          onClick={() =>
-            downloadCsv(ReportType.Income, enqueueSnackbar, transactions, t)
-          }
-        >
-          {t('Income Report')}
-        </StyledButton>
-      ) : null}
-      {expenses.length > 0 ? (
-        <StyledButton
-          startIcon={<StyledDownloadIcon />}
-          onClick={() =>
-            downloadCsv(ReportType.Expense, enqueueSnackbar, transactions, t)
-          }
-        >
-          {t('Expense Report')}
-        </StyledButton>
-      ) : null}
-      {expenses.length > 0 && incomes.length ? (
-        <StyledButton
-          startIcon={<StyledDownloadIcon />}
-          onClick={() =>
-            downloadCsv(ReportType.Combined, enqueueSnackbar, transactions, t)
-          }
-        >
-          {t('Combined Report')}
-        </StyledButton>
-      ) : null}
+      <StyledButton
+        startIcon={<StyledDownloadIcon />}
+        onClick={() =>
+          downloadCsv(ReportType.Income, enqueueSnackbar, incomes, t)
+        }
+        disabled={incomes.length === 0}
+      >
+        {t('Income Report')}
+      </StyledButton>
+
+      <StyledButton
+        startIcon={<StyledDownloadIcon />}
+        onClick={() =>
+          downloadCsv(ReportType.Expense, enqueueSnackbar, expenses, t)
+        }
+        disabled={expenses.length === 0}
+      >
+        {t('Expense Report')}
+      </StyledButton>
+
+      <StyledButton
+        startIcon={<StyledDownloadIcon />}
+        onClick={() =>
+          downloadCsv(ReportType.Combined, enqueueSnackbar, transactions, t)
+        }
+        disabled={expenses.length === 0 || incomes.length === 0}
+      >
+        {t('Combined Report')}
+      </StyledButton>
     </StyledButtonGroup>
   );
 };

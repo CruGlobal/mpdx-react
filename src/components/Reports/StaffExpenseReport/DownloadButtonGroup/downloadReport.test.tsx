@@ -27,6 +27,8 @@ const mockData: Transaction[] = [
   },
 ];
 
+const mockT = jest.fn((key: string) => key);
+
 describe('downloadReport', () => {
   const clickMock = jest.fn();
   const setAttributeMock = jest.fn();
@@ -41,7 +43,10 @@ describe('downloadReport', () => {
 
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-    downloadCsv(ReportType.Income, enqueueSnackbarMock, mockData);
+    const incomeMockData = mockData.filter(
+      (transaction) => transaction.total > 0,
+    );
+    downloadCsv(ReportType.Income, enqueueSnackbarMock, incomeMockData, mockT);
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
@@ -66,7 +71,15 @@ describe('downloadReport', () => {
 
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-    downloadCsv(ReportType.Expense, enqueueSnackbarMock, mockData);
+    const expenseMockData = mockData.filter(
+      (transaction) => transaction.total < 0,
+    );
+    downloadCsv(
+      ReportType.Expense,
+      enqueueSnackbarMock,
+      expenseMockData,
+      mockT,
+    );
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
@@ -91,7 +104,7 @@ describe('downloadReport', () => {
 
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-    downloadCsv(ReportType.Combined, enqueueSnackbarMock, mockData);
+    downloadCsv(ReportType.Combined, enqueueSnackbarMock, mockData, mockT);
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
@@ -110,16 +123,7 @@ describe('downloadReport', () => {
   });
 
   it('shows snackbar and returns when no transactions are provided', () => {
-    downloadCsv(ReportType.Income, enqueueSnackbarMock, []);
-
-    expect(enqueueSnackbarMock).toHaveBeenCalledWith(
-      'No transactions to download',
-      { variant: 'error' },
-    );
-  });
-
-  it('shows snackbar and returns if transactions is undefined', () => {
-    downloadCsv(ReportType.Income, enqueueSnackbarMock, undefined);
+    downloadCsv(ReportType.Income, enqueueSnackbarMock, [], mockT);
 
     expect(enqueueSnackbarMock).toHaveBeenCalledWith(
       'No transactions to download',
@@ -129,9 +133,9 @@ describe('downloadReport', () => {
 
   it('returns early if an invalid ReportType is provided', () => {
     expect(
-      downloadCsv('invalid' as ReportType, enqueueSnackbarMock, []),
+      downloadCsv('invalid' as ReportType, enqueueSnackbarMock, [], mockT),
     ).toBeUndefined();
 
-    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
+    expect(enqueueSnackbarMock).toHaveBeenCalled();
   });
 });
