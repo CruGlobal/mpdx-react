@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -63,7 +63,8 @@ const calculateDateRange = (
         startDate: now.startOf('year'),
         endDate: now.endOf('day'),
       };
-    // consider a default case if needed
+    default:
+      throw new Error(`Unsupported date range: ${range}`);
   }
 };
 
@@ -75,7 +76,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [hasDateRangeError, setHasDateRangeError] = React.useState(false);
+  const [hasDateRangeError, setHasDateRangeError] = useState(false);
 
   const initialValues = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
@@ -226,12 +227,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   />
                 </Box>
 
-                <Typography sx={{ mt: 2 }}>
-                  If you like, you can combine certain categories of data into
-                  single rows. This may be useful when using long date ranges,
-                  such as &quot;Year to Date.&quot; Select which categories of
-                  items you wish to consolidate (each category is still kept
-                  separate from the other categories).{' '}
+                <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
+                  {t(
+                    `You can combine certain categories of data into single rows. This may be useful for long date ranges (e.g., "Year to Date").
+                    Select which categories to consolidate. Each category remains separate.`,
+                  )}
                 </Typography>
 
                 <Typography sx={{ mt: 2, mb: 1 }}>
