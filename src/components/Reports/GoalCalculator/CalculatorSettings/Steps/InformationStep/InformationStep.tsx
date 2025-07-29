@@ -7,6 +7,13 @@ import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
 import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
+import {
+  Age,
+  BenefitsPlan,
+  FamilySize,
+  Role,
+  Tenure,
+} from './InformationStepForm/enums';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -43,9 +50,9 @@ interface InformationFormValues {
   location: string;
   role: string;
   benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
+  familySize: string;
+  tenure: string;
+  age: string;
 }
 
 interface TabPanelProps {
@@ -120,33 +127,33 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .required(t('Solid monthly support developed is required')),
 
     // Personal validation
-    location: yup
-      .string()
-      .min(2, t('Location must be at least 2 characters'))
-      .required(t('Location is required')),
+    location: yup.string().required(t('Location is required')),
     role: yup
       .string()
-      .min(2, t('Role must be at least 2 characters'))
+      .oneOf(Object.values(Role), t('Role must be one of the options'))
       .required(t('Role is required')),
     benefits: yup
       .string()
-      .min(10, t('Benefits description must be at least 10 characters'))
-      .required(t('Benefits information is required')),
+      .oneOf(
+        Object.values(BenefitsPlan),
+        t('Benefits plan must be one of the options'),
+      )
+      .required(t('Benefits plan is required')),
+    familySize: yup
+      .string()
+      .oneOf(
+        Object.values(FamilySize),
+        t('Family size must be one of the options'),
+      )
+      .required(t('Family size is required')),
     tenure: yup
-      .number()
-      .min(0, t('Tenure must be positive'))
-      .max(50, t('Tenure cannot exceed 50 years'))
+      .string()
+      .oneOf(Object.values(Tenure), t('Tenure must be one of the options'))
       .required(t('Tenure is required')),
     age: yup
-      .number()
-      .min(18, t('Age must be at least 18'))
-      .max(100, t('Age cannot exceed 100'))
+      .string()
+      .oneOf(Object.values(Age), t('Age range must be one of the options'))
       .required(t('Age is required')),
-    children: yup
-      .number()
-      .min(0, t('Number of children must be positive'))
-      .max(20, t('Number of children cannot exceed 20'))
-      .required(t('Number of children is required')),
   });
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -169,9 +176,9 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     location: 'None',
     role: '',
     benefits: '',
-    tenure: 0,
-    age: 0,
-    children: 0,
+    familySize: '',
+    tenure: '',
+    age: '',
   };
 
   const handleSubmit = () => {
