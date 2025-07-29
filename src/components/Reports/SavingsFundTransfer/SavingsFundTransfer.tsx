@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState } from 'react';
+import { Groups, Savings, Wallet } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -15,6 +16,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { BalanceCard } from './BalanceCard/BalanceCard';
 
 interface SavingsFundTransferProps {
   accountListId: string;
@@ -30,6 +32,11 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
+
+  const mockData = {
+    accountListId: '123456789',
+    accountName: 'Test Account',
+  };
 
   const [showForm, setShowForm] = useState(false);
 
@@ -171,6 +178,53 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
         <Box sx={{ mt: 2 }}>
           <Container>
             <Typography variant="h4">{t('Fund Transfer')}</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 3,
+                mb: 2,
+              }}
+            >
+              <Typography>{mockData.accountName}</Typography>
+              <Typography>{mockData.accountListId}</Typography>
+            </Box>
+            <Box
+              display="flex"
+              flexWrap="wrap"
+              gap={2}
+              sx={{
+                flexDirection: { xs: 'column', sm: 'row' },
+              }}
+            >
+              <BalanceCard
+                title={t('Staff Account Balance')}
+                icon={Wallet}
+                iconBgColor="#F08020"
+                balance={15000}
+                pending={17500}
+                onClick={() => console.log('Staff Savings Fund clicked')}
+              />
+              <BalanceCard
+                title={t('Staff Conference Savings Balance')}
+                icon={Savings}
+                iconBgColor="#00C0D8"
+                balance={500}
+                pending={200}
+                onClick={() =>
+                  console.log('Staff Conference Savings Fund clicked')
+                }
+              />
+              <BalanceCard
+                title={t('Staff Savings Balance')}
+                icon={Groups}
+                iconBgColor="#007890"
+                balance={2500}
+                pending={0}
+                onClick={() => console.log('Staff Savings Fund clicked')}
+              />
+            </Box>
           </Container>
         </Box>
       )}
