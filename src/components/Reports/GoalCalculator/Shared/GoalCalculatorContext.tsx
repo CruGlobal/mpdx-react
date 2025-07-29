@@ -23,8 +23,9 @@ export type GoalCalculatorType = {
   handleContinue: () => void;
 };
 
-export const GoalCalculatorContext =
-  React.createContext<GoalCalculatorType | null>(null);
+const GoalCalculatorContext = React.createContext<GoalCalculatorType | null>(
+  null,
+);
 
 export const useGoalCalculator = (): GoalCalculatorType => {
   const context = React.useContext(GoalCalculatorContext);
