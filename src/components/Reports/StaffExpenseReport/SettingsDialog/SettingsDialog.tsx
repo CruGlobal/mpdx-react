@@ -17,7 +17,7 @@ import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { DateRange } from '../Helpers/StaffReportEnum';
 
@@ -35,11 +35,11 @@ export interface Filters {
   categories?: string[] | null;
 }
 
-const validationSchema = Yup.object({
-  selectedDateRange: Yup.mixed().nullable(),
-  startDate: Yup.mixed().nullable(),
-  endDate: Yup.mixed().nullable(),
-  categories: Yup.array().of(Yup.string()),
+const validationSchema = yup.object({
+  selectedDateRange: yup.mixed().nullable(),
+  startDate: yup.mixed().nullable(),
+  endDate: yup.mixed().nullable(),
+  categories: yup.array().of(yup.string()),
 });
 
 const calculateDateRange = (
