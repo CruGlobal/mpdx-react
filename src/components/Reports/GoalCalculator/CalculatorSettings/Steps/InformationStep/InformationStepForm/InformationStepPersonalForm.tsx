@@ -1,36 +1,9 @@
 import React from 'react';
 import { Grid, TextField, Typography } from '@mui/material';
-import { Field, FieldProps, FormikProps } from 'formik';
+import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 
-interface InformationFormValues {
-  // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
-  taxes: number;
-  secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
-
-  // Personal form fields
-  location: string;
-  role: string;
-  benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
-}
-
-interface InformationStepPersonalFormProps {
-  formikProps: FormikProps<InformationFormValues>;
-}
-
-export const InformationStepPersonalForm: React.FC<
-  InformationStepPersonalFormProps
-> = () => {
+export const InformationStepPersonalForm: React.FC = () => {
   const { t } = useTranslation();
 
   return (
