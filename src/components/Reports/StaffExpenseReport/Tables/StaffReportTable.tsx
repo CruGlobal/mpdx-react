@@ -19,7 +19,7 @@ export interface StaffReportTableProps {
   loading?: boolean;
 }
 
-export const StyledGrid = styled(DataGrid)(({ theme }) => ({
+const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },
@@ -30,7 +30,7 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export const LoadingBox = styled(Box)(({ theme }) => ({
+const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
   height: 300,
   minWidth: 700,
@@ -41,7 +41,7 @@ export const LoadingBox = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 

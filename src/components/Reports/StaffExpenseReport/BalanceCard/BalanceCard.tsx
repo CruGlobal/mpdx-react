@@ -4,6 +4,41 @@ import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 
+const StyledCardActionArea = styled(CardActionArea)<{ isSelected: boolean }>(
+  ({ theme, isSelected }) => ({
+    padding: theme.spacing(1),
+    margin: 0,
+    minHeight: 48,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: isSelected ? 'center' : 'flex-start',
+  }),
+);
+
+const StyledIconBox = styled(Box)<{ iconBgColor?: string }>(
+  ({ theme, iconBgColor }) => ({
+    backgroundColor: iconBgColor || theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    borderRadius: theme.spacing(1),
+    padding: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }),
+);
+
+const StyledCard = styled(Card)<{ isSelected: boolean }>(
+  ({ theme, isSelected }) => ({
+    padding: theme.spacing(2),
+    flex: 1,
+    minWidth: 0,
+    maxWidth: 'none',
+    fontSize: '1.25rem',
+    boxShadow: isSelected ? theme.shadows[3] : theme.shadows[1],
+    transition: 'box-shadow 0.3s ease-in-out',
+  }),
+);
+
 interface BalanceCardProps {
   fundType: string;
   title: string;
@@ -39,32 +74,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const locale = useLocale();
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        p: 2,
-        flex: 1,
-        minWidth: 0,
-        maxWidth: 'none',
-        fontSize: '1.25rem',
-        boxShadow: isSelected ? 3 : 1,
-        transition: 'box-shadow 0.3s ease-in-out',
-      }}
-    >
+    <StyledCard variant="outlined" isSelected={isSelected}>
       <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
-        <Box
-          sx={{
-            backgroundColor: iconBgColor || 'primary.main',
-            color: 'primary.contrastText',
-            borderRadius: 1,
-            p: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <StyledIconBox iconBgColor={iconBgColor}>
           <Icon />
-        </Box>
+        </StyledIconBox>
         <Typography variant="h6">{title}</Typography>
       </Box>
       <Box display="flex" flexDirection="column" mt={3} mb={2}>
@@ -100,18 +114,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       </Box>
 
       <ScreenOnly>
-        <CardActionArea
+        <StyledCardActionArea
           onClick={() => {
             onClick?.(fundType);
           }}
-          sx={{
-            p: 1,
-            m: 0,
-            minHeight: 48,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: isSelected ? 'center' : 'flex-start',
-          }}
+          isSelected={isSelected}
         >
           {isSelected ? (
             <Typography
@@ -134,8 +141,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               </Typography>
             </Box>
           )}
-        </CardActionArea>
+        </StyledCardActionArea>
       </ScreenOnly>
-    </Card>
+    </StyledCard>
   );
 };
