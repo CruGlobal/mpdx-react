@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Card, Container, Tab, Tabs, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Form, Formik, FormikProps } from 'formik';
+import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
@@ -203,30 +203,28 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {(formikProps: FormikProps<InformationFormValues>) => (
-            <Form>
-              <StyledCard>
-                <StyledInfoBox>
-                  <StyledTabs
-                    value={value}
-                    onChange={handleChange}
-                    aria-label={t('information tabs')}
-                  >
-                    <Tab label={t('Personal')} />
-                    <Tab label={t('Financial')} />
-                  </StyledTabs>
-                </StyledInfoBox>
+          <Form>
+            <StyledCard>
+              <StyledInfoBox>
+                <StyledTabs
+                  value={value}
+                  onChange={handleChange}
+                  aria-label={t('information tabs')}
+                >
+                  <Tab label={t('Personal')} />
+                  <Tab label={t('Financial')} />
+                </StyledTabs>
+              </StyledInfoBox>
 
-                <TabPanel value={value} index={0}>
-                  <InformationStepPersonalForm formikProps={formikProps} />
-                </TabPanel>
+              <TabPanel value={value} index={0}>
+                <InformationStepPersonalForm />
+              </TabPanel>
 
-                <TabPanel value={value} index={1}>
-                  <InformationStepFinancialForm formikProps={formikProps} />
-                </TabPanel>
-              </StyledCard>
-            </Form>
-          )}
+              <TabPanel value={value} index={1}>
+                <InformationStepFinancialForm />
+              </TabPanel>
+            </StyledCard>
+          </Form>
         </Formik>
       </StyledContainer>
       <ContinueButton onClick={handleSubmit} />

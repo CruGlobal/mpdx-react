@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Field, FieldProps, FormikProps } from 'formik';
+import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 
 const StyledFinancialForm = styled('div')({
@@ -13,34 +13,7 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-interface InformationFormValues {
-  // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
-  taxes: number;
-  secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
-
-  // Personal form fields
-  location: string;
-  role: string;
-  benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
-}
-
-interface InformationStepFinancialFormProps {
-  formikProps: FormikProps<InformationFormValues>;
-}
-
-export const InformationStepFinancialForm: React.FC<
-  InformationStepFinancialFormProps
-> = () => {
+export const InformationStepFinancialForm: React.FC = () => {
   const { t } = useTranslation();
 
   return (
