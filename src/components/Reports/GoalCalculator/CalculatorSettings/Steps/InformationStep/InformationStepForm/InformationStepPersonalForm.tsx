@@ -1,7 +1,8 @@
 import React from 'react';
-import { Grid, TextField, Typography } from '@mui/material';
+import { Autocomplete, Grid, TextField, Typography } from '@mui/material';
 import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { locations } from './geographicAdjustments';
 
 export const InformationStepPersonalForm: React.FC = () => {
   const { t } = useTranslation();
@@ -14,19 +15,23 @@ export const InformationStepPersonalForm: React.FC = () => {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         {t('Review your personal details and preferences here.')}
       </Typography>
-
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Field name="location">
-            {({ field, meta }: FieldProps) => (
-              <TextField
+            {({ field, meta, form }: FieldProps) => (
+              <Autocomplete
                 {...field}
-                fullWidth
+                onChange={(_, value) => form.setFieldValue('location', value)}
+                options={locations}
                 size="small"
-                label={t('Location')}
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('Location')}
+                    error={meta.touched && Boolean(meta.error)}
+                    helperText={meta.touched && meta.error}
+                  />
+                )}
               />
             )}
           </Field>
