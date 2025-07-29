@@ -154,7 +154,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
     }),
     [
-      categories,
       selectedCategoryId,
       selectedStepId,
       currentCategory,
