@@ -8,25 +8,23 @@ import { Transaction } from '../StaffExpenseReport';
 import { downloadCsv } from './downloadReport';
 
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
-  backgroundColor: 'white',
-  borderColor: 'black',
+  borderColor: theme.palette.cruGrayDark.main,
   [theme.breakpoints.down('sm')]: {
     width: '100%',
   },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  color: 'black',
+  color: theme.palette.cruGrayDark.main,
   backgroundColor: 'white',
-  borderColor: 'black',
   fontSize: '0.75rem',
   padding: '4px 8px',
   '& .MuiButton-startIcon': {
     marginRight: '4px',
   },
   '&:hover': {
-    backgroundColor: '#f5f5f5',
-    color: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.main,
+    color: 'white',
   },
   [theme.breakpoints.up('sm')]: {
     fontSize: '1rem',

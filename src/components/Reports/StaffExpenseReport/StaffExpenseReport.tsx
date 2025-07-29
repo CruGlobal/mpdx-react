@@ -33,6 +33,7 @@ import {
   TransactionCategory,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import theme from 'src/theme';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
@@ -563,12 +564,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   setIsFilterDateSelected(false);
                 }}
                 sx={{
-                  backgroundColor: 'white',
-                  color: 'black',
-                  borderColor: 'black',
+                  color: theme.palette.cruGrayDark.main,
+                  borderColor: theme.palette.cruGrayDark.main,
                   '&:hover': {
-                    backgroundColor: '#f5f5f5',
-                    borderColor: 'black',
+                    backgroundColor: theme.palette.cruGrayLight.main,
+                    borderColor: theme.palette.cruGrayDark.main,
                   },
                 }}
               >
@@ -580,12 +580,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               startIcon={<Settings />}
               size="small"
               sx={{
-                backgroundColor: 'white',
-                color: 'black',
-                borderColor: 'black',
+                color: theme.palette.cruGrayDark.main,
+                borderColor: theme.palette.cruGrayDark.main,
                 '&:hover': {
-                  backgroundColor: '#f5f5f5',
-                  borderColor: 'black',
+                  backgroundColor: theme.palette.cruGrayLight.main,
+                  borderColor: theme.palette.cruGrayDark.main,
                 },
               }}
               onClick={handleSettingsClick}
@@ -597,7 +596,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       </ScreenOnly>
       <ScreenOnly mt={2} mb={2}>
         <Container>
-          <Divider></Divider>
+          <Divider />
         </Container>
       </ScreenOnly>
       <Box>
