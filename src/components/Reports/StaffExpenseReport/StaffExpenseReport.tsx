@@ -42,6 +42,7 @@ import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
+import { filterTransactions } from './filterTransactions';
 
 export interface Transaction extends BreakdownByMonth {
   fundType: string;
@@ -91,21 +92,15 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   );
   const [filterTimeTitle, setFilterTimeTitle] = useState<string | null>(null);
 
-  const getQueryDateRange = () => {
-    return {
+  const { data, loading } = useReportsStaffExpensesQuery({
+    variables: {
+      accountId: '1000000001',
       startMonth: filters?.startDate
         ? filters.startDate.startOf('month').toISODate()
         : time.startOf('month').toISODate(),
       endMonth: filters?.endDate
         ? filters.endDate.endOf('month').toISODate()
         : time.endOf('month').toISODate(),
-    };
-  };
-
-  const { data, loading } = useReportsStaffExpensesQuery({
-    variables: {
-      accountId: '1000000001',
-      ...getQueryDateRange(),
     },
   });
   console.log(data);
@@ -116,7 +111,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     year: 'numeric',
   });
 
-  const hasNext = time.hasSame(DateTime.now().startOf('month'), 'month');
+  const hasNext = time.hasSame(DateTime.now(), 'month');
 
   const allFunds: Fund[] = data?.reportsStaffExpenses?.funds ?? [];
 
@@ -132,75 +127,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   useEffect(() => {
     if (!selectedFundType && allFunds.length > 0) {
       const defaultType =
-        allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
-        allFunds[0]?.fundType ??
-        null;
-
-      if (defaultType) {
-        setSelectedFundType(defaultType);
-      }
+        allFunds.find((fund) => fund.fundType === 'Primary')?.fundType ??
+        allFunds[0]?.fundType;
+      setSelectedFundType(defaultType);
     }
   }, [allFunds, selectedFundType]);
 
   const selectedFund = allFunds.find((f) => f.fundType === selectedFundType);
-
-  const filterTransactionsByTime = (
-    fund: Fund,
-    targetTime: DateTime,
-  ): Transaction[] => {
-    return (
-      fund.categories?.flatMap((category) =>
-        category.subcategories
-          ? category.subcategories.flatMap(
-              (subcategory) =>
-                subcategory.breakdownByMonth
-                  ?.filter((tx) => {
-                    const txDate = DateTime.fromISO(tx.month);
-                    // query filtering is not granular enough (only by month),
-                    // so filtering by date must happen here.
-                    if (filters && (filters.startDate || filters.endDate)) {
-                      return (
-                        (!filters.startDate || txDate >= filters.startDate) &&
-                        (filters.endDate
-                          ? txDate <= filters.endDate
-                          : txDate <= DateTime.now())
-                      );
-                    }
-                    return (
-                      txDate >= targetTime.startOf('month') &&
-                      txDate <= targetTime.endOf('month')
-                    );
-                  })
-                  .map((tx) => ({
-                    ...tx,
-                    fundType: fund.fundType,
-                    category: `${category.category} - ${subcategory.subCategory}`,
-                  })) ?? [],
-            )
-          : category.breakdownByMonth
-              ?.filter((tx) => {
-                const txDate = DateTime.fromISO(tx.month);
-                if (filters && (filters.startDate || filters.endDate)) {
-                  return (
-                    (!filters.startDate || txDate >= filters.startDate) &&
-                    (filters.endDate
-                      ? txDate <= filters.endDate
-                      : txDate <= DateTime.now())
-                  );
-                }
-                return (
-                  txDate >= targetTime.startOf('month') &&
-                  txDate <= targetTime.endOf('month')
-                );
-              })
-              .map((tx) => ({
-                ...tx,
-                fundType: fund.fundType,
-                category: category.category,
-              })) ?? [],
-      ) ?? []
-    );
-  };
 
   const setPrevMonth = () => {
     const prevTime = time.minus({ months: 1 });
@@ -209,7 +142,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
-      const txs = filterTransactionsByTime(fund, prevTime);
+      const txs = filterTransactions(fund, prevTime, filters);
       newTransactions[fund.fundType] = txs;
     });
 
@@ -223,7 +156,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
-      const txs = filterTransactionsByTime(fund, nextTime);
+      const txs = filterTransactions(fund, nextTime, filters);
       newTransactions[fund.fundType] = txs;
     });
 
@@ -242,7 +175,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
-      const fundTransactions = filterTransactionsByTime(fund, time);
+      const fundTransactions = filterTransactions(fund, time, filters);
       newTransactions[fund.fundType] = fundTransactions;
     });
 
