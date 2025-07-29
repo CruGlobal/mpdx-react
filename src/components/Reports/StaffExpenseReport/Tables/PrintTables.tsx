@@ -67,8 +67,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                     <span
                       style={{ color: transactionTotal < 0 ? 'red' : 'green' }}
                     >
-                      {transactionTotal < 0 ? '-' : ''}
-                      {Math.abs(transactionTotal).toLocaleString(locale, {
+                      {transactionTotal.toLocaleString(locale, {
                         style: 'currency',
                         currency: 'USD',
                       })}
@@ -96,7 +95,12 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                 </TableCell>
                 <TableCell />
                 <TableCell>
-                  <strong>${transactionTotal}</strong>
+                  <strong>
+                    {transactionTotal.toLocaleString(locale, {
+                      style: 'currency',
+                      currency: 'USD',
+                    })}
+                  </strong>
                 </TableCell>
               </TableRow>
             </>
@@ -106,5 +110,3 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
     </TableContainer>
   );
 };
-
-// Add Primary and amounts
