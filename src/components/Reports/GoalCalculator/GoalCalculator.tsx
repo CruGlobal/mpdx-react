@@ -29,10 +29,6 @@ const StyledCategoryIconButton = styled(IconButton)<{ selected: boolean }>(
   }),
 );
 
-const StyledVerticalDivider = styled(Divider)({
-  height: '100vh',
-});
-
 const StyledCategoryTitle = styled(Typography)(({ theme }) => ({
   marginBottom: 0,
   marginTop: theme.spacing(1),
@@ -103,7 +99,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         title={t('Goal Calculator')}
         headerType={HeaderTypeEnum.Report}
       />
-      <Stack direction="row">
+      <Stack direction="row" flex={1}>
         <Stack direction="column">
           {categories.map((category) => (
             <StyledCategoryIconButton
@@ -115,7 +111,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
             </StyledCategoryIconButton>
           ))}
         </Stack>
-        <StyledVerticalDivider orientation="vertical" flexItem />
+        <Divider orientation="vertical" flexItem />
         <Box width={240}>
           <StyledCategoryTitle variant="h6">
             {categoryTitle || t('Goal Calculator')}
@@ -147,7 +143,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
             })}
           </List>
         </Box>
-        <StyledVerticalDivider orientation="vertical" flexItem />
+        <Divider orientation="vertical" flexItem />
         <Box flex={1}>
           <StyledToolbar disableGutters>
             <StyledTitle variant="h6">
