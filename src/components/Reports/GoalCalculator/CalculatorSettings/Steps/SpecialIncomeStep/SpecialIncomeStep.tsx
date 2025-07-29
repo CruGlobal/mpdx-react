@@ -31,7 +31,7 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
     additionalIncomes: [],
   };
 
-  const validationSchema = yup.object().shape({
+  const validationSchema = yup.object({
     incidentIncome: yup
       .number()
       .min(0, t('Incident income must be positive'))
@@ -41,7 +41,7 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
       .min(0, t('Property income must be positive'))
       .required(t('Property income is required')),
     additionalIncomes: yup.array().of(
-      yup.object().shape({
+      yup.object({
         label: yup
           .string()
           .min(2, t('Label must be at least 2 characters'))

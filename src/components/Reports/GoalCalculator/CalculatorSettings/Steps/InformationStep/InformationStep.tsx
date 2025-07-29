@@ -76,7 +76,7 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
 
-  const validationSchema = yup.object().shape({
+  const validationSchema = yup.object({
     // Financial validation
     monthlyIncome: yup
       .number()
@@ -166,7 +166,7 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     solidMonthlySupportDeveloped: 0,
 
     // Personal form initial values
-    location: '',
+    location: 'None',
     role: '',
     benefits: '',
     tenure: 0,
