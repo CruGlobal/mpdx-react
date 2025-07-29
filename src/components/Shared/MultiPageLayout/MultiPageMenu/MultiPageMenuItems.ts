@@ -45,7 +45,7 @@ export const reportNavItems: NavItems[] = [
     title: i18n.t('Coaching'),
   },
   {
-    id: 'savingsFundTransfer',
+    id: 'staffSavingFund',
     title: i18n.t('Savings Fund Transfer'),
   },
 ];

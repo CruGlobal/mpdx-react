@@ -14,17 +14,6 @@ import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { TransferHistoryTable } from '../Table/TransferHistory';
 import { mockData } from '../mockData';
 
-export interface TransferHistory {
-  transfers: string;
-  amount: number;
-  schedule: string;
-  status: string;
-  transferDate: string;
-  stopDate: string;
-  note: string;
-  actions: string;
-}
-
 interface SavingsFundTransfersProps {
   title: string;
 }

@@ -43,9 +43,19 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { Status } from '../Helper/TransferHistoryEnum';
-import { TransferHistory } from '../SavingsFundTransfer';
 
 type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
+
+export interface TransferHistory {
+  transfers: string;
+  amount: number;
+  schedule: string;
+  status: string;
+  transferDate: string;
+  stopDate: string;
+  note: string;
+  actions: string;
+}
 
 export interface TransferHistoryTableProps {
   history: TransferHistory[];
