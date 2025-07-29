@@ -5,19 +5,24 @@ import {
   Edit,
   ErrorOutline,
   EventRepeat,
+  FilterList,
   Groups,
   Inventory,
   MoreHoriz,
   PauseCircleFilled,
   RepeatOne,
   Replay,
+  SaveAlt,
   Savings,
+  TableRows,
   Undo,
+  ViewColumn,
   Wallet,
 } from '@mui/icons-material';
 import {
   Avatar,
   Box,
+  Button,
   Chip,
   CircularProgress,
   IconButton,
@@ -27,7 +32,13 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
-import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridSortModel,
+  GridToolbarContainer,
+  GridToolbarQuickFilter,
+} from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
@@ -447,6 +458,41 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
+  const QuickFilterToolbar = () => (
+    <GridToolbarContainer
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
+      <Box sx={{ display: 'flex', gap: 0 }}>
+        <Button>
+          <ViewColumn sx={{ color: '#05699B', mr: 0.5 }} />
+          {t('Columns').toUpperCase()}
+        </Button>
+        <Button>
+          <FilterList sx={{ color: '#05699B', mr: 0.5 }} />
+          {t('Filters').toUpperCase()}
+        </Button>
+        <Button>
+          <TableRows sx={{ color: '#05699B', mr: 0.5 }} />
+          {t('Density').toUpperCase()}
+        </Button>
+        <Button>
+          <SaveAlt sx={{ color: '#05699B', mr: 0.5 }} />
+          {t('Export').toUpperCase()}
+        </Button>
+      </Box>
+      <GridToolbarQuickFilter
+        sx={{
+          width: 250,
+          m: 1,
+        }}
+      />
+    </GridToolbarContainer>
+  );
+
   return loading ? (
     <LoadingBox>
       <LoadingIndicator
@@ -474,12 +520,15 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={[5, 10, 25]}
         pageSize={pageSize}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
         disableSelectionOnClick
         pagination
+        components={{
+          Toolbar: QuickFilterToolbar,
+        }}
       />
     </>
   ) : (
