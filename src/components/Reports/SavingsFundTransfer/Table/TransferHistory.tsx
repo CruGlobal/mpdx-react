@@ -30,6 +30,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { Status } from '../Helper/TransferHistoryEnum';
+import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
 
 type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
 
@@ -112,6 +113,12 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const locale = useLocale();
 
   const [pageSize, setPageSize] = useState(5);
+  const [openDeleteModal, setOpenDeleteModal] =
+    useState<TransferHistory | null>(null);
+
+  const handleDeleteModalOpen = (transfer: TransferHistory) => {
+    setOpenDeleteModal(transfer);
+  };
 
   const transferHistoryRows = useMemo(() => {
     return history.map((data, index) => CreateTransferHistoryRows(data, index));
@@ -337,7 +344,12 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
             <Edit />
           </IconButton>
           <IconButton>
-            <Delete sx={{ color: 'error.main' }} />
+            <Delete
+              sx={{ color: 'error.main' }}
+              onClick={() => {
+                handleDeleteModalOpen(row);
+              }}
+            />
           </IconButton>
         </>
       );
@@ -465,6 +477,12 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           Toolbar: QuickFilterToolbar,
         }}
       />
+      {openDeleteModal && (
+        <DeleteTransferModal
+          handleClose={() => setOpenDeleteModal(null)}
+          transfer={openDeleteModal}
+        />
+      )}
     </>
   ) : (
     emptyPlaceholder
