@@ -1,6 +1,6 @@
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
-import { downloadCsv } from './downloadReport';
+import { createCsvReport } from './downloadReport';
 
 const mockData: Transaction[] = [
   {
@@ -46,7 +46,7 @@ describe('downloadReport', () => {
     const incomeMockData = mockData.filter(
       (transaction) => transaction.total > 0,
     );
-    downloadCsv(
+    createCsvReport(
       ReportType.Income,
       enqueueSnackbarMock,
       incomeMockData,
@@ -79,7 +79,7 @@ describe('downloadReport', () => {
     const expenseMockData = mockData.filter(
       (transaction) => transaction.total < 0,
     );
-    downloadCsv(
+    createCsvReport(
       ReportType.Expense,
       enqueueSnackbarMock,
       expenseMockData,
@@ -109,7 +109,7 @@ describe('downloadReport', () => {
 
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-    downloadCsv(
+    createCsvReport(
       ReportType.Combined,
       enqueueSnackbarMock,
       mockData,
@@ -133,7 +133,13 @@ describe('downloadReport', () => {
   });
 
   it('shows snackbar and returns when no transactions are provided', () => {
-    downloadCsv(ReportType.Income, enqueueSnackbarMock, [], mockT, mockLocale);
+    createCsvReport(
+      ReportType.Income,
+      enqueueSnackbarMock,
+      [],
+      mockT,
+      mockLocale,
+    );
 
     expect(enqueueSnackbarMock).toHaveBeenCalledWith(
       'No transactions to download',
@@ -143,7 +149,7 @@ describe('downloadReport', () => {
 
   it('returns early if an invalid ReportType is provided', () => {
     expect(
-      downloadCsv(
+      createCsvReport(
         'invalid' as ReportType,
         enqueueSnackbarMock,
         [],
