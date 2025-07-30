@@ -1,5 +1,4 @@
 import Head from 'next/dist/shared/lib/head';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -31,16 +30,7 @@ const StaffExpenseReportPage: React.FC = () => {
     setIsNavListOpen(!isNavListOpen);
   };
 
-  const { query } = useRouter();
-  const [time, setTime] = useState(() => {
-    if (typeof query.month === 'string') {
-      const date = DateTime.fromISO(query.month);
-      if (date.isValid) {
-        return date.startOf('month');
-      }
-    }
-    return DateTime.now().startOf('month');
-  });
+  const [time, setTime] = useState(DateTime.now().startOf('month'));
 
   return (
     <>
