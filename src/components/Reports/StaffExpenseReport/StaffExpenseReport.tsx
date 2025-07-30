@@ -47,6 +47,51 @@ import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
 import { filterTransactions } from './filterTransactions';
 
+const ScreenOnly = styled(Box)({
+  '@media print': {
+    display: 'none',
+  },
+});
+
+const PrintOnly = styled(Box)({
+  display: 'none',
+  '@media print': {
+    display: 'block',
+  },
+});
+
+const StyledHeaderBox = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  justifyContent: 'space-between',
+});
+
+const StyledPrintButton = styled(Button)({
+  border: '1px solid',
+  borderRadius: theme.spacing(1),
+  marginLeft: theme.spacing(2),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+});
+
+const StyledTimeNavBox = styled(Box)({
+  display: 'flex',
+  margin: 0,
+  gap: theme.spacing(2),
+});
+
+const StyledFilterButton = styled(Button)({
+  color: theme.palette.cruGrayDark.main,
+  borderColor: theme.palette.cruGrayDark.main,
+  '&:hover': {
+    backgroundColor: theme.palette.cruGrayLight.main,
+    borderColor: theme.palette.cruGrayDark.main,
+  },
+});
+
 export interface Transaction extends BreakdownByMonth {
   fundType: string;
   category: TransactionCategory['category'];
@@ -61,19 +106,6 @@ interface StaffExpenseReportProps {
   time: DateTime;
   setTime: (time: DateTime) => void;
 }
-
-const ScreenOnly = styled(Box)(() => ({
-  '@media print': {
-    display: 'none',
-  },
-}));
-
-const PrintOnly = styled(Box)(() => ({
-  display: 'none',
-  '@media print': {
-    display: 'block',
-  },
-}));
 
 export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   isNavListOpen,
@@ -238,14 +270,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box mt={2}>
         <Container>
           <Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-                justifyContent: 'space-between',
-              }}
-            >
+            <StyledHeaderBox>
               <PrintOnly>
                 <Typography variant="h4">
                   {t('Income and Expenses: {{timeTitle}}', {
@@ -263,26 +288,19 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   alignItems="flex-end"
                   gap={1}
                 >
-                  <Button
+                  <StyledPrintButton
                     startIcon={
                       <SvgIcon fontSize="small">
                         <PrintIcon titleAccess={t('Print')} />
                       </SvgIcon>
                     }
                     onClick={handlePrint}
-                    sx={{
-                      border: '1px solid',
-                      borderRadius: 1,
-                      ml: 2,
-                      px: 2,
-                      py: 1,
-                    }}
                   >
                     {t('Print')}
-                  </Button>
+                  </StyledPrintButton>
                 </ScreenOnly>
               ) : null}
-            </Box>
+            </StyledHeaderBox>
             <Box
               display="flex"
               flexDirection="row"
@@ -394,13 +412,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       </ScreenOnly>
       <ScreenOnly mt={2}>
         <Container>
-          <Box
-            sx={{
-              display: 'flex',
-              margin: 0,
-              gap: 2,
-            }}
-          >
+          <StyledTimeNavBox>
             {!filters ? (
               <Typography variant="h6">{timeTitle}</Typography>
             ) : (
@@ -429,7 +441,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 </Button>
               </>
             ) : null}
-          </Box>
+          </StyledTimeNavBox>
         </Container>
       </ScreenOnly>
       <Box mt={2} mb={2}>
@@ -445,7 +457,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
             {isFilterDateSelected ? (
-              <Button
+              <StyledFilterButton
                 variant="outlined"
                 startIcon={<FilterListOff />}
                 size="small"
@@ -453,34 +465,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   setFilters(null);
                   setIsFilterDateSelected(false);
                 }}
-                sx={{
-                  color: theme.palette.cruGrayDark.main,
-                  borderColor: theme.palette.cruGrayDark.main,
-                  '&:hover': {
-                    backgroundColor: theme.palette.cruGrayLight.main,
-                    borderColor: theme.palette.cruGrayDark.main,
-                  },
-                }}
               >
                 {t('Clear Filters')}
-              </Button>
+              </StyledFilterButton>
             ) : null}
-            <Button
+            <StyledFilterButton
               variant="outlined"
               startIcon={<Settings />}
               size="small"
-              sx={{
-                color: theme.palette.cruGrayDark.main,
-                borderColor: theme.palette.cruGrayDark.main,
-                '&:hover': {
-                  backgroundColor: theme.palette.cruGrayLight.main,
-                  borderColor: theme.palette.cruGrayDark.main,
-                },
-              }}
               onClick={handleSettingsClick}
             >
               {t('Filter Settings')}
-            </Button>
+            </StyledFilterButton>
           </Box>
         </Container>
       </ScreenOnly>
