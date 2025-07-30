@@ -83,7 +83,6 @@ const RAW_RUNTIME_STATE =
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
           ["clsx", "npm:2.1.1"],\
           ["concurrently", "npm:8.2.2"],\
-          ["cross-env", "npm:7.0.3"],\
           ["css-mediaquery", "npm:0.1.2"],\
           ["dnd-core", "npm:16.0.1"],\
           ["eslint", "npm:8.57.0"],\
@@ -96,7 +95,6 @@ const RAW_RUNTIME_STATE =
           ["formidable", "npm:3.5.4"],\
           ["formik", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.9"],\
           ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.3.6"],\
-          ["full-icu", "npm:1.5.0"],\
           ["graphql", "npm:16.9.0"],\
           ["graphql-ergonomock", [\
             "@cruglobal/graphql-ergonomock",\
@@ -12580,16 +12578,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["cross-env", [\
-      ["npm:7.0.3", {\
-        "packageLocation": "./.yarn/cache/cross-env-npm-7.0.3-96d81820f4-e99911f0d3.zip/node_modules/cross-env/",\
-        "packageDependencies": [\
-          ["cross-env", "npm:7.0.3"],\
-          ["cross-spawn", "npm:7.0.6"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["cross-fetch", [\
       ["npm:3.1.5", {\
         "packageLocation": "./.yarn/cache/cross-fetch-npm-3.1.5-e414995db9-5d101a3b1e.zip/node_modules/cross-fetch/",\
@@ -15385,16 +15373,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["fsevents", "patch:fsevents@npm%3A2.3.2#optional!builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
           ["node-gyp", "npm:9.1.0"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["full-icu", [\
-      ["npm:1.5.0", {\
-        "packageLocation": "./.yarn/unplugged/full-icu-npm-1.5.0-64ef6b2565/node_modules/full-icu/",\
-        "packageDependencies": [\
-          ["full-icu", "npm:1.5.0"],\
-          ["yauzl", "npm:2.10.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -19532,7 +19510,6 @@ const RAW_RUNTIME_STATE =
           ["apollo3-cache-persist", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:0.14.1"],\
           ["clsx", "npm:2.1.1"],\
           ["concurrently", "npm:8.2.2"],\
-          ["cross-env", "npm:7.0.3"],\
           ["css-mediaquery", "npm:0.1.2"],\
           ["dnd-core", "npm:16.0.1"],\
           ["eslint", "npm:8.57.0"],\
@@ -19545,7 +19522,6 @@ const RAW_RUNTIME_STATE =
           ["formidable", "npm:3.5.4"],\
           ["formik", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.2.9"],\
           ["framer-motion", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:7.3.6"],\
-          ["full-icu", "npm:1.5.0"],\
           ["graphql", "npm:16.9.0"],\
           ["graphql-ergonomock", [\
             "@cruglobal/graphql-ergonomock",\
