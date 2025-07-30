@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Box,
   Button,
@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -38,7 +37,7 @@ export interface Filters {
 const validationSchema = yup.object({
   selectedDateRange: yup.mixed().nullable(),
   startDate: yup
-    .date()
+    .mixed()
     .nullable()
     .test(
       'start-date-validation',
@@ -48,20 +47,22 @@ const validationSchema = yup.object({
         if (!value || !endDate) {
           return true;
         }
+
         return value <= endDate;
       },
     ),
   endDate: yup
-    .date()
+    .mixed()
     .nullable()
     .test(
       'end-date-validation',
-      i18n.t('Start date must be earlier than or equal to end date'),
+      i18n.t('End date must be later than or equal to start date'),
       function (value) {
         const { startDate } = this.parent;
         if (!value || !startDate) {
           return true;
         }
+
         return startDate <= value;
       },
     ),
@@ -103,8 +104,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
 }) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
-  const [hasDateError, setHasDateError] = useState(false);
 
   const initialValues = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
@@ -119,18 +118,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     categories: selectedFilters?.categories ?? [],
   };
 
-  useEffect(() => {
-    if (hasDateError) {
-      enqueueSnackbar(
-        t('Start date must be earlier than or equal to end date'),
-        {
-          variant: 'error',
-          autoHideDuration: 4000,
-        },
-      );
-    }
-  }, [hasDateError, enqueueSnackbar, t]);
-
   return (
     <Dialog
       open={isOpen}
@@ -139,7 +126,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
       maxWidth="md"
     >
       <DialogTitle>{t('Report Settings')}</DialogTitle>
-
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -168,11 +154,6 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           validateForm,
           setTouched,
         }) => {
-          setHasDateError(
-            Boolean(errors.startDate && touched.startDate) ||
-              Boolean(errors.endDate && touched.endDate),
-          );
-
           return (
             <Form>
               <DialogContent>
@@ -188,12 +169,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     if (value !== undefined) {
                       setFieldValue('startDate', null);
                       setFieldValue('endDate', null);
+
                       setTouched({
                         ...touched,
                         startDate: false,
                         endDate: false,
                       });
                     }
+                    setTimeout(() => validateForm(), 0);
                   }}
                 >
                   <MenuItem value="">{t('None')}</MenuItem>
@@ -222,12 +205,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       if (date) {
                         setFieldValue('selectedDateRange', undefined);
                       }
-                      setTimeout(() => {
-                        validateForm();
-                      }, 0);
+                      setTimeout(() => validateForm(), 0);
                     }}
                     fullWidth
-                    error={hasDateError}
+                    error={Boolean(errors.startDate && touched.startDate)}
+                    helperText={
+                      errors.startDate && touched.startDate
+                        ? errors.startDate
+                        : ''
+                    }
                   />
                   <CustomDateField
                     label={t('End Date')}
@@ -238,12 +224,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       if (date) {
                         setFieldValue('selectedDateRange', undefined);
                       }
-                      setTimeout(() => {
-                        validateForm();
-                      }, 0);
+                      setTimeout(() => validateForm(), 0);
                     }}
                     fullWidth
-                    error={hasDateError}
+                    error={Boolean(errors.endDate && touched.endDate)}
+                    helperText={
+                      errors.endDate && touched.endDate ? errors.endDate : ''
+                    }
                   />
                 </Box>
 
