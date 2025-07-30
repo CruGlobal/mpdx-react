@@ -5,7 +5,7 @@ import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { TableType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 
@@ -100,10 +100,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
 
     return (
       <Typography variant="body2" noWrap>
-        {row.amount.toLocaleString(locale, {
-          style: 'currency',
-          currency: 'USD',
-        })}
+        {currencyFormat(row.amount, 'USD', locale)}
       </Typography>
     );
   };
@@ -178,20 +175,14 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
           <Typography fontWeight="bold">
             {t('Total Income:')}{' '}
             <span style={{ color: 'green' }}>
-              {transferTotal.toLocaleString(locale, {
-                style: 'currency',
-                currency: 'USD',
-              })}
+              {currencyFormat(transferTotal, 'USD', locale)}
             </span>
           </Typography>
         ) : (
           <Typography fontWeight="bold">
             {t('Total Expenses:')}{' '}
             <span style={{ color: 'red' }}>
-              {transferTotal.toLocaleString(locale, {
-                style: 'currency',
-                currency: 'USD',
-              })}
+              {currencyFormat(transferTotal, 'USD', locale)}
             </span>
           </Typography>
         )}
