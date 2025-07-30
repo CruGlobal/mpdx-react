@@ -73,27 +73,27 @@ const calculateDateRange = (
   range: DateRange,
 ): { startDate: DateTime; endDate: DateTime } => {
   const now = DateTime.now();
-
+  const endDate = now.endOf('day');
   switch (range) {
     case DateRange.WeekToDate:
       return {
         startDate: now.startOf('week'),
-        endDate: now.endOf('day'),
+        endDate,
       };
     case DateRange.MonthToDate:
       return {
         startDate: now.startOf('month'),
-        endDate: now.endOf('day'),
+        endDate,
       };
     case DateRange.YearToDate:
       return {
         startDate: now.startOf('year'),
-        endDate: now.endOf('day'),
+        endDate,
       };
     default:
       return {
         startDate: now.startOf('day'),
-        endDate: now.endOf('day'),
+        endDate,
       };
   }
 };
@@ -118,6 +118,18 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     categories: selectedFilters?.categories ?? [],
   };
 
+  const handleSubmit = (values: Filters) => {
+    const finalValues = { ...values };
+    if (values.selectedDateRange !== undefined) {
+      const { startDate, endDate } = calculateDateRange(
+        values.selectedDateRange,
+      );
+      finalValues.startDate = startDate;
+      finalValues.endDate = endDate;
+    }
+    onClose(finalValues);
+  };
+
   return (
     <Dialog
       open={isOpen}
@@ -132,17 +144,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
         validateOnChange
         validateOnBlur
         enableReinitialize
-        onSubmit={(values) => {
-          const finalValues = { ...values };
-          if (values.selectedDateRange !== undefined) {
-            const { startDate, endDate } = calculateDateRange(
-              values.selectedDateRange,
-            );
-            finalValues.startDate = startDate;
-            finalValues.endDate = endDate;
-          }
-          onClose(finalValues);
-        }}
+        onSubmit={handleSubmit}
       >
         {({
           values,
@@ -272,10 +274,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
               <DialogActions>
                 <Button
+                  sx={{ color: 'black' }}
                   onClick={() => {
                     onClose(selectedFilters);
                   }}
-                  color="secondary"
                 >
                   {t('Cancel')}
                 </Button>

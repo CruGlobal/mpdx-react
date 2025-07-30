@@ -6,12 +6,6 @@ import { SnackbarProvider } from 'notistack';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { Filters, SettingsDialog } from './SettingsDialog';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 jest.mock('src/components/common/DateTimePickers/CustomDateField', () => ({
   CustomDateField: ({ label, value, onChange, ...props }: any) => (
     <input
@@ -305,7 +299,10 @@ describe('SettingsDialog', () => {
     );
 
     const startDateField = getByTestId('date-field-Start Date');
-    userEvent.type(startDateField, '2025-01-01');
+
+    await waitFor(() => {
+      userEvent.type(startDateField, '2025-01-01');
+    });
 
     userEvent.click(getByRole('button', { name: 'Apply Filters' }));
 
@@ -315,6 +312,7 @@ describe('SettingsDialog', () => {
           selectedDateRange: undefined,
           startDate: expect.any(DateTime),
           endDate: null,
+          categories: [],
         }),
       );
     });
@@ -480,6 +478,8 @@ describe('SettingsDialog', () => {
     userEvent.type(endDateField, '2025-01-01');
     userEvent.type(startDateField, '2025-01-31');
 
-    expect(getByRole('button', { name: 'Apply Filters' })).toBeDisabled();
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Apply Filters' })).toBeDisabled();
+    });
   });
 });
