@@ -15,13 +15,13 @@ export const dateRangeToString = (dateRange: DateRange, locale: string) => {
   const now = DateTime.now();
   return {
     [DateRange.WeekToDate]: [
-      getFormattedDateString(now.minus({ weeks: 1 }), now, locale),
+      getFormattedDateString(now.startOf('week'), now, locale),
     ],
     [DateRange.MonthToDate]: [
-      getFormattedDateString(now.minus({ months: 1 }), now, locale),
+      getFormattedDateString(now.startOf('month'), now, locale),
     ],
     [DateRange.YearToDate]: [
-      getFormattedDateString(now.minus({ years: 1 }), now, locale),
+      getFormattedDateString(now.startOf('year'), now, locale),
     ],
   }[dateRange];
 };

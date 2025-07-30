@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 import { downloadCsv } from './downloadReport';
@@ -28,6 +27,7 @@ const mockData: Transaction[] = [
 ];
 
 const mockT = jest.fn((key: string) => key);
+const mockLocale = 'en-US';
 
 describe('downloadReport', () => {
   const clickMock = jest.fn();
@@ -46,17 +46,22 @@ describe('downloadReport', () => {
     const incomeMockData = mockData.filter(
       (transaction) => transaction.total > 0,
     );
-    downloadCsv(ReportType.Income, enqueueSnackbarMock, incomeMockData, mockT);
+    downloadCsv(
+      ReportType.Income,
+      enqueueSnackbarMock,
+      incomeMockData,
+      mockT,
+      mockLocale,
+    );
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
       expect.stringContaining('data:text/csv'),
     );
 
-    const today = DateTime.now().toISODate();
     expect(setAttributeMock).toHaveBeenCalledWith(
       'download',
-      expect.stringContaining(`Income Report ${today}.csv`),
+      expect.stringContaining(`Income Report.csv`),
     );
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
@@ -79,6 +84,7 @@ describe('downloadReport', () => {
       enqueueSnackbarMock,
       expenseMockData,
       mockT,
+      mockLocale,
     );
 
     expect(setAttributeMock).toHaveBeenCalledWith(
@@ -86,10 +92,9 @@ describe('downloadReport', () => {
       expect.stringContaining('data:text/csv'),
     );
 
-    const today = DateTime.now().toISODate();
     expect(setAttributeMock).toHaveBeenCalledWith(
       'download',
-      expect.stringContaining(`Expense Report ${today}.csv`),
+      expect.stringContaining(`Expense Report.csv`),
     );
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
@@ -104,17 +109,22 @@ describe('downloadReport', () => {
 
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-    downloadCsv(ReportType.Combined, enqueueSnackbarMock, mockData, mockT);
+    downloadCsv(
+      ReportType.Combined,
+      enqueueSnackbarMock,
+      mockData,
+      mockT,
+      mockLocale,
+    );
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
       expect.stringContaining('data:text/csv'),
     );
 
-    const today = DateTime.now().toISODate();
     expect(setAttributeMock).toHaveBeenCalledWith(
       'download',
-      expect.stringContaining(`Combined Report ${today}.csv`),
+      expect.stringContaining(`Combined Report.csv`),
     );
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
@@ -123,7 +133,7 @@ describe('downloadReport', () => {
   });
 
   it('shows snackbar and returns when no transactions are provided', () => {
-    downloadCsv(ReportType.Income, enqueueSnackbarMock, [], mockT);
+    downloadCsv(ReportType.Income, enqueueSnackbarMock, [], mockT, mockLocale);
 
     expect(enqueueSnackbarMock).toHaveBeenCalledWith(
       'No transactions to download',
@@ -133,7 +143,13 @@ describe('downloadReport', () => {
 
   it('returns early if an invalid ReportType is provided', () => {
     expect(
-      downloadCsv('invalid' as ReportType, enqueueSnackbarMock, [], mockT),
+      downloadCsv(
+        'invalid' as ReportType,
+        enqueueSnackbarMock,
+        [],
+        mockT,
+        mockLocale,
+      ),
     ).toBeUndefined();
 
     expect(enqueueSnackbarMock).toHaveBeenCalled();
