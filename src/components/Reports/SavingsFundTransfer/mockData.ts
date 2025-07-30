@@ -1,20 +1,34 @@
+export enum StaffSavingFund {
+  StaffSavings = 'staffSavings',
+  StaffAccount = 'staffAccount',
+  StaffConferenceSavings = 'staffConferenceSavings',
+}
 export const mockData = {
   accountListId: '123456789',
   accountName: 'Test Account',
-  funds: {
-    staffAccount: {
+  funds: [
+    {
+      accountId: crypto.randomUUID(),
+      type: StaffSavingFund.StaffAccount,
+      name: 'Staff Account',
       balance: 15000,
       pending: 17500,
     },
-    staffConferenceSavings: {
+    {
+      accountId: crypto.randomUUID(),
+      type: StaffSavingFund.StaffConferenceSavings,
+      name: 'Staff Conference Savings',
       balance: 500,
       pending: 200,
     },
-    staffSavings: {
+    {
+      accountId: crypto.randomUUID(),
+      type: StaffSavingFund.StaffSavings,
+      name: 'Staff Savings',
       balance: 2500,
       pending: 0,
     },
-  },
+  ],
   history: [
     {
       transfers: 'staffSavings to staffAccount',

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Groups, Savings, Wallet } from '@mui/icons-material';
 import { Box, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,17 @@ import {
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { TransferHistoryTable } from '../Table/TransferHistory';
-import { mockData } from '../mockData';
+import {
+  TransferModal,
+  TransferModalData,
+  TransferTypeEnum,
+} from '../TransferModal/TransferModal';
+import { StaffSavingFund, mockData } from '../mockData';
+
+export interface HandleOpenTransferModalProps {
+  accountTransferFromId?: TransferModalData['accountTransferFromId'];
+  accountTransferToId?: TransferModalData['accountTransferToId'];
+}
 
 interface SavingsFundTransfersProps {
   title: string;
@@ -22,9 +32,22 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
+  const [modalData, setModalData] = useState<TransferModalData | null>(null);
   const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
+
+  const handleOpenTransferModal = ({
+    accountTransferFromId,
+    accountTransferToId,
+  }: HandleOpenTransferModalProps) => {
+    setModalData({
+      title: t('New Transfer'),
+      type: TransferTypeEnum.New,
+      accountTransferFromId,
+      accountTransferToId,
+    });
+  };
 
   return (
     <Box>
@@ -57,35 +80,29 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
               flexDirection: { xs: 'column', sm: 'row' },
             }}
           >
-            <BalanceCard
-              title={t('Staff Account Balance')}
-              icon={Wallet}
-              iconBgColor="#F08020"
-              balance={15000}
-              pending={17500}
-              // eslint-disable-next-line no-console
-              onClick={() => console.log('Staff Savings Fund clicked')}
-            />
-            <BalanceCard
-              title={t('Staff Conference Savings Balance')}
-              icon={Groups}
-              iconBgColor="#00C0D8"
-              balance={500}
-              pending={200}
-              onClick={() =>
-                // eslint-disable-next-line no-console
-                console.log('Staff Conference Savings Fund clicked')
-              }
-            />
-            <BalanceCard
-              title={t('Staff Savings Balance')}
-              icon={Savings}
-              iconBgColor="#007890"
-              balance={2500}
-              pending={0}
-              // eslint-disable-next-line no-console
-              onClick={() => console.log('Staff Savings Fund clicked')}
-            />
+            {mockData.funds.map((fund) => (
+              <BalanceCard
+                key={fund.accountId}
+                title={`${fund.name} Balance`}
+                icon={
+                  fund.type === StaffSavingFund.StaffAccount
+                    ? Wallet
+                    : fund.type === StaffSavingFund.StaffConferenceSavings
+                    ? Groups
+                    : Savings
+                }
+                iconBgColor={
+                  fund.type === StaffSavingFund.StaffAccount
+                    ? '#F08020'
+                    : fund.type === StaffSavingFund.StaffConferenceSavings
+                    ? '#00C0D8'
+                    : '#007890'
+                }
+                balance={fund.balance}
+                pending={fund.pending}
+                handleOpenTransferModal={handleOpenTransferModal}
+              />
+            ))}
           </Box>
           <Box sx={{ mt: 2, mb: 3 }}>
             <TransferHistoryTable
@@ -97,6 +114,12 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
           </Box>
         </Container>
       </Box>
+      {modalData && (
+        <TransferModal
+          handleClose={() => setModalData(null)}
+          data={modalData}
+        />
+      )}
     </Box>
   );
 };

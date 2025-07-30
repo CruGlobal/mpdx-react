@@ -3,6 +3,7 @@ import { MoveToInbox, Outbox } from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { HandleOpenTransferModalProps } from '../TransfersPage/TransfersPage';
 
 interface BalanceCardProps {
   title: string;
@@ -10,7 +11,10 @@ interface BalanceCardProps {
   iconBgColor?: string;
   balance: number;
   pending: number;
-  onClick?: (fundType: string) => void;
+  handleOpenTransferModal: ({
+    accountTransferFromId,
+    accountTransferToId,
+  }: HandleOpenTransferModalProps) => void;
   isSelected?: boolean;
 }
 
@@ -20,11 +24,23 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   iconBgColor,
   balance,
   pending,
-  //onClick,
+  handleOpenTransferModal,
   isSelected = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const handleTransferFrom = () => {
+    handleOpenTransferModal({
+      accountTransferFromId: 'fromAccountId',
+    });
+  };
+
+  const handleTransferTo = () => {
+    handleOpenTransferModal({
+      accountTransferToId: 'toAccountId',
+    });
+  };
 
   return (
     <Card
@@ -92,11 +108,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           ml: 0,
         }}
       >
-        <Button>
+        <Button onClick={handleTransferFrom}>
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('Transfer From').toUpperCase()}
         </Button>
-        <Button>
+        <Button onClick={handleTransferTo}>
           <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('Transfer To').toUpperCase()}
         </Button>
