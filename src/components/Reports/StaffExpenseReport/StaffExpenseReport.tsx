@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   FilterListOff,
@@ -38,6 +37,10 @@ import { BalanceCard } from './BalanceCard/BalanceCard';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { TableType } from './Helpers/StaffReportEnum';
+import {
+  dateRangeToString,
+  getFormattedDateString,
+} from './Helpers/formatDate';
 import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { PrintTables } from './Tables/PrintTables';
@@ -90,20 +93,19 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         (filters.startDate || filters.endDate || filters.selectedDateRange),
     ),
   );
-  const [filterTimeTitle, setFilterTimeTitle] = useState<string | null>(null);
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
       accountId: '1000000001',
-      startMonth: filters?.startDate
-        ? filters.startDate.startOf('month').toISODate()
-        : time.startOf('month').toISODate(),
-      endMonth: filters?.endDate
-        ? filters.endDate.endOf('month').toISODate()
-        : time.endOf('month').toISODate(),
+      startMonth:
+        filters?.startDate?.startOf('month').toISODate() ??
+        filters?.endDate?.startOf('month').toISODate() ??
+        time.startOf('month').toISODate(),
+      endMonth:
+        filters?.endDate?.endOf('month').toISODate() ??
+        time.endOf('month').toISODate(),
     },
   });
-  console.log(data);
   const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
@@ -145,8 +147,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       const txs = filterTransactions(fund, prevTime, filters);
       newTransactions[fund.fundType] = txs;
     });
-
-    setTransactions(newTransactions);
   };
 
   const setNextMonth = () => {
@@ -159,19 +159,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       const txs = filterTransactions(fund, nextTime, filters);
       newTransactions[fund.fundType] = txs;
     });
-
-    setTransactions(newTransactions);
   };
 
-  const [transactions, setTransactions] = useState<
-    Record<string, Transaction[]>
-  >({});
-
-  useEffect(() => {
-    if (allFunds.length === 0) {
-      return;
-    }
-
+  const transactions = useMemo(() => {
     const newTransactions: Record<string, Transaction[]> = {};
 
     allFunds.forEach((fund) => {
@@ -179,7 +169,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       newTransactions[fund.fundType] = fundTransactions;
     });
 
-    setTransactions(newTransactions);
+    return newTransactions;
   }, [allFunds, time, filters]);
 
   const handleCardClick = (fundType: string) => {
@@ -187,7 +177,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   };
 
   const handleSettingsClick = () => {
-    console.log('Settings clicked');
     setIsSettingsOpen(!isSettingsOpen);
   };
 
@@ -220,53 +209,21 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     return totals;
   }, [transactions]);
 
-  const changeFilterTimeTitle = (newFilters: Filters | undefined) => {
-    let newFilterTimeTitle: string | null = null;
-    if (newFilters?.selectedDateRange) {
-      newFilterTimeTitle = t('Date Range: {{range}}', {
-        range: newFilters.selectedDateRange,
-      });
-    } else if (newFilters?.startDate && newFilters?.endDate) {
-      newFilterTimeTitle = t('{{start}} - {{end}}', {
-        start: newFilters.startDate.toJSDate().toLocaleDateString(locale, {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-        end: newFilters.endDate.toJSDate().toLocaleDateString(locale, {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-      });
-    } else if (newFilters?.startDate && !newFilters?.endDate) {
-      newFilterTimeTitle = t('{{start}} - Current Date', {
-        start: newFilters.startDate.toJSDate().toLocaleDateString(locale, {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-      });
-    } else if (!newFilters?.startDate && newFilters?.endDate) {
-      newFilterTimeTitle = t('{{start}} - {{end}}', {
-        start: DateTime.now()
-          .startOf('month')
-          .toJSDate()
-          .toLocaleDateString(locale, {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          }),
-        end: newFilters.endDate.toJSDate().toLocaleDateString(locale, {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-      });
+  const filterTimeTitle = useMemo(() => {
+    if (filters?.selectedDateRange) {
+      return dateRangeToString(filters.selectedDateRange);
+    } else if (filters?.startDate && filters?.endDate) {
+      return getFormattedDateString(filters.startDate, filters.endDate);
+    } else if (filters?.startDate && !filters?.endDate) {
+      return getFormattedDateString(filters.startDate, DateTime.now());
+    } else if (!filters?.startDate && filters?.endDate) {
+      return getFormattedDateString(
+        filters.endDate.startOf('month'),
+        filters.endDate,
+      );
     }
-
-    setFilterTimeTitle(newFilterTimeTitle);
-  };
+    return null;
+  }, [filters, locale, t]);
 
   return (
     <Box>
@@ -547,7 +504,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     newFilters.selectedDateRange),
               ),
             );
-            changeFilterTimeTitle(newFilters);
           }}
         />
         <ScreenOnly mt={2}>
