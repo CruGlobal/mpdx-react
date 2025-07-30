@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SwapHoriz } from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 import {
+  Avatar,
   Box,
   DialogActions,
   DialogContent,
@@ -305,19 +306,74 @@ export const EditTransferModal: React.FC<EditTransferModalProps> = ({
                         fullWidth={true}
                       >
                         <MenuItem key={Status.Pending} value={Status.Pending}>
-                          {t('Pending')}
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            <Avatar
+                              sx={{
+                                bgcolor: '#FFC107',
+                                width: 15,
+                                height: 15,
+                              }}
+                            >
+                              {' '}
+                            </Avatar>
+                            {t('Pending')}
+                          </Box>
                         </MenuItem>
                         <MenuItem key={Status.Ongoing} value={Status.Ongoing}>
-                          {t('Ongoing')}
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            <Avatar
+                              sx={{
+                                bgcolor: '#2196F3',
+                                width: 15,
+                                height: 15,
+                              }}
+                            >
+                              {' '}
+                            </Avatar>
+                            {t('Ongoing')}
+                          </Box>
                         </MenuItem>
                         <MenuItem key={Status.Complete} value={Status.Complete}>
-                          {t('Complete')}
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            <Avatar
+                              sx={{
+                                bgcolor: '#4CAF50',
+                                width: 15,
+                                height: 15,
+                              }}
+                            >
+                              {' '}
+                            </Avatar>
+                            {t('Complete')}
+                          </Box>
                         </MenuItem>
                         <MenuItem key={Status.Ended} value={Status.Ended}>
-                          {t('Ended')}
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            <Avatar
+                              sx={{
+                                bgcolor: '#9E9E9E',
+                                width: 15,
+                                height: 15,
+                              }}
+                            >
+                              {' '}
+                            </Avatar>
+                            {t('Ended')}
+                          </Box>
                         </MenuItem>
                         <MenuItem key={Status.Failed} value={Status.Failed}>
-                          {t('Failed')}
+                          <Box display="flex" alignItems="center" gap={0.5}>
+                            <Avatar
+                              sx={{
+                                bgcolor: '#F44336',
+                                width: 15,
+                                height: 15,
+                              }}
+                            >
+                              {' '}
+                            </Avatar>
+                            {t('Failed')}
+                          </Box>
                         </MenuItem>
                       </Select>
                     </FormControl>
