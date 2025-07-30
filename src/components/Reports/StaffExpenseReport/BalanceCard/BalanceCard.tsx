@@ -49,7 +49,7 @@ interface BalanceCardProps {
   endingBalance: number;
   transfersIn: number;
   transfersOut: number;
-  onClick?: (fundType: string) => void;
+  onClick: (fundType: string) => void;
   isSelected?: boolean;
 }
 
@@ -104,7 +104,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       <ScreenOnly>
         <StyledCardActionArea
           onClick={() => {
-            onClick?.(fundType);
+            onClick(fundType);
           }}
           isSelected={isSelected}
         >
