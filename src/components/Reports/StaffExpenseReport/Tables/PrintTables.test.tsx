@@ -16,7 +16,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ tableProps }) => (
   <ThemeProvider theme={theme}>
     <GqlMockedProvider<{
-      StaffExpenseReport: ReportsStaffExpensesQuery;
+      ReportsStaffExpenses: ReportsStaffExpensesQuery;
     }>
       mocks={{
         reportsStaffExpenses: {
