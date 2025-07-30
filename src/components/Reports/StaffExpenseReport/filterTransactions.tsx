@@ -64,9 +64,7 @@ const createDateRangeFilter = (
     if (filters && (filters.startDate || filters.endDate)) {
       return (
         (!filters.startDate || transactionDate >= filters.startDate) &&
-        (filters.endDate
-          ? transactionDate <= filters.endDate
-          : transactionDate <= DateTime.now())
+        (!filters.endDate || transactionDate <= filters.endDate)
       );
     }
     return (
