@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { Filters } from 'src/components/Reports/StaffExpenseReport/SettingsDialog/SettingsDialog';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
-import { Fund } from 'src/graphql/types.generated';
+import { BreakdownByMonth, Fund } from 'src/graphql/types.generated';
 
 export const filterTransactions = (
   fund: Fund,
@@ -10,9 +10,6 @@ export const filterTransactions = (
 ): Transaction[] => {
   // Create a date range filter based on the provided filters or default to the target time
   const isInRange = createDateRangeFilter(filters, targetTime);
-
-  // Map the transaction to include the fund type and category
-  const mapTransaction = mapTransactionToCategory;
 
   return (
     fund.categories?.flatMap((category) => {
@@ -24,8 +21,8 @@ export const filterTransactions = (
                 isInRange(DateTime.fromISO(transaction.month)),
               )
               .map((transaction) =>
-                mapTransaction(
-                  transaction as Transaction,
+                mapTransactionToCategory(
+                  transaction,
                   fund.fundType,
                   `${category.category} - ${subcategory.subCategory}`,
                 ),
@@ -38,8 +35,8 @@ export const filterTransactions = (
             isInRange(DateTime.fromISO(transaction.month)),
           )
           .map((transaction) =>
-            mapTransaction(
-              transaction as Transaction,
+            mapTransactionToCategory(
+              transaction,
               fund.fundType,
               category.category,
             ),
@@ -50,7 +47,7 @@ export const filterTransactions = (
 };
 
 const mapTransactionToCategory = (
-  transaction: Transaction,
+  transaction: BreakdownByMonth,
   fundType: Fund['fundType'],
   category: string,
 ): Transaction => ({

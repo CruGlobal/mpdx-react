@@ -55,7 +55,7 @@ describe('filterTransactions', () => {
         ],
       },
     ],
-  } as Fund;
+  };
 
   it('filters transactions for the target month by default', () => {
     const targetTime = DateTime.fromISO('2025-01-15');
