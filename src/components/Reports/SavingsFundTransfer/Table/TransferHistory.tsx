@@ -1,22 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import {
   ArrowForward,
-  Download,
+  Delete,
   Edit,
-  ErrorOutline,
-  EventRepeat,
-  FilterList,
   Groups,
-  Inventory,
-  MoreHoriz,
-  PauseCircleFilled,
-  RepeatOne,
-  Replay,
   SaveAlt,
   Savings,
-  TableRows,
-  Undo,
-  ViewColumn,
   Wallet,
 } from '@mui/icons-material';
 import {
@@ -26,12 +15,10 @@ import {
   Chip,
   CircularProgress,
   IconButton,
-  Menu,
-  MenuItem,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { alpha, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import {
   DataGrid,
   GridColDef,
@@ -124,17 +111,6 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const [pageSize, setPageSize] = useState(5);
 
   const transferHistoryRows = useMemo(() => {
@@ -187,51 +163,51 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
 
     if (row.transfers === 'staffAccount to staffSavings') {
       return (
-        <>
+        <Box sx={{ display: 'flex', ml: 1 }}>
           {staffAccount}
           <ArrowForward sx={{ mr: 1 }} />
           {staffSavings}
-        </>
+        </Box>
       );
     } else if (row.transfers === 'staffAccount to staffConferenceSavings') {
       return (
-        <>
+        <Box sx={{ display: 'flex', ml: 1 }}>
           {staffAccount}
           <ArrowForward sx={{ mr: 1 }} />
           {staffConferenceSavings}
-        </>
+        </Box>
       );
     } else if (row.transfers === 'staffSavings to staffAccount') {
       return (
-        <>
+        <Box sx={{ display: 'flex', ml: 1 }}>
           {staffSavings}
           <ArrowForward sx={{ mr: 1 }} />
           {staffAccount}
-        </>
+        </Box>
       );
     } else if (row.transfers === 'staffSavings to staffConferenceSavings') {
       return (
-        <>
+        <Box sx={{ display: 'flex', ml: 1 }}>
           {staffSavings}
           <ArrowForward sx={{ mr: 1 }} />
           {staffConferenceSavings}
-        </>
+        </Box>
       );
     } else if (row.transfers === 'staffConferenceSavings to staffAccount') {
       return (
-        <>
+        <Box sx={{ display: 'flex', ml: 1 }}>
           {staffConferenceSavings}
           <ArrowForward sx={{ mr: 1 }} />
           {staffAccount}
-        </>
+        </Box>
       );
     } else if (row.transfers === 'staffConferenceSavings to staffSavings') {
       return (
-        <>
+        <Box sx={{ display: 'flex', ml: 1 }}>
           {staffConferenceSavings}
           <ArrowForward sx={{ mr: 1 }} />
           {staffSavings}
-        </>
+        </Box>
       );
     }
 
@@ -297,11 +273,11 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     } else if (row.status === Status.Ended) {
       return (
         <Chip
-          avatar={<Avatar sx={{ bgcolor: '#BDBDBD' }}> </Avatar>}
+          avatar={<Avatar sx={{ bgcolor: '#9E9E9E' }}> </Avatar>}
           label={t(row.status)}
           color="default"
           size="small"
-          sx={{ backgroundColor: alpha('#00000014', 0.08), boxShadow: 'none' }}
+          sx={{ backgroundColor: '#FAFAFA', boxShadow: 'none' }}
         />
       );
     } else if (row.status === Status.Failed) {
@@ -354,53 +330,14 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   };
 
   const actions: RenderCell = ({ row }) => {
-    if (row.actions === 'dropdown') {
-      return (
-        <>
-          <IconButton onClick={handleClick}>
-            <MoreHoriz />
-          </IconButton>
-
-          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-            <MenuItem onClick={handleClose}>
-              <Undo sx={{ mr: 1 }} />
-              {t('Undo Transfer')}
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <RepeatOne sx={{ mr: 1 }} />
-              {t('Repeat Transfer')}
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <EventRepeat sx={{ mr: 1 }} />
-              {t('Convert to Monthly')}
-            </MenuItem>
-            <MenuItem onClick={handleClick}>
-              <Inventory sx={{ mr: 1 }} />
-              {t('Archive')}
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <ErrorOutline sx={{ mr: 1 }} />
-              {t('View Error')}
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <Download sx={{ mr: 1 }} />
-              {t('Download')}
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <Replay sx={{ mr: 1 }} />
-              {t('Retry Transfer')}
-            </MenuItem>
-          </Menu>
-        </>
-      );
-    } else if (row.actions === 'edit-pause') {
+    if (row.actions === 'edit-delete') {
       return (
         <>
           <IconButton>
             <Edit />
           </IconButton>
           <IconButton>
-            <PauseCircleFilled />
+            <Delete sx={{ color: 'error.main' }} />
           </IconButton>
         </>
       );
@@ -476,19 +413,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         alignItems: 'center',
       }}
     >
-      <Box sx={{ display: 'flex', gap: 0 }}>
-        <Button>
-          <ViewColumn sx={{ color: '#05699B', mr: 0.5 }} />
-          {t('Columns').toUpperCase()}
-        </Button>
-        <Button>
-          <FilterList sx={{ color: '#05699B', mr: 0.5 }} />
-          {t('Filters').toUpperCase()}
-        </Button>
-        <Button>
-          <TableRows sx={{ color: '#05699B', mr: 0.5 }} />
-          {t('Density').toUpperCase()}
-        </Button>
+      <Box sx={{ display: 'flex', gap: 0, ml: 1 }}>
         <Button>
           <SaveAlt sx={{ color: '#05699B', mr: 0.5 }} />
           {t('Export').toUpperCase()}
