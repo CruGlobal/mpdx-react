@@ -14,8 +14,8 @@ import { useSummaryReport } from '../SummaryReport/SummaryReport';
 
 export type GoalCalculatorType = {
   categories: GoalCalculatorCategory[];
-  selectedCategoryID: GoalCalculatorCategoryEnum;
-  selectedStepID: GoalCalculatorStepEnum;
+  selectedCategoryId: GoalCalculatorCategoryEnum;
+  selectedStepId: GoalCalculatorStepEnum;
   currentCategory?: GoalCalculatorCategory;
   currentStep?: GoalCalculatorCategoryStep;
   handleCategoryChange: (categoryId: GoalCalculatorCategoryEnum) => void;
@@ -23,8 +23,9 @@ export type GoalCalculatorType = {
   handleContinue: () => void;
 };
 
-export const GoalCalculatorContext =
-  React.createContext<GoalCalculatorType | null>(null);
+const GoalCalculatorContext = React.createContext<GoalCalculatorType | null>(
+  null,
+);
 
 export const useGoalCalculator = (): GoalCalculatorType => {
   const context = React.useContext(GoalCalculatorContext);
@@ -52,31 +53,29 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useSummaryReport(),
   ];
 
-  const [selectedCategoryID, setSelectedCategoryID] =
+  const [selectedCategoryId, setSelectedCategoryId] =
     useState<GoalCalculatorCategoryEnum>(
       GoalCalculatorCategoryEnum.CalculatorSettings,
     );
-  const [selectedStepID, setSelectedStepID] = useState<GoalCalculatorStepEnum>(
+  const [selectedStepId, setSelectedStepId] = useState<GoalCalculatorStepEnum>(
     GoalCalculatorStepEnum.Information,
   );
 
-  // Direct calculations - no memoization
   const currentCategory = useMemo(
-    () => categories.find((cat) => cat.id === selectedCategoryID),
-    [categories, selectedCategoryID],
+    () => categories.find((cat) => cat.id === selectedCategoryId),
+    [categories, selectedCategoryId],
   );
   const currentStep = useMemo(
-    () => currentCategory?.steps.find((step) => step.id === selectedStepID),
-    [currentCategory, selectedStepID],
+    () => currentCategory?.steps.find((step) => step.id === selectedStepId),
+    [currentCategory, selectedStepId],
   );
 
-  // Simple functions - no useCallback
   const handleCategoryChange = useCallback(
     (categoryId: GoalCalculatorCategoryEnum) => {
       const category = categories.find((cat) => cat.id === categoryId);
       if (category) {
-        setSelectedCategoryID(categoryId);
-        setSelectedStepID(category.steps[0].id);
+        setSelectedCategoryId(categoryId);
+        setSelectedStepId(category.steps[0].id);
       } else {
         enqueueSnackbar(t('The selected category does not exist.'), {
           variant: 'error',
@@ -92,7 +91,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
         (step) => step.id === stepId,
       );
       if (stepIsDefined) {
-        setSelectedStepID(stepId);
+        setSelectedStepId(stepId);
       } else {
         enqueueSnackbar(
           t('The selected step does not exist in the current category.'),
@@ -107,7 +106,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const handleContinue = useCallback(() => {
     const currentStepIndex = currentCategory?.steps.findIndex(
-      (step) => step.id === selectedStepID,
+      (step) => step.id === selectedStepId,
     );
     if (currentStepIndex === undefined || currentStepIndex < 0) {
       enqueueSnackbar(t('Current step is not defined or does not exist.'), {
@@ -119,15 +118,15 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
     if (currentCategory?.steps[nextStepIndex]) {
       // If next step exists, change to that step
-      setSelectedStepID(currentCategory.steps[nextStepIndex].id);
+      setSelectedStepId(currentCategory.steps[nextStepIndex].id);
     } else {
       // If no next step, check to find the next category
       const nextCategoryIndex =
-        categories.findIndex((cat) => cat.id === selectedCategoryID) + 1;
+        categories.findIndex((cat) => cat.id === selectedCategoryId) + 1;
       const nextCategory = categories[nextCategoryIndex];
       if (nextCategory) {
-        setSelectedCategoryID(nextCategory.id);
-        setSelectedStepID(nextCategory.steps[0].id);
+        setSelectedCategoryId(nextCategory.id);
+        setSelectedStepId(nextCategory.steps[0].id);
       } else {
         enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
           variant: 'info',
@@ -138,17 +137,16 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     categories,
     currentCategory,
     enqueueSnackbar,
-    selectedCategoryID,
-    selectedStepID,
+    selectedCategoryId,
+    selectedStepId,
     t,
   ]);
 
-  // Simple context value - no memoization
   const contextValue: GoalCalculatorType = useMemo(
     () => ({
       categories,
-      selectedCategoryID,
-      selectedStepID,
+      selectedCategoryId,
+      selectedStepId,
       currentCategory,
       currentStep,
       handleCategoryChange,
@@ -156,9 +154,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       handleContinue,
     }),
     [
-      categories,
-      selectedCategoryID,
-      selectedStepID,
+      selectedCategoryId,
+      selectedStepId,
       currentCategory,
       currentStep,
       handleCategoryChange,

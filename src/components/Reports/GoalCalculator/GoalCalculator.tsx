@@ -63,8 +63,8 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   const {
     categories,
     currentCategory,
-    selectedCategoryID,
-    selectedStepID,
+    selectedCategoryId,
+    selectedStepId,
     currentStep,
     handleCategoryChange,
     handleStepChange,
@@ -89,7 +89,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
               key={category.id}
               sx={(theme) => ({
                 color:
-                  selectedCategoryID === category.id
+                  selectedCategoryId === category.id
                     ? theme.palette.mpdxBlue.main
                     : theme.palette.cruGrayDark.main,
               })}
@@ -108,7 +108,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
           <List disablePadding>
             {categorySteps?.map((step) => {
               const { id, title } = step;
-              const selected = selectedStepID === id;
+              const selected = selectedStepId === id;
               return (
                 <StyledStepListItemButton
                   key={id}
