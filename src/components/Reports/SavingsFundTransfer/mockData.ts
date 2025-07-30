@@ -3,6 +3,14 @@ export enum StaffSavingFund {
   StaffAccount = 'staffAccount',
   StaffConferenceSavings = 'staffConferenceSavings',
 }
+export interface Fund {
+  accountId: string;
+  type: StaffSavingFund;
+  name: string;
+  balance: number;
+  pending: number;
+}
+
 export const mockData = {
   accountListId: '123456789',
   accountName: 'Test Account',
@@ -33,7 +41,7 @@ export const mockData = {
     {
       transfers: 'staffSavings to staffAccount',
       amount: 2500,
-      schedule: 'One Time',
+      schedule: 'One-time',
       status: 'Pending',
       transferDate: '2023-09-26',
       stopDate: '',
@@ -53,7 +61,7 @@ export const mockData = {
     {
       transfers: 'staffSavings to staffAccount',
       amount: 500,
-      schedule: 'One Time',
+      schedule: 'One-time',
       status: 'Complete',
       transferDate: '2023-09-29',
       stopDate: '',
@@ -73,7 +81,7 @@ export const mockData = {
     {
       transfers: 'staffAccount to staffConferenceSavings',
       amount: 750,
-      schedule: 'One Time',
+      schedule: 'One-time',
       status: 'Failed',
       transferDate: '2023-09-27',
       stopDate: '',

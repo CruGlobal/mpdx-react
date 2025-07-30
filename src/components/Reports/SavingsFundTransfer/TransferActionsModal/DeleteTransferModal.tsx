@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { DialogActions, DialogContent, DialogContentText } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { TransferHistory } from 'src/components/Reports/SavingsFundTransfer/Table/TransferHistory';
+import { TransferHistory } from 'src/components/Reports/SavingsFundTransfer/Table/TransferHistoryTable';
 import {
   CancelButton,
   SubmitButton,
