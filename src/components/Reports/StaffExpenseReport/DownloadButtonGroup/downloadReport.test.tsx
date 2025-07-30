@@ -26,7 +26,7 @@ const mockData: Transaction[] = [
   },
 ];
 
-const mockT = jest.fn((key: string) => key);
+const mockT = (key: string) => key;
 const mockLocale = 'en-US';
 
 describe('downloadReport', () => {
@@ -34,7 +34,6 @@ describe('downloadReport', () => {
   const setAttributeMock = jest.fn();
   const appendChildMock = jest.spyOn(document.body, 'appendChild');
   const removeChildMock = jest.spyOn(document.body, 'removeChild');
-  const enqueueSnackbarMock = jest.fn();
 
   it('downloads an income report when ReportType.Income is passed as an argument', () => {
     const realLink = document.createElement('a');
@@ -46,13 +45,7 @@ describe('downloadReport', () => {
     const incomeMockData = mockData.filter(
       (transaction) => transaction.total > 0,
     );
-    createCsvReport(
-      ReportType.Income,
-      enqueueSnackbarMock,
-      incomeMockData,
-      mockT,
-      mockLocale,
-    );
+    createCsvReport(ReportType.Income, incomeMockData, mockT, mockLocale);
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
@@ -66,7 +59,6 @@ describe('downloadReport', () => {
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
     expect(removeChildMock).toHaveBeenCalledWith(realLink);
-    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
   });
 
   it('downloads an expense report when ReportType.Expense is passed as an argument', () => {
@@ -79,13 +71,7 @@ describe('downloadReport', () => {
     const expenseMockData = mockData.filter(
       (transaction) => transaction.total < 0,
     );
-    createCsvReport(
-      ReportType.Expense,
-      enqueueSnackbarMock,
-      expenseMockData,
-      mockT,
-      mockLocale,
-    );
+    createCsvReport(ReportType.Expense, expenseMockData, mockT, mockLocale);
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
@@ -99,7 +85,6 @@ describe('downloadReport', () => {
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
     expect(removeChildMock).toHaveBeenCalledWith(realLink);
-    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
   });
 
   it('downloads a combined report when ReportType.Combined is passed as an argument', () => {
@@ -109,13 +94,7 @@ describe('downloadReport', () => {
 
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
-    createCsvReport(
-      ReportType.Combined,
-      enqueueSnackbarMock,
-      mockData,
-      mockT,
-      mockLocale,
-    );
+    createCsvReport(ReportType.Combined, mockData, mockT, mockLocale);
 
     expect(setAttributeMock).toHaveBeenCalledWith(
       'href',
@@ -129,35 +108,5 @@ describe('downloadReport', () => {
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
     expect(removeChildMock).toHaveBeenCalledWith(realLink);
-    expect(enqueueSnackbarMock).not.toHaveBeenCalled();
-  });
-
-  it('shows snackbar and returns when no transactions are provided', () => {
-    createCsvReport(
-      ReportType.Income,
-      enqueueSnackbarMock,
-      [],
-      mockT,
-      mockLocale,
-    );
-
-    expect(enqueueSnackbarMock).toHaveBeenCalledWith(
-      'No transactions to download',
-      { variant: 'error' },
-    );
-  });
-
-  it('returns early if an invalid ReportType is provided', () => {
-    expect(
-      createCsvReport(
-        'invalid' as ReportType,
-        enqueueSnackbarMock,
-        [],
-        mockT,
-        mockLocale,
-      ),
-    ).toBeUndefined();
-
-    expect(enqueueSnackbarMock).toHaveBeenCalled();
   });
 });

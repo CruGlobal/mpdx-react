@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
-import { downloadCsv } from './downloadReport';
+import { createCsvReport } from './downloadReport';
 
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   borderColor: theme.palette.cruGrayDark.main,
@@ -45,12 +45,10 @@ const StyledDownloadIcon = styled(Download)(({ theme }) => ({
 
 export interface DownloadButtonGroupProps {
   transactions: Transaction[];
-  enqueueSnackbar: (message: string, options?: object) => void;
 }
 
 export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
   transactions,
-  enqueueSnackbar,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -67,9 +65,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
     >
       <StyledButton
         startIcon={<StyledDownloadIcon />}
-        onClick={() =>
-          downloadCsv(ReportType.Income, enqueueSnackbar, incomes, t, locale)
-        }
+        onClick={() => createCsvReport(ReportType.Income, incomes, t, locale)}
         disabled={incomes.length === 0}
       >
         {t('Income Report')}
@@ -77,9 +73,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
 
       <StyledButton
         startIcon={<StyledDownloadIcon />}
-        onClick={() =>
-          downloadCsv(ReportType.Expense, enqueueSnackbar, expenses, t, locale)
-        }
+        onClick={() => createCsvReport(ReportType.Expense, expenses, t, locale)}
         disabled={expenses.length === 0}
       >
         {t('Expense Report')}
@@ -88,13 +82,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
       <StyledButton
         startIcon={<StyledDownloadIcon />}
         onClick={() =>
-          downloadCsv(
-            ReportType.Combined,
-            enqueueSnackbar,
-            transactions,
-            t,
-            locale,
-          )
+          createCsvReport(ReportType.Combined, transactions, t, locale)
         }
         disabled={expenses.length === 0 || incomes.length === 0}
       >
