@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import i18n from 'src/lib/i18n';
 import { DateRange } from '../Helpers/StaffReportEnum';
 
 interface SettingsDialogProps {
@@ -31,14 +32,39 @@ export interface Filters {
   selectedDateRange: DateRange | undefined;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
-  // change to enum array when category data is provided
   categories?: string[] | null;
 }
 
 const validationSchema = yup.object({
   selectedDateRange: yup.mixed().nullable(),
-  startDate: yup.mixed().nullable(),
-  endDate: yup.mixed().nullable(),
+  startDate: yup
+    .date()
+    .nullable()
+    .test(
+      'start-date-validation',
+      i18n.t('Start date must be earlier than or equal to end date'),
+      function (value) {
+        const { endDate } = this.parent;
+        if (!value || !endDate) {
+          return true;
+        }
+        return value <= endDate;
+      },
+    ),
+  endDate: yup
+    .date()
+    .nullable()
+    .test(
+      'end-date-validation',
+      i18n.t('Start date must be earlier than or equal to end date'),
+      function (value) {
+        const { startDate } = this.parent;
+        if (!value || !startDate) {
+          return true;
+        }
+        return startDate <= value;
+      },
+    ),
   categories: yup.array().of(yup.string()),
 });
 
@@ -64,7 +90,10 @@ const calculateDateRange = (
         endDate: now.endOf('day'),
       };
     default:
-      throw new Error(`Unsupported date range: ${range}`);
+      return {
+        startDate: now.startOf('day'),
+        endDate: now.endOf('day'),
+      };
   }
 };
 
@@ -75,8 +104,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-
-  const [hasDateRangeError, setHasDateRangeError] = useState(false);
+  const [hasDateError, setHasDateError] = useState(false);
 
   const initialValues = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
@@ -91,25 +119,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     categories: selectedFilters?.categories ?? [],
   };
 
-  /*
-   * Initially, date range validation was handled by Yup,
-   * but it would not properly disable the submit button.
-   * This manual validation function is a temporary solution.
-   */
-  const validateDateRange = (
-    startDate: DateTime | null,
-    endDate: DateTime | null,
-  ) => {
-    if (startDate && endDate && startDate > endDate) {
-      enqueueSnackbar(t('Start date must be earlier than end date'), {
-        variant: 'error',
-      });
-      setHasDateRangeError(true);
-      return false;
+  useEffect(() => {
+    if (hasDateError) {
+      enqueueSnackbar(
+        t('Start date must be earlier than or equal to end date'),
+        {
+          variant: 'error',
+          autoHideDuration: 4000,
+        },
+      );
     }
-    setHasDateRangeError(false);
-    return true;
-  };
+  }, [hasDateError, enqueueSnackbar, t]);
 
   return (
     <Dialog
@@ -123,16 +143,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
+        validateOnChange
+        validateOnBlur
+        enableReinitialize
         onSubmit={(values) => {
-          if (
-            values.startDate &&
-            values.endDate &&
-            !validateDateRange(values.startDate, values.endDate)
-          ) {
-            // Don't submit if validation fails
-            return;
-          }
-
           const finalValues = { ...values };
           if (values.selectedDateRange !== undefined) {
             const { startDate, endDate } = calculateDateRange(
@@ -144,13 +158,20 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
           onClose(finalValues);
         }}
       >
-        {({ values, setFieldValue, isValid, dirty, resetForm }) => {
-          const isDateRangeValid =
-            !values.startDate || !values.endDate
-              ? true
-              : values.endDate >= values.startDate;
-
-          const isFormValid = isValid && isDateRangeValid && !hasDateRangeError;
+        {({
+          values,
+          setFieldValue,
+          isValid,
+          dirty,
+          errors,
+          touched,
+          validateForm,
+          setTouched,
+        }) => {
+          setHasDateError(
+            Boolean(errors.startDate && touched.startDate) ||
+              Boolean(errors.endDate && touched.endDate),
+          );
 
           return (
             <Form>
@@ -164,11 +185,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     const value =
                       e.target.value === '' ? undefined : e.target.value;
                     setFieldValue('selectedDateRange', value);
-                    // Clear custom dates when predefined range is selected
                     if (value !== undefined) {
                       setFieldValue('startDate', null);
                       setFieldValue('endDate', null);
-                      setHasDateRangeError(false);
+                      setTouched({
+                        ...touched,
+                        startDate: false,
+                        endDate: false,
+                      });
                     }
                   }}
                 >
@@ -194,36 +218,32 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     value={values.startDate}
                     onChange={(date) => {
                       setFieldValue('startDate', date);
-                      if (date && values.endDate) {
-                        validateDateRange(date, values.endDate);
-                      } else {
-                        setHasDateRangeError(false);
-                      }
-
-                      // Clear predefined range when custom date is set
+                      setTouched({ ...touched, startDate: true });
                       if (date) {
                         setFieldValue('selectedDateRange', undefined);
                       }
+                      setTimeout(() => {
+                        validateForm();
+                      }, 0);
                     }}
                     fullWidth
+                    error={hasDateError}
                   />
                   <CustomDateField
                     label={t('End Date')}
                     value={values.endDate}
                     onChange={(date) => {
                       setFieldValue('endDate', date);
-                      if (date && values.startDate) {
-                        validateDateRange(values.startDate, date);
-                      } else {
-                        setHasDateRangeError(false);
-                      }
-
-                      // Clear predefined range when custom date is set
+                      setTouched({ ...touched, endDate: true });
                       if (date) {
                         setFieldValue('selectedDateRange', undefined);
                       }
+                      setTimeout(() => {
+                        validateForm();
+                      }, 0);
                     }}
                     fullWidth
+                    error={hasDateError}
                   />
                 </Box>
 
@@ -239,31 +259,33 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </Typography>
 
                 <FormGroup row>
-                  {['Benefits', 'Contributions', 'Salary'].map((category) => (
-                    <FormControlLabel
-                      key={category}
-                      control={
-                        <Checkbox
-                          checked={values.categories.includes(category)}
-                          onChange={(e) => {
-                            const newCategories = e.target.checked
-                              ? [...values.categories, category]
-                              : values.categories.filter((c) => c !== category);
-                            setFieldValue('categories', newCategories);
-                          }}
-                        />
-                      }
-                      label={t(category)}
-                    />
-                  ))}
+                  {[t('Benefits'), t('Contributions'), t('Salary')].map(
+                    (category) => (
+                      <FormControlLabel
+                        key={category}
+                        control={
+                          <Checkbox
+                            checked={values.categories.includes(category)}
+                            onChange={(e) => {
+                              const newCategories = e.target.checked
+                                ? [...values.categories, category]
+                                : values.categories.filter(
+                                    (c) => c !== category,
+                                  );
+                              setFieldValue('categories', newCategories);
+                            }}
+                          />
+                        }
+                        label={category}
+                      />
+                    ),
+                  )}
                 </FormGroup>
               </DialogContent>
 
               <DialogActions>
                 <Button
                   onClick={() => {
-                    resetForm();
-                    setHasDateRangeError(false);
                     onClose(selectedFilters);
                   }}
                   color="secondary"
@@ -274,7 +296,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   type="submit"
                   color="primary"
                   variant="contained"
-                  disabled={!dirty || !isFormValid}
+                  disabled={!dirty || !isValid}
                 >
                   {t('Apply Filters')}
                 </Button>
