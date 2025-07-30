@@ -18,18 +18,26 @@ const defaultProps = {
 };
 
 describe('BalanceCard', () => {
-  it('should display "Currently Viewing" in Card Action area when not selected', () => {
-    const { getByText } = render(
+  it('should display "Currently Viewing" in Card Action area when selected', () => {
+    const { getByRole, queryByRole } = render(
       <BalanceCard {...defaultProps} isSelected={true} />,
     );
-    expect(getByText('Currently Viewing')).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: 'Currently Viewing' }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'View Account' }),
+    ).not.toBeInTheDocument();
   });
 
   it('should display "View Account" in Card Action area when not selected', () => {
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <BalanceCard {...defaultProps} isSelected={false} />,
     );
     expect(getByRole('button', { name: 'View Account' })).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Currently Viewing' }),
+    ).not.toBeInTheDocument();
   });
 
   it('should call onClick with fundType when CardActionArea is clicked', () => {
@@ -59,7 +67,7 @@ describe('BalanceCard', () => {
     const { getByText } = render(
       <BalanceCard {...defaultProps} transfersIn={0} />,
     );
-    expect(getByText('+ Transfers in: $0.00')).toBeInTheDocument();
+    expect(getByText('+ Transfers in: $0')).toBeInTheDocument();
   });
 
   it('should handle large numbers correctly', () => {

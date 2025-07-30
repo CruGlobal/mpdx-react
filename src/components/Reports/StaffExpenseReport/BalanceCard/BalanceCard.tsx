@@ -36,7 +36,10 @@ const StyledCard = styled(Card)<{ isSelected: boolean }>(
     maxWidth: 'none',
     fontSize: '1.25rem',
     boxShadow: isSelected ? theme.shadows[3] : theme.shadows[1],
-    transition: 'box-shadow 0.3s ease-in-out',
+    transition: 'box-shadow 0.3s ease-in-out, border 0.3s ease-in-out',
+    border: isSelected
+      ? `1px dashed ${theme.palette.primary.main}`
+      : `1px solid ${theme.palette.divider}`,
   }),
 );
 
