@@ -1,29 +1,26 @@
-import { DateTime, DateTimeFormatOptions } from 'luxon';
+import { DateTime } from 'luxon';
 import { DateRange } from './StaffReportEnum';
 
-export const formatHelper: DateTimeFormatOptions = {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-};
-
 export const formatDate = (date: DateTime, locale: string) => {
-  return date.toJSDate().toLocaleDateString(locale, formatHelper);
+  return date.toJSDate().toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 };
 
 export const dateRangeToString = (dateRange: DateRange, locale: string) => {
   const now = DateTime.now();
-  return {
-    [DateRange.WeekToDate]: [
-      getFormattedDateString(now.startOf('week'), now, locale),
-    ],
-    [DateRange.MonthToDate]: [
-      getFormattedDateString(now.startOf('month'), now, locale),
-    ],
-    [DateRange.YearToDate]: [
-      getFormattedDateString(now.startOf('year'), now, locale),
-    ],
-  }[dateRange];
+  switch (dateRange) {
+    case DateRange.WeekToDate:
+      return getFormattedDateString(now.startOf('week'), now, locale);
+    case DateRange.MonthToDate:
+      return getFormattedDateString(now.startOf('month'), now, locale);
+    case DateRange.YearToDate:
+      return getFormattedDateString(now.startOf('year'), now, locale);
+    default:
+      return '';
+  }
 };
 
 export const getFormattedDateString = (

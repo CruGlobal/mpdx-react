@@ -49,36 +49,36 @@ describe('getFormattedDateString', () => {
 
   it('returns week to date range string', () => {
     const locale = 'en-US';
-    expect(dateRangeToString(DateRange.WeekToDate, locale)).toEqual([
+    expect(dateRangeToString(DateRange.WeekToDate, locale)).toBe(
       'June 15, 2020 - June 18, 2020',
-    ]);
+    );
   });
 
   it('returns month to date range string', () => {
     const locale = 'en-US';
-    expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual([
+    expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual(
       'June 1, 2020 - June 18, 2020',
-    ]);
+    );
   });
 
   it('returns year to date range string', () => {
     const locale = 'en-US';
-    expect(dateRangeToString(DateRange.YearToDate, locale)).toEqual([
+    expect(dateRangeToString(DateRange.YearToDate, locale)).toEqual(
       'January 1, 2020 - June 18, 2020',
-    ]);
+    );
   });
 
   it('returns week to date range string in different locale', () => {
     const locale = 'de-DE';
-    expect(dateRangeToString(DateRange.WeekToDate, locale)).toEqual([
+    expect(dateRangeToString(DateRange.WeekToDate, locale)).toEqual(
       '15. Juni 2020 - 18. Juni 2020',
-    ]);
+    );
   });
 
   it('returns month to date range string in different locale', () => {
     const locale = 'fr-FR';
-    expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual([
+    expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual(
       '1 juin 2020 - 18 juin 2020',
-    ]);
+    );
   });
 });
