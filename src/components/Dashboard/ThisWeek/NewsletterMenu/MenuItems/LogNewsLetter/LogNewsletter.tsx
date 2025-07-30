@@ -183,7 +183,7 @@ const LogNewsletter = ({
                     helperText={
                       errors.subject &&
                       touched.subject &&
-                      t('Field is required')
+                      t('Subject is required')
                     }
                     variant="outlined"
                     required
