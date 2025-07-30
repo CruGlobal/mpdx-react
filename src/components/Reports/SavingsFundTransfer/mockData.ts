@@ -38,7 +38,7 @@ export const mockData = {
       transferDate: '2023-09-26',
       stopDate: '',
       note: 'Reimbursements',
-      actions: 'dropdown',
+      actions: 'edit-delete',
     },
     {
       transfers: 'staffAccount to staffSavings',
@@ -48,7 +48,7 @@ export const mockData = {
       transferDate: '2023-09-30',
       stopDate: '2025-09-30',
       note: 'Long-term savings',
-      actions: 'edit-pause',
+      actions: 'edit-delete',
     },
     {
       transfers: 'staffSavings to staffAccount',
@@ -58,7 +58,7 @@ export const mockData = {
       transferDate: '2023-09-29',
       stopDate: '',
       note: 'Tax',
-      actions: 'dropdown',
+      actions: 'edit-delete',
     },
     {
       transfers: 'staffAccount to staffConferenceSavings',
@@ -68,7 +68,7 @@ export const mockData = {
       transferDate: '2023-09-28',
       stopDate: '2024-06-01',
       note: 'Cru 25',
-      actions: 'dropdown',
+      actions: 'edit-delete',
     },
     {
       transfers: 'staffAccount to staffConferenceSavings',
@@ -78,7 +78,7 @@ export const mockData = {
       transferDate: '2023-09-27',
       stopDate: '',
       note: 'X-fer tickets',
-      actions: 'dropdown',
+      actions: 'edit-delete',
     },
   ],
 };
