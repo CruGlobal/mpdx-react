@@ -3,6 +3,7 @@ import { Visibility } from '@mui/icons-material';
 import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 
 const StyledCardActionArea = styled(CardActionArea)<{ isSelected: boolean }>(
   ({ theme, isSelected }) => ({
@@ -84,32 +85,19 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       <Box display="flex" flexDirection="column" mt={3} mb={2}>
         <Typography>
           {t('Starting Balance: ')}
-          {startingBalance.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}
+          {currencyFormat(startingBalance, 'USD', locale)}
         </Typography>
         <Typography>
           {t('+ Transfers in: ')}
-
-          {transfersIn.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}
+          {currencyFormat(transfersIn, 'USD', locale)}
         </Typography>
         <Typography>
           {t('- Transfers out: ')}
-          {Math.abs(transfersOut).toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}
+          {currencyFormat(Math.abs(transfersOut), 'USD', locale)}
         </Typography>
         <Typography>
           {t('= Ending Balance: ')}
-          {endingBalance.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}
+          {currencyFormat(endingBalance, 'USD', locale)}
         </Typography>
       </Box>
 
