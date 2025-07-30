@@ -3,6 +3,7 @@ import { Download } from '@mui/icons-material';
 import { Button, ButtonGroup, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 import { downloadCsv } from './downloadReport';
@@ -52,6 +53,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
   enqueueSnackbar,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const isMobile = useMediaQuery('(max-width:600px)');
 
   const expenses = transactions.filter((transaction) => transaction.total < 0);
@@ -66,7 +68,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
       <StyledButton
         startIcon={<StyledDownloadIcon />}
         onClick={() =>
-          downloadCsv(ReportType.Income, enqueueSnackbar, incomes, t)
+          downloadCsv(ReportType.Income, enqueueSnackbar, incomes, t, locale)
         }
         disabled={incomes.length === 0}
       >
@@ -76,7 +78,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
       <StyledButton
         startIcon={<StyledDownloadIcon />}
         onClick={() =>
-          downloadCsv(ReportType.Expense, enqueueSnackbar, expenses, t)
+          downloadCsv(ReportType.Expense, enqueueSnackbar, expenses, t, locale)
         }
         disabled={expenses.length === 0}
       >
@@ -86,7 +88,13 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
       <StyledButton
         startIcon={<StyledDownloadIcon />}
         onClick={() =>
-          downloadCsv(ReportType.Combined, enqueueSnackbar, transactions, t)
+          downloadCsv(
+            ReportType.Combined,
+            enqueueSnackbar,
+            transactions,
+            t,
+            locale,
+          )
         }
         disabled={expenses.length === 0 || incomes.length === 0}
       >

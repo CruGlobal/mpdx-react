@@ -1,34 +1,59 @@
+import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { ReportType } from '../Helpers/StaffReportEnum';
 
 const makeTable = (
   title: string,
+  csvHeader: string[],
   transactions: Transaction[],
-  // TFunction to translate text
-  t: (key: string) => string,
+  locale: string,
 ) => {
-  const csvHeader = [t('Date'), t('Category'), t('Amount')];
-
   const csvData = [
     [title],
     csvHeader,
     ...transactions.map((transaction) => [
       transaction.month,
       transaction.category,
-      transaction.total.toString(),
+      transaction.total.toLocaleString(locale, {
+        style: 'currency',
+        currency: 'USD',
+      }),
     ]),
   ];
 
   return csvData;
 };
 
+function createCombinedReport(
+  transactions: Transaction[],
+  titles: { income: string; expense: string; combined: string },
+  csvHeader: string[],
+  locale: string,
+) {
+  const income = transactions.filter((transaction) => transaction.total > 0);
+  const expenses = transactions.filter((transaction) => transaction.total < 0);
+  const incomeData = makeTable(
+    titles[ReportType.Income],
+    csvHeader,
+    income,
+    locale,
+  );
+  const expenseData = makeTable(
+    titles[ReportType.Expense],
+    csvHeader,
+    expenses,
+    locale,
+  );
+  return [...incomeData, [''], ...expenseData];
+}
+
 export const downloadCsv = (
   type: ReportType,
   enqueueSnackbar: (message: string, options?: { variant: string }) => void,
   transactions: Transaction[],
-  // translation function
-  t: (key: string) => string,
+  t: TFunction,
+  locale: string,
 ) => {
   if (!transactions || transactions.length === 0) {
     enqueueSnackbar(t('No transactions to download'), { variant: 'error' });
@@ -40,21 +65,15 @@ export const downloadCsv = (
     [ReportType.Expense]: t('Expense Report'),
     [ReportType.Combined]: t('Combined Report'),
   };
+  const csvHeader = [t('Date'), t('Category'), t('Amount')];
 
   let csvData: string[][] = [];
+
   const reportTitle = titles[type];
-  if (type === ReportType.Income) {
-    csvData = makeTable(reportTitle, transactions, t);
-  } else if (type === ReportType.Expense) {
-    csvData = makeTable(reportTitle, transactions, t);
-  } else if (type === ReportType.Combined) {
-    const income = transactions.filter((transaction) => transaction.total > 0);
-    const expenses = transactions.filter(
-      (transaction) => transaction.total < 0,
-    );
-    const incomeData = makeTable(titles[ReportType.Income], income, t);
-    const expenseData = makeTable(titles[ReportType.Expense], expenses, t);
-    csvData = [...incomeData, [''], ...expenseData];
+  if (type === ReportType.Combined) {
+    csvData = createCombinedReport(transactions, titles, csvHeader, locale);
+  } else {
+    csvData = makeTable(reportTitle, csvHeader, transactions, locale);
   }
 
   const csvBlob = buildURI(csvData, true);

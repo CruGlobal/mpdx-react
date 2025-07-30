@@ -243,15 +243,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const filterTimeTitle = useMemo(() => {
     if (filters?.selectedDateRange) {
-      return dateRangeToString(filters.selectedDateRange);
+      return dateRangeToString(filters.selectedDateRange, locale);
     } else if (filters?.startDate && filters?.endDate) {
-      return getFormattedDateString(filters.startDate, filters.endDate);
+      return getFormattedDateString(filters.startDate, filters.endDate, locale);
     } else if (filters?.startDate && !filters?.endDate) {
-      return getFormattedDateString(filters.startDate, DateTime.now());
+      return getFormattedDateString(filters.startDate, DateTime.now(), locale);
     } else if (!filters?.startDate && filters?.endDate) {
       return getFormattedDateString(
         filters.endDate.startOf('month'),
         filters.endDate,
+        locale,
       );
     }
     return null;
