@@ -10,7 +10,7 @@ import {
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
-import { TransferHistoryTable } from '../Table/TransferHistory';
+import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import {
   TransferModal,
   TransferModalData,
@@ -87,6 +87,7 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
           <Box sx={{ mt: 2, mb: 3 }}>
             <TransferHistoryTable
               history={mockData.history}
+              funds={mockData.funds}
               emptyPlaceholder={
                 <Typography>{t('No transfer history available')}</Typography>
               }

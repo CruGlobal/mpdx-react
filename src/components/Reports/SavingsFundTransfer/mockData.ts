@@ -59,7 +59,7 @@ export const mockData: MockData = {
     {
       transfers: 'staffSavings to staffAccount',
       amount: 2500,
-      schedule: 'One Time',
+      schedule: 'One-time',
       status: 'Pending',
       transferDate: '2023-09-26',
       stopDate: '',
@@ -79,7 +79,7 @@ export const mockData: MockData = {
     {
       transfers: 'staffSavings to staffAccount',
       amount: 500,
-      schedule: 'One Time',
+      schedule: 'One-time',
       status: 'Complete',
       transferDate: '2023-09-29',
       stopDate: '',
@@ -99,7 +99,7 @@ export const mockData: MockData = {
     {
       transfers: 'staffAccount to staffConferenceSavings',
       amount: 750,
-      schedule: 'One Time',
+      schedule: 'One-time',
       status: 'Failed',
       transferDate: '2023-09-27',
       stopDate: '',

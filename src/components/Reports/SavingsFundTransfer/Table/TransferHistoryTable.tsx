@@ -30,6 +30,9 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { Status } from '../Helper/TransferHistoryEnum';
+import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
+import { EditTransferModal } from '../TransferActionsModal/EditTransferModal';
+import { Fund } from '../mockData';
 
 type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
 
@@ -46,6 +49,7 @@ export interface TransferHistory {
 
 export interface TransferHistoryTableProps {
   history: TransferHistory[];
+  funds: Fund[];
   emptyPlaceholder: React.ReactElement;
   loading?: boolean;
 }
@@ -103,8 +107,53 @@ export const CreateTransferHistoryRows = (
   actions: history.actions,
 });
 
+// icon definitions
+export const staffAccount = (
+  <Wallet
+    sx={{
+      backgroundColor: '#F08020',
+      color: 'primary.contrastText',
+      borderRadius: 1,
+      p: 0.25,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      mr: 1,
+    }}
+  />
+);
+export const staffSavings = (
+  <Savings
+    sx={{
+      backgroundColor: '#007890',
+      color: 'primary.contrastText',
+      borderRadius: 1,
+      p: 0.25,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      mr: 1,
+    }}
+  />
+);
+export const staffConferenceSavings = (
+  <Groups
+    sx={{
+      backgroundColor: '#00C0D8',
+      color: 'primary.contrastText',
+      borderRadius: 1,
+      p: 0.25,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      mr: 1,
+    }}
+  />
+);
+
 export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   history,
+  funds,
   emptyPlaceholder,
   loading,
 }) => {
@@ -112,55 +161,25 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const locale = useLocale();
 
   const [pageSize, setPageSize] = useState(5);
+  const [openDeleteModal, setOpenDeleteModal] =
+    useState<TransferHistory | null>(null);
+  const [openEditModal, setOpenEditModal] = useState<TransferHistory | null>(
+    null,
+  );
+
+  const handleDeleteModalOpen = (transfer: TransferHistory) => {
+    setOpenDeleteModal(transfer);
+  };
+
+  const handleEditModalOpen = (transfer: TransferHistory) => {
+    setOpenEditModal(transfer);
+  };
 
   const transferHistoryRows = useMemo(() => {
     return history.map((data, index) => CreateTransferHistoryRows(data, index));
   }, [history]);
 
   const transfers: RenderCell = ({ row }) => {
-    const staffAccount = (
-      <Wallet
-        sx={{
-          backgroundColor: '#F08020',
-          color: 'primary.contrastText',
-          borderRadius: 1,
-          p: 0.25,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mr: 1,
-        }}
-      />
-    );
-    const staffSavings = (
-      <Savings
-        sx={{
-          backgroundColor: '#007890',
-          color: 'primary.contrastText',
-          borderRadius: 1,
-          p: 0.25,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mr: 1,
-        }}
-      />
-    );
-    const staffConferenceSavings = (
-      <Groups
-        sx={{
-          backgroundColor: '#00C0D8',
-          color: 'primary.contrastText',
-          borderRadius: 1,
-          p: 0.25,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mr: 1,
-        }}
-      />
-    );
-
     if (row.transfers === 'staffAccount to staffSavings') {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
@@ -334,10 +353,15 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <>
           <IconButton>
-            <Edit />
+            <Edit onClick={() => handleEditModalOpen(row)} />
           </IconButton>
           <IconButton>
-            <Delete sx={{ color: 'error.main' }} />
+            <Delete
+              sx={{ color: 'error.main' }}
+              onClick={() => {
+                handleDeleteModalOpen(row);
+              }}
+            />
           </IconButton>
         </>
       );
@@ -465,6 +489,19 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           Toolbar: QuickFilterToolbar,
         }}
       />
+      {openDeleteModal && (
+        <DeleteTransferModal
+          handleClose={() => setOpenDeleteModal(null)}
+          transfer={openDeleteModal}
+        />
+      )}
+      {openEditModal && (
+        <EditTransferModal
+          handleClose={() => setOpenEditModal(null)}
+          transfer={openEditModal}
+          funds={funds}
+        />
+      )}
     </>
   ) : (
     emptyPlaceholder
