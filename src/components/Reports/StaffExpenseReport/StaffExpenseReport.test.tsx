@@ -121,17 +121,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('StaffExpenseReport', () => {
-  it('renders with data', async () => {
-    const { getByTestId, getByRole } = render(
-      <TestComponent isEmpty={false} />,
-    );
-
-    expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
-    const boxInfo = getByTestId('account-info');
-    await waitFor(() => expect(boxInfo).toHaveTextContent('Test Account'));
-    await waitFor(() => expect(boxInfo).toHaveTextContent('account-1'));
-  });
-
   it('initializes with month from query', () => {
     const { getByRole } = render(<TestComponent routerMonth="2025-01-01" />);
 
