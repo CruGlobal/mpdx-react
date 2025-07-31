@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
+import InfoIcon from '@mui/icons-material/Info';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import {
   Box,
@@ -21,17 +22,25 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 
+// Typography Components
 const StyledCategoryTitle = styled(Typography)(({ theme }) => ({
   marginBottom: 0,
   marginTop: theme.spacing(1),
   paddingLeft: theme.spacing(2),
 }));
 
+const StyledTitle = styled(Typography)({
+  flex: '1 1 100%',
+});
+
+// List Components
 const StyledStepListItemButton = styled(ListItemButton)(({ theme }) => ({
   paddingLeft: theme.spacing(3),
   paddingRight: 0,
   paddingTop: 0,
   paddingBottom: 0,
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
 }));
 
 const StyledStepListItemIcon = styled(ListItemIcon)(({ theme }) => ({
@@ -43,10 +52,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
 }));
 
-const StyledTitle = styled(Typography)({
-  flex: '1 1 100%',
-});
-
 const StyledDefaultContent = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
@@ -54,11 +59,13 @@ const StyledDefaultContent = styled(Box)(({ theme }) => ({
 interface GoalCalculatorProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
+  onHeaderHeightChange?: (height: number) => void;
 }
 
 export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   isNavListOpen,
   onNavListToggle,
+  onHeaderHeightChange,
 }) => {
   const {
     categories,
@@ -66,22 +73,48 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     selectedCategoryId,
     selectedStepId,
     currentStep,
+    isRightOpen,
     handleCategoryChange,
     handleStepChange,
+    toggleRightPanel,
   } = useGoalCalculator();
   const { t } = useTranslation();
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  // Calculate header height on mount and resize
+  useEffect(() => {
+    const calculateHeaderHeight = () => {
+      if (headerRef.current) {
+        const height = headerRef.current.offsetHeight;
+        onHeaderHeightChange?.(height);
+      }
+    };
+
+    calculateHeaderHeight();
+    window.addEventListener('resize', calculateHeaderHeight);
+
+    return () => {
+      window.removeEventListener('resize', calculateHeaderHeight);
+    };
+  }, [onHeaderHeightChange]);
 
   const { title: categoryTitle, steps: categorySteps } = currentCategory || {};
-  const { title: stepTitle, component: stepComponent } = currentStep || {};
+  const {
+    title: stepTitle,
+    component: stepComponent,
+    rightPanelComponent,
+  } = currentStep || {};
 
   return (
     <>
-      <MultiPageHeader
-        isNavListOpen={isNavListOpen}
-        onNavListToggle={onNavListToggle}
-        title={t('Goal Calculator')}
-        headerType={HeaderTypeEnum.Report}
-      />
+      <Box ref={headerRef}>
+        <MultiPageHeader
+          isNavListOpen={isNavListOpen}
+          onNavListToggle={onNavListToggle}
+          title={t('Goal Calculator')}
+          headerType={HeaderTypeEnum.Report}
+        />
+      </Box>
       <Stack direction="row" flex={1}>
         <Stack direction="column">
           {categories.map((category) => (
@@ -145,6 +178,16 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
             <StyledTitle variant="h6">
               {stepTitle || t('Goal Calculator')}
             </StyledTitle>
+            {!!rightPanelComponent && (
+              <IconButton
+                onClick={toggleRightPanel}
+                aria-label={
+                  isRightOpen ? t('Hide Right Panel') : t('Show Right Panel')
+                }
+              >
+                <InfoIcon />
+              </IconButton>
+            )}
           </StyledToolbar>
           <Box>
             {stepComponent || (
