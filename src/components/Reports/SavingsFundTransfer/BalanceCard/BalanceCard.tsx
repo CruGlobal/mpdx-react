@@ -1,44 +1,57 @@
 import React from 'react';
-import { MoveToInbox, Outbox } from '@mui/icons-material';
+import {
+  Groups,
+  MoveToInbox,
+  Outbox,
+  Savings,
+  Wallet,
+} from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { HandleOpenTransferModalProps } from '../TransfersPage/TransfersPage';
+import { Fund, StaffSavingFund } from '../mockData';
 
-interface BalanceCardProps {
-  title: string;
-  icon: React.ComponentType;
-  iconBgColor?: string;
-  balance: number;
-  pending: number;
+export interface BalanceCardProps {
+  fund: Fund;
   handleOpenTransferModal: ({
-    accountTransferFromId,
-    accountTransferToId,
+    transferFrom,
+    transferTo,
   }: HandleOpenTransferModalProps) => void;
   isSelected?: boolean;
 }
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
-  title,
-  icon: Icon,
-  iconBgColor,
-  balance,
-  pending,
+  fund,
   handleOpenTransferModal,
   isSelected = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const title = `${fund.name} Balance`;
+  const Icon =
+    fund.type === StaffSavingFund.StaffAccount
+      ? Wallet
+      : fund.type === StaffSavingFund.StaffConferenceSavings
+      ? Groups
+      : Savings;
+  const iconBgColor =
+    fund.type === StaffSavingFund.StaffAccount
+      ? '#F08020'
+      : fund.type === StaffSavingFund.StaffConferenceSavings
+      ? '#00C0D8'
+      : '#007890';
+
   const handleTransferFrom = () => {
     handleOpenTransferModal({
-      accountTransferFromId: 'fromAccountId',
+      transferFrom: fund.accountId,
     });
   };
 
   const handleTransferTo = () => {
     handleOpenTransferModal({
-      accountTransferToId: 'toAccountId',
+      transferTo: fund.accountId,
     });
   };
 
@@ -87,18 +100,20 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         mr={1}
       >
         <Typography variant="h5">
-          {balance.toLocaleString(locale, {
+          {fund.balance.toLocaleString(locale, {
             style: 'currency',
             currency: 'USD',
           })}
         </Typography>
-        <Typography variant="h5" color="#00000061">
-          {pending.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}{' '}
-          (pending)
-        </Typography>
+        {fund.pending && (
+          <Typography variant="h5" color="#00000061">
+            {fund.pending.toLocaleString(locale, {
+              style: 'currency',
+              currency: 'USD',
+            })}{' '}
+            (pending)
+          </Typography>
+        )}
       </Box>
 
       <Box

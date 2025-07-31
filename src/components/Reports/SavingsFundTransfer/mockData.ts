@@ -3,7 +3,33 @@ export enum StaffSavingFund {
   StaffAccount = 'staffAccount',
   StaffConferenceSavings = 'staffConferenceSavings',
 }
-export const mockData = {
+export interface Fund {
+  accountId: string;
+  type: StaffSavingFund;
+  name: string;
+  balance: number;
+  pending: number;
+}
+
+interface History {
+  transfers: string;
+  amount: number;
+  schedule: string;
+  status: string;
+  transferDate: string;
+  stopDate: string;
+  note: string;
+  actions: string;
+}
+
+interface MockData {
+  accountListId: string;
+  accountName: string;
+  funds: Fund[];
+  history: History[];
+}
+
+export const mockData: MockData = {
   accountListId: '123456789',
   accountName: 'Test Account',
   funds: [

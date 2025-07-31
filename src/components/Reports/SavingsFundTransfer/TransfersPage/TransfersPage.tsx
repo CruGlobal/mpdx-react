@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import { Groups, Savings, Wallet } from '@mui/icons-material';
 import { Box, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
@@ -15,13 +14,12 @@ import { TransferHistoryTable } from '../Table/TransferHistory';
 import {
   TransferModal,
   TransferModalData,
-  TransferTypeEnum,
 } from '../TransferModal/TransferModal';
-import { StaffSavingFund, mockData } from '../mockData';
+import { mockData } from '../mockData';
 
 export interface HandleOpenTransferModalProps {
-  accountTransferFromId?: TransferModalData['accountTransferFromId'];
-  accountTransferToId?: TransferModalData['accountTransferToId'];
+  transferFrom?: TransferModalData['transferFrom'];
+  transferTo?: TransferModalData['transferTo'];
 }
 
 interface SavingsFundTransfersProps {
@@ -38,14 +36,12 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
   ) as StaffSavingFundType;
 
   const handleOpenTransferModal = ({
-    accountTransferFromId,
-    accountTransferToId,
+    transferFrom,
+    transferTo,
   }: HandleOpenTransferModalProps) => {
     setModalData({
-      title: t('New Transfer'),
-      type: TransferTypeEnum.New,
-      accountTransferFromId,
-      accountTransferToId,
+      transferFrom,
+      transferTo,
     });
   };
 
@@ -82,24 +78,8 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
           >
             {mockData.funds.map((fund) => (
               <BalanceCard
+                fund={fund}
                 key={fund.accountId}
-                title={`${fund.name} Balance`}
-                icon={
-                  fund.type === StaffSavingFund.StaffAccount
-                    ? Wallet
-                    : fund.type === StaffSavingFund.StaffConferenceSavings
-                    ? Groups
-                    : Savings
-                }
-                iconBgColor={
-                  fund.type === StaffSavingFund.StaffAccount
-                    ? '#F08020'
-                    : fund.type === StaffSavingFund.StaffConferenceSavings
-                    ? '#00C0D8'
-                    : '#007890'
-                }
-                balance={fund.balance}
-                pending={fund.pending}
                 handleOpenTransferModal={handleOpenTransferModal}
               />
             ))}
@@ -117,7 +97,8 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
       {modalData && (
         <TransferModal
           handleClose={() => setModalData(null)}
-          data={modalData}
+          transfer={modalData}
+          funds={mockData.funds}
         />
       )}
     </Box>
