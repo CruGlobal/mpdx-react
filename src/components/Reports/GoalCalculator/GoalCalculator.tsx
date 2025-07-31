@@ -1,7 +1,6 @@
 import React from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import InfoIcon from '@mui/icons-material/Info';
-import MenuIcon from '@mui/icons-material/Menu';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import {
   Box,
@@ -82,10 +81,6 @@ const StyledStepIcon = styled(Box)<{ selected: boolean }>(
       : theme.palette.cruGrayDark.main,
   }),
 );
-
-const StyledMenuButton = styled(IconButton)(({ theme }) => ({
-  marginRight: theme.spacing(1),
-}));
 
 interface GoalCalculatorProps {
   isNavListOpen: boolean;
@@ -186,12 +181,6 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         {isDrawerOpen && <Divider orientation="vertical" flexItem />}
         <Box flex={1}>
           <StyledToolbar disableGutters>
-            <StyledMenuButton
-              onClick={toggleDrawer}
-              aria-label={isDrawerOpen ? t('Hide Steps') : t('Show Steps')}
-            >
-              <MenuIcon />
-            </StyledMenuButton>
             <StyledTitle variant="h6">
               {stepTitle || t('Goal Calculator')}
             </StyledTitle>
