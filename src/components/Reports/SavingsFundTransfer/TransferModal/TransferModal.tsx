@@ -18,7 +18,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Form, Formik } from 'formik';
+import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -30,28 +30,25 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import i18n from 'src/lib/i18n';
-import { Fund } from '../mockData';
+import {
+  staffAccount,
+  staffConferenceSavings,
+  staffSavings,
+} from '../Table/TransferHistoryTable';
+import {
+  Fund,
+  ScheduleEnum,
+  StaffSavingFund,
+  TransferHistory,
+} from '../mockData';
 
 export enum TransferTypeEnum {
   New = 'new',
   Edit = 'edit',
 }
-
-export enum ScheduleEnum {
-  OneTime = 'oneTime',
-  Monthly = 'monthly',
-  Annually = 'annually',
-}
-
 export interface TransferModalData {
-  transferFrom?: string;
-  transferTo?: string;
-  amount?: number;
-  schedule?: ScheduleEnum;
-  status?: string;
-  transferDate?: DateTime<boolean>;
-  endDate?: DateTime<boolean> | null;
-  note?: string;
+  type?: TransferTypeEnum;
+  transfer: TransferHistory;
 }
 
 interface TransferFormValues {
@@ -117,21 +114,21 @@ const transferSchema = yup.object({
 });
 
 interface TransferModalProps {
-  type?: TransferTypeEnum;
-  transfer: TransferModalData;
+  data: TransferModalData;
   funds: Fund[];
   handleClose: () => void;
 }
 
 export const TransferModal: React.FC<TransferModalProps> = ({
-  type = TransferTypeEnum.New,
-  transfer,
+  data,
   funds,
   handleClose,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
+
+  const type = data.type || TransferTypeEnum.New;
 
   const {
     transferFrom,
@@ -142,7 +139,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     transferDate,
     endDate,
     note,
-  } = transfer;
+  } = data.transfer;
 
   const title =
     type === TransferTypeEnum.New
@@ -194,14 +191,17 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             endDate,
             amount,
           },
-          errors,
+          isSubmitting,
+          isValid,
           touched,
+          errors,
+          handleSubmit,
+          handleChange,
           setFieldValue,
           setFieldTouched,
-          handleChange,
           handleBlur,
         }) => (
-          <Form>
+          <form onSubmit={handleSubmit} noValidate>
             <DialogContent dividers>
               <Box sx={{ mb: 3 }}>
                 <Typography variant="h6" gutterBottom>
@@ -228,7 +228,22 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       >
                         {funds.map((fund) => (
                           <MenuItem key={fund.accountId} value={fund.accountId}>
-                            {fund.name}
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {fund.type === StaffSavingFund.StaffAccount
+                                ? staffAccount
+                                : fund.type === StaffSavingFund.StaffSavings
+                                ? staffSavings
+                                : fund.type ===
+                                  StaffSavingFund.StaffConferenceSavings
+                                ? staffConferenceSavings
+                                : null}{' '}
+                              <strong>{fund.name}</strong>
+                            </Box>
                           </MenuItem>
                         ))}
                       </Select>
@@ -277,7 +292,22 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       >
                         {funds.map((fund) => (
                           <MenuItem key={fund.accountId} value={fund.accountId}>
-                            {fund.name}
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                              }}
+                            >
+                              {fund.type === StaffSavingFund.StaffAccount
+                                ? staffAccount
+                                : fund.type === StaffSavingFund.StaffSavings
+                                ? staffSavings
+                                : fund.type ===
+                                  StaffSavingFund.StaffConferenceSavings
+                                ? staffConferenceSavings
+                                : null}{' '}
+                              <strong>{fund.name}</strong>
+                            </Box>
                           </MenuItem>
                         ))}
                       </Select>
@@ -377,7 +407,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   error={touched.amount && Boolean(errors.amount)}
-                  helperText={touched.amount && errors.amount}
+                  helperText={
+                    errors.amount && touched.amount ? errors.amount : ''
+                  }
                   InputProps={{
                     startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
                   }}
@@ -402,19 +434,19 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             <DialogActions>
               <CancelButton
                 size="large"
-                disabled={submitting}
+                disabled={submitting || isSubmitting}
                 onClick={handleClose}
               />
               <SubmitButton
                 size="large"
                 variant="contained"
-                disabled={submitting}
+                disabled={submitting || isSubmitting || !isValid}
                 type="submit"
               >
-                {submitting ? t('Submitting...') : t('Submit')}
+                {submitting || isSubmitting ? t('Submitting...') : t('Submit')}
               </SubmitButton>
             </DialogActions>
-          </Form>
+          </form>
         )}
       </Formik>
     </Modal>

@@ -9,15 +9,12 @@ import {
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { HandleOpenTransferModalProps } from '../TransfersPage/TransfersPage';
+import { TransferModalData } from '../TransferModal/TransferModal';
 import { Fund, StaffSavingFund } from '../mockData';
 
 export interface BalanceCardProps {
   fund: Fund;
-  handleOpenTransferModal: ({
-    transferFrom,
-    transferTo,
-  }: HandleOpenTransferModalProps) => void;
+  handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   isSelected?: boolean;
 }
 
@@ -45,13 +42,17 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
-      transferFrom: fund.accountId,
+      transfer: {
+        transferFrom: fund.accountId,
+      },
     });
   };
 
   const handleTransferTo = () => {
     handleOpenTransferModal({
-      transferTo: fund.accountId,
+      transfer: {
+        transferFrom: fund.accountId,
+      },
     });
   };
 

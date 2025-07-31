@@ -17,11 +17,6 @@ import {
 } from '../TransferModal/TransferModal';
 import { mockData } from '../mockData';
 
-export interface HandleOpenTransferModalProps {
-  transferFrom?: TransferModalData['transferFrom'];
-  transferTo?: TransferModalData['transferTo'];
-}
-
 interface SavingsFundTransfersProps {
   title: string;
 }
@@ -35,13 +30,10 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const handleOpenTransferModal = ({
-    transferFrom,
-    transferTo,
-  }: HandleOpenTransferModalProps) => {
+  const handleOpenTransferModal = ({ type, transfer }: TransferModalData) => {
     setModalData({
-      transferFrom,
-      transferTo,
+      type,
+      transfer,
     });
   };
 
@@ -87,7 +79,7 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
           <Box sx={{ mt: 2, mb: 3 }}>
             <TransferHistoryTable
               history={mockData.history}
-              funds={mockData.funds}
+              handleOpenTransferModal={handleOpenTransferModal}
               emptyPlaceholder={
                 <Typography>{t('No transfer history available')}</Typography>
               }
@@ -98,7 +90,7 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
       {modalData && (
         <TransferModal
           handleClose={() => setModalData(null)}
-          transfer={modalData}
+          data={modalData}
           funds={mockData.funds}
         />
       )}
