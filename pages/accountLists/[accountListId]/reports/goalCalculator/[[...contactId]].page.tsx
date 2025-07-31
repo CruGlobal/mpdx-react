@@ -28,7 +28,7 @@ const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: theme.spacing(1),
+  padding: theme.spacing(3),
   borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
 }));
 

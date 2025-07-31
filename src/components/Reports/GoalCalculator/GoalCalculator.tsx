@@ -56,7 +56,10 @@ const StyledDefaultContent = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-const StyledDrawer = styled(Box)<{
+const StyledDrawer = styled(Box, {
+  shouldForwardProp: (prop) =>
+    prop !== 'open' && prop !== 'headerHeight' && prop !== 'iconContainerWidth',
+})<{
   open: boolean;
   headerHeight: string;
   iconContainerWidth: string;
@@ -78,22 +81,22 @@ const StyledDrawer = styled(Box)<{
   },
 }));
 
-const StyledCategoryIconButton = styled(IconButton)<{ selected: boolean }>(
-  ({ theme, selected }) => ({
-    color: selected
-      ? theme.palette.mpdxBlue.main
-      : theme.palette.cruGrayDark.main,
-  }),
-);
+const StyledCategoryIconButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'selected',
+})<{ selected: boolean }>(({ theme, selected }) => ({
+  color: selected
+    ? theme.palette.mpdxBlue.main
+    : theme.palette.cruGrayDark.main,
+}));
 
-const StyledStepIcon = styled(Box)<{ selected: boolean }>(
-  ({ theme, selected }) => ({
-    fontSize: '1rem',
-    color: selected
-      ? theme.palette.mpdxBlue.main
-      : theme.palette.cruGrayDark.main,
-  }),
-);
+const StyledStepIcon = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'selected',
+})<{ selected: boolean }>(({ theme, selected }) => ({
+  fontSize: '1rem',
+  color: selected
+    ? theme.palette.mpdxBlue.main
+    : theme.palette.cruGrayDark.main,
+}));
 
 interface GoalCalculatorProps {
   isNavListOpen: boolean;
