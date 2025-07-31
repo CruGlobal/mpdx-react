@@ -1,47 +1,59 @@
 import React from 'react';
-import { MoveToInbox, Outbox } from '@mui/icons-material';
-import { Box, Button, Card, SvgIconProps, Typography } from '@mui/material';
+import {
+  Groups,
+  MoveToInbox,
+  Outbox,
+  Savings,
+  Wallet,
+} from '@mui/icons-material';
+import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  HandleOpenTransferModalProps,
-  ScreenOnly,
-} from '../TransfersPage/TransfersPage';
+import { TransferModalData } from '../TransferModal/TransferModal';
+import { ScreenOnly } from '../TransfersPage/TransfersPage';
+import { Fund, StaffSavingFund } from '../mockData';
 
-interface BalanceCardProps {
-  title: string;
-  icon: React.ComponentType<SvgIconProps>;
-  iconBgColor?: string;
-  balance: number;
-  pending: number;
-  handleOpenTransferModal: ({
-    accountTransferFromId,
-    accountTransferToId,
-  }: HandleOpenTransferModalProps) => void;
+export interface BalanceCardProps {
+  fund: Fund;
+  handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   isSelected?: boolean;
 }
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
-  title,
-  icon: Icon,
-  iconBgColor,
-  balance,
-  pending,
+  fund,
   handleOpenTransferModal,
   isSelected = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const title = `${fund.name} Balance`;
+  const Icon =
+    fund.type === StaffSavingFund.StaffAccount
+      ? Wallet
+      : fund.type === StaffSavingFund.StaffConferenceSavings
+      ? Groups
+      : Savings;
+  const iconBgColor =
+    fund.type === StaffSavingFund.StaffAccount
+      ? '#F08020'
+      : fund.type === StaffSavingFund.StaffConferenceSavings
+      ? '#00C0D8'
+      : '#007890';
+
   const handleTransferFrom = () => {
     handleOpenTransferModal({
-      accountTransferFromId: 'fromAccountId',
+      transfer: {
+        transferFrom: fund.accountId,
+      },
     });
   };
 
   const handleTransferTo = () => {
     handleOpenTransferModal({
-      accountTransferToId: 'toAccountId',
+      transfer: {
+        transferFrom: fund.accountId,
+      },
     });
   };
 
@@ -111,18 +123,24 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         }}
       >
         <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-          {balance.toLocaleString(locale, {
+          {fund.balance.toLocaleString(locale, {
             style: 'currency',
             currency: 'USD',
           })}
         </Typography>
-        <Typography variant="h5" color="#00000061" sx={{ fontSize: 'inherit' }}>
-          {pending.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}{' '}
-          (pending)
-        </Typography>
+        {!!fund.pending && (
+          <Typography
+            variant="h5"
+            color="#00000061"
+            sx={{ fontSize: 'inherit' }}
+          >
+            {fund.pending.toLocaleString(locale, {
+              style: 'currency',
+              currency: 'USD',
+            })}{' '}
+            (pending)
+          </Typography>
+        )}
       </Box>
 
       <ScreenOnly

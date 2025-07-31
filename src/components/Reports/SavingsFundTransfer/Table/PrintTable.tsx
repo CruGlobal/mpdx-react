@@ -12,8 +12,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Status } from '../Helper/TransferHistoryEnum';
-import { StaffSavingFund } from '../mockData';
-import { TransferHistory } from './TransferHistoryTable';
+import { StaffSavingFund, TransferHistory } from '../mockData';
 
 interface PrintTableProps {
   transfers: TransferHistory[];
@@ -143,16 +142,10 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                     ) : null}
                   </TableCell>
                   <TableCell sx={{ fontSize: '8pt' }}>
-                    {DateTime.fromISO(transfer.transferDate).toLocaleString(
-                      DateTime.DATE_MED,
-                    )}
+                    {transfer.transferDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
                   <TableCell sx={{ fontSize: '8pt' }}>
-                    {transfer.stopDate
-                      ? DateTime.fromISO(transfer.stopDate).toLocaleString(
-                          DateTime.DATE_MED,
-                        )
-                      : t('')}
+                    {transfer.endDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
                   <TableCell sx={{ fontSize: '8pt' }}>
                     {transfer.note}

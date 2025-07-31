@@ -33,29 +33,20 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { downloadCSV } from '../DownloadTable/downloadTable';
-import { Schedule, Status } from '../Helper/TransferHistoryEnum';
+import { Status } from '../Helper/TransferHistoryEnum';
 import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
-import { EditTransferModal } from '../TransferActionsModal/EditTransferModal';
-import { Fund, mockData } from '../mockData';
+import {
+  TransferModalData,
+  TransferTypeEnum,
+} from '../TransferModal/TransferModal';
+import { ScheduleEnum, TransferHistory, mockData } from '../mockData';
 
 type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
 
-export interface TransferHistory {
-  transferFrom: string;
-  transferTo: string;
-  amount: number;
-  schedule: string;
-  status: string;
-  transferDate: string;
-  stopDate: string;
-  note: string;
-  actions: string;
-}
-
 export interface TransferHistoryTableProps {
   history: TransferHistory[];
-  funds: Fund[];
   emptyPlaceholder: React.ReactElement;
+  handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   loading?: boolean;
 }
 
@@ -90,28 +81,27 @@ export interface TransferHistoryRow {
   transferFrom: string;
   transferTo: string;
   amount: number;
-  schedule: string;
+  schedule: ScheduleEnum;
   status: string;
-  transferDate: string;
-  stopDate: string;
+  transferDate: DateTime<boolean> | null;
+  endDate: DateTime<boolean> | null;
   note: string;
   actions: string;
 }
 
 export const CreateTransferHistoryRows = (
   history: TransferHistory,
-  index: number,
 ): TransferHistoryRow => ({
-  id: index.toString(),
-  transferFrom: history.transferFrom,
-  transferTo: history.transferTo,
-  amount: history.amount,
-  schedule: history.schedule,
-  status: history.status,
-  transferDate: history.transferDate,
-  stopDate: history.stopDate,
-  note: history.note,
-  actions: history.actions,
+  id: history.id || crypto.randomUUID(),
+  transferFrom: history.transferFrom || '',
+  transferTo: history.transferTo || '',
+  amount: history.amount || 0,
+  schedule: history.schedule || ScheduleEnum.OneTime,
+  status: history.status || '',
+  transferDate: history.transferDate || null,
+  endDate: history.endDate || null,
+  note: history.note || '',
+  actions: history.actions || '',
 });
 
 // icon definitions
@@ -160,8 +150,8 @@ export const staffConferenceSavings = (
 
 export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   history,
-  funds,
   emptyPlaceholder,
+  handleOpenTransferModal,
   loading,
 }) => {
   const { t } = useTranslation();
@@ -170,20 +160,20 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const [pageSize, setPageSize] = useState(5);
   const [openDeleteModal, setOpenDeleteModal] =
     useState<TransferHistory | null>(null);
-  const [openEditModal, setOpenEditModal] = useState<TransferHistory | null>(
-    null,
-  );
 
-  const handleDeleteModalOpen = (transfer: TransferHistory) => {
+  const handleDeleteModalOpen = (transfer: TransferHistoryRow) => {
     setOpenDeleteModal(transfer);
   };
 
-  const handleEditModalOpen = (transfer: TransferHistory) => {
-    setOpenEditModal(transfer);
+  const handleEditModalOpen = (transfer: TransferHistoryRow) => {
+    handleOpenTransferModal({
+      type: TransferTypeEnum.Edit,
+      transfer,
+    });
   };
 
   const transferHistoryRows = useMemo(() => {
-    return history.map((data, index) => CreateTransferHistoryRows(data, index));
+    return history.map((data) => CreateTransferHistoryRows(data));
   }, [history]);
 
   const transfers: RenderCell = ({ row }) => {
@@ -276,7 +266,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   };
 
   const schedule: RenderCell = ({ row }) => {
-    if (row.schedule === Schedule.OneTime) {
+    if (row.schedule === ScheduleEnum.OneTime) {
       return (
         <Typography variant="body2" noWrap>
           {t('One Time')}
@@ -355,18 +345,16 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     return (
       <Typography variant="body2" noWrap>
         {row.transferDate
-          ? DateTime.fromISO(row.transferDate).toLocaleString(DateTime.DATE_MED)
+          ? row.transferDate.toLocaleString(DateTime.DATE_MED)
           : t('N/A')}
       </Typography>
     );
   };
 
-  const stopDate: RenderCell = ({ row }) => {
+  const endDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.stopDate
-          ? DateTime.fromISO(row.stopDate).toLocaleString(DateTime.DATE_MED)
-          : t('')}
+        {row.endDate ? row.endDate.toLocaleString(DateTime.DATE_MED) : t('N/A')}
       </Typography>
     );
   };
@@ -439,10 +427,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       renderCell: transferDate,
     },
     {
-      field: 'stopDate',
+      field: 'endDate',
       headerName: t('Stop Date'),
       width: 150,
-      renderCell: stopDate,
+      renderCell: endDate,
     },
     {
       field: 'note',
@@ -533,13 +521,6 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         <DeleteTransferModal
           handleClose={() => setOpenDeleteModal(null)}
           transfer={openDeleteModal}
-        />
-      )}
-      {openEditModal && (
-        <EditTransferModal
-          handleClose={() => setOpenEditModal(null)}
-          transfer={openEditModal}
-          funds={funds}
         />
       )}
     </>

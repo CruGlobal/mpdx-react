@@ -1,7 +1,6 @@
 import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
-import { TransferHistory } from '../Table/TransferHistoryTable';
-import { StaffSavingFund } from '../mockData';
+import { StaffSavingFund, TransferHistory } from '../mockData';
 
 const createTable = (
   csvHeader: string[],
@@ -28,14 +27,14 @@ const createTable = (
     return [
       fromFund,
       toFund,
-      transfer.amount.toLocaleString(locale, {
+      transfer.amount?.toLocaleString(locale, {
         style: 'currency',
         currency: 'USD',
       }),
       transfer.schedule,
       transfer.status,
       transfer.transferDate,
-      transfer.stopDate,
+      transfer.endDate,
     ];
   });
 
