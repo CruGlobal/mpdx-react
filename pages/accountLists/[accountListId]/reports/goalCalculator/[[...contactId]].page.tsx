@@ -16,13 +16,28 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
+
+const RightPanelHeader = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(1),
+  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+}));
+
+const RightPanelTitle = styled(Typography)({
+  fontSize: '0.875rem',
+});
+
+const RightPanelContent = styled(Box)({
+  // Content wrapper for right panel
+});
 
 const GoalCalculatorContent: React.FC<{
   isNavListOpen: boolean;
@@ -35,23 +50,15 @@ const GoalCalculatorContent: React.FC<{
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { currentStep, isRightOpen, toggleRightPanel } = useGoalCalculator();
+  const { currentStep, isRightOpen, toggleRightPanel, headerHeight } =
+    useGoalCalculator();
   const { rightPanelComponent: rightPanelStepComponent } = currentStep || {};
   const { t } = useTranslation();
 
   const rightPanel = (
     <Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        padding={1}
-        borderBottom="1px solid"
-        borderColor="cruGrayLight.main"
-      >
-        <Typography variant="h6" fontSize="0.875rem">
-          {t('Details')}
-        </Typography>
+      <RightPanelHeader>
+        <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
         <IconButton
           size="small"
           onClick={() => toggleRightPanel()}
@@ -59,8 +66,8 @@ const GoalCalculatorContent: React.FC<{
         >
           <CloseIcon fontSize="small" />
         </IconButton>
-      </Box>
-      <Box>{rightPanelStepComponent}</Box>
+      </RightPanelHeader>
+      <RightPanelContent>{rightPanelStepComponent}</RightPanelContent>
     </Box>
   );
 
@@ -84,6 +91,7 @@ const GoalCalculatorContent: React.FC<{
       leftOpen={isNavListOpen}
       leftWidth="290px"
       rightWidth="290px"
+      headerHeight={headerHeight}
       mainContent={
         <GoalCalculator
           isNavListOpen={isNavListOpen}
@@ -96,7 +104,9 @@ const GoalCalculatorContent: React.FC<{
   );
 };
 
-const PageContent: React.FC = () => {
+const GoalCalculatorPage: React.FC = () => {
+  const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
@@ -105,34 +115,25 @@ const PageContent: React.FC = () => {
     setNavListOpen(!isNavListOpen);
   };
 
-  return accountListId ? (
-    <GoalCalculatorPageWrapper>
-      <GoalCalculatorProvider>
-        <GoalCalculatorContent
-          isNavListOpen={isNavListOpen}
-          onNavListToggle={handleNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
-        />
-      </GoalCalculatorProvider>
-    </GoalCalculatorPageWrapper>
-  ) : (
-    <Loading loading />
-  );
-};
-
-const GoalCalculatorPage: React.FC = () => {
-  const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
-
   return (
     <>
       <Head>
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
-      <ContactPanelProvider>
-        <PageContent />
-      </ContactPanelProvider>
+      {accountListId ? (
+        <GoalCalculatorPageWrapper>
+          <GoalCalculatorProvider>
+            <GoalCalculatorContent
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              designationAccounts={designationAccounts}
+              setDesignationAccounts={setDesignationAccounts}
+            />
+          </GoalCalculatorProvider>
+        </GoalCalculatorPageWrapper>
+      ) : (
+        <Loading loading />
+      )}
     </>
   );
 };
