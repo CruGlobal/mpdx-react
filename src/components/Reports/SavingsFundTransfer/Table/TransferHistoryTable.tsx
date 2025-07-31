@@ -33,14 +33,16 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { downloadCSV } from '../DownloadTable/downloadTable';
+import { Schedule, Status } from '../Helper/TransferHistoryEnum';
 import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
 import { EditTransferModal } from '../TransferActionsModal/EditTransferModal';
-import { Fund } from '../mockData';
+import { Fund, mockData } from '../mockData';
 
 type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
 
 export interface TransferHistory {
-  transfers: string;
+  transferFrom: string;
+  transferTo: string;
   amount: number;
   schedule: string;
   status: string;
@@ -85,7 +87,8 @@ export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 
 export interface TransferHistoryRow {
   id: string;
-  transfers: string;
+  transferFrom: string;
+  transferTo: string;
   amount: number;
   schedule: string;
   status: string;
@@ -100,7 +103,8 @@ export const CreateTransferHistoryRows = (
   index: number,
 ): TransferHistoryRow => ({
   id: index.toString(),
-  transfers: history.transfers,
+  transferFrom: history.transferFrom,
+  transferTo: history.transferTo,
   amount: history.amount,
   schedule: history.schedule,
   status: history.status,
@@ -183,7 +187,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   }, [history]);
 
   const transfers: RenderCell = ({ row }) => {
-    if (row.transfers === 'staffAccount to staffSavings') {
+    if (
+      row.transferFrom === 'staffAccount' &&
+      row.transferTo === 'staffSavings'
+    ) {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffAccount}
@@ -191,7 +198,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           {staffSavings}
         </Box>
       );
-    } else if (row.transfers === 'staffAccount to staffConferenceSavings') {
+    } else if (
+      row.transferFrom === 'staffAccount' &&
+      row.transferTo === 'staffConferenceSavings'
+    ) {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffAccount}
@@ -199,7 +209,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           {staffConferenceSavings}
         </Box>
       );
-    } else if (row.transfers === 'staffSavings to staffAccount') {
+    } else if (
+      row.transferFrom === 'staffSavings' &&
+      row.transferTo === 'staffAccount'
+    ) {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffSavings}
@@ -207,7 +220,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           {staffAccount}
         </Box>
       );
-    } else if (row.transfers === 'staffSavings to staffConferenceSavings') {
+    } else if (
+      row.transferFrom === 'staffSavings' &&
+      row.transferTo === 'staffConferenceSavings'
+    ) {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffSavings}
@@ -215,7 +231,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           {staffConferenceSavings}
         </Box>
       );
-    } else if (row.transfers === 'staffConferenceSavings to staffAccount') {
+    } else if (
+      row.transferFrom === 'staffConferenceSavings' &&
+      row.transferTo === 'staffAccount'
+    ) {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffConferenceSavings}
@@ -223,7 +242,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           {staffAccount}
         </Box>
       );
-    } else if (row.transfers === 'staffConferenceSavings to staffSavings') {
+    } else if (
+      row.transferFrom === 'staffConferenceSavings' &&
+      row.transferTo === 'staffSavings'
+    ) {
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffConferenceSavings}
@@ -234,9 +256,9 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     }
 
     return (
-      <Tooltip title={t(row.transfers)}>
+      <Tooltip title={t('N/A')}>
         <Typography variant="body2" noWrap>
-          {row.transfers}
+          {'N/A'}
         </Typography>
       </Tooltip>
     );
@@ -254,11 +276,19 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   };
 
   const schedule: RenderCell = ({ row }) => {
-    return (
-      <Typography variant="body2" noWrap>
-        {row.schedule}
-      </Typography>
-    );
+    if (row.schedule === Schedule.OneTime) {
+      return (
+        <Typography variant="body2" noWrap>
+          {t('One Time')}
+        </Typography>
+      );
+    } else {
+      return (
+        <Typography variant="body2" noWrap>
+          {row.schedule}
+        </Typography>
+      );
+    }
   };
 
   const status: RenderCell = ({ row }) => {

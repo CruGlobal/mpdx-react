@@ -39,7 +39,8 @@ export const mockData = {
   ],
   history: [
     {
-      transfers: 'staffSavings to staffAccount',
+      transferFrom: 'staffSavings',
+      transferTo: 'staffAccount',
       amount: 2500,
       schedule: 'One-time',
       status: 'Pending',
@@ -49,7 +50,8 @@ export const mockData = {
       actions: 'edit-delete',
     },
     {
-      transfers: 'staffAccount to staffSavings',
+      transferFrom: 'staffAccount',
+      transferTo: 'staffSavings',
       amount: 1200,
       schedule: 'Monthly',
       status: 'Ongoing',
@@ -59,7 +61,8 @@ export const mockData = {
       actions: 'edit-delete',
     },
     {
-      transfers: 'staffSavings to staffAccount',
+      transferFrom: 'staffSavings',
+      transferTo: 'staffAccount',
       amount: 500,
       schedule: 'One-time',
       status: 'Complete',
@@ -69,7 +72,8 @@ export const mockData = {
       actions: 'edit-delete',
     },
     {
-      transfers: 'staffAccount to staffConferenceSavings',
+      transferFrom: 'staffAccount',
+      transferTo: 'staffConferenceSavings',
       amount: 120,
       schedule: 'Monthly',
       status: 'Ended',
@@ -79,7 +83,8 @@ export const mockData = {
       actions: 'edit-delete',
     },
     {
-      transfers: 'staffAccount to staffConferenceSavings',
+      transferFrom: 'staffAccount',
+      transferTo: 'staffConferenceSavings',
       amount: 750,
       schedule: 'One-time',
       status: 'Failed',

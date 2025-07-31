@@ -1,13 +1,16 @@
 import React from 'react';
 import { MoveToInbox, Outbox } from '@mui/icons-material';
-import { Box, Button, Card, Typography } from '@mui/material';
+import { Box, Button, Card, SvgIconProps, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { HandleOpenTransferModalProps } from '../TransfersPage/TransfersPage';
+import {
+  HandleOpenTransferModalProps,
+  ScreenOnly,
+} from '../TransfersPage/TransfersPage';
 
 interface BalanceCardProps {
   title: string;
-  icon: React.ComponentType;
+  icon: React.ComponentType<SvgIconProps>;
   iconBgColor?: string;
   balance: number;
   pending: number;
@@ -65,17 +68,30 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            '@media print': {
+              color: iconBgColor,
+            },
           }}
         >
-          <Icon />
+          <Icon
+            sx={{
+              color: 'inherit',
+            }}
+          />
         </Box>
         <Box>
-          <Typography variant="body1" mb={0} sx={{ fontWeight: 500 }}>
+          <Typography
+            variant="body1"
+            mb={0}
+            sx={{ '@media print': { fontSize: '10pt' }, fontWeight: 500 }}
+          >
             {title}
           </Typography>
-          <Typography variant="body2" mt={0}>
-            {t('Updated 3 min ago')}
-          </Typography>
+          <ScreenOnly>
+            <Typography variant="body2" mt={0}>
+              {t('Updated 3 min ago')}
+            </Typography>
+          </ScreenOnly>
         </Box>
       </Box>
       <Box
@@ -85,14 +101,22 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         mt={5}
         mb={1}
         mr={1}
+        sx={{
+          '@media print': {
+            fontSize: '14pt',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            mt: 2,
+          },
+        }}
       >
-        <Typography variant="h5">
+        <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
           {balance.toLocaleString(locale, {
             style: 'currency',
             currency: 'USD',
           })}
         </Typography>
-        <Typography variant="h5" color="#00000061">
+        <Typography variant="h5" color="#00000061" sx={{ fontSize: 'inherit' }}>
           {pending.toLocaleString(locale, {
             style: 'currency',
             currency: 'USD',
@@ -101,7 +125,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         </Typography>
       </Box>
 
-      <Box
+      <ScreenOnly
         sx={{
           alignItems: 'left',
           mt: 3,
@@ -116,7 +140,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('Transfer To').toUpperCase()}
         </Button>
-      </Box>
+      </ScreenOnly>
     </Card>
   );
 };
