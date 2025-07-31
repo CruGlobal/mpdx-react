@@ -22,6 +22,7 @@ import {
   multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
+import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 
 const StyledCategoryTitle = styled(Typography)(({ theme }) => ({
@@ -109,37 +110,37 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   onNavListToggle,
 }) => {
   const {
-    categories,
-    currentCategory,
-    selectedCategoryId,
-    selectedStepId,
+    steps,
     currentStep,
     isRightOpen,
     isDrawerOpen,
-    handleCategoryChange,
-    handleStepChange,
+    selectedStepId,
+    selectedCategoryId,
+    currentCategory,
     toggleRightPanel,
     toggleDrawer,
     setDrawerOpen,
+    handleStepChange,
+    handleCategoryChange,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const iconPanelWidth = theme.spacing(5);
 
-  const handleCategoryIconClick = (categoryId: typeof selectedCategoryId) => {
-    if (selectedCategoryId === categoryId) {
+  const handleStepIconClick = (stepId: GoalCalculatorStepEnum) => {
+    if (selectedStepId === stepId) {
       toggleDrawer();
     } else {
-      handleCategoryChange(categoryId);
+      handleStepChange(stepId);
       setDrawerOpen(true);
     }
   };
 
-  const { title: categoryTitle, steps: categorySteps } = currentCategory || {};
+  const { title: stepTitle, categories: stepCategories } = currentStep || {};
   const {
-    title: stepTitle,
+    title: categoryTitle,
     component: stepComponent,
     rightPanelComponent,
-  } = currentStep || {};
+  } = currentCategory || {};
 
   return (
     <>
@@ -151,13 +152,13 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
       />
       <Stack direction="row" flex={1}>
         <Stack sx={{ width: iconPanelWidth }} direction="column">
-          {categories.map((category) => (
+          {steps?.map((step) => (
             <StyledCategoryIconButton
-              key={category.id}
-              selected={selectedCategoryId === category.id}
-              onClick={() => handleCategoryIconClick(category.id)}
+              key={step.id}
+              selected={selectedStepId === step.id}
+              onClick={() => handleStepIconClick(step.id)}
             >
-              {category.icon}
+              {step.icon}
             </StyledCategoryIconButton>
           ))}
         </Stack>
@@ -172,13 +173,13 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
           </StyledCategoryTitle>
 
           <List disablePadding>
-            {categorySteps?.map((step) => {
-              const { id, title } = step;
-              const selected = selectedStepId === id;
+            {stepCategories?.map((category) => {
+              const { id, title } = category;
+              const selected = selectedCategoryId === id;
               return (
                 <StyledStepListItemButton
                   key={id}
-                  onClick={() => handleStepChange(id)}
+                  onClick={() => handleCategoryChange(id)}
                 >
                   <StyledStepListItemIcon>
                     <StyledStepIcon selected={selected}>
