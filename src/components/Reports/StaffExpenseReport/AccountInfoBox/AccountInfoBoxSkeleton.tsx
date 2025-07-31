@@ -8,7 +8,7 @@ const StyledAccountInfoContainer = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const StyledSkeletonBox = styled(Box)<{ width: number }>(({ theme }) => ({
+const StyledSkeletonBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.grey[300],
   width: 120,
   height: 24,
@@ -16,19 +16,13 @@ const StyledSkeletonBox = styled(Box)<{ width: number }>(({ theme }) => ({
   borderRadius: theme.spacing(0.5),
 }));
 
-interface AccountInfoItemProps {
-  width: number;
-}
-
-const AccountInfoItem: React.FC<AccountInfoItemProps> = ({ width }) => (
-  <Skeleton variant="text">
-    <StyledSkeletonBox width={width} />
-  </Skeleton>
-);
-
 export const AccountInfoBoxSkeleton: React.FC = () => (
   <StyledAccountInfoContainer data-testid="account-info">
-    <AccountInfoItem width={120} />
-    <AccountInfoItem width={100} />
+    <Skeleton variant="text" data-testid="name-skeleton">
+      <StyledSkeletonBox />
+    </Skeleton>
+    <Skeleton variant="text" data-testid="account-id-skeleton">
+      <StyledSkeletonBox />
+    </Skeleton>
   </StyledAccountInfoContainer>
 );
