@@ -12,6 +12,7 @@ import {
   GoalCalculatorProvider,
   useGoalCalculator,
 } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -39,24 +40,25 @@ const RightPanelContent = styled(Box)({
   // Content wrapper for right panel
 });
 
-const GoalCalculatorContent: React.FC<{
+interface GoalCalculatorContentProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   designationAccounts: string[];
   setDesignationAccounts: (accounts: string[]) => void;
-}> = ({
+}
+
+const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   isNavListOpen,
   onNavListToggle,
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { currentStep, isRightOpen, toggleRightPanel, headerHeight } =
-    useGoalCalculator();
+  const { currentStep, isRightOpen, toggleRightPanel } = useGoalCalculator();
   const { rightPanelComponent: rightPanelStepComponent } = currentStep || {};
   const { t } = useTranslation();
 
   const rightPanel = (
-    <Box>
+    <>
       <RightPanelHeader>
         <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
         <IconButton
@@ -68,30 +70,26 @@ const GoalCalculatorContent: React.FC<{
         </IconButton>
       </RightPanelHeader>
       <RightPanelContent>{rightPanelStepComponent}</RightPanelContent>
-    </Box>
-  );
-
-  const leftPanel = (
-    <Box>
-      <MultiPageMenu
-        isOpen={isNavListOpen}
-        selectedId="goalCalculation"
-        onClose={onNavListToggle}
-        designationAccounts={designationAccounts}
-        setDesignationAccounts={setDesignationAccounts}
-        navType={NavTypeEnum.Reports}
-      />
-    </Box>
+    </>
   );
 
   return (
     <SidePanelsLayout
       isScrollBox={false}
-      leftPanel={leftPanel}
+      leftPanel={
+        <MultiPageMenu
+          isOpen={isNavListOpen}
+          selectedId="goalCalculation"
+          onClose={onNavListToggle}
+          designationAccounts={designationAccounts}
+          setDesignationAccounts={setDesignationAccounts}
+          navType={NavTypeEnum.Reports}
+        />
+      }
       leftOpen={isNavListOpen}
       leftWidth="290px"
       rightWidth="290px"
-      headerHeight={headerHeight}
+      headerHeight={multiPageHeaderHeight}
       mainContent={
         <GoalCalculator
           isNavListOpen={isNavListOpen}

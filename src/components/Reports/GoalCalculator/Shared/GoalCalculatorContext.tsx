@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
@@ -26,9 +20,6 @@ export type GoalCalculatorType = {
   currentStep?: GoalCalculatorCategoryStep;
   isRightOpen: boolean;
   isDrawerOpen: boolean;
-  headerRef: React.RefObject<HTMLElement>;
-  headerHeight: string;
-  calculateHeaderHeight: () => void;
   handleCategoryChange: (categoryId: GoalCalculatorCategoryEnum) => void;
   handleStepChange: (stepId: GoalCalculatorStepEnum) => void;
   handleContinue: () => void;
@@ -59,9 +50,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
 
-  // Header ref for tracking MultiPageHeader element
-  const headerRef = useRef<HTMLElement>(null);
-
   // Static categories - no memoization to avoid React queue issues
   const categories = [
     useCalculatorSettings(),
@@ -77,9 +65,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [selectedStepId, setSelectedStepId] = useState<GoalCalculatorStepEnum>(
     GoalCalculatorStepEnum.Information,
   );
-  const [isRightOpen, setIsRightOpen] = useState<boolean>(true);
+  const [isRightOpen, setIsRightOpen] = useState<boolean>(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
-  const [headerHeight, setHeaderHeight] = useState<string>('54px');
 
   const currentCategory = useMemo(
     () => categories.find((cat) => cat.id === selectedCategoryId),
@@ -173,32 +160,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const setDrawerOpen = useCallback((open: boolean) => {
     setIsDrawerOpen(open);
   }, []);
-
-  const calculateHeaderHeight = useCallback(() => {
-    if (headerRef.current) {
-      const rect = headerRef.current.getBoundingClientRect();
-      setHeaderHeight(rect.height + 'px');
-    }
-  }, [headerRef]);
-
-  // Calculate header height when the component mounts and when headerRef changes
-  useEffect(() => {
-    calculateHeaderHeight();
-
-    // Set up resize observer to recalculate height when window resizes
-    const resizeObserver = new ResizeObserver(() => {
-      calculateHeaderHeight();
-    });
-
-    if (headerRef.current) {
-      resizeObserver.observe(headerRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [calculateHeaderHeight]);
-
   const contextValue: GoalCalculatorType = useMemo(
     () => ({
       categories,
@@ -208,9 +169,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       currentStep,
       isRightOpen,
       isDrawerOpen,
-      headerRef,
-      headerHeight,
-      calculateHeaderHeight,
       handleCategoryChange,
       handleStepChange,
       handleContinue,
@@ -225,9 +183,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       currentStep,
       isRightOpen,
       isDrawerOpen,
-      headerRef,
-      headerHeight,
-      calculateHeaderHeight,
       handleCategoryChange,
       handleStepChange,
       handleContinue,
