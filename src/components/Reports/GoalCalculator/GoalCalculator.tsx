@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import InfoIcon from '@mui/icons-material/Info';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -21,6 +21,7 @@ import {
   MultiPageHeader,
   multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import theme from 'src/theme';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 
 const StyledCategoryTitle = styled(Typography)(({ theme }) => ({
@@ -58,12 +59,12 @@ const StyledDefaultContent = styled(Box)(({ theme }) => ({
 
 const StyledDrawer = styled(Box, {
   shouldForwardProp: (prop) =>
-    prop !== 'open' && prop !== 'headerHeight' && prop !== 'iconContainerWidth',
+    prop !== 'open' && prop !== 'headerHeight' && prop !== 'iconPanelWidth',
 })<{
   open: boolean;
   headerHeight: string;
-  iconContainerWidth: string;
-}>(({ theme, open, headerHeight, iconContainerWidth }) => ({
+  iconPanelWidth: string;
+}>(({ theme, open, headerHeight, iconPanelWidth }) => ({
   width: open ? 240 : 0,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -74,7 +75,7 @@ const StyledDrawer = styled(Box, {
   [theme.breakpoints.down('sm')]: {
     position: 'absolute',
     top: headerHeight,
-    left: `calc(${iconContainerWidth} + 1px)`,
+    left: `calc(${iconPanelWidth} + 1px)`,
     height: '100%',
     backgroundColor: theme.palette.common.white,
     zIndex: 270,
@@ -122,30 +123,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     setDrawerOpen,
   } = useGoalCalculator();
   const { t } = useTranslation();
-  const [iconContainerWidth, setIconContainerWidth] = useState<string>('54px');
-  const iconContainerRef = useRef<HTMLDivElement>(null);
-  const calculateIconContainerWidth = useCallback(() => {
-    if (iconContainerRef.current) {
-      const rect = iconContainerRef.current.getBoundingClientRect();
-      setIconContainerWidth(rect.width + 'px');
-    }
-  }, [iconContainerRef]);
-
-  useEffect(() => {
-    calculateIconContainerWidth();
-
-    const resizeObserver = new ResizeObserver(() => {
-      calculateIconContainerWidth();
-    });
-
-    if (iconContainerRef.current) {
-      resizeObserver.observe(iconContainerRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [calculateIconContainerWidth]);
+  const iconPanelWidth = theme.spacing(5);
 
   const handleCategoryIconClick = (categoryId: typeof selectedCategoryId) => {
     if (selectedCategoryId === categoryId) {
@@ -172,7 +150,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Stack direction="row" flex={1}>
-        <Stack ref={iconContainerRef} direction="column">
+        <Stack sx={{ width: iconPanelWidth }} direction="column">
           {categories.map((category) => (
             <StyledCategoryIconButton
               key={category.id}
@@ -187,7 +165,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         <StyledDrawer
           open={isDrawerOpen}
           headerHeight={multiPageHeaderHeight}
-          iconContainerWidth={iconContainerWidth}
+          iconPanelWidth={iconPanelWidth}
         >
           <StyledCategoryTitle variant="h6">
             {categoryTitle || t('Goal Calculator')}
