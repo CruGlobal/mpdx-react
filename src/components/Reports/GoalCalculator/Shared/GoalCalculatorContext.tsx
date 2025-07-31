@@ -18,9 +18,11 @@ export type GoalCalculatorType = {
   selectedStepId: GoalCalculatorStepEnum;
   currentCategory?: GoalCalculatorCategory;
   currentStep?: GoalCalculatorCategoryStep;
+  isRightOpen: boolean;
   handleCategoryChange: (categoryId: GoalCalculatorCategoryEnum) => void;
   handleStepChange: (stepId: GoalCalculatorStepEnum) => void;
   handleContinue: () => void;
+  toggleRightPanel: () => void;
 };
 
 const GoalCalculatorContext = React.createContext<GoalCalculatorType | null>(
@@ -60,6 +62,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [selectedStepId, setSelectedStepId] = useState<GoalCalculatorStepEnum>(
     GoalCalculatorStepEnum.Information,
   );
+  const [isRightOpen, setIsRightOpen] = useState<boolean>(true);
 
   const currentCategory = useMemo(
     () => categories.find((cat) => cat.id === selectedCategoryId),
@@ -142,6 +145,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     t,
   ]);
 
+  const toggleRightPanel = useCallback(() => {
+    setIsRightOpen((prev) => !prev);
+  }, []);
+
   const contextValue: GoalCalculatorType = useMemo(
     () => ({
       categories,
@@ -149,18 +156,22 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedStepId,
       currentCategory,
       currentStep,
+      isRightOpen,
       handleCategoryChange,
       handleStepChange,
       handleContinue,
+      toggleRightPanel,
     }),
     [
       selectedCategoryId,
       selectedStepId,
       currentCategory,
       currentStep,
+      isRightOpen,
       handleCategoryChange,
       handleStepChange,
       handleContinue,
+      toggleRightPanel,
     ],
   );
 
