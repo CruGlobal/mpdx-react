@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import InfoIcon from '@mui/icons-material/Info';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -55,7 +55,11 @@ const StyledDefaultContent = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-const StyledDrawer = styled(Box)<{ open: boolean }>(({ theme, open }) => ({
+const StyledDrawer = styled(Box)<{
+  open: boolean;
+  headerHeight: string;
+  iconContainerWidth: string;
+}>(({ theme, open, headerHeight, iconContainerWidth }) => ({
   width: open ? 240 : 0,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -63,6 +67,14 @@ const StyledDrawer = styled(Box)<{ open: boolean }>(({ theme, open }) => ({
   }),
   overflow: 'hidden',
   borderRight: open ? `1px solid ${theme.palette.cruGrayLight.main}` : 'none',
+  [theme.breakpoints.down('sm')]: {
+    position: 'absolute',
+    top: headerHeight,
+    left: `calc(${iconContainerWidth} + 1px)`,
+    height: '100%',
+    backgroundColor: theme.palette.common.white,
+    zIndex: 270,
+  },
 }));
 
 const StyledCategoryIconButton = styled(IconButton)<{ selected: boolean }>(
@@ -105,8 +117,33 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     toggleRightPanel,
     toggleDrawer,
     setDrawerOpen,
+    headerHeight,
   } = useGoalCalculator();
   const { t } = useTranslation();
+  const [iconContainerWidth, setIconContainerWidth] = useState<string>('54px');
+  const iconContainerRef = useRef<HTMLDivElement>(null);
+  const calculateIconContainerWidth = useCallback(() => {
+    if (iconContainerRef.current) {
+      const rect = iconContainerRef.current.getBoundingClientRect();
+      setIconContainerWidth(rect.width + 'px');
+    }
+  }, [iconContainerRef]);
+
+  useEffect(() => {
+    calculateIconContainerWidth();
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateIconContainerWidth();
+    });
+
+    if (iconContainerRef.current) {
+      resizeObserver.observe(iconContainerRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [calculateIconContainerWidth]);
 
   const handleCategoryIconClick = (categoryId: typeof selectedCategoryId) => {
     if (selectedCategoryId === categoryId) {
@@ -134,7 +171,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         headerType={HeaderTypeEnum.Report}
       />
       <Stack direction="row" flex={1}>
-        <Stack direction="column">
+        <Stack ref={iconContainerRef} direction="column">
           {categories.map((category) => (
             <StyledCategoryIconButton
               key={category.id}
@@ -146,7 +183,11 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
           ))}
         </Stack>
         <Divider orientation="vertical" flexItem />
-        <StyledDrawer open={isDrawerOpen}>
+        <StyledDrawer
+          open={isDrawerOpen}
+          headerHeight={headerHeight}
+          iconContainerWidth={iconContainerWidth}
+        >
           <StyledCategoryTitle variant="h6">
             {categoryTitle || t('Goal Calculator')}
           </StyledCategoryTitle>
