@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { DateRange } from './StaffReportEnum';
 import {
   dateRangeToString,
@@ -8,11 +8,8 @@ import {
 
 /* The default now date is not helpful for these particular tests
  * (for example, Year to Date would return January 1, 2020 - January 1, 2020),
- * so it is mocked to a different date.
+ * so it is mocked to a different date in some of the tests below.
  */
-jest
-  .spyOn(DateTime, 'now')
-  .mockImplementation(() => DateTime.fromISO('2020-06-18') as DateTime<true>);
 
 describe('formatDate', () => {
   it('formats a DateTime object to a localized string', () => {
@@ -48,6 +45,7 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns week to date range string', () => {
+    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'en-US';
     expect(dateRangeToString(DateRange.WeekToDate, locale)).toBe(
       'June 15, 2020 - June 18, 2020',
@@ -55,6 +53,7 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns month to date range string', () => {
+    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'en-US';
     expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual(
       'June 1, 2020 - June 18, 2020',
@@ -62,6 +61,7 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns year to date range string', () => {
+    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'en-US';
     expect(dateRangeToString(DateRange.YearToDate, locale)).toEqual(
       'January 1, 2020 - June 18, 2020',
@@ -69,6 +69,7 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns week to date range string in different locale', () => {
+    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'de-DE';
     expect(dateRangeToString(DateRange.WeekToDate, locale)).toEqual(
       '15. Juni 2020 - 18. Juni 2020',
@@ -76,6 +77,7 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns month to date range string in different locale', () => {
+    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'fr-FR';
     expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual(
       '1 juin 2020 - 18 juin 2020',
