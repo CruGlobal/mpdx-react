@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import FilterList from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, IconButton, Typography } from '@mui/material';
@@ -58,13 +58,10 @@ const NavMenuIcon = styled(MenuIcon)(() => ({
   color: theme.palette.primary.dark,
 }));
 
-export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
-  title,
-  rightExtra,
-  isNavListOpen,
-  onNavListToggle,
-  headerType,
-}) => {
+export const MultiPageHeader = React.forwardRef<
+  HTMLElement,
+  MultiPageHeaderProps
+>(({ title, rightExtra, isNavListOpen, onNavListToggle, headerType }, ref) => {
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
   const isReportHeader = headerType === HeaderTypeEnum.Report;
@@ -81,7 +78,7 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
   }
 
   return (
-    <StickyHeader p={2} test-dataid="MultiPageHeader">
+    <StickyHeader ref={ref} p={2} test-dataid="MultiPageHeader">
       <Box
         display="flex"
         justifyContent="space-between"
@@ -119,4 +116,6 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
       </Box>
     </StickyHeader>
   );
-};
+});
+
+MultiPageHeader.displayName = 'MultiPageHeader';
