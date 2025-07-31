@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
+  multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 
@@ -111,13 +112,11 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     currentStep,
     isRightOpen,
     isDrawerOpen,
-    headerRef,
     handleCategoryChange,
     handleStepChange,
     toggleRightPanel,
     toggleDrawer,
     setDrawerOpen,
-    headerHeight,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const [iconContainerWidth, setIconContainerWidth] = useState<string>('54px');
@@ -164,7 +163,6 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   return (
     <>
       <MultiPageHeader
-        ref={headerRef}
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         title={t('Goal Calculator')}
@@ -185,7 +183,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         <Divider orientation="vertical" flexItem />
         <StyledDrawer
           open={isDrawerOpen}
-          headerHeight={headerHeight}
+          headerHeight={multiPageHeaderHeight}
           iconContainerWidth={iconContainerWidth}
         >
           <StyledCategoryTitle variant="h6">
