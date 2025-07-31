@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -11,8 +10,8 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { Status } from '../Helper/TransferHistoryEnum';
-import { StaffSavingFund, TransferHistory } from '../mockData';
+import { useLocale } from 'src/hooks/useLocale';
+import { ScheduleEnum, StaffSavingFund, TransferHistory } from '../mockData';
 
 interface PrintTableProps {
   transfers: TransferHistory[];
@@ -20,6 +19,8 @@ interface PrintTableProps {
 
 export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
   return (
     <>
       <Typography variant="h6" sx={{ mt: 2 }}>
@@ -29,30 +30,14 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontSize: '8pt', width: '20%' }}>
-                {t('From')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '20%' }}>
-                {t('To')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '5%' }}>
-                {t('Amount')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '5%' }}>
-                {t('Schedule')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '5%' }}>
-                {t('Status')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '15%' }}>
-                {t('Transfer Date')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '15%' }}>
-                {t('Stop Date')}
-              </TableCell>
-              <TableCell sx={{ fontSize: '8pt', width: '15%' }}>
-                {t('Note')}
-              </TableCell>
+              <TableCell>{t('From')}</TableCell>
+              <TableCell>{t('To')}</TableCell>
+              <TableCell>{t('Amount')}</TableCell>
+              <TableCell>{t('Schedule')}</TableCell>
+              <TableCell>{t('Status')}</TableCell>
+              <TableCell>{t('Transfer Date')}</TableCell>
+              <TableCell>{t('Stop Date')}</TableCell>
+              <TableCell>{t('Note')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -61,95 +46,39 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                 <TableRow
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
-                  <TableCell sx={{ fontSize: '8pt' }}>
+                  <TableCell>
                     {transfer.transferFrom === StaffSavingFund.StaffAccount
                       ? 'Staff Account'
                       : transfer.transferFrom === StaffSavingFund.StaffSavings
                       ? 'Staff Savings'
                       : 'Staff Conference Savings'}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '8pt' }}>
+                  <TableCell>
                     {transfer.transferTo === StaffSavingFund.StaffAccount
                       ? 'Staff Account'
                       : transfer.transferTo === StaffSavingFund.StaffSavings
                       ? 'Staff Savings'
                       : 'Staff Conference Savings'}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '8pt' }}>
-                    {transfer.amount}
-                  </TableCell>
-                  <TableCell sx={{ fontSize: '8pt' }}>
-                    {transfer.schedule}
+                  <TableCell>
+                    {transfer.amount?.toLocaleString(locale, {
+                      style: 'currency',
+                      currency: 'USD',
+                    })}
                   </TableCell>
                   <TableCell>
-                    {transfer.status === Status.Pending ? (
-                      <Chip
-                        label={transfer.status}
-                        color="default"
-                        size="small"
-                        sx={{
-                          '@media print': {
-                            backgroundColor: '#FFF8E1',
-                            boxShadow: 'none',
-                            fontSize: '8pt',
-                          },
-                        }}
-                      />
-                    ) : transfer.status === Status.Ongoing ? (
-                      <Chip
-                        label={t(transfer.status)}
-                        color="default"
-                        size="small"
-                        sx={{
-                          backgroundColor: '#E3F2FD',
-                          boxShadow: 'none',
-                          fontSize: '8pt',
-                        }}
-                      />
-                    ) : transfer.status === Status.Complete ? (
-                      <Chip
-                        label={t(transfer.status)}
-                        color="default"
-                        size="small"
-                        sx={{
-                          backgroundColor: '#E8F5E9',
-                          boxShadow: 'none',
-                          fontSize: '8pt',
-                        }}
-                      />
-                    ) : transfer.status === Status.Ended ? (
-                      <Chip
-                        label={t(transfer.status)}
-                        color="default"
-                        size="small"
-                        sx={{
-                          backgroundColor: '#FAFAFA',
-                          boxShadow: 'none',
-                          fontSize: '8pt',
-                        }}
-                      />
-                    ) : transfer.status === Status.Failed ? (
-                      <Chip
-                        label={t(transfer.status)}
-                        color="default"
-                        size="small"
-                        sx={{
-                          backgroundColor: '#FEEBEE',
-                          boxShadow: 'none',
-                          fontSize: '8pt',
-                        }}
-                      />
-                    ) : null}
+                    {transfer.schedule === ScheduleEnum.OneTime
+                      ? 'One Time'
+                      : 'Monthly'}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '8pt' }}>
+                  <TableCell>{transfer.status}</TableCell>
+                  <TableCell>
                     {transfer.transferDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '8pt' }}>
+                  <TableCell>
                     {transfer.endDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
-                  <TableCell sx={{ fontSize: '8pt' }}>
-                    {transfer.note}
-                  </TableCell>
+                  <TableCell>{transfer.note}</TableCell>
                 </TableRow>
               ))
             ) : (

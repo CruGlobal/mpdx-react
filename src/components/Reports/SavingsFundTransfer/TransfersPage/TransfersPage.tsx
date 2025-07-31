@@ -93,6 +93,9 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
               height: '24px',
             },
           },
+          '@page': {
+            size: 'landscape',
+          },
         }}
       />
       <Box>
