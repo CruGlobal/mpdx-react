@@ -23,13 +23,16 @@ import {
   DataGrid,
   GridColDef,
   GridSortModel,
+  GridToolbarColumnsButton,
   GridToolbarContainer,
+  GridToolbarDensitySelector,
+  GridToolbarFilterButton,
   GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { Status } from '../Helper/TransferHistoryEnum';
+import { downloadCSV } from '../DownloadTable/downloadTable';
 import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
 import { EditTransferModal } from '../TransferActionsModal/EditTransferModal';
 import { Fund } from '../mockData';
@@ -429,7 +432,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  const QuickFilterToolbar = () => (
+  const CustomToolbar = () => (
     <GridToolbarContainer
       sx={{
         display: 'flex',
@@ -437,12 +440,19 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         alignItems: 'center',
       }}
     >
-      <Box sx={{ display: 'flex', gap: 0, ml: 1 }}>
-        <Button>
-          <SaveAlt sx={{ color: '#05699B', mr: 0.5 }} />
-          {t('Export').toUpperCase()}
+      <GridToolbarContainer>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarDensitySelector />
+        <Button
+          size="small"
+          sx={{ minHeight: 33, pt: 0, pb: 0 }}
+          startIcon={<SaveAlt />}
+          onClick={() => downloadCSV(t, mockData.history, locale)}
+        >
+          {t('Export')}
         </Button>
-      </Box>
+      </GridToolbarContainer>
       <GridToolbarQuickFilter
         sx={{
           width: 250,
@@ -486,7 +496,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         disableSelectionOnClick
         pagination
         components={{
-          Toolbar: QuickFilterToolbar,
+          Toolbar: CustomToolbar,
         }}
       />
       {openDeleteModal && (
