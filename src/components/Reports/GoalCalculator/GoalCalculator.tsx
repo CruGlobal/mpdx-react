@@ -15,6 +15,7 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -43,6 +44,8 @@ const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
 
 const CategoriesStack = styled(Stack)(({ theme }) => ({
   paddingBlock: theme.spacing(4),
+  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+  overflow: 'scroll',
 }));
 
 const CategoryContainer = styled('div')(({ theme }) => ({
@@ -119,7 +122,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         title={t('Goal Calculator')}
         headerType={HeaderTypeEnum.Report}
       />
-      <Stack direction="row" flex={1}>
+      <Stack direction="row">
         <Stack direction="column" width={iconPanelWidth}>
           {steps.map((step) => (
             <IconButton
