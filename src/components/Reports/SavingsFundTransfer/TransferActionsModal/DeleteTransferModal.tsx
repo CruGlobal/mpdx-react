@@ -23,7 +23,8 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
 
   const [deleting, setDeleting] = useState(false);
 
-  const handleConfirm = () => {
+  //TODO: Complete handleDelete when delete mutation is built
+  const handleDelete = () => {
     setDeleting(true);
 
     enqueueSnackbar(t('Transfer deleted successfully'), { variant: 'success' });
@@ -45,7 +46,7 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
         <CancelButton onClick={handleClose} disabled={deleting}>
           {t('No')}
         </CancelButton>
-        <SubmitButton type="button" onClick={handleConfirm} disabled={deleting}>
+        <SubmitButton type="button" onClick={handleDelete} disabled={deleting}>
           {t('Yes')}
         </SubmitButton>
       </DialogActions>
