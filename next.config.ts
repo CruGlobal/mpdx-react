@@ -106,6 +106,11 @@ const config: NextConfig = {
       ...config.experiments,
       topLevelAwait: true,
     };
+
+    // Needed to use MUI X v8 with MUI v5
+    // Reference: https://mui.com/x/migration/usage-with-material-ui-v5-v6/
+    config.resolve.conditionNames = ['require', '...'];
+
     config.module.rules.push(
       {
         test: /\.mjs$/,
@@ -155,6 +160,11 @@ const config: NextConfig = {
 
     return config;
   },
+
+  // Needed to use MUI X v8 with MUI v5
+  // Reference: https://mui.com/x/migration/usage-with-material-ui-v5-v6/
+  transpilePackages: ['@mui/x-data-grid'],
+
   redirects: async () => [
     {
       source: '/accountLists/:accountListId/settings',

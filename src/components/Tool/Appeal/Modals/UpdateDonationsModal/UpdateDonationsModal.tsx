@@ -1,5 +1,6 @@
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { DialogActions, DialogContent, DialogContentText } from '@mui/material';
+import { GridPaginationModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
@@ -60,7 +61,10 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
     setLessThanPledgeConfirmationMessage,
   ] = useState<ReactNode | null>(null);
   const [saveDisabled, setSaveDisabled] = useState(true);
-  const [pageSize, setPageSize] = useState(25);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
 
   const { data: accountListData, loading: loadingAccountListData } =
     useAccountListCurrencyQuery({
@@ -97,10 +101,10 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
   const variables: DonationTableQueryVariables = useMemo(
     () => ({
       accountListId: accountListId ?? '',
-      pageSize,
+      pageSize: paginationModel.pageSize,
       donorAccountIds,
     }),
-    [accountListId, pageSize, donorAccountIds],
+    [accountListId, donorAccountIds],
   );
 
   const donationTableQueryResult = useDonationTableQuery({
@@ -347,8 +351,8 @@ export const UpdateDonationsModal: React.FC<UpdateDonationsModalProps> = ({
             selectedDonations={selectedDonations}
             setSelectedDonations={setSelectedDonations}
             totalSelectedDonationsAmount={totalSelectedDonationsAmount}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
+            paginationModel={paginationModel}
+            setPaginationModel={setPaginationModel}
             donationTableQueryResult={donationTableQueryResult}
           />
         </DialogContent>

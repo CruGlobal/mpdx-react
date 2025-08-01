@@ -10,7 +10,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridPaginationModel,
+} from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import {
   DonationRow,
@@ -42,8 +46,8 @@ export interface DonationTableProps {
   selectedDonations: DonationRow[];
   setSelectedDonations: React.Dispatch<React.SetStateAction<DonationRow[]>>;
   totalSelectedDonationsAmount: number;
-  pageSize: number;
-  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   donationTableQueryResult: ReturnType<typeof useDonationTableQuery>;
 }
 
@@ -77,8 +81,8 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   selectedDonations = [],
   setSelectedDonations,
   totalSelectedDonationsAmount = 0,
-  pageSize = 25,
-  setPageSize,
+  paginationModel,
+  setPaginationModel,
   donationTableQueryResult,
 }) => {
   const { t } = useTranslation();
@@ -247,12 +251,12 @@ export const DonationTable: React.FC<DonationTableProps> = ({
           foreignAmount: hasForeignDonations,
         }}
         onColumnVisibilityModelChange={setColumnVisibility}
-        pageSize={pageSize}
-        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
-        rowsPerPageOptions={[25, 50, 100]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[25, 50, 100]}
         pagination
         autoHeight
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         disableVirtualization
       />
       {data.donations.pageInfo.hasNextPage ? (
