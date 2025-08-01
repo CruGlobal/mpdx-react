@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ScheduleEnum } from '../mockData';
+import { ScheduleEnum } from '../Helper/TransferHistoryEnum';
 import { TransferHistoryTable } from './TransferHistoryTable';
 
 const mutationSpy = jest.fn();

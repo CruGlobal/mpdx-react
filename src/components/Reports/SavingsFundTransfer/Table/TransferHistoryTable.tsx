@@ -39,7 +39,7 @@ import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { TransferHistory, mockData } from '../mockData';
 
-type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
+type RenderCell = GridColDef<TransferHistory>['renderCell'];
 
 export interface TransferHistoryTableProps {
   history: TransferHistory[];
@@ -74,22 +74,9 @@ export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
-export interface TransferHistoryRow {
-  id: string;
-  transferFrom: string;
-  transferTo: string;
-  amount: number;
-  schedule: ScheduleEnum;
-  status: string;
-  transferDate: DateTime<boolean> | null;
-  endDate: DateTime<boolean> | null;
-  note: string;
-  actions: string;
-}
-
 export const CreateTransferHistoryRows = (
   history: TransferHistory,
-): TransferHistoryRow => ({
+): TransferHistory => ({
   id: history.id || crypto.randomUUID(),
   transferFrom: history.transferFrom || '',
   transferTo: history.transferTo || '',
@@ -115,11 +102,11 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const [openDeleteModal, setOpenDeleteModal] =
     useState<TransferHistory | null>(null);
 
-  const handleDeleteModalOpen = (transfer: TransferHistoryRow) => {
+  const handleDeleteModalOpen = (transfer: TransferHistory) => {
     setOpenDeleteModal(transfer);
   };
 
-  const handleEditModalOpen = (transfer: TransferHistoryRow) => {
+  const handleEditModalOpen = (transfer: TransferHistory) => {
     handleOpenTransferModal({
       type: TransferTypeEnum.Edit,
       transfer,
@@ -211,7 +198,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const amount: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.amount.toLocaleString(locale, {
+        {row.amount?.toLocaleString(locale, {
           style: 'currency',
           currency: 'USD',
         })}
@@ -335,7 +322,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
 
   const note: RenderCell = ({ row }) => {
     return (
-      <Tooltip title={t(row.note)}>
+      <Tooltip title={t(row.note ? row.note : 'N/A')}>
         <Typography variant="body2" noWrap>
           {row.note}
         </Typography>
