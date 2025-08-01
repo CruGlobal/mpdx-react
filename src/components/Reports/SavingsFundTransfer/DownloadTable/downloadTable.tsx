@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
 import { ScheduleEnum, StaffSavingFund, TransferHistory } from '../mockData';
 
-const createTable = (
+export const createTable = (
   csvHeader: string[],
   transfers: TransferHistory[],
   locale: string,
@@ -69,4 +69,6 @@ export const downloadCSV = (
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
+  return csvBlob;
 };

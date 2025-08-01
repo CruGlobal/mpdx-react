@@ -107,6 +107,7 @@ export const CreateTransferHistoryRows = (
 // icon definitions
 export const staffAccount = (
   <Wallet
+    titleAccess="Staff Account"
     sx={{
       backgroundColor: '#F08020',
       color: 'primary.contrastText',
@@ -121,6 +122,7 @@ export const staffAccount = (
 );
 export const staffSavings = (
   <Savings
+    titleAccess="Staff Savings"
     sx={{
       backgroundColor: '#007890',
       color: 'primary.contrastText',
@@ -135,6 +137,7 @@ export const staffSavings = (
 );
 export const staffConferenceSavings = (
   <Groups
+    titleAccess="Staff Conference Savings"
     sx={{
       backgroundColor: '#00C0D8',
       color: 'primary.contrastText',
@@ -184,7 +187,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffAccount}
-          <ArrowForward sx={{ mr: 1 }} />
+          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
           {staffSavings}
         </Box>
       );
@@ -195,7 +198,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffAccount}
-          <ArrowForward sx={{ mr: 1 }} />
+          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
           {staffConferenceSavings}
         </Box>
       );
@@ -206,7 +209,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffSavings}
-          <ArrowForward sx={{ mr: 1 }} />
+          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
           {staffAccount}
         </Box>
       );
@@ -217,7 +220,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffSavings}
-          <ArrowForward sx={{ mr: 1 }} />
+          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
           {staffConferenceSavings}
         </Box>
       );
@@ -228,7 +231,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffConferenceSavings}
-          <ArrowForward sx={{ mr: 1 }} />
+          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
           {staffAccount}
         </Box>
       );
@@ -239,7 +242,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <Box sx={{ display: 'flex', ml: 1 }}>
           {staffConferenceSavings}
-          <ArrowForward sx={{ mr: 1 }} />
+          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
           {staffSavings}
         </Box>
       );
@@ -374,10 +377,11 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       return (
         <>
           <IconButton>
-            <Edit onClick={() => handleEditModalOpen(row)} />
+            <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
           </IconButton>
           <IconButton>
             <Delete
+              titleAccess="Delete"
               sx={{ color: 'error.main' }}
               onClick={() => {
                 handleDeleteModalOpen(row);
@@ -512,6 +516,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
         disableSelectionOnClick
+        disableVirtualization
         pagination
         components={{
           Toolbar: CustomToolbar,
