@@ -10,8 +10,8 @@ import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { TransferModalData } from '../TransferModal/TransferModal';
-import { ScreenOnly } from '../TransfersPage/TransfersPage';
 import { Fund, StaffSavingFund } from '../mockData';
+import { ScreenOnly } from '../styledComponents';
 
 export interface BalanceCardProps {
   fund: Fund;

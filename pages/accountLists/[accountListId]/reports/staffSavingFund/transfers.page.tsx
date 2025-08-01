@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
-import { SavingsFundTransfers } from 'src/components/Reports/SavingsFundTransfer/TransfersPage/TransfersPage';
+import { TransfersPage } from 'src/components/Reports/SavingsFundTransfer/TransfersPage/TransfersPage';
 import { StaffSavingFundProvider } from 'src/components/Reports/StaffSavingFund/StaffSavingFundContext';
 import { StaffSavingFundLayout } from 'src/components/Reports/StaffSavingFund/StaffSavingFundLayout';
 
@@ -15,7 +15,7 @@ const StaffSavingFundTransfersPage: React.FC = () => {
         pageTitle={title}
         selectedMenuId="staffSavingFundTransfers"
       >
-        <SavingsFundTransfers title={title} />
+        <TransfersPage title={title} />
       </StaffSavingFundLayout>
     </StaffSavingFundProvider>
   );
