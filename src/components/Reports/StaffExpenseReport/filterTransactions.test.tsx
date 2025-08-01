@@ -60,9 +60,9 @@ describe('filterTransactions', () => {
   it('filters transactions for the target month by default', () => {
     const targetTime = DateTime.fromISO('2025-01-15');
     let result = filterTransactions(mockFund, targetTime, {
-      selectedDateRange: undefined,
-      startDate: undefined,
-      endDate: undefined,
+      selectedDateRange: null,
+      startDate: null,
+      endDate: null,
     });
     expect(result).toHaveLength(2);
 
@@ -73,7 +73,7 @@ describe('filterTransactions', () => {
   it('filters transactions by custom date range', () => {
     const targetTime = DateTime.fromISO('2024-06-15');
     const result = filterTransactions(mockFund, targetTime, {
-      selectedDateRange: undefined,
+      selectedDateRange: null,
       startDate: DateTime.fromISO('2025-01-01'),
       endDate: DateTime.fromISO('2025-02-03'),
     });
@@ -81,7 +81,7 @@ describe('filterTransactions', () => {
   });
 
   it('returns empty array if no main categories', () => {
-    const emptyFund = { ...mockFund, categories: undefined };
+    const emptyFund = { ...mockFund, categories: null };
     const targetTime = DateTime.fromISO('2024-06-01');
     const result = filterTransactions(emptyFund, targetTime);
     expect(result).toEqual([]);
@@ -96,7 +96,7 @@ describe('filterTransactions', () => {
   it('returns empty array if no transactions in range with custom date range', () => {
     const targetTime = DateTime.fromISO('2024-06-01');
     const result = filterTransactions(mockFund, targetTime, {
-      selectedDateRange: undefined,
+      selectedDateRange: null,
       startDate: DateTime.fromISO('2025-04-01'),
       endDate: DateTime.fromISO('2025-06-03'),
     });
