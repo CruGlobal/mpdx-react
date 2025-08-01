@@ -1,13 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  ArrowForward,
-  Delete,
-  Edit,
-  Groups,
-  SaveAlt,
-  Savings,
-  Wallet,
-} from '@mui/icons-material';
+import { ArrowForward, Delete, Edit, SaveAlt } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -34,6 +26,11 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { downloadCSV } from '../DownloadTable/downloadTable';
 import { Status } from '../Helper/TransferHistoryEnum';
+import {
+  staffAccount,
+  staffConferenceSavings,
+  staffSavings,
+} from '../Helper/TransferIcons';
 import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
 import {
   TransferModalData,
@@ -103,53 +100,6 @@ export const CreateTransferHistoryRows = (
   note: history.note || '',
   actions: history.actions || '',
 });
-
-// icon definitions
-export const staffAccount = (
-  <Wallet
-    titleAccess="Staff Account"
-    sx={{
-      backgroundColor: '#F08020',
-      color: 'primary.contrastText',
-      borderRadius: 1,
-      p: 0.25,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      mr: 1,
-    }}
-  />
-);
-export const staffSavings = (
-  <Savings
-    titleAccess="Staff Savings"
-    sx={{
-      backgroundColor: '#007890',
-      color: 'primary.contrastText',
-      borderRadius: 1,
-      p: 0.25,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      mr: 1,
-    }}
-  />
-);
-export const staffConferenceSavings = (
-  <Groups
-    titleAccess="Staff Conference Savings"
-    sx={{
-      backgroundColor: '#00C0D8',
-      color: 'primary.contrastText',
-      borderRadius: 1,
-      p: 0.25,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      mr: 1,
-    }}
-  />
-);
 
 export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   history,
