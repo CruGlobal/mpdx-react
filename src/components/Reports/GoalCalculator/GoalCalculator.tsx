@@ -1,4 +1,6 @@
+import { useRouter } from 'next/router';
 import React from 'react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CircleIcon from '@mui/icons-material/Circle';
 import InfoIcon from '@mui/icons-material/Info';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -97,6 +99,7 @@ const StyledStepIcon = styled(Box, {
 }));
 
 export const GoalCalculator: React.FC = () => {
+  const router = useRouter();
   const {
     steps,
     currentStep,
@@ -123,6 +126,12 @@ export const GoalCalculator: React.FC = () => {
     }
   };
 
+  const handleBackClick = () => {
+    // Navigate back to the GoalsList page
+    const { accountListId } = router.query;
+    router.push(`/accountLists/${accountListId}/reports/goalCalculator`);
+  };
+
   const { title: stepTitle, categories: stepCategories } = currentStep || {};
   const {
     title: categoryTitle,
@@ -142,6 +151,13 @@ export const GoalCalculator: React.FC = () => {
             {step.icon}
           </StyledCategoryIconButton>
         ))}
+        <StyledCategoryIconButton
+          selected={false}
+          onClick={handleBackClick}
+          aria-label={t('Go Back')}
+        >
+          <ArrowBackIcon />
+        </StyledCategoryIconButton>
       </Stack>
       <Divider orientation="vertical" flexItem />
       <StyledDrawer
