@@ -57,6 +57,17 @@ const StyledContainer = styled(Container)({
   padding: theme.spacing(1),
 });
 
+const StyledPersonBox = styled(Box)({
+  width: 36,
+  height: 36,
+  borderRadius: theme.shape.borderRadius,
+  overflow: 'hidden',
+  backgroundColor: theme.palette.background.default,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
 export interface InformationFormValues {
   // Financial form fields
   monthlyIncome: number;
@@ -284,22 +295,11 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
               justifyContent="center"
               gap={1}
             >
-              <Box
-                sx={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: theme.shape.borderRadius,
-                  overflow: 'hidden',
-                  backgroundColor: theme.palette.background.paper,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
+              <StyledPersonBox>
                 <PersonIcon
                   sx={{ fontSize: 40, color: theme.palette.primary.main }}
                 />
-              </Box>
+              </StyledPersonBox>
               <Typography align="center">{"User's name"}</Typography>
             </Box>
             {spouseInformation !== null && (
