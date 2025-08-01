@@ -14,7 +14,7 @@ fs.readdirSync(localesDir).forEach((langCode) => {
       ),
     );
 
-    fs.writeFileSync(filePath, JSON.stringify(sortedContent, null, 2));
+    fs.writeFileSync(filePath, JSON.stringify(sortedContent, null, 4) + '\n');
     // eslint-disable-next-line no-console
     console.log(`✔ Sorted translation.json for locale: ${langCode}`);
   }
