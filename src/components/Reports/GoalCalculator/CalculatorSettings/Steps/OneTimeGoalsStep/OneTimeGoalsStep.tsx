@@ -38,9 +38,9 @@ export const OneTimeGoalsStep: React.FC<OneTimeGoalsStepProps> = () => {
   };
   const { t } = useTranslation();
 
-  const validationSchema = yup.object().shape({
+  const validationSchema = yup.object({
     additionalGoals: yup.array().of(
-      yup.object().shape({
+      yup.object({
         label: yup
           .string()
           .min(2, t('Label must be at least 2 characters'))

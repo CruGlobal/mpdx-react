@@ -13,13 +13,13 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-export const InformationStepFinancialForm: React.FC = () => {
+export const SpouseInformationStepFinancialForm: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <StyledFinancialForm>
       <Typography variant="h6" gutterBottom>
-        {t('Financial Information')}
+        {t("Spouse's Financial Information")}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         {t('Review your financial details and settings here.')}
@@ -181,27 +181,6 @@ export const InformationStepFinancialForm: React.FC = () => {
                 fullWidth
                 size="small"
                 label={t('MHA Amount Per Month')}
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="solidMonthlySupportDeveloped">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Solid Monthly Support Developed')}
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}

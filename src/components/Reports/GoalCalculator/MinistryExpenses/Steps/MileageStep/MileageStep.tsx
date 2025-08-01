@@ -24,9 +24,9 @@ export const MileageStep: React.FC<MileageStepProps> = () => {
     additionalMileage: [],
   };
 
-  const validationSchema = yup.object().shape({
+  const validationSchema = yup.object({
     additionalMileage: yup.array().of(
-      yup.object().shape({
+      yup.object({
         label: yup
           .string()
           .min(2, t('Label must be at least 2 characters'))

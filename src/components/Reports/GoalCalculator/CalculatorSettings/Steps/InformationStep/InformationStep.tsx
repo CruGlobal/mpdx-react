@@ -1,17 +1,38 @@
 import React, { useState } from 'react';
-import { Box, Card, Container, Tab, Tabs, Typography } from '@mui/material';
+import RightArrowIcon from '@mui/icons-material/ArrowForward';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import PersonIcon from '@mui/icons-material/Person';
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/system';
-import { Form, Formik, FormikProps } from 'formik';
+import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import theme from 'src/theme';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { ContinueButton } from '../../../SharedComponents/ContinueButton';
 import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
 import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
+import { SpouseInformationStepFinancialForm } from './InformationStepForm/SpouseInformationStepFinancialForm';
+import { SpouseInformationStepPersonalForm } from './InformationStepForm/SpouseInformationStepFormPersonal';
+import {
+  Age,
+  BenefitsPlan,
+  FamilySize,
+  Role,
+  Tenure,
+} from './InformationStepForm/enums';
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled(Box)({
   padding: theme.spacing(1),
-}));
+});
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -22,21 +43,32 @@ const StyledCard = styled(Card)({
   width: '100%',
 });
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
+const StyledTypography = styled(Typography)({
   flex: '1 1 100%',
   marginBottom: theme.spacing(2),
-}));
+});
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
+const StyledTabs = styled(Tabs)({
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
-}));
+});
 
-const StyledContainer = styled(Container)(({ theme }) => ({
+const StyledContainer = styled(Container)({
   padding: theme.spacing(1),
-}));
+});
 
-interface InformationFormValues {
+const StyledPersonBox = styled(Box)({
+  width: 36,
+  height: 36,
+  borderRadius: theme.shape.borderRadius,
+  overflow: 'hidden',
+  backgroundColor: theme.palette.background.default,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
+export interface InformationFormValues {
   // Financial form fields
   monthlyIncome: number;
   monthlyExpenses: number;
@@ -52,9 +84,9 @@ interface InformationFormValues {
   location: string;
   role: string;
   benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
+  familySize: string;
+  tenure: string;
+  age: string;
 }
 
 interface TabPanelProps {
@@ -85,7 +117,7 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
 
-  const validationSchema = yup.object().shape({
+  const validationSchema = yup.object({
     // Financial validation
     monthlyIncome: yup
       .number()
@@ -129,34 +161,54 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .required(t('Solid monthly support developed is required')),
 
     // Personal validation
-    location: yup
-      .string()
-      .min(2, t('Location must be at least 2 characters'))
-      .required(t('Location is required')),
+    location: yup.string().required(t('Location is required')),
     role: yup
       .string()
-      .min(2, t('Role must be at least 2 characters'))
+      .oneOf(Object.values(Role), t('Role must be one of the options'))
       .required(t('Role is required')),
     benefits: yup
       .string()
-      .min(10, t('Benefits description must be at least 10 characters'))
-      .required(t('Benefits information is required')),
+      .oneOf(
+        Object.values(BenefitsPlan),
+        t('Benefits plan must be one of the options'),
+      )
+      .required(t('Benefits plan is required')),
+    familySize: yup
+      .string()
+      .oneOf(
+        Object.values(FamilySize),
+        t('Family size must be one of the options'),
+      )
+      .required(t('Family size is required')),
     tenure: yup
-      .number()
-      .min(0, t('Tenure must be positive'))
-      .max(50, t('Tenure cannot exceed 50 years'))
+      .string()
+      .oneOf(Object.values(Tenure), t('Tenure must be one of the options'))
       .required(t('Tenure is required')),
     age: yup
-      .number()
-      .min(18, t('Age must be at least 18'))
-      .max(100, t('Age cannot exceed 100'))
+      .string()
+      .oneOf(Object.values(Age), t('Age range must be one of the options'))
       .required(t('Age is required')),
-    children: yup
-      .number()
-      .min(0, t('Number of children must be positive'))
-      .max(20, t('Number of children cannot exceed 20'))
-      .required(t('Number of children is required')),
   });
+
+  /* Initially pick was used here, but certain fields
+   * like tenure may not be required for a spouse.
+   */
+  const spouseValidationSchema = yup.object(
+    Object.fromEntries(
+      [
+        'monthlyIncome',
+        'monthlyExpenses',
+        'targetAmount',
+        'monthlySalary',
+        'taxes',
+        'secaStatus',
+        'contribution403b',
+        'benefits',
+        'tenure',
+        'age',
+      ].map((field) => [field, validationSchema.fields[field].notRequired()]),
+    ),
+  );
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -175,12 +227,31 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     solidMonthlySupportDeveloped: 0,
 
     // Personal form initial values
-    location: '',
+    location: 'None',
     role: '',
     benefits: '',
-    tenure: 0,
-    age: 0,
-    children: 0,
+    familySize: '',
+    tenure: '',
+    age: '',
+  };
+
+  const initialSpouseValues: Partial<InformationFormValues> = {
+    // Financial form initial values for spouse
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    targetAmount: 0,
+    monthlySalary: 0,
+    taxes: 0,
+    secaStatus: '',
+    contribution403b: 0,
+    mhaAmountPerMonth: 0,
+
+    // Personal form initial values for spouse
+    role: '',
+    benefits: '',
+    familySize: '',
+    tenure: '',
+    age: '',
   };
 
   const handleSubmit = () => {
@@ -190,44 +261,129 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     handleContinue();
   };
 
+  // Someone may or may not have a spouse,
+  // set to null until query when we have real data
+  const [spouseInformation, setSpouseInformation] = useState<boolean | null>(
+    false,
+  );
+  const [buttonText, setButtonText] = useState<string>(t('View Spouse'));
+  const onClickSpouseInformation = () => {
+    setSpouseInformation(!spouseInformation);
+    // Change 'Spouse' here to be actual spouse's name if available
+    setButtonText(
+      spouseInformation ? t('View Spouse') : t('View Your Information'),
+    );
+  };
+
   return (
     <StyledBox>
       <StyledContainer disableGutters>
         <StyledTypography>
           {t('Take a moment to verify your information.')}
         </StyledTypography>
+        <StyledCard>
+          <Box
+            display="flex"
+            gap={2}
+            m={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={1}
+            >
+              <StyledPersonBox>
+                <PersonIcon
+                  sx={{ fontSize: 40, color: theme.palette.primary.main }}
+                />
+              </StyledPersonBox>
+              <Typography align="center">{"User's name"}</Typography>
+            </Box>
+            {spouseInformation !== null && (
+              <Button
+                endIcon={<RightArrowIcon />}
+                onClick={onClickSpouseInformation}
+              >
+                {buttonText}
+              </Button>
+            )}
+          </Box>
 
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {(formikProps: FormikProps<InformationFormValues>) => (
-            <Form>
-              <StyledCard>
-                <StyledInfoBox>
-                  <StyledTabs
-                    value={value}
-                    onChange={handleChange}
-                    aria-label={t('information tabs')}
-                  >
-                    <Tab label={t('Personal')} />
-                    <Tab label={t('Financial')} />
-                  </StyledTabs>
-                </StyledInfoBox>
+          {!spouseInformation && (
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+              enableReinitialize
+            >
+              <Form>
+                <StyledCard>
+                  <StyledInfoBox>
+                    <StyledTabs
+                      value={value}
+                      onChange={handleChange}
+                      aria-label={t('information tabs')}
+                    >
+                      <Tab
+                        iconPosition={'start'}
+                        icon={<PersonIcon />}
+                        label={t('Personal')}
+                      />
+                      <Tab
+                        iconPosition={'start'}
+                        icon={<CreditCardIcon />}
+                        label={t('Financial')}
+                      />
+                    </StyledTabs>
+                  </StyledInfoBox>
 
-                <TabPanel value={value} index={0}>
-                  <InformationStepPersonalForm formikProps={formikProps} />
-                </TabPanel>
+                  <TabPanel value={value} index={0}>
+                    <InformationStepPersonalForm />
+                  </TabPanel>
 
-                <TabPanel value={value} index={1}>
-                  <InformationStepFinancialForm formikProps={formikProps} />
-                </TabPanel>
-              </StyledCard>
-            </Form>
+                  <TabPanel value={value} index={1}>
+                    <InformationStepFinancialForm />
+                  </TabPanel>
+                </StyledCard>
+              </Form>
+            </Formik>
           )}
-        </Formik>
+
+          {spouseInformation && (
+            <Formik
+              initialValues={initialSpouseValues}
+              validationSchema={spouseValidationSchema}
+              onSubmit={handleSubmit}
+              enableReinitialize
+            >
+              <Form>
+                <StyledCard>
+                  <StyledInfoBox>
+                    <StyledTabs
+                      value={value}
+                      onChange={handleChange}
+                      aria-label={t('information tabs')}
+                    >
+                      <Tab label={t("Spouse's Personal")} />
+                      <Tab label={t("Spouse's Financial")} />
+                    </StyledTabs>
+                  </StyledInfoBox>
+
+                  <TabPanel value={value} index={0}>
+                    <SpouseInformationStepPersonalForm />
+                  </TabPanel>
+
+                  <TabPanel value={value} index={1}>
+                    <SpouseInformationStepFinancialForm />
+                  </TabPanel>
+                </StyledCard>
+              </Form>
+            </Formik>
+          )}
+        </StyledCard>
       </StyledContainer>
       <ContinueButton onClick={handleSubmit} />
     </StyledBox>
