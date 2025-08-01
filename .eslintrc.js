@@ -103,11 +103,5 @@ module.exports = {
         'jsx-a11y/no-static-element-interactions': 'off',
       },
     },
-    {
-      files: ['onesky/**.ts'],
-      rules: {
-        '@typescript-eslint/no-var-requires': 'off',
-      },
-    },
   ],
 };

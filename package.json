@@ -24,8 +24,8 @@
     "gql": "graphql-codegen --config codegen.yml",
     "gql:w": "yarn gql --watch",
     "postinstall": "husky install",
-    "onesky:upload": "babel-node ./onesky/upload.js",
-    "onesky:download": "babel-node ./onesky/download.js",
+    "crowdin:sort-translations": "node ./crowdin/sort-translations.js",
+    "crowdin:download": "crowdin download translations && yarn crowdin:sort-translations",
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
@@ -85,7 +85,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@brainly/onesky-utils": "1.4.2",
+    "@crowdin/cli": "^4.9.1",
     "@graphql-codegen/add": "^5.0.2",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/fragment-matcher": "^5.0.2",
