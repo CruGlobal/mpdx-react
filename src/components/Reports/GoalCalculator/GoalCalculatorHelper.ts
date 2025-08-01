@@ -1,25 +1,25 @@
-export interface GoalCalculatorCategoryStep {
-  id: GoalCalculatorStepEnum;
+export interface GoalCalculatorCategory {
+  id: GoalCalculatorCategoryEnum;
   title: string;
   component: JSX.Element;
   rightPanelComponent?: JSX.Element;
 }
 
-export interface GoalCalculatorCategory {
+export interface GoalCalculatorStep {
   title: string;
-  id: GoalCalculatorCategoryEnum;
-  steps: GoalCalculatorCategoryStep[];
+  id: GoalCalculatorStepEnum;
+  categories: GoalCalculatorCategory[];
   icon: JSX.Element;
 }
 
-export enum GoalCalculatorCategoryEnum {
+export enum GoalCalculatorStepEnum {
   CalculatorSettings = 'calculator-settings',
   MinistryExpenses = 'ministry-expenses',
   HouseholdExpenses = 'household-expenses',
   SummaryReport = 'summary-report',
 }
 
-export enum GoalCalculatorStepEnum {
+export enum GoalCalculatorCategoryEnum {
   // CalculatorSettings
   Settings = 'settings',
   Information = 'information',

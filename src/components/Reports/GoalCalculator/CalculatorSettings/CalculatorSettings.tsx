@@ -1,33 +1,33 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useTranslation } from 'react-i18next';
 import {
-  GoalCalculatorCategory,
   GoalCalculatorCategoryEnum,
+  GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { InformationStep } from './Steps/InformationStep/InformationStep';
 import { OneTimeGoalsStep } from './Steps/OneTimeGoalsStep/OneTimeGoalsStep';
 import { SpecialIncomeStep } from './Steps/SpecialIncomeStep/SpecialIncomeStep';
 
-export const useCalculatorSettings = (): GoalCalculatorCategory => {
+export const useCalculatorSettings = (): GoalCalculatorStep => {
   const { t } = useTranslation();
   return {
     title: t('Calculator Settings'),
-    id: GoalCalculatorCategoryEnum.CalculatorSettings,
+    id: GoalCalculatorStepEnum.CalculatorSettings,
     icon: <SettingsIcon />,
-    steps: [
+    categories: [
       {
-        id: GoalCalculatorStepEnum.Information,
+        id: GoalCalculatorCategoryEnum.Information,
         title: t('Information'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.SpecialIncome,
+        id: GoalCalculatorCategoryEnum.SpecialIncome,
         title: t('Special Income'),
         component: <SpecialIncomeStep />,
       },
       {
-        id: GoalCalculatorStepEnum.OneTimeGoals,
+        id: GoalCalculatorCategoryEnum.OneTimeGoals,
         title: t('One-time Goals'),
         component: <OneTimeGoalsStep />,
       },

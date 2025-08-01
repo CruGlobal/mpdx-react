@@ -53,8 +53,10 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { currentStep, isRightOpen, toggleRightPanel } = useGoalCalculator();
-  const { rightPanelComponent: rightPanelStepComponent } = currentStep || {};
+  const { currentCategory, isRightOpen, toggleRightPanel } =
+    useGoalCalculator();
+  const { rightPanelComponent: rightPanelStepComponent } =
+    currentCategory || {};
   const { t } = useTranslation();
 
   const rightPanel = (
