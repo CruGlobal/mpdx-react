@@ -106,10 +106,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const setDrawerOpen = useCallback((open: boolean) => {
-    setIsDrawerOpen(open);
-  }, []);
-
   const contextValue: GoalCalculatorType = useMemo(
     () => ({
       steps,
@@ -122,7 +118,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       setRightPanelContent,
       closeRightPanel,
       toggleDrawer,
-      setDrawerOpen,
+      setDrawerOpen: setIsDrawerOpen,
     }),
     [
       selectedStepId,
@@ -134,7 +130,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       setRightPanelContent,
       closeRightPanel,
       toggleDrawer,
-      setDrawerOpen,
+      setIsDrawerOpen,
     ],
   );
 
