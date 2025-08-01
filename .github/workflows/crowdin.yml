@@ -1,4 +1,4 @@
-name: OneSky Translation PR
+name: CrowdIn Translation PR
 
 on:
   schedule:
@@ -27,12 +27,17 @@ jobs:
 
       - name: 🌐 Extract Translations
         run: yarn extract
-      - name: ⛅🔽 OneSky Download
+      - name: 🔤🔽 CrowdIn Translations Download
+        uses: crowdin/github-action@v2
+        with:
+          upload_sources: false
+          upload_translations: false
+          download_sources: false
+          download_translations: true
         env:
-          ONESKY_API_KEY: ${{ secrets.ONESKY_API_KEY }}
-          ONESKY_API_SECRET: ${{ secrets.ONESKY_API_SECRET }}
-          ONESKY_PROJECT_ID: ${{ secrets.ONESKY_PROJECT_ID }}
-        run: yarn onesky:download
+          CROWDIN_API_TOKEN: ${{ secrets.CROWDIN_API_TOKEN }}
+      - name: 🔤 Sort Translations
+        run: yarn crowdin:sort-translations
       - name: 🔀 Create PR
         uses: peter-evans/create-pull-request@v7
         env:
@@ -44,10 +49,10 @@ jobs:
             public/locales/
           # Sign commits so that the author is a bot
           sign-commits: true
-          commit-message: Run `yarn extract` and `yarn onesky:download`
+          commit-message: Run `yarn extract` and `yarn crowdin:download`
           title: '[no-Jira] Update translations'
           body: |
-            Update translations with the latest labels extracted from the components and downloaded from OneSky.
+            Update translations with the latest labels extracted from the components and downloaded from CrowdIn.
 
             Due to GitHub Actions restrictions, our `on: pull_request` CI workflow will not run automatically because this PR was created by a bot. To get it to run, a human will have to push a commit to the branch.
 
