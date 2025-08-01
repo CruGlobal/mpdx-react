@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
@@ -33,7 +32,10 @@ import {
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { AccountInfoBox } from './AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from './AccountInfoBox/AccountInfoBoxSkeleton';
 import { BalanceCard } from './BalanceCard/BalanceCard';
+import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { TableType } from './Helpers/StaffReportEnum';
@@ -92,6 +94,13 @@ const StyledFilterButton = styled(Button)({
   },
 });
 
+const StyledCardsBox = styled(Box)({
+  flex: 1,
+  minWidth: 250,
+  display: 'flex',
+  gap: 16,
+});
+
 export interface Transaction extends BreakdownByMonth {
   fundType: string;
   category: TransactionCategory['category'];
@@ -116,15 +125,15 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { enqueueSnackbar } = useSnackbar();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [filters, setFilters] = useState<Filters | null | undefined>(null);
-  const [isFilterDateSelected, setIsFilterDateSelected] = useState(
-    Boolean(
+  const [filters, setFilters] = useState<Filters | null>(null);
+
+  const isFilterDateSelected = useMemo(() => {
+    return Boolean(
       filters &&
         (filters.startDate || filters.endDate || filters.selectedDateRange),
-    ),
-  );
+    );
+  }, [filters]);
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
@@ -159,38 +168,23 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   );
 
   useEffect(() => {
-    if (!selectedFundType && allFunds.length > 0) {
-      const defaultType =
-        allFunds.find((fund) => fund.fundType === 'Primary')?.fundType ??
-        allFunds[0]?.fundType;
-      setSelectedFundType(defaultType);
+    if (!selectedFundType && defaultFundType) {
+      setSelectedFundType(defaultFundType);
     }
-  }, [allFunds, selectedFundType]);
+  }, [allFunds, selectedFundType, defaultFundType]);
 
-  const selectedFund = allFunds.find((f) => f.fundType === selectedFundType);
+  const selectedFund = allFunds.find(
+    (fund) => fund.fundType === selectedFundType,
+  );
 
   const setPrevMonth = () => {
     const prevTime = time.minus({ months: 1 });
     setTime(prevTime);
-
-    const newTransactions: Record<string, Transaction[]> = {};
-
-    allFunds.forEach((fund) => {
-      const txs = filterTransactions(fund, prevTime, filters);
-      newTransactions[fund.fundType] = txs;
-    });
   };
 
   const setNextMonth = () => {
     const nextTime = time.plus({ months: 1 });
     setTime(nextTime);
-
-    const newTransactions: Record<string, Transaction[]> = {};
-
-    allFunds.forEach((fund) => {
-      const txs = filterTransactions(fund, nextTime, filters);
-      newTransactions[fund.fundType] = txs;
-    });
   };
 
   const transactions = useMemo(() => {
@@ -213,28 +207,32 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   };
 
   const getPosOrNegTransactions = (tableType: TableType, fundType: string) => {
-    const txs = transactions[fundType] ?? [];
-    return txs.filter((tx) =>
-      tableType === TableType.Income ? tx.total > 0 : tx.total < 0,
+    const transactionsToFilter = transactions[fundType] ?? [];
+    return transactionsToFilter.filter((transaction) =>
+      tableType === TableType.Income
+        ? transaction.total > 0
+        : transaction.total < 0,
     );
   };
 
   const getFilteredTotals = (tableType: TableType, fundType: string) => {
     const filtered = getPosOrNegTransactions(tableType, fundType);
-    return filtered.reduce((sum, tx) => sum + tx.total, 0);
+    return filtered.reduce((sum, transaction) => sum + transaction.total, 0);
   };
 
   const transferTotals = useMemo(() => {
     const totals: Record<string, { in: number; out: number }> = {};
 
-    for (const [fundType, txs] of Object.entries(transactions)) {
+    for (const [fundType, transactionsToFilter] of Object.entries(
+      transactions,
+    )) {
       totals[fundType] = {
-        in: txs
-          .filter((tx) => tx.total > 0)
-          .reduce((sum, tx) => sum + tx.total, 0),
-        out: txs
-          .filter((tx) => tx.total < 0)
-          .reduce((sum, tx) => sum + tx.total, 0),
+        in: transactionsToFilter
+          .filter((transaction) => transaction.total > 0)
+          .reduce((sum, transaction) => sum + transaction.total, 0),
+        out: transactionsToFilter
+          .filter((transaction) => transaction.total < 0)
+          .reduce((sum, transaction) => sum + transaction.total, 0),
       };
     }
 
@@ -282,7 +280,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               <ScreenOnly>
                 <Typography variant="h4">{t('Income and Expenses')}</Typography>
               </ScreenOnly>
-              {Object.values(transactions).some((txs) => txs.length > 0) ? (
+              {Object.values(transactions).some(
+                (transactionsToFilter) => transactionsToFilter.length > 0,
+              ) ? (
                 <ScreenOnly
                   display="flex"
                   flexDirection="column"
@@ -302,20 +302,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 </ScreenOnly>
               ) : null}
             </StyledHeaderBox>
-            <Box
-              display="flex"
-              flexDirection="row"
-              gap={3}
-              mb={2}
-              data-testid="account-info"
-            >
-              <Typography>
-                {t(data?.reportsStaffExpenses.name ?? '')}
-              </Typography>
-              <Typography>
-                {t(data?.reportsStaffExpenses.accountId ?? '')}
-              </Typography>
-            </Box>
+            {loading ? (
+              <AccountInfoBoxSkeleton />
+            ) : (
+              <AccountInfoBox
+                name={data?.reportsStaffExpenses.name}
+                accountId={data?.reportsStaffExpenses.accountId}
+              />
+            )}
             <ScreenOnly>
               <Box
                 display="flex"
@@ -325,35 +319,45 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   flexDirection: { xs: 'column', sm: 'row' },
                 }}
               >
-                {allFunds.map((fund) => (
-                  <BalanceCard
-                    key={fund.fundType}
-                    fundType={fund.fundType}
-                    icon={
-                      fund.fundType === 'Primary'
-                        ? Wallet
-                        : fund.fundType === 'Savings'
-                        ? Savings
-                        : Groups
-                    }
-                    iconBgColor={
-                      fund.fundType === 'Primary'
-                        ? '#FF9800'
-                        : fund.fundType === 'Savings'
-                        ? '#90CAF9'
-                        : '#588C87'
-                    }
-                    title={fund.fundType}
-                    isSelected={selectedFundType === fund.fundType}
-                    startingBalance={
-                      data?.reportsStaffExpenses.startBalance ?? 0
-                    }
-                    endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
-                    transfersIn={transferTotals[fund.fundType]?.in ?? 0}
-                    transfersOut={transferTotals[fund.fundType]?.out ?? 0}
-                    onClick={handleCardClick}
-                  />
-                ))}
+                {loading ? (
+                  <StyledCardsBox>
+                    <BalanceCardSkeleton />
+                    <BalanceCardSkeleton />
+                  </StyledCardsBox>
+                ) : (
+                  allFunds.map((fund) => (
+                    <StyledCardsBox key={fund.fundType}>
+                      <BalanceCard
+                        fundType={fund.fundType}
+                        icon={
+                          fund.fundType === 'Primary'
+                            ? Wallet
+                            : fund.fundType === 'Savings'
+                            ? Savings
+                            : Groups
+                        }
+                        iconBgColor={
+                          fund.fundType === 'Primary'
+                            ? '#FF9800'
+                            : fund.fundType === 'Savings'
+                            ? '#90CAF9'
+                            : '#588C87'
+                        }
+                        title={fund.fundType}
+                        isSelected={selectedFundType === fund.fundType}
+                        startingBalance={
+                          data?.reportsStaffExpenses.startBalance ?? 0
+                        }
+                        endingBalance={
+                          data?.reportsStaffExpenses.endBalance ?? 0
+                        }
+                        transfersIn={transferTotals[fund.fundType]?.in ?? 0}
+                        transfersOut={transferTotals[fund.fundType]?.out ?? 0}
+                        onClick={handleCardClick}
+                      />
+                    </StyledCardsBox>
+                  ))
+                )}
               </Box>
             </ScreenOnly>
             <PrintOnly>
@@ -454,7 +458,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
             transactions={transactions[selectedFundType ?? ''] ?? []}
-            enqueueSnackbar={enqueueSnackbar}
           />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
             {isFilterDateSelected ? (
@@ -464,7 +467,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 size="small"
                 onClick={() => {
                   setFilters(null);
-                  setIsFilterDateSelected(false);
+                  // setIsFilterDateSelected(false);
                 }}
               >
                 {t('Clear Filters')}
@@ -491,16 +494,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           selectedFilters={filters || undefined}
           isOpen={isSettingsOpen}
           onClose={(newFilters) => {
-            setFilters(newFilters);
+            setFilters(newFilters ?? null);
             setIsSettingsOpen(false);
-            setIsFilterDateSelected(
-              Boolean(
-                newFilters &&
-                  (newFilters.startDate ||
-                    newFilters.endDate ||
-                    newFilters.selectedDateRange),
-              ),
-            );
+            // setIsFilterDateSelected(
+            //   Boolean(
+            //     newFilters &&
+            //       (newFilters.startDate ||
+            //         newFilters.endDate ||
+            //         newFilters.selectedDateRange),
+            //   ),
+            // );
           }}
         />
         <ScreenOnly mt={2}>
