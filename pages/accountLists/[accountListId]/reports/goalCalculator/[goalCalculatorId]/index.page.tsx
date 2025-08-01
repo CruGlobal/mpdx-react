@@ -12,7 +12,11 @@ import {
   GoalCalculatorProvider,
   useGoalCalculator,
 } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
-import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import {
+  HeaderTypeEnum,
+  MultiPageHeader,
+  multiPageHeaderHeight,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -93,10 +97,15 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
       rightWidth="290px"
       headerHeight={multiPageHeaderHeight}
       mainContent={
-        <GoalCalculator
-          isNavListOpen={isNavListOpen}
-          onNavListToggle={onNavListToggle}
-        />
+        <>
+          <MultiPageHeader
+            isNavListOpen={isNavListOpen}
+            onNavListToggle={onNavListToggle}
+            title={t('Goal Calculator')}
+            headerType={HeaderTypeEnum.Report}
+          />
+          <GoalCalculator />
+        </>
       }
       rightPanel={rightPanel}
       rightOpen={isRightOpen && !!rightPanelStepComponent}

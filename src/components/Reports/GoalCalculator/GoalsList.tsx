@@ -4,7 +4,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
 
-export const GoalsList = () => {
+export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
 

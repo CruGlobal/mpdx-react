@@ -7,7 +7,11 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList';
-import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import {
+  HeaderTypeEnum,
+  MultiPageHeader,
+  multiPageHeaderHeight,
+} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -53,10 +57,15 @@ const GoalCalculatorPage: React.FC = () => {
             leftWidth="290px"
             headerHeight={multiPageHeaderHeight}
             mainContent={
-              <GoalsList
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-              />
+              <>
+                <MultiPageHeader
+                  isNavListOpen={isNavListOpen}
+                  onNavListToggle={handleNavListToggle}
+                  title={t('Goal Calculator')}
+                  headerType={HeaderTypeEnum.Report}
+                />
+                <GoalsList />
+              </>
             }
           />
         </GoalCalculatorPageWrapper>
