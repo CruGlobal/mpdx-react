@@ -1,6 +1,7 @@
 import { TFunction } from 'i18next';
+import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
-import { StaffSavingFund, TransferHistory } from '../mockData';
+import { ScheduleEnum, StaffSavingFund, TransferHistory } from '../mockData';
 
 const createTable = (
   csvHeader: string[],
@@ -24,6 +25,8 @@ const createTable = (
         : transfer.transferTo === StaffSavingFund.StaffConferenceSavings
         ? 'Staff Conference Savings'
         : transfer.transferTo;
+    const schedule =
+      transfer.schedule === ScheduleEnum.OneTime ? 'One Time' : 'Monthly';
     return [
       fromFund,
       toFund,
@@ -31,10 +34,10 @@ const createTable = (
         style: 'currency',
         currency: 'USD',
       }),
-      transfer.schedule,
+      schedule,
       transfer.status,
-      transfer.transferDate,
-      transfer.endDate,
+      transfer.transferDate?.toLocaleString(DateTime.DATE_MED),
+      transfer.endDate?.toLocaleString(DateTime.DATE_MED),
     ];
   });
 
