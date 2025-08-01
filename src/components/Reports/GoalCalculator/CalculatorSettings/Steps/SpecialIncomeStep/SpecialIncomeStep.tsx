@@ -1,19 +1,10 @@
 import React from 'react';
-import { Box, Container, Typography, styled } from '@mui/material';
+import { Typography, styled } from '@mui/material';
 import { Form, Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { ContinueButton } from '../../../SharedComponents/ContinueButton';
 import { SpecialIncomeStepForm } from './SpecialIncomeStepForm/SpecialIncomeStepForm';
-
-const StyledSpecialIncomeStep = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(1),
-}));
-
-const StyledContainer = styled(Container)(({ theme }) => ({
-  padding: theme.spacing(1),
-}));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -70,26 +61,23 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   };
 
   return (
-    <StyledSpecialIncomeStep>
-      <StyledContainer disableGutters>
-        <StyledTypography>
-          {t('Do you have any additional sources of income?')}
-        </StyledTypography>
+    <>
+      <StyledTypography>
+        {t('Do you have any additional sources of income?')}
+      </StyledTypography>
 
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {(formikProps: FormikProps<SpecialIncomeFormValues>) => (
-            <Form>
-              <SpecialIncomeStepForm formikProps={formikProps} />
-            </Form>
-          )}
-        </Formik>
-      </StyledContainer>
-      <ContinueButton onClick={handleSubmit} />
-    </StyledSpecialIncomeStep>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize
+      >
+        {(formikProps: FormikProps<SpecialIncomeFormValues>) => (
+          <Form>
+            <SpecialIncomeStepForm formikProps={formikProps} />
+          </Form>
+        )}
+      </Formik>
+    </>
   );
 };
