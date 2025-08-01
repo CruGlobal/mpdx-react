@@ -34,7 +34,7 @@ frontend:
         # Build graphql files
         - yarn gql
         # Extract translations
-        - timeout 1m yarn onesky:download || echo "yarn onesky:download timed out after 1 minute or failed with an error"
+        - timeout 1m yarn crowdin:download || echo "yarn crowdin:download timed out after 1 minute or failed with an error"
     build:
       commands:
         - yarn build:amplify
