@@ -4,7 +4,6 @@ import { Form, Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { ContinueButton } from '../../../SharedComponents/ContinueButton';
 import { MileageStepForm } from './MileageStepForm/MileageStepForm';
 
 interface MileageStepProps {}
@@ -65,7 +64,6 @@ export const MileageStep: React.FC<MileageStepProps> = () => {
           )}
         </Formik>
       </Container>
-      <ContinueButton onClick={handleSubmit} />
     </Box>
   );
 };
