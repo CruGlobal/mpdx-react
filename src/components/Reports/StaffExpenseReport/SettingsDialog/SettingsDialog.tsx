@@ -21,14 +21,14 @@ import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDat
 import i18n from 'src/lib/i18n';
 import { DateRange } from '../Helpers/StaffReportEnum';
 
-interface SettingsDialogProps {
+export interface SettingsDialogProps {
   isOpen: boolean;
   selectedFilters?: Filters;
   onClose: (filters?: Filters) => void;
 }
 
 export interface Filters {
-  selectedDateRange: DateRange | undefined;
+  selectedDateRange: DateRange | null;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
   categories?: string[] | null;
@@ -106,21 +106,21 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   const { t } = useTranslation();
 
   const initialValues = {
-    selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
+    selectedDateRange: selectedFilters?.selectedDateRange ?? null,
     startDate:
-      selectedFilters?.selectedDateRange !== undefined
-        ? null
-        : selectedFilters?.startDate ?? null,
+      selectedFilters?.selectedDateRange === null
+        ? selectedFilters?.startDate
+        : null,
     endDate:
-      selectedFilters?.selectedDateRange !== undefined
-        ? null
-        : selectedFilters?.endDate ?? null,
+      selectedFilters?.selectedDateRange === null
+        ? selectedFilters?.endDate
+        : null,
     categories: selectedFilters?.categories ?? [],
   };
 
   const handleSubmit = (values: Filters) => {
     const finalValues = { ...values };
-    if (values.selectedDateRange !== undefined) {
+    if (values.selectedDateRange !== null) {
       const { startDate, endDate } = calculateDateRange(
         values.selectedDateRange,
       );
@@ -165,10 +165,9 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   fullWidth
                   value={values.selectedDateRange ?? ''}
                   onChange={(e) => {
-                    const value =
-                      e.target.value === '' ? undefined : e.target.value;
+                    const value = e.target.value === '' ? null : e.target.value;
                     setFieldValue('selectedDateRange', value);
-                    if (value !== undefined) {
+                    if (value !== null) {
                       setFieldValue('startDate', null);
                       setFieldValue('endDate', null);
 
@@ -200,12 +199,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 <Box display="flex" gap={2}>
                   <CustomDateField
                     label={t('Start Date')}
-                    value={values.startDate}
+                    value={values.startDate ?? null}
                     onChange={(date) => {
                       setFieldValue('startDate', date);
                       setTouched({ ...touched, startDate: true });
                       if (date) {
-                        setFieldValue('selectedDateRange', undefined);
+                        setFieldValue('selectedDateRange', null);
                       }
                       setTimeout(() => validateForm(), 0);
                     }}
@@ -219,12 +218,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   />
                   <CustomDateField
                     label={t('End Date')}
-                    value={values.endDate}
+                    value={values.endDate ?? null}
                     onChange={(date) => {
                       setFieldValue('endDate', date);
                       setTouched({ ...touched, endDate: true });
                       if (date) {
-                        setFieldValue('selectedDateRange', undefined);
+                        setFieldValue('selectedDateRange', null);
                       }
                       setTimeout(() => validateForm(), 0);
                     }}
