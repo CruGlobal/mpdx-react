@@ -2,75 +2,75 @@ import HomeIcon from '@mui/icons-material/Home';
 import { useTranslation } from 'react-i18next';
 import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
-  GoalCalculatorCategory,
   GoalCalculatorCategoryEnum,
+  GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 
-export const useHouseholdExpenses = (): GoalCalculatorCategory => {
+export const useHouseholdExpenses = (): GoalCalculatorStep => {
   const { t } = useTranslation();
   return {
     title: t('Household Expenses'),
-    id: GoalCalculatorCategoryEnum.HouseholdExpenses,
+    id: GoalCalculatorStepEnum.HouseholdExpenses,
     icon: <HomeIcon />,
-    steps: [
+    categories: [
       {
-        id: GoalCalculatorStepEnum.Giving,
+        id: GoalCalculatorCategoryEnum.Giving,
         title: t('Giving'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Saving,
+        id: GoalCalculatorCategoryEnum.Saving,
         title: t('Saving'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Housing,
+        id: GoalCalculatorCategoryEnum.Housing,
         title: t('Housing'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Utilities,
+        id: GoalCalculatorCategoryEnum.Utilities,
         title: t('Utilities'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Insurance,
+        id: GoalCalculatorCategoryEnum.Insurance,
         title: t('Insurance'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Debt,
+        id: GoalCalculatorCategoryEnum.Debt,
         title: t('Debt'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Food,
+        id: GoalCalculatorCategoryEnum.Food,
         title: t('Food'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Clothing,
+        id: GoalCalculatorCategoryEnum.Clothing,
         title: t('Clothing'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Transportation,
+        id: GoalCalculatorCategoryEnum.Transportation,
         title: t('Transportation'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Medical,
+        id: GoalCalculatorCategoryEnum.Medical,
         title: t('Medical'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Recreational,
+        id: GoalCalculatorCategoryEnum.Recreational,
         title: t('Recreational'),
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorStepEnum.Personal,
+        id: GoalCalculatorCategoryEnum.Personal,
         title: t('Personal'),
         component: <InformationStep />,
       },
