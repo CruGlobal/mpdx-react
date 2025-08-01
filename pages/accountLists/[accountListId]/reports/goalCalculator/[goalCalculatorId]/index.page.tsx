@@ -1,12 +1,17 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList';
+import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
+import {
+  GoalCalculatorProvider,
+  useGoalCalculator,
+} from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
@@ -48,7 +53,10 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { rightPanelContent, closeRightPanel } = useGoalCalculator();
+  const { currentCategory, isRightOpen, toggleRightPanel } =
+    useGoalCalculator();
+  const { rightPanelComponent: rightPanelStepComponent } =
+    currentCategory || {};
   const { t } = useTranslation();
 
   const rightPanel = (
@@ -57,13 +65,13 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
         <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
         <IconButton
           size="small"
-          onClick={closeRightPanel}
+          onClick={() => toggleRightPanel()}
           aria-label={t('Close Panel')}
         >
           <CloseIcon fontSize="small" />
         </IconButton>
       </RightPanelHeader>
-      <RightPanelContent>{rightPanelContent}</RightPanelContent>
+      <RightPanelContent>{rightPanelStepComponent}</RightPanelContent>
     </>
   );
 
@@ -91,7 +99,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
         />
       }
       rightPanel={rightPanel}
-      rightOpen={!!rightPanelContent}
+      rightOpen={isRightOpen && !!rightPanelStepComponent}
     />
   );
 };
@@ -114,28 +122,14 @@ const GoalCalculatorPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <GoalCalculatorPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <MultiPageMenu
-                isOpen={isNavListOpen}
-                selectedId="goalCalculation"
-                onClose={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
-                navType={NavTypeEnum.Reports}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            headerHeight={multiPageHeaderHeight}
-            mainContent={
-              <GoalsList
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-              />
-            }
-          />
+          <GoalCalculatorProvider>
+            <GoalCalculatorContent
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              designationAccounts={designationAccounts}
+              setDesignationAccounts={setDesignationAccounts}
+            />
+          </GoalCalculatorProvider>
         </GoalCalculatorPageWrapper>
       ) : (
         <Loading loading />
