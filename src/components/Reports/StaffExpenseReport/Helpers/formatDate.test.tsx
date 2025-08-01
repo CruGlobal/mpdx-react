@@ -6,11 +6,6 @@ import {
   getFormattedDateString,
 } from './formatDate';
 
-/* The default now date is not helpful for these particular tests
- * (for example, Year to Date would return January 1, 2020 - January 1, 2020),
- * so it is mocked to a different date in some of the tests below.
- */
-
 describe('formatDate', () => {
   it('formats a DateTime object to a localized string', () => {
     const date = DateTime.fromISO('2023-06-15');
@@ -26,6 +21,14 @@ describe('formatDate', () => {
 });
 
 describe('getFormattedDateString', () => {
+  /* The default now date is not helpful for these particular tests
+   * (for example, Year to Date would return January 1, 2020 - January 1, 2020),
+   * so it is mocked to a different date in some of the tests below.
+   */
+  beforeEach(() => {
+    Settings.now = () => new Date(2020, 5, 18).valueOf();
+  });
+
   it('returns a formatted date range string', () => {
     const start = DateTime.fromISO('2023-01-01');
     const end = DateTime.fromISO('2023-01-31');
@@ -45,7 +48,6 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns week to date range string', () => {
-    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'en-US';
     expect(dateRangeToString(DateRange.WeekToDate, locale)).toBe(
       'June 15, 2020 - June 18, 2020',
@@ -53,7 +55,6 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns month to date range string', () => {
-    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'en-US';
     expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual(
       'June 1, 2020 - June 18, 2020',
@@ -61,23 +62,20 @@ describe('getFormattedDateString', () => {
   });
 
   it('returns year to date range string', () => {
-    Settings.now = () => new Date(2020, 5, 18).valueOf();
     const locale = 'en-US';
     expect(dateRangeToString(DateRange.YearToDate, locale)).toEqual(
       'January 1, 2020 - June 18, 2020',
     );
   });
 
-  it('returns week to date range string in different locale', () => {
-    Settings.now = () => new Date(2020, 5, 18).valueOf();
+  it('returns week to date range string in another locale', () => {
     const locale = 'de-DE';
     expect(dateRangeToString(DateRange.WeekToDate, locale)).toEqual(
       '15. Juni 2020 - 18. Juni 2020',
     );
   });
 
-  it('returns month to date range string in different locale', () => {
-    Settings.now = () => new Date(2020, 5, 18).valueOf();
+  it('returns month to date range string in another locale', () => {
     const locale = 'fr-FR';
     expect(dateRangeToString(DateRange.MonthToDate, locale)).toEqual(
       '1 juin 2020 - 18 juin 2020',
