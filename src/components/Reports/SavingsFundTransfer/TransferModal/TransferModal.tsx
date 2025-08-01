@@ -34,11 +34,11 @@ import {
   staffAccount,
   staffConferenceSavings,
   staffSavings,
-} from '../Table/TransferHistoryTable';
+} from '../Helper/TransferIcons';
 import {
   Fund,
   ScheduleEnum,
-  StaffSavingFund,
+  StaffSavingFundEnum,
   TransferHistory,
 } from '../mockData';
 
@@ -234,12 +234,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                                 alignItems: 'center',
                               }}
                             >
-                              {fund.type === StaffSavingFund.StaffAccount
+                              {fund.type === StaffSavingFundEnum.StaffAccount
                                 ? staffAccount
-                                : fund.type === StaffSavingFund.StaffSavings
+                                : fund.type === StaffSavingFundEnum.StaffSavings
                                 ? staffSavings
                                 : fund.type ===
-                                  StaffSavingFund.StaffConferenceSavings
+                                  StaffSavingFundEnum.StaffConferenceSavings
                                 ? staffConferenceSavings
                                 : null}{' '}
                               <strong>{fund.name}</strong>
@@ -298,12 +298,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                                 alignItems: 'center',
                               }}
                             >
-                              {fund.type === StaffSavingFund.StaffAccount
+                              {fund.type === StaffSavingFundEnum.StaffAccount
                                 ? staffAccount
-                                : fund.type === StaffSavingFund.StaffSavings
+                                : fund.type === StaffSavingFundEnum.StaffSavings
                                 ? staffSavings
                                 : fund.type ===
-                                  StaffSavingFund.StaffConferenceSavings
+                                  StaffSavingFundEnum.StaffConferenceSavings
                                 ? staffConferenceSavings
                                 : null}{' '}
                               <strong>{fund.name}</strong>

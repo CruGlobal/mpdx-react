@@ -1,7 +1,11 @@
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
-import { ScheduleEnum, StaffSavingFund, TransferHistory } from '../mockData';
+import {
+  ScheduleEnum,
+  StaffSavingFundEnum,
+  TransferHistory,
+} from '../mockData';
 
 export const createTable = (
   csvHeader: string[],
@@ -10,19 +14,19 @@ export const createTable = (
 ) => {
   const newTransfers = transfers.map((transfer) => {
     const fromFund =
-      transfer.transferFrom === StaffSavingFund.StaffSavings
+      transfer.transferFrom === StaffSavingFundEnum.StaffSavings
         ? 'Staff Savings'
-        : transfer.transferFrom === StaffSavingFund.StaffAccount
+        : transfer.transferFrom === StaffSavingFundEnum.StaffAccount
         ? 'Staff Account'
-        : transfer.transferFrom === StaffSavingFund.StaffConferenceSavings
+        : transfer.transferFrom === StaffSavingFundEnum.StaffConferenceSavings
         ? 'Staff Conference Savings'
         : transfer.transferFrom;
     const toFund =
-      transfer.transferTo === StaffSavingFund.StaffSavings
+      transfer.transferTo === StaffSavingFundEnum.StaffSavings
         ? 'Staff Savings'
-        : transfer.transferTo === StaffSavingFund.StaffAccount
+        : transfer.transferTo === StaffSavingFundEnum.StaffAccount
         ? 'Staff Account'
-        : transfer.transferTo === StaffSavingFund.StaffConferenceSavings
+        : transfer.transferTo === StaffSavingFundEnum.StaffConferenceSavings
         ? 'Staff Conference Savings'
         : transfer.transferTo;
     const schedule =

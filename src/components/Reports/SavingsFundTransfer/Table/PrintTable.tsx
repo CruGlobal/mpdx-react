@@ -11,7 +11,11 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { ScheduleEnum, StaffSavingFund, TransferHistory } from '../mockData';
+import {
+  ScheduleEnum,
+  StaffSavingFundEnum,
+  TransferHistory,
+} from '../mockData';
 
 interface PrintTableProps {
   transfers: TransferHistory[];
@@ -47,16 +51,17 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
-                    {transfer.transferFrom === StaffSavingFund.StaffAccount
+                    {transfer.transferFrom === StaffSavingFundEnum.StaffAccount
                       ? 'Staff Account'
-                      : transfer.transferFrom === StaffSavingFund.StaffSavings
+                      : transfer.transferFrom ===
+                        StaffSavingFundEnum.StaffSavings
                       ? 'Staff Savings'
                       : 'Staff Conference Savings'}
                   </TableCell>
                   <TableCell>
-                    {transfer.transferTo === StaffSavingFund.StaffAccount
+                    {transfer.transferTo === StaffSavingFundEnum.StaffAccount
                       ? 'Staff Account'
-                      : transfer.transferTo === StaffSavingFund.StaffSavings
+                      : transfer.transferTo === StaffSavingFundEnum.StaffSavings
                       ? 'Staff Savings'
                       : 'Staff Conference Savings'}
                   </TableCell>

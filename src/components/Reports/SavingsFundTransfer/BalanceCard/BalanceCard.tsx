@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { ScreenOnly } from '../TransfersPage/TransfersPage';
-import { Fund, StaffSavingFund } from '../mockData';
+import { Fund, StaffSavingFundEnum } from '../mockData';
 
 export interface BalanceCardProps {
   fund: Fund;
@@ -29,15 +29,15 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
   const title = `${fund.name} Balance`;
   const Icon =
-    fund.type === StaffSavingFund.StaffAccount
+    fund.type === StaffSavingFundEnum.StaffAccount
       ? Wallet
-      : fund.type === StaffSavingFund.StaffConferenceSavings
+      : fund.type === StaffSavingFundEnum.StaffConferenceSavings
       ? Groups
       : Savings;
   const iconBgColor =
-    fund.type === StaffSavingFund.StaffAccount
+    fund.type === StaffSavingFundEnum.StaffAccount
       ? '#F08020'
-      : fund.type === StaffSavingFund.StaffConferenceSavings
+      : fund.type === StaffSavingFundEnum.StaffConferenceSavings
       ? '#00C0D8'
       : '#007890';
 

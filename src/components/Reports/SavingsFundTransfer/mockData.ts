@@ -1,13 +1,13 @@
 import { DateTime } from 'luxon';
 
-export enum StaffSavingFund {
+export enum StaffSavingFundEnum {
   StaffSavings = 'staffSavings',
   StaffAccount = 'staffAccount',
   StaffConferenceSavings = 'staffConferenceSavings',
 }
 export interface Fund {
   accountId: string;
-  type: StaffSavingFund;
+  type: StaffSavingFundEnum;
   name: string;
   balance: number;
   pending: number;
@@ -45,21 +45,21 @@ export const mockData: MockData = {
   funds: [
     {
       accountId: 'staffSavings',
-      type: StaffSavingFund.StaffAccount,
+      type: StaffSavingFundEnum.StaffAccount,
       name: 'Staff Account',
       balance: 15000,
       pending: 17500,
     },
     {
       accountId: 'staffConferenceSavings',
-      type: StaffSavingFund.StaffConferenceSavings,
+      type: StaffSavingFundEnum.StaffConferenceSavings,
       name: 'Staff Conference Savings',
       balance: 500,
       pending: 200,
     },
     {
       accountId: 'staffAccount',
-      type: StaffSavingFund.StaffSavings,
+      type: StaffSavingFundEnum.StaffSavings,
       name: 'Staff Savings',
       balance: 2500,
       pending: 0,

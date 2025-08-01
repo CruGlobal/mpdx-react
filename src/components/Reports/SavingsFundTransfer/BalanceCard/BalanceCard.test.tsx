@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { Fund, StaffSavingFund } from '../mockData';
+import { Fund, StaffSavingFundEnum } from '../mockData';
 import { BalanceCard } from './BalanceCard';
 
 const accountListId = 'abc';
@@ -22,7 +22,7 @@ const mockHandleOpenTransferModal = jest.fn();
 
 const defaultFund: Fund = {
   accountId: crypto.randomUUID(),
-  type: StaffSavingFund.StaffAccount,
+  type: StaffSavingFundEnum.StaffAccount,
   name: 'Staff Account',
   balance: 15000,
   pending: 17500,
@@ -89,7 +89,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            type: StaffSavingFund.StaffSavings,
+            type: StaffSavingFundEnum.StaffSavings,
           }}
         />,
       );
@@ -102,7 +102,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            type: StaffSavingFund.StaffConferenceSavings,
+            type: StaffSavingFundEnum.StaffConferenceSavings,
           }}
         />,
       );
@@ -115,7 +115,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            type: StaffSavingFund.StaffAccount,
+            type: StaffSavingFundEnum.StaffAccount,
           }}
         />,
       );

@@ -11,7 +11,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
-import { StaffSavingFund, mockData } from '../mockData';
+import { StaffSavingFundEnum, mockData } from '../mockData';
 import { SavingsFundTransfers } from './TransfersPage';
 
 const accountListId = 'abc';
@@ -245,13 +245,13 @@ describe('TransfersPage', () => {
 
     // Verify all fund types are handled
     const staffAccountFund = mockData.funds.find(
-      (f) => f.type === StaffSavingFund.StaffAccount,
+      (f) => f.type === StaffSavingFundEnum.StaffAccount,
     );
     const staffSavingsFund = mockData.funds.find(
-      (f) => f.type === StaffSavingFund.StaffSavings,
+      (f) => f.type === StaffSavingFundEnum.StaffSavings,
     );
     const staffConferenceFund = mockData.funds.find(
-      (f) => f.type === StaffSavingFund.StaffConferenceSavings,
+      (f) => f.type === StaffSavingFundEnum.StaffConferenceSavings,
     );
 
     expect(staffAccountFund).toBeDefined();
