@@ -7,6 +7,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { MileageStep } from './Steps/MileageStep/MileageStep';
+import { MileageStepRightPanelComponent } from './Steps/MileageStep/MileageStepRightPanelComponent/MileageStepRightPanelComponent';
 
 export const useMinistryExpenses = (): GoalCalculatorCategory => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const useMinistryExpenses = (): GoalCalculatorCategory => {
         id: GoalCalculatorStepEnum.Mileage,
         title: t('Mileage'),
         component: <MileageStep />,
+        rightPanelComponent: <MileageStepRightPanelComponent />,
       },
       {
         id: GoalCalculatorStepEnum.Medical,
