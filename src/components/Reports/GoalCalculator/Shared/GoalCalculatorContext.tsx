@@ -18,9 +18,14 @@ export type GoalCalculatorType = {
   selectedStepId: GoalCalculatorStepEnum;
   currentCategory?: GoalCalculatorCategory;
   currentStep?: GoalCalculatorCategoryStep;
+  isRightOpen: boolean;
+  isDrawerOpen: boolean;
   handleCategoryChange: (categoryId: GoalCalculatorCategoryEnum) => void;
   handleStepChange: (stepId: GoalCalculatorStepEnum) => void;
   handleContinue: () => void;
+  toggleRightPanel: () => void;
+  toggleDrawer: () => void;
+  setDrawerOpen: (open: boolean) => void;
 };
 
 const GoalCalculatorContext = React.createContext<GoalCalculatorType | null>(
@@ -60,6 +65,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [selectedStepId, setSelectedStepId] = useState<GoalCalculatorStepEnum>(
     GoalCalculatorStepEnum.Information,
   );
+  const [isRightOpen, setIsRightOpen] = useState<boolean>(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
 
   const currentCategory = useMemo(
     () => categories.find((cat) => cat.id === selectedCategoryId),
@@ -142,6 +149,17 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     t,
   ]);
 
+  const toggleRightPanel = useCallback(() => {
+    setIsRightOpen((prev) => !prev);
+  }, []);
+
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
+
+  const setDrawerOpen = useCallback((open: boolean) => {
+    setIsDrawerOpen(open);
+  }, []);
   const contextValue: GoalCalculatorType = useMemo(
     () => ({
       categories,
@@ -149,18 +167,28 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedStepId,
       currentCategory,
       currentStep,
+      isRightOpen,
+      isDrawerOpen,
       handleCategoryChange,
       handleStepChange,
       handleContinue,
+      toggleRightPanel,
+      toggleDrawer,
+      setDrawerOpen,
     }),
     [
       selectedCategoryId,
       selectedStepId,
       currentCategory,
       currentStep,
+      isRightOpen,
+      isDrawerOpen,
       handleCategoryChange,
       handleStepChange,
       handleContinue,
+      toggleRightPanel,
+      toggleDrawer,
+      setDrawerOpen,
     ],
   );
 
