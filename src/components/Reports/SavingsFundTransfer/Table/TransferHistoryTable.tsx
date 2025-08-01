@@ -278,7 +278,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     } else {
       return (
         <Typography variant="body2" noWrap>
-          {row.schedule}
+          {t('Monthly')}
         </Typography>
       );
     }
