@@ -86,9 +86,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   );
 
   const handleContinue = useCallback(() => {
-    const nextCategoryIndex =
+    const nextStepIndex =
       steps.findIndex((step) => step.id === selectedStepId) + 1;
-    const nextStep = steps[nextCategoryIndex];
+    const nextStep = steps[nextStepIndex];
     if (nextStep) {
       setSelectedStepId(nextStep.id);
     } else {

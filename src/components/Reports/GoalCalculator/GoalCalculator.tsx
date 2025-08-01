@@ -99,6 +99,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     toggleDrawer,
     setDrawerOpen,
     handleStepChange,
+    handleContinue,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const iconPanelWidth = theme.spacing(5);
@@ -214,7 +215,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
             </StyledDefaultContent>
           )}
           <CategoryContainer>
-            <ContinueButton onClick={() => {}} />
+            <ContinueButton onClick={handleContinue} />
           </CategoryContainer>
         </CategoriesStack>
       </Stack>
