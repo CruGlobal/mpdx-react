@@ -8,7 +8,7 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ScheduleEnum } from '../mockData';
+import { ScheduleEnum } from '../Helper/TransferHistoryEnum';
 import { DeleteTransferModal } from './DeleteTransferModal';
 
 const mutationSpy = jest.fn();

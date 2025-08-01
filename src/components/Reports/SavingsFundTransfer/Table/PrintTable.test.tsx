@@ -6,7 +6,7 @@ import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ScheduleEnum } from '../mockData';
+import { ScheduleEnum } from '../Helper/TransferHistoryEnum';
 import { PrintTable } from './PrintTable';
 
 const mutationSpy = jest.fn();

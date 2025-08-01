@@ -4,8 +4,8 @@ import { buildURI } from 'react-csv/lib/core';
 import {
   ScheduleEnum,
   StaffSavingFundEnum,
-  TransferHistory,
-} from '../mockData';
+} from '../Helper/TransferHistoryEnum';
+import { TransferHistory } from '../mockData';
 
 export const createTable = (
   csvHeader: string[],

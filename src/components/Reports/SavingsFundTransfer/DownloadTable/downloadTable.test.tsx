@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { ScheduleEnum } from '../mockData';
+import { ScheduleEnum } from '../Helper/TransferHistoryEnum';
 import { createTable, downloadCSV } from './downloadTable';
 
 const mockT = (key: string) => key;

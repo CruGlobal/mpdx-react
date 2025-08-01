@@ -11,12 +11,9 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
-import { ScheduleEnum, mockData } from '../mockData';
-import {
-  TransferModal,
-  TransferModalData,
-  TransferTypeEnum,
-} from './TransferModal';
+import { ScheduleEnum, TransferTypeEnum } from '../Helper/TransferHistoryEnum';
+import { mockData } from '../mockData';
+import { TransferModal, TransferModalData } from './TransferModal';
 
 const accountListId = 'abc';
 const router = {

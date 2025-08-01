@@ -9,9 +9,10 @@ import {
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { StaffSavingFundEnum } from '../Helper/TransferHistoryEnum';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { ScreenOnly } from '../TransfersPage/TransfersPage';
-import { Fund, StaffSavingFundEnum } from '../mockData';
+import { Fund } from '../mockData';
 
 export interface BalanceCardProps {
   fund: Fund;

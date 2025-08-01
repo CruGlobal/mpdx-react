@@ -25,18 +25,19 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { downloadCSV } from '../DownloadTable/downloadTable';
-import { Status } from '../Helper/TransferHistoryEnum';
+import {
+  ScheduleEnum,
+  StatusEnum,
+  TransferTypeEnum,
+} from '../Helper/TransferHistoryEnum';
 import {
   staffAccount,
   staffConferenceSavings,
   staffSavings,
 } from '../Helper/TransferIcons';
 import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
-import {
-  TransferModalData,
-  TransferTypeEnum,
-} from '../TransferModal/TransferModal';
-import { ScheduleEnum, TransferHistory, mockData } from '../mockData';
+import { TransferModalData } from '../TransferModal/TransferModal';
+import { TransferHistory, mockData } from '../mockData';
 
 type RenderCell = GridColDef<TransferHistoryRow>['renderCell'];
 
@@ -235,54 +236,74 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   };
 
   const status: RenderCell = ({ row }) => {
-    if (row.status === Status.Pending) {
+    if (row.status === StatusEnum.Pending) {
       return (
         <Chip
           avatar={<Avatar sx={{ bgcolor: '#FFC107' }}> </Avatar>}
           label={t(row.status)}
           color="default"
           size="small"
-          sx={{ backgroundColor: '#FFF8E1', boxShadow: 'none' }}
+          sx={{
+            backgroundColor: '#FFF8E1',
+            boxShadow: 'none',
+            textTransform: 'capitalize',
+          }}
         />
       );
-    } else if (row.status === Status.Ongoing) {
+    } else if (row.status === StatusEnum.Ongoing) {
       return (
         <Chip
           avatar={<Avatar sx={{ bgcolor: '#2196F3' }}> </Avatar>}
           label={t(row.status)}
           color="default"
           size="small"
-          sx={{ backgroundColor: '#E3F2FD', boxShadow: 'none' }}
+          sx={{
+            backgroundColor: '#E3F2FD',
+            boxShadow: 'none',
+            textTransform: 'capitalize',
+          }}
         />
       );
-    } else if (row.status === Status.Complete) {
+    } else if (row.status === StatusEnum.Complete) {
       return (
         <Chip
           avatar={<Avatar sx={{ bgcolor: '#4CAF50' }}> </Avatar>}
           label={t(row.status)}
           color="default"
           size="small"
-          sx={{ backgroundColor: '#E8F5E9', boxShadow: 'none' }}
+          sx={{
+            backgroundColor: '#E8F5E9',
+            boxShadow: 'none',
+            textTransform: 'capitalize',
+          }}
         />
       );
-    } else if (row.status === Status.Ended) {
+    } else if (row.status === StatusEnum.Ended) {
       return (
         <Chip
           avatar={<Avatar sx={{ bgcolor: '#9E9E9E' }}> </Avatar>}
           label={t(row.status)}
           color="default"
           size="small"
-          sx={{ backgroundColor: '#FAFAFA', boxShadow: 'none' }}
+          sx={{
+            backgroundColor: '#FAFAFA',
+            boxShadow: 'none',
+            textTransform: 'capitalize',
+          }}
         />
       );
-    } else if (row.status === Status.Failed) {
+    } else if (row.status === StatusEnum.Failed) {
       return (
         <Chip
           avatar={<Avatar sx={{ bgcolor: '#F44336' }}> </Avatar>}
           label={t(row.status)}
           color="default"
           size="small"
-          sx={{ backgroundColor: '#FEEBEE', boxShadow: 'none' }}
+          sx={{
+            backgroundColor: '#FEEBEE',
+            boxShadow: 'none',
+            textTransform: 'capitalize',
+          }}
         />
       );
     }

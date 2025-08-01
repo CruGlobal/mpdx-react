@@ -11,7 +11,8 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
-import { StaffSavingFundEnum, mockData } from '../mockData';
+import { StaffSavingFundEnum } from '../Helper/TransferHistoryEnum';
+import { mockData } from '../mockData';
 import { SavingsFundTransfers } from './TransfersPage';
 
 const accountListId = 'abc';

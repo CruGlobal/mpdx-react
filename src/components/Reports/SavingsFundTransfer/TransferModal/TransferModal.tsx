@@ -31,21 +31,17 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import i18n from 'src/lib/i18n';
 import {
+  ScheduleEnum,
+  StaffSavingFundEnum,
+  TransferTypeEnum,
+} from '../Helper/TransferHistoryEnum';
+import {
   staffAccount,
   staffConferenceSavings,
   staffSavings,
 } from '../Helper/TransferIcons';
-import {
-  Fund,
-  ScheduleEnum,
-  StaffSavingFundEnum,
-  TransferHistory,
-} from '../mockData';
+import { Fund, TransferHistory } from '../mockData';
 
-export enum TransferTypeEnum {
-  New = 'new',
-  Edit = 'edit',
-}
 export interface TransferModalData {
   type?: TransferTypeEnum;
   transfer: TransferHistory;

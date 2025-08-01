@@ -14,8 +14,8 @@ import { useLocale } from 'src/hooks/useLocale';
 import {
   ScheduleEnum,
   StaffSavingFundEnum,
-  TransferHistory,
-} from '../mockData';
+} from '../Helper/TransferHistoryEnum';
+import { TransferHistory } from '../mockData';
 
 interface PrintTableProps {
   transfers: TransferHistory[];
@@ -76,7 +76,9 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                       ? 'One Time'
                       : 'Monthly'}
                   </TableCell>
-                  <TableCell>{transfer.status}</TableCell>
+                  <TableCell sx={{ textTransform: 'capitalize' }}>
+                    {transfer.status}
+                  </TableCell>
                   <TableCell>
                     {transfer.transferDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>

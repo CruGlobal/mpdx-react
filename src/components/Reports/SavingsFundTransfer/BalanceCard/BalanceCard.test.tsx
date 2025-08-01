@@ -8,7 +8,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { Fund, StaffSavingFundEnum } from '../mockData';
+import { StaffSavingFundEnum } from '../Helper/TransferHistoryEnum';
+import { Fund } from '../mockData';
 import { BalanceCard } from './BalanceCard';
 
 const accountListId = 'abc';

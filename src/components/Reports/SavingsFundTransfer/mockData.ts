@@ -1,22 +1,15 @@
 import { DateTime } from 'luxon';
+import {
+  ScheduleEnum,
+  StaffSavingFundEnum,
+} from './Helper/TransferHistoryEnum';
 
-export enum StaffSavingFundEnum {
-  StaffSavings = 'staffSavings',
-  StaffAccount = 'staffAccount',
-  StaffConferenceSavings = 'staffConferenceSavings',
-}
 export interface Fund {
   accountId: string;
   type: StaffSavingFundEnum;
   name: string;
   balance: number;
   pending: number;
-}
-
-export enum ScheduleEnum {
-  OneTime = 'oneTime',
-  Monthly = 'monthly',
-  Annually = 'annually',
 }
 
 export interface TransferHistory {
@@ -72,7 +65,7 @@ export const mockData: MockData = {
       transferTo: 'staffAccount',
       amount: 2500,
       schedule: ScheduleEnum.OneTime,
-      status: 'Pending',
+      status: 'pending',
       transferDate: DateTime.fromISO('2023-09-26'),
       endDate: null,
       note: 'Reimbursements',
@@ -84,7 +77,7 @@ export const mockData: MockData = {
       transferTo: 'staffSavings',
       amount: 1200,
       schedule: ScheduleEnum.Monthly,
-      status: 'Ongoing',
+      status: 'ongoing',
       transferDate: DateTime.fromISO('2023-09-30'),
       endDate: DateTime.fromISO('2025-09-30'),
       note: 'Long-term savings',
@@ -96,7 +89,7 @@ export const mockData: MockData = {
       transferTo: 'staffAccount',
       amount: 500,
       schedule: ScheduleEnum.OneTime,
-      status: 'Complete',
+      status: 'complete',
       transferDate: DateTime.fromISO('2023-09-29'),
       endDate: null,
       note: 'Tax',
@@ -108,7 +101,7 @@ export const mockData: MockData = {
       transferTo: 'staffConferenceSavings',
       amount: 120,
       schedule: ScheduleEnum.Monthly,
-      status: 'Ended',
+      status: 'ended',
       transferDate: DateTime.fromISO('2023-09-28'),
       endDate: DateTime.fromISO('2024-06-01'),
       note: 'Cru 25',
@@ -120,7 +113,7 @@ export const mockData: MockData = {
       transferTo: 'staffConferenceSavings',
       amount: 750,
       schedule: ScheduleEnum.OneTime,
-      status: 'Failed',
+      status: 'failed',
       transferDate: DateTime.fromISO('2023-09-27'),
       endDate: null,
       note: 'X-fer tickets',
