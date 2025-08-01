@@ -12,7 +12,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import { StaffSavingFund, mockData } from '../mockData';
-import { SavingsFundTransfers } from './TransfersPage';
+import { TransfersPage } from './TransfersPage';
 
 const accountListId = 'abc';
 const router = {
@@ -55,7 +55,7 @@ const Components = ({
           <I18nextProvider i18n={i18n}>
             <GqlMockedProvider onCall={mutationSpy}>
               <StaffSavingFundProvider>
-                <SavingsFundTransfers title={title} />
+                <TransfersPage title={title} />
               </StaffSavingFundProvider>
             </GqlMockedProvider>
           </I18nextProvider>

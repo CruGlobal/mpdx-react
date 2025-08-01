@@ -28,19 +28,13 @@ import {
   TransferModalData,
 } from '../TransferModal/TransferModal';
 import { mockData } from '../mockData';
-
-interface SavingsFundTransfersProps {
-  title: string;
-}
+import { PrintOnly, ScreenOnly } from '../styledComponents';
 
 const StyledPrintButton = styled(Button)({
   border: '1px solid',
   borderRadius: theme.spacing(1),
   marginLeft: theme.spacing(2),
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(1),
+  padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
 });
 
 const StyledHeaderBox = styled(Box)({
@@ -50,22 +44,11 @@ const StyledHeaderBox = styled(Box)({
   justifyContent: 'space-between',
 });
 
-export const PrintOnly = styled(Box)({
-  display: 'none',
-  '@media print': {
-    display: 'block',
-  },
-});
+interface TransfersPageProps {
+  title: string;
+}
 
-export const ScreenOnly = styled(Box)({
-  '@media print': {
-    display: 'none',
-  },
-});
-
-export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
-  title,
-}) => {
+export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { t } = useTranslation();
   const [modalData, setModalData] = useState<TransferModalData | null>(null);
   const { isNavListOpen, onNavListToggle } = useContext(
@@ -104,7 +87,7 @@ export const SavingsFundTransfers: React.FC<SavingsFundTransfersProps> = ({
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
-            title={t(title)}
+            title={title}
           />
         </ScreenOnly>
         <Box sx={{ mt: 2 }}>
