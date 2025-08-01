@@ -104,7 +104,7 @@ module.exports = {
       },
     },
     {
-      files: ['onesky/**.ts'],
+      files: ['crowdin/**.ts'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
       },
