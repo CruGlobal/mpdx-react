@@ -203,7 +203,6 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
         'taxes',
         'secaStatus',
         'contribution403b',
-        'benefits',
         'tenure',
         'age',
       ].map((field) => [field, validationSchema.fields[field].notRequired()]),
@@ -248,8 +247,6 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
 
     // Personal form initial values for spouse
     role: '',
-    benefits: '',
-    familySize: '',
     tenure: '',
     age: '',
   };
@@ -295,6 +292,7 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
               justifyContent="center"
               gap={1}
             >
+              {/* Replace with user image when we have data */}
               <StyledPersonBox>
                 <PersonIcon
                   sx={{ fontSize: 40, color: theme.palette.primary.main }}
