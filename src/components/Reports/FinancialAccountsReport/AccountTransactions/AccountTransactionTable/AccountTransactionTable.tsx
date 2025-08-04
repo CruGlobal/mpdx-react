@@ -305,7 +305,6 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
     <>
       <StyledDataGrid
         rows={transactions}
-        rowCount={transactions.length}
         columns={columns}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}

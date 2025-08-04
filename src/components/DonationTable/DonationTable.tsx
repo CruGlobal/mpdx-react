@@ -374,8 +374,19 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       {data?.donations.nodes.length ? (
         <>
           <StyledGrid
-            rows={donations}
+            // If we use paginationMode="client", the data grid won't show the total row count in
+            // the pagination UI because it assumes that the provided rows are all the rows.
+            // If we use paginationMode="server" and pass in all the rows, the data grid won't
+            // automatically limit the rows to the selected page because it assumes that the
+            // provided rows are all the rows for that page.
+            // To work around this, we have to use paginationMode="server" and manually pass in only
+            // the current page's rows.
+            rows={donations.slice(
+              paginationModel.page * paginationModel.pageSize,
+              (paginationModel.page + 1) * paginationModel.pageSize,
+            )}
             rowCount={data?.donations.totalCount}
+            paginationMode="server"
             columns={columns}
             columnVisibilityModel={{
               ...columnVisibility,
