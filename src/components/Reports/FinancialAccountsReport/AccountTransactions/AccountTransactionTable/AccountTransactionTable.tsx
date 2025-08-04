@@ -308,7 +308,6 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
         columns={columns}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[25, 50, 100]}
         pagination
         sortModel={sortModel}
         onSortModelChange={(sortModel) => setSortModel(sortModel)}

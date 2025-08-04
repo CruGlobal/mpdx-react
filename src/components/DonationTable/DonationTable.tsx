@@ -395,7 +395,6 @@ export const DonationTable: React.FC<DonationTableProps> = ({
             onColumnVisibilityModelChange={setColumnVisibility}
             paginationModel={paginationModel}
             onPaginationModelChange={setPaginationModel}
-            pageSizeOptions={[25, 50, 100]}
             pagination
             sortModel={sortModel}
             onSortModelChange={(sortModel) => setSortModel(sortModel)}
