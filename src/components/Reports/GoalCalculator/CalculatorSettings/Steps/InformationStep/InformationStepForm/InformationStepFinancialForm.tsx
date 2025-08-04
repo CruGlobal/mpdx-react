@@ -1,8 +1,12 @@
 import React from 'react';
+import InfoIcon from '@mui/icons-material/Info';
 import { Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Field, FieldProps, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';
+import { InformationFormValues } from '../InformationStep';
 
 const StyledFinancialForm = styled('div')({
   '.prefix': {
@@ -12,28 +16,6 @@ const StyledFinancialForm = styled('div')({
     marginLeft: 8,
   },
 });
-
-interface InformationFormValues {
-  // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
-  taxes: number;
-  secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
-
-  // Personal form fields
-  location: string;
-  role: string;
-  benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
-}
-
 interface InformationStepFinancialFormProps {
   formikProps: FormikProps<InformationFormValues>;
 }
@@ -42,6 +24,7 @@ export const InformationStepFinancialForm: React.FC<
   InformationStepFinancialFormProps
 > = () => {
   const { t } = useTranslation();
+  const { setRightPanelContent } = useGoalCalculator();
 
   return (
     <StyledFinancialForm>
@@ -194,6 +177,14 @@ export const InformationStepFinancialForm: React.FC<
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
                   startAdornment: <span className="prefix">$</span>,
+                  endAdornment: (
+                    <InfoIcon
+                      role="button"
+                      onClick={() =>
+                        setRightPanelContent(<Contribution403bHelperPanel />)
+                      }
+                    />
+                  ),
                 }}
               />
             )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
   Button,
@@ -10,6 +11,8 @@ import {
 } from '@mui/material';
 import { Field, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { SpouseIncomeHelperPanel } from '../SpecialInterestHelperPanel/SpouseIncomeHelperPanel';
 
 const StyledCurrencyPrefix = styled('span')({
   marginRight: 8,
@@ -37,6 +40,7 @@ interface SpecialIncomeFormValues {
   // Special income fields
   incidentIncome: number;
   propertyIncome: number;
+  spouseIncome: number;
   additionalIncomes: Array<{
     label: string;
     amount: number;
@@ -50,6 +54,7 @@ interface SpecialIncomeStepFormProps {
 export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
   formikProps,
 }) => {
+  const { setRightPanelContent } = useGoalCalculator();
   const { t } = useTranslation();
   const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
     formikProps;
@@ -115,6 +120,40 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
                 InputProps={{
                   startAdornment: (
                     <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
+                  ),
+                }}
+              />
+            )}
+          </Field>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Field name="spouseIncome">
+            {() => (
+              <TextField
+                fullWidth
+                size="small"
+                label={t('Non Staff Spouse Income')}
+                name="spouseIncome"
+                type="number"
+                value={values.spouseIncome}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.spouseIncome && Boolean(errors.spouseIncome)}
+                helperText={touched.spouseIncome && errors.spouseIncome}
+                variant="outlined"
+                inputProps={{ min: 0, step: 0.01 }}
+                InputProps={{
+                  startAdornment: (
+                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
+                  ),
+                  endAdornment: (
+                    <InfoIcon
+                      role="button"
+                      onClick={() =>
+                        setRightPanelContent(<SpouseIncomeHelperPanel />)
+                      }
+                    />
                   ),
                 }}
               />

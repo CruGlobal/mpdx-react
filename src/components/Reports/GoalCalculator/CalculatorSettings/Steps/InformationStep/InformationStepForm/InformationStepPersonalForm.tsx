@@ -1,28 +1,11 @@
 import React from 'react';
+import InfoIcon from '@mui/icons-material/Info';
 import { Grid, TextField, Typography } from '@mui/material';
 import { Field, FieldProps, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
-
-interface InformationFormValues {
-  // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
-  taxes: number;
-  secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
-
-  // Personal form fields
-  location: string;
-  role: string;
-  benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
-}
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
+import { InformationFormValues } from '../InformationStep';
 
 interface InformationStepPersonalFormProps {
   formikProps: FormikProps<InformationFormValues>;
@@ -32,6 +15,7 @@ export const InformationStepPersonalForm: React.FC<
   InformationStepPersonalFormProps
 > = () => {
   const { t } = useTranslation();
+  const { setRightPanelContent } = useGoalCalculator();
 
   return (
     <>
@@ -89,6 +73,16 @@ export const InformationStepPersonalForm: React.FC<
                 helperText={meta.touched && meta.error}
                 variant="outlined"
                 placeholder={t('Describe your benefits package...')}
+                InputProps={{
+                  endAdornment: (
+                    <InfoIcon
+                      role="button"
+                      onClick={() =>
+                        setRightPanelContent(<BenefitsPlanHelperPanel />)
+                      }
+                    />
+                  ),
+                }}
               />
             )}
           </Field>
