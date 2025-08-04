@@ -6,6 +6,7 @@ import { Field, FieldProps, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';
+import { InformationFormValues } from '../InformationStep';
 
 const StyledFinancialForm = styled('div')({
   '.prefix': {
@@ -16,34 +17,13 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-interface InformationFormValues {
-  // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
-  taxes: number;
-  secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
-
-  // Personal form fields
-  location: string;
-  role: string;
-  benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
-}
-
 interface InformationStepFinancialFormProps {
   formikProps: FormikProps<InformationFormValues>;
 }
 
 export const InformationStepFinancialForm: React.FC<
   InformationStepFinancialFormProps
-> = () => {
+> = ({ formikProps: _formikProps }) => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();
 
@@ -205,6 +185,27 @@ export const InformationStepFinancialForm: React.FC<
                       }
                     />
                   ),
+                }}
+              />
+            )}
+          </Field>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Field name="contributionRoth">
+            {({ field, meta }: FieldProps) => (
+              <TextField
+                {...field}
+                fullWidth
+                size="small"
+                label={t('% Contributed to ROTH')}
+                type="number"
+                error={meta.touched && Boolean(meta.error)}
+                helperText={meta.touched && meta.error}
+                variant="outlined"
+                inputProps={{ min: 0, max: 100, step: 0.01 }}
+                InputProps={{
+                  endAdornment: <span className="suffix">%</span>,
                 }}
               />
             )}

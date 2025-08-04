@@ -36,10 +36,15 @@ interface InformationFormValues {
   taxes: number;
   secaStatus: string;
   contribution403b: number;
+  contributionRoth: number;
   mhaAmountPerMonth: number;
   solidMonthlySupportDeveloped: number;
 
   // Personal form fields
+  firstName: string;
+  lastName: string;
+  ministryLocation: string;
+  familySize: number;
   location: string;
   role: string;
   benefits: string;
@@ -110,6 +115,11 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .number()
       .min(0, t('403(b) contribution must be positive'))
       .required(t('403(b) contribution is required')),
+    contributionRoth: yup
+      .number()
+      .min(0, t('ROTH contribution must be positive'))
+      .max(100, t('ROTH contribution cannot exceed 100%'))
+      .required(t('ROTH contribution is required')),
     mhaAmountPerMonth: yup
       .number()
       .min(0, t('MHA amount must be positive'))
@@ -120,6 +130,23 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .required(t('Solid monthly support developed is required')),
 
     // Personal validation
+    firstName: yup
+      .string()
+      .min(2, t('First name must be at least 2 characters'))
+      .required(t('First name is required')),
+    lastName: yup
+      .string()
+      .min(2, t('Last name must be at least 2 characters'))
+      .required(t('Last name is required')),
+    ministryLocation: yup
+      .string()
+      .min(2, t('Ministry location must be at least 2 characters'))
+      .required(t('Ministry location is required')),
+    familySize: yup
+      .number()
+      .min(1, t('Family size must be at least 1'))
+      .max(20, t('Family size cannot exceed 20'))
+      .required(t('Family size is required')),
     location: yup
       .string()
       .min(2, t('Location must be at least 2 characters'))
@@ -162,10 +189,15 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     taxes: 0,
     secaStatus: '',
     contribution403b: 0,
+    contributionRoth: 0,
     mhaAmountPerMonth: 0,
     solidMonthlySupportDeveloped: 0,
 
     // Personal form initial values
+    firstName: '',
+    lastName: '',
+    ministryLocation: '',
+    familySize: 0,
     location: '',
     role: '',
     benefits: '',
