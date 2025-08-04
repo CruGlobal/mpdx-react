@@ -76,6 +76,7 @@ export const InformationStepPersonalForm: React.FC<
                 InputProps={{
                   endAdornment: (
                     <InfoIcon
+                      role="button"
                       onClick={() =>
                         toggleRightPanel(<BenefitsPlanHelperPanel />)
                       }

@@ -42,7 +42,7 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
       .number()
       .min(0, t('Property income must be positive'))
       .required(t('Property income is required')),
-    spouseIncome: yup.number().min(0, t('Property income must be positive')),
+    spouseIncome: yup.number().min(0, t('Spouse income must be positive')),
     additionalIncomes: yup.array().of(
       yup.object().shape({
         label: yup

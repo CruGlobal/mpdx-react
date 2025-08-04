@@ -179,6 +179,7 @@ export const InformationStepFinancialForm: React.FC<
                   startAdornment: <span className="prefix">$</span>,
                   endAdornment: (
                     <InfoIcon
+                      role="button"
                       onClick={() =>
                         toggleRightPanel(<Contribution403bHelperPanel />)
                       }
