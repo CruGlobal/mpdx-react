@@ -6,7 +6,7 @@ import { EmptyReportTable } from './EmptyReportTable';
 
 const title = 'No Expense Transactions Found';
 
-describe('PrintTables Component', () => {
+describe('EmptyReportTable Component', () => {
   it('renders empty report message and title', () => {
     const { getByRole, getByText } = render(
       <ThemeProvider theme={theme}>

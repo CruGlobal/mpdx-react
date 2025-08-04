@@ -467,7 +467,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 size="small"
                 onClick={() => {
                   setFilters(null);
-                  // setIsFilterDateSelected(false);
                 }}
               >
                 {t('Clear Filters')}
@@ -496,14 +495,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           onClose={(newFilters) => {
             setFilters(newFilters ?? null);
             setIsSettingsOpen(false);
-            // setIsFilterDateSelected(
-            //   Boolean(
-            //     newFilters &&
-            //       (newFilters.startDate ||
-            //         newFilters.endDate ||
-            //         newFilters.selectedDateRange),
-            //   ),
-            // );
           }}
         />
         <ScreenOnly mt={2}>
