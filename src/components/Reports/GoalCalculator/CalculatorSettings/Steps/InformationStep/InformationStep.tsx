@@ -7,13 +7,12 @@ import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
 import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
+import { BenefitsPlan, Role } from './InformationStepForm/enums';
 import {
-  Age,
-  BenefitsPlan,
-  FamilySize,
-  Role,
-  Tenure,
-} from './InformationStepForm/enums';
+  ageOptions,
+  familySizeOptions,
+  tenureOptions,
+} from './InformationStepForm/mockData';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -47,12 +46,14 @@ interface InformationFormValues {
   solidMonthlySupportDeveloped: number;
 
   // Personal form fields
+  geographicLocation: string;
   location: string;
   role: string;
   benefits: string;
   familySize: string;
   tenure: string;
   age: string;
+  children: string;
 }
 
 interface TabPanelProps {
@@ -127,11 +128,14 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .required(t('Solid monthly support developed is required')),
 
     // Personal validation
-    location: yup.string().required(t('Location is required')),
+    geographicLocation: yup
+      .string()
+      .required(t('Geographic location is required')),
     role: yup
       .string()
       .oneOf(Object.values(Role), t('Role must be one of the options'))
       .required(t('Role is required')),
+    location: yup.string().required(t('Location is required')),
     benefits: yup
       .string()
       .oneOf(
@@ -141,19 +145,17 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .required(t('Benefits plan is required')),
     familySize: yup
       .string()
-      .oneOf(
-        Object.values(FamilySize),
-        t('Family size must be one of the options'),
-      )
+      .oneOf(familySizeOptions, t('Family size must be one of the options'))
       .required(t('Family size is required')),
     tenure: yup
       .string()
-      .oneOf(Object.values(Tenure), t('Tenure must be one of the options'))
-      .required(t('Tenure is required')),
+      .oneOf(tenureOptions, t('Years on staff must be one of the options'))
+      .required(t('Years on staff is required')),
     age: yup
       .string()
-      .oneOf(Object.values(Age), t('Age range must be one of the options'))
+      .oneOf(ageOptions, t('Age range must be one of the options'))
       .required(t('Age is required')),
+    children: yup.string().optional(),
   });
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -173,12 +175,14 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     solidMonthlySupportDeveloped: 0,
 
     // Personal form initial values
-    location: 'None',
+    geographicLocation: 'None',
+    location: '',
     role: '',
     benefits: '',
     familySize: '',
     tenure: '',
     age: '',
+    children: '',
   };
 
   const handleSubmit = () => {
