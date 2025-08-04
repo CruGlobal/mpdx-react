@@ -54,7 +54,7 @@ interface SpecialIncomeStepFormProps {
 export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
   formikProps,
 }) => {
-  const { setRightPanelContent } = useGoalCalculator();
+  const { toggleRightPanel } = useGoalCalculator();
   const { t } = useTranslation();
   const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
     formikProps;
@@ -149,8 +149,9 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
                   ),
                   endAdornment: (
                     <InfoIcon
+                      role="button"
                       onClick={() =>
-                        setRightPanelContent(<SpouseIncomeHelperPanel />)
+                        toggleRightPanel(<SpouseIncomeHelperPanel />)
                       }
                     />
                   ),
