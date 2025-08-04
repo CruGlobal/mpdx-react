@@ -83,9 +83,8 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `AUTH_PROVIDER` - Name of auth provider used in application. Set to `OKTA` or `API_OAUTH`
 - `ROLLBAR_ACCESS_TOKEN` - Optional token for sending error reports to Rollbar
 - `ROLLBAR_SERVER_ACCESS_TOKEN` - Optional token for sending error reports on server pages to Rollbar
-- `ONESKY_API_KEY` - Public key for uploading/downloading translations from OneSky
-- `ONESKY_API_SECRET` - Secret key for uploading/downloading translations from OneSky
-- `ONESKY_PROJECT_ID` - Project id for uploading/downloading translations from OneSky
+- `CROWDIN_API_TOKEN` - Secret key for uploading/downloading translations from CrowdIn
+- `CROWDIN_PROJECT_ID` - Project id for uploading/downloading translations from CrowdIn
 - `GOOGLE_MAPS_API_KEY` - Google Maps API key configured to have access to the `places` API
 - `GOOGLE_TAG_MANAGER_CONTAINER_ID` - Optional Google Tag Manager container ID
 - `NEXT_PUBLIC_MEDIA_FAVICON` - Application favicon image url
@@ -711,7 +710,7 @@ export const Dashboard: React.FC = () => {
 };
 ```
 
-Whenever you open a new PR, GitHub actions automatically runs `yarn onesky:upload` to extract all the labels used by the application (including your new one) and sends them to OneSky for translation. Once they have been translated, you can then run `yarn onesky:download` to pull the updated translations from OneSky into the project. Note that you will need the [`ONESKY_API_*` variables](#cru-specific-secrets) in your `.env` file for the download to work. Then you can submit a PR with the changes to the `public/locales/` directory.
+Whenever you open a new PR, GitHub actions automatically extracts all the labels used by the application (including your new one) and uploads the translations to CrowdIn. Once they have been translated, you can then run `yarn crowdin:download` to pull the updated translations from CrowdIn into the project. Note that you will need the [`CROWDIN_*` variables](#cru-specific-secrets) in your `.env` file for the download to work. Then you can submit a PR with the changes to the `public/locales/` directory.
 
 ## Learn More
 
