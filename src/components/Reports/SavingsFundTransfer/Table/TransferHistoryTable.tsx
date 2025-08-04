@@ -1,45 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { ArrowForward, Delete, Edit, SaveAlt } from '@mui/icons-material';
-import {
-  Avatar,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import {
-  DataGrid,
-  GridColDef,
-  GridSortModel,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
-} from '@mui/x-data-grid';
-import { DateTime } from 'luxon';
+import { Box, Typography } from '@mui/material';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { downloadCSV } from '../DownloadTable/downloadTable';
-import {
-  ScheduleEnum,
-  StatusEnum,
-  TransferTypeEnum,
-} from '../Helper/TransferHistoryEnum';
-import {
-  staffAccount,
-  staffConferenceSavings,
-  staffSavings,
-} from '../Helper/TransferIcons';
-import { DeleteTransferModal } from '../TransferActionsModal/DeleteTransferModal';
+import { CustomToolbar } from '../Helper/CustomToolbar';
+import { ScheduleEnum, TransferTypeEnum } from '../Helper/TransferHistoryEnum';
+import { populateTransferHistoryRows } from '../Helper/createTableRow';
+import { DynamicDeleteTransferModal } from '../TransferActionsModal/DynamicDeleteTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
-import { TransferHistory, mockData } from '../mockData';
+import { TransferHistory } from '../mockData';
+import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
 
-type RenderCell = GridColDef<TransferHistory>['renderCell'];
+export type RenderCell = GridColDef<TransferHistory>['renderCell'];
 
 export interface TransferHistoryTableProps {
   history: TransferHistory[];
@@ -47,32 +19,6 @@ export interface TransferHistoryTableProps {
   handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   loading?: boolean;
 }
-
-export const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
-  '.MuiDataGrid-cell': {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-  },
-}));
-
-export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
-
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 export const CreateTransferHistoryRows = (
   history: TransferHistory,
@@ -102,6 +48,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const [openDeleteModal, setOpenDeleteModal] =
     useState<TransferHistory | null>(null);
 
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    { field: 'date', sort: 'desc' },
+  ]);
+
   const handleDeleteModalOpen = (transfer: TransferHistory) => {
     setOpenDeleteModal(transfer);
   };
@@ -117,329 +67,74 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     return history.map((data) => CreateTransferHistoryRows(data));
   }, [history]);
 
-  const transfers: RenderCell = ({ row }) => {
-    if (
-      row.transferFrom === 'staffAccount' &&
-      row.transferTo === 'staffSavings'
-    ) {
-      return (
-        <Box sx={{ display: 'flex', ml: 1 }}>
-          {staffAccount}
-          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
-          {staffSavings}
-        </Box>
-      );
-    } else if (
-      row.transferFrom === 'staffAccount' &&
-      row.transferTo === 'staffConferenceSavings'
-    ) {
-      return (
-        <Box sx={{ display: 'flex', ml: 1 }}>
-          {staffAccount}
-          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
-          {staffConferenceSavings}
-        </Box>
-      );
-    } else if (
-      row.transferFrom === 'staffSavings' &&
-      row.transferTo === 'staffAccount'
-    ) {
-      return (
-        <Box sx={{ display: 'flex', ml: 1 }}>
-          {staffSavings}
-          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
-          {staffAccount}
-        </Box>
-      );
-    } else if (
-      row.transferFrom === 'staffSavings' &&
-      row.transferTo === 'staffConferenceSavings'
-    ) {
-      return (
-        <Box sx={{ display: 'flex', ml: 1 }}>
-          {staffSavings}
-          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
-          {staffConferenceSavings}
-        </Box>
-      );
-    } else if (
-      row.transferFrom === 'staffConferenceSavings' &&
-      row.transferTo === 'staffAccount'
-    ) {
-      return (
-        <Box sx={{ display: 'flex', ml: 1 }}>
-          {staffConferenceSavings}
-          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
-          {staffAccount}
-        </Box>
-      );
-    } else if (
-      row.transferFrom === 'staffConferenceSavings' &&
-      row.transferTo === 'staffSavings'
-    ) {
-      return (
-        <Box sx={{ display: 'flex', ml: 1 }}>
-          {staffConferenceSavings}
-          <ArrowForward titleAccess="Arrow" sx={{ mr: 1 }} />
-          {staffSavings}
-        </Box>
-      );
-    }
+  const {
+    transfers,
+    amount,
+    schedule,
+    status,
+    transferDate,
+    endDate,
+    note,
+    actions,
+  } = populateTransferHistoryRows(
+    handleEditModalOpen,
+    handleDeleteModalOpen,
+    t,
+    locale,
+  );
 
-    return (
-      <Tooltip title={t('N/A')}>
-        <Typography variant="body2" noWrap>
-          {'N/A'}
-        </Typography>
-      </Tooltip>
-    );
-  };
-
-  const amount: RenderCell = ({ row }) => {
-    return (
-      <Typography variant="body2" noWrap>
-        {row.amount?.toLocaleString(locale, {
-          style: 'currency',
-          currency: 'USD',
-        })}
-      </Typography>
-    );
-  };
-
-  const schedule: RenderCell = ({ row }) => {
-    if (row.schedule === ScheduleEnum.OneTime) {
-      return (
-        <Typography variant="body2" noWrap>
-          {t('One Time')}
-        </Typography>
-      );
-    } else {
-      return (
-        <Typography variant="body2" noWrap>
-          {t('Monthly')}
-        </Typography>
-      );
-    }
-  };
-
-  const status: RenderCell = ({ row }) => {
-    if (row.status === StatusEnum.Pending) {
-      return (
-        <Chip
-          avatar={<Avatar sx={{ bgcolor: '#FFC107' }}> </Avatar>}
-          label={t(row.status)}
-          color="default"
-          size="small"
-          sx={{
-            backgroundColor: '#FFF8E1',
-            boxShadow: 'none',
-            textTransform: 'capitalize',
-          }}
-        />
-      );
-    } else if (row.status === StatusEnum.Ongoing) {
-      return (
-        <Chip
-          avatar={<Avatar sx={{ bgcolor: '#2196F3' }}> </Avatar>}
-          label={t(row.status)}
-          color="default"
-          size="small"
-          sx={{
-            backgroundColor: '#E3F2FD',
-            boxShadow: 'none',
-            textTransform: 'capitalize',
-          }}
-        />
-      );
-    } else if (row.status === StatusEnum.Complete) {
-      return (
-        <Chip
-          avatar={<Avatar sx={{ bgcolor: '#4CAF50' }}> </Avatar>}
-          label={t(row.status)}
-          color="default"
-          size="small"
-          sx={{
-            backgroundColor: '#E8F5E9',
-            boxShadow: 'none',
-            textTransform: 'capitalize',
-          }}
-        />
-      );
-    } else if (row.status === StatusEnum.Ended) {
-      return (
-        <Chip
-          avatar={<Avatar sx={{ bgcolor: '#9E9E9E' }}> </Avatar>}
-          label={t(row.status)}
-          color="default"
-          size="small"
-          sx={{
-            backgroundColor: '#FAFAFA',
-            boxShadow: 'none',
-            textTransform: 'capitalize',
-          }}
-        />
-      );
-    } else if (row.status === StatusEnum.Failed) {
-      return (
-        <Chip
-          avatar={<Avatar sx={{ bgcolor: '#F44336' }}> </Avatar>}
-          label={t(row.status)}
-          color="default"
-          size="small"
-          sx={{
-            backgroundColor: '#FEEBEE',
-            boxShadow: 'none',
-            textTransform: 'capitalize',
-          }}
-        />
-      );
-    }
-
-    return (
-      <Typography variant="body2" noWrap>
-        {row.status}
-      </Typography>
-    );
-  };
-
-  const transferDate: RenderCell = ({ row }) => {
-    return (
-      <Typography variant="body2" noWrap>
-        {row.transferDate
-          ? row.transferDate.toLocaleString(DateTime.DATE_MED)
-          : t('N/A')}
-      </Typography>
-    );
-  };
-
-  const endDate: RenderCell = ({ row }) => {
-    return (
-      <Typography variant="body2" noWrap>
-        {row.endDate ? row.endDate.toLocaleString(DateTime.DATE_MED) : t('N/A')}
-      </Typography>
-    );
-  };
-
-  const note: RenderCell = ({ row }) => {
-    return (
-      <Tooltip title={t(row.note ? row.note : 'N/A')}>
-        <Typography variant="body2" noWrap>
-          {row.note}
-        </Typography>
-      </Tooltip>
-    );
-  };
-
-  const actions: RenderCell = ({ row }) => {
-    if (row.actions === 'edit-delete') {
-      return (
-        <>
-          <IconButton>
-            <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
-          </IconButton>
-          <IconButton>
-            <Delete
-              titleAccess="Delete"
-              sx={{ color: 'error.main' }}
-              onClick={() => {
-                handleDeleteModalOpen(row);
-              }}
-            />
-          </IconButton>
-        </>
-      );
-    }
-
-    return (
-      <Typography variant="body2" noWrap>
-        {row.actions}
-      </Typography>
-    );
-  };
-
-  const columns: GridColDef[] = [
-    {
-      field: 'transfers',
-      headerName: t('Transfers'),
-      width: 150,
-      renderCell: transfers,
-    },
-    {
-      field: 'amount',
-      headerName: t('Amount'),
-      width: 150,
-      renderCell: amount,
-    },
-    {
-      field: 'schedule',
-      headerName: t('Schedule'),
-      width: 150,
-      renderCell: schedule,
-    },
-    {
-      field: 'status',
-      headerName: t('Status'),
-      width: 150,
-      renderCell: status,
-    },
-    {
-      field: 'transferDate',
-      headerName: t('Transfer Date'),
-      width: 150,
-      renderCell: transferDate,
-    },
-    {
-      field: 'endDate',
-      headerName: t('Stop Date'),
-      width: 150,
-      renderCell: endDate,
-    },
-    {
-      field: 'note',
-      headerName: t('Note'),
-      width: 150,
-      renderCell: note,
-    },
-    {
-      field: 'actions',
-      headerName: t('Actions'),
-      width: 150,
-      renderCell: actions,
-    },
-  ];
-
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: 'date', sort: 'desc' },
-  ]);
-
-  const CustomToolbar = () => (
-    <GridToolbarContainer
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-        <Button
-          size="small"
-          sx={{ minHeight: 33, pt: 0, pb: 0 }}
-          startIcon={<SaveAlt />}
-          onClick={() => downloadCSV(t, mockData.history, locale)}
-        >
-          {t('Export')}
-        </Button>
-      </GridToolbarContainer>
-      <GridToolbarQuickFilter
-        sx={{
-          width: 250,
-          m: 1,
-        }}
-      />
-    </GridToolbarContainer>
+  const columns = useMemo<GridColDef[]>(
+    () => [
+      {
+        field: 'transfers',
+        headerName: t('Transfers'),
+        width: 150,
+        renderCell: transfers,
+      },
+      {
+        field: 'amount',
+        headerName: t('Amount'),
+        width: 150,
+        renderCell: amount,
+      },
+      {
+        field: 'schedule',
+        headerName: t('Schedule'),
+        width: 150,
+        renderCell: schedule,
+      },
+      {
+        field: 'status',
+        headerName: t('Status'),
+        width: 150,
+        renderCell: status,
+      },
+      {
+        field: 'transferDate',
+        headerName: t('Transfer Date'),
+        width: 150,
+        renderCell: transferDate,
+      },
+      {
+        field: 'endDate',
+        headerName: t('Stop Date'),
+        width: 150,
+        renderCell: endDate,
+      },
+      {
+        field: 'note',
+        headerName: t('Note'),
+        width: 150,
+        renderCell: note,
+      },
+      {
+        field: 'actions',
+        headerName: t('Actions'),
+        width: 150,
+        renderCell: actions,
+      },
+    ],
+    [],
   );
 
   return loading ? (
@@ -481,7 +176,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         }}
       />
       {openDeleteModal && (
-        <DeleteTransferModal
+        <DynamicDeleteTransferModal
           handleClose={() => setOpenDeleteModal(null)}
           transfer={openDeleteModal}
         />

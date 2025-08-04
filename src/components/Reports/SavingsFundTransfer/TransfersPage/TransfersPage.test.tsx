@@ -126,7 +126,7 @@ describe('TransfersPage', () => {
 
     const { getByText } = render(<Components />);
 
-    expect(getByText('No transfer history available')).toBeInTheDocument();
+    expect(getByText('Transfer History not available')).toBeInTheDocument();
 
     // Restore original history
     mockData.history = originalHistory;

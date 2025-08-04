@@ -39,7 +39,7 @@ import {
   staffAccount,
   staffConferenceSavings,
   staffSavings,
-} from '../Helper/TransferIcons';
+} from '../Helper/transferIcons';
 import { Fund, TransferHistory } from '../mockData';
 
 export interface TransferModalData {
