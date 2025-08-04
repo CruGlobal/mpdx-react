@@ -1,24 +1,14 @@
 import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Form, Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { ContinueButton } from '../../../SharedComponents/ContinueButton';
 import { OneTimeGoalsStepForm } from './OneTimeGoalsStepForm/OneTimeGoalsStepForm';
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  flex: '1 1 100%',
   marginBottom: theme.spacing(2),
-}));
-
-const StyledContainer = styled(Container)(({ theme }) => ({
-  padding: theme.spacing(1),
-}));
-
-const StyledBox = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(1),
 }));
 
 interface OneTimeGoalsStepProps {}
@@ -60,26 +50,23 @@ export const OneTimeGoalsStep: React.FC<OneTimeGoalsStepProps> = () => {
   };
 
   return (
-    <StyledBox>
-      <StyledContainer disableGutters>
-        <StyledTypography>
-          {t('What are your one-time financial goals?')}
-        </StyledTypography>
+    <>
+      <StyledTypography>
+        {t('What are your one-time financial goals?')}
+      </StyledTypography>
 
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          {(formikProps: FormikProps<OneTimeGoalsFormValues>) => (
-            <Form>
-              <OneTimeGoalsStepForm formikProps={formikProps} />
-            </Form>
-          )}
-        </Formik>
-      </StyledContainer>
-      <ContinueButton onClick={handleSubmit} />
-    </StyledBox>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize
+      >
+        {(formikProps: FormikProps<OneTimeGoalsFormValues>) => (
+          <Form>
+            <OneTimeGoalsStepForm formikProps={formikProps} />
+          </Form>
+        )}
+      </Formik>
+    </>
   );
 };

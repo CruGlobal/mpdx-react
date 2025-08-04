@@ -53,10 +53,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { currentCategory, isRightOpen, toggleRightPanel } =
-    useGoalCalculator();
-  const { rightPanelComponent: rightPanelStepComponent } =
-    currentCategory || {};
+  const { rightPanelContent, closeRightPanel } = useGoalCalculator();
   const { t } = useTranslation();
 
   const rightPanel = (
@@ -65,13 +62,13 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
         <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
         <IconButton
           size="small"
-          onClick={() => toggleRightPanel()}
+          onClick={closeRightPanel}
           aria-label={t('Close Panel')}
         >
           <CloseIcon fontSize="small" />
         </IconButton>
       </RightPanelHeader>
-      <RightPanelContent>{rightPanelStepComponent}</RightPanelContent>
+      <RightPanelContent>{rightPanelContent}</RightPanelContent>
     </>
   );
 
@@ -99,7 +96,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
         />
       }
       rightPanel={rightPanel}
-      rightOpen={isRightOpen && !!rightPanelStepComponent}
+      rightOpen={!!rightPanelContent}
     />
   );
 };

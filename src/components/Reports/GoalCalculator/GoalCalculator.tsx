@@ -7,15 +7,15 @@ import {
   Divider,
   IconButton,
   List,
-  ListItemButton,
+  ListItem,
   ListItemIcon,
   ListItemText,
   Stack,
-  Toolbar,
   Typography,
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -24,34 +24,32 @@ import {
 import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
+import { ContinueButton } from './SharedComponents/ContinueButton';
 
-const StyledCategoryTitle = styled(Typography)(({ theme }) => ({
+const StepTitle = styled(Typography)(({ theme }) => ({
   marginBottom: 0,
   marginTop: theme.spacing(1),
   paddingLeft: theme.spacing(2),
-  whiteSpace: 'nowrap',
 }));
 
-const StyledTitle = styled(Typography)({
-  flex: '1 1 100%',
-});
-
-const StyledStepListItemButton = styled(ListItemButton)(({ theme }) => ({
+const CategoryListItem = styled(ListItem)(({ theme }) => ({
+  padding: 0,
   paddingLeft: theme.spacing(3),
-  paddingRight: 0,
-  paddingTop: 0,
-  paddingBottom: 0,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
 }));
 
-const StyledStepListItemIcon = styled(ListItemIcon)(({ theme }) => ({
+const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
   minWidth: 'auto',
   marginRight: theme.spacing(0.5),
 }));
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  paddingLeft: theme.spacing(2),
+const CategoriesStack = styled(Stack)(({ theme }) => ({
+  paddingBlock: theme.spacing(4),
+  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+  overflow: 'scroll',
+}));
+
+const CategoryContainer = styled('div')(({ theme }) => ({
+  paddingInline: theme.spacing(4),
 }));
 
 const StyledDefaultContent = styled(Box)(({ theme }) => ({
@@ -83,23 +81,6 @@ const StyledDrawer = styled(Box, {
   },
 }));
 
-const StyledCategoryIconButton = styled(IconButton, {
-  shouldForwardProp: (prop) => prop !== 'selected',
-})<{ selected: boolean }>(({ theme, selected }) => ({
-  color: selected
-    ? theme.palette.mpdxBlue.main
-    : theme.palette.cruGrayDark.main,
-}));
-
-const StyledStepIcon = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'selected',
-})<{ selected: boolean }>(({ theme, selected }) => ({
-  fontSize: '1rem',
-  color: selected
-    ? theme.palette.mpdxBlue.main
-    : theme.palette.cruGrayDark.main,
-}));
-
 interface GoalCalculatorProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
@@ -112,16 +93,13 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   const {
     steps,
     currentStep,
-    isRightOpen,
     isDrawerOpen,
     selectedStepId,
-    selectedCategoryId,
-    currentCategory,
-    toggleRightPanel,
+    setRightPanelContent,
     toggleDrawer,
     setDrawerOpen,
     handleStepChange,
-    handleCategoryChange,
+    handleContinue,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const iconPanelWidth = theme.spacing(5);
@@ -135,12 +113,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     }
   };
 
-  const { title: stepTitle, categories: stepCategories } = currentStep || {};
-  const {
-    title: categoryTitle,
-    component: stepComponent,
-    rightPanelComponent,
-  } = currentCategory || {};
+  const { title: stepTitle, categories } = currentStep || {};
 
   return (
     <>
@@ -150,16 +123,21 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         title={t('Goal Calculator')}
         headerType={HeaderTypeEnum.Report}
       />
-      <Stack direction="row" flex={1}>
-        <Stack sx={{ width: iconPanelWidth }} direction="column">
-          {steps?.map((step) => (
-            <StyledCategoryIconButton
+      <Stack direction="row">
+        <Stack direction="column" width={iconPanelWidth}>
+          {steps.map((step) => (
+            <IconButton
               key={step.id}
-              selected={selectedStepId === step.id}
+              sx={(theme) => ({
+                color:
+                  selectedStepId === step.id
+                    ? theme.palette.mpdxBlue.main
+                    : theme.palette.cruGrayDark.main,
+              })}
               onClick={() => handleStepIconClick(step.id)}
             >
               {step.icon}
-            </StyledCategoryIconButton>
+            </IconButton>
           ))}
         </Stack>
         <Divider orientation="vertical" flexItem />
@@ -168,66 +146,78 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
           headerHeight={multiPageHeaderHeight}
           iconPanelWidth={iconPanelWidth}
         >
-          <StyledCategoryTitle variant="h6">
-            {categoryTitle || t('Goal Calculator')}
-          </StyledCategoryTitle>
+          <StepTitle variant="h6">
+            {stepTitle || t('Goal Calculator')}
+          </StepTitle>
 
           <List disablePadding>
-            {stepCategories?.map((category) => {
+            {categories?.map((category) => {
               const { id, title } = category;
-              const selected = selectedCategoryId === id;
+              // TODO: Determine whether each category is complete
+              const complete = false;
               return (
-                <StyledStepListItemButton
-                  key={id}
-                  onClick={() => handleCategoryChange(id)}
-                >
-                  <StyledStepListItemIcon>
-                    <StyledStepIcon selected={selected}>
-                      {selected ? (
+                <CategoryListItem key={id}>
+                  <CategoryListItemIcon>
+                    <Box
+                      sx={(theme) => ({
+                        fontSize: '1rem',
+                        color: complete
+                          ? theme.palette.mpdxBlue.main
+                          : theme.palette.cruGrayDark.main,
+                      })}
+                    >
+                      {complete ? (
                         <CircleIcon sx={{ fontSize: '1rem' }} />
                       ) : (
                         <RadioButtonUncheckedIcon sx={{ fontSize: '1rem' }} />
                       )}
-                    </StyledStepIcon>
-                  </StyledStepListItemIcon>
+                    </Box>
+                  </CategoryListItemIcon>
                   <ListItemText
                     primary={title}
                     primaryTypographyProps={{ variant: 'body2' }}
                   />
-                </StyledStepListItemButton>
+                </CategoryListItem>
               );
             })}
           </List>
         </StyledDrawer>
         {isDrawerOpen && <Divider orientation="vertical" flexItem />}
-        <Box flex={1}>
-          <StyledToolbar disableGutters>
-            <StyledTitle variant="h6">
-              {stepTitle || t('Goal Calculator')}
-            </StyledTitle>
-            {!!rightPanelComponent && (
-              <IconButton
-                onClick={toggleRightPanel}
-                aria-label={
-                  isRightOpen ? t('Hide Right Panel') : t('Show Right Panel')
-                }
-              >
-                <InfoIcon />
-              </IconButton>
-            )}
-          </StyledToolbar>
-          <Box>
-            {stepComponent || (
-              <StyledDefaultContent>
-                <Typography variant="body1">
-                  {t(
-                    'Please select a step from the left panel to view its content.',
+        <Divider orientation="vertical" flexItem />
+        <CategoriesStack flex={1} spacing={4} divider={<Divider />}>
+          {categories?.map((category) => {
+            const rightPanelContent = category.rightPanelComponent;
+            return (
+              <CategoryContainer key={category.id}>
+                <Typography variant="h6">
+                  {category.title}
+                  {rightPanelContent && (
+                    <IconButton
+                      onClick={() => {
+                        setRightPanelContent(rightPanelContent);
+                      }}
+                      aria-label={t('Show additional info')}
+                    >
+                      <InfoIcon />
+                    </IconButton>
                   )}
                 </Typography>
-              </StyledDefaultContent>
-            )}
-          </Box>
-        </Box>
+                {category.component}
+              </CategoryContainer>
+            );
+          }) ?? (
+            <StyledDefaultContent>
+              <Typography variant="body1">
+                {t(
+                  'Please select a step from the left panel to view its content.',
+                )}
+              </Typography>
+            </StyledDefaultContent>
+          )}
+          <CategoryContainer>
+            <ContinueButton onClick={handleContinue} />
+          </CategoryContainer>
+        </CategoriesStack>
       </Stack>
     </>
   );
