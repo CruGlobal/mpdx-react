@@ -11,6 +11,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
@@ -24,6 +25,13 @@ import {
 interface SavingsFundTransferProps {
   title: string;
 }
+
+const StyledListItem = styled(ListItem)({
+  display: 'list-item',
+  listStylePosition: 'outside',
+  p: 0,
+  m: 0,
+});
 
 export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   title,
@@ -41,7 +49,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
         isNavListOpen={isNavListOpen}
         onNavListToggle={onNavListToggle}
         headerType={HeaderTypeEnum.Report}
-        title={t(title)}
+        title={title}
       />
 
       <Box>
@@ -82,7 +90,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
             </Typography>
             <Typography variant="body1" sx={{ mt: 2 }}>
               {t(
-                'In response to those requests, we’ve set up a new, self-service ',
+                "In response to those requests, we've set up a new, self-service ",
               )}
               <strong>Staff Savings Fund</strong>
               {t(
@@ -94,48 +102,27 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               {t('A Few Quick Notes About Monthly Transfers:')}
             </Typography>
             <List sx={{ listStyleType: 'disc', pl: 4 }}>
-              <ListItem
-                sx={{
-                  display: 'list-item',
-                  listStylePosition: 'outside',
-                  p: 0,
-                  m: 0,
-                }}
-              >
+              <StyledListItem>
                 <ListItemText
                   primary={t(
                     'Want your monthly transfer to end at a certain point? You can set a stop date—super handy! Just a heads-up: once it’s there, it can’t be removed, but you can change it to a different date if needed.',
                   )}
                 />
-              </ListItem>
-              <ListItem
-                sx={{
-                  display: 'list-item',
-                  listStylePosition: 'outside',
-                  p: 0,
-                  m: 0,
-                }}
-              >
+              </StyledListItem>
+              <StyledListItem>
                 <ListItemText
                   primary={t(
-                    'Need to update the amount you’re transferring each month? No problem! Just set a stop date for the end of the current month on your existing transfer. After that, go ahead and set up a brand-new monthly transfer with the updated amount.',
+                    "Need to update the amount you're transferring each month? No problem! Just set a stop date for the end of the current month on your existing transfer. After that, go ahead and set up a brand-new monthly transfer with the updated amount.",
                   )}
                 />
-              </ListItem>
-              <ListItem
-                sx={{
-                  display: 'list-item',
-                  listStylePosition: 'outside',
-                  p: 0,
-                  m: 0,
-                }}
-              >
+              </StyledListItem>
+              <StyledListItem>
                 <ListItemText
                   primary={t(
                     "For brand-new monthly transfers, it might take up to one full month cycle before you see it show up in your account. So hang tight—it's on its way!",
                   )}
                 />
-              </ListItem>
+              </StyledListItem>
             </List>
             <Typography variant="h6" sx={{ mt: 2 }}>
               <Box component="span" display="inline">
@@ -158,7 +145,12 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               {t(
                 'If you have any questions, please contact Crystal Dunaway in Staff Services at ',
               )}
-              <Link href="mailto:Crystal.Dunaway@cru.org" underline="hover">
+              <Link
+                href="mailto:Crystal.Dunaway@cru.org"
+                underline="hover"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Crystal.Dunaway@cru.org
               </Link>
               .
