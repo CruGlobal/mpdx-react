@@ -177,7 +177,7 @@ describe('DonationsReport', () => {
     expect(
       queryByTestId('DonationHistoriesGridLoading'),
     ).not.toBeInTheDocument();
-    expect(await findByRole('cell', { name: 'John' })).toBeInTheDocument();
+    expect(await findByRole('gridcell', { name: 'John' })).toBeInTheDocument();
   });
 
   it('initializes with month from query', () => {
