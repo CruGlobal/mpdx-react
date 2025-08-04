@@ -352,7 +352,7 @@ describe('UpdateDonationsModal', () => {
       const { queryByRole, findByRole, queryByTestId } = render(<Components />);
 
       expect(
-        await findByRole('cell', { name: 'Designation Account 1' }),
+        await findByRole('gridcell', { name: 'Designation Account 1' }),
       ).toBeInTheDocument();
       expect(queryByTestId('LoadingBox')).not.toBeInTheDocument();
       expect(
@@ -362,7 +362,11 @@ describe('UpdateDonationsModal', () => {
       const totalRow = within(
         await findByRole('table', { name: 'Donation Totals' }),
       ).getByRole('row');
-      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+      await waitFor(() =>
+        expect(totalRow.children[0]).toHaveTextContent(
+          'Total Donations: CA$10',
+        ),
+      );
     });
 
     it('selects one donation onload as it was given to this appeal and then on selecting the other it should update the total amount', async () => {
@@ -372,7 +376,7 @@ describe('UpdateDonationsModal', () => {
 
       expect(checkboxes).toHaveLength(3);
 
-      expect(checkboxes[0]).toBeChecked();
+      await waitFor(() => expect(checkboxes[0]).toBeChecked());
       expect(checkboxes[1]).not.toBeChecked();
 
       const totalRow = within(
@@ -393,7 +397,7 @@ describe('UpdateDonationsModal', () => {
 
       const checkboxes = await findAllByRole('checkbox');
 
-      expect(checkboxes[0]).toBeChecked();
+      await waitFor(() => expect(checkboxes[0]).toBeChecked());
       userEvent.click(checkboxes[0]);
 
       expect(getByText('Appeal 1')).toHaveStyle(
@@ -411,7 +415,11 @@ describe('UpdateDonationsModal', () => {
       const totalRow = within(
         await findByRole('table', { name: 'Donation Totals' }),
       ).getByRole('row');
-      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+      await waitFor(() =>
+        expect(totalRow.children[0]).toHaveTextContent(
+          'Total Donations: CA$10',
+        ),
+      );
     });
 
     it('updates the sort order', async () => {
@@ -423,13 +431,13 @@ describe('UpdateDonationsModal', () => {
       ).toBeInTheDocument();
 
       userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-      const cellsAsc = getAllByRole('cell', { name: /CA/ });
+      const cellsAsc = getAllByRole('gridcell', { name: /CA/ });
       expect(cellsAsc[0]).toHaveTextContent('CA$0');
       expect(cellsAsc[1]).toHaveTextContent('CA$10');
       expect(cellsAsc[2]).toHaveTextContent('CA$100');
 
       userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-      const cellsDesc = getAllByRole('cell', { name: /CA/ });
+      const cellsDesc = getAllByRole('gridcell', { name: /CA/ });
       expect(cellsDesc[0]).toHaveTextContent('CA$100');
       expect(cellsDesc[1]).toHaveTextContent('CA$10');
       expect(cellsDesc[2]).toHaveTextContent('CA$0');
@@ -503,7 +511,9 @@ describe('UpdateDonationsModal', () => {
       const checkboxes = await findAllByRole('checkbox');
       expect(checkboxes).toHaveLength(3);
 
-      userEvent.click(getByRole('button', { name: 'Save' }));
+      const saveButton = getByRole('button', { name: 'Save' });
+      await waitFor(() => expect(saveButton).not.toBeDisabled());
+      userEvent.click(saveButton);
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
@@ -755,9 +765,15 @@ describe('UpdateDonationsModal', () => {
       const totalRow = within(
         await findByRole('table', { name: 'Donation Totals' }),
       ).getByRole('row');
-      expect(totalRow.children[0]).toHaveTextContent('Total Donations: CA$10');
+      await waitFor(() =>
+        expect(totalRow.children[0]).toHaveTextContent(
+          'Total Donations: CA$10',
+        ),
+      );
 
-      userEvent.click(getByRole('button', { name: 'Save' }));
+      const saveButton = getByRole('button', { name: 'Save' });
+      await waitFor(() => expect(saveButton).not.toBeDisabled());
+      userEvent.click(saveButton);
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('CreateAccountListPledge', {

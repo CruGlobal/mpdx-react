@@ -20,6 +20,7 @@ import {
   DataGrid,
   GridColDef,
   GridColumnVisibilityModel,
+  GridPaginationModel,
   GridSortModel,
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
@@ -157,7 +158,10 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     setEditingDonation(null);
   };
 
-  const [pageSize, setPageSize] = useState(25);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
 
   // pageSize is intentionally omitted from the dependencies array so that the query isn't rerun when the page size changes
   // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
@@ -165,7 +169,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   const variables: DonationTableQueryVariables = useMemo(
     () => ({
       accountListId,
-      pageSize,
+      pageSize: paginationModel.pageSize,
       ...filter,
     }),
     [accountListId, filter],
@@ -378,14 +382,14 @@ export const DonationTable: React.FC<DonationTableProps> = ({
               foreignAmount: hasForeignDonations,
             }}
             onColumnVisibilityModelChange={setColumnVisibility}
-            pageSize={pageSize}
-            onPageSizeChange={(pageSize) => setPageSize(pageSize)}
-            rowsPerPageOptions={[25, 50, 100]}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            pageSizeOptions={[25, 50, 100]}
             pagination
             sortModel={sortModel}
             onSortModelChange={(sortModel) => setSortModel(sortModel)}
             autoHeight
-            disableSelectionOnClick
+            disableRowSelectionOnClick
             disableVirtualization
             localeText={localeText}
           />

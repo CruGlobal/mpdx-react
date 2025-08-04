@@ -8,7 +8,12 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
@@ -138,7 +143,10 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const [pageSize, setPageSize] = useState(25);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'date', sort: 'desc' },
   ]);
@@ -299,13 +307,13 @@ export const AccountTransactionTable: React.FC<TableProps> = ({
         rows={transactions}
         rowCount={transactions.length}
         columns={columns}
-        pageSize={pageSize}
-        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
-        rowsPerPageOptions={[25, 50, 100]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[25, 50, 100]}
         pagination
         sortModel={sortModel}
         onSortModelChange={(sortModel) => setSortModel(sortModel)}
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         disableVirtualization
         disableColumnMenu
         rowHeight={70}
