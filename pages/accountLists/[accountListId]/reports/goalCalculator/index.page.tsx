@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList';
+import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList/GoalsList';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
