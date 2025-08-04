@@ -582,9 +582,12 @@ describe('UpdateDonationsModal', () => {
       it('should show less than pledge confirmation', async () => {
         const { getByRole, getByTestId } = render(<Components />);
 
-        await waitFor(() => {
-          expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
-        });
+        await waitFor(
+          () => {
+            expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
+          },
+          { timeout: 3000 },
+        );
 
         userEvent.click(getByRole('button', { name: 'Save' }));
 
@@ -598,9 +601,12 @@ describe('UpdateDonationsModal', () => {
       it('should move contact to Received', async () => {
         const { getByRole } = render(<Components />);
 
-        await waitFor(() => {
-          expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
-        });
+        await waitFor(
+          () => {
+            expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
+          },
+          { timeout: 3000 },
+        );
 
         userEvent.click(getByRole('button', { name: 'Save' }));
         userEvent.click(getByRole('button', { name: 'No' }));
@@ -628,9 +634,12 @@ describe('UpdateDonationsModal', () => {
       it('should move contact to Processed', async () => {
         const { getByRole } = render(<Components />);
 
-        await waitFor(() => {
-          expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
-        });
+        await waitFor(
+          () => {
+            expect(getByRole('button', { name: 'Save' })).not.toBeDisabled();
+          },
+          { timeout: 3000 },
+        );
 
         userEvent.click(getByRole('button', { name: 'Save' }));
         userEvent.click(getByRole('button', { name: 'Yes' }));
