@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
@@ -10,8 +10,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
-import { StaffSavingFundEnum } from '../Helper/TransferHistoryEnum';
+import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import { mockData } from '../mockData';
 import { TransfersPage } from './TransfersPage';
 
@@ -23,6 +22,23 @@ const router = {
 
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
+const onNavListToggle = jest.fn();
+
+const MockStaffSavingFundProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => (
+  <StaffSavingFundContext.Provider
+    value={{
+      accountListId: 'abc123',
+      isNavListOpen: false,
+      onNavListToggle: onNavListToggle,
+    }}
+  >
+    {children}
+  </StaffSavingFundContext.Provider>
+);
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -35,15 +51,6 @@ jest.mock('notistack', () => ({
   },
 }));
 
-// Mock the crypto.randomUUID to have consistent IDs for testing
-const mockAccountIds = ['account-1', 'account-2', 'account-3'];
-let idIndex = 0;
-Object.defineProperty(global, 'crypto', {
-  value: {
-    randomUUID: () => mockAccountIds[idIndex++ % mockAccountIds.length],
-  },
-});
-
 const Components = ({
   title = 'Staff Saving Fund Transfers',
 }: {
@@ -55,9 +62,9 @@ const Components = ({
         <TestRouter router={router}>
           <I18nextProvider i18n={i18n}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <StaffSavingFundProvider>
+              <MockStaffSavingFundProvider>
                 <TransfersPage title={title} />
-              </StaffSavingFundProvider>
+              </MockStaffSavingFundProvider>
             </GqlMockedProvider>
           </I18nextProvider>
         </TestRouter>
@@ -67,23 +74,18 @@ const Components = ({
 );
 
 describe('TransfersPage', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    idIndex = 0; // Reset ID index for consistent testing
+  it('should render with custom title', () => {
+    const customTitle = 'Custom Transfer Page Title';
+    const { getByText } = render(<Components title={customTitle} />);
+
+    expect(getByText(customTitle)).toBeInTheDocument();
   });
 
-  it('should render the page with header and title', () => {
-    const { getByText, getByRole } = render(<Components />);
+  it('should render the page with header, title, and account information', () => {
+    const { getByText } = render(<Components />);
 
     expect(getByText('Staff Saving Fund Transfers')).toBeInTheDocument();
     expect(getByText('Fund Transfer')).toBeInTheDocument();
-    expect(getByRole('heading', { level: 4 })).toHaveTextContent(
-      'Fund Transfer',
-    );
-  });
-
-  it('should display account information from mock data', () => {
-    const { getByText } = render(<Components />);
 
     expect(getByText(mockData.accountName)).toBeInTheDocument();
     expect(getByText(mockData.accountListId)).toBeInTheDocument();
@@ -92,35 +94,28 @@ describe('TransfersPage', () => {
   it('should render all balance cards with correct information', () => {
     const { getByText, getAllByText } = render(<Components />);
 
-    // Check all fund names are displayed
     expect(getByText('Staff Account Balance')).toBeInTheDocument();
     expect(getByText('Staff Conference Savings Balance')).toBeInTheDocument();
     expect(getByText('Staff Savings Balance')).toBeInTheDocument();
 
-    // Check balance amounts are displayed (formatted with decimals)
-    // Use getAllByText for amounts that might appear multiple times (balance + pending)
-    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0); // Staff Account balance
-    expect(getAllByText('$500.00').length).toBeGreaterThan(0); // Staff Conference Savings balance
-    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0); // Staff Savings balance
+    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
+    expect(getAllByText('$500.00').length).toBeGreaterThan(0);
+    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
   });
 
-  it('should render transfer history table', () => {
-    const { container } = render(<Components />);
+  it('should render cards and transfer history table', () => {
+    const { getByRole, getAllByRole } = render(<Components />);
 
-    // Check that the component renders successfully and has the expected structure
-    expect(container.querySelector('.MuiContainer-root')).toBeInTheDocument();
+    expect(getAllByRole('button', { name: 'TRANSFER FROM' })).toHaveLength(3);
+    expect(getAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(3);
 
-    // Check that balance cards are rendered (main functionality)
-    const cards = container.querySelectorAll('.MuiCard-root');
-    expect(cards.length).toBeGreaterThan(0);
-
-    // The transfer history table might be in a separate section or conditionally rendered
-    // For now, just verify the component structure is correct
-    expect(container.firstChild).toBeTruthy();
+    expect(getByRole('grid')).toBeInTheDocument();
+    expect(within(getByRole('grid')).getAllByRole('columnheader')).toHaveLength(
+      8,
+    );
   });
 
   it('should show empty state when no transfer history', () => {
-    // Mock empty history
     const originalHistory = mockData.history;
     mockData.history = [];
 
@@ -128,20 +123,15 @@ describe('TransfersPage', () => {
 
     expect(getByText('Transfer History not available')).toBeInTheDocument();
 
-    // Restore original history
     mockData.history = originalHistory;
   });
 
   it('should open transfer modal when balance card transfer button is clicked', async () => {
-    const { getByRole, getByText, container } = render(<Components />);
+    const { getByRole, getByText, getAllByRole } = render(<Components />);
 
-    // Find transfer buttons by their icon (OutboxIcon test id)
-    const transferButtons = container.querySelectorAll(
-      '[data-testid="OutboxIcon"]',
-    );
+    const transferButtons = getAllByRole('button', { name: /transfer/i });
     expect(transferButtons.length).toBeGreaterThan(0);
 
-    // Click the first transfer button (parent button element)
     const firstTransferButton = transferButtons[0].closest('button');
     expect(firstTransferButton).toBeTruthy();
     userEvent.click(firstTransferButton!);
@@ -153,20 +143,16 @@ describe('TransfersPage', () => {
   });
 
   it('should close transfer modal when close button is clicked', async () => {
-    const { getByRole, queryByRole, container } = render(<Components />);
+    const { getByRole, queryByRole, getAllByRole } = render(<Components />);
 
-    // Open modal
-    const transferButtons = container.querySelectorAll(
-      '[data-testid="OutboxIcon"]',
-    );
-    const firstTransferButton = transferButtons[0].closest('button');
+    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const firstTransferButton = transferButtons?.[0].closest('button');
     userEvent.click(firstTransferButton!);
 
     await waitFor(() => {
       expect(getByRole('dialog')).toBeInTheDocument();
     });
 
-    // Close modal
     const cancelButton = getByRole('button', { name: /cancel/i });
     userEvent.click(cancelButton);
 
@@ -176,46 +162,34 @@ describe('TransfersPage', () => {
   });
 
   it('should display correct icons for different fund types', () => {
-    const { container } = render(<Components />);
+    const { getAllByRole } = render(<Components />);
 
-    // Check that icons are rendered (they should be svg elements)
-    const svgElements = container.querySelectorAll('svg');
-    expect(svgElements.length).toBeGreaterThan(0);
-
-    // We can check for specific icons by their test IDs if they exist
-    // or by checking the presence of icon containers
-    const iconContainers = container.querySelectorAll(
-      '[data-testid*="icon"], .MuiSvgIcon-root',
-    );
-    expect(iconContainers.length).toBeGreaterThan(0);
+    const svgIcons = getAllByRole('img', { hidden: true });
+    expect(svgIcons.length).toBeGreaterThan(0);
   });
 
-  it('should display correct fund types with proper styling', () => {
-    const { container } = render(<Components />);
+  it('should handle navigation toggle', async () => {
+    const { getByRole, getByTestId } = render(<Components />);
 
-    // Check that balance cards are rendered
-    const cards = container.querySelectorAll('.MuiCard-root');
-    expect(cards).toHaveLength(mockData.funds.length);
-  });
+    expect(
+      getByRole('heading', { name: 'Staff Saving Fund Transfers' }),
+    ).toBeTruthy();
 
-  it('should handle navigation toggle', () => {
-    const { container } = render(<Components />);
+    const navigationButton = getByRole('button', {
+      name: 'Toggle Navigation Panel',
+    });
+    expect(navigationButton).toBeInTheDocument();
+    userEvent.click(navigationButton);
 
-    // Check that the MultiPageHeader is rendered
-    const _header = container.querySelector(
-      '[role="banner"], header, .MuiAppBar-root',
-    );
-    // The header should be present (exact selector depends on MultiPageHeader implementation)
-    expect(container).toBeTruthy(); // Basic check that component renders
+    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsFilterIcon'));
+    await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
   it('should display transfer modal with correct type', async () => {
-    const { getByRole, container } = render(<Components />);
+    const { getByRole, getAllByRole } = render(<Components />);
 
-    // Open modal
-    const transferButtons = container.querySelectorAll(
-      '[data-testid="OutboxIcon"]',
-    );
+    const transferButtons = getAllByRole('button', { name: /transfer/i });
     const firstTransferButton = transferButtons[0].closest('button');
     userEvent.click(firstTransferButton!);
 
@@ -223,101 +197,22 @@ describe('TransfersPage', () => {
       const modal = getByRole('dialog');
       expect(modal).toBeInTheDocument();
 
-      // Check modal contains form elements
+      const fromAccount = getByRole('combobox', { name: /from account/i });
+      const toAccount = getByRole('combobox', { name: /to account/i });
+
+      expect(fromAccount).toBeInTheDocument();
+      expect(toAccount).toBeInTheDocument();
+
       expect(
-        getByRole('combobox', { name: /from account/i }),
+        within(fromAccount).getByText(mockData.funds[0].name, {
+          selector: 'strong',
+        }),
       ).toBeInTheDocument();
       expect(
-        getByRole('combobox', { name: /to account/i }),
-      ).toBeInTheDocument();
-      expect(getByRole('radio', { name: /one time/i })).toBeInTheDocument();
-    });
-  });
-
-  it('should render with custom title', () => {
-    const customTitle = 'Custom Transfer Page Title';
-    const { getByText } = render(<Components title={customTitle} />);
-
-    expect(getByText(customTitle)).toBeInTheDocument();
-  });
-
-  it('should handle fund data correctly', () => {
-    const { getAllByText } = render(<Components />);
-
-    // Verify all fund types are handled
-    const staffAccountFund = mockData.funds.find(
-      (f) => f.type === StaffSavingFundEnum.StaffAccount,
-    );
-    const staffSavingsFund = mockData.funds.find(
-      (f) => f.type === StaffSavingFundEnum.StaffSavings,
-    );
-    const staffConferenceFund = mockData.funds.find(
-      (f) => f.type === StaffSavingFundEnum.StaffConferenceSavings,
-    );
-
-    expect(staffAccountFund).toBeDefined();
-    expect(staffSavingsFund).toBeDefined();
-    expect(staffConferenceFund).toBeDefined();
-
-    // Check that balances are displayed using getAllByText for amounts that appear multiple times
-    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0); // Staff Account balance from mock
-    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0); // Staff Savings balance from mock
-    expect(getAllByText('$500.00').length).toBeGreaterThan(0); // Staff Conference Savings balance from mock
-  });
-
-  it('should maintain responsive layout', () => {
-    const { container } = render(<Components />);
-
-    // Check that responsive classes or styles are applied - look for MUI Box components
-    const boxContainers = container.querySelectorAll('.MuiBox-root');
-    expect(boxContainers.length).toBeGreaterThan(0);
-
-    // Check for Container component which handles responsive layout
-    const containerElements = container.querySelectorAll('.MuiContainer-root');
-    expect(containerElements.length).toBeGreaterThan(0);
-  });
-
-  it('should pass correct props to transfer modal', async () => {
-    const { getByRole, container } = render(<Components />);
-
-    // Open modal
-    const transferButtons = container.querySelectorAll(
-      '[data-testid="OutboxIcon"]',
-    );
-    const firstTransferButton = transferButtons[0].closest('button');
-    userEvent.click(firstTransferButton!);
-
-    await waitFor(() => {
-      expect(getByRole('dialog')).toBeInTheDocument();
-
-      // Verify modal has the expected form structure
-      expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
-      expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-    });
-  });
-
-  it('should handle modal state correctly', async () => {
-    const { getByRole, queryByRole, container } = render(<Components />);
-
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
-
-    // Open modal
-    const transferButtons = container.querySelectorAll(
-      '[data-testid="OutboxIcon"]',
-    );
-    const firstTransferButton = transferButtons[0].closest('button');
-    userEvent.click(firstTransferButton!);
-
-    await waitFor(() => {
-      expect(getByRole('dialog')).toBeInTheDocument();
-    });
-
-    // Close modal by clicking cancel
-    const cancelButton = getByRole('button', { name: /cancel/i });
-    userEvent.click(cancelButton);
-
-    await waitFor(() => {
-      expect(queryByRole('dialog')).not.toBeInTheDocument();
+        within(toAccount).queryByText(mockData.funds[0].name, {
+          selector: 'strong',
+        }),
+      ).not.toBeInTheDocument();
     });
   });
 });

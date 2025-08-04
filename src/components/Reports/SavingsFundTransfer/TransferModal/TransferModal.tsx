@@ -286,26 +286,32 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         error={touched.transferTo && Boolean(errors.transferTo)}
                         required
                       >
-                        {funds.map((fund) => (
-                          <MenuItem key={fund.accountId} value={fund.accountId}>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
+                        {funds
+                          .filter((fund) => fund.type !== transferFrom)
+                          .map((fund) => (
+                            <MenuItem
+                              key={fund.accountId}
+                              value={fund.accountId}
                             >
-                              {fund.type === StaffSavingFundEnum.StaffAccount
-                                ? staffAccount
-                                : fund.type === StaffSavingFundEnum.StaffSavings
-                                ? staffSavings
-                                : fund.type ===
-                                  StaffSavingFundEnum.StaffConferenceSavings
-                                ? staffConferenceSavings
-                                : null}{' '}
-                              <strong>{fund.name}</strong>
-                            </Box>
-                          </MenuItem>
-                        ))}
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                {fund.type === StaffSavingFundEnum.StaffAccount
+                                  ? staffAccount
+                                  : fund.type ===
+                                    StaffSavingFundEnum.StaffSavings
+                                  ? staffSavings
+                                  : fund.type ===
+                                    StaffSavingFundEnum.StaffConferenceSavings
+                                  ? staffConferenceSavings
+                                  : null}{' '}
+                                <strong>{fund.name}</strong>
+                              </Box>
+                            </MenuItem>
+                          ))}
                       </Select>
                       {touched.transferTo && errors.transferTo && (
                         <FormHelperText error={true}>

@@ -37,7 +37,7 @@ export const mockData: MockData = {
   accountName: 'Test Account',
   funds: [
     {
-      accountId: 'staffSavings',
+      accountId: 'staffAccount',
       type: StaffSavingFundEnum.StaffAccount,
       name: 'Staff Account',
       balance: 15000,
@@ -51,7 +51,7 @@ export const mockData: MockData = {
       pending: 200,
     },
     {
-      accountId: 'staffAccount',
+      accountId: 'staffSavings',
       type: StaffSavingFundEnum.StaffSavings,
       name: 'Staff Savings',
       balance: 2500,
