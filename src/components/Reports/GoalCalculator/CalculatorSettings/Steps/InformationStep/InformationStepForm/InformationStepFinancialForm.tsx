@@ -24,7 +24,7 @@ export const InformationStepFinancialForm: React.FC<
   InformationStepFinancialFormProps
 > = () => {
   const { t } = useTranslation();
-  const { setRightPanelContent } = useGoalCalculator();
+  const { toggleRightPanel } = useGoalCalculator();
 
   return (
     <StyledFinancialForm>
@@ -180,7 +180,7 @@ export const InformationStepFinancialForm: React.FC<
                   endAdornment: (
                     <InfoIcon
                       onClick={() =>
-                        setRightPanelContent(<Contribution403bHelperPanel />)
+                        toggleRightPanel(<Contribution403bHelperPanel />)
                       }
                     />
                   ),

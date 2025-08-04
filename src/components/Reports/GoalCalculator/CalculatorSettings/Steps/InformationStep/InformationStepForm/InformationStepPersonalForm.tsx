@@ -15,7 +15,7 @@ export const InformationStepPersonalForm: React.FC<
   InformationStepPersonalFormProps
 > = () => {
   const { t } = useTranslation();
-  const { setRightPanelContent } = useGoalCalculator();
+  const { toggleRightPanel } = useGoalCalculator();
 
   return (
     <>
@@ -77,7 +77,7 @@ export const InformationStepPersonalForm: React.FC<
                   endAdornment: (
                     <InfoIcon
                       onClick={() =>
-                        setRightPanelContent(<BenefitsPlanHelperPanel />)
+                        toggleRightPanel(<BenefitsPlanHelperPanel />)
                       }
                     />
                   ),
