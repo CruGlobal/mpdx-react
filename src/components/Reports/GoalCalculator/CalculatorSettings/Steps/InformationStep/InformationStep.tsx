@@ -35,15 +35,12 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 
 interface InformationFormValues {
   // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
+  paycheckAmount: number;
   taxes: number;
   secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
+  contributionRoth403b: number;
+  contributionTraditional403b: number;
+  mhaAmountPerPaycheck: number;
 
   // Personal form fields
   geographicLocation: string;
@@ -86,22 +83,10 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
 
   const validationSchema = yup.object({
     // Financial validation
-    monthlyIncome: yup
+    paycheckAmount: yup
       .number()
-      .min(0, t('Monthly income must be positive'))
-      .required(t('Monthly income is required')),
-    monthlyExpenses: yup
-      .number()
-      .min(0, t('Monthly expenses must be positive'))
-      .required(t('Monthly expenses is required')),
-    targetAmount: yup
-      .number()
-      .min(0, t('Target amount must be positive'))
-      .required(t('Target amount is required')),
-    monthlySalary: yup
-      .number()
-      .min(0, t('Monthly salary must be positive'))
-      .required(t('Monthly salary is required')),
+      .min(0, t('Paycheck amount must be positive'))
+      .required(t('Paycheck amount is required')),
     taxes: yup
       .number()
       .min(0, t('Taxes must be positive'))
@@ -114,18 +99,18 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
         t('SECA status must be either exempt or non-exempt'),
       )
       .required(t('SECA status is required')),
-    contribution403b: yup
+    contributionRoth403b: yup
       .number()
-      .min(0, t('403(b) contribution must be positive'))
-      .required(t('403(b) contribution is required')),
-    mhaAmountPerMonth: yup
+      .min(0, t('Roth 403(b) contribution must be positive'))
+      .optional(),
+    contributionTraditional403b: yup
       .number()
-      .min(0, t('MHA amount must be positive'))
-      .required(t('MHA amount per month is required')),
-    solidMonthlySupportDeveloped: yup
+      .min(0, t('Traditional 403(b) contribution must be positive'))
+      .optional(),
+    mhaAmountPerPaycheck: yup
       .number()
-      .min(0, t('Solid monthly support must be positive'))
-      .required(t('Solid monthly support developed is required')),
+      .min(0, t('MHA amount per paycheck must be positive'))
+      .optional(),
 
     // Personal validation
     geographicLocation: yup
@@ -164,18 +149,15 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
 
   const initialValues: InformationFormValues = {
     // Financial form initial values
-    monthlyIncome: 0,
-    monthlyExpenses: 0,
-    targetAmount: 0,
-    monthlySalary: 0,
+    paycheckAmount: 0,
     taxes: 0,
     secaStatus: '',
-    contribution403b: 0,
-    mhaAmountPerMonth: 0,
-    solidMonthlySupportDeveloped: 0,
+    contributionRoth403b: 0,
+    contributionTraditional403b: 0,
+    mhaAmountPerPaycheck: 0,
 
     // Personal form initial values
-    geographicLocation: 'None',
+    geographicLocation: '',
     location: '',
     role: '',
     benefits: '',
