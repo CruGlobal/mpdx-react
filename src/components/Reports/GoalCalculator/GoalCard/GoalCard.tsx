@@ -8,7 +8,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 
 const StyledCard = styled(Card)({
-  minWidth: 400,
+  minWidth: 350,
   borderRadius: theme.shape.borderRadius,
 });
 
@@ -43,8 +43,8 @@ const StyledContentInnerBox = styled(Box)({
 
 const StyledInfoRow = styled(Box)({
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-start',
+  gap: 72,
 });
 
 const StyledActionBox = styled(Box)({
@@ -115,8 +115,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       <StyledContentBox>
         <StyledContentInnerBox>
           <StyledInfoRow>
-            <Typography variant="body1" fontWeight="bold">
-              Goal Amount
+            <Typography variant="body1" fontWeight="bold" pl={2}>
+              {t('Goal Amount')}
             </Typography>
             <Typography variant="body1">
               {currencyFormat(goalAmount, 'USD', locale)}
@@ -126,8 +126,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
           <Divider />
 
           <StyledInfoRow>
-            <Typography variant="body1" fontWeight="bold">
-              Last Updated
+            <Typography variant="body1" fontWeight="bold" pl={2}>
+              {t('Last Updated')}
             </Typography>
             <Typography variant="body1">
               {goalDate.toLocaleString({
