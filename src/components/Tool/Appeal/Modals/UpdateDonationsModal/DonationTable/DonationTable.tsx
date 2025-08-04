@@ -10,7 +10,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridColumnVisibilityModel,
+  GridPaginationModel,
+} from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import {
   DonationRow,
@@ -42,8 +46,8 @@ export interface DonationTableProps {
   selectedDonations: DonationRow[];
   setSelectedDonations: React.Dispatch<React.SetStateAction<DonationRow[]>>;
   totalSelectedDonationsAmount: number;
-  pageSize: number;
-  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   donationTableQueryResult: ReturnType<typeof useDonationTableQuery>;
 }
 
@@ -77,8 +81,8 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   selectedDonations = [],
   setSelectedDonations,
   totalSelectedDonationsAmount = 0,
-  pageSize = 25,
-  setPageSize,
+  paginationModel,
+  setPaginationModel,
   donationTableQueryResult,
 }) => {
   const { t } = useTranslation();
@@ -239,20 +243,30 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   return data?.donations.nodes.length ? (
     <>
       <StyledGrid
-        rows={donations}
+        // If we use paginationMode="client", the data grid won't show the total row count in
+        // the pagination UI because it assumes that the provided rows are all the rows.
+        // If we use paginationMode="server" and pass in all the rows, the data grid won't
+        // automatically limit the rows to the selected page because it assumes that the
+        // provided rows are all the rows for that page.
+        // To work around this, we have to use paginationMode="server" and manually pass in only
+        // the current page's rows.
+        rows={donations.slice(
+          paginationModel.page * paginationModel.pageSize,
+          (paginationModel.page + 1) * paginationModel.pageSize,
+        )}
         rowCount={data?.donations.totalCount}
+        paginationMode="server"
         columns={columns}
         columnVisibilityModel={{
           ...columnVisibility,
           foreignAmount: hasForeignDonations,
         }}
         onColumnVisibilityModelChange={setColumnVisibility}
-        pageSize={pageSize}
-        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
-        rowsPerPageOptions={[25, 50, 100]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
         pagination
         autoHeight
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         disableVirtualization
       />
       {data.donations.pageInfo.hasNextPage ? (

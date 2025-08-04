@@ -45,7 +45,8 @@
     "@mui/material": "^5.15.14",
     "@mui/styles": "^5.15.14",
     "@mui/system": "^5.15.14",
-    "@mui/x-data-grid": "^5.17.4",
+    "@mui/utils": "^7.2.0",
+    "@mui/x-data-grid": "^8.9.2",
     "@mui/x-date-pickers": "^7.0.0-beta.7",
     "@react-google-maps/api": "^2.20.3",
     "@rollbar/react": "^0.11.1",
@@ -146,7 +147,6 @@
     "chokidar/glob-parent": "^5.1.2",
     "glob-stream/glob-parent": "^5.1.2",
     "fast-glob/glob-parent": "^5.1.2",
-    "@mui/x-data-grid@^5.17.4": "patch:@mui/x-data-grid@npm%3A5.17.4#./.yarn/patches/@mui-x-data-grid-npm-5.17.4-542730a19e.patch",
     "@mui/base@^5.0.0-beta.36": "patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch",
     "@mui/base@5.0.0-beta.40": "patch:@mui/base@npm%3A5.0.0-beta.40#./.yarn/patches/@mui-base-npm-5.0.0-beta.40-248417914d.patch"
   },
