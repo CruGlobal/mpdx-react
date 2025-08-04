@@ -1,8 +1,16 @@
 import React from 'react';
-import { Grid, MenuItem, TextField, Typography } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import {
+  Grid,
+  IconButton,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/system';
 import { Field, FieldProps, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 
 const StyledFinancialForm = styled('div')({
   '.prefix': {
@@ -42,6 +50,7 @@ export const InformationStepFinancialForm: React.FC<
   InformationStepFinancialFormProps
 > = () => {
   const { t } = useTranslation();
+  const { toggleRightPanel } = useGoalCalculator();
 
   return (
     <StyledFinancialForm>
@@ -194,6 +203,11 @@ export const InformationStepFinancialForm: React.FC<
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
                   startAdornment: <span className="prefix">$</span>,
+                  endAdornment: (
+                    <IconButton onClick={toggleRightPanel}>
+                      <InfoIcon />
+                    </IconButton>
+                  ),
                 }}
               />
             )}
