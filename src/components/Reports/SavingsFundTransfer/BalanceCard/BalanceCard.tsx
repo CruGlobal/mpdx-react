@@ -28,6 +28,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const staffAccountColor = '#F08020';
+  const staffConferenceSavingsColor = '#00C0D8';
+  const staffSavingsColor = '#007890';
+  const amountColor = '#00000061';
+
   const title = `${fund.name} Balance`;
   const Icon =
     fund.type === StaffSavingFundEnum.StaffAccount
@@ -37,10 +42,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       : Savings;
   const iconBgColor =
     fund.type === StaffSavingFundEnum.StaffAccount
-      ? '#F08020'
+      ? staffAccountColor
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-      ? '#00C0D8'
-      : '#007890';
+      ? staffConferenceSavingsColor
+      : staffSavingsColor;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
@@ -53,7 +58,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferTo = () => {
     handleOpenTransferModal({
       transfer: {
-        transferFrom: fund.accountId,
+        transferTo: fund.accountId,
       },
     });
   };
@@ -132,14 +137,14 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         {!!fund.pending && (
           <Typography
             variant="h5"
-            color="#00000061"
+            color={amountColor}
             sx={{ fontSize: 'inherit' }}
           >
             {fund.pending.toLocaleString(locale, {
               style: 'currency',
               currency: 'USD',
             })}{' '}
-            (pending)
+            ({t('pending')})
           </Typography>
         )}
       </Box>
@@ -153,11 +158,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       >
         <Button onClick={handleTransferFrom}>
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
-          {t('Transfer From').toUpperCase()}
+          {t('TRANSFER FROM')}
         </Button>
         <Button onClick={handleTransferTo}>
           <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
-          {t('Transfer To').toUpperCase()}
+          {t('TRANSFER TO')}
         </Button>
       </ScreenOnly>
     </Card>

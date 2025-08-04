@@ -182,7 +182,7 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByText('$1,234.57')).toBeInTheDocument(); // Should round to 2 decimal places
+      expect(getByText('$1,234.57')).toBeInTheDocument();
       expect(getByText('$98.76 (pending)')).toBeInTheDocument();
     });
   });
@@ -202,18 +202,18 @@ describe('BalanceCard', () => {
     });
   });
 
-  // it('should call handleOpenTransferModal with correct parameters when Transfer To is clicked', async () => {
-  //   const { findByRole } = render(<Components />);
+  it('should call handleOpenTransferModal with correct parameters when Transfer To is clicked', async () => {
+    const { findByRole } = render(<Components />);
 
-  //   const transferToButton = await findByRole('button', {
-  //     name: /transfer to/i,
-  //   });
-  //   userEvent.click(transferToButton);
+    const transferToButton = await findByRole('button', {
+      name: /transfer to/i,
+    });
+    userEvent.click(transferToButton);
 
-  //   expect(mockHandleOpenTransferModal).toHaveBeenCalledWith({
-  //     transfer: {
-  //       transferTo: expect.any(String),
-  //     },
-  //   });
-  // });
+    expect(mockHandleOpenTransferModal).toHaveBeenCalledWith({
+      transfer: {
+        transferTo: expect.any(String),
+      },
+    });
+  });
 });
