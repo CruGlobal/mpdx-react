@@ -13,7 +13,13 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-export const InformationStepFinancialForm: React.FC = () => {
+interface InformationStepFinancialFormProps {
+  isSpouse?: boolean;
+}
+
+export const InformationStepFinancialForm: React.FC<
+  InformationStepFinancialFormProps
+> = () => {
   const { t } = useTranslation();
 
   return (
