@@ -13,7 +13,7 @@ interface InformationStepPersonalFormProps {
 
 export const InformationStepPersonalForm: React.FC<
   InformationStepPersonalFormProps
-> = ({ formikProps: _formikProps }) => {
+> = () => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();
 
@@ -27,72 +27,6 @@ export const InformationStepPersonalForm: React.FC<
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <Field name="firstName">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('First Name')}
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Field name="lastName">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Last Name')}
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="ministryLocation">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Ministry Location')}
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="familySize">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Family Size')}
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 1, max: 20 }}
-              />
-            )}
-          </Field>
-        </Grid>
-
         <Grid item xs={12}>
           <Field name="location">
             {({ field, meta }: FieldProps) => (
