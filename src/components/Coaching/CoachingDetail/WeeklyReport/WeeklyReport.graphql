@@ -17,3 +17,10 @@ query WeeklyReports($accountListId: ID!, $organizationId: ID) {
     completedAt
   }
 }
+
+query AccountListOrganization($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    salaryOrganizationId
+  }
+}
