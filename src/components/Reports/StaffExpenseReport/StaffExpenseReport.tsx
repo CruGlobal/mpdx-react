@@ -98,7 +98,7 @@ const StyledCardsBox = styled(Box)({
   flex: 1,
   minWidth: 250,
   display: 'flex',
-  gap: 16,
+  gap: theme.spacing(4),
 });
 
 export interface Transaction extends BreakdownByMonth {
@@ -112,21 +112,18 @@ interface StaffExpenseReportProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
-  time: DateTime;
-  setTime: (time: DateTime) => void;
 }
 
 export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   isNavListOpen,
   onNavListToggle,
   title,
-  time,
-  setTime,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters | null>(null);
+  const [time, setTime] = useState(DateTime.now().startOf('month'));
 
   const isFilterDateSelected = useMemo(() => {
     return Boolean(
@@ -207,8 +204,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   };
 
   const getPosOrNegTransactions = (tableType: TableType, fundType: string) => {
-    const transactionsToFilter = transactions[fundType] ?? [];
-    return transactionsToFilter.filter((transaction) =>
+    const allTransactions = transactions[fundType] ?? [];
+    return allTransactions.filter((transaction) =>
       tableType === TableType.Income
         ? transaction.total > 0
         : transaction.total < 0,
@@ -223,14 +220,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const transferTotals = useMemo(() => {
     const totals: Record<string, { in: number; out: number }> = {};
 
-    for (const [fundType, transactionsToFilter] of Object.entries(
-      transactions,
-    )) {
+    for (const [fundType, allTransactions] of Object.entries(transactions)) {
       totals[fundType] = {
-        in: transactionsToFilter
+        in: allTransactions
           .filter((transaction) => transaction.total > 0)
           .reduce((sum, transaction) => sum + transaction.total, 0),
-        out: transactionsToFilter
+        out: allTransactions
           .filter((transaction) => transaction.total < 0)
           .reduce((sum, transaction) => sum + transaction.total, 0),
       };
@@ -281,7 +276,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 <Typography variant="h4">{t('Income and Expenses')}</Typography>
               </ScreenOnly>
               {Object.values(transactions).some(
-                (transactionsToFilter) => transactionsToFilter.length > 0,
+                (allTransactions) => allTransactions.length > 0,
               ) ? (
                 <ScreenOnly
                   display="flex"
@@ -412,7 +407,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       </Box>
       <ScreenOnly mt={2} mb={2}>
         <Container>
-          <Divider></Divider>
+          <Divider />
         </Container>
       </ScreenOnly>
       <ScreenOnly mt={2}>
