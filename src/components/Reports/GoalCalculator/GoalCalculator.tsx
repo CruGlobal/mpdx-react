@@ -93,10 +93,12 @@ export const GoalCalculator: React.FC = () => {
   } = useGoalCalculator();
   const { t } = useTranslation();
   const router = useRouter();
+  const { accountListId } = router.query;
+
   const iconPanelWidth = theme.spacing(5);
 
   const handleBack = () => {
-    router.back();
+    router.push(`/accountLists/${accountListId}/reports/goalCalculator`);
   };
 
   const handleStepIconClick = (stepId: GoalCalculatorStepEnum) => {
