@@ -14,6 +14,10 @@ const InstructionsWrapper = styled('div')(({ theme }) => ({
   },
 }));
 
+const MonthlySavingsTable = styled('table')({
+  width: '100%',
+});
+
 export const useHouseholdExpenses = (): GoalCalculatorStep => {
   const { t } = useTranslation();
   return {
@@ -47,6 +51,29 @@ export const useHouseholdExpenses = (): GoalCalculatorStep => {
         id: GoalCalculatorCategoryEnum.Saving,
         title: t('Saving'),
         component: <InformationStep />,
+        rightPanelComponent: (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {t('Emergency Savings Guide')}
+            </Typography>
+            <MonthlySavingsTable>
+              <tbody>
+                <tr>
+                  <td>{t('Individuals')}</td>
+                  <td>$50/{t('month')}</td>
+                </tr>
+                <tr>
+                  <td>{t('Couples')}</td>
+                  <td>$100/{t('month')}</td>
+                </tr>
+                <tr>
+                  <td>{t('With kids')}</td>
+                  <td>$150/{t('month')}</td>
+                </tr>
+              </tbody>
+            </MonthlySavingsTable>
+          </>
+        ),
       },
       {
         id: GoalCalculatorCategoryEnum.Housing,
@@ -57,6 +84,18 @@ export const useHouseholdExpenses = (): GoalCalculatorStep => {
         id: GoalCalculatorCategoryEnum.Utilities,
         title: t('Utilities'),
         component: <InformationStep />,
+        rightPanelComponent: (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {t('Utilities')}
+            </Typography>
+            <Alert severity="warning">
+              {t(
+                'For mobile phone and internet expenses, only include the portion not reimbursed as a ministry expense.',
+              )}
+            </Alert>
+          </>
+        ),
       },
       {
         id: GoalCalculatorCategoryEnum.Insurance,
