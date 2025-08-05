@@ -5,7 +5,7 @@ import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/
 
 export const MileageStepRightPanelComponent: React.FC = () => {
   const { t } = useTranslation();
-  const { closeRightPanel } = useGoalCalculator();
+  const { toggleRightPanel } = useGoalCalculator();
 
   return (
     <Box sx={{ padding: '16px' }}>
@@ -15,7 +15,7 @@ export const MileageStepRightPanelComponent: React.FC = () => {
 
       <Button
         variant="outlined"
-        onClick={closeRightPanel}
+        onClick={toggleRightPanel}
         sx={{ marginTop: '16px' }}
       >
         {t('Close Panel')}
