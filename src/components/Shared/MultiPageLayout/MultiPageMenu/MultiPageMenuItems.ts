@@ -50,6 +50,10 @@ export const reportNavItems: NavItems[] = [
   //   title: i18n.t('Goal Calculator'),
   //   subTitle: i18n.t('Reports - Goal Calculation'),
   // },
+  {
+    id: 'mpgaIncomeExpenses',
+    title: i18n.t('MPGA Monthly Report'),
+  },
 ];
 
 export const settingsNavItems: NavItems[] = [
