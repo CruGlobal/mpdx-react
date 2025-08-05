@@ -1,5 +1,5 @@
 import HomeIcon from '@mui/icons-material/Home';
-import { Link, Typography, styled } from '@mui/material';
+import { Alert, Link, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
@@ -87,6 +87,18 @@ export const useHouseholdExpenses = (): GoalCalculatorStep => {
         id: GoalCalculatorCategoryEnum.Medical,
         title: t('Medical'),
         component: <InformationStep />,
+        rightPanelComponent: (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {t('Medical Expenses')}
+            </Typography>
+            <Alert severity="warning">
+              {t(
+                'Only include medical expenses that are not reimbursable through your staff account.',
+              )}
+            </Alert>
+          </>
+        ),
       },
       {
         id: GoalCalculatorCategoryEnum.Recreational,
