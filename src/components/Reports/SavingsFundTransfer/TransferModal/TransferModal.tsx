@@ -11,10 +11,8 @@ import {
   Grid,
   IconButton,
   InputLabel,
-  MenuItem,
   Radio,
   RadioGroup,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -30,16 +28,12 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import i18n from 'src/lib/i18n';
+import { TransferModalSelect } from '../../../common/TransferModalSelect/TransferModalSelect';
 import {
   ScheduleEnum,
-  StaffSavingFundEnum,
+  TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
-import {
-  staffAccount,
-  staffConferenceSavings,
-  staffSavings,
-} from '../Helper/transferIcons';
 import { Fund, TransferHistory } from '../mockData';
 
 export interface TransferModalData {
@@ -210,7 +204,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       <InputLabel id="transferFrom">
                         {t('From Account')}
                       </InputLabel>
-                      <Select
+                      <TransferModalSelect
+                        type={TransferDirectionEnum.From}
+                        funds={funds}
                         label={t('From Account')}
                         labelId="transferFrom"
                         name="transferFrom"
@@ -221,28 +217,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           touched.transferFrom && Boolean(errors.transferFrom)
                         }
                         required
-                      >
-                        {funds.map((fund) => (
-                          <MenuItem key={fund.accountId} value={fund.accountId}>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
-                            >
-                              {fund.type === StaffSavingFundEnum.StaffAccount
-                                ? staffAccount
-                                : fund.type === StaffSavingFundEnum.StaffSavings
-                                ? staffSavings
-                                : fund.type ===
-                                  StaffSavingFundEnum.StaffConferenceSavings
-                                ? staffConferenceSavings
-                                : null}{' '}
-                              <strong>{fund.name}</strong>
-                            </Box>
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      />
                       {touched.transferFrom && errors.transferFrom && (
                         <FormHelperText error={true}>
                           {errors.transferFrom}
@@ -276,7 +251,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                   <Grid item xs={12} sm={5.5}>
                     <FormControl fullWidth>
                       <InputLabel id="transferTo">{t('To Account')}</InputLabel>
-                      <Select
+                      <TransferModalSelect
+                        type={TransferDirectionEnum.To}
+                        selectedTransferFrom={transferFrom}
+                        funds={funds}
                         label={t('To Account')}
                         labelId="transferTo"
                         name="transferTo"
@@ -285,34 +263,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         onBlur={handleBlur}
                         error={touched.transferTo && Boolean(errors.transferTo)}
                         required
-                      >
-                        {funds
-                          .filter((fund) => fund.type !== transferFrom)
-                          .map((fund) => (
-                            <MenuItem
-                              key={fund.accountId}
-                              value={fund.accountId}
-                            >
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                {fund.type === StaffSavingFundEnum.StaffAccount
-                                  ? staffAccount
-                                  : fund.type ===
-                                    StaffSavingFundEnum.StaffSavings
-                                  ? staffSavings
-                                  : fund.type ===
-                                    StaffSavingFundEnum.StaffConferenceSavings
-                                  ? staffConferenceSavings
-                                  : null}{' '}
-                                <strong>{fund.name}</strong>
-                              </Box>
-                            </MenuItem>
-                          ))}
-                      </Select>
+                      />
                       {touched.transferTo && errors.transferTo && (
                         <FormHelperText error={true}>
                           {errors.transferTo}
