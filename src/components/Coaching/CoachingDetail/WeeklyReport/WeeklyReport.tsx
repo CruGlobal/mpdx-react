@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
 import { useLocale } from 'src/hooks/useLocale';
+import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { useWeeklyReportsQuery } from './WeeklyReport.generated';
 
@@ -71,11 +72,12 @@ export const WeeklyReport: React.FC<WeeklyReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const organizationId = useOrganizationId();
 
   const [reportIndex, setReportIndex] = useState(0);
 
   const { data, loading } = useWeeklyReportsQuery({
-    variables: { accountListId },
+    variables: { accountListId, organizationId },
   });
   const reports = data?.coachingAnswerSets ?? [];
   const report = reports[reportIndex];
