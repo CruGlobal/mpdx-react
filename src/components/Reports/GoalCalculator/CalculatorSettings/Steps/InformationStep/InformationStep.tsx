@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
 import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
@@ -43,6 +44,8 @@ interface InformationFormValues {
   mhaAmountPerPaycheck: number;
 
   // Personal form fields
+  firstName: string;
+  lastName: string;
   geographicLocation: string;
   location: string;
   role: string;
@@ -80,6 +83,7 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
+  const { data: userData } = useGetUserQuery();
 
   const validationSchema = yup.object({
     // Financial validation
@@ -113,6 +117,8 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
       .optional(),
 
     // Personal validation
+    firstName: yup.string().required(t('First name is required')),
+    lastName: yup.string().required(t('Last name is required')),
     geographicLocation: yup
       .string()
       .required(t('Geographic location is required')),
@@ -157,6 +163,8 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     mhaAmountPerPaycheck: 0,
 
     // Personal form initial values
+    firstName: userData?.user?.firstName || '',
+    lastName: userData?.user?.lastName || '',
     geographicLocation: '',
     location: '',
     role: '',

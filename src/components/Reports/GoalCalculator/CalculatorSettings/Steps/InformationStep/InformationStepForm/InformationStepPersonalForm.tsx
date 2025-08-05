@@ -28,6 +28,40 @@ export const InformationStepPersonalForm: React.FC = () => {
         {t('Review your personal details and preferences here.')}
       </Typography>
       <Grid container spacing={3}>
+        <Grid item xs={12} sm={6}>
+          <Field name="firstName">
+            {({ field, meta }: FieldProps) => (
+              <TextField
+                {...field}
+                fullWidth
+                size="small"
+                label={t('First Name')}
+                error={meta.touched && Boolean(meta.error)}
+                helperText={meta.touched && meta.error}
+                variant="outlined"
+                required
+              />
+            )}
+          </Field>
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <Field name="lastName">
+            {({ field, meta }: FieldProps) => (
+              <TextField
+                {...field}
+                fullWidth
+                size="small"
+                label={t('Last Name')}
+                error={meta.touched && Boolean(meta.error)}
+                helperText={meta.touched && meta.error}
+                variant="outlined"
+                required
+              />
+            )}
+          </Field>
+        </Grid>
+
         <Grid item xs={12}>
           <Field name="geographicLocation">
             {({ field, meta, form }: FieldProps) => (
