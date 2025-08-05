@@ -4,6 +4,7 @@ import { Box, Button, List, ListItem, Typography, styled } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { GoalCard } from '../GoalCard/GoalCard';
 import { GoalsListGraphic } from './GoalsListGraphic';
 
@@ -124,7 +125,9 @@ export const GoalsList: React.FC = () => {
 
   const handleCreateGoal = () => {
     const { goalCalculatorId } = router.query;
-    router.push(`${router.asPath}/${goalCalculatorId}`);
+    router.push(
+      `${router.asPath}/${goalCalculatorId}/${GoalCalculatorStepEnum.CalculatorSettings}`,
+    );
   };
 
   const handleStarToggle = (goalId: number) => {
