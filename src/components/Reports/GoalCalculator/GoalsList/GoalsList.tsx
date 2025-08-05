@@ -126,7 +126,7 @@ export const GoalsList: React.FC = () => {
   const handleCreateGoal = () => {
     const { goalCalculatorId } = router.query;
     router.push(
-      `${router.asPath}/${goalCalculatorId}/${GoalCalculatorStepEnum.CalculatorSettings}`,
+      `${router.asPath}/${goalCalculatorId}/${GoalCalculatorStepEnum.HouseholdExpenses}`,
     );
   };
 

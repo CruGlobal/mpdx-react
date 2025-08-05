@@ -11,37 +11,10 @@ import { useHouseholdExpenses } from '../HouseholdExpenses/HouseholdExpenses';
 import { useMinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
 import { useSummaryReport } from '../SummaryReport/SummaryReport';
 
-// Helper function to get step enum from router query
-const getStepFromRouterQuery = (
-  query: Record<string, string | string[] | undefined>,
-): GoalCalculatorStepEnum => {
-  // With the new route structure, goalStep is directly available
-  const { goalStep } = query;
-
-  const stepMap: Record<string, GoalCalculatorStepEnum> = {
-    'calculator-settings': GoalCalculatorStepEnum.CalculatorSettings,
-    'household-expenses': GoalCalculatorStepEnum.HouseholdExpenses,
-    'ministry-expenses': GoalCalculatorStepEnum.MinistryExpenses,
-    'summary-report': GoalCalculatorStepEnum.SummaryReport,
-  };
-
-  const stepValue = Array.isArray(goalStep) ? goalStep[0] : goalStep;
-  return stepMap[stepValue || ''] || GoalCalculatorStepEnum.CalculatorSettings;
-};
-
 export type GoalCalculatorType = {
   steps: GoalCalculatorStep[];
   selectedStepId: GoalCalculatorStepEnum;
   currentStep?: GoalCalculatorStep;
-  goalCalculatorId?: string;
-  goalStep?: string;
-
-  /** Restructured query parameters in the desired format */
-  queryParams: {
-    accountListId?: string | string[];
-    goalCalculatorId?: string;
-    goalStep?: string;
-  };
 
   /** The current contents of the right panel, or null if it is closed */
   rightPanelContent: JSX.Element | null;
@@ -80,21 +53,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  // Extract goalCalculatorId and goalStep directly from router query
-  const { goalCalculatorId, goalStep, accountListId } = router.query;
-
-  // Create the restructured query parameters in the desired format
-  const queryParams = useMemo(
-    () => ({
-      accountListId,
-      goalCalculatorId: Array.isArray(goalCalculatorId)
-        ? goalCalculatorId[0]
-        : goalCalculatorId,
-      goalStep: Array.isArray(goalStep) ? goalStep[0] : goalStep,
-    }),
-    [accountListId, goalCalculatorId, goalStep],
-  );
-
   // Static categories - no memoization to avoid React queue issues
   const steps = [
     useCalculatorSettings(),
@@ -103,10 +61,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useSummaryReport(),
   ];
 
-  // Use router query to determine initial step, fallback to CalculatorSettings
-  const initialStepId = getStepFromRouterQuery(router.query);
-
-  const [selectedStepId, setSelectedStepId] = useState(initialStepId);
+  const { goalStep } = router.query;
+  const [selectedStepId, setSelectedStepId] = useState(
+    goalStep || GoalCalculatorStepEnum.CalculatorSettings,
+  );
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
@@ -156,9 +114,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       steps,
       selectedStepId,
       currentStep,
-      goalCalculatorId: queryParams.goalCalculatorId,
-      goalStep: queryParams.goalStep,
-      queryParams,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
@@ -171,7 +126,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     [
       selectedStepId,
       currentStep,
-      queryParams,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
