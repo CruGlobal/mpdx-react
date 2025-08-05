@@ -1,11 +1,12 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
 import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
+  getStepEnumFromString,
 } from '../GoalCalculatorHelper';
 import { useHouseholdExpenses } from '../HouseholdExpenses/HouseholdExpenses';
 import { useMinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
@@ -63,8 +64,14 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const { goalStep } = router.query;
   const [selectedStepId, setSelectedStepId] = useState(
-    goalStep || GoalCalculatorStepEnum.CalculatorSettings,
+    getStepEnumFromString(goalStep),
   );
+
+  useEffect(() => {
+    const newStepId = getStepEnumFromString(goalStep);
+    setSelectedStepId(newStepId);
+  }, [goalStep]);
+
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
@@ -78,14 +85,18 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     (stepId: GoalCalculatorStepEnum) => {
       const step = steps.find((step) => step.id === stepId);
       if (step) {
-        setSelectedStepId(stepId);
+        // Update the route to reflect the new step
+        const { goalCalculatorId, accountListId } = router.query;
+        const newPath = `/accountLists/${accountListId}/reports/goalCalculator/${goalCalculatorId}/${stepId}`;
+
+        router.push(newPath, undefined, { shallow: true });
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
           variant: 'error',
         });
       }
     },
-    [steps, enqueueSnackbar, t],
+    [steps, enqueueSnackbar, t, router],
   );
 
   const handleContinue = useCallback(() => {
@@ -93,13 +104,14 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       steps.findIndex((step) => step.id === selectedStepId) + 1;
     const nextStep = steps[nextStepIndex];
     if (nextStep) {
-      setSelectedStepId(nextStep.id);
+      // Use handleStepChange to update both state and route
+      handleStepChange(nextStep.id);
     } else {
       enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
         variant: 'info',
       });
     }
-  }, [steps, enqueueSnackbar, selectedStepId, t]);
+  }, [steps, selectedStepId, handleStepChange, enqueueSnackbar, t]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);
