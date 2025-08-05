@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
@@ -67,11 +67,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     getStepEnumFromString(goalStep),
   );
 
-  useEffect(() => {
-    const newStepId = getStepEnumFromString(goalStep);
-    setSelectedStepId(newStepId);
-  }, [goalStep]);
-
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
@@ -85,11 +80,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     (stepId: GoalCalculatorStepEnum) => {
       const step = steps.find((step) => step.id === stepId);
       if (step) {
-        // Update the route to reflect the new step
-        const { goalCalculatorId, accountListId } = router.query;
-        const newPath = `/accountLists/${accountListId}/reports/goalCalculator/${goalCalculatorId}/${stepId}`;
-
-        router.push(newPath, undefined, { shallow: true });
+        setSelectedStepId(stepId);
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
           variant: 'error',
