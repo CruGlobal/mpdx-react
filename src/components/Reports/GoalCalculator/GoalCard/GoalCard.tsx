@@ -56,11 +56,11 @@ const StyledActionBox = styled(Box)({
   paddingLeft: theme.spacing(1),
 });
 
-interface GoalCardProps {
+export interface GoalCardProps {
   goalId: number;
   goalTitle: string;
   goalAmount: number;
-  goalDate: DateTime<boolean>;
+  goalDate: DateTime;
   starred: boolean;
   onStarToggle: (goalId: number) => void;
   onDelete: (goalId: number) => void;
@@ -96,9 +96,11 @@ export const GoalCard: React.FC<GoalCardProps> = ({
     <StyledCard>
       <StyledHeaderBox>
         <StyledTitleBox>
-          <Typography variant="h6">{goalTitle}</Typography>
+          <Typography data-testid="goal-title" variant="h6">
+            {goalTitle}
+          </Typography>
         </StyledTitleBox>
-        <StyledStarButton onClick={handleStarClick}>
+        <StyledStarButton aria-label="star-button" onClick={handleStarClick}>
           {starred ? (
             <Star color="primary" sx={{ verticalAlign: 'middle' }} />
           ) : (
@@ -118,7 +120,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             <Typography variant="body1" fontWeight="bold" pl={2}>
               {t('Goal Amount')}
             </Typography>
-            <Typography variant="body1">
+            <Typography data-testid="goal-amount-value" variant="body1">
               {currencyFormat(goalAmount, 'USD', locale)}
             </Typography>
           </StyledInfoRow>
@@ -129,7 +131,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             <Typography variant="body1" fontWeight="bold" pl={2}>
               {t('Last Updated')}
             </Typography>
-            <Typography variant="body1">
+            <Typography data-testid="date-value" variant="body1">
               {goalDate.toLocaleString({
                 month: 'long',
                 day: 'numeric',
@@ -145,6 +147,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       <StyledActionBox>
         <Button onClick={handleDelete}>
           <Typography
+            data-testid="delete-button"
             variant="body2"
             fontWeight="bold"
             color={theme.palette.error.main}
@@ -152,7 +155,12 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             {t('Delete')}
           </Typography>
         </Button>
-        <Button onClick={handleView} variant="contained" color="primary">
+        <Button
+          data-testid="view-button"
+          onClick={handleView}
+          variant="contained"
+          color="primary"
+        >
           <Typography
             variant="body2"
             fontWeight="bold"
