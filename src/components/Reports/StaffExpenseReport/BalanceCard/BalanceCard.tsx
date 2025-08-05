@@ -5,43 +5,43 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 
-const StyledCardActionArea = styled(CardActionArea)<{ isSelected: boolean }>(
-  ({ theme, isSelected }) => ({
-    padding: theme.spacing(1),
-    margin: 0,
-    minHeight: 48,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: isSelected ? 'center' : 'flex-start',
-  }),
-);
+const StyledCardActionArea = styled(CardActionArea, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+  padding: theme.spacing(1),
+  margin: 0,
+  minHeight: 48,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: isSelected ? 'center' : 'flex-start',
+}));
 
-const StyledIconBox = styled(Box)<{ iconBgColor?: string }>(
-  ({ theme, iconBgColor }) => ({
-    backgroundColor: iconBgColor || theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    borderRadius: theme.spacing(1),
-    padding: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }),
-);
+const StyledIconBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'iconBgColor',
+})<{ iconBgColor?: string }>(({ theme, iconBgColor }) => ({
+  backgroundColor: iconBgColor || theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  borderRadius: theme.spacing(1),
+  padding: theme.spacing(1),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
 
-const StyledCard = styled(Card)<{ isSelected: boolean }>(
-  ({ theme, isSelected }) => ({
-    padding: theme.spacing(2),
-    flex: 1,
-    minWidth: 0,
-    maxWidth: 'none',
-    fontSize: '1.25rem',
-    boxShadow: isSelected ? theme.shadows[3] : theme.shadows[1],
-    transition: 'box-shadow 0.3s ease-in-out, border 0.3s ease-in-out',
-    border: isSelected
-      ? `1px dashed ${theme.palette.primary.main}`
-      : `1px solid ${theme.palette.divider}`,
-  }),
-);
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+  padding: theme.spacing(2),
+  flex: 1,
+  minWidth: 0,
+  maxWidth: 'none',
+  fontSize: '1.25rem',
+  boxShadow: isSelected ? theme.shadows[3] : theme.shadows[1],
+  transition: 'box-shadow 0.3s ease-in-out, border 0.3s ease-in-out',
+  border: isSelected
+    ? `1px dashed ${theme.palette.primary.main}`
+    : `1px solid ${theme.palette.divider}`,
+}));
 
 interface BalanceCardProps {
   fundType: string;
