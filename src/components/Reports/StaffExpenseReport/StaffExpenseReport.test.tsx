@@ -4,7 +4,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -19,10 +18,8 @@ interface TestComponentProps {
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
-const setTime = jest.fn();
 const push = jest.fn();
 
-const time = DateTime.fromISO('2025-01-01').startOf('month');
 const title = 'Report title';
 
 const router = {
@@ -109,8 +106,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 isNavListOpen={true}
                 onNavListToggle={onNavListToggle}
                 title={title}
-                time={time}
-                setTime={setTime}
               />
             </GqlMockedProvider>
           </TestRouter>
@@ -122,9 +117,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('StaffExpenseReport', () => {
   it('initializes with month from query', () => {
-    const { getByRole } = render(<TestComponent routerMonth="2025-01-01" />);
+    const { getByText } = render(<TestComponent />);
 
-    expect(getByRole('heading', { name: 'January 2025' })).toBeInTheDocument();
+    expect(getByText('January 2020')).toBeInTheDocument();
   });
 
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {
@@ -137,9 +132,8 @@ describe('StaffExpenseReport', () => {
   });
 
   it('updates the time filter', () => {
-    const { getByRole } = render(<TestComponent />);
-
+    const { getByRole, getByText } = render(<TestComponent />);
     userEvent.click(getByRole('button', { name: 'Previous Month' }));
-    expect(setTime.mock.lastCall[0].toISODate()).toBe('2024-12-01');
+    expect(getByText('December 2019')).toBeInTheDocument();
   });
 });
