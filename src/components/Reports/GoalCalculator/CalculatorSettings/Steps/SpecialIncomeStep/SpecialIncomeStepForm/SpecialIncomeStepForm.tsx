@@ -1,47 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Button, Card, Switch, Typography, styled } from '@mui/material';
 import {
-  Box,
-  Button,
-  Grid,
-  IconButton,
-  TextField,
-  styled,
-} from '@mui/material';
-import { Field, FormikProps } from 'formik';
+  GridActionsCellItem,
+  GridColDef,
+  GridValidRowModel,
+} from '@mui/x-data-grid';
+import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { GoalCalculatorGrid } from '../../../../SharedComponents/GoalCalculatorGrid';
+import { SpecialIncomeFormValues } from '../SpecialIncomeStep';
 
-const StyledCurrencyPrefix = styled('span')({
-  marginRight: 8,
+const StyledCard = styled(Card)({
+  borderRadius: '4px',
 });
-
-const StyledDeleteIconButton = styled(IconButton)(({ theme }) => ({
-  color: 'black',
-  padding: theme.spacing(0.5),
-}));
-
-const StyledAddIncomeButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(1),
-  borderStyle: 'dashed',
-  borderColor: theme.palette.primary.main,
-  color: theme.palette.primary.main,
-  '&:hover': {
-    borderStyle: 'dashed',
-    borderColor: theme.palette.primary.dark,
-    backgroundColor: theme.palette.primary.light,
-    opacity: 0.3,
-  },
-}));
-
-interface SpecialIncomeFormValues {
-  // Special income fields
-  incidentIncome: number;
-  propertyIncome: number;
-  additionalIncomes: Array<{
-    label: string;
-    amount: number;
-  }>;
-}
 
 interface SpecialIncomeStepFormProps {
   formikProps: FormikProps<SpecialIncomeFormValues>;
@@ -51,142 +24,154 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
   formikProps,
 }) => {
   const { t } = useTranslation();
-  const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
-    formikProps;
+  const { values, setFieldValue } = formikProps;
 
-  const addIncomeField = () => {
-    const newIncome = { label: '', amount: 0 };
-    const updatedIncomes = [...values.additionalIncomes, newIncome];
-    setFieldValue('additionalIncomes', updatedIncomes);
+  // Calculate total dynamically from the actual form data
+  const totalAmount = values.specialIncomeData.reduce(
+    (sum, item) => sum + item.amount,
+    0,
+  );
+
+  // Add total row to the data
+  const dataWithTotal = [
+    ...values.specialIncomeData,
+    { id: 'total', name: 'Total', amount: totalAmount },
+  ];
+
+  // State for Direct Input toggle
+  const [directInput, setDirectInput] = useState(false);
+
+  // Handler for adding special income
+  const addSpecialIncome = () => {
+    const newId =
+      Math.max(...values.specialIncomeData.map((item) => item.id), 0) + 1;
+    const newIncomeItem = {
+      id: newId,
+      name: 'New Income',
+      amount: 0,
+    };
+    const updatedData = [...values.specialIncomeData, newIncomeItem];
+    setFieldValue('specialIncomeData', updatedData);
   };
 
-  const removeIncomeField = (index: number) => {
-    const updatedIncomes = values.additionalIncomes.filter(
-      (_, i) => i !== index,
+  // Handler for toggling direct input
+  const handleDirectInputToggle = () => {
+    setDirectInput(!directInput);
+  };
+
+  // Handler for deleting a row
+  const handleDelete = (id: number) => {
+    const updatedData = values.specialIncomeData.filter(
+      (item) => item.id !== id,
     );
-    setFieldValue('additionalIncomes', updatedIncomes);
+    setFieldValue('specialIncomeData', updatedData);
   };
+
+  // Handle row updates
+  const processRowUpdate = (newRow: GridValidRowModel) => {
+    // Don't allow editing the total row
+    if (newRow.id === 'total') {
+      return newRow;
+    }
+
+    const updatedData = values.specialIncomeData.map((item) =>
+      item.id === newRow.id
+        ? {
+            ...item,
+            name: newRow.name as string,
+            amount: newRow.amount as number,
+          }
+        : item,
+    );
+    setFieldValue('specialIncomeData', updatedData);
+    return newRow;
+  };
+
+  // DataGrid columns configuration
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: t('Special Income Name'),
+      flex: 1,
+      minWidth: 200,
+      editable: true,
+    },
+    {
+      field: 'amount',
+      headerName: t('Amount'),
+      flex: 1,
+      minWidth: 150,
+      editable: true,
+      type: 'number',
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params) => `$${params.value.toLocaleString()}`,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: '',
+      width: 60,
+      getActions: (params) => {
+        // Don't show delete action for total row
+        if (params.id === 'total') {
+          return [];
+        }
+
+        return [
+          <GridActionsCellItem
+            key="delete"
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDelete(params.id as number)}
+            showInMenu={false}
+          />,
+        ];
+      },
+    },
+  ];
 
   return (
     <Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Field name="incidentIncome">
-            {() => (
-              <TextField
-                fullWidth
-                size="small"
-                label={t('Incident Income')}
-                name="incidentIncome"
-                type="number"
-                value={values.incidentIncome}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.incidentIncome && Boolean(errors.incidentIncome)}
-                helperText={touched.incidentIncome && errors.incidentIncome}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="propertyIncome">
-            {() => (
-              <TextField
-                fullWidth
-                size="small"
-                label={t('Property Income')}
-                name="propertyIncome"
-                type="number"
-                value={values.propertyIncome}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.propertyIncome && Boolean(errors.propertyIncome)}
-                helperText={touched.propertyIncome && errors.propertyIncome}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-
-        {/* Dynamic Additional Income Fields */}
-        {values.additionalIncomes.map((income, index) => (
-          <React.Fragment key={index}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label={t('Income Label')}
-                value={income.label}
-                onChange={(e) =>
-                  setFieldValue(
-                    `additionalIncomes.${index}.label`,
-                    e.target.value,
-                  )
-                }
-                variant="outlined"
-                placeholder={t('e.g., Freelance, Side Business')}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                size="small"
-                label={t('Amount')}
-                type="number"
-                value={income.amount}
-                onChange={(e) =>
-                  setFieldValue(
-                    `additionalIncomes.${index}.amount`,
-                    parseFloat(e.target.value) || 0,
-                  )
-                }
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
-                  endAdornment: (
-                    <StyledDeleteIconButton
-                      onClick={() => removeIncomeField(index)}
-                      size="small"
-                      aria-label={t('Delete income')}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </StyledDeleteIconButton>
-                  ),
-                }}
-              />
-            </Grid>
-          </React.Fragment>
-        ))}
-
-        {/* Add Income Button */}
-        <Grid item xs={12}>
-          <StyledAddIncomeButton
-            variant="outlined"
-            onClick={addIncomeField}
+      <StyledCard>
+        <Box sx={{ p: 1, display: 'flex', gap: 0, alignItems: 'center' }}>
+          <Button
+            variant="text"
+            onClick={addSpecialIncome}
             size="small"
-            fullWidth
+            sx={{ color: 'primary.main' }}
+            startIcon={<AddIcon />}
           >
-            {t('+ Add Income')}
-          </StyledAddIncomeButton>
-        </Grid>
-      </Grid>
+            {t('Add Special Income')}
+          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Switch
+              checked={directInput}
+              onChange={handleDirectInputToggle}
+              size="small"
+            />
+
+            <Typography
+              sx={{
+                color: 'primary.main',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+              }}
+              variant="button"
+            >
+              {t('Direct Input')}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Box sx={{ height: 'auto', width: '100%' }}>
+          <GoalCalculatorGrid
+            rows={dataWithTotal}
+            columns={columns}
+            processRowUpdate={processRowUpdate}
+          />
+        </Box>
+      </StyledCard>
     </Box>
   );
 };

@@ -12,12 +12,11 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 
 interface SpecialIncomeStepProps {}
 
-interface SpecialIncomeFormValues {
+export interface SpecialIncomeFormValues {
   // Special income fields
-  incidentIncome: number;
-  propertyIncome: number;
-  additionalIncomes: Array<{
-    label: string;
+  specialIncomeData: Array<{
+    id: number;
+    name: string;
     amount: number;
   }>;
 }
@@ -26,26 +25,21 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
   const initialValues: SpecialIncomeFormValues = {
-    incidentIncome: 0,
-    propertyIncome: 0,
-    additionalIncomes: [],
+    specialIncomeData: [
+      { id: 1, name: 'Freelance Work', amount: 2500 },
+      { id: 2, name: 'Investment Returns', amount: 1200 },
+      { id: 3, name: 'Rental Income', amount: 1800 },
+    ],
   };
 
   const validationSchema = yup.object({
-    incidentIncome: yup
-      .number()
-      .min(0, t('Incident income must be positive'))
-      .required(t('Incident income is required')),
-    propertyIncome: yup
-      .number()
-      .min(0, t('Property income must be positive'))
-      .required(t('Property income is required')),
-    additionalIncomes: yup.array().of(
+    specialIncomeData: yup.array().of(
       yup.object({
-        label: yup
+        id: yup.number().required(),
+        name: yup
           .string()
-          .min(2, t('Label must be at least 2 characters'))
-          .required(t('Label is required')),
+          .min(2, t('Name must be at least 2 characters'))
+          .required(t('Name is required')),
         amount: yup
           .number()
           .min(0, t('Amount must be positive'))
