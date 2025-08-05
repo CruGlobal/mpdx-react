@@ -14,10 +14,15 @@ export const GoalsListWelcome: React.FC<GoalsListWelcomeProps> = ({
   const greeting = useGreeting(firstName);
   return (
     <>
-      <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
+      <Typography
+        data-testid="greeting-typography"
+        variant="h4"
+        gutterBottom
+        sx={{ mb: 2 }}
+      >
         {greeting}
       </Typography>
-      <Typography sx={{ mb: 3 }}>
+      <Typography data-testid="welcome-typography" sx={{ mb: 3 }}>
         {t('Welcome to the MPD Goal Calculator.')}
       </Typography>
     </>
