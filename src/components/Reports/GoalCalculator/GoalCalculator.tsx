@@ -113,7 +113,11 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     }
   };
 
-  const { title: stepTitle, categories } = currentStep || {};
+  const {
+    title: stepTitle,
+    instructions: stepInstructions,
+    categories,
+  } = currentStep || {};
 
   return (
     <>
@@ -185,6 +189,9 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
         {isDrawerOpen && <Divider orientation="vertical" flexItem />}
         <Divider orientation="vertical" flexItem />
         <CategoriesStack flex={1} spacing={4} divider={<Divider />}>
+          {stepInstructions && (
+            <CategoryContainer>{stepInstructions}</CategoryContainer>
+          )}
           {categories?.map((category) => {
             const rightPanelContent = category.rightPanelComponent;
             return (

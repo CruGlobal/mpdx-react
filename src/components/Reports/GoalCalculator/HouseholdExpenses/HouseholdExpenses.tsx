@@ -1,4 +1,5 @@
 import HomeIcon from '@mui/icons-material/Home';
+import { Link, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
@@ -7,11 +8,34 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 
+const InstructionsWrapper = styled('div')(({ theme }) => ({
+  '.MuiTypography-root': {
+    marginBottom: theme.spacing(1),
+  },
+}));
+
 export const useHouseholdExpenses = (): GoalCalculatorStep => {
   const { t } = useTranslation();
   return {
-    title: t('Household Expenses'),
     id: GoalCalculatorStepEnum.HouseholdExpenses,
+    title: t('Household Expenses'),
+    instructions: (
+      <InstructionsWrapper>
+        <Typography variant="h6">{t('Enter your monthly budget')}</Typography>
+        <Typography variant="body2">
+          {t(
+            'You may choose to skip entering your budget below if you know the net cash you need each month.',
+          )}
+        </Typography>
+        <Typography variant="body2">
+          {t('For additional guidance, check out')}{' '}
+          <Link href="https://www.ramseysolutions.com/budgeting/useful-forms">
+            {t('these resources from Ramsey Solutions')}
+          </Link>
+          .
+        </Typography>
+      </InstructionsWrapper>
+    ),
     icon: <HomeIcon />,
     categories: [
       {
