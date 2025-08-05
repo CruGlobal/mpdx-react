@@ -85,7 +85,7 @@ export const GoalCalculator: React.FC = () => {
     currentStep,
     isDrawerOpen,
     selectedStepId,
-    toggleRightPanel,
+    setRightPanelContent,
     toggleDrawer,
     setDrawerOpen,
     handleStepChange,
@@ -188,7 +188,7 @@ export const GoalCalculator: React.FC = () => {
                 {category.title}
                 {rightPanelContent && (
                   <IconButton
-                    onClick={toggleRightPanel}
+                    onClick={() => setRightPanelContent(rightPanelContent)}
                     aria-label={t('Show additional info')}
                   >
                     <InfoIcon />
