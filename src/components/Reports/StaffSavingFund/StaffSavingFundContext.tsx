@@ -23,13 +23,14 @@ export const StaffSavingFundProvider: React.FC<Props> = ({ children }) => {
     setIsNavListOpen(!isNavListOpen);
   }, [isNavListOpen]);
 
-  const contextValue = useMemo(() => {
-    return {
+  const contextValue = useMemo(
+    () => ({
       accountListId,
       isNavListOpen,
       onNavListToggle,
-    };
-  }, [accountListId, isNavListOpen, onNavListToggle]);
+    }),
+    [accountListId, isNavListOpen, onNavListToggle],
+  );
 
   return (
     <StaffSavingFundContext.Provider value={contextValue}>

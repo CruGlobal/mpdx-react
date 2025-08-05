@@ -50,24 +50,12 @@ interface TransferFormValues {
   amount: number;
 }
 
-// Helper function to get the start of next month
-const getStartOfNextMonth = (): DateTime<boolean> => {
-  const now = new Date();
-  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const nextMonthDateTime = DateTime.fromJSDate(nextMonth, { zone: 'utc' });
-  // Ensure the date is at the start of the month
-  nextMonthDateTime.set({
-    day: 1,
-    hour: 0,
-    minute: 0,
-    second: 0,
-    millisecond: 0,
-  });
-  return nextMonthDateTime;
+const getStartOfNextMonth = (): DateTime => {
+  return DateTime.utc().plus({ months: 1 }).startOf('month');
 };
 
 const transferSchema = yup.object({
-  transferFrom: yup.string().required('From account is required'),
+  transferFrom: yup.string().required(i18n.t('From account is required')),
   transferTo: yup
     .string()
     .required(i18n.t('To account is required'))
@@ -146,7 +134,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       enqueueSnackbar(t('Transfer successful'), {
         variant: 'success',
       });
-      // handleClose();
+      handleClose();
     } catch (error) {
       enqueueSnackbar(t('Transfer failed'), {
         variant: 'error',
