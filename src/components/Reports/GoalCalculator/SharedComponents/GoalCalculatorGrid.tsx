@@ -33,6 +33,9 @@ const StyledDataGrid = styled(DataGrid)({
     opacity: 1,
     '& .MuiDataGrid-actionsCell': {
       opacity: 1,
+      '&:focus': {
+        outline: 'none !important',
+      },
     },
   },
   '& .MuiDataGrid-row[data-id="total"]': {
