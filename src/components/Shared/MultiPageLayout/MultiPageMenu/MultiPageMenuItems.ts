@@ -53,6 +53,7 @@ export const reportNavItems: NavItems[] = [
   {
     id: 'mpgaIncomeExpenses',
     title: i18n.t('MPGA Monthly Report'),
+    subTitle: i18n.t('Income & Expenses'),
   },
 ];
 
