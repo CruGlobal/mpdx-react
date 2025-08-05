@@ -1,12 +1,14 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { Box, Button, List, ListItem, Typography, styled } from '@mui/material';
+import { Box, Button, List, ListItem, styled } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { GoalCard } from '../GoalCard/GoalCard';
-import { GoalsListGraphic } from './GoalsListGraphic';
+import { GoalsListWelcome } from './GoalsListWelcome';
 
 const StyledCreateButton = styled(Button)({
   backgroundColor: 'primary.main',
@@ -120,8 +122,8 @@ export const GoalsList: React.FC = () => {
   const [deleteGoalDialog, setDeleteGoalDialog] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<GoalCardData | null>(null);
 
-  // You can replace this with actual user name from context/props
-  const userName = 'User'; // TODO: Get actual user name
+  const { data, loading } = useGetUserQuery();
+  const firstName = loading ? 'User' : data?.user?.firstName;
 
   const handleCreateGoal = () => {
     const { goalCalculatorId } = router.query;
@@ -153,7 +155,6 @@ export const GoalsList: React.FC = () => {
       );
     }
     setDeleteGoalDialog(false);
-    Promise.resolve();
   };
 
   const handleView = () => {
@@ -191,16 +192,10 @@ export const GoalsList: React.FC = () => {
       {goals.length === 0 ? (
         <StyledEmptyStateContainer>
           <Box sx={{ flex: '0 0 auto' }}>
-            <GoalsListGraphic />
+            <img src={illustration6graybg} alt="empty" />
           </Box>
           <StyledEmptyStateContent>
-            <Typography variant="h4" gutterBottom sx={{ mb: 2 }}>
-              {t('Good Afternoon, {{name}}.', { name: userName })}
-            </Typography>
-
-            <Typography sx={{ mb: 3 }}>
-              {t('Welcome to the MPD Goal Calculator.')}
-            </Typography>
+            <GoalsListWelcome firstName={firstName ?? t('User')} />
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <StyledCreateButton
                 variant="contained"
@@ -217,14 +212,7 @@ export const GoalsList: React.FC = () => {
         </StyledEmptyStateContainer>
       ) : (
         <>
-          <Typography variant="h3" gutterBottom sx={{ mb: 3 }}>
-            {t('Good Afternoon, {{name}}.', { name: userName })}
-          </Typography>
-
-          <Typography sx={{ mb: 3 }}>
-            {t('Welcome to the MPD Goal Calculator.')}
-          </Typography>
-
+          <GoalsListWelcome firstName={firstName ?? t('User')} />
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <StyledCreateButton variant="contained" onClick={handleCreateGoal}>
               {t('Create a New Goal')}
