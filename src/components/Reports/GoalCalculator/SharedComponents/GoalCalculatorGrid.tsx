@@ -14,6 +14,27 @@ const StyledDataGrid = styled(DataGrid)({
   '& .MuiDataGrid-columnSeparator': {
     display: 'none',
   },
+  // Hide actions column by default
+  '& .MuiDataGrid-cell[data-field="actions"]': {
+    '&:focus': {
+      outline: 'none !important',
+    },
+    '&.Mui-focusVisible': {
+      outline: 'none !important',
+    },
+    '& .MuiDataGrid-actionsCell': {
+      opacity: 0,
+      transition: 'opacity 0.2s ease-in-out',
+    },
+  },
+
+  // Show actions column on row hover
+  '& .MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
+    opacity: 1,
+    '& .MuiDataGrid-actionsCell': {
+      opacity: 1,
+    },
+  },
   '& .MuiDataGrid-row[data-id="total"]': {
     fontWeight: 'bold',
     '&:hover': {
