@@ -3,21 +3,10 @@ query GetUser {
     id
     firstName
     lastName
-    admin
-    developer
-    keyAccounts {
-      id
-      email
-    }
     preferences {
       id
       language: locale
       locale: localeDisplay
-    }
-    administrativeOrganizations(first: 25) {
-      nodes {
-        id
-      }
     }
   }
 }
