@@ -1,15 +1,13 @@
 import Head from 'next/dist/shared/lib/head';
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { ReactElement, useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -30,10 +28,6 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
   selectedMenuId,
   children,
 }) => {
-  const { appName } = useGetAppSettings();
-  const { t } = useTranslation();
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-
   const { accountListId, isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
@@ -41,7 +35,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports')} | ${pageTitle}`}</title>
+        <title>{`${pageTitle}`}</title>
       </Head>
       {accountListId ? (
         <StaffSavingFundPageWrapper>
@@ -52,8 +46,6 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
                 isOpen={isNavListOpen}
                 selectedId={selectedMenuId}
                 onClose={onNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
                 navType={NavTypeEnum.Reports}
               />
             }
