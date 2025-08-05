@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Field, FieldProps, FormikProps } from 'formik';
+import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 
 const StyledFinancialForm = styled('div')({
@@ -13,34 +13,7 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-interface InformationFormValues {
-  // Financial form fields
-  monthlyIncome: number;
-  monthlyExpenses: number;
-  targetAmount: number;
-  monthlySalary: number;
-  taxes: number;
-  secaStatus: string;
-  contribution403b: number;
-  mhaAmountPerMonth: number;
-  solidMonthlySupportDeveloped: number;
-
-  // Personal form fields
-  location: string;
-  role: string;
-  benefits: string;
-  tenure: number;
-  age: number;
-  children: number;
-}
-
-interface InformationStepFinancialFormProps {
-  formikProps: FormikProps<InformationFormValues>;
-}
-
-export const InformationStepFinancialForm: React.FC<
-  InformationStepFinancialFormProps
-> = () => {
+export const InformationStepFinancialForm: React.FC = () => {
   const { t } = useTranslation();
 
   return (
@@ -54,76 +27,13 @@ export const InformationStepFinancialForm: React.FC<
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Field name="monthlyIncome">
+          <Field name="paycheckAmount">
             {({ field, meta }: FieldProps) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Monthly Income')}
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="monthlyExpenses">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Monthly Expenses')}
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="targetAmount">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Target Amount')}
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Field name="monthlySalary">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Monthly Salary')}
+                label={t('Net Paycheck Amount')}
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -166,7 +76,7 @@ export const InformationStepFinancialForm: React.FC<
                 fullWidth
                 size="small"
                 select
-                label={t('SECA Status')}
+                label={t('SECA (Social Security) Status')}
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
                 variant="outlined"
@@ -180,13 +90,13 @@ export const InformationStepFinancialForm: React.FC<
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="contribution403b">
+          <Field name="contributionRoth403b">
             {({ field, meta }: FieldProps) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('403(b) Contributions')}
+                label={t('Roth 403(b) Contributions')}
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -201,13 +111,13 @@ export const InformationStepFinancialForm: React.FC<
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="mhaAmountPerMonth">
+          <Field name="contributionTraditional403b">
             {({ field, meta }: FieldProps) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('MHA Amount Per Month')}
+                label={t('Traditional 403(b) Contributions')}
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -222,13 +132,13 @@ export const InformationStepFinancialForm: React.FC<
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="solidMonthlySupportDeveloped">
+          <Field name="mhaAmountPerPaycheck">
             {({ field, meta }: FieldProps) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Solid Monthly Support Developed')}
+                label={t('MHA Amount Per Paycheck')}
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
