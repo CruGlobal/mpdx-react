@@ -35,5 +35,5 @@ export const StyledRow = styled(TableRow)(() => ({
 }));
 
 export const StyledTypography = styled(Typography)(() => ({
-  fontSize: '13px',
+  fontSize: '12px',
 }));
