@@ -1,11 +1,11 @@
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { useTranslation } from 'react-i18next';
-import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
   GoalCalculatorCategoryEnum,
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
+import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
 
 export const useSummaryReport = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -16,8 +16,8 @@ export const useSummaryReport = (): GoalCalculatorStep => {
     categories: [
       {
         id: GoalCalculatorCategoryEnum.Overview,
-        title: t('Overview'),
-        component: <InformationStep />,
+        title: t('MPD Goal'),
+        component: <MpdGoalTable />,
       },
     ],
   };
