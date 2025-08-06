@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import RightArrowIcon from '@mui/icons-material/ArrowForward';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import PersonIcon from '@mui/icons-material/Person';
@@ -11,7 +11,6 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -44,17 +43,6 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 const StyledTabs = styled(Tabs)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
-}));
-
-const StyledPersonBox = styled(Box)(({ theme }) => ({
-  width: 36,
-  height: 36,
-  borderRadius: theme.shape.borderRadius,
-  overflow: 'hidden',
-  backgroundColor: theme.palette.background.default,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
 }));
 
 interface InformationFormValues {
@@ -103,7 +91,6 @@ interface InformationStepProps {
 }
 
 export const InformationStep: React.FC<InformationStepProps> = () => {
-  const theme = useTheme();
   const { handleContinue } = useGoalCalculator();
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
@@ -246,14 +233,18 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
   const [spouseInformation, setSpouseInformation] = useState<boolean | null>(
     false,
   );
-  const [buttonText, setButtonText] = useState<string>(t('View Spouse'));
+  const buttonText = useMemo(() => {
+    if (!spouseInformation) {
+      return t('View Spouse');
+    }
+    if (userData?.user?.firstName) {
+      return `${t('View')} ${userData.user.firstName}`;
+    }
+    return t('View Your Information');
+  }, [spouseInformation, userData?.user?.firstName, t]);
 
   const onClickSpouseInformation = () => {
     setSpouseInformation(!spouseInformation);
-    // Change 'Spouse' here to be actual spouse's name if available
-    setButtonText(
-      spouseInformation ? t('View Spouse') : t('View Your Information'),
-    );
   };
 
   return (
@@ -277,19 +268,16 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
           >
             {userData?.user ? (
               <Avatar
+                data-testid="info-avatar"
                 src={userData.user.avatar}
                 alt={userData.user.firstName ?? t('User')}
                 variant="rounded"
                 sx={{ width: 36, height: 36, marginRight: 1 }}
               />
             ) : (
-              <StyledPersonBox>
-                <PersonIcon
-                  sx={{ fontSize: 40, color: theme.palette.primary.main }}
-                />
-              </StyledPersonBox>
+              <Avatar variant="rounded" />
             )}
-            <Typography data-testid="info-name-typography" align="center">
+            <Typography data-testid="info-name-typography">
               {userData?.user.firstName ?? t('User')}
             </Typography>
           </Box>

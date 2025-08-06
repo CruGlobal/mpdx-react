@@ -28,20 +28,24 @@ export const InformationStepPersonalForm: React.FC<
   return (
     <>
       <Typography variant="h6" gutterBottom>
-        {t('Personal Information')}
+        {isSpouse
+          ? t("Spouse's Personal Information")
+          : t('Personal Information')}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        {t('Review your personal details and preferences here.')}
+        {isSpouse
+          ? t('Review spouse personal details and preferences here.')
+          : t('Review your personal details and preferences here.')}
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={isSpouse ? 12 : 6}>
           <Field name="firstName">
             {({ field, meta }: FieldProps) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('First Name')}
+                label={isSpouse ? t('Spouse First Name') : t('First Name')}
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
                 variant="outlined"
@@ -50,23 +54,24 @@ export const InformationStepPersonalForm: React.FC<
             )}
           </Field>
         </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <Field name="lastName">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={t('Last Name')}
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                required={!isSpouse}
-              />
-            )}
-          </Field>
-        </Grid>
+        {!isSpouse && (
+          <Grid item xs={12} sm={6}>
+            <Field name="lastName">
+              {({ field, meta }: FieldProps) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  size="small"
+                  label={t('Last Name')}
+                  error={meta.touched && Boolean(meta.error)}
+                  helperText={meta.touched && meta.error}
+                  variant="outlined"
+                  required
+                />
+              )}
+            </Field>
+          </Grid>
+        )}
 
         {!isSpouse && (
           <Grid item xs={12}>
@@ -181,7 +186,9 @@ export const InformationStepPersonalForm: React.FC<
           <Field name="tenure">
             {({ field, meta }: FieldProps) => (
               <FormControl fullWidth size="small">
-                <InputLabel>{t('Years on Staff')}</InputLabel>
+                <InputLabel>
+                  {isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
+                </InputLabel>
                 <Select {...field} label={t('Years on Staff')}>
                   {tenureOptions.map((tenure) => (
                     <MenuItem key={tenure} value={tenure}>
@@ -202,7 +209,7 @@ export const InformationStepPersonalForm: React.FC<
           <Field name="age">
             {({ field, meta }: FieldProps) => (
               <FormControl fullWidth size="small">
-                <InputLabel>{t('Age')}</InputLabel>
+                <InputLabel>{isSpouse ? t('Spouse Age') : t('Age')}</InputLabel>
                 <Select {...field} label={t('Age')}>
                   {ageOptions.map((age) => (
                     <MenuItem key={age} value={age}>
@@ -219,27 +226,29 @@ export const InformationStepPersonalForm: React.FC<
           </Field>
         </Grid>
 
-        <Grid item xs={12}>
-          <Field name="children">
-            {({ field, meta }: FieldProps) => (
-              <>
-                <TextField
-                  {...field}
-                  fullWidth
-                  size="small"
-                  label={t("Children's Names and Ages")}
-                  error={meta.touched && Boolean(meta.error)}
-                  helperText={meta.touched && meta.error}
-                  variant="outlined"
-                />
-                <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                  {(meta.touched && meta.error) ||
-                    t('For informational purposes only')}
-                </FormHelperText>
-              </>
-            )}
-          </Field>
-        </Grid>
+        {!isSpouse && (
+          <Grid item xs={12}>
+            <Field name="children">
+              {({ field, meta }: FieldProps) => (
+                <>
+                  <TextField
+                    {...field}
+                    fullWidth
+                    size="small"
+                    label={t("Children's Names and Ages")}
+                    error={meta.touched && Boolean(meta.error)}
+                    helperText={meta.touched && meta.error}
+                    variant="outlined"
+                  />
+                  <FormHelperText error={meta.touched && Boolean(meta.error)}>
+                    {(meta.touched && meta.error) ||
+                      t('For informational purposes only')}
+                  </FormHelperText>
+                </>
+              )}
+            </Field>
+          </Grid>
+        )}
       </Grid>
     </>
   );

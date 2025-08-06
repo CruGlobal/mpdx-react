@@ -21,7 +21,7 @@ const TestComponent = () => (
               id: 'user-id-1',
               firstName: 'Obi',
               lastName: 'Wan',
-              avatar: '',
+              avatar: 'avatar.jpg',
             },
           },
         }}
@@ -58,5 +58,11 @@ describe('InformationStep', () => {
     await waitFor(() => {
       expect(getByTestId('info-name-typography')).toHaveTextContent('Obi');
     });
+  });
+
+  it("renders the user's avatar", async () => {
+    const { findByRole } = render(<TestComponent />);
+    const avatarImg = await findByRole('img');
+    expect(avatarImg).toBeInTheDocument();
   });
 });
