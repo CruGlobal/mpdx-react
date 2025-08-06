@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -97,10 +98,6 @@ export const GoalCalculator: React.FC = () => {
 
   const iconPanelWidth = theme.spacing(5);
 
-  const handleBack = () => {
-    router.push(`/accountLists/${accountListId}/reports/goalCalculator`);
-  };
-
   const handleStepIconClick = (stepId: GoalCalculatorStepEnum) => {
     if (selectedStepId === stepId) {
       toggleDrawer();
@@ -130,10 +127,11 @@ export const GoalCalculator: React.FC = () => {
           </IconButton>
         ))}
         <IconButton
+          component={NextLink}
+          href={`/accountLists/${accountListId}/reports/goalCalculator`}
           sx={(theme) => ({
             color: theme.palette.cruGrayDark.main,
           })}
-          onClick={handleBack}
           aria-label={t('Go back')}
         >
           <ArrowBackIcon />

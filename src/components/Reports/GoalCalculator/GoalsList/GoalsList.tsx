@@ -109,9 +109,10 @@ export const GoalsList: React.FC = () => {
   const firstName = loading ? 'User' : data?.user?.firstName;
 
   const handleCreateGoal = () => {
-    const { goalCalculatorId } = router.query;
+    // TODO: Create a new goal with a GraphQL mutation
+    const goalCalculatorId = 1;
     router.push(
-      `${router.asPath}/${goalCalculatorId}/${GoalCalculatorStepEnum.HouseholdExpenses}`,
+      `/accountLists/${router.query.accountListId}/reports/goalCalculator/${goalCalculatorId}/${GoalCalculatorStepEnum.HouseholdExpenses}`,
     );
   };
 

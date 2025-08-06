@@ -87,7 +87,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
         });
       }
     },
-    [steps, enqueueSnackbar, t, router],
+    [steps, enqueueSnackbar, t],
   );
 
   const handleContinue = useCallback(() => {
@@ -95,7 +95,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       steps.findIndex((step) => step.id === selectedStepId) + 1;
     const nextStep = steps[nextStepIndex];
     if (nextStep) {
-      // Use handleStepChange to update both state and route
       handleStepChange(nextStep.id);
     } else {
       enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
