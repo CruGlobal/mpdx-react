@@ -1,13 +1,22 @@
 import ChurchIcon from '@mui/icons-material/Church';
 import { useTranslation } from 'react-i18next';
-import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
   GoalCalculatorCategoryEnum,
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { MileageStep } from './Steps/MileageStep/MileageStep';
-import { MileageStepRightPanelComponent } from './Steps/MileageStep/MileageStepRightPanelComponent/MileageStepRightPanelComponent';
+import { CommunicationsStep } from './Steps/CommunicationsStep/CommunicationsStep';
+import { EntertainmentStep } from './Steps/EntertainmentStep/EntertainmentStep';
+import { MedicalExpensesStep } from './Steps/MedicalExpensesStep/MedicalExpensesStep';
+import { MedicalMileageStep } from './Steps/MedicalMileageStep/MedicalMileageStep';
+import { MinistryMileageStep } from './Steps/MinistryMileageStep/MinistryMileageStep';
+import { MinistryPartnerDevelopmentStep } from './Steps/MinistryPartnerDevelopmentStep/MinistryPartnerDevelopmentStep';
+import { OtherStep } from './Steps/OtherStep/OtherStep';
+import { StaffDevelopmentStep } from './Steps/StaffDevelopmentStep/StaffDevelopmentStep';
+import { SuppliesStep } from './Steps/SuppliesStep/SuppliesStep';
+import { TechnologyStep } from './Steps/TechnologyStep/TechnologyStep';
+import { TransfersStep } from './Steps/TransfersStep/TransfersStep';
+import { TravelStep } from './Steps/TravelStep/TravelStep';
 
 export const useMinistryExpenses = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -17,40 +26,64 @@ export const useMinistryExpenses = (): GoalCalculatorStep => {
     icon: <ChurchIcon />,
     categories: [
       {
-        id: GoalCalculatorCategoryEnum.Mileage,
-        title: t('Mileage'),
-        component: <MileageStep />,
-        rightPanelComponent: <MileageStepRightPanelComponent />,
+        id: GoalCalculatorCategoryEnum.MinistryMileage,
+        title: t('Ministry Mileage'),
+        component: <MinistryMileageStep />,
       },
       {
-        id: GoalCalculatorCategoryEnum.Medical,
-        title: t('Medical'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.MedicalMileage,
+        title: t('Medical Mileage'),
+        component: <MedicalMileageStep />,
       },
       {
-        id: GoalCalculatorCategoryEnum.MPD,
-        title: t('MPD'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.MedicalExpenses,
+        title: t('Medical Expenses'),
+        component: <MedicalExpensesStep />,
       },
       {
-        id: GoalCalculatorCategoryEnum.Transfers,
-        title: t('Transfers'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.MedicalExpenses,
+        title: t('Ministry Partner Development'),
+        component: <MinistryPartnerDevelopmentStep />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Communications,
+        title: t('Communications'),
+        component: <CommunicationsStep />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Entertainment,
+        title: t('Entertainment'),
+        component: <EntertainmentStep />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.StaffDevelopment,
+        title: t('Staff Development'),
+        component: <StaffDevelopmentStep />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Supplies,
+        title: t('Supplies'),
+        component: <SuppliesStep />,
       },
       {
         id: GoalCalculatorCategoryEnum.Technology,
         title: t('Technology'),
-        component: <InformationStep />,
+        component: <TechnologyStep />,
       },
       {
-        id: GoalCalculatorCategoryEnum.SummerMissions,
-        title: t('Summer Missions'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.Travel,
+        title: t('Travel'),
+        component: <TravelStep />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Transfers,
+        title: t('Transfers'),
+        component: <TransfersStep />,
       },
       {
         id: GoalCalculatorCategoryEnum.Other,
         title: t('Other'),
-        component: <InformationStep />,
+        component: <OtherStep />,
       },
     ],
   };

@@ -243,7 +243,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   ];
 
   return (
-    <Box>
+    <Box sx={{ pt: 2 }}>
       <StyledCard>
         <StyledControlsBox>
           <StyledAddButton

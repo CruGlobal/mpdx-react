@@ -1,6 +1,6 @@
 import React from 'react';
 import { GoalCalculatorGrid } from '../../../SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
 
-export const OtherStep: React.FC = () => {
+export const MinistryPartnerDevelopmentStep: React.FC = () => {
   return <GoalCalculatorGrid headerName="Expense Name" ctaText="Add Expense" />;
 };
