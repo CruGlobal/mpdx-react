@@ -5,7 +5,7 @@ import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { InformationStep } from './Steps/InformationStep/InformationStep';
+import { InformationCategory } from './Categories/InformationCategory/InformationCategory';
 
 export const useCalculatorSettings = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ export const useCalculatorSettings = (): GoalCalculatorStep => {
       {
         id: GoalCalculatorCategoryEnum.Information,
         title: t('Information'),
-        component: <InformationStep />,
+        component: <InformationCategory />,
       },
       {
         id: GoalCalculatorCategoryEnum.SpecialIncome,
