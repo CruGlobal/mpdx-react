@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
-import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
-import { BenefitsPlan, Role } from './InformationStepForm/enums';
+import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
+import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
+import { BenefitsPlan, Role } from './InformationCategoryForm/enums';
 import {
   ageOptions,
   familySizeOptions,
   tenureOptions,
-} from './InformationStepForm/mockData';
+} from './InformationCategoryForm/mockData';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -79,7 +79,7 @@ interface InformationStepProps {
   handlePageChange?: (page: string) => void;
 }
 
-export const InformationStep: React.FC<InformationStepProps> = () => {
+export const InformationCategory: React.FC<InformationStepProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
@@ -207,11 +207,11 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
             </StyledInfoBox>
 
             <TabPanel value={value} index={0}>
-              <InformationStepPersonalForm />
+              <InformationCategoryPersonalForm />
             </TabPanel>
 
             <TabPanel value={value} index={1}>
-              <InformationStepFinancialForm />
+              <InformationCategoryFinancialForm />
             </TabPanel>
           </StyledCard>
         </Form>

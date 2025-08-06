@@ -1,13 +1,10 @@
 import ChurchIcon from '@mui/icons-material/Church';
 import { useTranslation } from 'react-i18next';
-import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
   GoalCalculatorCategoryEnum,
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { MileageStep } from './Steps/MileageStep/MileageStep';
-import { MileageStepRightPanelComponent } from './Steps/MileageStep/MileageStepRightPanelComponent/MileageStepRightPanelComponent';
 
 export const useMinistryExpenses = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -17,40 +14,52 @@ export const useMinistryExpenses = (): GoalCalculatorStep => {
     icon: <ChurchIcon />,
     categories: [
       {
-        id: GoalCalculatorCategoryEnum.Mileage,
-        title: t('Mileage'),
-        component: <MileageStep />,
-        rightPanelComponent: <MileageStepRightPanelComponent />,
+        id: GoalCalculatorCategoryEnum.MinistryMileage,
+        title: t('Ministry Mileage'),
       },
       {
-        id: GoalCalculatorCategoryEnum.Medical,
-        title: t('Medical'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.MedicalMileage,
+        title: t('Medical Mileage'),
       },
       {
-        id: GoalCalculatorCategoryEnum.MPD,
-        title: t('MPD'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.MedicalExpenses,
+        title: t('Medical Expenses'),
       },
       {
-        id: GoalCalculatorCategoryEnum.Transfers,
-        title: t('Transfers'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.MinistryPartnerDevelopment,
+        title: t('Ministry Partner Development'),
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Communications,
+        title: t('Communications'),
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Entertainment,
+        title: t('Entertainment'),
+      },
+      {
+        id: GoalCalculatorCategoryEnum.StaffDevelopment,
+        title: t('Staff Development'),
+      },
+      {
+        id: GoalCalculatorCategoryEnum.Supplies,
+        title: t('Supplies'),
       },
       {
         id: GoalCalculatorCategoryEnum.Technology,
         title: t('Technology'),
-        component: <InformationStep />,
       },
       {
-        id: GoalCalculatorCategoryEnum.SummerMissions,
-        title: t('Summer Missions'),
-        component: <InformationStep />,
+        id: GoalCalculatorCategoryEnum.Travel,
+        title: t('Travel'),
       },
       {
-        id: GoalCalculatorCategoryEnum.Other,
+        id: GoalCalculatorCategoryEnum.Transfers,
+        title: t('Transfers'),
+      },
+      {
+        id: GoalCalculatorCategoryEnum.OtherMinistry,
         title: t('Other'),
-        component: <InformationStep />,
       },
     ],
   };

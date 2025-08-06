@@ -25,6 +25,7 @@ import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 import { ContinueButton } from './SharedComponents/ContinueButton';
+import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
 
 const StepTitle = styled(Typography)(({ theme }) => ({
   marginBottom: 0,
@@ -202,7 +203,12 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                     </IconButton>
                   )}
                 </Typography>
-                {category.component}
+                {category.component || (
+                  <GoalCalculatorGrid
+                    headerName="Expense Name"
+                    ctaText="Add Expense"
+                  />
+                )}
               </CategoryContainer>
             );
           }) ?? (
