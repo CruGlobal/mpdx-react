@@ -161,7 +161,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     const newId = Math.max(...values.gridData.map((item) => item.id), 0) + 1;
     const newIncomeItem = {
       id: newId,
-      name: 'New Income',
+      name: t('New Income'),
       amount: 0,
     };
     const updatedData = [...values.gridData, newIncomeItem];
