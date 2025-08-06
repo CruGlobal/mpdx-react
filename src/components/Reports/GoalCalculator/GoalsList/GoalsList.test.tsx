@@ -21,7 +21,6 @@ describe('GoalsList', () => {
     expect(
       getByRole('button', { name: 'Create a New Goal' }),
     ).toBeInTheDocument();
-    // Update the button name to match the actual rendered text, e.g. "Learn About Goal Setting"
     expect(
       getByRole('button', { name: 'Learn About Goalsetting' }),
     ).toBeInTheDocument();
