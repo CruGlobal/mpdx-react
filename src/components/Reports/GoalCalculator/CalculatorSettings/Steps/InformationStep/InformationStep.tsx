@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import RightArrowIcon from '@mui/icons-material/ArrowForward';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import PersonIcon from '@mui/icons-material/Person';
-import { Box, Button, Card, Tab, Tabs, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
 import { Form, Formik } from 'formik';
@@ -12,8 +20,6 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
 import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
-import { SpouseInformationStepFinancialForm } from './InformationStepForm/SpouseInformationStepFinancialForm';
-import { SpouseInformationStepPersonalForm } from './InformationStepForm/SpouseInformationStepPersonalForm';
 import { BenefitsPlan, Role } from './InformationStepForm/enums';
 import {
   ageOptions,
@@ -220,6 +226,8 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
     secaStatus: '',
     contributionRoth403b: 0,
     contributionTraditional403b: 0,
+    mhaAmountPerPaycheck: 0,
+
     // Personal form initial values for spouse
     role: '',
     tenure: '',
@@ -250,7 +258,7 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
 
   return (
     <>
-      <StyledTypography>
+      <StyledTypography data-testid="verify-info-typography">
         {t('Take a moment to verify your information.')}
       </StyledTypography>
       <StyledCard>
@@ -267,13 +275,23 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
             justifyContent="center"
             gap={1}
           >
-            {/* Replace with user image when we have data */}
-            <StyledPersonBox>
-              <PersonIcon
-                sx={{ fontSize: 40, color: theme.palette.primary.main }}
+            {userData?.user ? (
+              <Avatar
+                src={userData.user.avatar}
+                alt={userData.user.firstName ?? t('User')}
+                variant="rounded"
+                sx={{ width: 36, height: 36, marginRight: 1 }}
               />
-            </StyledPersonBox>
-            <Typography align="center">{"User's name"}</Typography>
+            ) : (
+              <StyledPersonBox>
+                <PersonIcon
+                  sx={{ fontSize: 40, color: theme.palette.primary.main }}
+                />
+              </StyledPersonBox>
+            )}
+            <Typography data-testid="info-name-typography" align="center">
+              {userData?.user.firstName ?? t('User')}
+            </Typography>
           </Box>
           {spouseInformation !== null && (
             <Button
@@ -301,11 +319,13 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
                     aria-label={t('information tabs')}
                   >
                     <Tab
+                      data-testid="personal-tab"
                       iconPosition={'start'}
                       icon={<PersonIcon />}
                       label={t('Personal')}
                     />
                     <Tab
+                      data-testid="financial-tab"
                       iconPosition={'start'}
                       icon={<CreditCardIcon />}
                       label={t('Financial')}
@@ -340,17 +360,30 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
                     onChange={handleChange}
                     aria-label={t('information tabs')}
                   >
-                    <Tab label={t("Spouse's Personal")} />
-                    <Tab label={t("Spouse's Financial")} />
+                    <Tab
+                      data-testid="spouse-personal-tab"
+                      iconPosition={'start'}
+                      icon={<PersonIcon />}
+                      label={t("Spouse's Personal")}
+                    />
+                    <Tab
+                      data-testid="spouse-financial-tab"
+                      iconPosition={'start'}
+                      icon={<CreditCardIcon />}
+                      label={t("Spouse's Financial")}
+                    />
                   </StyledTabs>
                 </StyledInfoBox>
 
                 <TabPanel value={value} index={0}>
-                  <SpouseInformationStepPersonalForm />
+                  <InformationStepPersonalForm isSpouse />
                 </TabPanel>
 
                 <TabPanel value={value} index={1}>
-                  <SpouseInformationStepFinancialForm />
+                  {/* isSpouse logic does not currently need to be handled in
+                  InformationStepFinancialForm but it's worth passing
+                  in the event we do make changes */}
+                  <InformationStepFinancialForm isSpouse />
                 </TabPanel>
               </StyledCard>
             </Form>
