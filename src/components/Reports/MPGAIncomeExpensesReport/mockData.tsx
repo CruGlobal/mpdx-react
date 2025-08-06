@@ -260,13 +260,13 @@ export const mockData: MockData = {
   },
   healthcareExpenses: {
     data: [
-      // {
-      //   id: crypto.randomUUID(),
-      //   description: 'Single/Husband/Widow EOBs',
-      //   monthly: [0, 0, 0, 976, 55, 0, 0, 0, 194, 708, 0, 0],
-      //   average: 161,
-      //   total: 1933,
-      // },
+      {
+        id: crypto.randomUUID(),
+        description: 'Single/Husband/Widow EOBs',
+        monthly: [0, 0, 0, 976, 55, 0, 0, 0, 194, 708, 0, 0],
+        average: 161,
+        total: 1933,
+      },
     ],
   },
   misc: {

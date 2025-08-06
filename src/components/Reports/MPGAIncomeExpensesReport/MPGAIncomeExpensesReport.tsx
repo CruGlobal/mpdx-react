@@ -1,6 +1,13 @@
 import React from 'react';
 import PrintIcon from '@mui/icons-material/Print';
-import { Box, Button, Container, SvgIcon, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  SvgIcon,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,8 +15,10 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
-import { CardTable } from './Tables/CardTable';
+import { ExpensesPieChart } from './Charts/ExpensesPieChart';
+import { SummaryBarChart } from './Charts/SummaryBarChart';
 import { EmptyTable } from './Tables/EmptyTable';
+import { Tables } from './Tables/Tables';
 import { mockData } from './mockData';
 
 interface MPGAIncomeExpensesReportProps {
@@ -35,6 +44,19 @@ const StyledPrintButton = styled(Button)({
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(1),
 });
+
+const incomeTotal = mockData.income?.data.reduce(
+  (sum, data) => sum + data.total,
+  0,
+);
+const ministryTotal = mockData.ministryExpenses?.data.reduce(
+  (sum, data) => sum + data.total,
+  0,
+);
+const healthcareTotal = mockData.healthcareExpenses?.data.reduce(
+  (sum, data) => sum + data.total,
+  0,
+);
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
@@ -74,9 +96,28 @@ export const MPGAIncomeExpensesReport: React.FC<
             <Typography>{mockData.accountName}</Typography>
             <Typography>{mockData.accountListId}</Typography>
           </Box>
+          <Box mt={2} mb={2}>
+            <Grid container spacing={2}>
+              <Grid item xs={7}>
+                <SummaryBarChart
+                  incomeTotal={incomeTotal}
+                  ministryTotal={ministryTotal}
+                  healthcareTotal={healthcareTotal}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <ExpensesPieChart
+                  incomeTotal={incomeTotal}
+                  ministryTotal={ministryTotal}
+                  healthcareTotal={healthcareTotal}
+                />
+              </Grid>
+            </Grid>
+          </Box>
           <Box>
-            <CardTable
+            <Tables
               data={mockData.income?.data}
+              overallTotal={incomeTotal}
               emptyPlaceholder={
                 <EmptyTable
                   title={t('No Income data available')}
@@ -87,8 +128,9 @@ export const MPGAIncomeExpensesReport: React.FC<
             />
           </Box>
           <Box mt={2}>
-            <CardTable
+            <Tables
               data={mockData.ministryExpenses?.data}
+              overallTotal={ministryTotal}
               emptyPlaceholder={
                 <EmptyTable
                   title={t('No Ministry Expenses available')}
@@ -99,8 +141,9 @@ export const MPGAIncomeExpensesReport: React.FC<
             />
           </Box>
           <Box mt={2} mb={2}>
-            <CardTable
+            <Tables
               data={mockData.healthcareExpenses?.data}
+              overallTotal={healthcareTotal}
               emptyPlaceholder={
                 <EmptyTable
                   title={t('No Healthcare Expenses available')}
