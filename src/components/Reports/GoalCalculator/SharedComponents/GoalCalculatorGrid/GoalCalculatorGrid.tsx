@@ -168,20 +168,16 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     setFieldValue('gridData', updatedData);
   };
 
-  // Handler for toggling direct input
   const handleDirectInputToggle = () => {
     setDirectInput(!directInput);
   };
 
-  // Handler for deleting a row
   const handleDelete = (id: number) => {
     const updatedData = values.gridData.filter((item) => item.id !== id);
     setFieldValue('gridData', updatedData);
   };
 
-  // Handle row updates
   const processRowUpdate = (newRow: GridValidRowModel) => {
-    // Don't allow editing the total row
     if (newRow.id === 'total') {
       return newRow;
     }

@@ -14,7 +14,6 @@ const StyledDataGrid = styled(DataGrid)({
   '& .MuiDataGrid-columnSeparator': {
     display: 'none',
   },
-  // Hide actions column by default
   '& .MuiDataGrid-cell[data-field="actions"]': {
     '&:focus': {
       outline: 'none !important',
@@ -28,7 +27,6 @@ const StyledDataGrid = styled(DataGrid)({
     },
   },
 
-  // Show actions column on row hover
   '& .MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
     opacity: 1,
     '& .MuiDataGrid-actionsCell': {
