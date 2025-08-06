@@ -1,4 +1,4 @@
-import { Box, CircularProgress, TableRow } from '@mui/material';
+import { Box, CircularProgress, TableRow, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -32,4 +32,8 @@ export const StyledRow = styled(TableRow)(() => ({
   '&:nth-of-type(odd)': {
     backgroundColor: '#E3F2FD',
   },
+}));
+
+export const StyledTypography = styled(Typography)(() => ({
+  fontSize: '13px',
 }));

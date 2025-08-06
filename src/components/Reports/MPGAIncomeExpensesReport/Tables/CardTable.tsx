@@ -11,11 +11,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DataFields } from '../mockData';
-import { LoadingBox, LoadingIndicator, StyledRow } from '../styledComponents';
+import {
+  LoadingBox,
+  LoadingIndicator,
+  StyledRow,
+  StyledTypography,
+} from '../styledComponents';
 
 export interface CardTableProps {
   data?: DataFields[];
@@ -116,14 +120,14 @@ export const CardTable: React.FC<CardTableProps> = ({
                         }}
                       >
                         {isFirstOfYear ? (
-                          <Typography
+                          <StyledTypography
                             sx={{
                               color: borderColor,
                               ml: -2,
                             }}
                           >
                             <strong>{year}</strong>
-                          </Typography>
+                          </StyledTypography>
                         ) : null}
                       </TableCell>
                     );
@@ -134,33 +138,33 @@ export const CardTable: React.FC<CardTableProps> = ({
                       borderBottom: '2px solid #565652',
                     }}
                   >
-                    <Typography sx={{ color: '#565652', ml: -2 }}>
+                    <StyledTypography sx={{ color: '#565652', ml: -2 }}>
                       {t('Summary')}
-                    </Typography>
+                    </StyledTypography>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>
-                    <Typography>
+                    <StyledTypography>
                       <strong>{t('Description')}</strong>
-                    </Typography>
+                    </StyledTypography>
                   </TableCell>
                   {last12Months.map((month) => (
                     <TableCell key={month}>
-                      <Typography>
+                      <StyledTypography>
                         <strong>{month.split(' ')[0]}</strong>
-                      </Typography>
+                      </StyledTypography>
                     </TableCell>
                   ))}
                   <TableCell sx={{ textAlign: 'right' }}>
-                    <Typography>
+                    <StyledTypography>
                       <strong>{t('Average')}</strong>
-                    </Typography>
+                    </StyledTypography>
                   </TableCell>
                   <TableCell sx={{ textAlign: 'right' }}>
-                    <Typography>
+                    <StyledTypography>
                       <strong>{t('Total')}</strong>
-                    </Typography>
+                    </StyledTypography>
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -168,53 +172,70 @@ export const CardTable: React.FC<CardTableProps> = ({
                 {data.map((data) => (
                   <StyledRow key={data.id}>
                     <TableCell>
-                      <Typography>{data.description}</Typography>
+                      <StyledTypography>{data.description}</StyledTypography>
                     </TableCell>
                     {data.monthly.map((amount, index) => (
                       <TableCell key={index}>
-                        <Typography>
+                        <StyledTypography>
                           {amount.toLocaleString() === '0'
                             ? '-'
                             : amount.toLocaleString()}
-                        </Typography>
+                        </StyledTypography>
                       </TableCell>
                     ))}
                     <TableCell align="right">
-                      <Typography>{data.average.toLocaleString()}</Typography>
+                      <StyledTypography>
+                        {data.average.toLocaleString()}
+                      </StyledTypography>
                     </TableCell>
                     <TableCell align="right">
-                      <Typography>{data.total.toLocaleString()}</Typography>
+                      <StyledTypography>
+                        {data.total.toLocaleString()}
+                      </StyledTypography>
                     </TableCell>
                   </StyledRow>
                 ))}
                 <TableRow sx={{ backgroundColor: '#BBDEFB' }}>
                   <TableCell>
-                    <Typography>
+                    <StyledTypography>
                       <strong>{t('Total')}</strong>
-                    </Typography>
+                    </StyledTypography>
                   </TableCell>
                   {data[0].monthly.map((_, index) => (
-                    <TableCell key={index} align="center">
-                      <Typography>
-                        {data
-                          .reduce((sum, data) => sum + data.monthly[index], 0)
-                          .toLocaleString()}
-                      </Typography>
+                    <TableCell key={index}>
+                      <StyledTypography>
+                        <strong>
+                          {data
+                            .reduce((sum, data) => sum + data.monthly[index], 0)
+                            .toLocaleString() === '0'
+                            ? '-'
+                            : data
+                                .reduce(
+                                  (sum, data) => sum + data.monthly[index],
+                                  0,
+                                )
+                                .toLocaleString()}
+                        </strong>
+                      </StyledTypography>
                     </TableCell>
                   ))}
                   <TableCell align="right">
-                    <Typography>
-                      {data
-                        .reduce((sum, data) => sum + data.average, 0)
-                        .toLocaleString()}
-                    </Typography>
+                    <StyledTypography>
+                      <strong>
+                        {data
+                          .reduce((sum, data) => sum + data.average, 0)
+                          .toLocaleString()}
+                      </strong>
+                    </StyledTypography>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography>
-                      {data
-                        .reduce((sum, data) => sum + data.total, 0)
-                        .toLocaleString()}
-                    </Typography>
+                    <StyledTypography>
+                      <strong>
+                        {data
+                          .reduce((sum, data) => sum + data.total, 0)
+                          .toLocaleString()}
+                      </strong>
+                    </StyledTypography>
                   </TableCell>
                 </TableRow>
               </TableBody>
