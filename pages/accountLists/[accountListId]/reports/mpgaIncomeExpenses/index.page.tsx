@@ -31,7 +31,7 @@ const MPGAReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports')} | ${t(
+        <title>{`${appName} | ${t('Reports')} - ${t(
           'MPGA Monthly Report',
         )}`}</title>
       </Head>
