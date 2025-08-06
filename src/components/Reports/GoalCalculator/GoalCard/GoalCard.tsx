@@ -1,6 +1,14 @@
 import React from 'react';
 import { Star, StarBorderOutlined } from '@mui/icons-material';
-import { Box, Button, Card, Divider, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  IconButton,
+  Typography,
+  styled,
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
@@ -26,7 +34,7 @@ const StyledTitleBox = styled(Box)({
   justifyContent: 'center',
 });
 
-const StyledStarButton = styled(Button)({
+const StyledStarButton = styled(IconButton)({
   position: 'absolute',
   right: 0,
   padding: theme.spacing(2),
@@ -116,7 +124,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
       <StyledContentBox>
         <StyledContentInnerBox>
-          <StyledInfoRow>
+          <StyledInfoRow pb={theme.spacing(1)}>
             <Typography variant="body1" fontWeight="bold" pl={2}>
               {t('Goal Amount')}
             </Typography>
@@ -127,7 +135,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
           <Divider />
 
-          <StyledInfoRow>
+          <StyledInfoRow pt={theme.spacing(1)}>
             <Typography variant="body1" fontWeight="bold" pl={2}>
               {t('Last Updated')}
             </Typography>

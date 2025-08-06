@@ -10,23 +10,6 @@ import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { GoalCard } from '../GoalCard/GoalCard';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
-const StyledCreateButton = styled(Button)({
-  backgroundColor: 'primary.main',
-  color: 'white',
-  '&:hover': {
-    backgroundColor: 'primary.dark',
-  },
-});
-
-const StyledLearnButton = styled(Button)({
-  borderColor: 'primary.main',
-  color: 'primary.main',
-  '&:hover': {
-    borderColor: 'primary.dark',
-    backgroundColor: 'primary.light',
-  },
-});
-
 const StyledEmptyStateContainer = styled(Box)({
   display: 'flex',
   alignItems: 'center',
@@ -197,16 +180,11 @@ export const GoalsList: React.FC = () => {
           <StyledEmptyStateContent>
             <GoalsListWelcome firstName={firstName ?? t('User')} />
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <StyledCreateButton
-                variant="contained"
-                onClick={handleCreateGoal}
-              >
+              <Button variant="contained" onClick={handleCreateGoal}>
                 {t('Create a New Goal')}
-              </StyledCreateButton>
+              </Button>
 
-              <StyledLearnButton variant="outlined">
-                {t('Learn About Goalsetting')}
-              </StyledLearnButton>
+              <Button variant="outlined">{t('Learn About Goalsetting')}</Button>
             </Box>
           </StyledEmptyStateContent>
         </StyledEmptyStateContainer>
@@ -214,14 +192,10 @@ export const GoalsList: React.FC = () => {
         <>
           <GoalsListWelcome firstName={firstName ?? t('User')} />
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <StyledCreateButton variant="contained" onClick={handleCreateGoal}>
+            <Button variant="contained" onClick={handleCreateGoal}>
               {t('Create a New Goal')}
-            </StyledCreateButton>
-
-            <StyledLearnButton variant="outlined">
-              {/* "Goalsetting" is the term used in the Figma */}
-              {t('Learn About Goalsetting')}
-            </StyledLearnButton>
+            </Button>
+            <Button variant="outlined">{t('Learn About Goalsetting')}</Button>
           </Box>
 
           <StyledList>

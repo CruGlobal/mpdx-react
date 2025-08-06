@@ -4,24 +4,24 @@ import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { GoalCard, GoalCardProps } from './GoalCard';
 
-describe('GoalCard', () => {
-  const onStarToggle = jest.fn();
-  const onDelete = jest.fn();
-  const onView = jest.fn();
-  const TestComponent: React.FC<Partial<GoalCardProps>> = (props) => (
-    <GoalCard
-      goalId={1}
-      goalTitle="Test Goal"
-      goalAmount={1000}
-      goalDate={DateTime.fromISO('2024-06-01')}
-      starred={false}
-      onStarToggle={onStarToggle}
-      onDelete={onDelete}
-      onView={onView}
-      {...props}
-    />
-  );
+const onStarToggle = jest.fn();
+const onDelete = jest.fn();
+const onView = jest.fn();
+const TestComponent: React.FC<Partial<GoalCardProps>> = (props) => (
+  <GoalCard
+    goalId={1}
+    goalTitle="Test Goal"
+    goalAmount={1000}
+    goalDate={DateTime.fromISO('2024-06-01')}
+    starred={false}
+    onStarToggle={onStarToggle}
+    onDelete={onDelete}
+    onView={onView}
+    {...props}
+  />
+);
 
+describe('GoalCard', () => {
   it('renders goal title, amount, and date', () => {
     const { getByTestId } = render(<TestComponent />);
     expect(getByTestId('goal-title')).toBeInTheDocument();
