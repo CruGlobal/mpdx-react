@@ -1,7 +1,7 @@
 export interface GoalCalculatorCategory {
   id: GoalCalculatorCategoryEnum;
   title: string;
-  component: JSX.Element;
+  component?: JSX.Element;
   rightPanelComponent?: JSX.Element;
 }
 
@@ -38,6 +38,7 @@ export enum GoalCalculatorCategoryEnum {
   MedicalHousehold = 'medical-household',
   Recreational = 'recreational',
   Personal = 'personal',
+  OtherHousehold = 'other-household',
   // MinistryExpenses
   MinistryMileage = 'ministry-mileage',
   MedicalMileage = 'medical-mileage',
@@ -50,7 +51,7 @@ export enum GoalCalculatorCategoryEnum {
   Technology = 'technology',
   Travel = 'travel',
   Transfers = 'transfers',
-  Other = 'other',
+  OtherMinistry = 'other-ministry',
   // SummaryReport
   Overview = 'overview',
 }

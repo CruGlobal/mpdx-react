@@ -252,7 +252,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             size="small"
             startIcon={<AddIcon />}
           >
-            {t('Add Special Income')}
+            {t(ctaText)}
           </StyledAddButton>
           <StyledToggleBox>
             <Switch
@@ -262,7 +262,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             />
 
             <StyledDirectInputText variant="button">
-              {t(ctaText)}
+              {t('Direct Input')}
             </StyledDirectInputText>
           </StyledToggleBox>
         </StyledControlsBox>

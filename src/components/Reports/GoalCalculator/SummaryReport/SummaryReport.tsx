@@ -1,6 +1,5 @@
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import { useTranslation } from 'react-i18next';
-import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
   GoalCalculatorCategoryEnum,
   GoalCalculatorStep,
@@ -17,7 +16,6 @@ export const useSummaryReport = (): GoalCalculatorStep => {
       {
         id: GoalCalculatorCategoryEnum.Overview,
         title: t('Overview'),
-        component: <InformationStep />,
       },
     ],
   };
