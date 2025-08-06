@@ -60,11 +60,6 @@ export const useHouseholdExpenses = (): GoalCalculatorStep => {
         component: <InformationStep />,
       },
       {
-        id: GoalCalculatorCategoryEnum.Medical,
-        title: t('Medical'),
-        component: <InformationStep />,
-      },
-      {
         id: GoalCalculatorCategoryEnum.Recreational,
         title: t('Recreational'),
         component: <InformationStep />,
