@@ -101,7 +101,7 @@ const mockGoalCards: GoalCardData[] = [
 export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [goals, setGoals] = React.useState<GoalCardData[]>(mockGoalCards);
+  const [goals, setGoals] = useState<GoalCardData[]>(mockGoalCards);
   const [deleteGoalDialog, setDeleteGoalDialog] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<GoalCardData | null>(null);
 
