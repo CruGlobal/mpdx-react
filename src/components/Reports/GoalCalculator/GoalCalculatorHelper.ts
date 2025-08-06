@@ -54,13 +54,8 @@ export const getStepEnumFromString = (
   goalStep: string | string[] | undefined,
 ): GoalCalculatorStepEnum => {
   const stepValue = Array.isArray(goalStep) ? goalStep[0] : goalStep;
-
-  const stepMap: Record<string, GoalCalculatorStepEnum> = {
-    'calculator-settings': GoalCalculatorStepEnum.CalculatorSettings,
-    'household-expenses': GoalCalculatorStepEnum.HouseholdExpenses,
-    'ministry-expenses': GoalCalculatorStepEnum.MinistryExpenses,
-    'summary-report': GoalCalculatorStepEnum.SummaryReport,
-  };
-
-  return stepMap[stepValue || ''] || GoalCalculatorStepEnum.CalculatorSettings;
+  const stepEnum = Object.values(GoalCalculatorStepEnum).find(
+    (value) => value === stepValue,
+  );
+  return stepEnum || GoalCalculatorStepEnum.CalculatorSettings;
 };
