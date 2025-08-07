@@ -13,16 +13,26 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-export const InformationStepFinancialForm: React.FC = () => {
+interface InformationStepFinancialFormProps {
+  isSpouse?: boolean;
+}
+
+export const InformationStepFinancialForm: React.FC<
+  InformationStepFinancialFormProps
+> = ({ isSpouse }) => {
   const { t } = useTranslation();
 
   return (
     <StyledFinancialForm>
       <Typography variant="h6" gutterBottom>
-        {t('Financial Information')}
+        {isSpouse
+          ? t("Spouse's Financial Information")
+          : t('Financial Information')}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        {t('Review your financial details and settings here.')}
+        {isSpouse
+          ? t('Review spouse financial details and settings here.')
+          : t('Review your financial details and settings here.')}
       </Typography>
 
       <Grid container spacing={3}>
@@ -33,7 +43,11 @@ export const InformationStepFinancialForm: React.FC = () => {
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Net Paycheck Amount')}
+                label={
+                  isSpouse
+                    ? t('Spouse Net Paycheck Amount')
+                    : t('Net Paycheck Amount')
+                }
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -54,7 +68,7 @@ export const InformationStepFinancialForm: React.FC = () => {
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Taxes (%)')}
+                label={isSpouse ? t('Spouse Taxes (%)') : t('Taxes (%)')}
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -76,7 +90,11 @@ export const InformationStepFinancialForm: React.FC = () => {
                 fullWidth
                 size="small"
                 select
-                label={t('SECA (Social Security) Status')}
+                label={
+                  isSpouse
+                    ? t('Spouse SECA (Social Security) Status')
+                    : t('SECA (Social Security) Status')
+                }
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
                 variant="outlined"
@@ -96,7 +114,11 @@ export const InformationStepFinancialForm: React.FC = () => {
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Roth 403(b) Contributions')}
+                label={
+                  isSpouse
+                    ? t('Spouse Roth 403(b) Contributions')
+                    : t('Roth 403(b) Contributions')
+                }
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -117,7 +139,11 @@ export const InformationStepFinancialForm: React.FC = () => {
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Traditional 403(b) Contributions')}
+                label={
+                  isSpouse
+                    ? t('Spouse Traditional 403(b) Contributions')
+                    : t('Traditional 403(b) Contributions')
+                }
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}
@@ -138,7 +164,11 @@ export const InformationStepFinancialForm: React.FC = () => {
                 {...field}
                 fullWidth
                 size="small"
-                label={t('MHA Amount Per Paycheck')}
+                label={
+                  isSpouse
+                    ? t('Spouse MHA Amount Per Paycheck')
+                    : t('MHA Amount Per Paycheck')
+                }
                 type="number"
                 error={meta.touched && Boolean(meta.error)}
                 helperText={meta.touched && meta.error}

@@ -3,6 +3,7 @@ query GetUser {
     id
     firstName
     lastName
+    avatar
     preferences {
       id
       language: locale
