@@ -10,6 +10,8 @@ interface MonthlySummaryChartProps {
   months: string[];
 }
 
+const chartColors = ['#88E4B6', '#EA657F'];
+
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   incomeData,
   expenseData,
@@ -96,7 +98,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
           {monthlyTotals.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={entry.net >= 0 ? '#88E4B6' : '#EA657F'}
+              fill={entry.net >= 0 ? chartColors[0] : chartColors[1]}
             />
           ))}
         </Bar>
@@ -133,8 +135,8 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
             </ul>
           )}
           payload={[
-            { value: 'Income', type: 'square', color: '#88E4B6' },
-            { value: 'Expenses', type: 'square', color: '#EA657F' },
+            { value: 'Income', type: 'square', color: chartColors[0] },
+            { value: 'Expenses', type: 'square', color: chartColors[1] },
           ]}
         />
       </BarChart>

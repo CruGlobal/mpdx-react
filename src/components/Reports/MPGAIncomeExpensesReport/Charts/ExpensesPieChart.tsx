@@ -10,6 +10,8 @@ interface ExpensesPieChartProps {
   other: number | undefined;
 }
 
+const chartColors = ['#05699B', '#00C0D8', '#F08020', '#FFCF07'];
+
 export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
   ministryExpenses,
   healthcareExpenses,
@@ -65,10 +67,10 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
           outerRadius={100}
           dataKey="value"
         >
-          <Cell key="cell-0" fill="#05699B" />
-          <Cell key="cell-1" fill="#00C0D8" />
-          <Cell key="cell-2" fill="#F08020" />
-          <Cell key="cell-3" fill="#FFCF07" />
+          <Cell key="cell-0" fill={chartColors[0]} />
+          <Cell key="cell-1" fill={chartColors[1]} />
+          <Cell key="cell-2" fill={chartColors[2]} />
+          <Cell key="cell-3" fill={chartColors[3]} />
         </Pie>
         <Legend
           wrapperStyle={{ marginTop: 5 }}

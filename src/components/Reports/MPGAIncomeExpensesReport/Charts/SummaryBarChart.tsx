@@ -8,6 +8,8 @@ interface SummaryBarChartProps {
   expensesTotal: number | undefined;
 }
 
+const chartColors = ['#05699B', '#00C0D8'];
+
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   incomeTotal,
   expensesTotal,
@@ -52,7 +54,13 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
           {data.map((_, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={index === 0 ? '#05699B' : index === 1 ? '#00C0D8' : 'white'}
+              fill={
+                index === 0
+                  ? chartColors[0]
+                  : index === 1
+                  ? chartColors[1]
+                  : 'white'
+              }
             />
           ))}
           <LabelList
