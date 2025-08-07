@@ -14,7 +14,10 @@ import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
-import { useWeeklyReportsQuery } from './WeeklyReport.generated';
+import {
+  useAccountListOrganizationQuery,
+  useWeeklyReportsQuery,
+} from './WeeklyReport.generated';
 
 const Header = styled(Typography)(({ theme }) => ({
   display: 'flex',
@@ -71,11 +74,19 @@ export const WeeklyReport: React.FC<WeeklyReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { data: organizationData, loading: organizationLoading } =
+    useAccountListOrganizationQuery({
+      variables: { accountListId },
+    });
 
   const [reportIndex, setReportIndex] = useState(0);
 
   const { data, loading } = useWeeklyReportsQuery({
-    variables: { accountListId },
+    variables: {
+      accountListId,
+      organizationId: organizationData?.accountList.salaryOrganizationId,
+    },
+    skip: !organizationData,
   });
   const reports = data?.coachingAnswerSets ?? [];
   const report = reports[reportIndex];
@@ -134,7 +145,7 @@ export const WeeklyReport: React.FC<WeeklyReportProps> = ({
         }
       />
       <ContentContainer>
-        {loading ? (
+        {loading || organizationLoading ? (
           <MultilineSkeleton lines={4} height={80} />
         ) : reports.length === 0 ? (
           t('No completed reports found')
