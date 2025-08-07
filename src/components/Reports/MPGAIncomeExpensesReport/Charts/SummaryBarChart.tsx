@@ -5,14 +5,12 @@ import { CardSkeleton } from '../Card/CardSkeleton';
 
 interface SummaryBarChartProps {
   incomeTotal: number | undefined;
-  ministryTotal: number | undefined;
-  healthcareTotal: number | undefined;
+  expensesTotal: number | undefined;
 }
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   incomeTotal,
-  ministryTotal,
-  healthcareTotal,
+  expensesTotal,
 }) => {
   const { t } = useTranslation();
 
@@ -20,7 +18,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
     { name: t('Income'), total: incomeTotal },
     {
       name: t('Expenses'),
-      total: (ministryTotal ?? 0) + (healthcareTotal ?? 0),
+      total: expensesTotal,
     },
   ];
 

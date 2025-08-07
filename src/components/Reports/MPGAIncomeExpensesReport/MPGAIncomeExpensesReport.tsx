@@ -49,6 +49,7 @@ const incomeTotal = mockData.income?.data.reduce(
   (sum, data) => sum + data.total,
   0,
 );
+
 const ministryTotal = mockData.ministryExpenses?.data.reduce(
   (sum, data) => sum + data.total,
   0,
@@ -57,6 +58,26 @@ const healthcareTotal = mockData.healthcareExpenses?.data.reduce(
   (sum, data) => sum + data.total,
   0,
 );
+const miscTotal = mockData.misc?.data.reduce(
+  (sum, data) => sum + data.total,
+  0,
+);
+const otherTotal = mockData.other?.data.reduce(
+  (sum, data) => sum + data.total,
+  0,
+);
+const expensesTotal =
+  (ministryTotal ?? 0) +
+  (healthcareTotal ?? 0) +
+  (miscTotal ?? 0) +
+  (otherTotal ?? 0);
+
+const expenseData = [
+  ...(mockData.ministryExpenses?.data ?? []),
+  ...(mockData.healthcareExpenses?.data ?? []),
+  ...(mockData.misc?.data ?? []),
+  ...(mockData.other?.data ?? []),
+];
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
@@ -101,15 +122,15 @@ export const MPGAIncomeExpensesReport: React.FC<
               <Grid item xs={7}>
                 <SummaryBarChart
                   incomeTotal={incomeTotal}
-                  ministryTotal={ministryTotal}
-                  healthcareTotal={healthcareTotal}
+                  expensesTotal={expensesTotal}
                 />
               </Grid>
               <Grid item xs={5}>
                 <ExpensesPieChart
-                  incomeTotal={incomeTotal}
-                  ministryTotal={ministryTotal}
-                  healthcareTotal={healthcareTotal}
+                  ministryExpenses={ministryTotal}
+                  healthcareExpenses={healthcareTotal}
+                  misc={miscTotal}
+                  other={otherTotal}
                 />
               </Grid>
             </Grid>
@@ -129,30 +150,18 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Box>
           <Box mt={2}>
             <Tables
-              data={mockData.ministryExpenses?.data}
-              overallTotal={ministryTotal}
+              data={expenseData}
+              overallTotal={expensesTotal}
               emptyPlaceholder={
                 <EmptyTable
-                  title={t('No Ministry Expenses available')}
+                  title={t('No Expenses data available')}
                   subtitle={t('Data not found in the last 12 months')}
                 />
               }
-              title={t('Ministry Expenses')}
+              title={t('Expenses')}
             />
           </Box>
-          <Box mt={2} mb={2}>
-            <Tables
-              data={mockData.healthcareExpenses?.data}
-              overallTotal={healthcareTotal}
-              emptyPlaceholder={
-                <EmptyTable
-                  title={t('No Healthcare Expenses available')}
-                  subtitle={t('Data not found in the last 12 months')}
-                />
-              }
-              title={t('Healthcare Expenses')}
-            />
-          </Box>
+          <Box mt={2} mb={2}></Box>
         </Container>
       </Box>
     </Box>
