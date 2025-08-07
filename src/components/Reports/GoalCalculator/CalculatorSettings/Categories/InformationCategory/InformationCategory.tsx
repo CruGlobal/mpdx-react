@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
-import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
+import { FinancialInformationForm } from './InformationCategoryForm/FinancialInformationForm';
+import { PersonalInformationForm } from './InformationCategoryForm/PersonalInformationForm';
 import { BenefitsPlan, Role } from './InformationCategoryForm/enums';
 import {
   ageOptions,
@@ -207,11 +207,11 @@ export const InformationCategory: React.FC<InformationStepProps> = () => {
             </StyledInfoBox>
 
             <TabPanel value={value} index={0}>
-              <InformationCategoryPersonalForm />
+              <PersonalInformationForm />
             </TabPanel>
 
             <TabPanel value={value} index={1}>
-              <InformationCategoryFinancialForm />
+              <FinancialInformationForm />
             </TabPanel>
           </StyledCard>
         </Form>

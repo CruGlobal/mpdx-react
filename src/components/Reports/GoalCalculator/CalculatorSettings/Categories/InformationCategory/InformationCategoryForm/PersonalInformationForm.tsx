@@ -16,7 +16,7 @@ import { BenefitsPlan, Role } from './enums';
 import { locations } from './geographicAdjustments';
 import { ageOptions, familySizeOptions, tenureOptions } from './mockData';
 
-export const InformationCategoryPersonalForm: React.FC = () => {
+export const PersonalInformationForm: React.FC = () => {
   const { t } = useTranslation();
 
   return (

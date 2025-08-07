@@ -13,7 +13,7 @@ const StyledFinancialForm = styled('div')({
   },
 });
 
-export const InformationCategoryFinancialForm: React.FC = () => {
+export const FinancialInformationForm: React.FC = () => {
   const { t } = useTranslation();
 
   return (
