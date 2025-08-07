@@ -10,6 +10,8 @@ import {
 import { Form, Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { StyledGrid } from './StyledGrid';
 
@@ -139,6 +141,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } = formikProps;
+  const locale = useLocale();
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
@@ -207,7 +210,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       type: 'number',
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) => `$${params.value.toLocaleString()}`,
+      renderCell: (params) => currencyFormat(params.value, 'USD', locale),
     },
     {
       field: 'actions',
