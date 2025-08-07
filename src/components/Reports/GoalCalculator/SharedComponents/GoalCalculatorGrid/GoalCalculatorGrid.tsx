@@ -13,9 +13,9 @@ import * as yup from 'yup';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { StyledGrid } from './StyledGrid';
 
-const StyledCard = styled(Card)({
-  borderRadius: '4px',
-});
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius,
+}));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
