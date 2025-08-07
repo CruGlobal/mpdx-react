@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Divider,
@@ -7,11 +7,12 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableRow,
   Typography,
+  styled,
   useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   Cell,
@@ -25,229 +26,256 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import cruLogo from 'src/images/cru/cru.svg';
 import { currencyFormat } from 'src/lib/intlFormat';
-import theme from 'src/theme';
 
-const pieData = [
+const StyledTableCell = styled(TableCell)({
+  border: 'none',
+  paddingTop: 16,
+  paddingBottom: 16,
+});
+
+const mockData = [
   { name: 'Salary', value: 1000 },
-  { name: 'Ministry Expenses', value: 200 },
+  {
+    name: 'Ministry Expenses',
+    value: 200,
+  },
   { name: 'Benefits', value: 400 },
-  { name: 'Social Security and Taxes', value: 300 },
-  { name: 'Voluntary 403b Retirement Plan', value: 1900 },
-  { name: 'Administrative Charge', value: 150 },
+  {
+    name: 'Social Security and Taxes',
+    value: 300,
+  },
+  {
+    name: 'Voluntary 403b Retirement Plan',
+    value: 1900,
+  },
+  {
+    name: 'Administrative Charge',
+    value: 150,
+  },
 ];
 
-const chartColors = [
-  theme.palette.primary.main,
-  theme.palette.success.main,
-  theme.palette.warning.main,
-  theme.palette.error.main,
-  theme.palette.secondary.main,
-  theme.palette.info.main,
-];
+interface PersonalInfoRow {
+  label: string;
+  value?: string;
+}
+
+interface PresentingYourGoalRow {
+  title: string;
+  description?: string;
+  amount: number;
+  bold?: boolean;
+}
 
 export const PresentingYourGoal: React.FC = () => {
   const { data: userData } = useGetUserQuery();
   const { t } = useTranslation();
   const locale = useLocale();
-
-  // Left side panel takes a generous amount of space, so using lg breakpoint
+  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+
+  // Made useMemo for when real data is added.
+  const total = useMemo(
+    () => mockData.reduce((sum, entry) => sum + entry.value, 0),
+    [mockData],
+  );
+
+  const formatPercent = (value: number) =>
+    total ? ((value / total) * 100).toFixed(2) : '0';
+
+  // Consider adding more brand colors to theme.
+  const chartColors = [
+    theme.palette.primary.main,
+    theme.palette.secondary.main,
+    theme.palette.success.main,
+    theme.palette.warning.main,
+    theme.palette.error.main,
+    theme.palette.info.main,
+  ];
+
+  const personalInfoRows: PersonalInfoRow[] = useMemo(
+    () => [
+      {
+        label: 'Name',
+        value: userData?.user
+          ? `${userData.user.firstName} ${userData.user.lastName}`
+          : t('User'),
+      },
+      {
+        label: t('Mission Agency'),
+        value: t('Campus Crusade for Christ, Inc.'),
+      },
+      { label: t('Ministry Location'), value: t('Orlando, FL') },
+    ],
+    [userData?.user, t],
+  );
+
+  const rows: PresentingYourGoalRow[] = useMemo(
+    () => [
+      {
+        title: 'Salary',
+        description:
+          'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
+        amount: mockData[0].value,
+      },
+      {
+        title: 'Ministry Expenses',
+        description:
+          'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
+        amount: mockData[1].value,
+      },
+      {
+        title: 'Benefits',
+        description:
+          "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
+        amount: mockData[2].value,
+      },
+      {
+        title: 'Social Security and Taxes',
+        description:
+          'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
+        amount: mockData[3].value,
+      },
+      {
+        title: 'Voluntary 403b Retirement Plan',
+        description:
+          'Staff members are eligible to contribute to a voluntary retirement program each month.',
+        amount: mockData[4].value,
+      },
+      { title: 'Administrative Charge', amount: mockData[5].value },
+      { title: 'Total Support Goal', amount: total, bold: true },
+      // change amount when real data is added
+      { title: 'Total Solid Support', amount: 2500 },
+    ],
+    [mockData, total, t],
+  );
+
   return (
-    <Box
-      sx={{
-        p: 3,
-        display: 'flex',
-        justifySelf: 'center',
-        mb: theme.spacing(4),
-        width: '100%',
-      }}
-    >
+    <Box sx={{ p: 3 }}>
       <Grid container spacing={4}>
         <Grid item xs={12}>
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h5" gutterBottom>
+          <Paper
+            sx={{ padding: theme.spacing(3), marginBottom: theme.spacing(3) }}
+          >
+            <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
               {t('Personal Information')}
             </Typography>
-            <Divider sx={{ mb: 2, mt: 2, mx: -3 }} />
-            <TableContainer>
-              <Table size="small">
-                <TableBody
-                  sx={{ '& .MuiTableRow-root .MuiTableCell-root': { py: 2 } }}
-                >
-                  <TableRow>
-                    <TableCell sx={{ borderBottom: 'none' }}>
+
+            <Divider
+              sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
+            />
+
+            <Table size="small">
+              <TableBody>
+                {personalInfoRows.map((item, index) => (
+                  <TableRow key={item.label}>
+                    <StyledTableCell>
                       <Typography variant="body1" fontWeight="bold">
-                        {t('Name')}
+                        {item.label}
                       </Typography>
-                    </TableCell>
-                    <TableCell sx={{ borderBottom: 'none' }}>
-                      {userData?.user
-                        ? `${userData.user.firstName} ${userData.user.lastName}`
-                        : 'John Doe'}
-                    </TableCell>
-                    <TableCell
-                      sx={{ borderBottom: 'none', textAlign: 'center' }}
-                      rowSpan={3}
-                    >
-                      <Box sx={{ pb: theme.spacing(2) }}>
+                    </StyledTableCell>
+                    <StyledTableCell data-testid="value-typography">
+                      {item.value}
+                    </StyledTableCell>
+                    {index === 0 && (
+                      <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
                         <img
                           src={cruLogo}
-                          alt={'Campus Crusade for Christ, Inc. logo'}
-                          style={{
-                            width: 150,
-                            height: 'auto',
-                          }}
+                          alt={t('Campus Crusade for Christ, Inc. logo')}
+                          style={{ width: 150, height: 'auto' }}
                         />
-                      </Box>
-                    </TableCell>
+                      </StyledTableCell>
+                    )}
                   </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ borderBottom: 'none' }}>
-                      <Typography variant="body1" fontWeight="bold">
-                        {t('Mission Agency')}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ borderBottom: 'none' }}>
-                      {t('Campus Crusade for Christ, Inc.')}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ borderBottom: 'none' }}>
-                      <Typography variant="body1" fontWeight="bold">
-                        {t('Ministry Location')}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ borderBottom: 'none' }}>
-                      Orlando, FL
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
+                ))}
+              </TableBody>
+            </Table>
           </Paper>
 
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Typography variant="h5" gutterBottom>
+          <Paper
+            sx={{ padding: theme.spacing(3), marginBottom: theme.spacing(3) }}
+          >
+            <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
               {t('Monthly Support Needs')}
             </Typography>
-            <Divider sx={{ mb: 2, mt: 2, mx: -3 }} />
-            <TableContainer>
-              <Table size="small">
-                <TableBody>
-                  {[
-                    {
-                      title: t('Salary'),
-                      description: t(
-                        'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
-                      ),
-                      amount: currencyFormat(1000, 'USD', locale),
-                    },
-                    {
-                      title: t('Ministry Expenses'),
-                      description: t(
-                        'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
-                      ),
-                      amount: currencyFormat(200, 'USD', locale),
-                    },
-                    {
-                      title: t('Benefits'),
-                      description: t(
-                        "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
-                      ),
-                      amount: currencyFormat(400, 'USD', locale),
-                    },
-                    {
-                      title: t('Social Security and Taxes'),
-                      description: t(
-                        'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
-                      ),
-                      amount: currencyFormat(300, 'USD', locale),
-                    },
-                    {
-                      title: t('Voluntary 403b Retirement Plan'),
-                      description: t(
-                        'Staff members are eligible to contribute to a voluntary retirement program each month.',
-                      ),
-                      amount: currencyFormat(1900, 'USD', locale),
-                    },
-                    {
-                      title: t('Administrative Charge'),
-                      amount: currencyFormat(150, 'USD', locale),
-                    },
-                    {
-                      title: t('Total Support Goal'),
-                      amount: currencyFormat(3950, 'USD', locale),
-                      amountFontWeight: 'bold',
-                    },
-                    {
-                      title: t('Total Solid Support'),
-                      amount: currencyFormat(2500, 'USD', locale),
-                    },
-                  ].map((item, index, array) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        td: {
-                          borderBottom:
-                            index !== array.length - 1 ? '1px solid' : 'none',
-                          borderBottomColor: 'divider',
-                        },
-                      }}
-                    >
-                      <TableCell>
-                        <Typography variant="body1" fontWeight="bold">
-                          {item.title}
-                        </Typography>
+
+            <Divider
+              sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
+            />
+
+            <Table size="small">
+              <TableBody>
+                {rows.map((item, index, array) => (
+                  <TableRow
+                    key={item.title}
+                    sx={{
+                      '& td': {
+                        borderBottom:
+                          index < array.length - 1 ? '1px solid' : 'none',
+                        borderBottomColor: 'divider',
+                      },
+                    }}
+                  >
+                    <TableCell>
+                      <Typography variant="body1" fontWeight="bold">
+                        {t(item.title)}
+                      </Typography>
+                      {item.description && (
                         <Typography
                           variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            mt: 1,
-                          }}
+                          color={theme.palette.text.secondary}
+                          sx={{ mt: 1 }}
                         >
-                          {item.description}
+                          {t(item.description)}
                         </Typography>
-                      </TableCell>
-                      <TableCell sx={{ verticalAlign: 'top' }}>
-                        <Typography
-                          sx={{ fontWeight: item.amountFontWeight || 'normal' }}
-                          variant="body1"
-                        >
-                          {item.amount}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ verticalAlign: 'top' }}>
+                      <Typography
+                        data-testid="amount-typography"
+                        variant="body1"
+                        fontWeight={item.bold ? 'bold' : 'normal'}
+                      >
+                        {currencyFormat(item.amount, 'USD', locale)}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </Paper>
 
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h5" gutterBottom>
+          <Paper
+            sx={{
+              padding: theme.spacing(3),
+              marginBottom: theme.spacing(3),
+            }}
+          >
+            <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
               {t('Monthly Support Breakdown')}
             </Typography>
-            <Divider sx={{ mb: 2, mt: 2, mx: -3 }} />
+
+            <Divider
+              sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
+            />
+
             <Box
-              width="50%"
-              justifyContent={isMobile ? 'center' : 'flex-end'}
-              mx="auto"
+              sx={{
+                width: isMobile ? '100%' : '70%',
+                height: 500,
+              }}
             >
-              <ResponsiveContainer width="100%" height={500}>
+              <ResponsiveContainer>
                 <PieChart>
                   <Pie
-                    data={pieData}
+                    data={mockData}
                     dataKey="value"
                     nameKey="name"
-                    cx="45%"
+                    cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={160}
-                    paddingAngle={4}
+                    outerRadius={isMobile ? 100 : 180}
                     cornerRadius={theme.shape.borderRadius}
-                    labelLine={false}
                   >
-                    {pieData.map((entry, index) => (
+                    {mockData.map((entry, index) => (
                       <Cell
                         key={entry.name}
                         fill={chartColors[index % chartColors.length]}
@@ -255,26 +283,23 @@ export const PresentingYourGoal: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => {
-                      const total = pieData.reduce(
-                        (sum, entry) => sum + entry.value,
-                        0,
-                      );
-                      const percent = total
-                        ? ((Number(value) / total) * 100).toFixed(1)
-                        : 0;
-                      return `$${value} (${percent}%)`;
-                    }}
+                    formatter={(value) =>
+                      `${currencyFormat(
+                        Number(value),
+                        'USD',
+                        locale,
+                      )} (${formatPercent(Number(value))}%)`
+                    }
                   />
                   <Legend
-                    layout={!isMobile ? 'vertical' : 'horizontal'}
+                    layout={isMobile ? 'horizontal' : 'vertical'}
                     align="right"
-                    verticalAlign={!isMobile ? 'middle' : 'bottom'}
+                    verticalAlign={isMobile ? 'bottom' : 'middle'}
                     wrapperStyle={{
-                      fontSize: !isMobile
-                        ? theme.typography.h5.fontSize
-                        : theme.typography.subtitle1.fontSize,
-                      paddingRight: theme.spacing(8),
+                      fontSize: isMobile
+                        ? theme.typography.subtitle1.fontSize
+                        : theme.typography.h5.fontSize,
+                      paddingRight: isMobile ? 0 : theme.spacing(30),
                     }}
                   />
                 </PieChart>

@@ -10,7 +10,7 @@ export const PresentingYourGoalStepRightPanelComponent: React.FC = () => {
   return (
     <Box sx={{ padding: '16px' }}>
       <Typography variant="h6" gutterBottom>
-        {t('Mileage Step')}
+        {t('Presenting Your Goal Step')}
       </Typography>
 
       <Button
