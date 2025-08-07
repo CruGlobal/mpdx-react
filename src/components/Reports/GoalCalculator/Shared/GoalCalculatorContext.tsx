@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +5,6 @@ import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings'
 import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
-  getStepEnumFromString,
 } from '../GoalCalculatorHelper';
 import { useHouseholdExpenses } from '../HouseholdExpenses/HouseholdExpenses';
 import { useMinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
@@ -52,7 +50,6 @@ interface Props {
 export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
-  const router = useRouter();
 
   // Static categories - no memoization to avoid React queue issues
   const steps = [
@@ -62,9 +59,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useSummaryReport(),
   ];
 
-  const { goalStep } = router.query;
   const [selectedStepId, setSelectedStepId] = useState(
-    getStepEnumFromString(goalStep),
+    GoalCalculatorStepEnum.CalculatorSettings,
   );
 
   const [rightPanelContent, setRightPanelContent] =

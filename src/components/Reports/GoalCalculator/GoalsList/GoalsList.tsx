@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
-import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { GoalCard } from '../GoalCard/GoalCard';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
@@ -112,7 +111,7 @@ export const GoalsList: React.FC = () => {
     // TODO: Create a new goal with a GraphQL mutation
     const goalCalculatorId = 1;
     router.push(
-      `/accountLists/${router.query.accountListId}/reports/goalCalculator/${goalCalculatorId}/${GoalCalculatorStepEnum.HouseholdExpenses}`,
+      `/accountLists/${router.query.accountListId}/reports/goalCalculator/${goalCalculatorId}`,
     );
   };
 

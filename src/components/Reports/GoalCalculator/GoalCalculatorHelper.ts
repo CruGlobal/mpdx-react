@@ -49,13 +49,3 @@ export enum GoalCalculatorCategoryEnum {
   // SummaryReport
   Overview = 'overview',
 }
-
-export const getStepEnumFromString = (
-  goalStep: string | string[] | undefined,
-): GoalCalculatorStepEnum => {
-  const stepValue = Array.isArray(goalStep) ? goalStep[0] : goalStep;
-  const stepEnum = Object.values(GoalCalculatorStepEnum).find(
-    (value) => value === stepValue,
-  );
-  return stepEnum || GoalCalculatorStepEnum.CalculatorSettings;
-};
