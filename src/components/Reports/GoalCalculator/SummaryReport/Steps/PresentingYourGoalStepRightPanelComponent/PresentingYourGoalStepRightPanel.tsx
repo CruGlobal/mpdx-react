@@ -3,7 +3,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 
-export const PresentingYourGoalStepRightPanelComponent: React.FC = () => {
+export const PresentingYourGoalStepRightPanel: React.FC = () => {
   const { t } = useTranslation();
   const { closeRightPanel } = useGoalCalculator();
 

@@ -6,7 +6,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
-import { PresentingYourGoalStepRightPanelComponent } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanelComponent';
+import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanel';
 
 export const useSummaryReport = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -19,7 +19,7 @@ export const useSummaryReport = (): GoalCalculatorStep => {
         id: GoalCalculatorCategoryEnum.PresentingYourGoal,
         title: t('Presenting Your Goal'),
         component: <PresentingYourGoal />,
-        rightPanelComponent: <PresentingYourGoalStepRightPanelComponent />,
+        rightPanelComponent: <PresentingYourGoalStepRightPanel />,
       },
     ],
   };
