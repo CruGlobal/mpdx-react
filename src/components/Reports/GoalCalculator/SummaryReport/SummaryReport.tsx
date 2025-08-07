@@ -6,6 +6,8 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
+import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
+import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanel';
 import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 
 const goal = {
@@ -42,6 +44,12 @@ export const useSummaryReport = (): GoalCalculatorStep => {
         title: t('MPD Goal'),
         component: <MpdGoalTable goal={goal} />,
         rightPanelComponent: <MpdGoalStepRightPanel />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.PresentingYourGoal,
+        title: t('Presenting Your Goal'),
+        component: <PresentingYourGoal />,
+        rightPanelComponent: <PresentingYourGoalStepRightPanel />,
       },
     ],
   };
