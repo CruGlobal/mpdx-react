@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -16,6 +16,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { ExpensesPieChart } from './Charts/ExpensesPieChart';
+import { MonthlySummaryChart } from './Charts/MonthlySummaryChart';
 import { SummaryBarChart } from './Charts/SummaryBarChart';
 import { EmptyTable } from './Tables/EmptyTable';
 import { Tables } from './Tables/Tables';
@@ -45,40 +46,6 @@ const StyledPrintButton = styled(Button)({
   paddingBottom: theme.spacing(1),
 });
 
-const incomeTotal = mockData.income?.data.reduce(
-  (sum, data) => sum + data.total,
-  0,
-);
-
-const ministryTotal = mockData.ministryExpenses?.data.reduce(
-  (sum, data) => sum + data.total,
-  0,
-);
-const healthcareTotal = mockData.healthcareExpenses?.data.reduce(
-  (sum, data) => sum + data.total,
-  0,
-);
-const miscTotal = mockData.misc?.data.reduce(
-  (sum, data) => sum + data.total,
-  0,
-);
-const otherTotal = mockData.other?.data.reduce(
-  (sum, data) => sum + data.total,
-  0,
-);
-const expensesTotal =
-  (ministryTotal ?? 0) +
-  (healthcareTotal ?? 0) +
-  (miscTotal ?? 0) +
-  (otherTotal ?? 0);
-
-const expenseData = [
-  ...(mockData.ministryExpenses?.data ?? []),
-  ...(mockData.healthcareExpenses?.data ?? []),
-  ...(mockData.misc?.data ?? []),
-  ...(mockData.other?.data ?? []),
-];
-
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
 > = ({ title, isNavListOpen, onNavListToggle }) => {
@@ -87,6 +54,83 @@ export const MPGAIncomeExpensesReport: React.FC<
   const handlePrint = () => {
     window.print();
   };
+
+  const getLast12Months = (): string[] => {
+    const result: string[] = [];
+    const date = new Date();
+
+    for (let i = 0; i < 12; i++) {
+      const month = new Date(date.getFullYear(), date.getMonth() - i, 1);
+      const formatted = month.toLocaleString('default', {
+        month: 'short',
+        year: 'numeric',
+      });
+      result.push(formatted);
+    }
+
+    return result.reverse();
+  };
+
+  const last12Months = useMemo(() => getLast12Months(), []);
+
+  const uniqueYears = [...new Set(last12Months.map((m) => m.split(' ')[1]))];
+
+  const incomeTotal = useMemo(
+    () => mockData.income?.data.reduce((sum, data) => sum + data.total, 0),
+    [mockData.income?.data],
+  );
+
+  const ministryTotal = useMemo(
+    () =>
+      mockData.ministryExpenses?.data.reduce(
+        (sum, data) => sum + data.total,
+        0,
+      ),
+    [mockData.ministryExpenses?.data],
+  );
+
+  const healthcareTotal = useMemo(
+    () =>
+      mockData.healthcareExpenses?.data.reduce(
+        (sum, data) => sum + data.total,
+        0,
+      ),
+    [mockData.healthcareExpenses?.data],
+  );
+
+  const miscTotal = useMemo(
+    () => mockData.misc?.data.reduce((sum, data) => sum + data.total, 0),
+    [mockData.misc?.data],
+  );
+
+  const otherTotal = useMemo(
+    () => mockData.other?.data.reduce((sum, data) => sum + data.total, 0),
+    [mockData.other?.data],
+  );
+
+  const expensesTotal = useMemo(
+    () =>
+      (ministryTotal ?? 0) +
+      (healthcareTotal ?? 0) +
+      (miscTotal ?? 0) +
+      (otherTotal ?? 0),
+    [ministryTotal, healthcareTotal, miscTotal, otherTotal],
+  );
+
+  const expenseData = useMemo(
+    () => [
+      ...(mockData.ministryExpenses?.data ?? []),
+      ...(mockData.healthcareExpenses?.data ?? []),
+      ...(mockData.misc?.data ?? []),
+      ...(mockData.other?.data ?? []),
+    ],
+    [
+      mockData.ministryExpenses?.data,
+      mockData.healthcareExpenses?.data,
+      mockData.misc?.data,
+      mockData.other?.data,
+    ],
+  );
 
   return (
     <Box>
@@ -137,7 +181,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Box>
           <Box>
             <Tables
-              data={mockData.income?.data}
+              data={mockData.income?.data ?? []}
               overallTotal={incomeTotal}
               emptyPlaceholder={
                 <EmptyTable
@@ -146,6 +190,8 @@ export const MPGAIncomeExpensesReport: React.FC<
                 />
               }
               title={t('Income')}
+              months={last12Months}
+              years={uniqueYears}
             />
           </Box>
           <Box mt={2}>
@@ -159,9 +205,17 @@ export const MPGAIncomeExpensesReport: React.FC<
                 />
               }
               title={t('Expenses')}
+              months={last12Months}
+              years={uniqueYears}
             />
           </Box>
-          <Box mt={2} mb={2}></Box>
+          <Box mt={2} mb={2}>
+            <MonthlySummaryChart
+              incomeData={mockData.income?.data ?? []}
+              expenseData={expenseData}
+              months={last12Months}
+            />
+          </Box>
         </Container>
       </Box>
     </Box>
