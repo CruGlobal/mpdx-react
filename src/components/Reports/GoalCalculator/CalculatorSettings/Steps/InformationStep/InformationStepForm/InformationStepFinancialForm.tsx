@@ -1,17 +1,11 @@
 import React from 'react';
 import { Grid, MenuItem, TextField, Typography } from '@mui/material';
-import { styled } from '@mui/system';
 import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
-
-const StyledFinancialForm = styled('div')({
-  '.prefix': {
-    marginRight: 8,
-  },
-  '.suffix': {
-    marginLeft: 8,
-  },
-});
+import {
+  CurrencyAdornment,
+  PercentageAdornment,
+} from '../../../../Shared/Adornments';
 
 interface InformationStepFinancialFormProps {
   isSpouse?: boolean;
@@ -23,7 +17,7 @@ export const InformationStepFinancialForm: React.FC<
   const { t } = useTranslation();
 
   return (
-    <StyledFinancialForm>
+    <>
       <Typography variant="h6" gutterBottom>
         {isSpouse
           ? t("Spouse's Financial Information")
@@ -54,7 +48,7 @@ export const InformationStepFinancialForm: React.FC<
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
+                  startAdornment: <CurrencyAdornment />,
                 }}
               />
             )}
@@ -75,7 +69,7 @@ export const InformationStepFinancialForm: React.FC<
                 variant="outlined"
                 inputProps={{ min: 0, max: 100, step: 0.01 }}
                 InputProps={{
-                  endAdornment: <span className="suffix">%</span>,
+                  endAdornment: <PercentageAdornment />,
                 }}
               />
             )}
@@ -125,7 +119,7 @@ export const InformationStepFinancialForm: React.FC<
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
+                  startAdornment: <CurrencyAdornment />,
                 }}
               />
             )}
@@ -150,7 +144,7 @@ export const InformationStepFinancialForm: React.FC<
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
+                  startAdornment: <CurrencyAdornment />,
                 }}
               />
             )}
@@ -175,13 +169,13 @@ export const InformationStepFinancialForm: React.FC<
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: <span className="prefix">$</span>,
+                  startAdornment: <CurrencyAdornment />,
                 }}
               />
             )}
           </Field>
         </Grid>
       </Grid>
-    </StyledFinancialForm>
+    </>
   );
 };
