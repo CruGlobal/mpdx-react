@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   Box,
   Table,
@@ -23,36 +22,21 @@ export interface TablesProps {
   overallTotal: number | undefined;
   emptyPlaceholder: React.ReactElement;
   title: string;
+  months: string[];
+  years: string[];
   loading?: boolean;
 }
 
 export const Tables: React.FC<TablesProps> = ({
   title,
+  months,
+  years,
   overallTotal,
   loading,
   data,
   emptyPlaceholder,
 }) => {
   const { t } = useTranslation();
-
-  const getLast12Months = (): string[] => {
-    const result: string[] = [];
-    const date = new Date();
-
-    for (let i = 0; i < 12; i++) {
-      const month = new Date(date.getFullYear(), date.getMonth() - i, 1);
-      const formatted = month.toLocaleString('default', {
-        month: 'short',
-        year: 'numeric',
-      });
-      result.push(formatted);
-    }
-
-    return result.reverse();
-  };
-  const last12Months = useMemo(() => getLast12Months(), []);
-
-  const uniqueYears = [...new Set(last12Months.map((m) => m.split(' ')[1]))];
 
   const getBorderColor = (index: number): string => {
     if (index === 0) {
@@ -80,18 +64,16 @@ export const Tables: React.FC<TablesProps> = ({
             <TableHead>
               <TableRow>
                 <TableCell sx={{ borderBottom: 'none' }} />
-                {last12Months.map((monthYear, index) => {
+                {months.map((monthYear, index) => {
                   const [month, year] = monthYear.split(' ');
                   const isFirstOfYear =
                     index === 0 ||
-                    monthYear.split(' ')[1] !==
-                      last12Months[index - 1].split(' ')[1];
+                    monthYear.split(' ')[1] !== months[index - 1].split(' ')[1];
                   const isLastOfYear =
-                    index === last12Months.length - 1 ||
-                    monthYear.split(' ')[1] !==
-                      last12Months[index + 1].split(' ')[1];
+                    index === months.length - 1 ||
+                    monthYear.split(' ')[1] !== months[index + 1].split(' ')[1];
 
-                  const borderColor = getBorderColor(uniqueYears.indexOf(year));
+                  const borderColor = getBorderColor(years.indexOf(year));
 
                   return (
                     <TableCell
@@ -143,7 +125,7 @@ export const Tables: React.FC<TablesProps> = ({
                     <strong>{t('Description')}</strong>
                   </StyledTypography>
                 </TableCell>
-                {last12Months.map((month) => (
+                {months.map((month) => (
                   <TableCell key={month}>
                     <StyledTypography>
                       <strong>{month.split(' ')[0]}</strong>

@@ -70,7 +70,38 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
           <Cell key="cell-2" fill="#F08020" />
           <Cell key="cell-3" fill="#FFCF07" />
         </Pie>
-        <Legend iconSize={15} />
+        <Legend
+          wrapperStyle={{ marginTop: 5 }}
+          content={({ payload }) => (
+            <ul
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                listStyle: 'none',
+                gap: '0.5rem',
+                padding: 0,
+              }}
+            >
+              {payload?.map((entry, index) => (
+                <li
+                  key={`item-${index}`}
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  <div
+                    style={{
+                      width: 14,
+                      height: 14,
+                      backgroundColor: entry.color,
+                      marginRight: 5,
+                    }}
+                  />
+                  <span style={{ color: '#000000' }}>{entry.value}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        />
       </PieChart>
     </CardSkeleton>
   );
