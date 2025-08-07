@@ -1,19 +1,9 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
-import theme from 'src/theme';
 import { GoalCalculatorProvider } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
-
-jest.mock('src/hooks/useLocale', () => ({
-  useLocale: () => 'en-US',
-}));
 
 jest.mock('src/lib/intlFormat', () => ({
   currencyFormat: (value: number, currency: string, locale: string) =>
@@ -22,20 +12,10 @@ jest.mock('src/lib/intlFormat', () => ({
     ),
 }));
 
-jest.mock('notistack', () => ({
-  useSnackbar: () => ({
-    enqueueSnackbar: jest.fn(),
-    closeSnackbar: jest.fn(),
-  }),
-  SnackbarProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
-
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider maxSnack={3}>
-      <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
-    </SnackbarProvider>
-  </ThemeProvider>
+  <SnackbarProvider>
+    <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
+  </SnackbarProvider>
 );
 
 const defaultProps = {
@@ -49,14 +29,6 @@ const defaultProps = {
 };
 
 describe('GoalCalculatorGrid', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    beforeTestResizeObserver();
-  });
-  afterEach(() => {
-    afterTestResizeObserver();
-  });
-
   it('renders with initial data and calculates total correctly', async () => {
     const { getByText } = render(
       <TestWrapper>
@@ -74,7 +46,7 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('adds a new row when Add button is clicked', async () => {
-    const { getByRole, getByText, findByText } = render(
+    const { getByRole, getByText } = render(
       <TestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
       </TestWrapper>,
@@ -85,7 +57,8 @@ describe('GoalCalculatorGrid', () => {
         name: /add special income name/i,
       }),
     );
-    await findByText('New Income');
+
+    expect(getByText('New Income')).toBeInTheDocument();
     expect(getByText('$5,500.00')).toBeInTheDocument();
   });
 
@@ -95,28 +68,22 @@ describe('GoalCalculatorGrid', () => {
         <GoalCalculatorGrid {...defaultProps} />
       </TestWrapper>,
     );
-
-    // Find the Freelance Work row and hover to show delete button
     const freelanceRow = getByText('Freelance Work').closest('[role="row"]');
     userEvent.hover(freelanceRow!);
-
-    // Find and click the delete button for this row
     const deleteButtons = freelanceRow?.querySelectorAll(
       '[aria-label="Delete"]',
     );
     if (deleteButtons && deleteButtons.length > 0) {
       userEvent.click(deleteButtons[0] as Element);
     }
-
-    // Wait for the row to be removed and total to update
     await waitFor(() => {
       expect(queryByText('Freelance Work')).not.toBeInTheDocument();
-      expect(getByText('$3,000.00')).toBeInTheDocument(); // 5500 - 2500 = 3000
     });
+    expect(getByText('$3,000.00')).toBeInTheDocument();
   });
 
   it('edits a row name and updates the data', async () => {
-    const { queryByDisplayValue, findByText } = render(
+    const { queryByDisplayValue, getByDisplayValue, findByText } = render(
       <TestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
       </TestWrapper>,
@@ -124,8 +91,13 @@ describe('GoalCalculatorGrid', () => {
 
     const nameCell = await findByText('Freelance Work');
     userEvent.dblClick(nameCell);
-    userEvent.type(nameCell, 'Consulting Work');
-    userEvent.tab();
+
+    await waitFor(() => {
+      const input = getByDisplayValue('Freelance Work');
+      userEvent.clear(input);
+      userEvent.type(input, 'Consulting Work');
+      userEvent.tab();
+    });
 
     await waitFor(() => {
       expect(queryByDisplayValue('Freelance Work')).not.toBeInTheDocument();
@@ -134,16 +106,22 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('edits a row amount and updates the total', async () => {
-    const { getAllByRole, findByText } = render(
+    const { findByText, getByDisplayValue } = render(
       <TestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
       </TestWrapper>,
     );
 
-    const amountInputs = getAllByRole('gridcell');
-    const firstAmountInput = amountInputs[amountInputs.length - 3];
-    userEvent.dblClick(firstAmountInput);
-    userEvent.type(firstAmountInput, '500');
+    const amountCell = await findByText('$2,500.00');
+    userEvent.dblClick(amountCell);
+
+    // Wait for the input to appear and clear it
+    await waitFor(async () => {
+      const input = getByDisplayValue('2500');
+      userEvent.clear(input);
+      userEvent.type(input, '3000');
+    });
+
     userEvent.tab();
     expect(await findByText('$6,000.00')).toBeInTheDocument();
   });
@@ -162,7 +140,7 @@ describe('GoalCalculatorGrid', () => {
     expect(editableCells).toHaveLength(0);
     userEvent.hover(totalRow!);
     const deleteButtons = queryAllByLabelText('Delete');
-    expect(deleteButtons).toHaveLength(3); // Only for the 3 data rows, not total
+    expect(deleteButtons).toHaveLength(3);
   });
 
   it('calculates total correctly when multiple operations are performed', async () => {
