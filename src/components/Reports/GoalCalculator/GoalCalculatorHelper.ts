@@ -48,4 +48,5 @@ export enum GoalCalculatorCategoryEnum {
   Other = 'other',
   // SummaryReport
   Overview = 'overview',
+  PresentingYourGoal = 'presenting-your-goal',
 }
