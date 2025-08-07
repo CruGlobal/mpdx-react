@@ -24,8 +24,10 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru.svg';
 import { currencyFormat } from 'src/lib/intlFormat';
 
@@ -112,6 +114,12 @@ export const PresentingYourGoal: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
+  const salaryOrganizationId = useOrganizationId();
+  const { data } = useGetUsersOrganizationsAccountsQuery({
+    skip: !salaryOrganizationId,
+  });
+  const organization = data?.userOrganizationAccounts[0].organization.name;
+
   // Made useMemo for when real data is added.
   const total = useMemo(
     () => mockData.reduce((sum, entry) => sum + entry.value, 0),
@@ -154,7 +162,7 @@ export const PresentingYourGoal: React.FC = () => {
       },
       {
         label: t('Mission Agency'),
-        value: t('Campus Crusade for Christ, Inc.'),
+        value: organization || t('Campus Crusade for Christ, Inc.'),
       },
       { label: t('Ministry Location'), value: t('Orlando, FL') },
     ],
