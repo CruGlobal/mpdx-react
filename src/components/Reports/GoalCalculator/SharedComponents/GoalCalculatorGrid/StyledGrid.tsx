@@ -3,69 +3,43 @@ import { styled } from '@mui/material';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 
 const StyledDataGrid = styled(DataGrid)({
-  borderRadius: 0,
   border: 'none',
-  '& .MuiDataGrid-columnHeader': {
-    fontWeight: 'bold !important',
+  '.MuiDataGrid-columnHeaderTitle': {
+    fontWeight: 'bold',
   },
-  '& .MuiDataGrid-columnHeaderTitle': {
-    fontWeight: 'bold !important',
-  },
-  '& .MuiDataGrid-columnSeparator': {
+  '.MuiDataGrid-columnSeparator': {
     display: 'none',
   },
-  '& .MuiDataGrid-cell[data-field="actions"]': {
+  '.MuiDataGrid-cell[data-field="actions"]': {
     '&:focus': {
-      outline: 'none !important',
-    },
-    '&.Mui-focusVisible': {
-      outline: 'none !important',
+      outline: 'none',
     },
     '& .MuiDataGrid-actionsCell': {
       opacity: 0,
       transition: 'opacity 0.2s ease-in-out',
     },
   },
-
-  '& .MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
+  '.MuiDataGrid-row:hover .MuiDataGrid-cell[data-field="actions"]': {
     opacity: 1,
-    '& .MuiDataGrid-actionsCell': {
+    '.MuiDataGrid-actionsCell': {
       opacity: 1,
-      '&:focus': {
-        outline: 'none !important',
-      },
     },
   },
-  '& .MuiDataGrid-row[data-id="total"]': {
+  '.MuiDataGrid-row[data-id="total"]': {
     fontWeight: 'bold',
     '&:hover': {
-      backgroundColor: 'transparent !important',
+      backgroundColor: 'transparent',
     },
     '&:focus': {
-      backgroundColor: 'transparent !important',
-      outline: 'none !important',
-    },
-    '&.Mui-focusVisible': {
-      backgroundColor: 'transparent !important',
-      outline: 'none !important',
+      backgroundColor: 'transparent',
+      outline: 'none',
     },
   },
-  '& .MuiDataGrid-row[data-id="total"] .MuiDataGrid-cell': {
-    fontWeight: 'bold',
-    '&:hover': {
-      backgroundColor: 'transparent !important',
-    },
+  '.MuiDataGrid-row[data-id="total"] .MuiDataGrid-cell': {
     '&:focus': {
-      backgroundColor: 'transparent !important',
-      outline: 'none !important',
+      backgroundColor: 'transparent',
+      outline: 'none',
     },
-    '&.Mui-focusVisible': {
-      backgroundColor: 'transparent !important',
-      outline: 'none !important',
-    },
-  },
-  '& .MuiDataGrid-row[data-id="total"] .MuiDataGrid-cell--editable': {
-    cursor: 'default',
   },
 });
 
