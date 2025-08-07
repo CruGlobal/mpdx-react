@@ -24,8 +24,10 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru.svg';
 import { currencyFormat } from 'src/lib/intlFormat';
 
@@ -112,6 +114,13 @@ export const PresentingYourGoal: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
+  const salaryOrganizationId = useOrganizationId();
+  const { data } = useGetUsersOrganizationsAccountsQuery({
+    skip: !salaryOrganizationId,
+  });
+  const organization = data?.userOrganizationAccounts[0].organization.name;
+  const cruOrganizationName = t('Campus Crusade for Christ');
+
   // Made useMemo for when real data is added.
   const total = useMemo(
     () => mockData.reduce((sum, entry) => sum + entry.value, 0),
@@ -144,8 +153,8 @@ export const PresentingYourGoal: React.FC = () => {
     theme.palette.info.main,
   ];
 
-  const personalInfoRows: PersonalInfoRow[] = useMemo(
-    () => [
+  const personalInfoRows: PersonalInfoRow[] = useMemo(() => {
+    const personalRows: PersonalInfoRow[] = [
       {
         label: 'Name',
         value: userData?.user
@@ -154,12 +163,16 @@ export const PresentingYourGoal: React.FC = () => {
       },
       {
         label: t('Mission Agency'),
-        value: t('Campus Crusade for Christ, Inc.'),
+        value: organization || cruOrganizationName,
       },
       { label: t('Ministry Location'), value: t('Orlando, FL') },
-    ],
-    [userData?.user, t],
-  );
+    ];
+    if (!organization?.includes(cruOrganizationName)) {
+      return personalRows.filter((row) => row.label !== t('Ministry Location'));
+    }
+
+    return personalRows;
+  }, [userData?.user, t, organization, cruOrganizationName]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
@@ -243,7 +256,7 @@ export const PresentingYourGoal: React.FC = () => {
                   <StyledTableCell data-testid="value-typography">
                     {item.value}
                   </StyledTableCell>
-                  {index === 0 && (
+                  {index === 0 && organization?.includes(cruOrganizationName) && (
                     <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
                       <img
                         src={cruLogo}
