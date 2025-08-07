@@ -62,6 +62,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [selectedStepId, setSelectedStepId] = useState(
     GoalCalculatorStepEnum.CalculatorSettings,
   );
+
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
@@ -90,13 +91,13 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       steps.findIndex((step) => step.id === selectedStepId) + 1;
     const nextStep = steps[nextStepIndex];
     if (nextStep) {
-      setSelectedStepId(nextStep.id);
+      handleStepChange(nextStep.id);
     } else {
       enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
         variant: 'info',
       });
     }
-  }, [steps, enqueueSnackbar, selectedStepId, t]);
+  }, [steps, selectedStepId, handleStepChange, enqueueSnackbar, t]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);
