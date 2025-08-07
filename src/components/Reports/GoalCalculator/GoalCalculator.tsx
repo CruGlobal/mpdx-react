@@ -204,10 +204,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                   )}
                 </Typography>
                 {category.component || (
-                  <GoalCalculatorGrid
-                    headerName="Expense Name"
-                    ctaText="Add Expense"
-                  />
+                  <GoalCalculatorGrid headerName={category.title} />
                 )}
               </CategoryContainer>
             );

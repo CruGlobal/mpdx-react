@@ -65,14 +65,12 @@ interface GoalCalculatorGridProps {
   }>;
   promptText?: string;
   headerName: string;
-  ctaText: string;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   formData,
   promptText,
   headerName,
-  ctaText,
 }) => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
@@ -122,7 +120,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             <GoalCalculatorGridForm
               formikProps={formikProps}
               headerName={headerName}
-              ctaText={ctaText}
             />
           </Form>
         )}
@@ -134,13 +131,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 interface GoalCalculatorGridFormProps {
   formikProps: FormikProps<GoalCalculatorGridFormValues>;
   headerName: string;
-  ctaText: string;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   formikProps,
   headerName,
-  ctaText,
 }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } = formikProps;
@@ -248,7 +243,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             size="small"
             startIcon={<AddIcon />}
           >
-            {t(ctaText)}
+            {t(`Add ${headerName}`)}
           </StyledAddButton>
           <StyledToggleBox>
             <Switch
