@@ -74,6 +74,8 @@ export const StyledGrid: React.FC<DataGridProps> = (props) => {
     <StyledDataGrid
       hideFooter
       disableRowSelectionOnClick
+      disableColumnSorting
+      disableColumnMenu
       hideFooterSelectedRowCount
       rowHeight={38}
       columnHeaderHeight={38}
