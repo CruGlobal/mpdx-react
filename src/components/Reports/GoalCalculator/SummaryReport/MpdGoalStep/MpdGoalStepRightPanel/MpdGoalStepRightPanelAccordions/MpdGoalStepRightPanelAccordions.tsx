@@ -17,7 +17,7 @@ interface AccordionItem {
   hasSpace?: boolean;
 }
 
-export const MpdGoalStepRightPanelAccordion: React.FC = () => {
+export const MpdGoalStepRightPanelAccordions: React.FC = () => {
   const { t } = useTranslation();
 
   const accordionItems: AccordionItem[] = [
@@ -114,7 +114,7 @@ export const MpdGoalStepRightPanelAccordion: React.FC = () => {
   ];
 
   return (
-    <Box>
+    <Box data-testid="accordions">
       {accordionItems.map((item, index) => (
         <Accordion
           key={item.title}
@@ -122,14 +122,11 @@ export const MpdGoalStepRightPanelAccordion: React.FC = () => {
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls={`panel${index + 1}-content`}
             id={`panel${index + 1}-header`}
             sx={{
-              '& .MuiAccordionSummary-content': {
-                display: 'flex',
+              '.MuiAccordionSummary-content': {
                 justifyContent: 'center',
-                alignItems: 'center',
-                gap: 2,
+                gap: theme.spacing(2),
               },
             }}
           >
@@ -146,7 +143,11 @@ export const MpdGoalStepRightPanelAccordion: React.FC = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" color={theme.palette.text.secondary}>
+            <Typography
+              data-testid={`content-${index + 1}-typography`}
+              variant="body1"
+              color={theme.palette.text.primary}
+            >
               {item.content}
             </Typography>
           </AccordionDetails>
