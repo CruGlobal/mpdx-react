@@ -28,13 +28,13 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import i18n from 'src/lib/i18n';
-import { TransferModalSelect } from '../../../common/TransferModalSelect/TransferModalSelect';
 import {
   ScheduleEnum,
   TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
 import { Fund, TransferHistory } from '../mockData';
+import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
 export interface TransferModalData {
   type?: TransferTypeEnum;

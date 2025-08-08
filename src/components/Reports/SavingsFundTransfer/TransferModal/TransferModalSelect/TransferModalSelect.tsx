@@ -8,8 +8,8 @@ import {
 import {
   StaffSavingFundEnum,
   TransferDirectionEnum,
-} from '../../Reports/SavingsFundTransfer/Helper/TransferHistoryEnum';
-import { Fund } from '../../Reports/SavingsFundTransfer/mockData';
+} from '../../Helper/TransferHistoryEnum';
+import { Fund } from '../../mockData';
 
 type TransferModalSelectProps = Partial<SelectProps> & {
   type: TransferDirectionEnum;
