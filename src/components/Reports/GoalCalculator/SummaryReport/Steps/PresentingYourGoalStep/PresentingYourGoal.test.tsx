@@ -87,7 +87,7 @@ describe('PresentingYourGoal', () => {
     beforeTestResizeObserver();
   });
 
-  it('renders cell text', async () => {
+  it('renders cell text and table headings', async () => {
     const { getByRole } = render(<TestComponent />);
     expect(
       getByRole('heading', { name: 'Personal Information' }),
@@ -100,21 +100,14 @@ describe('PresentingYourGoal', () => {
 
     await waitFor(() => {
       expect(getByRole('cell', { name: 'Obiwan Kenobi' })).toBeInTheDocument();
+      expect(
+        getByRole('cell', { name: 'Campus Crusade for Christ, Inc.' }),
+      ).toBeInTheDocument();
+      expect(getByRole('cell', { name: 'Orlando, FL' })).toBeInTheDocument();
     });
-
     expect(
       getByRole('heading', { name: 'Monthly Support Breakdown' }),
     ).toBeInTheDocument();
-  });
-
-  it("renders the user's name", async () => {
-    const { getAllByTestId } = render(<TestComponent />);
-    await waitFor(() => {
-      const nameElement = getAllByTestId('value-typography').find(
-        (element) => element.textContent === 'Obiwan Kenobi',
-      );
-      expect(nameElement).toBeInTheDocument();
-    });
   });
 
   it('renders the logo image when the user salary organization is Cru', async () => {
@@ -129,7 +122,7 @@ describe('PresentingYourGoal', () => {
     expect(getAllByTestId('amount-typography').length).toBeGreaterThan(0);
   });
 
-  it('renders the pie chart legend', async () => {
+  it('renders the pie chart', async () => {
     const { container } = render(<TestComponent />);
 
     const chart = container.querySelector('.recharts-pie');
@@ -138,5 +131,35 @@ describe('PresentingYourGoal', () => {
     const legend = container.querySelector('.recharts-legend-wrapper');
     expect(legend).toBeInTheDocument();
     expect(legend?.textContent).toMatch('Salary');
+  });
+
+  it('renders the print button and triggers print handler', () => {
+    const { getByRole } = render(<TestComponent />);
+    const printButton = getByRole('button', { name: 'Print' });
+    expect(printButton).toBeInTheDocument();
+
+    const printSpy = jest.spyOn(window, 'print').mockImplementation();
+    jest.spyOn(window.location, 'reload').mockImplementation();
+    const originalInnerHTML = document.body.innerHTML;
+    Object.defineProperty(document.body, 'innerHTML', {
+      value: originalInnerHTML,
+      writable: true,
+    });
+
+    printButton.click();
+
+    expect(printSpy).toHaveBeenCalled();
+    expect(document.body.innerHTML).toBe(originalInnerHTML);
+  });
+
+  it('renders the legend with all pie chart categories', async () => {
+    const { container } = render(<TestComponent />);
+    const legend = container.querySelector('.recharts-legend-wrapper');
+    expect(legend?.textContent).toMatch('Salary');
+    expect(legend?.textContent).toMatch('Ministry Expenses');
+    expect(legend?.textContent).toMatch('Benefits');
+    expect(legend?.textContent).toMatch('Social Security and Taxes');
+    expect(legend?.textContent).toMatch('Voluntary 403b Retirement Plan');
+    expect(legend?.textContent).toMatch('Administrative Charge');
   });
 });
