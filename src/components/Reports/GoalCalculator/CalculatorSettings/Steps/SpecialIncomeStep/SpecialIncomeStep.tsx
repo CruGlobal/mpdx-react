@@ -16,6 +16,7 @@ interface SpecialIncomeFormValues {
   // Special income fields
   incidentIncome: number;
   propertyIncome: number;
+  spouseIncome: number;
   additionalIncomes: Array<{
     label: string;
     amount: number;
@@ -28,6 +29,7 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   const initialValues: SpecialIncomeFormValues = {
     incidentIncome: 0,
     propertyIncome: 0,
+    spouseIncome: 0,
     additionalIncomes: [],
   };
 
@@ -40,6 +42,7 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
       .number()
       .min(0, t('Property income must be positive'))
       .required(t('Property income is required')),
+    spouseIncome: yup.number().min(0, t('Spouse income must be positive')),
     additionalIncomes: yup.array().of(
       yup.object({
         label: yup
