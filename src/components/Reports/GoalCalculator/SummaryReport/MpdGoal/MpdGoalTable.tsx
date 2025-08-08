@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
@@ -63,242 +63,251 @@ export const MpdGoalTable: React.FC = () => {
   const localeText = useDataGridLocaleText();
   const calculations = useGoalLineItems(goal);
 
-  const valueFormatter = (value: number, row: MpdGoalRow) =>
-    row.percentage
-      ? percentageFormat(value, locale)
-      : currencyFormat(value, 'USD', locale, { showTrailingZeros: true });
+  const valueFormatter = useCallback(
+    (value: number, row: MpdGoalRow) =>
+      row.percentage
+        ? percentageFormat(value, locale)
+        : currencyFormat(value, 'USD', locale, { showTrailingZeros: true }),
+    [locale],
+  );
 
-  const rows: MpdGoalRow[] = [
-    {
-      line: '1A',
-      category: t('Net Monthly Combined Salary'),
-      amount: goal.netMonthlySalary,
-      reference: 5511.31,
-    },
-    {
-      line: '1B',
-      category: t('Taxes, SECA, VTL, etc. %'),
-      amount: goal.taxesPercentage,
-      reference: 0.22,
-      percentage: true,
-    },
-    {
-      line: '1C',
-      category: t('Taxes, SECA, VTL, etc.'),
-      amount: calculations.taxes,
-      reference: 1212.49,
-    },
-    {
-      line: '1D',
-      category: t('Subtotal with Net, Taxes, and SECA'),
-      amount: calculations.salaryPreIra,
-      reference: 6723.8,
-    },
-    {
-      line: '1E',
-      category: t('Roth 403(b) Contribution %'),
-      amount: goal.rothContributionPercentage,
-      reference: 0.07,
-      percentage: true,
-    },
-    {
-      line: '1F',
-      category: t('Traditional 403(b) Contribution %'),
-      amount: goal.traditionalContributionPercentage,
-      reference: 0,
-      percentage: true,
-    },
-    {
-      line: '1G',
-      category: t('100% - Roth + Traditional 403(b) %'),
-      amount:
-        1 -
-        goal.rothContributionPercentage -
-        goal.traditionalContributionPercentage,
-      reference: 93,
-      percentage: true,
-    },
-    {
-      line: '1H',
-      category: t('Roth 403(b)'),
-      amount: calculations.rothContribution,
-      reference: 506.09,
-    },
-    {
-      line: '1I',
-      category: t('Traditional 403(b)'),
-      amount: calculations.traditionalContribution,
-      reference: 0,
-    },
-    {
-      line: '1J',
-      category: t('Gross Annual Salary'),
-      amount: calculations.grossAnnualSalary,
-      reference: 86758.68,
-    },
-    {
-      line: '1',
-      category: t('Gross Monthly Salary'),
-      amount: calculations.grossMonthlySalary,
-      reference: 7229.89,
-    },
-    {
-      line: '2',
-      category: t('Benefits Charge'),
-      amount: ministryExpenses.benefitsCharge,
-      reference: 2302.24,
-    },
-    {
-      line: '3',
-      category: t('Ministry Mileage'),
-      amount: ministryExpenses.ministryMileage,
-      reference: 95,
-    },
-    {
-      line: '4',
-      category: t('Medical Mileage'),
-      amount: ministryExpenses.medicalMileage,
-      reference: 65,
-    },
-    {
-      line: '5',
-      category: t('Medical Expenses'),
-      amount: ministryExpenses.medicalExpenses,
-      reference: 230,
-    },
-    {
-      line: '6',
-      category: t('Ministry Partner Development'),
-      amount: ministryExpenses.ministryPartnerDevelopment,
-      reference: 155,
-    },
-    {
-      line: '7',
-      category: t('Communications'),
-      amount: ministryExpenses.communications,
-      reference: 135,
-    },
-    {
-      line: '8',
-      category: t('Entertainment'),
-      amount: ministryExpenses.entertainment,
-      reference: 125,
-    },
-    {
-      line: '9',
-      category: t('Staff Development'),
-      amount: ministryExpenses.staffDevelopment,
-      reference: 180,
-    },
-    {
-      line: '10',
-      category: t('Supplies'),
-      amount: ministryExpenses.supplies,
-      reference: 50,
-    },
-    {
-      line: '11',
-      category: t('Technology'),
-      amount: ministryExpenses.technology,
-      reference: 100,
-    },
-    {
-      line: '12',
-      category: t('Travel'),
-      amount: ministryExpenses.travel,
-      reference: 225,
-    },
-    {
-      line: '13',
-      category: t('Transfers'),
-      amount: ministryExpenses.transfers,
-      reference: 160,
-    },
-    {
-      line: '14',
-      category: t('Other'),
-      amount: ministryExpenses.other,
-      reference: 80,
-    },
-    {
-      line: '15',
-      category: t('Ministry Expenses Subtotal'),
-      amount: calculations.totalMinistryExpenses,
-      reference: 2994.74,
-    },
-    {
-      line: '16',
-      category: t('Subtotal'),
-      amount: calculations.overallSubtotal,
-      reference: 10224.63,
-    },
-    {
-      line: '17',
-      category: t('Subtotal with 12% admin charge'),
-      amount: calculations.overallSubtotalWithAdmin,
-      reference: 11618.9,
-    },
-    {
-      line: '18',
-      category: t('Total Goal (line 16 x 1.06 attrition)'),
-      amount: calculations.overallTotal,
-      reference: 12316.03,
-    },
-    {
-      line: '19',
-      category: t('Solid Monthly Support Developed'),
-      amount: calculations.supportRaised,
-      reference: 0,
-    },
-    {
-      line: '20',
-      category: t('Monthly Support to be Developed'),
-      amount: calculations.supportRemaining,
-      reference: 12316.03,
-    },
-    {
-      line: '21',
-      category: t('Support Goal Percentage Progress'),
-      amount: calculations.supportRaisedPercentage,
-      reference: 0,
-      percentage: true,
-    },
-  ];
+  const rows = useMemo(
+    (): MpdGoalRow[] => [
+      {
+        line: '1A',
+        category: t('Net Monthly Combined Salary'),
+        amount: goal.netMonthlySalary,
+        reference: 5511.31,
+      },
+      {
+        line: '1B',
+        category: t('Taxes, SECA, VTL, etc. %'),
+        amount: goal.taxesPercentage,
+        reference: 0.22,
+        percentage: true,
+      },
+      {
+        line: '1C',
+        category: t('Taxes, SECA, VTL, etc.'),
+        amount: calculations.taxes,
+        reference: 1212.49,
+      },
+      {
+        line: '1D',
+        category: t('Subtotal with Net, Taxes, and SECA'),
+        amount: calculations.salaryPreIra,
+        reference: 6723.8,
+      },
+      {
+        line: '1E',
+        category: t('Roth 403(b) Contribution %'),
+        amount: goal.rothContributionPercentage,
+        reference: 0.07,
+        percentage: true,
+      },
+      {
+        line: '1F',
+        category: t('Traditional 403(b) Contribution %'),
+        amount: goal.traditionalContributionPercentage,
+        reference: 0,
+        percentage: true,
+      },
+      {
+        line: '1G',
+        category: t('100% - Roth + Traditional 403(b) %'),
+        amount:
+          1 -
+          goal.rothContributionPercentage -
+          goal.traditionalContributionPercentage,
+        reference: 93,
+        percentage: true,
+      },
+      {
+        line: '1H',
+        category: t('Roth 403(b)'),
+        amount: calculations.rothContribution,
+        reference: 506.09,
+      },
+      {
+        line: '1I',
+        category: t('Traditional 403(b)'),
+        amount: calculations.traditionalContribution,
+        reference: 0,
+      },
+      {
+        line: '1J',
+        category: t('Gross Annual Salary'),
+        amount: calculations.grossAnnualSalary,
+        reference: 86758.68,
+      },
+      {
+        line: '1',
+        category: t('Gross Monthly Salary'),
+        amount: calculations.grossMonthlySalary,
+        reference: 7229.89,
+      },
+      {
+        line: '2',
+        category: t('Benefits Charge'),
+        amount: ministryExpenses.benefitsCharge,
+        reference: 2302.24,
+      },
+      {
+        line: '3',
+        category: t('Ministry Mileage'),
+        amount: ministryExpenses.ministryMileage,
+        reference: 95,
+      },
+      {
+        line: '4',
+        category: t('Medical Mileage'),
+        amount: ministryExpenses.medicalMileage,
+        reference: 65,
+      },
+      {
+        line: '5',
+        category: t('Medical Expenses'),
+        amount: ministryExpenses.medicalExpenses,
+        reference: 230,
+      },
+      {
+        line: '6',
+        category: t('Ministry Partner Development'),
+        amount: ministryExpenses.ministryPartnerDevelopment,
+        reference: 155,
+      },
+      {
+        line: '7',
+        category: t('Communications'),
+        amount: ministryExpenses.communications,
+        reference: 135,
+      },
+      {
+        line: '8',
+        category: t('Entertainment'),
+        amount: ministryExpenses.entertainment,
+        reference: 125,
+      },
+      {
+        line: '9',
+        category: t('Staff Development'),
+        amount: ministryExpenses.staffDevelopment,
+        reference: 180,
+      },
+      {
+        line: '10',
+        category: t('Supplies'),
+        amount: ministryExpenses.supplies,
+        reference: 50,
+      },
+      {
+        line: '11',
+        category: t('Technology'),
+        amount: ministryExpenses.technology,
+        reference: 100,
+      },
+      {
+        line: '12',
+        category: t('Travel'),
+        amount: ministryExpenses.travel,
+        reference: 225,
+      },
+      {
+        line: '13',
+        category: t('Transfers'),
+        amount: ministryExpenses.transfers,
+        reference: 160,
+      },
+      {
+        line: '14',
+        category: t('Other'),
+        amount: ministryExpenses.other,
+        reference: 80,
+      },
+      {
+        line: '15',
+        category: t('Ministry Expenses Subtotal'),
+        amount: calculations.totalMinistryExpenses,
+        reference: 2994.74,
+      },
+      {
+        line: '16',
+        category: t('Subtotal'),
+        amount: calculations.overallSubtotal,
+        reference: 10224.63,
+      },
+      {
+        line: '17',
+        category: t('Subtotal with 12% admin charge'),
+        amount: calculations.overallSubtotalWithAdmin,
+        reference: 11618.9,
+      },
+      {
+        line: '18',
+        category: t('Total Goal (line 16 x 1.06 attrition)'),
+        amount: calculations.overallTotal,
+        reference: 12316.03,
+      },
+      {
+        line: '19',
+        category: t('Solid Monthly Support Developed'),
+        amount: calculations.supportRaised,
+        reference: 0,
+      },
+      {
+        line: '20',
+        category: t('Monthly Support to be Developed'),
+        amount: calculations.supportRemaining,
+        reference: 12316.03,
+      },
+      {
+        line: '21',
+        category: t('Support Goal Percentage Progress'),
+        amount: calculations.supportRaisedPercentage,
+        reference: 0,
+        percentage: true,
+      },
+    ],
+    [t, goal, calculations, ministryExpenses],
+  );
 
-  const columns: GridColDef[] = [
-    {
-      field: 'line',
-      headerName: t('Line'),
-      width: 80,
-      sortable: false,
-      hideable: false,
-    },
-    {
-      field: 'category',
-      headerName: t('Category'),
-      flex: 1,
-      minWidth: 200,
-      sortable: false,
-      hideable: false,
-    },
-    {
-      field: 'amount',
-      headerName: t('Amount'),
-      width: 120,
-      sortable: false,
-      hideable: false,
-      valueFormatter,
-    },
-    {
-      field: 'reference',
-      headerName: t('NS Reference'),
-      headerClassName: 'reference',
-      width: 130,
-      sortable: false,
-      hideable: true,
-      valueFormatter,
-    },
-  ];
+  const columns = useMemo(
+    (): GridColDef[] => [
+      {
+        field: 'line',
+        headerName: t('Line'),
+        width: 80,
+        sortable: false,
+        hideable: false,
+      },
+      {
+        field: 'category',
+        headerName: t('Category'),
+        flex: 1,
+        minWidth: 200,
+        sortable: false,
+        hideable: false,
+      },
+      {
+        field: 'amount',
+        headerName: t('Amount'),
+        width: 120,
+        sortable: false,
+        hideable: false,
+        valueFormatter,
+      },
+      {
+        field: 'reference',
+        headerName: t('NS Reference'),
+        headerClassName: 'reference',
+        width: 130,
+        sortable: false,
+        hideable: true,
+        valueFormatter,
+      },
+    ],
+    [t, valueFormatter],
+  );
 
   return (
     <StyledDataGrid
