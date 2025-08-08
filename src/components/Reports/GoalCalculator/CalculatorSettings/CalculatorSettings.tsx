@@ -5,6 +5,7 @@ import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
+import { CategoryOverview } from '../SharedComponents/CategoryOverview';
 import { InformationStep } from './Steps/InformationStep/InformationStep';
 import { OneTimeGoalsStep } from './Steps/OneTimeGoalsStep/OneTimeGoalsStep';
 import { SpecialIncomeStep } from './Steps/SpecialIncomeStep/SpecialIncomeStep';
@@ -15,6 +16,7 @@ export const useCalculatorSettings = (): GoalCalculatorStep => {
     title: t('Calculator Settings'),
     id: GoalCalculatorStepEnum.CalculatorSettings,
     icon: <SettingsIcon />,
+    headerComponent: <CategoryOverview />,
     categories: [
       {
         id: GoalCalculatorCategoryEnum.Information,

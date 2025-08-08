@@ -27,6 +27,8 @@ export type GoalCalculatorType = {
   handleContinue: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
+  hideCategoryId: GoalCalculatorStepEnum | null;
+  setHideCategoryId: (stepId: GoalCalculatorStepEnum | null) => void;
 };
 
 const GoalCalculatorContext = React.createContext<GoalCalculatorType | null>(
@@ -50,6 +52,8 @@ interface Props {
 export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
+  const [hideCategoryId, setHideCategoryId] =
+    useState<GoalCalculatorStepEnum | null>(null);
 
   // Static categories - no memoization to avoid React queue issues
   const steps = [
@@ -119,6 +123,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       closeRightPanel,
       toggleDrawer,
       setDrawerOpen: setIsDrawerOpen,
+      hideCategoryId,
+      setHideCategoryId,
     }),
     [
       selectedStepId,
@@ -131,6 +137,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       closeRightPanel,
       toggleDrawer,
       setIsDrawerOpen,
+      hideCategoryId,
     ],
   );
 
