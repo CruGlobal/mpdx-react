@@ -196,7 +196,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const columns: GridColDef[] = [
     {
       field: 'name',
-      headerName: t(categoryName),
+      headerName: categoryName,
       flex: 1,
       minWidth: 200,
       editable: true,
