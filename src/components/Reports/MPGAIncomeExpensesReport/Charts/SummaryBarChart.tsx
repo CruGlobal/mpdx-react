@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bar, BarChart, Cell, LabelList, XAxis, YAxis } from 'recharts';
-import { CardSkeleton } from '../Card/CardSkeleton';
+import {
+  Bar,
+  BarChart,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 interface SummaryBarChartProps {
   incomeTotal: number | undefined;
   expensesTotal: number | undefined;
+  aspect: number;
+  width: number;
 }
 
 const chartColors = ['#05699B', '#00C0D8'];
@@ -13,6 +22,8 @@ const chartColors = ['#05699B', '#00C0D8'];
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   incomeTotal,
   expensesTotal,
+  aspect,
+  width,
 }) => {
   const { t } = useTranslation();
 
@@ -35,10 +46,8 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   }
 
   return (
-    <CardSkeleton title={t('Summary')} subtitle={t('Last 12 Months')}>
+    <ResponsiveContainer width={`${width}%`} aspect={aspect}>
       <BarChart
-        width={600}
-        height={300}
         data={data}
         margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
       >
@@ -79,6 +88,6 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
           />
         </Bar>
       </BarChart>
-    </CardSkeleton>
+    </ResponsiveContainer>
   );
 };

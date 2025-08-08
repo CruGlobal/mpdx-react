@@ -10,7 +10,7 @@ export interface TableData {
   data: DataFields[];
 }
 
-interface MockData {
+export interface MockData {
   accountListId: string;
   accountName: string;
   income?: TableData;
