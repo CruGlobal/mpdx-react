@@ -87,7 +87,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
       }
       leftOpen={isNavListOpen}
       leftWidth="290px"
-      rightWidth="290px"
+      rightWidth="600px"
       headerHeight={multiPageHeaderHeight}
       mainContent={
         <GoalCalculator
