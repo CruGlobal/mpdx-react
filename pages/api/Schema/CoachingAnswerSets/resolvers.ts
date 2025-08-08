@@ -4,11 +4,12 @@ const CoachingAnswerSetsResolvers: Resolvers = {
   Query: {
     coachingAnswerSets: (
       _source,
-      { accountListId, completed },
+      { accountListId, organizationId, completed },
       { dataSources },
     ) => {
       return dataSources.mpdxRestApi.getCoachingAnswerSets(
         accountListId,
+        organizationId,
         completed,
         true,
       );

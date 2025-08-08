@@ -132,7 +132,11 @@ export const SidePanelsLayout: FC<SidePanelsLayoutProps> = ({
           >
             {leftOpen && leftPanel}
           </LeftPanelWrapper>
-          <ExpandingContent component="main" open={leftOpen}>
+          <ExpandingContent
+            component="main"
+            sx={{ display: 'flex', flexDirection: 'column' }}
+            open={leftOpen}
+          >
             {mainContent}
           </ExpandingContent>
         </CollapsibleWrapper>

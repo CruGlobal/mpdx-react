@@ -26,11 +26,7 @@ frontend:
         # Install git-lfs and pull down the files
         - export PATH=$PATH:$(pwd)/bin && git-lfs install
         - export PATH=$PATH:$(pwd)/bin && git-lfs pull
-        # Install dependencies
-        # Installing yarn manually shouldn't be necessary, but the automatic
-        # `npm install -g --quiet @aws-amplify/cli bower cypress grunt-cli hugo-extended vuepress yarn`
-        # command is failing as of 7/23/2025. In the future, we may be able to remove this line.
-        - npm install -g yarn
+        # Install npm dependencies
         - yarn config set nodeLinker node-modules
         - yarn -v
         - yarn
@@ -38,7 +34,7 @@ frontend:
         # Build graphql files
         - yarn gql
         # Extract translations
-        - timeout 1m yarn onesky:download || echo "yarn onesky:download timed out after 1 minute or failed with an error"
+        - timeout 1m yarn crowdin:download || echo "yarn crowdin:download timed out after 1 minute or failed with an error"
     build:
       commands:
         - yarn build:amplify
