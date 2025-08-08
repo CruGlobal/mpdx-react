@@ -8,8 +8,8 @@ import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/inte
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import { GoalCalculatorProvider } from '../../../Shared/GoalCalculatorContext';
+import { GetAccountListQuery } from './GetAccountList.generated';
 import { PresentingYourGoal } from './PresentingYourGoal';
-
 /*
  * Mocking recharts ResponsiveContainer to avoid ResponsiveContainer
  * width and height issue
@@ -31,12 +31,17 @@ jest.mock('src/hooks/useOrganizationId', () => ({
   useOrganizationId: jest.fn(() => 'organization-id-1'),
 }));
 
+jest.mock('src/hooks/useAccountListId', () => ({
+  useAccountListId: jest.fn(() => 'account-list-id-1'),
+}));
+
 const TestComponent: React.FC = () => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         GetUser: GetUserQuery;
         GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
+        GetAccountList: GetAccountListQuery;
       }>
         mocks={{
           GetUser: {
@@ -62,6 +67,11 @@ const TestComponent: React.FC = () => (
               },
             ],
           },
+          GetAccountList: {
+            accountList: {
+              receivedPledges: 100,
+            },
+          },
         }}
       >
         <GoalCalculatorProvider>
@@ -77,7 +87,7 @@ describe('PresentingYourGoal', () => {
     beforeTestResizeObserver();
   });
 
-  it('renders cell text', () => {
+  it('renders cell text', async () => {
     const { getByRole } = render(<TestComponent />);
     expect(
       getByRole('heading', { name: 'Personal Information' }),
@@ -87,6 +97,10 @@ describe('PresentingYourGoal', () => {
     expect(
       getByRole('heading', { name: 'Monthly Support Needs' }),
     ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(getByRole('cell', { name: 'Obiwan Kenobi' })).toBeInTheDocument();
+    });
 
     expect(
       getByRole('heading', { name: 'Monthly Support Breakdown' }),
