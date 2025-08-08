@@ -9,7 +9,6 @@ import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createTableRows';
 import { DataFields } from '../mockData';
 import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
-//import { CardTableHead } from './CardTableHead';
 import { TotalsRow } from './TotalsRow';
 
 export type RenderCell = GridColDef<DataFields>['renderCell'];
@@ -21,7 +20,6 @@ export interface TableCardProps {
   emptyPlaceholder: React.ReactElement;
   title: string;
   months: string[];
-  years: string[];
   loading?: boolean;
 }
 
@@ -35,7 +33,7 @@ export const CreateCardTableRows = (incomeData: DataFields): DataFields => ({
 
 export const descriptionWidth = 175;
 export const monthWidth = 65;
-export const summaryWidth = 97.5;
+export const summaryWidth = 98.5;
 
 export const TableCard: React.FC<TableCardProps> = ({
   type,
@@ -43,7 +41,6 @@ export const TableCard: React.FC<TableCardProps> = ({
   overallTotal,
   title,
   months,
-  //years,
   emptyPlaceholder,
   loading,
 }) => {
@@ -63,6 +60,8 @@ export const TableCard: React.FC<TableCardProps> = ({
   const cardTableRows = useMemo(() => {
     return data.map((data) => CreateCardTableRows(data));
   }, [data]);
+
+  const tableLength = useMemo(() => cardTableRows.length, [cardTableRows]);
 
   const { description, average, total } = populateCardTableRows();
 
@@ -126,7 +125,7 @@ export const TableCard: React.FC<TableCardProps> = ({
     >
       <Box>
         {/* <Box mb={2}>
-          <CardTableHead months={months} years={years} />
+          <TableCardHead months={months} />
         </Box> */}
         <StyledGrid
           rows={cardTableRows}
@@ -135,7 +134,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
           onSortModelChange={(size) => setSortModel(size)}
-          pageSizeOptions={[5, 10, 25]}
+          pageSizeOptions={[5, 10, 25, { label: 'All', value: tableLength }]}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => setPaginationModel(model)}
           disableVirtualization
@@ -149,6 +148,7 @@ export const TableCard: React.FC<TableCardProps> = ({
             toolbar: {
               data: data,
               type: type,
+              months: months,
             } as unknown as GridToolbarProps,
           }}
           showToolbar

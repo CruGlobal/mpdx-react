@@ -36,6 +36,9 @@ export const StyledGrid = styled(DataGrid)(() => ({
   '.MuiDataGrid-cell *': {
     fontSize: '12px',
   },
+  border: 'none',
+  borderTopLeftRadius: 0,
+  borderTopRightRadius: 0,
 }));
 
 export const StyledRow = styled(TableRow)(() => ({
