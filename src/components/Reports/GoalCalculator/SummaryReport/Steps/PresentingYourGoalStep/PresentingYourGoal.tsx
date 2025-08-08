@@ -26,10 +26,12 @@ import {
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
-import cruLogo from 'src/images/cru/cru.svg';
-import { currencyFormat } from 'src/lib/intlFormat';
+import cruLogo from 'src/images/cru/Cru_Brandmark_Trademark[RGB]_Cru_Brandmark_Black-Color_[RGB].svg';
+import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { useGetAccountListQuery } from './GetAccountList.generated';
 
 const ChartContainer = styled(Box)(({ theme }) => ({
   width: '70%',
@@ -57,13 +59,13 @@ const ChartContainer = styled(Box)(({ theme }) => ({
     },
   },
 
-  '& .recharts-legend-item .recharts-surface': {
+  '.recharts-legend-item .recharts-surface': {
     width: '16px !important',
     height: '16px !important',
     top: '2px',
   },
 
-  '& .recharts-legend-item text': {
+  '.recharts-legend-item text': {
     dominantBaseline: 'middle',
   },
 }));
@@ -108,7 +110,6 @@ interface PresentingYourGoalRow {
 }
 
 export const PresentingYourGoal: React.FC = () => {
-  const { data: userData } = useGetUserQuery();
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
@@ -121,12 +122,20 @@ export const PresentingYourGoal: React.FC = () => {
    * so I am querying and handling logic by name, though it may
    * be better to use the organization IDs somehow.
    */
+  const { data: userData } = useGetUserQuery();
+  const accountListId = useAccountListId();
   const salaryOrganizationId = useOrganizationId();
   const { data } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
   });
   const organizationName = data?.userOrganizationAccounts[0].organization.name;
-  const cruOrganizationName = t('Campus Crusade for Christ');
+  const cruOrganizationName = 'Campus Crusade for Christ';
+
+  const { data: receivedPledgesData } = useGetAccountListQuery({
+    variables: { accountListId: accountListId || '' },
+  });
+  const totalSolidSupport =
+    receivedPledgesData?.accountList?.receivedPledges || 0;
 
   // Made useMemo for when real data is added.
   const total = useMemo(
@@ -146,9 +155,6 @@ export const PresentingYourGoal: React.FC = () => {
       window.location.reload();
     }
   };
-
-  const formatPercent = (value: number) =>
-    total ? ((value / total) * 100).toFixed(2) : '0';
 
   // Consider adding more brand colors to theme.
   const chartColors = [
@@ -216,7 +222,7 @@ export const PresentingYourGoal: React.FC = () => {
       { title: 'Administrative Charge', amount: mockData[5].value },
       { title: 'Total Support Goal', amount: total, bold: true },
       // change amount when real data is added
-      { title: 'Total Solid Support', amount: 2500 },
+      { title: 'Total Solid Support', amount: totalSolidSupport },
     ],
     [mockData, total, t],
   );
@@ -375,7 +381,7 @@ export const PresentingYourGoal: React.FC = () => {
                       Number(value),
                       'USD',
                       locale,
-                    )} (${formatPercent(Number(value))}%)`
+                    )} (${percentageFormat(Number(value), locale)}%)`
                   }
                 />
                 <Legend
