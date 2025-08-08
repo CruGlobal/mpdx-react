@@ -38,10 +38,6 @@ export const MpdGoalStepRightPanel: React.FC = () => {
 
   return (
     <Box>
-      <Typography sx={{ p: 4 }} variant="h5" gutterBottom>
-        {t('About MPD Goal')}
-      </Typography>
-
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
@@ -77,8 +73,9 @@ export const MpdGoalStepRightPanel: React.FC = () => {
             />
             {t('MPD Goal Calculation Table')}
           </Box>
+          <MpdGoalStepRightPanelAccordion />
         </TabPanel>
-        <MpdGoalStepRightPanelAccordion />
+
         <Button
           variant="outlined"
           onClick={closeRightPanel}
