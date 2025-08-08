@@ -196,14 +196,14 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const columns: GridColDef[] = [
     {
       field: 'name',
-      categoryName: t(categoryName),
+      headerName: t(categoryName),
       flex: 1,
       minWidth: 200,
       editable: true,
     },
     {
       field: 'amount',
-      categoryName: t('Amount'),
+      headerName: t('Amount'),
       flex: 1,
       minWidth: 150,
       editable: true,
@@ -215,7 +215,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     {
       field: 'actions',
       type: 'actions',
-      categoryName: '',
+      headerName: '',
       width: 60,
       getActions: (params) => {
         // Don't show delete action for total row
