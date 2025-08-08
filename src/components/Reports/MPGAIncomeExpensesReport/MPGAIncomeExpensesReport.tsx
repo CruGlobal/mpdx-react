@@ -18,6 +18,8 @@ import theme from 'src/theme';
 import { ExpensesPieChart } from './Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from './Charts/MonthlySummaryChart';
 import { SummaryBarChart } from './Charts/SummaryBarChart';
+import { ReportTypeEnum } from './Helper/MPGAReportEnum';
+import { getLast12Months } from './Helper/getLastTwelveMonths';
 import { EmptyTable } from './Tables/EmptyTable';
 import { TableCard } from './Tables/TableCard';
 import { mockData } from './mockData';
@@ -53,22 +55,6 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const getLast12Months = (): string[] => {
-    const result: string[] = [];
-    const date = new Date();
-
-    for (let i = 0; i < 12; i++) {
-      const month = new Date(date.getFullYear(), date.getMonth() - i, 1);
-      const formatted = month.toLocaleString('default', {
-        month: 'short',
-        year: 'numeric',
-      });
-      result.push(formatted);
-    }
-
-    return result.reverse();
   };
 
   const last12Months = useMemo(() => getLast12Months(), []);
@@ -181,6 +167,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Box>
           <Box>
             <TableCard
+              type={ReportTypeEnum.Income}
               data={mockData.income?.data ?? []}
               overallTotal={incomeTotal}
               emptyPlaceholder={
@@ -196,6 +183,7 @@ export const MPGAIncomeExpensesReport: React.FC<
           </Box>
           <Box mt={2}>
             <TableCard
+              type={ReportTypeEnum.Expenses}
               data={expenseData}
               overallTotal={expensesTotal}
               emptyPlaceholder={

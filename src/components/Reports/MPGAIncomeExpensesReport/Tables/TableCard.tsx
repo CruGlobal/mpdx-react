@@ -1,17 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { GridToolbarProps } from '@mui/x-data-grid/internals';
 import { useTranslation } from 'react-i18next';
 import { CardSkeleton } from '../Card/CardSkeleton';
+import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
+import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createTableRows';
-import { CustomToolbar } from '../Helper/customToolbar';
 import { DataFields } from '../mockData';
 import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
+//import { CardTableHead } from './CardTableHead';
 import { TotalsRow } from './TotalsRow';
 
 export type RenderCell = GridColDef<DataFields>['renderCell'];
 
 export interface TableCardProps {
+  type: ReportTypeEnum;
   data: DataFields[];
   overallTotal: number | undefined;
   emptyPlaceholder: React.ReactElement;
@@ -34,10 +38,12 @@ export const monthWidth = 65;
 export const summaryWidth = 97.5;
 
 export const TableCard: React.FC<TableCardProps> = ({
+  type,
   data,
   overallTotal,
   title,
   months,
+  //years,
   emptyPlaceholder,
   loading,
 }) => {
@@ -119,6 +125,9 @@ export const TableCard: React.FC<TableCardProps> = ({
       styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
     >
       <Box>
+        {/* <Box mb={2}>
+          <CardTableHead months={months} years={years} />
+        </Box> */}
         <StyledGrid
           rows={cardTableRows}
           columns={columns}
@@ -135,6 +144,12 @@ export const TableCard: React.FC<TableCardProps> = ({
           disableColumnMenu
           slots={{
             toolbar: CustomToolbar,
+          }}
+          slotProps={{
+            toolbar: {
+              data: data,
+              type: type,
+            } as unknown as GridToolbarProps,
           }}
           showToolbar
         />
