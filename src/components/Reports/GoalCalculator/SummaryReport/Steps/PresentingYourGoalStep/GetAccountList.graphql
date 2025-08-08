@@ -1,0 +1,5 @@
+query GetAccountList($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    receivedPledges
+  }
+}
