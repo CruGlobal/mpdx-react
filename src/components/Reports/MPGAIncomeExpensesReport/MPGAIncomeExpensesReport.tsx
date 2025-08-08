@@ -59,8 +59,6 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const last12Months = useMemo(() => getLast12Months(), []);
 
-  const uniqueYears = [...new Set(last12Months.map((m) => m.split(' ')[1]))];
-
   const incomeTotal = useMemo(
     () => mockData.income?.data.reduce((sum, data) => sum + data.total, 0),
     [mockData.income?.data],
@@ -178,7 +176,6 @@ export const MPGAIncomeExpensesReport: React.FC<
               }
               title={t('Income')}
               months={last12Months}
-              years={uniqueYears}
             />
           </Box>
           <Box mt={2}>
@@ -194,7 +191,6 @@ export const MPGAIncomeExpensesReport: React.FC<
               }
               title={t('Expenses')}
               months={last12Months}
-              years={uniqueYears}
             />
           </Box>
           <Box mt={2} mb={2}>
