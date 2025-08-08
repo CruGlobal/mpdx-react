@@ -45,7 +45,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   paddingRight: theme.spacing(2),
 }));
 
-interface InformationFormValues {
+export interface InformationFormValues {
   // Financial form fields
   paycheckAmount: number;
   taxes: number;

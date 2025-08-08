@@ -12,7 +12,6 @@ import {
   GoalCalculatorProvider,
   useGoalCalculator,
 } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
-import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -88,7 +87,6 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
       leftOpen={isNavListOpen}
       leftWidth="290px"
       rightWidth="290px"
-      headerHeight={multiPageHeaderHeight}
       mainContent={
         <GoalCalculator
           isNavListOpen={isNavListOpen}
