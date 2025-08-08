@@ -3,13 +3,13 @@ import { Box, Typography } from '@mui/material';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { CustomToolbar } from '../Helper/CustomToolbar';
 import { ScheduleEnum, TransferTypeEnum } from '../Helper/TransferHistoryEnum';
-import { populateTransferHistoryRows } from '../Helper/createTableRow';
 import { DynamicDeleteTransferModal } from '../TransferActionsModal/DynamicDeleteTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { TransferHistory } from '../mockData';
 import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
+import { CustomToolbar } from './CustomToolbar';
+import { populateTransferHistoryRows } from './Row/createTableRow';
 
 export type RenderCell = GridColDef<TransferHistory>['renderCell'];
 
@@ -83,106 +83,109 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     locale,
   );
 
-  const columns = useMemo<GridColDef[]>(
-    () => [
-      {
-        field: 'transfers',
-        headerName: t('Transfers'),
-        width: 150,
-        renderCell: transfers,
-      },
-      {
-        field: 'amount',
-        headerName: t('Amount'),
-        width: 150,
-        renderCell: amount,
-      },
-      {
-        field: 'schedule',
-        headerName: t('Schedule'),
-        width: 150,
-        renderCell: schedule,
-      },
-      {
-        field: 'status',
-        headerName: t('Status'),
-        width: 150,
-        renderCell: status,
-      },
-      {
-        field: 'transferDate',
-        headerName: t('Transfer Date'),
-        width: 150,
-        renderCell: transferDate,
-      },
-      {
-        field: 'endDate',
-        headerName: t('Stop Date'),
-        width: 150,
-        renderCell: endDate,
-      },
-      {
-        field: 'note',
-        headerName: t('Note'),
-        width: 150,
-        renderCell: note,
-      },
-      {
-        field: 'actions',
-        headerName: t('Actions'),
-        width: 150,
-        renderCell: actions,
-      },
-    ],
-    [],
-  );
+  const columns: GridColDef[] = [
+    {
+      field: 'transfers',
+      headerName: t('Transfers'),
+      width: 150,
+      renderCell: transfers,
+    },
+    {
+      field: 'amount',
+      headerName: t('Amount'),
+      width: 150,
+      renderCell: amount,
+    },
+    {
+      field: 'schedule',
+      headerName: t('Schedule'),
+      width: 150,
+      renderCell: schedule,
+    },
+    {
+      field: 'status',
+      headerName: t('Status'),
+      width: 150,
+      renderCell: status,
+    },
+    {
+      field: 'transferDate',
+      headerName: t('Transfer Date'),
+      width: 150,
+      renderCell: transferDate,
+    },
+    {
+      field: 'endDate',
+      headerName: t('Stop Date'),
+      width: 150,
+      renderCell: endDate,
+    },
+    {
+      field: 'note',
+      headerName: t('Note'),
+      width: 150,
+      renderCell: note,
+    },
+    {
+      field: 'actions',
+      headerName: t('Actions'),
+      width: 150,
+      renderCell: actions,
+    },
+  ];
 
-  return loading ? (
-    <LoadingBox>
-      <LoadingIndicator
-        data-testid="loading-spinner"
-        color="primary"
-        size={50}
-      />
-    </LoadingBox>
-  ) : history.length ? (
+  return (
     <>
-      <Box
-        display="flex"
-        flexDirection="row"
-        justifyContent="space-between"
-        mb={1}
-      >
-        <Typography variant="h6" mb={1}>
-          {t('Transfer History')}
-        </Typography>
-      </Box>
-      <StyledGrid
-        rows={transferHistoryRows || []}
-        columns={columns}
-        getRowId={(row) => row.id}
-        sortingOrder={['desc', 'asc']}
-        sortModel={sortModel}
-        onSortModelChange={(size) => setSortModel(size)}
-        rowsPerPageOptions={[5, 10, 25]}
-        pageSize={pageSize}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-        autoHeight
-        disableSelectionOnClick
-        disableVirtualization
-        pagination
-        components={{
-          Toolbar: CustomToolbar,
-        }}
-      />
-      {openDeleteModal && (
-        <DynamicDeleteTransferModal
-          handleClose={() => setOpenDeleteModal(null)}
-          transfer={openDeleteModal}
-        />
+      {loading && !history && (
+        <LoadingBox>
+          <LoadingIndicator
+            data-testid="loading-spinner"
+            color="primary"
+            size={50}
+          />
+        </LoadingBox>
+      )}
+
+      {!loading && history ? (
+        <>
+          <Box
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            mb={1}
+          >
+            <Typography variant="h6" mb={1}>
+              {t('Transfer History')}
+            </Typography>
+          </Box>
+          <StyledGrid
+            rows={transferHistoryRows || []}
+            columns={columns}
+            getRowId={(row) => row.id}
+            sortingOrder={['desc', 'asc']}
+            sortModel={sortModel}
+            onSortModelChange={(size) => setSortModel(size)}
+            rowsPerPageOptions={[5, 10, 25]}
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            autoHeight
+            disableSelectionOnClick
+            disableVirtualization
+            pagination
+            components={{
+              Toolbar: CustomToolbar,
+            }}
+          />
+          {openDeleteModal && (
+            <DynamicDeleteTransferModal
+              handleClose={() => setOpenDeleteModal(null)}
+              transfer={openDeleteModal}
+            />
+          )}
+        </>
+      ) : (
+        emptyPlaceholder
       )}
     </>
-  ) : (
-    emptyPlaceholder
   );
 };

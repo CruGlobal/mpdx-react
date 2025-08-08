@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
-import { RenderCell } from '../Table/TransferHistoryTable';
-import { TransferHistory } from '../mockData';
-import { ScheduleEnum, StatusEnum } from './TransferHistoryEnum';
+import { ScheduleEnum, StatusEnum } from '../../Helper/TransferHistoryEnum';
+import { TransferHistory } from '../../mockData';
+import { RenderCell } from '../TransferHistoryTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
 
 export const populateTransferHistoryRows = (

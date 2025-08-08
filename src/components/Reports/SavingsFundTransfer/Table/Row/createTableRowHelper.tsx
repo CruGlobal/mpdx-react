@@ -1,9 +1,9 @@
-import { StatusEnum } from './TransferHistoryEnum';
+import { StatusEnum } from '../../Helper/TransferHistoryEnum';
 import {
   staffAccount,
   staffConferenceSavings,
   staffSavings,
-} from './transferIcons';
+} from '../../Helper/TransferIcons';
 
 export const iconMap: Record<string, React.ReactElement> = {
   staffAccount,

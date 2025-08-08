@@ -4,7 +4,7 @@ import {
   staffAccount,
   staffConferenceSavings,
   staffSavings,
-} from 'src/components/Reports/SavingsFundTransfer/Helper/transferIcons';
+} from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import {
   StaffSavingFundEnum,
   TransferDirectionEnum,
