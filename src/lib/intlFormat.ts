@@ -10,11 +10,18 @@ export const percentageFormat = (value: number, locale: string): string =>
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
 
+interface CurrencyFormatOptions {
+  showTrailingZeros?: boolean;
+}
+
 export const currencyFormat = (
   value: number,
   currency: string | null | undefined,
   locale: string,
+  options?: CurrencyFormatOptions,
 ): string => {
+  const { showTrailingZeros = false } = options ?? {};
+
   const amount = Number.isNaN(value) ? 0 : value;
   if (!currency) {
     currency = 'USD';
@@ -23,7 +30,7 @@ export const currencyFormat = (
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
-      trailingZeroDisplay: 'stripIfInteger',
+      trailingZeroDisplay: showTrailingZeros ? undefined : 'stripIfInteger',
     }).format(Number.isFinite(amount) ? amount : 0);
   } catch (error) {
     // eslint-disable-next-line no-console
