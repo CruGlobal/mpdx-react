@@ -6,6 +6,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
+import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 
 const goal = {
   netMonthlySalary: 8774.25,
@@ -40,6 +41,7 @@ export const useSummaryReport = (): GoalCalculatorStep => {
         id: GoalCalculatorCategoryEnum.Overview,
         title: t('MPD Goal'),
         component: <MpdGoalTable goal={goal} />,
+        rightPanelComponent: <MpdGoalStepRightPanel />,
       },
     ],
   };
