@@ -18,6 +18,7 @@ export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 export const StyledGrid = styled(DataGrid)(() => ({
+  fontSize: '12px',
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
     backgroundColor: '#E3F2FD',
   },
@@ -25,6 +26,15 @@ export const StyledGrid = styled(DataGrid)(() => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+    alignItems: 'center',
+    display: 'flex',
+  },
+  '.MuiDataGrid-columnHeaderTitle': {
+    fontWeight: 'bold',
+    fontSize: '12px',
+  },
+  '.MuiDataGrid-cell *': {
+    fontSize: '12px',
   },
 }));
 
