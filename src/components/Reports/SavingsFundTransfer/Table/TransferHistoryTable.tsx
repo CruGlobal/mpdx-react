@@ -1,6 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import {
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { ScheduleEnum, TransferTypeEnum } from '../Helper/TransferHistoryEnum';
@@ -44,10 +48,12 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const [pageSize, setPageSize] = useState(5);
   const [openDeleteModal, setOpenDeleteModal] =
     useState<TransferHistory | null>(null);
-
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'date', sort: 'desc' },
   ]);
@@ -62,10 +68,6 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       transfer,
     });
   };
-
-  const transferHistoryRows = useMemo(() => {
-    return history.map((data) => CreateTransferHistoryRows(data));
-  }, [history]);
 
   const {
     transfers,
@@ -82,6 +84,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     t,
     locale,
   );
+
+  const transferHistoryRows = history.map(CreateTransferHistoryRows);
+
+  const ToolbarWrapper = () => <CustomToolbar history={history} />;
 
   const columns: GridColDef[] = [
     {
@@ -134,58 +140,62 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     },
   ];
 
-  return (
-    <>
-      {loading && !history && (
-        <LoadingBox>
-          <LoadingIndicator
-            data-testid="loading-spinner"
-            color="primary"
-            size={50}
-          />
-        </LoadingBox>
-      )}
+  if (loading && !history) {
+    return (
+      <LoadingBox>
+        <LoadingIndicator
+          data-testid="loading-spinner"
+          color="primary"
+          size={50}
+        />
+      </LoadingBox>
+    );
+  }
 
-      {!loading && history ? (
-        <>
-          <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            mb={1}
-          >
-            <Typography variant="h6" mb={1}>
-              {t('Transfer History')}
-            </Typography>
-          </Box>
-          <StyledGrid
-            rows={transferHistoryRows || []}
-            columns={columns}
-            getRowId={(row) => row.id}
-            sortingOrder={['desc', 'asc']}
-            sortModel={sortModel}
-            onSortModelChange={(size) => setSortModel(size)}
-            rowsPerPageOptions={[5, 10, 25]}
-            pageSize={pageSize}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            autoHeight
-            disableSelectionOnClick
-            disableVirtualization
-            pagination
-            components={{
-              Toolbar: CustomToolbar,
-            }}
-          />
-          {openDeleteModal && (
-            <DynamicDeleteTransferModal
-              handleClose={() => setOpenDeleteModal(null)}
-              transfer={openDeleteModal}
-            />
-          )}
-        </>
-      ) : (
-        emptyPlaceholder
+  return history ? (
+    <>
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        mb={1}
+      >
+        <Typography variant="h6" mb={1}>
+          {t('Transfer History')}
+        </Typography>
+      </Box>
+      <StyledGrid
+        rows={transferHistoryRows.slice(
+          paginationModel.page * paginationModel.pageSize,
+          (paginationModel.page + 1) * paginationModel.pageSize,
+        )}
+        rowCount={transferHistoryRows.length}
+        columns={columns}
+        getRowId={(row) => row.id}
+        sortingOrder={['desc', 'asc']}
+        sortModel={sortModel}
+        onSortModelChange={(size) => setSortModel(size)}
+        pageSizeOptions={[2, 4, 25, { value: -1, label: 'All' }]}
+        paginationMode="server"
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pagination
+        autoHeight
+        disableRowSelectionOnClick
+        disableVirtualization
+        showToolbar
+        slots={{
+          toolbar: ToolbarWrapper,
+        }}
+      />
+      {openDeleteModal && (
+        <DynamicDeleteTransferModal
+          handleClose={() => setOpenDeleteModal(null)}
+          transfer={openDeleteModal}
+        />
       )}
     </>
+  ) : (
+    emptyPlaceholder
   );
 };

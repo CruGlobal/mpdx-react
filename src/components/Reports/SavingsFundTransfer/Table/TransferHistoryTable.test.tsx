@@ -63,7 +63,7 @@ describe('TransferHistoryTable', () => {
     const iconRow = getByRole('row', {
       name: 'Staff Savings Arrow Staff Account $2,500.00 One Time Pending Sep 26, 2023 N/A Reimbursements Edit Delete',
     });
-    const cells = within(iconRow).getAllByRole('cell');
+    const cells = within(iconRow).getAllByRole('gridcell');
 
     const transferIconCell = cells[0];
     const statusCell = cells[3];
@@ -85,11 +85,11 @@ describe('TransferHistoryTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '$2,500.00' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '$2,500.00' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Schedule' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'One Time' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'One Time' })).toBeInTheDocument();
 
     expect(
       await findByRole('columnheader', { name: 'Status' }),
@@ -99,15 +99,17 @@ describe('TransferHistoryTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Transfer Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Sep 26, 2023' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Sep 26, 2023' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Stop Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'N/A' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'N/A' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Note' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Reimbursements' })).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Reimbursements' }),
+    ).toBeInTheDocument();
 
     expect(
       await findByRole('columnheader', { name: 'Actions' }),
@@ -141,12 +143,12 @@ describe('TransferHistoryTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const ascCells = getAllByRole('cell', { name: /\$\d+/ });
+    const ascCells = getAllByRole('gridcell', { name: /\$\d+/ });
     expect(ascCells[0]).toHaveTextContent('$2,500.00');
     expect(ascCells[1]).toHaveTextContent('$1,200.00');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const descCells = getAllByRole('cell', { name: /\$\d+/ });
+    const descCells = getAllByRole('gridcell', { name: /\$\d+/ });
     expect(descCells[0]).toHaveTextContent('$1,200.00');
     expect(descCells[1]).toHaveTextContent('$2,500.00');
   });

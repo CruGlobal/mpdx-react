@@ -1,48 +1,78 @@
-import { SaveAlt } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import { Divider, Tooltip } from '@mui/material';
+import Badge from '@mui/material/Badge';
 import {
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarDensitySelector,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
+  ColumnsPanelTrigger,
+  ExportCsv,
+  FilterPanelTrigger,
+  Toolbar,
+  ToolbarButton,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { downloadCSV } from '../DownloadTable/downloadTable';
-import { mockData } from '../mockData';
+import { TransferHistory } from '../mockData';
 
-export const CustomToolbar = () => {
+interface CustomToolbarProps {
+  history?: TransferHistory[];
+}
+
+export const CustomToolbar: React.FC<CustomToolbarProps> = ({
+  history = [],
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   return (
-    <GridToolbarContainer
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}
-    >
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarDensitySelector />
-        <Button
-          size="small"
-          sx={{ minHeight: 33, pt: 0, pb: 0 }}
-          startIcon={<SaveAlt />}
-          onClick={() => downloadCSV(t, mockData.history, locale)}
-        >
-          {t('Export')}
-        </Button>
-      </GridToolbarContainer>
-      <GridToolbarQuickFilter
-        sx={{
-          width: 250,
-          m: 1,
-        }}
+    <Toolbar>
+      <Tooltip title="Columns">
+        <ColumnsPanelTrigger render={<ToolbarButton />}>
+          <ViewColumnIcon fontSize="small" color="primary" />
+        </ColumnsPanelTrigger>
+      </Tooltip>
+
+      <Tooltip title="Filters">
+        <FilterPanelTrigger
+          render={(_, state) => (
+            <ToolbarButton
+              color="primary"
+              style={{
+                gridArea: '1 / 1',
+                width: 'min-content',
+                height: 'min-content',
+                zIndex: 1,
+                transition: 'opacity 0.5s ease 0s',
+              }}
+            >
+              <Badge
+                badgeContent={state.filterCount}
+                color="primary"
+                variant="dot"
+              >
+                <FilterListIcon fontSize="small" color="primary" />
+              </Badge>
+            </ToolbarButton>
+          )}
+        />
+      </Tooltip>
+
+      <Divider
+        orientation="vertical"
+        variant="middle"
+        flexItem
+        sx={{ mx: 0.5 }}
       />
-    </GridToolbarContainer>
+
+      <Tooltip title="Download as CSV">
+        <ExportCsv
+          onClick={() => downloadCSV(t, history, locale)}
+          render={<ToolbarButton />}
+        >
+          <FileDownloadIcon fontSize="small" color="primary" />
+        </ExportCsv>
+      </Tooltip>
+    </Toolbar>
   );
 };
