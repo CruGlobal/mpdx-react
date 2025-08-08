@@ -7,6 +7,30 @@ import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalLineItems } from './useGoalLineItems';
 
+export interface Goal {
+  netMonthlySalary: number;
+  taxesPercentage: number;
+  rothContributionPercentage: number;
+  traditionalContributionPercentage: number;
+  ministryExpenses: MinistryExpenses;
+}
+
+export interface MinistryExpenses {
+  benefitsCharge: number;
+  ministryMileage: number;
+  medicalMileage: number;
+  medicalExpenses: number;
+  ministryPartnerDevelopment: number;
+  communications: number;
+  entertainment: number;
+  staffDevelopment: number;
+  supplies: number;
+  technology: number;
+  travel: number;
+  transfers: number;
+  other: number;
+}
+
 interface MpdGoalRow {
   line: string;
   category: string;
@@ -14,30 +38,6 @@ interface MpdGoalRow {
   reference: number;
   percentage?: boolean;
 }
-
-const ministryExpenses = {
-  benefitsCharge: 1910.54,
-  ministryMileage: 85,
-  medicalMileage: 55,
-  medicalExpenses: 210,
-  ministryPartnerDevelopment: 140,
-  communications: 120,
-  entertainment: 110,
-  staffDevelopment: 175,
-  supplies: 45,
-  technology: 90,
-  travel: 200,
-  transfers: 150,
-  other: 75,
-};
-
-const goal = {
-  netMonthlySalary: 8774.25,
-  taxesPercentage: 0.17,
-  rothContributionPercentage: 0.04,
-  traditionalContributionPercentage: 0.06,
-  ministryExpenses,
-};
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-columnHeaderTitle': {
@@ -57,7 +57,11 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export const MpdGoalTable: React.FC = () => {
+interface MpdGoalTableProps {
+  goal: Goal;
+}
+
+export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
@@ -71,6 +75,7 @@ export const MpdGoalTable: React.FC = () => {
     [locale],
   );
 
+  const ministryExpenses = goal.ministryExpenses;
   const rows = useMemo(
     (): MpdGoalRow[] => [
       {
@@ -311,6 +316,7 @@ export const MpdGoalTable: React.FC = () => {
 
   return (
     <StyledDataGrid
+      label={t('MPD Goal')}
       getRowId={(row) => row.line}
       getRowClassName={(params) => {
         const classes: string[] = [];

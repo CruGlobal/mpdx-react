@@ -1,30 +1,7 @@
 import { useMemo } from 'react';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { Goal } from './MpdGoalTable';
 import { useAccountListSupportRaisedQuery } from './MpdGoalTable.generated';
-
-interface Goal {
-  netMonthlySalary: number;
-  taxesPercentage: number;
-  rothContributionPercentage: number;
-  traditionalContributionPercentage: number;
-  ministryExpenses: MinistryExpenses;
-}
-
-interface MinistryExpenses {
-  benefitsCharge: number;
-  ministryMileage: number;
-  medicalMileage: number;
-  medicalExpenses: number;
-  ministryPartnerDevelopment: number;
-  communications: number;
-  entertainment: number;
-  staffDevelopment: number;
-  supplies: number;
-  technology: number;
-  travel: number;
-  transfers: number;
-  other: number;
-}
 
 export interface GoalTableLineItems {
   taxes: number;
