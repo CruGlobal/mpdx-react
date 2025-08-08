@@ -66,13 +66,13 @@ interface GoalCalculatorGridProps {
     amount: number;
   }>;
   promptText?: string;
-  headerName: string;
+  categoryName: string;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   formData,
   promptText,
-  headerName,
+  categoryName,
 }) => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
@@ -121,7 +121,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           <Form>
             <GoalCalculatorGridForm
               formikProps={formikProps}
-              headerName={headerName}
+              categoryName={categoryName}
             />
           </Form>
         )}
@@ -132,12 +132,12 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
 interface GoalCalculatorGridFormProps {
   formikProps: FormikProps<GoalCalculatorGridFormValues>;
-  headerName: string;
+  categoryName: string;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   formikProps,
-  headerName,
+  categoryName,
 }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } = formikProps;
@@ -196,14 +196,14 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const columns: GridColDef[] = [
     {
       field: 'name',
-      headerName: t(headerName),
+      categoryName: t(categoryName),
       flex: 1,
       minWidth: 200,
       editable: true,
     },
     {
       field: 'amount',
-      headerName: t('Amount'),
+      categoryName: t('Amount'),
       flex: 1,
       minWidth: 150,
       editable: true,
@@ -215,7 +215,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     {
       field: 'actions',
       type: 'actions',
-      headerName: '',
+      categoryName: '',
       width: 60,
       getActions: (params) => {
         // Don't show delete action for total row
@@ -246,7 +246,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             size="small"
             startIcon={<AddIcon />}
           >
-            {t(`Add ${headerName}`)}
+            {t(`Add ${categoryName}`)}
           </StyledAddButton>
           <StyledToggleBox>
             <Switch

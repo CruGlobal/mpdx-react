@@ -19,7 +19,7 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const defaultProps = {
-  headerName: 'Special Income Name',
+  categoryName: 'Special Income Name',
   promptText: 'Add your special income sources',
   formData: [
     { id: 1, name: 'Freelance Work', amount: 2500 },
@@ -198,7 +198,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('renders without prompt text when not provided', async () => {
     const propsWithoutPrompt = {
-      headerName: 'Special Income Name',
+      categoryName: 'Special Income Name',
       formData: defaultProps.formData,
     };
 
@@ -216,7 +216,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('uses default data when no formData is provided', () => {
     const propsWithoutData = {
-      headerName: 'Special Income Name',
+      categoryName: 'Special Income Name',
     };
 
     const { getByText } = render(

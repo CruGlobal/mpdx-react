@@ -204,7 +204,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                   )}
                 </Typography>
                 {category.component || (
-                  <GoalCalculatorGrid headerName={category.title} />
+                  <GoalCalculatorGrid categoryName={category.title} />
                 )}
               </CategoryContainer>
             );
