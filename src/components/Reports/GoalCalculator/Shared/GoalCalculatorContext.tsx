@@ -54,8 +54,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   // Static categories - no memoization to avoid React queue issues
   const steps = [
     useCalculatorSettings(),
-    useHouseholdExpenses(),
     useMinistryExpenses(),
+    useHouseholdExpenses(),
     useSummaryReport(),
   ];
 

@@ -6,8 +6,9 @@ export interface GoalCalculatorCategory {
 }
 
 export interface GoalCalculatorStep {
-  title: string;
   id: GoalCalculatorStepEnum;
+  title: string;
+  instructions?: JSX.Element;
   categories: GoalCalculatorCategory[];
   icon: JSX.Element;
 }

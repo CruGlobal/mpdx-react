@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 
@@ -8,9 +8,9 @@ export const MileageStepRightPanelComponent: React.FC = () => {
   const { closeRightPanel } = useGoalCalculator();
 
   return (
-    <Box sx={{ padding: '16px' }}>
+    <>
       <Typography variant="h6" gutterBottom>
-        {t('Mileage Step')}
+        {t('Mileage Expenses')}
       </Typography>
 
       <Button
@@ -20,6 +20,6 @@ export const MileageStepRightPanelComponent: React.FC = () => {
       >
         {t('Close Panel')}
       </Button>
-    </Box>
+    </>
   );
 };

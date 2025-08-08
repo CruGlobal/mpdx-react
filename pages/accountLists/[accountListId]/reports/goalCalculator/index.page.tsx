@@ -36,9 +36,9 @@ const RightPanelTitle = styled(Typography)({
   fontSize: '0.875rem',
 });
 
-const RightPanelContent = styled(Box)({
-  // Content wrapper for right panel
-});
+const RightPanelContent = styled('div')(({ theme }) => ({
+  margin: theme.spacing(2),
+}));
 
 interface GoalCalculatorContentProps {
   isNavListOpen: boolean;
