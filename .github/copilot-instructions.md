@@ -8,6 +8,7 @@ MPDX is a Next.js 15 React application built with TypeScript using pages router.
 
 - **Frontend**: Next.js v15, React, Material UI v5, TypeScript
 - **Data Loading**: Apollo Client GraphQL
+- **Forms**: Formik and yup for validation
 - **Testing**: Jest, React Testing Library v13
 - **Internationalization**: react-i18next
 - **Code Quality**: ESLint, Prettier
