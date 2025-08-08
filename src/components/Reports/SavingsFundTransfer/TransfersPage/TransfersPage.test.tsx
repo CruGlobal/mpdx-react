@@ -52,7 +52,7 @@ jest.mock('notistack', () => ({
 }));
 
 const Components = ({
-  title = 'Staff Saving Fund Transfers',
+  title = 'Staff Savings Fund Transfers',
 }: {
   title?: string;
 }) => (
@@ -84,7 +84,7 @@ describe('TransfersPage', () => {
   it('should render the page with header, title, and account information', () => {
     const { getByText } = render(<Components />);
 
-    expect(getByText('Staff Saving Fund Transfers')).toBeInTheDocument();
+    expect(getByText('Staff Savings Fund Transfers')).toBeInTheDocument();
     expect(getByText('Fund Transfer')).toBeInTheDocument();
 
     expect(getByText(mockData.accountName)).toBeInTheDocument();
@@ -172,7 +172,7 @@ describe('TransfersPage', () => {
     const { getByRole, getByTestId } = render(<Components />);
 
     expect(
-      getByRole('heading', { name: 'Staff Saving Fund Transfers' }),
+      getByRole('heading', { name: 'Staff Savings Fund Transfers' }),
     ).toBeTruthy();
 
     const navigationButton = getByRole('button', {
