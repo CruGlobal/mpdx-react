@@ -5,7 +5,7 @@ import { Box, Button, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
-import { MpdGoalStepRightPanelAccordion } from './MpdGoalStepRightPanelAccordion';
+import { MpdGoalStepRightPanelAccordion } from '../MpdGoalStepRightPanelAccordion/MpdGoalStepRightPanelAccordion';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -61,6 +61,7 @@ export const MpdGoalStepRightPanel: React.FC = () => {
       <Box sx={{ p: theme.spacing(3) }}>
         <TabPanel value={activeTab} index={0}>
           <Box
+            data-testid="resource-tab-panel-title"
             component={Typography}
             display="flex"
             alignItems="center"

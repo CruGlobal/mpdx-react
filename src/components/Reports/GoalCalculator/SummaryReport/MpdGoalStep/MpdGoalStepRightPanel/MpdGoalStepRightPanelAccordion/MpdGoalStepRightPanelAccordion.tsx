@@ -114,7 +114,7 @@ export const MpdGoalStepRightPanelAccordion: React.FC = () => {
   ];
 
   return (
-    <Box>
+    <Box data-testid="accordions">
       {accordionItems.map((item, index) => (
         <Accordion
           key={item.title}
@@ -146,7 +146,11 @@ export const MpdGoalStepRightPanelAccordion: React.FC = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" color={theme.palette.text.secondary}>
+            <Typography
+              data-testid={`content-${index + 1}-typography`}
+              variant="body2"
+              color={theme.palette.text.secondary}
+            >
               {item.content}
             </Typography>
           </AccordionDetails>

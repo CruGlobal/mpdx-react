@@ -6,7 +6,7 @@ import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
+import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 
 export const useSummaryReport = (): GoalCalculatorStep => {
   const { t } = useTranslation();
