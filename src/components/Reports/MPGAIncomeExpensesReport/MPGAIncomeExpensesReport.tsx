@@ -19,7 +19,7 @@ import { ExpensesPieChart } from './Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from './Charts/MonthlySummaryChart';
 import { SummaryBarChart } from './Charts/SummaryBarChart';
 import { EmptyTable } from './Tables/EmptyTable';
-import { Tables } from './Tables/Tables';
+import { TableCard } from './Tables/TableCard';
 import { mockData } from './mockData';
 
 interface MPGAIncomeExpensesReportProps {
@@ -180,7 +180,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             </Grid>
           </Box>
           <Box>
-            <Tables
+            <TableCard
               data={mockData.income?.data ?? []}
               overallTotal={incomeTotal}
               emptyPlaceholder={
@@ -195,7 +195,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             />
           </Box>
           <Box mt={2}>
-            <Tables
+            <TableCard
               data={expenseData}
               overallTotal={expensesTotal}
               emptyPlaceholder={

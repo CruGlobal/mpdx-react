@@ -1,0 +1,158 @@
+import React, { useMemo, useState } from 'react';
+import { Box, Tooltip, Typography } from '@mui/material';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { useTranslation } from 'react-i18next';
+import { CardSkeleton } from '../Card/CardSkeleton';
+import { populateCardTableRows } from '../Helper/createTableRows';
+import { CustomToolbar } from '../Helper/customToolbar';
+import { DataFields } from '../mockData';
+import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
+import { TotalsRow } from './TotalsRow';
+
+export type RenderCell = GridColDef<DataFields>['renderCell'];
+
+export interface TableCardProps {
+  data: DataFields[];
+  overallTotal: number | undefined;
+  emptyPlaceholder: React.ReactElement;
+  title: string;
+  months: string[];
+  years: string[];
+  loading?: boolean;
+}
+
+export const CreateCardTableRows = (incomeData: DataFields): DataFields => ({
+  id: incomeData.id,
+  description: incomeData.description,
+  monthly: incomeData.monthly,
+  average: incomeData.average,
+  total: incomeData.total,
+});
+
+export const descriptionWidth = 175;
+export const monthWidth = 65;
+export const summaryWidth = 97.5;
+
+export const TableCard: React.FC<TableCardProps> = ({
+  data,
+  overallTotal,
+  title,
+  months,
+  emptyPlaceholder,
+  loading,
+}) => {
+  const { t } = useTranslation();
+
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: 'description',
+      sort: 'desc',
+    },
+  ]);
+
+  const cardTableRows = useMemo(() => {
+    return data.map((data) => CreateCardTableRows(data));
+  }, [data]);
+
+  const { description, average, total } = populateCardTableRows();
+
+  const columns = useMemo<GridColDef[]>(() => {
+    const monthColumns: GridColDef[] = months.map((month, index) => ({
+      field: `month${index}`,
+      headerName: month.split(' ')[0],
+      width: 65,
+      renderCell: (params) => {
+        const value = params.row.monthly?.[index] ?? null;
+        return (
+          <Tooltip title={String(value)}>
+            <Typography variant="body2" noWrap>
+              {value === 0 ? '-' : value}
+            </Typography>
+          </Tooltip>
+        );
+      },
+    }));
+
+    return [
+      {
+        field: 'description',
+        headerName: t('Description'),
+        width: descriptionWidth,
+        renderCell: description,
+      },
+      ...monthColumns,
+      {
+        field: 'average',
+        headerName: t('Average'),
+        width: summaryWidth,
+        renderCell: average,
+        align: 'right',
+        headerAlign: 'right',
+      },
+      {
+        field: 'total',
+        headerName: t('Total'),
+        width: summaryWidth,
+        renderCell: total,
+        align: 'right',
+        headerAlign: 'right',
+      },
+    ];
+  }, [months]);
+
+  return loading ? (
+    <LoadingBox>
+      <LoadingIndicator
+        data-testid="loading-spinner"
+        color="primary"
+        size={50}
+      />
+    </LoadingBox>
+  ) : data.length ? (
+    <CardSkeleton
+      title={title}
+      subtitle={t('Last 12 Months')}
+      styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
+    >
+      <Box>
+        <StyledGrid
+          rows={cardTableRows}
+          columns={columns}
+          getRowId={(row) => row.id}
+          sortingOrder={['desc', 'asc']}
+          sortModel={sortModel}
+          onSortModelChange={(size) => setSortModel(size)}
+          pageSizeOptions={[5, 10, 25]}
+          paginationModel={paginationModel}
+          onPaginationModelChange={(model) => setPaginationModel(model)}
+          disableVirtualization
+          disableRowSelectionOnClick
+          pagination
+          disableColumnMenu
+          slots={{
+            toolbar: CustomToolbar,
+          }}
+          showToolbar
+        />
+        <Box>
+          <TotalsRow data={data} overallTotal={overallTotal} />
+        </Box>
+      </Box>
+    </CardSkeleton>
+  ) : (
+    <CardSkeleton title={title} subtitle={t('Last 12 Months')}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        {emptyPlaceholder}
+      </Box>
+    </CardSkeleton>
+  );
+};
