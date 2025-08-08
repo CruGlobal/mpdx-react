@@ -53,8 +53,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     paddingLeft: theme.spacing(4),
   },
   '.MuiDataGrid-columnHeader.reference, .MuiDataGrid-cell.reference': {
-    // Lighten by 90%
-    backgroundColor: `color-mix(in srgb, ${theme.palette.primary.main} 10%, white)`,
+    backgroundColor: theme.palette.mpdxBlue.light,
   },
 }));
 
