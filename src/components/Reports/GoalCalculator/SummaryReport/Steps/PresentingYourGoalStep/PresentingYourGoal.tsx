@@ -119,6 +119,7 @@ export const PresentingYourGoal: React.FC = () => {
     skip: !salaryOrganizationId,
   });
   const organization = data?.userOrganizationAccounts[0].organization.name;
+  const cruOrganizationName = t('Campus Crusade for Christ');
 
   // Made useMemo for when real data is added.
   const total = useMemo(
@@ -152,8 +153,8 @@ export const PresentingYourGoal: React.FC = () => {
     theme.palette.info.main,
   ];
 
-  const personalInfoRows: PersonalInfoRow[] = useMemo(
-    () => [
+  const personalInfoRows: PersonalInfoRow[] = useMemo(() => {
+    const personalRows: PersonalInfoRow[] = [
       {
         label: 'Name',
         value: userData?.user
@@ -162,12 +163,16 @@ export const PresentingYourGoal: React.FC = () => {
       },
       {
         label: t('Mission Agency'),
-        value: organization || t('Campus Crusade for Christ, Inc.'),
+        value: organization || cruOrganizationName,
       },
       { label: t('Ministry Location'), value: t('Orlando, FL') },
-    ],
-    [userData?.user, t],
-  );
+    ];
+    if (!organization?.includes(cruOrganizationName)) {
+      return personalRows.filter((row) => row.label !== t('Ministry Location'));
+    }
+
+    return personalRows;
+  }, [userData?.user, t, organization, cruOrganizationName]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
@@ -251,7 +256,7 @@ export const PresentingYourGoal: React.FC = () => {
                   <StyledTableCell data-testid="value-typography">
                     {item.value}
                   </StyledTableCell>
-                  {index === 0 && (
+                  {index === 0 && organization?.includes(cruOrganizationName) && (
                     <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
                       <img
                         src={cruLogo}
