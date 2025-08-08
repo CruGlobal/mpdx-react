@@ -28,13 +28,9 @@ const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: theme.spacing(1),
+  padding: theme.spacing(4),
   borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
 }));
-
-const RightPanelTitle = styled(Typography)({
-  fontSize: '0.875rem',
-});
 
 const RightPanelContent = styled('div')(({ theme }) => ({
   margin: theme.spacing(2),
@@ -53,13 +49,16 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { rightPanelContent, closeRightPanel } = useGoalCalculator();
+  const { rightPanelContent, closeRightPanel, currentStep } =
+    useGoalCalculator();
   const { t } = useTranslation();
 
   const rightPanel = (
     <>
       <RightPanelHeader>
-        <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
+        <Typography variant="h5" component="div">
+          {currentStep?.title || ''}
+        </Typography>
         <IconButton
           size="small"
           onClick={closeRightPanel}
