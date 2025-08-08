@@ -14,7 +14,6 @@ import {
   styled,
   useMediaQuery,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   Cell,
@@ -26,15 +25,19 @@ import {
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
-import cruLogo from 'src/images/cru/cru.svg';
-import { currencyFormat } from 'src/lib/intlFormat';
+import cruLogo from 'src/images/cru/Cru_Brandmark_Trademark[RGB]_Cru_Brandmark_Black-Color_[RGB].svg';
+import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
+import { useGetAccountListQuery } from './GetAccountList.generated';
+import { useGetOrganizationsQuery } from './GetOrganization.generated';
 
-const ChartContainer = styled(Box)(({ theme }) => ({
-  width: '70%',
+const ChartContainer = styled(Box)({
   height: 500,
-
+  display: 'flex',
+  justifyContent: 'center',
   [theme.breakpoints.down('lg')]: {
     width: '100%',
   },
@@ -57,21 +60,20 @@ const ChartContainer = styled(Box)(({ theme }) => ({
     },
   },
 
-  '& .recharts-legend-item .recharts-surface': {
+  '.recharts-legend-item .recharts-surface': {
     width: '16px !important',
     height: '16px !important',
     top: '2px',
   },
 
-  '& .recharts-legend-item text': {
+  '.recharts-legend-item text': {
     dominantBaseline: 'middle',
   },
-}));
+});
 
 const StyledTableCell = styled(TableCell)({
   border: 'none',
-  paddingTop: 16,
-  paddingBottom: 16,
+  paddingBlock: theme.spacing(2),
 });
 
 const mockData = [
@@ -108,18 +110,37 @@ interface PresentingYourGoalRow {
 }
 
 export const PresentingYourGoal: React.FC = () => {
-  const { data: userData } = useGetUserQuery();
   const { t } = useTranslation();
   const locale = useLocale();
-  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
+  /*
+   * We don't want to display ministry location and Cru image if
+   * the user is not part of Cru.
+   * There are multiple Campus Crusade for Christ ministries
+   * so I am querying and handling logic by name, though it may
+   * be better to use the organization IDs somehow.
+   */
+  const { data: userData } = useGetUserQuery();
+  const accountListId = useAccountListId();
   const salaryOrganizationId = useOrganizationId();
-  const { data } = useGetUsersOrganizationsAccountsQuery({
+  const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
   });
-  const organization = data?.userOrganizationAccounts[0].organization.name;
-  const cruOrganizationName = t('Campus Crusade for Christ');
+  const { data: orgTypeData } = useGetOrganizationsQuery();
+  const orgTypeDataFiltered = orgTypeData?.organizations.filter(
+    (org) => org.id === salaryOrganizationId,
+  );
+  const orgTypeName = orgTypeDataFiltered?.[0].organizationType;
+  const isOrgTypeCru = orgTypeName === 'Cru';
+  const organizationName =
+    salaryOrganization?.userOrganizationAccounts[0].organization.name;
+
+  const { data: receivedPledgesData } = useGetAccountListQuery({
+    variables: { accountListId: accountListId || '' },
+  });
+  const totalSolidSupport =
+    receivedPledgesData?.accountList?.receivedPledges || 0;
 
   // Made useMemo for when real data is added.
   const total = useMemo(
@@ -139,9 +160,6 @@ export const PresentingYourGoal: React.FC = () => {
       window.location.reload();
     }
   };
-
-  const formatPercent = (value: number) =>
-    total ? ((value / total) * 100).toFixed(2) : '0';
 
   // Consider adding more brand colors to theme.
   const chartColors = [
@@ -163,16 +181,17 @@ export const PresentingYourGoal: React.FC = () => {
       },
       {
         label: t('Mission Agency'),
-        value: organization || cruOrganizationName,
+        value: organizationName,
       },
+      // change to location user inputs in Information section of calculator
       { label: t('Ministry Location'), value: t('Orlando, FL') },
     ];
-    if (!organization?.includes(cruOrganizationName)) {
+    if (!isOrgTypeCru) {
       return personalRows.filter((row) => row.label !== t('Ministry Location'));
     }
 
     return personalRows;
-  }, [userData?.user, t, organization, cruOrganizationName]);
+  }, [userData?.user, t, organizationName, isOrgTypeCru]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
@@ -209,7 +228,7 @@ export const PresentingYourGoal: React.FC = () => {
       { title: 'Administrative Charge', amount: mockData[5].value },
       { title: 'Total Support Goal', amount: total, bold: true },
       // change amount when real data is added
-      { title: 'Total Solid Support', amount: 2500 },
+      { title: 'Total Solid Support', amount: totalSolidSupport },
     ],
     [mockData, total, t],
   );
@@ -256,9 +275,10 @@ export const PresentingYourGoal: React.FC = () => {
                   <StyledTableCell data-testid="value-typography">
                     {item.value}
                   </StyledTableCell>
-                  {index === 0 && organization?.includes(cruOrganizationName) && (
+                  {index === 0 && isOrgTypeCru && (
                     <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
                       <img
+                        data-testid="cru-logo"
                         src={cruLogo}
                         alt={t('Campus Crusade for Christ, Inc. logo')}
                         style={{ width: 150, height: 'auto' }}
@@ -342,7 +362,7 @@ export const PresentingYourGoal: React.FC = () => {
           />
 
           <ChartContainer>
-            <ResponsiveContainer>
+            <ResponsiveContainer width={isMobile ? 700 : 800} height="100%">
               <PieChart>
                 <Pie
                   data={mockData}
@@ -361,13 +381,14 @@ export const PresentingYourGoal: React.FC = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) =>
-                    `${currencyFormat(
+                  formatter={(value) => {
+                    const percent = total > 0 ? Number(value) / total : 0;
+                    return `${currencyFormat(
                       Number(value),
                       'USD',
                       locale,
-                    )} (${formatPercent(Number(value))}%)`
-                  }
+                    )} (${percentageFormat(percent, locale)})`;
+                  }}
                 />
                 <Legend
                   layout={isMobile ? 'horizontal' : 'vertical'}
@@ -377,7 +398,6 @@ export const PresentingYourGoal: React.FC = () => {
                     fontSize: isMobile
                       ? theme.typography.subtitle1.fontSize
                       : theme.typography.h5.fontSize,
-                    paddingRight: isMobile ? 0 : theme.spacing(30),
                   }}
                   iconSize={16}
                 />
