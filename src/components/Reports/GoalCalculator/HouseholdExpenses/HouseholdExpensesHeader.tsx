@@ -14,6 +14,12 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { CurrencyAdornment } from '../Shared/Adornments';
 
+enum TotalState {
+  Categories = 'Categories',
+  DirectInput = 'DirectInput',
+  Editing = 'Editing',
+}
+
 const StyledCard = styled(Card)({
   flex: 1,
 
@@ -47,34 +53,32 @@ export const HouseholdExpensesHeader: React.FC<
   const locale = useLocale();
 
   const [showPercentage, setShowPercentage] = useState(true);
-  const [totalState, setTotalState] = useState<
-    'categories' | 'directInput' | 'editing'
-  >('categories');
+  const [totalState, setTotalState] = useState(TotalState.Categories);
   const [directInput, setDirectInput] = useState(0);
 
   const budgetTotal =
-    totalState === 'categories' ? categoriesTotal : directInput;
+    totalState === TotalState.Categories ? categoriesTotal : directInput;
   const leftToAllocate = directInput === 0 ? 0 : directInput - categoriesTotal;
 
   const [directInputFieldValue, setDirectInputFieldValue] = useState(0);
 
   const handleDirectInputClear = () => {
     setDirectInput(0);
-    setTotalState('categories');
+    setTotalState(TotalState.Categories);
   };
 
   const handleEditDirectInput = () => {
     setDirectInputFieldValue(categoriesTotal);
-    setTotalState('editing');
+    setTotalState(TotalState.Editing);
   };
 
   const handleDirectInputSave = () => {
     setDirectInput(directInputFieldValue);
-    setTotalState('directInput');
+    setTotalState(TotalState.DirectInput);
   };
 
   const handleDirectInputCancel = () => {
-    setTotalState('categories');
+    setTotalState(TotalState.Categories);
   };
 
   return (
@@ -82,7 +86,7 @@ export const HouseholdExpensesHeader: React.FC<
       <StyledCard>
         <CardContent>
           <Typography variant="h6">{t('Budgeted')}</Typography>
-          {totalState === 'editing' ? (
+          {totalState === TotalState.Editing ? (
             <TextField
               sx={{ marginBlock: 2 }}
               fullWidth
@@ -109,7 +113,9 @@ export const HouseholdExpensesHeader: React.FC<
           ) : (
             <AmountTypography>
               {currencyFormat(
-                totalState === 'categories' ? budgetTotal : directInput,
+                totalState === TotalState.Categories
+                  ? budgetTotal
+                  : directInput,
                 'USD',
                 locale,
               )}
@@ -117,9 +123,9 @@ export const HouseholdExpensesHeader: React.FC<
           )}
         </CardContent>
         <CardActions>
-          {totalState === 'categories' ? (
+          {totalState === TotalState.Categories ? (
             <Button onClick={handleEditDirectInput}>{t('Direct input')}</Button>
-          ) : totalState === 'directInput' ? (
+          ) : totalState === TotalState.DirectInput ? (
             <Button onClick={handleDirectInputClear}>
               {t('Manual input')}
             </Button>
