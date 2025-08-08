@@ -4,7 +4,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
-import { percentageFormat } from 'src/lib/intlFormat';
+import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalLineItems } from './useGoalLineItems';
 
 interface MpdGoalRow {
@@ -58,12 +58,6 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-const formatNumber = (amount: number, locale: string) =>
-  new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
-
 export const MpdGoalTable: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -73,7 +67,7 @@ export const MpdGoalTable: React.FC = () => {
   const valueFormatter = (value: number, row: MpdGoalRow) =>
     row.percentage
       ? percentageFormat(value, locale)
-      : formatNumber(value, locale);
+      : currencyFormat(value, 'USD', locale, { showTrailingZeros: true });
 
   const rows: MpdGoalRow[] = [
     {

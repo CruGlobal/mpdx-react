@@ -76,6 +76,16 @@ describe('intlFormat', () => {
       expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000,10 €');
     });
 
+    it('strips trailing zeros by default', () => {
+      expect(currencyFormat(1000, 'USD', 'en-US')).toEqual('$1,000');
+    });
+
+    it('showTrailingZeros shows trailing zeros', () => {
+      expect(
+        currencyFormat(1000, 'USD', 'en-US', { showTrailingZeros: true }),
+      ).toEqual('$1,000.00');
+    });
+
     describe('value', () => {
       it('handles NaN case', () => {
         expect(currencyFormat(NaN, 'NZD', 'en-US')).toEqual('NZ$0');
