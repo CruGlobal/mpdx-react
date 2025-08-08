@@ -3,6 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Grid, IconButton, TextField } from '@mui/material';
 import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { CurrencyAdornment } from '../../../../Shared/Adornments';
 
 interface MileageStepFormValues {
   // Mileage entries
@@ -73,7 +74,7 @@ export const MileageStepForm: React.FC<MileageStepFormProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: <span style={{ marginRight: 8 }}>$</span>,
+                  startAdornment: <CurrencyAdornment />,
                   endAdornment: (
                     <IconButton
                       onClick={() => removeMileageField(index)}

@@ -4,10 +4,7 @@ import { Box, Button, Grid, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
-
-const StyledPrefix = styled('span')({
-  marginRight: 8,
-});
+import { CurrencyAdornment } from '../../../../Shared/Adornments';
 
 const StyledAddGoalButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1),
@@ -94,7 +91,7 @@ export const OneTimeGoalsStepForm: React.FC<OneTimeGoalsStepFormProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: <StyledPrefix>$</StyledPrefix>,
+                  startAdornment: <CurrencyAdornment />,
                   endAdornment: (
                     <StyledIconButton
                       onClick={() => removeGoalField(index)}

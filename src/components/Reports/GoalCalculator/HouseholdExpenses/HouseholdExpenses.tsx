@@ -7,6 +7,7 @@ import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
+import { HouseholdExpensesHeader } from './HouseholdExpensesHeader';
 
 const InstructionsWrapper = styled('div')(({ theme }) => ({
   '.MuiTypography-root': {
@@ -24,21 +25,24 @@ export const useHouseholdExpenses = (): GoalCalculatorStep => {
     id: GoalCalculatorStepEnum.HouseholdExpenses,
     title: t('Household Expenses'),
     instructions: (
-      <InstructionsWrapper>
-        <Typography variant="h6">{t('Enter your monthly budget')}</Typography>
-        <Typography variant="body2">
-          {t(
-            'You may choose to skip entering your budget below if you know the net cash you need each month.',
-          )}
-        </Typography>
-        <Typography variant="body2">
-          {t('For additional guidance, check out')}{' '}
-          <Link href="https://www.ramseysolutions.com/budgeting/useful-forms">
-            {t('these resources from Ramsey Solutions')}
-          </Link>
-          .
-        </Typography>
-      </InstructionsWrapper>
+      <>
+        <InstructionsWrapper>
+          <Typography variant="h6">{t('Enter your monthly budget')}</Typography>
+          <Typography variant="body2">
+            {t(
+              'You may choose to skip entering your budget below if you know the net cash you need each month.',
+            )}
+          </Typography>
+          <Typography variant="body2">
+            {t('For additional guidance, check out')}{' '}
+            <Link href="https://www.ramseysolutions.com/budgeting/useful-forms">
+              {t('these resources from Ramsey Solutions')}
+            </Link>
+            .
+          </Typography>
+        </InstructionsWrapper>
+        <HouseholdExpensesHeader categoriesTotal={7000} />
+      </>
     ),
     icon: <HomeIcon />,
     categories: [

@@ -10,10 +10,7 @@ import {
 } from '@mui/material';
 import { Field, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
-
-const StyledCurrencyPrefix = styled('span')({
-  marginRight: 8,
-});
+import { CurrencyAdornment } from '../../../../Shared/Adornments';
 
 const StyledDeleteIconButton = styled(IconButton)(({ theme }) => ({
   color: 'black',
@@ -87,9 +84,7 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
+                  startAdornment: <CurrencyAdornment />,
                 }}
               />
             )}
@@ -113,9 +108,7 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
+                  startAdornment: <CurrencyAdornment />,
                 }}
               />
             )}
@@ -157,9 +150,7 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
+                  startAdornment: <CurrencyAdornment />,
                   endAdornment: (
                     <StyledDeleteIconButton
                       onClick={() => removeIncomeField(index)}
