@@ -14,7 +14,6 @@ import {
   styled,
   useMediaQuery,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   Cell,
@@ -31,12 +30,13 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/Cru_Brandmark_Trademark[RGB]_Cru_Brandmark_Black-Color_[RGB].svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { useGetAccountListQuery } from './GetAccountList.generated';
 
-const ChartContainer = styled(Box)(({ theme }) => ({
-  width: '70%',
+const ChartContainer = styled(Box)({
   height: 500,
-
+  display: 'flex',
+  justifyContent: 'center',
   [theme.breakpoints.down('lg')]: {
     width: '100%',
   },
@@ -68,12 +68,11 @@ const ChartContainer = styled(Box)(({ theme }) => ({
   '.recharts-legend-item text': {
     dominantBaseline: 'middle',
   },
-}));
+});
 
 const StyledTableCell = styled(TableCell)({
   border: 'none',
-  paddingTop: 16,
-  paddingBottom: 16,
+  paddingBlock: theme.spacing(2),
 });
 
 const mockData = [
@@ -112,7 +111,6 @@ interface PresentingYourGoalRow {
 export const PresentingYourGoal: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   /*
@@ -357,7 +355,7 @@ export const PresentingYourGoal: React.FC = () => {
           />
 
           <ChartContainer>
-            <ResponsiveContainer>
+            <ResponsiveContainer width={isMobile ? 700 : 800} height="100%">
               <PieChart>
                 <Pie
                   data={mockData}
@@ -392,7 +390,6 @@ export const PresentingYourGoal: React.FC = () => {
                     fontSize: isMobile
                       ? theme.typography.subtitle1.fontSize
                       : theme.typography.h5.fontSize,
-                    paddingRight: isMobile ? 0 : theme.spacing(30),
                   }}
                   iconSize={16}
                 />
