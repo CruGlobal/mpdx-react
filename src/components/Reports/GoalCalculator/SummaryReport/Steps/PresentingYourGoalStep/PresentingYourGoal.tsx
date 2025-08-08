@@ -114,11 +114,18 @@ export const PresentingYourGoal: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
+  /*
+   * We don't want to display ministry location and Cru image if
+   * the user is not part of Cru.
+   * There are multiple Campus Crusade for Christ ministries
+   * so I am querying and handling logic by name, though it may
+   * be better to use the organization IDs somehow.
+   */
   const salaryOrganizationId = useOrganizationId();
   const { data } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
   });
-  const organization = data?.userOrganizationAccounts[0].organization.name;
+  const organizationName = data?.userOrganizationAccounts[0].organization.name;
   const cruOrganizationName = t('Campus Crusade for Christ');
 
   // Made useMemo for when real data is added.
@@ -163,16 +170,16 @@ export const PresentingYourGoal: React.FC = () => {
       },
       {
         label: t('Mission Agency'),
-        value: organization || cruOrganizationName,
+        value: organizationName || cruOrganizationName,
       },
       { label: t('Ministry Location'), value: t('Orlando, FL') },
     ];
-    if (!organization?.includes(cruOrganizationName)) {
+    if (!organizationName?.includes(cruOrganizationName)) {
       return personalRows.filter((row) => row.label !== t('Ministry Location'));
     }
 
     return personalRows;
-  }, [userData?.user, t, organization, cruOrganizationName]);
+  }, [userData?.user, t, organizationName, cruOrganizationName]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
@@ -256,15 +263,17 @@ export const PresentingYourGoal: React.FC = () => {
                   <StyledTableCell data-testid="value-typography">
                     {item.value}
                   </StyledTableCell>
-                  {index === 0 && organization?.includes(cruOrganizationName) && (
-                    <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
-                      <img
-                        src={cruLogo}
-                        alt={t('Campus Crusade for Christ, Inc. logo')}
-                        style={{ width: 150, height: 'auto' }}
-                      />
-                    </StyledTableCell>
-                  )}
+                  {index === 0 &&
+                    organizationName?.includes(cruOrganizationName) && (
+                      <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
+                        <img
+                          data-testid="cru-logo"
+                          src={cruLogo}
+                          alt={t('Campus Crusade for Christ, Inc. logo')}
+                          style={{ width: 150, height: 'auto' }}
+                        />
+                      </StyledTableCell>
+                    )}
                 </TableRow>
               ))}
             </TableBody>

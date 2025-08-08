@@ -4,6 +4,7 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
+import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import { GoalCalculatorProvider } from '../../../Shared/GoalCalculatorContext';
@@ -26,19 +27,40 @@ jest.mock('recharts', () => {
   };
 });
 
+jest.mock('src/hooks/useOrganizationId', () => ({
+  useOrganizationId: jest.fn(() => 'organization-id-1'),
+}));
+
 const TestComponent: React.FC = () => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         GetUser: GetUserQuery;
+        GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
       }>
         mocks={{
           GetUser: {
             user: {
-              id: 'user-id-1',
+              id: 'account-list-id-1',
               firstName: 'Obiwan',
               lastName: 'Kenobi',
             },
+          },
+          GetUsersOrganizationsAccounts: {
+            userOrganizationAccounts: [
+              {
+                id: 'user-org-account-id-1',
+                username: 'obiwan.kenobi',
+                latestDonationDate: '2023-12-01',
+                lastDownloadedAt: '2023-12-15',
+                organization: {
+                  id: 'organization-id-1',
+                  name: 'Campus Crusade for Christ, Inc.',
+                  apiClass: 'DataSync',
+                  oauth: false,
+                },
+              },
+            ],
           },
         }}
       >
@@ -81,9 +103,10 @@ describe('PresentingYourGoal', () => {
     });
   });
 
-  it('renders the logo image', async () => {
-    const { findByRole } = render(<TestComponent />);
-    const cruLogo = await findByRole('img');
+  it('renders the logo image when the user salary organization is Cru', async () => {
+    const { findAllByRole, getByTestId } = render(<TestComponent />);
+    await findAllByRole('img');
+    const cruLogo = getByTestId('cru-logo');
     expect(cruLogo).toBeInTheDocument();
   });
 
