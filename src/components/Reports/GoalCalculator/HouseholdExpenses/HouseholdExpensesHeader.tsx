@@ -58,25 +58,21 @@ export const HouseholdExpensesHeader: React.FC<
 
   const [directInputFieldValue, setDirectInputFieldValue] = useState(0);
 
-  // Clear directInput value and go back to showing the categories total
   const handleDirectInputClear = () => {
     setDirectInput(0);
     setTotalState('categories');
   };
 
-  // Start editing the direct input
   const handleEditDirectInput = () => {
     setDirectInputFieldValue(categoriesTotal);
     setTotalState('editing');
   };
 
-  // Save the direct input field as the new direct input
   const handleDirectInputSave = () => {
     setDirectInput(directInputFieldValue);
     setTotalState('directInput');
   };
 
-  // Cancel setting a new direct input
   const handleDirectInputCancel = () => {
     setTotalState('categories');
   };
@@ -139,7 +135,6 @@ export const HouseholdExpensesHeader: React.FC<
         <CardContent>
           <Typography variant="h6">{t('Left to Allocate')}</Typography>
           <AmountTypography>
-            {/* If there is a direct input */}
             {showPercentage
               ? percentageFormat(leftToAllocate / budgetTotal, locale)
               : currencyFormat(leftToAllocate, 'USD', locale)}
