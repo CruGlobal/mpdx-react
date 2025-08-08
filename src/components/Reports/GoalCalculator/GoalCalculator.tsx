@@ -100,6 +100,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     setDrawerOpen,
     handleStepChange,
     handleContinue,
+    hideCategoryId,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const iconPanelWidth = theme.spacing(5);
@@ -114,8 +115,10 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
   };
 
   const {
+    id: stepId,
     title: stepTitle,
     instructions: stepInstructions,
+    headerComponent,
     categories,
   } = currentStep || {};
 
@@ -155,72 +158,83 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
           </StepTitle>
 
           <List disablePadding>
-            {categories?.map((category) => {
-              const { id, title } = category;
-              // TODO: Determine whether each category is complete
-              const complete = false;
-              return (
-                <CategoryListItem key={id}>
-                  <CategoryListItemIcon>
-                    <Box
-                      sx={(theme) => ({
-                        fontSize: '1rem',
-                        color: complete
-                          ? theme.palette.mpdxBlue.main
-                          : theme.palette.cruGrayDark.main,
-                      })}
-                    >
-                      {complete ? (
-                        <CircleIcon sx={{ fontSize: '1rem' }} />
-                      ) : (
-                        <RadioButtonUncheckedIcon sx={{ fontSize: '1rem' }} />
-                      )}
-                    </Box>
-                  </CategoryListItemIcon>
-                  <ListItemText
-                    primary={title}
-                    primaryTypographyProps={{ variant: 'body2' }}
-                  />
-                </CategoryListItem>
-              );
-            })}
+            {hideCategoryId !== stepId &&
+              categories?.map((category) => {
+                const { id, title } = category;
+                // TODO: Determine whether each category is complete
+                const complete = false;
+                return (
+                  <CategoryListItem key={id}>
+                    <CategoryListItemIcon>
+                      <Box
+                        sx={(theme) => ({
+                          fontSize: '1rem',
+                          color: complete
+                            ? theme.palette.mpdxBlue.main
+                            : theme.palette.cruGrayDark.main,
+                        })}
+                      >
+                        {complete ? (
+                          <CircleIcon sx={{ fontSize: '1rem' }} />
+                        ) : (
+                          <RadioButtonUncheckedIcon sx={{ fontSize: '1rem' }} />
+                        )}
+                      </Box>
+                    </CategoryListItemIcon>
+                    <ListItemText
+                      primary={title}
+                      primaryTypographyProps={{ variant: 'body2' }}
+                    />
+                  </CategoryListItem>
+                );
+              })}
           </List>
         </StyledDrawer>
         {isDrawerOpen && <Divider orientation="vertical" flexItem />}
+
         <Divider orientation="vertical" flexItem />
         <CategoriesStack flex={1} spacing={4} divider={<Divider />}>
-          {stepInstructions && (
-            <CategoryContainer>{stepInstructions}</CategoryContainer>
+          {headerComponent && (
+            <CategoryContainer>{headerComponent}</CategoryContainer>
           )}
-          {categories?.map((category) => {
-            const rightPanelContent = category.rightPanelComponent;
-            return (
-              <CategoryContainer key={category.id}>
-                <Typography variant="h6">
-                  {category.title}
-                  {rightPanelContent && (
-                    <IconButton
-                      onClick={() => {
-                        setRightPanelContent(rightPanelContent);
-                      }}
-                      aria-label={t('Show additional info')}
-                    >
-                      <InfoIcon />
-                    </IconButton>
-                  )}
-                </Typography>
-                {category.component}
-              </CategoryContainer>
-            );
-          }) ?? (
-            <StyledDefaultContent>
-              <Typography variant="body1">
-                {t(
-                  'Please select a step from the left panel to view its content.',
-                )}
-              </Typography>
-            </StyledDefaultContent>
+
+          {hideCategoryId !== stepId && (
+            <>
+              {stepInstructions && (
+                <CategoryContainer>{stepInstructions}</CategoryContainer>
+              )}
+              {categories?.map((category) => {
+                const rightPanelContent = category.rightPanelComponent;
+                return (
+                  <CategoryContainer key={category.id}>
+                    <Typography variant="h6">
+                      {category.title}
+                      {rightPanelContent && (
+                        <IconButton
+                          onClick={() => {
+                            setRightPanelContent(rightPanelContent);
+                          }}
+                          aria-label={t('Show additional info')}
+                        >
+                          <InfoIcon />
+                        </IconButton>
+                      )}
+                    </Typography>
+                    {category.component}
+                  </CategoryContainer>
+                );
+              }) ?? (
+                <StyledDefaultContent>
+                  <Typography variant="body1">
+                    {t(
+                      'Please select a step from the left panel to view its content.',
+                    )}
+                  </Typography>
+                </StyledDefaultContent>
+              )}
+            </>
           )}
+
           <CategoryContainer>
             <ContinueButton onClick={handleContinue} />
           </CategoryContainer>
