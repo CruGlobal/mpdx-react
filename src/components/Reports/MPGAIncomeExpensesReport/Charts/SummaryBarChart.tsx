@@ -45,9 +45,11 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
         <XAxis dataKey="name" />
         <YAxis
           tickFormatter={(value) =>
-            `$${value.toLocaleString('en-US', {
+            value.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
               minimumFractionDigits: 0,
-            })}`
+            })
           }
         />
         <Bar dataKey="total">

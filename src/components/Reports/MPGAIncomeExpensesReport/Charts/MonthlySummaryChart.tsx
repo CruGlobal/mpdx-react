@@ -80,7 +80,11 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
         <XAxis dataKey="name" tickFormatter={(value) => value.split(' ')[0]} />
         <YAxis
           tickFormatter={(value) =>
-            `$${value.toLocaleString('en-US', { minimumFractionDigits: 0 })}`
+            value.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+            })
           }
         />
         <Tooltip
