@@ -1,3 +1,4 @@
+import React, { useContext, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -53,6 +54,13 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   ) as StaffSavingFundType;
 
   const handlePrint = () => window.print();
+
+  const handleOpenTransferModal = ({ type, transfer }: TransferModalData) => {
+    setModalData({
+      type,
+      transfer,
+    });
+  };
 
   return (
     <>
@@ -136,6 +144,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             <ScreenOnly sx={{ mt: 2, mb: 3 }}>
               <TransferHistoryTable
                 history={mockData.history}
+                handleOpenTransferModal={handleOpenTransferModal}
                 emptyPlaceholder={
                   <EmptyTable
                     title={t('Transfer History not available')}

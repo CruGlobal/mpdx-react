@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
 import { DynamicDeleteTransferModal } from '../TransferActionsModal/DynamicDeleteTransferModal';
+import { TransferModalData } from '../TransferModal/TransferModal';
 import { ScheduleEnum, TransferHistory } from '../mockData';
 import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
 import { CustomToolbar } from './CustomToolbar';
@@ -40,11 +41,13 @@ const createToolbar = (history: TransferHistory[]) => {
 export interface TransferHistoryTableProps {
   history: TransferHistory[];
   emptyPlaceholder: React.ReactElement;
+  handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   loading?: boolean;
 }
 export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   history,
   emptyPlaceholder,
+  handleOpenTransferModal,
   loading,
 }) => {
   const { t } = useTranslation();
@@ -64,6 +67,13 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     setOpenDeleteModal(transfer);
   };
 
+  const handleEditModalOpen = (transfer: TransferHistory) => {
+    handleOpenTransferModal({
+      type: TransferTypeEnum.Edit,
+      transfer,
+    });
+  };
+
   const {
     transfers,
     amount,
@@ -74,6 +84,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     note,
     actions,
   } = populateTransferHistoryRows(
+    handleEditModalOpen,
     handleDeleteModalOpen,
     t,
     locale,

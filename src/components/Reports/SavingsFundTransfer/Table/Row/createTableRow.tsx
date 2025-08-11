@@ -13,7 +13,12 @@ import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
 import { RenderCell } from '../TransferHistoryTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
 
-export const populateTransferHistoryRows = (t: TFunction, locale: string) => {
+export const populateTransferHistoryRows = (
+  handleEditModalOpen: (transfer: TransferHistory) => void,
+  handleDeleteModalOpen: (transfer: TransferHistory) => void,
+  t: TFunction,
+  locale: string,
+) => {
   const transfers: RenderCell = ({ row }) => {
     const fromIcon =
       iconMap[row.transferFrom ? row.transferFrom : 'staffAccount'];
@@ -123,10 +128,16 @@ export const populateTransferHistoryRows = (t: TFunction, locale: string) => {
       return (
         <>
           <IconButton>
-            <Edit titleAccess="Edit" />
+            <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
           </IconButton>
           <IconButton>
-            <Delete titleAccess="Delete" sx={{ color: 'error.main' }} />
+            <Delete
+              titleAccess="Delete"
+              sx={{ color: 'error.main' }}
+              onClick={() => {
+                handleDeleteModalOpen(row);
+              }}
+            />
           </IconButton>
         </>
       );
