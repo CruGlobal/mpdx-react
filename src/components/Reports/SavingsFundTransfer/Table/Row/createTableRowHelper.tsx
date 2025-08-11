@@ -1,14 +1,14 @@
 import {
-  staffAccount,
-  staffConferenceSavings,
-  staffSavings,
+  StaffAccount,
+  StaffConferenceSavings,
+  StaffSavings,
 } from '../../Helper/TransferIcons';
 import { StatusEnum } from '../../mockData';
 
 export const iconMap: Record<string, React.ReactElement> = {
-  staffAccount,
-  staffConferenceSavings,
-  staffSavings,
+  StaffAccount,
+  StaffConferenceSavings,
+  StaffSavings,
 };
 
 const pendingAvatarColor = '#FFC107';

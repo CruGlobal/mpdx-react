@@ -50,6 +50,8 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const [openDeleteModal, setOpenDeleteModal] =
+    useState<TransferHistory | null>(null);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 25,
@@ -57,6 +59,10 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'date', sort: 'desc' },
   ]);
+
+  const handleDeleteModalOpen = (transfer: TransferHistory) => {
+    setOpenDeleteModal(transfer);
+  };
 
   const {
     transfers,
@@ -67,7 +73,11 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     endDate,
     note,
     actions,
-  } = populateTransferHistoryRows(t, locale);
+  } = populateTransferHistoryRows(
+    handleDeleteModalOpen,
+    t,
+    locale,
+  );
 
   const transferHistoryRows = history.map(CreateTransferHistoryRows);
 
@@ -170,6 +180,12 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           toolbar: createToolbar(history),
         }}
       />
+      {openDeleteModal && (
+        <DynamicDeleteTransferModal
+          handleClose={() => setOpenDeleteModal(null)}
+          transfer={openDeleteModal}
+        />
+      )}
     </>
   ) : (
     emptyPlaceholder
