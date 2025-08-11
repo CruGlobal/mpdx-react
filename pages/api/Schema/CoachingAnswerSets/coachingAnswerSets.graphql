@@ -1,7 +1,6 @@
 extend type Query {
   coachingAnswerSets(
     accountListId: ID!
-    organizationId: ID
     completed: Boolean
   ): [CoachingAnswerSet!]!
 

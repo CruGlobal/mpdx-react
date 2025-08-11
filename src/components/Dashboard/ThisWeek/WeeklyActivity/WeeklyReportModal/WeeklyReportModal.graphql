@@ -6,6 +6,13 @@ fragment WeeklyReportCoachingQuestion on CoachingQuestion {
   responseOptions
 }
 
+query AccountListOrganization($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    salaryOrganizationId
+  }
+}
+
 query CurrentCoachingAnswerSet($accountListId: ID!, $organizationId: ID!) {
   currentCoachingAnswerSet(
     accountListId: $accountListId
