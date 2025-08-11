@@ -23,6 +23,7 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+    alignContent: 'center',
   },
 }));
 
