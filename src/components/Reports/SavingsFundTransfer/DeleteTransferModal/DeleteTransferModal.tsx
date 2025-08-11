@@ -27,19 +27,19 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   const handleDelete = () => {
     setDeleting(true);
 
-    enqueueSnackbar(t('Transfer deleted successfully'), { variant: 'success' });
+    enqueueSnackbar(t('Transfer stopped successfully'), { variant: 'success' });
     handleClose();
   };
 
   return (
     <Modal
       isOpen={true}
-      title={t('Delete Transfer: ${{transfer}}', { transfer: transfer.amount })}
+      title={t('Stop Transfer: ${{transfer}}', { transfer: transfer.amount })}
       handleClose={handleClose}
     >
       <DialogContent dividers>
         <DialogContentText component={'div'}>
-          {t('Are you sure you want to delete this transfer?')}
+          {t('Are you sure you want to stop this recurring transfer?')}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

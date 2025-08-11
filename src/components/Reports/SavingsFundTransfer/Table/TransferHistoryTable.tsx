@@ -7,8 +7,8 @@ import {
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
-import { DynamicDeleteTransferModal } from '../TransferActionsModal/DynamicDeleteTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { ScheduleEnum, TransferHistory } from '../mockData';
 import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';

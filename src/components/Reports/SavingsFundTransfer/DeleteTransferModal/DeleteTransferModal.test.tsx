@@ -51,9 +51,9 @@ describe('DeleteTransferModal', () => {
     const { getByText } = render(<TestComponent />);
 
     // temporary modal title
-    expect(getByText('Delete Transfer: ${{transfer}}')).toBeInTheDocument();
+    expect(getByText('Stop Transfer: ${{transfer}}')).toBeInTheDocument();
     expect(
-      getByText('Are you sure you want to delete this transfer?'),
+      getByText('Are you sure you want to stop this recurring transfer?'),
     ).toBeInTheDocument();
   });
 
@@ -63,7 +63,7 @@ describe('DeleteTransferModal', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        'Transfer deleted successfully',
+        'Transfer stopped successfully',
         { variant: 'success' },
       );
     });

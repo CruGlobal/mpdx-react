@@ -1,4 +1,4 @@
-import { ArrowForward, Delete, Edit } from '@mui/icons-material';
+import { ArrowForward, Edit, StopCircle } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -134,8 +134,8 @@ export const populateTransferHistoryRows = (
             <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
           </IconButton>
           <IconButton>
-            <Delete
-              titleAccess="Delete"
+            <StopCircle
+              titleAccess={t('Stop ongoing Transfer')}
               sx={{ color: 'error.main' }}
               onClick={() => {
                 handleDeleteModalOpen(row);
