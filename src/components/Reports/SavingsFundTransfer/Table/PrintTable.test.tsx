@@ -6,23 +6,18 @@ import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ScheduleEnum, StatusEnum } from '../mockData';
+import { StatusEnum, mockData } from '../mockData';
 import { PrintTable } from './PrintTable';
 
 const mutationSpy = jest.fn();
 
 const mockTransfers = [
   {
-    id: '1',
-    transferFrom: 'staffSavings',
-    transferTo: 'staffAccount',
-    amount: 1000,
-    schedule: ScheduleEnum.OneTime,
-    status: StatusEnum.Ongoing,
+    ...mockData.history[0],
+    status: StatusEnum.Complete,
     transferDate: DateTime.fromISO('2023-01-01'),
     endDate: null,
     note: 'Test transfer',
-    actions: 'edit-delete',
   },
 ];
 
@@ -49,7 +44,7 @@ describe('PrintTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '$1,000.00' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$2,500.00' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Schedule' }),
     ).toBeInTheDocument();
@@ -57,7 +52,7 @@ describe('PrintTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Status' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Completed' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'complete' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Transfer Date' }),
     ).toBeInTheDocument();

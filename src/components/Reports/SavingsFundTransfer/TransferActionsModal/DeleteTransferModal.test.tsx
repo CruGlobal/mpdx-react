@@ -4,11 +4,10 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ScheduleEnum, StatusEnum } from '../mockData';
+import { StatusEnum, mockData } from '../mockData';
 import { DeleteTransferModal } from './DeleteTransferModal';
 
 const mutationSpy = jest.fn();
@@ -27,17 +26,9 @@ jest.mock('notistack', () => ({
 }));
 
 const mockTransfer = {
-  id: '1',
-  transferFrom: 'staffSavings',
-  transferTo: 'staffAccount',
-  amount: 2500,
-  schedule: ScheduleEnum.OneTime,
+  ...mockData.history[0],
   status: StatusEnum.Ongoing,
-  transferDate: DateTime.fromISO('2023-09-26'),
-  endDate: null,
-  note: 'Reimbursements',
 };
-
 const TestComponent: React.FC = () => {
   return (
     <SnackbarProvider>

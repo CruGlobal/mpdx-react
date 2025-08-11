@@ -4,10 +4,9 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ScheduleEnum, StatusEnum, TransferHistory } from '../mockData';
+import { TransferHistory, mockData } from '../mockData';
 import { TransferHistoryTable } from './TransferHistoryTable';
 
 const mutationSpy = jest.fn();
@@ -15,28 +14,10 @@ const handleOpenMock = jest.fn();
 
 const mockHistory: TransferHistory[] = [
   {
-    id: '1',
-    transferFrom: 'staffSavings',
-    transferTo: 'staffAccount',
-    amount: 2500,
-    schedule: ScheduleEnum.OneTime,
-    status: StatusEnum.Pending,
-    transferDate: DateTime.fromISO('2023-09-26'),
-    endDate: null,
-    note: 'Reimbursements',
-    actions: 'edit-delete',
+    ...mockData.history[0],
   },
   {
-    id: '2',
-    transferFrom: 'staffAccount',
-    transferTo: 'staffSavings',
-    amount: 1200,
-    schedule: ScheduleEnum.Monthly,
-    status: StatusEnum.Ongoing,
-    transferDate: DateTime.fromISO('2023-09-30'),
-    endDate: DateTime.fromISO('2025-09-30'),
-    note: 'Long-term savings',
-    actions: 'edit-delete',
+    ...mockData.history[1],
   },
 ];
 
@@ -61,7 +42,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Staff Savings Arrow Staff Account $2,500.00 One Time Pending Sep 26, 2023 N/A Reimbursements Edit Delete',
+      name: 'Staff Savings Arrow Staff Account $2,500.00 One Time pending Sep 26, 2023 N/A Reimbursements Edit Delete',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
 
@@ -94,7 +75,7 @@ describe('TransferHistoryTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Status' }),
     ).toBeInTheDocument();
-    expect(within(statusCell).getByText('Pending')).toBeInTheDocument();
+    expect(within(statusCell).getByText('pending')).toBeInTheDocument();
 
     expect(
       await findByRole('columnheader', { name: 'Transfer Date' }),

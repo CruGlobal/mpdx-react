@@ -20,9 +20,12 @@ export const populateTransferHistoryRows = (
   locale: string,
 ) => {
   const transfers: RenderCell = ({ row }) => {
+    const fromIconName = row.transferFrom || 'staffAccount';
+    const toIconName = row.transferTo || 'staffSavings';
     const fromIcon =
-      iconMap[row.transferFrom ? row.transferFrom : 'staffAccount'];
-    const toIcon = iconMap[row.transferTo ? row.transferTo : 'staffSavings'];
+      iconMap[fromIconName.charAt(0).toUpperCase() + fromIconName.slice(1)];
+    const toIcon =
+      iconMap[toIconName.charAt(0).toUpperCase() + toIconName.slice(1)];
 
     if (fromIcon && toIcon) {
       return (

@@ -196,23 +196,23 @@ describe('TransfersPage', () => {
     await waitFor(() => {
       const modal = getByRole('dialog');
       expect(modal).toBeInTheDocument();
-
-      const fromAccount = getByRole('combobox', { name: /from account/i });
-      const toAccount = getByRole('combobox', { name: /to account/i });
-
-      expect(fromAccount).toBeInTheDocument();
-      expect(toAccount).toBeInTheDocument();
-
-      expect(
-        within(fromAccount).getByText(mockData.funds[0].name, {
-          selector: 'strong',
-        }),
-      ).toBeInTheDocument();
-      expect(
-        within(toAccount).queryByText(mockData.funds[0].name, {
-          selector: 'strong',
-        }),
-      ).not.toBeInTheDocument();
     });
+
+    const fromAccount = getByRole('combobox', { name: /from account/i });
+    const toAccount = getByRole('combobox', { name: /to account/i });
+
+    expect(fromAccount).toBeInTheDocument();
+    expect(toAccount).toBeInTheDocument();
+
+    expect(
+      within(fromAccount).getByText(mockData.funds[0].name, {
+        selector: 'b',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(toAccount).queryByText(mockData.funds[0].name, {
+        selector: 'b',
+      }),
+    ).not.toBeInTheDocument();
   });
 });

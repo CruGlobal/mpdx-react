@@ -1,5 +1,4 @@
-import { DateTime } from 'luxon';
-import { ScheduleEnum, StatusEnum } from '../mockData';
+import { StatusEnum, mockData } from '../mockData';
 import { createTable, downloadCSV } from './downloadTable';
 
 const mockT = (key: string) => key;
@@ -22,20 +21,7 @@ const mockHeaders = [
   'Stop Date',
 ];
 
-const mockHistory = [
-  {
-    id: '1',
-    transferFrom: 'staffAccount',
-    transferTo: 'staffSavings',
-    amount: 1200,
-    schedule: ScheduleEnum.Monthly,
-    status: StatusEnum.Ongoing,
-    transferDate: DateTime.fromISO('2023-09-30'),
-    endDate: DateTime.fromISO('2025-09-30'),
-    note: 'Long-term savings',
-    actions: 'edit-delete',
-  },
-];
+const mockHistory = [mockData.history[1]];
 
 describe('DownloadTable', () => {
   it('should download csv file', () => {
@@ -71,7 +57,7 @@ describe('DownloadTable', () => {
       'Staff Savings',
       '$1,200.00',
       'Monthly',
-      'Ongoing',
+      StatusEnum.Ongoing,
       'Sep 30, 2023',
       'Sep 30, 2025',
     ]);
