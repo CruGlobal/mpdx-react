@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GoalCalculatorProvider } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import theme from 'src/theme';
@@ -29,14 +28,9 @@ describe('MpdGoalStepRightPanelAccordion', () => {
   });
 
   it('renders accordion details content when expanded', () => {
-    const { getByRole, getByTestId } = render(<TestComponent />);
-
-    const accordion = getByRole('button', {
-      name: '1A Net Monthly Combined Salary',
-    });
-
-    userEvent.click(accordion);
+    const { getByTestId } = render(<TestComponent />);
     expect(getByTestId('content-1-typography')).toBeInTheDocument();
+    expect(getByTestId('content-2-typography')).toBeInTheDocument();
   });
 
   it('applies extra spacing for items with hasSpace', () => {

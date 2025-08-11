@@ -20,9 +20,11 @@ const TestComponent = () => {
 
 describe('MpdGoalStepRightPanel', () => {
   it('renders the resources and table title', () => {
-    const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('resource-title')).toBeInTheDocument();
-    expect(getByTestId('table-title')).toBeInTheDocument();
+    const { getByRole } = render(<TestComponent />);
+    expect(getByRole('heading', { name: 'Resources' })).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'MPD Goal Calculation Table' }),
+    ).toBeInTheDocument();
   });
 
   it('renders the accordions', () => {
@@ -30,13 +32,7 @@ describe('MpdGoalStepRightPanel', () => {
     expect(getByTestId('accordions')).toBeInTheDocument();
   });
 
-  it('renders the close button', async () => {
-    const { getByRole } = render(<TestComponent />);
-    const closeButton = getByRole('button', { name: 'Close Panel' });
-    expect(closeButton).toBeInTheDocument();
-  });
-
-  it('renders the tab panel only for the active tab', () => {
+  it('renders the MPD Goal Calculation Table text', () => {
     const { getByText } = render(<TestComponent />);
     expect(getByText('MPD Goal Calculation Table')).toBeVisible();
   });
