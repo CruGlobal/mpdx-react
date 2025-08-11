@@ -331,13 +331,15 @@ class MpdxRestApi extends RESTDataSource {
     completed: boolean | null | undefined,
     multiple: boolean,
   ) {
-    const response = await this.get(
-      `coaching/answer_sets?filter[account_list_id]=${accountListId}&filter[completed]=${
-        completed ?? false
-      }${
-        multiple ? '' : '&filter[limit]=1'
-      }&include=answers,questions&sort=-completed_at`,
-    );
+    const response = await this.get(`coaching/answer_sets`, {
+      params: {
+        'filter[account_list_id]': accountListId,
+        'filter[completed]': (completed ?? false).toString(),
+        'filter[limit]': multiple ? '1' : undefined,
+        include: 'answers,questions',
+        sort: '-completed_at',
+      },
+    });
     return getCoachingAnswerSets(response);
   }
 
