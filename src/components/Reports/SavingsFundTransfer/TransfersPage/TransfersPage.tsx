@@ -22,6 +22,8 @@ import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransferHistoryTable } from '../Table/TransferHistoryTable';
+import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
+import { TransferModalData } from '../TransferModal/TransferModal';
 import { mockData } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents';
 
@@ -45,6 +47,7 @@ interface TransfersPageProps {
 
 export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { t } = useTranslation();
+  const [modalData, setModalData] = useState<TransferModalData | null>(null);
   const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
@@ -146,6 +149,13 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             </PrintOnly>
           </Container>
         </Box>
+        {modalData && (
+          <DynamicTransferModal
+            handleClose={() => setModalData(null)}
+            data={modalData}
+            funds={mockData.funds}
+          />
+        )}
       </Box>
     </>
   );

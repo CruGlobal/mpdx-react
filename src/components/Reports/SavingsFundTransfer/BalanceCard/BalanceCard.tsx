@@ -9,16 +9,19 @@ import {
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { TransferModalData } from '../TransferModal/TransferModal';
 import { Fund, StaffSavingFundEnum } from '../mockData';
 import { ScreenOnly } from '../styledComponents';
 
 export interface BalanceCardProps {
   fund: Fund;
+  handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   isSelected?: boolean;
 }
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   fund,
+  handleOpenTransferModal,
   isSelected = false,
 }) => {
   const { t } = useTranslation();
@@ -42,6 +45,22 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
       ? staffConferenceSavingsColor
       : staffSavingsColor;
+
+  const handleTransferFrom = () => {
+    handleOpenTransferModal({
+      transfer: {
+        transferFrom: fund.accountId,
+      },
+    });
+  };
+
+  const handleTransferTo = () => {
+    handleOpenTransferModal({
+      transfer: {
+        transferTo: fund.accountId,
+      },
+    });
+  };
 
   return (
     <Card
@@ -136,11 +155,11 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           ml: 0,
         }}
       >
-        <Button>
+        <Button onClick={handleTransferFrom}>
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER FROM')}
         </Button>
-        <Button>
+        <Button onClick={handleTransferTo}>
           <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER TO')}
         </Button>
