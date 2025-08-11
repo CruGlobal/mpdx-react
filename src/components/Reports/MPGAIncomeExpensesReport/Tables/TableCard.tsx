@@ -124,9 +124,6 @@ export const TableCard: React.FC<TableCardProps> = ({
       styling={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}
     >
       <Box>
-        {/* <Box mb={2}>
-          <TableCardHead months={months} />
-        </Box> */}
         <StyledGrid
           rows={cardTableRows}
           columns={columns}

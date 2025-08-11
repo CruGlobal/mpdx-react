@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Cell, Legend, Pie, PieChart } from 'recharts';
-import { CardSkeleton } from '../Card/CardSkeleton';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
 interface ExpensesPieChartProps {
   ministryExpenses: number | undefined;
   healthcareExpenses: number | undefined;
   misc: number | undefined;
   other: number | undefined;
+  aspect: number;
+  width: number;
 }
 
 const chartColors = ['#05699B', '#00C0D8', '#F08020', '#FFCF07'];
@@ -17,6 +18,8 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
   healthcareExpenses,
   misc,
   other,
+  aspect,
+  width,
 }) => {
   const { t } = useTranslation();
 
@@ -30,19 +33,18 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
     return null;
   }
 
+  const data = [
+    { name: t('Ministry'), value: ministryExpenses ?? 0 },
+    { name: t('Healthcare'), value: healthcareExpenses ?? 0 },
+    { name: t('Miscellaneous'), value: misc ?? 0 },
+    { name: t('Assessment, Benefits, Salary'), value: other ?? 0 },
+  ];
+
   return (
-    <CardSkeleton
-      title={t('Expenses Categories')}
-      subtitle={t('Last 12 Months')}
-    >
-      <PieChart width={400} height={300}>
+    <ResponsiveContainer width={`${width}%`} aspect={aspect}>
+      <PieChart>
         <Pie
-          data={[
-            { name: t('Ministry'), value: ministryExpenses ?? 0 },
-            { name: t('Healthcare'), value: healthcareExpenses ?? 0 },
-            { name: t('Miscellaneous'), value: misc ?? 0 },
-            { name: t('Assessment, Benefits, Salary'), value: other ?? 0 },
-          ]}
+          data={data}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -64,7 +66,7 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
               </text>
             );
           }}
-          outerRadius={100}
+          outerRadius="85%"
           dataKey="value"
         >
           <Cell key="cell-0" fill={chartColors[0]} />
@@ -90,12 +92,15 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
                   key={`item-${index}`}
                   style={{ display: 'flex', alignItems: 'center' }}
                 >
-                  <div
+                  <span
+                    className="legend-swatch"
                     style={{
                       width: 14,
                       height: 14,
                       backgroundColor: entry.color,
-                      marginRight: 5,
+                      marginRight: 6,
+                      WebkitPrintColorAdjust: 'exact',
+                      printColorAdjust: 'exact',
                     }}
                   />
                   <span style={{ color: '#000000' }}>{entry.value}</span>
@@ -105,6 +110,6 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
           )}
         />
       </PieChart>
-    </CardSkeleton>
+    </ResponsiveContainer>
   );
 };

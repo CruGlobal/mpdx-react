@@ -1,6 +1,13 @@
-import { Box, CircularProgress, TableRow, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
+import theme from 'src/theme';
 
 export const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -16,6 +23,23 @@ export const LoadingBox = styled(Box)(({ theme }) => ({
 export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
+
+export const StyledHeaderBox = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  justifyContent: 'space-between',
+});
+
+export const StyledPrintButton = styled(Button)({
+  border: '1px solid',
+  borderRadius: theme.spacing(1),
+  marginLeft: theme.spacing(2),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+});
 
 export const StyledGrid = styled(DataGrid)(() => ({
   fontSize: '12px',
@@ -42,11 +66,49 @@ export const StyledGrid = styled(DataGrid)(() => ({
 }));
 
 export const StyledRow = styled(TableRow)(() => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: '#E3F2FD',
+  '@media print': {
+    '&:nth-of-type(odd)': {
+      backgroundColor: '#E3F2FD !important',
+      WebkitPrintColorAdjust: 'exact',
+      printColorAdjust: 'exact',
+    },
   },
 }));
 
 export const StyledTypography = styled(Typography)(() => ({
   fontSize: '12px',
+  '@media print': {
+    fontSize: '8px',
+  },
+}));
+
+export const PrintOnly = styled(Box)(() => ({
+  visibility: 'hidden',
+  pointerEvents: 'none',
+  height: 0,
+  overflow: 'hidden',
+  margin: 0,
+  padding: 0,
+  width: '100%',
+
+  '@media print': {
+    visibility: 'visible',
+    pointerEvents: 'auto',
+    height: 'auto',
+    overflow: 'visible',
+    display: 'block',
+  },
+}));
+
+export const SimplePrintOnly = styled(Box)(() => ({
+  display: 'none',
+  '@media print': {
+    display: 'block',
+  },
+}));
+
+export const ScreenOnly = styled(Box)(() => ({
+  '@media print': {
+    display: 'none',
+  },
 }));

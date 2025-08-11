@@ -1,13 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Bar, BarChart, Cell, Legend, Tooltip, XAxis, YAxis } from 'recharts';
-import { CardSkeleton } from '../Card/CardSkeleton';
+import { Box, GlobalStyles } from '@mui/material';
+import {
+  Bar,
+  BarChart,
+  Cell,
+  LabelList,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { DataFields } from '../mockData';
 
 interface MonthlySummaryChartProps {
   incomeData: DataFields[];
   expenseData: DataFields[];
   months: string[];
+  aspect: number;
+  width: number;
 }
 
 const chartColors = ['#88E4B6', '#EA657F'];
@@ -16,9 +27,9 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   incomeData,
   expenseData,
   months,
+  aspect,
+  width,
 }) => {
-  const { t } = useTranslation();
-
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -70,80 +81,108 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   }
 
   return (
-    <CardSkeleton title={t('Monthly Summary')} subtitle={t('Last 12 Months')}>
-      <BarChart
-        width={1100}
-        height={500}
-        data={monthlyTotals}
-        margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
-      >
-        <XAxis dataKey="name" tickFormatter={(value) => value.split(' ')[0]} />
-        <YAxis
-          tickFormatter={(value) =>
-            value.toLocaleString('en-US', {
-              style: 'currency',
-              currency: 'USD',
-              minimumFractionDigits: 0,
-            })
-          }
-        />
-        <Tooltip
-          formatter={(value: number | string): [string, string] => [
-            `${Number(value).toLocaleString('en-US', {
-              minimumFractionDigits: 0,
-              style: 'currency',
-              currency: 'USD',
-            })}`,
-            'Total',
-          ]}
-          labelFormatter={(label: string) => `Month: ${label}`}
-        />
-        <Bar dataKey="net">
-          {monthlyTotals.map((entry, index) => (
-            <Cell
-              key={`cell-${index}`}
-              fill={entry.net >= 0 ? chartColors[0] : chartColors[1]}
+    <>
+      <GlobalStyles
+        styles={{
+          '.labels-print-only .recharts-label-list': { display: 'none' },
+          '@media print': {
+            '.labels-print-only .recharts-label-list': { display: 'block' },
+          },
+        }}
+      />
+      <Box className="labels-print-only">
+        <ResponsiveContainer width={`${width}%`} aspect={aspect}>
+          <BarChart
+            data={monthlyTotals}
+            margin={{ top: 15, right: 30, left: 20, bottom: 5 }}
+          >
+            <XAxis
+              dataKey="name"
+              tickFormatter={(value) => value.split(' ')[0]}
             />
-          ))}
-        </Bar>
-        <Legend
-          verticalAlign="top"
-          align="center"
-          wrapperStyle={{ marginBottom: 5 }}
-          content={({ payload }) => (
-            <ul
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                listStyle: 'none',
-                gap: '1rem',
-                padding: 0,
-              }}
-            >
-              {payload?.map((entry, index) => (
-                <li
-                  key={`item-${index}`}
-                  style={{ display: 'flex', alignItems: 'center' }}
-                >
-                  <div
-                    style={{
-                      width: 14,
-                      height: 14,
-                      backgroundColor: entry.color,
-                      marginRight: 5,
-                    }}
-                  />
-                  <span style={{ color: '#000000' }}>{entry.value}</span>
-                </li>
+            <YAxis
+              tickFormatter={(value) =>
+                value.toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                  minimumFractionDigits: 0,
+                })
+              }
+            />
+            <Tooltip
+              formatter={(value: number | string): [string, string] => [
+                `${Number(value).toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  style: 'currency',
+                  currency: 'USD',
+                })}`,
+                'Total',
+              ]}
+              labelFormatter={(label: string) => `Month: ${label}`}
+            />
+            <Bar dataKey="net">
+              {monthlyTotals.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.net >= 0 ? chartColors[0] : chartColors[1]}
+                />
               ))}
-            </ul>
-          )}
-          payload={[
-            { value: 'Income', type: 'square', color: chartColors[0] },
-            { value: 'Expenses', type: 'square', color: chartColors[1] },
-          ]}
-        />
-      </BarChart>
-    </CardSkeleton>
+              <LabelList
+                dataKey="net"
+                position="top"
+                style={{ fill: '#000000' }}
+                formatter={(value) =>
+                  value.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                  })
+                }
+              />
+            </Bar>
+            <Legend
+              verticalAlign="top"
+              align="center"
+              wrapperStyle={{ marginBottom: 5 }}
+              content={({ payload }) => (
+                <ul
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    listStyle: 'none',
+                    gap: '1rem',
+                    padding: 0,
+                  }}
+                >
+                  {payload?.map((entry, index) => (
+                    <li
+                      key={`item-${index}`}
+                      style={{ display: 'flex', alignItems: 'center' }}
+                    >
+                      <span
+                        className="legend-swatch"
+                        style={{
+                          width: 14,
+                          height: 14,
+                          backgroundColor: entry.color,
+                          marginRight: 5,
+                          WebkitPrintColorAdjust: 'exact',
+                          printColorAdjust: 'exact',
+                        }}
+                      />
+                      <span style={{ color: '#000000' }}>{entry.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              payload={[
+                { value: 'Income', type: 'square', color: chartColors[0] },
+                { value: 'Expenses', type: 'square', color: chartColors[1] },
+              ]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+    </>
   );
 };
