@@ -115,6 +115,7 @@ export const GoalCalculator: React.FC = () => {
         {steps.map((step) => (
           <IconButton
             key={step.id}
+            data-testid={`step-icon-${step.id}`}
             sx={(theme) => ({
               color:
                 selectedStepId === step.id
@@ -127,6 +128,7 @@ export const GoalCalculator: React.FC = () => {
           </IconButton>
         ))}
         <IconButton
+          data-testid="back-button"
           component={NextLink}
           href={`/accountLists/${accountListId}/reports/goalCalculator`}
           sx={(theme) => ({
