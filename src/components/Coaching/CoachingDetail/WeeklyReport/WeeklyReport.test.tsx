@@ -72,7 +72,7 @@ describe('WeeklyReport', () => {
       const completed = getByTestId('CompletedText');
 
       expect(next).toBeDisabled();
-      await waitFor(() => expect(previous).not.toBeDisabled());
+      expect(previous).not.toBeDisabled();
       expect(completed).toHaveTextContent('Nov 1');
 
       userEvent.click(previous);

@@ -328,14 +328,12 @@ class MpdxRestApi extends RESTDataSource {
 
   async getCoachingAnswerSets(
     accountListId: string,
-    organizationId: string | null | undefined,
     completed: boolean | null | undefined,
     multiple: boolean,
   ) {
     const response = await this.get(`coaching/answer_sets`, {
       params: {
         'filter[account_list_id]': accountListId,
-        'filter[organization_id]': organizationId ?? undefined,
         'filter[completed]': (completed ?? false).toString(),
         'filter[limit]': multiple ? '1' : undefined,
         include: 'answers,questions',
@@ -352,7 +350,6 @@ class MpdxRestApi extends RESTDataSource {
     // Try to find the first incomplete answer set
     const [answerSet] = await this.getCoachingAnswerSets(
       accountListId,
-      organizationId,
       false,
       false,
     );

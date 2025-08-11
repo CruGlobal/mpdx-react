@@ -1,9 +1,5 @@
-query WeeklyReports($accountListId: ID!, $organizationId: ID) {
-  coachingAnswerSets(
-    accountListId: $accountListId
-    organizationId: $organizationId
-    completed: true
-  ) {
+query WeeklyReports($accountListId: ID!) {
+  coachingAnswerSets(accountListId: $accountListId, completed: true) {
     id
     answers {
       id
@@ -15,12 +11,5 @@ query WeeklyReports($accountListId: ID!, $organizationId: ID) {
       }
     }
     completedAt
-  }
-}
-
-query AccountListOrganization($accountListId: ID!) {
-  accountList(id: $accountListId) {
-    id
-    salaryOrganizationId
   }
 }
