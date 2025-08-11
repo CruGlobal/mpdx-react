@@ -28,20 +28,13 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
-import cruLogo from 'src/images/cru/Cru_Brandmark_Trademark[RGB]_Cru_Brandmark_Black-Color_[RGB].svg';
+import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGetAccountListQuery } from './GetAccountList.generated';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
 
 const ChartContainer = styled(Box)({
-  height: 500,
-  display: 'flex',
-  justifyContent: 'center',
-  [theme.breakpoints.down('lg')]: {
-    width: '100%',
-  },
-
   '@media print': {
     width: '100% !important',
     height: '350px !important',
@@ -117,9 +110,8 @@ export const PresentingYourGoal: React.FC = () => {
   /*
    * We don't want to display ministry location and Cru image if
    * the user is not part of Cru.
-   * There are multiple Campus Crusade for Christ ministries
-   * so I am querying and handling logic by name, though it may
-   * be better to use the organization IDs somehow.
+   * organizationType allows us to determine if a user's organization
+   * is a Cru ministry.
    */
   const { data: userData } = useGetUserQuery();
   const accountListId = useAccountListId();
@@ -127,12 +119,14 @@ export const PresentingYourGoal: React.FC = () => {
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
   });
-  const { data: orgTypeData } = useGetOrganizationsQuery();
-  const orgTypeDataFiltered = orgTypeData?.organizations.filter(
+  const { data: organizationTypeData } = useGetOrganizationsQuery();
+  const organizationTypeDataFiltered = organizationTypeData?.organizations.find(
     (org) => org.id === salaryOrganizationId,
   );
-  const orgTypeName = orgTypeDataFiltered?.[0].organizationType;
-  const isOrgTypeCru = orgTypeName === 'Cru';
+  const organizationTypeName = organizationTypeDataFiltered?.organizationType;
+  const isOrganizationTypeCru =
+    organizationTypeName === 'Cru' ||
+    organizationTypeName === 'Cru-International';
   const organizationName =
     salaryOrganization?.userOrganizationAccounts[0].organization.name;
 
@@ -186,12 +180,12 @@ export const PresentingYourGoal: React.FC = () => {
       // change to location user inputs in Information section of calculator
       { label: t('Ministry Location'), value: t('Orlando, FL') },
     ];
-    if (!isOrgTypeCru) {
+    if (!isOrganizationTypeCru) {
       return personalRows.filter((row) => row.label !== t('Ministry Location'));
     }
 
     return personalRows;
-  }, [userData?.user, t, organizationName, isOrgTypeCru]);
+  }, [userData?.user, t, organizationName, isOrganizationTypeCru]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
@@ -263,32 +257,34 @@ export const PresentingYourGoal: React.FC = () => {
             sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
           />
 
-          <Table size="small">
-            <TableBody>
-              {personalInfoRows.map((item, index) => (
-                <TableRow key={item.label}>
-                  <StyledTableCell>
-                    <Typography variant="body1" fontWeight="bold">
-                      {item.label}
-                    </Typography>
-                  </StyledTableCell>
-                  <StyledTableCell data-testid="value-typography">
-                    {item.value}
-                  </StyledTableCell>
-                  {index === 0 && isOrgTypeCru && (
-                    <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
-                      <img
-                        data-testid="cru-logo"
-                        src={cruLogo}
-                        alt={t('Campus Crusade for Christ, Inc. logo')}
-                        style={{ width: 150, height: 'auto' }}
-                      />
+          <Box sx={{ width: '100%', overflowX: 'auto' }}>
+            <Table size="small">
+              <TableBody>
+                {personalInfoRows.map((item, index) => (
+                  <TableRow key={item.label}>
+                    <StyledTableCell>
+                      <Typography variant="body1" fontWeight="bold">
+                        {item.label}
+                      </Typography>
                     </StyledTableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    <StyledTableCell data-testid="value-typography">
+                      {item.value}
+                    </StyledTableCell>
+                    {index === 0 && isOrganizationTypeCru && (
+                      <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
+                        <img
+                          data-testid="cru-logo"
+                          src={cruLogo}
+                          alt={t('Campus Crusade for Christ, Inc. logo')}
+                          style={{ width: 150, height: 'auto' }}
+                        />
+                      </StyledTableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
         </Paper>
 
         <Paper
@@ -301,47 +297,48 @@ export const PresentingYourGoal: React.FC = () => {
           <Divider
             sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
           />
-
-          <Table size="small">
-            <TableBody>
-              {rows.map((item, index, array) => (
-                <TableRow
-                  key={item.title}
-                  sx={{
-                    '& td': {
-                      borderBottom:
-                        index < array.length - 1 ? '1px solid' : 'none',
-                      borderBottomColor: 'divider',
-                    },
-                  }}
-                >
-                  <TableCell>
-                    <Typography variant="body1" fontWeight="bold">
-                      {t(item.title)}
-                    </Typography>
-                    {item.description && (
-                      <Typography
-                        variant="body2"
-                        color={theme.palette.text.secondary}
-                        sx={{ mt: 1 }}
-                      >
-                        {t(item.description)}
+          <Box sx={{ width: '100%', overflowX: 'auto' }}>
+            <Table size="small">
+              <TableBody>
+                {rows.map((item, index, array) => (
+                  <TableRow
+                    key={item.title}
+                    sx={{
+                      td: {
+                        borderBottom:
+                          index < array.length - 1 ? '1px solid' : 'none',
+                        borderBottomColor: 'divider',
+                      },
+                    }}
+                  >
+                    <TableCell>
+                      <Typography variant="body1" fontWeight="bold">
+                        {t(item.title)}
                       </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell sx={{ verticalAlign: 'top' }}>
-                    <Typography
-                      data-testid="amount-typography"
-                      variant="body1"
-                      fontWeight={item.bold ? 'bold' : 'normal'}
-                    >
-                      {currencyFormat(item.amount, 'USD', locale)}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                      {item.description && (
+                        <Typography
+                          variant="body2"
+                          color={theme.palette.text.secondary}
+                          sx={{ mt: 1 }}
+                        >
+                          {t(item.description)}
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ verticalAlign: 'top' }}>
+                      <Typography
+                        data-testid="amount-typography"
+                        variant="body1"
+                        fontWeight={item.bold ? 'bold' : 'normal'}
+                      >
+                        {currencyFormat(item.amount, 'USD', locale)}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
         </Paper>
 
         <Paper
@@ -361,8 +358,8 @@ export const PresentingYourGoal: React.FC = () => {
             sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
           />
 
-          <ChartContainer>
-            <ResponsiveContainer width={isMobile ? 700 : 800} height="100%">
+          <ChartContainer height={500}>
+            <ResponsiveContainer width="100%">
               <PieChart>
                 <Pie
                   data={mockData}
@@ -370,7 +367,7 @@ export const PresentingYourGoal: React.FC = () => {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  outerRadius={isMobile ? 100 : 180}
+                  outerRadius={isMobile ? 130 : 180}
                   cornerRadius={theme.shape.borderRadius}
                 >
                   {mockData.map((entry, index) => (
@@ -382,24 +379,23 @@ export const PresentingYourGoal: React.FC = () => {
                 </Pie>
                 <Tooltip
                   formatter={(value) => {
-                    const percent = total > 0 ? Number(value) / total : 0;
                     return `${currencyFormat(
                       Number(value),
                       'USD',
                       locale,
-                    )} (${percentageFormat(percent, locale)})`;
+                    )} (${percentageFormat(Number(value) / total, locale)})`;
                   }}
                 />
                 <Legend
-                  layout={isMobile ? 'horizontal' : 'vertical'}
-                  align="right"
+                  layout="vertical"
+                  align={isMobile ? 'center' : 'right'}
                   verticalAlign={isMobile ? 'bottom' : 'middle'}
                   wrapperStyle={{
                     fontSize: isMobile
                       ? theme.typography.subtitle1.fontSize
                       : theme.typography.h5.fontSize,
+                    maxWidth: isMobile ? 600 : 300,
                   }}
-                  iconSize={16}
                 />
               </PieChart>
             </ResponsiveContainer>
