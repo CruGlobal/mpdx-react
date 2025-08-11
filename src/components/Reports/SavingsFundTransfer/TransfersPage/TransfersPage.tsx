@@ -9,6 +9,7 @@ import {
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
+import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { mockData } from '../mockData';
 import { ScreenOnly } from '../styledComponents';
 
@@ -21,42 +22,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     StaffSavingFundContext,
   ) as StaffSavingFundType;
   return (
-    <Box>
-      <ScreenOnly>
-        <MultiPageHeader
-          isNavListOpen={isNavListOpen}
-          onNavListToggle={onNavListToggle}
-          headerType={HeaderTypeEnum.Report}
-          title={title}
-        />
-      </ScreenOnly>
-      <Box sx={{ mt: 2 }}>
-        <Container>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 3,
-              mb: 2,
-            }}
-          >
-            <Typography>{mockData.accountName}</Typography>
-            <Typography>{mockData.accountListId}</Typography>
-          </Box>
-          <Box
-            display="flex"
-            flexWrap="wrap"
-            gap={2}
-            sx={{
-              flexDirection: { xs: 'column', sm: 'row' },
-            }}
-          >
-            {mockData.funds.map((fund) => (
-              <BalanceCard fund={fund} key={fund.accountId} />
-            ))}
-          </Box>
-        </Container>
+              <TransferHistoryTable
+                history={mockData.history}
+                emptyPlaceholder={
+                  <EmptyTable
+                    title={t('Transfer History not available')}
+                    subtitle={t('No data found across any accounts.')}
+                  />
+                }
+              />
       </Box>
     </Box>
   );
