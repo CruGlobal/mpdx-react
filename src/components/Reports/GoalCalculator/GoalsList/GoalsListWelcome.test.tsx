@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import theme from 'src/theme';
 import { GoalCalculatorProvider } from '../Shared/GoalCalculatorContext';
@@ -17,6 +18,10 @@ const TestComponent: React.FC<{ firstName?: string }> = ({ firstName }) => (
 );
 
 describe('GoalsListWelcome', () => {
+  beforeEach(() => {
+    Settings.now = () => new Date().setHours(11, 34, 0, 0);
+  });
+
   it('should render welcome message', () => {
     const { getByText } = render(<TestComponent />);
 
@@ -26,26 +31,16 @@ describe('GoalsListWelcome', () => {
   });
 
   it('should render greeting without name', () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
 
-    const greeting = getByTestId('greeting-typography');
-    expect(greeting).toBeInTheDocument();
-    expect(
-      ['Good Morning,', 'Good Afternoon,', 'Good Evening,'].some(
-        (text) => greeting.textContent === text,
-      ),
-    ).toBe(true);
+    expect(getByRole('heading', { name: 'Good Morning,' })).toBeInTheDocument();
   });
 
   it('should render greeting with name when provided', () => {
-    const { getByTestId } = render(<TestComponent firstName="John" />);
-    const greeting = getByTestId('greeting-typography');
+    const { getByRole } = render(<TestComponent firstName="John" />);
+
     expect(
-      [
-        'Good Morning, John.',
-        'Good Afternoon, John.',
-        'Good Evening, John.',
-      ].some((text) => greeting.textContent === text),
-    ).toBe(true);
+      getByRole('heading', { name: 'Good Morning, John.' }),
+    ).toBeInTheDocument();
   });
 });
