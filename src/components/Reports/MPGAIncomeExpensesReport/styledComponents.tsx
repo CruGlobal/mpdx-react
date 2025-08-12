@@ -6,8 +6,9 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, type DataGridProps } from '@mui/x-data-grid';
 import theme from 'src/theme';
+import { DataFields } from './mockData';
 
 export const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -41,7 +42,9 @@ export const StyledPrintButton = styled(Button)({
   paddingBottom: theme.spacing(1),
 });
 
-export const StyledGrid = styled(DataGrid)(() => ({
+export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
+  <DataGrid<DataFields> {...props} />
+))(() => ({
   fontSize: '12px',
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
     backgroundColor: '#E3F2FD',

@@ -65,22 +65,34 @@ export const TableCard: React.FC<TableCardProps> = ({
 
   const { description, average, total } = populateCardTableRows();
 
-  const columns = useMemo<GridColDef[]>(() => {
-    const monthColumns: GridColDef[] = months.map((month, index) => ({
-      field: `month${index}`,
-      headerName: month.split(' ')[0],
-      width: 65,
-      renderCell: (params) => {
-        const value = params.row.monthly?.[index] ?? null;
-        return (
-          <Tooltip title={String(value)}>
-            <Typography variant="body2" noWrap>
-              {value === 0 ? '-' : value}
-            </Typography>
-          </Tooltip>
-        );
-      },
-    }));
+  const columns = useMemo<GridColDef<DataFields>[]>(() => {
+    const monthColumns: GridColDef<DataFields>[] = months.map(
+      (month, index) => ({
+        field: `month${index}`,
+        headerName: month.split(' ')[0],
+        width: monthWidth,
+        type: 'number',
+        valueGetter: (_value, row) => {
+          const v = row.monthly?.[index];
+          return typeof v === 'number' ? v : null;
+        },
+        valueFormatter: (value) => {
+          if (value === null) {
+            return '';
+          }
+          return value === 0 ? '-' : (value as number);
+        },
+        renderCell: (params) => {
+          return (
+            <Tooltip title={params.value === null ? '' : String(params.value)}>
+              <Typography variant="body2" noWrap>
+                {params.formattedValue as string}
+              </Typography>
+            </Tooltip>
+          );
+        },
+      }),
+    );
 
     return [
       {
@@ -130,7 +142,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           getRowId={(row) => row.id}
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
-          onSortModelChange={(size) => setSortModel(size)}
+          onSortModelChange={(model) => setSortModel(model)}
           pageSizeOptions={[5, 10, 25, { label: 'All', value: tableLength }]}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => setPaginationModel(model)}
