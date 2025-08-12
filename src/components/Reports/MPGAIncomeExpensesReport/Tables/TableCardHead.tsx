@@ -20,10 +20,8 @@ export const TableCardHead: React.FC<TableCardHeadProps> = ({ months }) => {
   const getBorderColor = (index: number): string => {
     if (index === 0) {
       return '#05699B';
-    } else if (index === 1) {
-      return '#F08020';
     } else {
-      return 'black';
+      return '#F08020';
     }
   };
 

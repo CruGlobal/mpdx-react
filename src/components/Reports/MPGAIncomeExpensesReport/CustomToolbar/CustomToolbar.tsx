@@ -15,15 +15,15 @@ import { TableCardHead } from '../Tables/TableCardHead';
 import { DataFields } from '../mockData';
 
 interface CustomToolbarProps {
-  data?: DataFields[];
-  type?: ReportTypeEnum;
-  months?: string[];
+  data: DataFields[];
+  type: ReportTypeEnum;
+  months: string[];
 }
 
 export const CustomToolbar: React.FC<CustomToolbarProps> = ({
-  data = [],
-  type = ReportTypeEnum.Income,
-  months = [],
+  data,
+  type,
+  months,
 }) => {
   return (
     <Toolbar style={{ display: 'flex', justifyContent: 'left' }}>
