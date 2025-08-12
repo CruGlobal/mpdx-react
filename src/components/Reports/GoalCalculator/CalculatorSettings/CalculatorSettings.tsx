@@ -7,6 +7,7 @@ import {
 } from '../GoalCalculatorHelper';
 import { InformationStep } from './Steps/InformationStep/InformationStep';
 import { OneTimeGoalsStep } from './Steps/OneTimeGoalsStep/OneTimeGoalsStep';
+import { SalaryCalculationRightPanel } from './Steps/SalaryCalculationRightPanel';
 import { SpecialIncomeStep } from './Steps/SpecialIncomeStep/SpecialIncomeStep';
 
 export const useCalculatorSettings = (): GoalCalculatorStep => {
@@ -20,6 +21,7 @@ export const useCalculatorSettings = (): GoalCalculatorStep => {
         id: GoalCalculatorCategoryEnum.Information,
         title: t('Information'),
         component: <InformationStep />,
+        rightPanelComponent: <SalaryCalculationRightPanel />,
       },
       {
         id: GoalCalculatorCategoryEnum.SpecialIncome,
