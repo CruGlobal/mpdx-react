@@ -65,13 +65,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
           {data.map((_, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={
-                index === 0
-                  ? chartColors[0]
-                  : index === 1
-                  ? chartColors[1]
-                  : 'white'
-              }
+              fill={index === 0 ? chartColors[0] : chartColors[1]}
             />
           ))}
           <LabelList

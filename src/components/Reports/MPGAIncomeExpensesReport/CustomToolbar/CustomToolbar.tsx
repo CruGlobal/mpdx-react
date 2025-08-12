@@ -15,15 +15,15 @@ import { TableCardHead } from '../Tables/TableCardHead';
 import { DataFields } from '../mockData';
 
 interface CustomToolbarProps {
-  data?: DataFields[];
-  type?: ReportTypeEnum;
-  months?: string[];
+  data: DataFields[];
+  type: ReportTypeEnum;
+  months: string[];
 }
 
 export const CustomToolbar: React.FC<CustomToolbarProps> = ({
-  data = [],
-  type = ReportTypeEnum.Income,
-  months = [],
+  data,
+  type,
+  months,
 }) => {
   return (
     <Toolbar style={{ display: 'flex', justifyContent: 'left' }}>
@@ -35,8 +35,10 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
 
       <Tooltip title="Filters">
         <FilterPanelTrigger
-          render={(_, state) => (
+          render={(props, state) => (
             <ToolbarButton
+              {...props}
+              ref={props.ref as React.Ref<HTMLButtonElement>}
               color="primary"
               style={{
                 gridArea: '1 / 1',
@@ -57,6 +59,12 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
           )}
         />
       </Tooltip>
+
+      {/* <Tooltip title="Filters">
+        <FilterPanelTrigger render={<ToolbarButton />}>
+          <FilterListIcon fontSize="small" color="primary" />
+        </FilterPanelTrigger>
+      </Tooltip> */}
 
       <Divider
         orientation="vertical"

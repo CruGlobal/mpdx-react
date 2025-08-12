@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { PrintTables } from './PrintTables';
 
 const mutationSpy = jest.fn();
@@ -61,9 +62,9 @@ const TestComponent: React.FC = () => (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
         <PrintTables
+          type={ReportTypeEnum.Income}
           data={mockData.income.data}
           overallTotal={overallTotal}
-          emptyPlaceholder={<span>Empty Table</span>}
           title={title}
           months={months}
         />
@@ -120,9 +121,9 @@ describe('PrintTables', () => {
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
             <PrintTables
+              type={ReportTypeEnum.Income}
               data={mockData.income.data}
               overallTotal={overallTotal}
-              emptyPlaceholder={<span>Empty Table</span>}
               title={title}
               months={months}
               loading={true}
@@ -142,15 +143,15 @@ describe('PrintTables', () => {
     expect(getByRole('columnheader', { name: '2025' })).toBeInTheDocument();
   });
 
-  it('should display empty placeholder when no data is available', () => {
+  it('should display empty message when no data is available', () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
             <PrintTables
+              type={ReportTypeEnum.Income}
               data={[]}
               overallTotal={0}
-              emptyPlaceholder={<span>Empty Table</span>}
               title={title}
               months={months}
             />
@@ -159,7 +160,7 @@ describe('PrintTables', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('Empty Table')).toBeInTheDocument();
+    expect(getByText(/no income data available/i)).toBeInTheDocument();
   });
 
   it('should span the correct number of months per year', () => {

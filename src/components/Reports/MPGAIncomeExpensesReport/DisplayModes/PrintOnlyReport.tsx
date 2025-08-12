@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart';
-import { EmptyTable } from '../Tables/EmptyTable';
+import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { PrintTables } from '../Tables/PrintTables';
 import { DataFields, MockData } from '../mockData';
 
@@ -81,28 +81,18 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
           </Box>
           <Box mt={2}>
             <PrintTables
+              type={ReportTypeEnum.Income}
               data={data.income?.data}
               overallTotal={incomeTotal}
-              emptyPlaceholder={
-                <EmptyTable
-                  title={t('No Income data available')}
-                  subtitle={t('Data not found in the last 12 months')}
-                />
-              }
               title={t('Income')}
               months={last12Months}
             />
           </Box>
           <Box mt={3}>
             <PrintTables
+              type={ReportTypeEnum.Expenses}
               data={expenseData}
               overallTotal={expensesTotal}
-              emptyPlaceholder={
-                <EmptyTable
-                  title={t('No Expenses data available')}
-                  subtitle={t('Data not found in the last 12 months')}
-                />
-              }
               title={t('Expenses')}
               months={last12Months}
             />

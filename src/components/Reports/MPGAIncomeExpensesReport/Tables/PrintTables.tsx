@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { CardSkeleton } from '../Card/CardSkeleton';
+import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { DataFields } from '../mockData';
 import {
   LoadingBox,
@@ -20,9 +20,9 @@ import {
 } from '../styledComponents';
 
 export interface PrintTablesProps {
+  type: ReportTypeEnum;
   data?: DataFields[];
   overallTotal: number | undefined;
-  emptyPlaceholder: React.ReactElement;
   title: string;
   months: string[];
   loading?: boolean;
@@ -34,17 +34,15 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
   overallTotal,
   loading,
   data,
-  emptyPlaceholder,
+  type,
 }) => {
   const { t } = useTranslation();
 
   const getBorderColor = (index: number): string => {
     if (index === 0) {
       return '#05699B';
-    } else if (index === 1) {
-      return '#F08020';
     } else {
-      return 'black';
+      return '#F08020';
     }
   };
 
@@ -85,7 +83,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
         size={50}
       />
     </LoadingBox>
-  ) : data?.length ? (
+  ) : (
     <Box mb={2}>
       <Typography variant="h6">{title}</Typography>
       <TableContainer>
@@ -159,91 +157,95 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {data.map((data) => (
-              <StyledRow key={data.id}>
+          {data?.length ? (
+            <TableBody>
+              {data.map((data) => (
+                <StyledRow key={data.id}>
+                  <TableCell>
+                    <StyledTypography>{data.description}</StyledTypography>
+                  </TableCell>
+                  {data.monthly.map((amount, index) => (
+                    <TableCell key={index}>
+                      <StyledTypography>
+                        {amount.toLocaleString() === '0'
+                          ? '-'
+                          : amount.toLocaleString()}
+                      </StyledTypography>
+                    </TableCell>
+                  ))}
+                  <TableCell align="right">
+                    <StyledTypography>
+                      {data.average.toLocaleString()}
+                    </StyledTypography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <StyledTypography>
+                      {data.total.toLocaleString()}
+                    </StyledTypography>
+                  </TableCell>
+                </StyledRow>
+              ))}
+              <TableRow
+                sx={{
+                  '@media print': {
+                    backgroundColor: '#BBDEFB !important',
+                    WebkitPrintColorAdjust: 'exact',
+                    printColorAdjust: 'exact',
+                  },
+                }}
+              >
                 <TableCell>
-                  <StyledTypography>{data.description}</StyledTypography>
+                  <StyledTypography>
+                    <strong>{t('Overall Total')}</strong>
+                  </StyledTypography>
                 </TableCell>
-                {data.monthly.map((amount, index) => (
+                {data[0].monthly.map((_, index) => (
                   <TableCell key={index}>
                     <StyledTypography>
-                      {amount.toLocaleString() === '0'
-                        ? '-'
-                        : amount.toLocaleString()}
+                      <strong>
+                        {data
+                          .reduce((sum, data) => sum + data.monthly[index], 0)
+                          .toLocaleString() === '0'
+                          ? '-'
+                          : data
+                              .reduce(
+                                (sum, data) => sum + data.monthly[index],
+                                0,
+                              )
+                              .toLocaleString()}
+                      </strong>
                     </StyledTypography>
                   </TableCell>
                 ))}
                 <TableCell align="right">
                   <StyledTypography>
-                    {data.average.toLocaleString()}
+                    <strong>
+                      {data
+                        .reduce((sum, data) => sum + data.average, 0)
+                        .toLocaleString()}
+                    </strong>
                   </StyledTypography>
                 </TableCell>
                 <TableCell align="right">
                   <StyledTypography>
-                    {data.total.toLocaleString()}
+                    <strong>{overallTotal?.toLocaleString()}</strong>
                   </StyledTypography>
                 </TableCell>
-              </StyledRow>
-            ))}
-            <TableRow
-              sx={{
-                '@media print': {
-                  backgroundColor: '#BBDEFB !important',
-                  WebkitPrintColorAdjust: 'exact',
-                  printColorAdjust: 'exact',
-                },
-              }}
-            >
-              <TableCell>
-                <StyledTypography>
-                  <strong>{t('Overall Total')}</strong>
-                </StyledTypography>
-              </TableCell>
-              {data[0].monthly.map((_, index) => (
-                <TableCell key={index}>
-                  <StyledTypography>
-                    <strong>
-                      {data
-                        .reduce((sum, data) => sum + data.monthly[index], 0)
-                        .toLocaleString() === '0'
-                        ? '-'
-                        : data
-                            .reduce((sum, data) => sum + data.monthly[index], 0)
-                            .toLocaleString()}
-                    </strong>
-                  </StyledTypography>
+              </TableRow>
+            </TableBody>
+          ) : (
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={15} align="center">
+                  {t(`No ${type} data available in the last 12 months`, {
+                    type: ReportTypeEnum[type],
+                  })}
                 </TableCell>
-              ))}
-              <TableCell align="right">
-                <StyledTypography>
-                  <strong>
-                    {data
-                      .reduce((sum, data) => sum + data.average, 0)
-                      .toLocaleString()}
-                  </strong>
-                </StyledTypography>
-              </TableCell>
-              <TableCell align="right">
-                <StyledTypography>
-                  <strong>{overallTotal?.toLocaleString()}</strong>
-                </StyledTypography>
-              </TableCell>
-            </TableRow>
-          </TableBody>
+              </TableRow>
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
     </Box>
-  ) : (
-    <CardSkeleton title={title} subtitle={t('Last 12 Months')}>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
-        {emptyPlaceholder}
-      </Box>
-    </CardSkeleton>
   );
 };

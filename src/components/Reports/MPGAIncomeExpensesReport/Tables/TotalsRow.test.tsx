@@ -18,11 +18,10 @@ const mockData = {
         id: crypto.randomUUID(),
         description: 'Contributions',
         monthly: [
-          6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020,
-          19215,
+          6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020, 0,
         ],
-        average: 9013,
-        total: 108156,
+        average: 7412,
+        total: 88938,
       },
       {
         id: crypto.randomUUID(),
@@ -64,6 +63,12 @@ describe('TotalsRow', () => {
   it('should display the correct overall total', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('columnheader', { name: '108,856' })).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: '89,638' })).toBeInTheDocument();
+  });
+
+  it('should display "-" when there is no data', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('columnheader', { name: '-' })).toBeInTheDocument();
   });
 });
