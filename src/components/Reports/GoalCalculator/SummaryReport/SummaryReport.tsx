@@ -7,6 +7,8 @@ import {
 } from '../GoalCalculatorHelper';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
 import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
+import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
+import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanel';
 
 const goal = {
   netMonthlySalary: 8774.25,
@@ -42,6 +44,12 @@ export const useSummaryReport = (): GoalCalculatorStep => {
         title: t('MPD Goal'),
         component: <MpdGoalTable goal={goal} />,
         rightPanelComponent: <MpdGoalStepRightPanel />,
+      },
+      {
+        id: GoalCalculatorCategoryEnum.PresentingYourGoal,
+        title: t('Presenting Your Goal'),
+        component: <PresentingYourGoal />,
+        rightPanelComponent: <PresentingYourGoalStepRightPanel />,
       },
     ],
   };
