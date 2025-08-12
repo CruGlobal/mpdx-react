@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
-import { GridToolbarProps } from '@mui/x-data-grid/internals';
 import { useTranslation } from 'react-i18next';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
@@ -23,17 +22,29 @@ export interface TableCardProps {
   loading?: boolean;
 }
 
-export const CreateCardTableRows = (incomeData: DataFields): DataFields => ({
-  id: incomeData.id,
-  description: incomeData.description,
-  monthly: incomeData.monthly,
-  average: incomeData.average,
-  total: incomeData.total,
+export const CreateCardTableRows = (data: DataFields): DataFields => ({
+  id: data.id,
+  description: data.description,
+  monthly: data.monthly,
+  average: data.average,
+  total: data.total,
 });
 
 export const descriptionWidth = 175;
 export const monthWidth = 65;
 export const summaryWidth = 98.5;
+
+const createToolbar = (
+  data: DataFields[],
+  type: ReportTypeEnum,
+  months: string[],
+) => {
+  const Toolbar = () => (
+    <CustomToolbar data={data} type={type} months={months} />
+  );
+  Toolbar.displayName = 'MPGATableCustomToolbar';
+  return Toolbar;
+};
 
 export const TableCard: React.FC<TableCardProps> = ({
   type,
@@ -151,14 +162,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           pagination
           disableColumnMenu
           slots={{
-            toolbar: CustomToolbar,
-          }}
-          slotProps={{
-            toolbar: {
-              data: data,
-              type: type,
-              months: months,
-            } as unknown as GridToolbarProps,
+            toolbar: createToolbar(data, type, months),
           }}
           showToolbar
         />
