@@ -72,6 +72,10 @@ export const TableCardHead: React.FC<TableCardHeadProps> = ({ months }) => {
                 return (
                   <TableCell
                     key={`${year}-${count}`}
+                    data-year={year}
+                    data-color={borderColor}
+                    data-count={count}
+                    data-width={(monthWidth + 5) * count}
                     sx={{
                       width: (monthWidth + 5) * count,
                       borderBottom: `2px solid ${borderColor}`,

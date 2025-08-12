@@ -60,8 +60,6 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
       count,
     }));
   }, [months]);
-  // eslint-disable-next-line no-console
-  console.log('monthCount: ', monthCount);
 
   const getFirstMonth = useMemo(
     () =>
