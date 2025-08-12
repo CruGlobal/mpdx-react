@@ -5,7 +5,6 @@ import { Box, Divider, Tooltip } from '@mui/material';
 import Badge from '@mui/material/Badge';
 import {
   ColumnsPanelTrigger,
-  ExportCsv,
   FilterPanelTrigger,
   Toolbar,
   ToolbarButton,
@@ -23,8 +22,8 @@ interface CustomToolbarProps {
 
 export const CustomToolbar: React.FC<CustomToolbarProps> = ({
   data = [],
-  type,
-  months,
+  type = ReportTypeEnum.Income,
+  months = [],
 }) => {
   return (
     <Toolbar style={{ display: 'flex', justifyContent: 'left' }}>
@@ -67,12 +66,9 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
       />
 
       <Tooltip title="Download as CSV">
-        <ExportCsv
-          onClick={() => exportToCsv(data, type ?? ReportTypeEnum.Income)}
-          render={<ToolbarButton />}
-        >
+        <ToolbarButton onClick={() => exportToCsv(data, type, months)}>
           <FileDownloadIcon fontSize="small" color="primary" />
-        </ExportCsv>
+        </ToolbarButton>
       </Tooltip>
       <Box mb={2}>
         <TableCardHead months={months!} />{' '}

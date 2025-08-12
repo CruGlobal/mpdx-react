@@ -1,9 +1,8 @@
 import { buildURI } from 'react-csv/lib/core';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { getLast12Months } from '../Helper/getLastTwelveMonths';
 import { DataFields } from '../mockData';
 
-const createTable = (csvHeader: string[], data: DataFields[]) => {
+export const createTable = (csvHeader: string[], data: DataFields[]) => {
   const csvData = data.map((item) => {
     const monthlyData = item.monthly.map((month) =>
       month === 0 ? '-' : month,
@@ -14,24 +13,28 @@ const createTable = (csvHeader: string[], data: DataFields[]) => {
   return [csvHeader, ...csvData];
 };
 
-export const exportToCsv = (data: DataFields[], reportType: ReportTypeEnum) => {
+export const exportToCsv = (
+  data: DataFields[],
+  reportType: ReportTypeEnum,
+  months: string[],
+) => {
   const title =
     reportType === ReportTypeEnum.Income
       ? 'MPGA Income Monthly Report'
       : 'MPGA Expenses Monthly Report';
-  const last12Months = getLast12Months().map((month) => month.split(' ')[0]);
+  const last12Months = months.map((month) => month.split(' ')[0]);
 
-  const monthlyTotals = data.reduce((totals, item) => {
+  const monthlyTotals = data.reduce<number[]>((totals, item) => {
     item.monthly.forEach((value, index) => {
       totals[index] = (totals[index] || 0) + value;
     });
     return totals;
-  }, [] as number[]);
+  }, []);
 
   const overallAverage = data.reduce((sum, item) => sum + item.average, 0);
   const overallTotal = data.reduce((sum, item) => sum + item.total, 0);
 
-  const dataWithTotal = [
+  const dataWithTotal: DataFields[] = [
     ...data,
     {
       id: crypto.randomUUID(),
@@ -53,4 +56,6 @@ export const exportToCsv = (data: DataFields[], reportType: ReportTypeEnum) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
+  return csvBlob;
 };

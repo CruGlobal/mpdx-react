@@ -22,12 +22,12 @@ export interface TableCardProps {
   loading?: boolean;
 }
 
-export const CreateCardTableRows = (incomeData: DataFields): DataFields => ({
-  id: incomeData.id,
-  description: incomeData.description,
-  monthly: incomeData.monthly,
-  average: incomeData.average,
-  total: incomeData.total,
+export const CreateCardTableRows = (data: DataFields): DataFields => ({
+  id: data.id,
+  description: data.description,
+  monthly: data.monthly,
+  average: data.average,
+  total: data.total,
 });
 
 export const descriptionWidth = 175;
@@ -36,8 +36,8 @@ export const summaryWidth = 98.5;
 
 const createToolbar = (
   data: DataFields[],
-  type?: ReportTypeEnum,
-  months?: string[],
+  type: ReportTypeEnum,
+  months: string[],
 ) => {
   const Toolbar = () => (
     <CustomToolbar data={data} type={type} months={months} />
