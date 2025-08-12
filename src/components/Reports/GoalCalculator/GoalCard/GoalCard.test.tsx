@@ -30,9 +30,9 @@ describe('GoalCard', () => {
   });
 
   it('renders Delete and View buttons', () => {
-    const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('delete-button')).toBeInTheDocument();
-    expect(getByTestId('view-button')).toBeInTheDocument();
+    const { getByRole } = render(<TestComponent />);
+    expect(getByRole('button', { name: 'Delete' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'View' })).toBeInTheDocument();
   });
 
   it('calls onStarToggle when star button is clicked', async () => {

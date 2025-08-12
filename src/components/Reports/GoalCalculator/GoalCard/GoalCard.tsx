@@ -163,12 +163,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             {t('Delete')}
           </Typography>
         </Button>
-        <Button
-          data-testid="view-button"
-          onClick={handleView}
-          variant="contained"
-          color="primary"
-        >
+        <Button onClick={handleView} variant="contained" color="primary">
           <Typography
             variant="body2"
             fontWeight="bold"
