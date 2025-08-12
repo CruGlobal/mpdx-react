@@ -155,7 +155,6 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       <StyledActionBox>
         <Button onClick={handleDelete}>
           <Typography
-            data-testid="delete-button"
             variant="body2"
             fontWeight="bold"
             color={theme.palette.error.main}

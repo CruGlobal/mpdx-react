@@ -14,10 +14,11 @@ const TestComponent = () => (
 
 describe('GoalsList', () => {
   it('renders the header and buttons', async () => {
-    const { getByTestId, getByRole } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
 
-    expect(getByTestId('welcome-typography')).toBeInTheDocument();
-    expect(getByTestId('greeting-typography')).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'Good Morning, User.' }),
+    ).toBeInTheDocument();
     expect(
       getByRole('button', { name: 'Create a New Goal' }),
     ).toBeInTheDocument();
