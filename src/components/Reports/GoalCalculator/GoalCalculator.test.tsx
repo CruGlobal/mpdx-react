@@ -21,15 +21,13 @@ const TestComponent: React.FC = () => (
 
 describe('GoalCalculator', () => {
   it('should render step icons, continue, and back button', () => {
-    const { getByTestId, getByRole } = render(<TestComponent />);
+    const { getByRole, getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('step-icon-calculator-settings')).toBeInTheDocument();
     expect(getByTestId('step-icon-ministry-expenses')).toBeInTheDocument();
     expect(getByTestId('step-icon-household-expenses')).toBeInTheDocument();
     expect(getByTestId('step-icon-summary-report')).toBeInTheDocument();
-    expect(getByTestId('back-button')).toBeInTheDocument();
-
-    const continueButton = getByRole('button', { name: 'Continue' });
-    expect(continueButton).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Go back' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Continue' })).toBeInTheDocument();
   });
 });

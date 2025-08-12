@@ -128,7 +128,6 @@ export const GoalCalculator: React.FC = () => {
           </IconButton>
         ))}
         <IconButton
-          data-testid="back-button"
           component={NextLink}
           href={`/accountLists/${accountListId}/reports/goalCalculator`}
           sx={(theme) => ({
