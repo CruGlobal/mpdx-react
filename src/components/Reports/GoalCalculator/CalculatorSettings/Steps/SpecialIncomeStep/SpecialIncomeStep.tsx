@@ -66,7 +66,9 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   return (
     <>
       <StyledTypography>
-        {t('Do you have any additional sources of income?')}
+        {t(
+          'Do you have any additional sources of income? If you have income from outside sources (other than Cru) that you use as part of your budget, please include it below. Please enter the NET amounts used in your monthly budget.',
+        )}
       </StyledTypography>
 
       <Formik
