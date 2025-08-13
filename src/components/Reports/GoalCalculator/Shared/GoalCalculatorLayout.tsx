@@ -1,5 +1,6 @@
 import React from 'react';
 import { Divider, IconButton, Stack, Typography, styled } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
@@ -21,7 +22,7 @@ const StepTitle = styled(Typography)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
 }));
 
-const StyledDrawer = styled('div', {
+const StyledDrawer = styled('nav', {
   shouldForwardProp: (prop) => prop !== 'open',
 })<{ open: boolean }>(({ theme, open }) => ({
   width: open ? 240 : 0,
@@ -55,6 +56,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   sectionListPanel,
   mainContent,
 }) => {
+  const { t } = useTranslation();
   const iconPanelWidth = theme.spacing(5);
   const {
     steps,
@@ -81,6 +83,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
         {steps.map((step) => (
           <IconButton
             key={step.id}
+            aria-label={step.title}
             sx={(theme) => ({
               color:
                 selectedStepId === step.id
@@ -94,7 +97,11 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
         ))}
       </Stack>
       <Divider orientation="vertical" flexItem />
-      <StyledDrawer open={isDrawerOpen}>
+      <StyledDrawer
+        open={isDrawerOpen}
+        aria-label={t('{{step}} Sections', { step: currentStep.title })}
+        aria-expanded={isDrawerOpen}
+      >
         <StepTitle variant="h6">{currentStep.title}</StepTitle>
         {sectionListPanel}
       </StyledDrawer>
