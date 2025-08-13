@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface GoalCalculatorCategory {
   id: GoalCalculatorCategoryEnum;
   title: string;
@@ -9,7 +11,8 @@ export interface GoalCalculatorStep {
   id: GoalCalculatorStepEnum;
   title: string;
   instructions?: JSX.Element;
-  categories: GoalCalculatorCategory[];
+  PageComponent?: React.FC;
+  categories?: GoalCalculatorCategory[];
   icon: JSX.Element;
 }
 
