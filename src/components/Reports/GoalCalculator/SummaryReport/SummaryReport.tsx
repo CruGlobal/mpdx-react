@@ -39,6 +39,7 @@ export const SummaryReport: React.FC = () => {
       <GoalCalculatorSection
         title={t('MPD Goal')}
         rightPanelContent={<MpdGoalStepRightPanel />}
+        printable
       >
         <MpdGoalTable goal={goal} />
       </GoalCalculatorSection>
@@ -48,6 +49,7 @@ export const SummaryReport: React.FC = () => {
       <GoalCalculatorSection
         title={t('Presenting Your Goal')}
         rightPanelContent={<PresentingYourGoalStepRightPanel />}
+        printable
       >
         <PresentingYourGoal />
       </GoalCalculatorSection>
