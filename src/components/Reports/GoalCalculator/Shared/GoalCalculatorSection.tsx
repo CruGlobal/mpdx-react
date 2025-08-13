@@ -16,7 +16,7 @@ const SectionContainer = styled('div')(({ theme }) => ({
   paddingInline: theme.spacing(4),
 }));
 
-interface GoalCalculatorSectionProps {
+export interface GoalCalculatorSectionProps {
   title: string;
   subtitle?: string;
   rightPanelContent?: JSX.Element;
