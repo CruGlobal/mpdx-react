@@ -9,7 +9,7 @@ import {
   TextField,
   styled,
 } from '@mui/material';
-import { Field, FormikProps } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import { CurrencyAdornment } from '../../../../Shared/Adornments';
@@ -44,16 +44,11 @@ interface SpecialIncomeFormValues {
   }>;
 }
 
-interface SpecialIncomeStepFormProps {
-  formikProps: FormikProps<SpecialIncomeFormValues>;
-}
-
-export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
-  formikProps,
-}) => {
+export const SpecialIncomeStepForm: React.FC = () => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();
-  const { values, errors, touched, setFieldValue } = formikProps;
+  const { values, errors, touched, setFieldValue } =
+    useFormikContext<SpecialIncomeFormValues>();
 
   const addIncomeField = () => {
     const newIncome = { label: '', amount: 0 };

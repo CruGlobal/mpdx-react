@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Form, Formik, FormikProps } from 'formik';
+import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
@@ -61,11 +61,9 @@ export const OneTimeGoalsStep: React.FC<OneTimeGoalsStepProps> = () => {
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {(formikProps: FormikProps<OneTimeGoalsFormValues>) => (
-          <Form>
-            <OneTimeGoalsStepForm formikProps={formikProps} />
-          </Form>
-        )}
+        <Form>
+          <OneTimeGoalsStepForm />
+        </Form>
       </Formik>
     </>
   );
