@@ -50,7 +50,7 @@ const StyledButton = styled(Button)(() => ({
   color: theme.palette.text.secondary,
   padding: '11px 8px 11px 40px',
   justifyContent: 'flex-start',
-  textTransform: 'none' as any,
+  textTransform: 'none',
   letterSpacing: 0,
   width: '100%',
 })) as typeof Button;
