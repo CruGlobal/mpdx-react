@@ -14,7 +14,7 @@ interface SpecialIncomeStepProps {}
 
 interface SpecialIncomeFormValues {
   // Special income fields
-  incidentIncome: number;
+  incidentalIncome: number;
   propertyIncome: number;
   spouseIncome: number;
   additionalIncomes: Array<{
@@ -27,14 +27,14 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
   const initialValues: SpecialIncomeFormValues = {
-    incidentIncome: 0,
+    incidentalIncome: 0,
     propertyIncome: 0,
     spouseIncome: 0,
     additionalIncomes: [],
   };
 
   const validationSchema = yup.object({
-    incidentIncome: yup
+    incidentalIncome: yup
       .number()
       .min(0, t('Incident income must be positive'))
       .required(t('Incident income is required')),
@@ -75,9 +75,9 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
         onSubmit={handleSubmit}
         enableReinitialize
       >
-          <Form>
+        <Form>
           <SpecialIncomeStepForm />
-          </Form>
+        </Form>
       </Formik>
     </>
   );
