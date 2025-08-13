@@ -20,6 +20,8 @@ import {
   currencyFormat,
   numberFormat,
   percentageFormat,
+  percentageFormatFloor,
+  roundPledgedBelow,
 } from '../../../lib/intlFormat';
 import AnimatedBox from '../../AnimatedBox';
 import AnimatedCard from '../../AnimatedCard';
@@ -71,6 +73,8 @@ const MonthlyGoal = ({
   const pledgedPercentage = pledged / goal;
   const belowGoal = goal - pledged;
   const belowGoalPercentage = belowGoal / goal;
+
+  const { pledgedPct, belowPct } = roundPledgedBelow(pledged, goal);
 
   return (
     <>
@@ -147,7 +151,7 @@ const MonthlyGoal = ({
                 ) : isNaN(receivedPercentage) ? (
                   '-'
                 ) : (
-                  percentageFormat(receivedPercentage, locale)
+                  percentageFormatFloor(receivedPercentage, locale)
                 )}
               </Typography>
               <Typography
@@ -177,7 +181,7 @@ const MonthlyGoal = ({
                 ) : isNaN(pledgedPercentage) ? (
                   '-'
                 ) : (
-                  percentageFormat(pledgedPercentage, locale)
+                  percentageFormat(pledgedPct, locale)
                 )}
               </Typography>
               <Typography
@@ -201,7 +205,7 @@ const MonthlyGoal = ({
                     variant="h5"
                     data-testid="MonthlyGoalTypographyBelowGoalPercentage"
                   >
-                    {percentageFormat(belowGoalPercentage, locale)}
+                    {percentageFormat(belowPct, locale)}
                   </Typography>
                   <Typography
                     component="small"
@@ -224,7 +228,7 @@ const MonthlyGoal = ({
                     ) : isNaN(belowGoalPercentage) ? (
                       '-'
                     ) : (
-                      percentageFormat(-belowGoalPercentage, locale)
+                      percentageFormat(-belowPct, locale)
                     )}
                   </Typography>
                   <Typography

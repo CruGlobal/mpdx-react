@@ -10,6 +10,26 @@ export const percentageFormat = (value: number, locale: string): string =>
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
 
+export const percentageFormatFloor = (value: number, locale: string): string =>
+  new Intl.NumberFormat(locale, {
+    style: 'percent',
+    roundingMode: 'floor',
+  }).format(Number.isFinite(value) ? value : 0);
+
+export function roundPledgedBelow(pledged: number, goal: number) {
+  if (goal <= 0) {
+    return { pledgedPct: 0, belowPct: 0 };
+  }
+
+  const pledgedPct = Math.max(0, Math.floor((pledged / goal) * 100));
+  const belowPct = pledgedPct <= 100 ? 100 - pledgedPct : 0;
+
+  return {
+    pledgedPct: pledgedPct / 100,
+    belowPct: belowPct / 100,
+  };
+}
+
 interface CurrencyFormatOptions {
   showTrailingZeros?: boolean;
 }
