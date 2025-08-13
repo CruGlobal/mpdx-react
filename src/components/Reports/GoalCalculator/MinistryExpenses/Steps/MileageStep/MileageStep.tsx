@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container, Typography } from '@mui/material';
-import { Form, Formik, FormikProps } from 'formik';
+import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
@@ -57,11 +57,9 @@ export const MileageStep: React.FC<MileageStepProps> = () => {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {(formikProps: FormikProps<MileageStepFormValues>) => (
-            <Form>
-              <MileageStepForm formikProps={formikProps} />
-            </Form>
-          )}
+          <Form>
+            <MileageStepForm />
+          </Form>
         </Formik>
       </Container>
     </Box>
