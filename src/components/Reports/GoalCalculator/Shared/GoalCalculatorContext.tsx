@@ -21,7 +21,7 @@ import { useSummaryReport } from '../SummaryReport/useSummaryReport';
 export type GoalCalculatorType = {
   steps: GoalCalculatorStep[];
   selectedStepId: GoalCalculatorStepEnum;
-  currentStep?: GoalCalculatorStep;
+  currentStep: GoalCalculatorStep;
   selectedReport: GoalCalculatorReportEnum;
   setSelectedReport: Dispatch<SetStateAction<GoalCalculatorReportEnum>>;
 
@@ -76,10 +76,13 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
 
-  const currentStep = useMemo(
-    () => steps.find((step) => step.id === selectedStepId),
-    [steps, selectedStepId],
-  );
+  const currentStep = useMemo(() => {
+    const selectedStep = steps.find((step) => step.id === selectedStepId);
+    if (!selectedStep) {
+      throw new Error('Invalid step');
+    }
+    return selectedStep;
+  }, [steps, selectedStepId]);
 
   const handleStepChange = useCallback(
     (stepId: GoalCalculatorStepEnum) => {

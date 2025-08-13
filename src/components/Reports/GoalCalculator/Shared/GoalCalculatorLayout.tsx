@@ -1,6 +1,5 @@
 import React from 'react';
 import { Divider, IconButton, Stack, Typography, styled } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
@@ -59,7 +58,6 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   sectionListPanel,
   mainContent,
 }) => {
-  const { t } = useTranslation();
   const iconPanelWidth = theme.spacing(5);
   const {
     steps,
@@ -104,10 +102,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
         headerHeight={multiPageHeaderHeight}
         iconPanelWidth={iconPanelWidth}
       >
-        <StepTitle variant="h6">
-          {currentStep?.title || t('Goal Calculator')}
-        </StepTitle>
-
+        <StepTitle variant="h6">{currentStep.title}</StepTitle>
         {sectionListPanel}
       </StyledDrawer>
       {isDrawerOpen && <Divider orientation="vertical" flexItem />}

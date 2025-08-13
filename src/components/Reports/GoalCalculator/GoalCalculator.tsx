@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Stack, Typography, styled } from '@mui/material';
+import { Divider, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
@@ -13,10 +13,6 @@ import { SectionList } from './SharedComponents/SectionList';
 
 const CategoryContainer = styled('div')(({ theme }) => ({
   paddingInline: theme.spacing(4),
-}));
-
-const StyledDefaultContent = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
 }));
 
 interface GoalCalculatorProps {
@@ -35,7 +31,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
     instructions: stepInstructions,
     categories,
     PageComponent,
-  } = currentStep || {};
+  } = currentStep;
 
   return (
     <>
@@ -73,15 +69,7 @@ export const GoalCalculator: React.FC<GoalCalculatorProps> = ({
                 >
                   {category.component}
                 </GoalCalculatorSection>
-              )) ?? (
-                <StyledDefaultContent>
-                  <Typography variant="body1">
-                    {t(
-                      'Please select a step from the left panel to view its content.',
-                    )}
-                  </Typography>
-                </StyledDefaultContent>
-              )}
+              ))}
               <CategoryContainer>
                 <ContinueButton onClick={handleContinue} />
               </CategoryContainer>
