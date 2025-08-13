@@ -1,8 +1,6 @@
-import React, { useMemo, useRef } from 'react';
-import PrintIcon from '@mui/icons-material/Print';
+import React, { useMemo } from 'react';
 import {
   Box,
-  Button,
   Divider,
   Grid,
   Paper,
@@ -142,19 +140,6 @@ export const PresentingYourGoal: React.FC = () => {
     [mockData],
   );
 
-  const printRef = useRef<HTMLDivElement>(null);
-  const handlePrint = () => {
-    const printContents = printRef.current?.innerHTML;
-    const originalContents = document.body.innerHTML;
-
-    if (printContents) {
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
-      window.location.reload();
-    }
-  };
-
   // Consider adding more brand colors to theme.
   const chartColors = [
     theme.palette.primary.main,
@@ -229,23 +214,7 @@ export const PresentingYourGoal: React.FC = () => {
 
   return (
     <Grid container spacing={theme.spacing(6)}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          width: '100%',
-        }}
-      >
-        <Button
-          variant="outlined"
-          endIcon={<PrintIcon />}
-          onClick={handlePrint}
-          aria-label={t('Print')}
-        >
-          {t('Print')}
-        </Button>
-      </Box>
-      <Grid ref={printRef} item xs={12}>
+      <Grid item xs={12}>
         <Paper
           sx={{ padding: theme.spacing(3), marginBottom: theme.spacing(3) }}
         >

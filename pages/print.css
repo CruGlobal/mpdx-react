@@ -16,7 +16,8 @@
   }
 
   header,
-  aside {
+  aside,
+  .print-hidden {
     display: none !important;
   }
 
