@@ -47,7 +47,6 @@ describe('InformationStep', () => {
 
   it('shows user information by default', () => {
     const { getByTestId, getByRole } = render(<TestComponent />);
-    expect(getByTestId('verify-info-typography')).toBeInTheDocument();
     expect(getByRole('button', { name: 'View Spouse' })).toBeInTheDocument();
     expect(getByTestId('personal-tab')).toBeInTheDocument();
     expect(getByTestId('financial-tab')).toBeInTheDocument();

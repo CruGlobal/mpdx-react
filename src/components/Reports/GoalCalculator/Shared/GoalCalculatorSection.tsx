@@ -1,7 +1,14 @@
 import React from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import PrintIcon from '@mui/icons-material/Print';
-import { Button, IconButton, Stack, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Typography,
+  styled,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
@@ -11,6 +18,7 @@ const SectionContainer = styled('div')(({ theme }) => ({
 
 interface GoalCalculatorSectionProps {
   title: string;
+  subtitle?: string;
   rightPanelContent?: JSX.Element;
   printable?: boolean;
   children: React.ReactNode;
@@ -18,6 +26,7 @@ interface GoalCalculatorSectionProps {
 
 export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   title,
+  subtitle,
   rightPanelContent,
   printable = false,
   children,
@@ -31,32 +40,35 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
 
   return (
     <SectionContainer>
-      <Stack direction="row" justifyContent="space-between">
-        <Typography variant="h6">
-          {title}
-          {rightPanelContent && (
-            <IconButton
+      <Box pb={4}>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="h6">
+            {title}
+            {rightPanelContent && (
+              <IconButton
+                className="print-hidden"
+                onClick={() => {
+                  rightPanelContent && setRightPanelContent(rightPanelContent);
+                }}
+                aria-label={t('Show additional info')}
+              >
+                <InfoIcon />
+              </IconButton>
+            )}
+          </Typography>
+          {printable && (
+            <Button
               className="print-hidden"
-              onClick={() => {
-                rightPanelContent && setRightPanelContent(rightPanelContent);
-              }}
-              aria-label={t('Show additional info')}
+              variant="outlined"
+              endIcon={<PrintIcon />}
+              onClick={handlePrint}
             >
-              <InfoIcon />
-            </IconButton>
+              {t('Print')}
+            </Button>
           )}
-        </Typography>
-        {printable && (
-          <Button
-            className="print-hidden"
-            variant="outlined"
-            endIcon={<PrintIcon />}
-            onClick={handlePrint}
-          >
-            {t('Print')}
-          </Button>
-        )}
-      </Stack>
+        </Stack>
+        {subtitle && <Typography pt={1}>{subtitle}</Typography>}
+      </Box>
       {children}
     </SectionContainer>
   );
