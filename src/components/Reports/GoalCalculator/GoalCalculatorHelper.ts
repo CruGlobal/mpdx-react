@@ -50,7 +50,10 @@ export enum GoalCalculatorCategoryEnum {
   Technology = 'technology',
   SummerMissions = 'summer-missions',
   Other = 'other',
-  // SummaryReport
-  Overview = 'overview',
+}
+
+export enum GoalCalculatorReportEnum {
+  MpdGoal = 'mpd-goal',
+  SalaryRequest = 'salary-request',
   PresentingYourGoal = 'presenting-your-goal',
 }

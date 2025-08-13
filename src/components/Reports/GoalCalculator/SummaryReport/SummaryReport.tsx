@@ -1,10 +1,8 @@
-import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  GoalCalculatorCategoryEnum,
-  GoalCalculatorStep,
-  GoalCalculatorStepEnum,
-} from '../GoalCalculatorHelper';
+import { GoalCalculatorReportEnum } from '../GoalCalculatorHelper';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
 import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
@@ -32,25 +30,29 @@ const goal = {
   },
 };
 
-export const useSummaryReport = (): GoalCalculatorStep => {
+export const SummaryReport: React.FC = () => {
   const { t } = useTranslation();
-  return {
-    title: t('Summary Report'),
-    id: GoalCalculatorStepEnum.SummaryReport,
-    icon: <RequestQuoteIcon />,
-    categories: [
-      {
-        id: GoalCalculatorCategoryEnum.Overview,
-        title: t('MPD Goal'),
-        component: <MpdGoalTable goal={goal} />,
-        rightPanelComponent: <MpdGoalStepRightPanel />,
-      },
-      {
-        id: GoalCalculatorCategoryEnum.PresentingYourGoal,
-        title: t('Presenting Your Goal'),
-        component: <PresentingYourGoal />,
-        rightPanelComponent: <PresentingYourGoalStepRightPanel />,
-      },
-    ],
-  };
+  const { selectedReport } = useGoalCalculator();
+
+  if (selectedReport === GoalCalculatorReportEnum.MpdGoal) {
+    return (
+      <GoalCalculatorSection
+        title={t('MPD Goal')}
+        rightPanelContent={<MpdGoalStepRightPanel />}
+      >
+        <MpdGoalTable goal={goal} />
+      </GoalCalculatorSection>
+    );
+  } else if (selectedReport === GoalCalculatorReportEnum.PresentingYourGoal) {
+    return (
+      <GoalCalculatorSection
+        title={t('Presenting Your Goal')}
+        rightPanelContent={<PresentingYourGoalStepRightPanel />}
+      >
+        <PresentingYourGoal />
+      </GoalCalculatorSection>
+    );
+  }
+
+  return null;
 };

@@ -4,12 +4,16 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import {
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   SxProps,
   Theme,
   styled,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { GoalCalculatorReportEnum } from '../GoalCalculatorHelper';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 
 const categoryListItemStyles: SxProps<Theme> = (theme) => ({
   '.MuiSvgIcon-root': {
@@ -68,3 +72,37 @@ export const SectionList: React.FC<SectionListProps> = ({ sections }) => (
     ))}
   </List>
 );
+
+export const ReportSectionList: React.FC = () => {
+  const { t } = useTranslation();
+  const { selectedReport, setSelectedReport } = useGoalCalculator();
+
+  const sections = [
+    {
+      title: t('MPD Goal'),
+      report: GoalCalculatorReportEnum.MpdGoal,
+    },
+    {
+      title: t('Salary Request'),
+      report: GoalCalculatorReportEnum.SalaryRequest,
+    },
+    {
+      title: t('Presenting Your Goal'),
+      report: GoalCalculatorReportEnum.PresentingYourGoal,
+    },
+  ];
+
+  return (
+    <List disablePadding>
+      {sections.map(({ title, report }, index) => (
+        <ListItemButton
+          key={index}
+          sx={categoryListItemStyles}
+          onClick={() => setSelectedReport(report)}
+        >
+          <ListItemContent title={title} complete={selectedReport === report} />
+        </ListItemButton>
+      ))}
+    </List>
+  );
+};

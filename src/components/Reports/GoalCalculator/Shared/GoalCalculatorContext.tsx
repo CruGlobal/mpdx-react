@@ -1,19 +1,29 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
 import {
+  GoalCalculatorReportEnum,
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { useHouseholdExpenses } from '../HouseholdExpenses/HouseholdExpenses';
 import { useMinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
-import { useSummaryReport } from '../SummaryReport/SummaryReport';
+import { useSummaryReport } from '../SummaryReport/useSummaryReport';
 
 export type GoalCalculatorType = {
   steps: GoalCalculatorStep[];
   selectedStepId: GoalCalculatorStepEnum;
   currentStep?: GoalCalculatorStep;
+  selectedReport: GoalCalculatorReportEnum;
+  setSelectedReport: Dispatch<SetStateAction<GoalCalculatorReportEnum>>;
 
   /** The current contents of the right panel, or null if it is closed */
   rightPanelContent: JSX.Element | null;
@@ -29,9 +39,7 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 };
 
-const GoalCalculatorContext = React.createContext<GoalCalculatorType | null>(
-  null,
-);
+const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
 
 export const useGoalCalculator = (): GoalCalculatorType => {
   const context = React.useContext(GoalCalculatorContext);
@@ -62,6 +70,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [selectedStepId, setSelectedStepId] = useState(
     GoalCalculatorStepEnum.CalculatorSettings,
   );
+  const [selectedReport, setSelectedReport] =
+    useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
@@ -119,6 +129,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       closeRightPanel,
       toggleDrawer,
       setDrawerOpen: setIsDrawerOpen,
+      selectedReport,
+      setSelectedReport,
     }),
     [
       selectedStepId,
@@ -131,6 +143,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       closeRightPanel,
       toggleDrawer,
       setIsDrawerOpen,
+      selectedReport,
+      setSelectedReport,
     ],
   );
 
