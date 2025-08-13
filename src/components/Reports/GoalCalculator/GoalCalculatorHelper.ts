@@ -3,6 +3,7 @@ import React from 'react';
 export interface GoalCalculatorCategory {
   id: GoalCalculatorCategoryEnum;
   title: string;
+  subtitle?: string;
   component: JSX.Element;
   rightPanelComponent?: JSX.Element;
 }

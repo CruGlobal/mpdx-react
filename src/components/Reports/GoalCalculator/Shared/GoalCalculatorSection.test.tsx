@@ -31,6 +31,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ rightPanelContent }) => (
             <RightPanel />
             <GoalCalculatorSection
               title="Section Title"
+              subtitle="Section Subtitle"
               rightPanelContent={rightPanelContent}
             >
               Main content
@@ -43,10 +44,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ rightPanelContent }) => (
 );
 
 describe('GoalCalculatorSection', () => {
-  it('renders the header with the specified title', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders the header with the title and subtitle', () => {
+    const { getByRole, getByText } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Section Title' })).toBeInTheDocument();
+    expect(getByText('Section Subtitle')).toBeInTheDocument();
   });
 
   it('shows right panel content when icon is clicked', async () => {
