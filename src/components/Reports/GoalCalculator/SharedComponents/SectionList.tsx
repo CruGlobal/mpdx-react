@@ -94,15 +94,19 @@ export const ReportSectionList: React.FC = () => {
 
   return (
     <List disablePadding>
-      {sections.map(({ title, report }, index) => (
-        <ListItemButton
-          key={index}
-          sx={categoryListItemStyles}
-          onClick={() => setSelectedReport(report)}
-        >
-          <ListItemContent title={title} complete={selectedReport === report} />
-        </ListItemButton>
-      ))}
+      {sections.map(({ title, report }, index) => {
+        const active = selectedReport === report;
+        return (
+          <ListItemButton
+            key={index}
+            sx={categoryListItemStyles}
+            aria-current={active}
+            onClick={() => setSelectedReport(report)}
+          >
+            <ListItemContent title={title} complete={active} />
+          </ListItemButton>
+        );
+      })}
     </List>
   );
 };
