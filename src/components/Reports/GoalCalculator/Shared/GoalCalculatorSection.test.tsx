@@ -10,7 +10,10 @@ import {
   GoalCalculatorProvider,
   useGoalCalculator,
 } from './GoalCalculatorContext';
-import { GoalCalculatorSection } from './GoalCalculatorSection';
+import {
+  GoalCalculatorSection,
+  GoalCalculatorSectionProps,
+} from './GoalCalculatorSection';
 
 const RightPanel: React.FC = () => {
   const { rightPanelContent } = useGoalCalculator();
@@ -18,11 +21,9 @@ const RightPanel: React.FC = () => {
   return <aside aria-label="Right Panel">{rightPanelContent}</aside>;
 };
 
-interface TestComponentProps {
-  rightPanelContent?: JSX.Element;
-}
-
-const TestComponent: React.FC<TestComponentProps> = ({ rightPanelContent }) => (
+const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
+  props,
+) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -32,7 +33,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ rightPanelContent }) => (
             <GoalCalculatorSection
               title="Section Title"
               subtitle="Section Subtitle"
-              rightPanelContent={rightPanelContent}
+              {...props}
             >
               Main content
             </GoalCalculatorSection>
@@ -66,5 +67,11 @@ describe('GoalCalculatorSection', () => {
     expect(
       queryByRole('button', { name: 'Show additional info' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('renders print button when it is printable', () => {
+    const { getByRole } = render(<TestComponent printable />);
+
+    expect(getByRole('button', { name: 'Print' })).toBeInTheDocument();
   });
 });
