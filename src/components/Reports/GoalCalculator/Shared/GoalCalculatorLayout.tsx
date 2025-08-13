@@ -6,6 +6,8 @@ import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
+const iconPanelWidth = theme.spacing(5);
+
 const MainContent = styled('div')(({ theme }) => ({
   paddingBlock: theme.spacing(4),
   width: '100%',
@@ -20,13 +22,8 @@ const StepTitle = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledDrawer = styled('div', {
-  shouldForwardProp: (prop) =>
-    prop !== 'open' && prop !== 'headerHeight' && prop !== 'iconPanelWidth',
-})<{
-  open: boolean;
-  headerHeight: string;
-  iconPanelWidth: string;
-}>(({ theme, open, headerHeight, iconPanelWidth }) => ({
+  shouldForwardProp: (prop) => prop !== 'open',
+})<{ open: boolean }>(({ theme, open }) => ({
   width: open ? 240 : 0,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -36,7 +33,7 @@ const StyledDrawer = styled('div', {
   borderRight: open ? `1px solid ${theme.palette.cruGrayLight.main}` : 'none',
   [theme.breakpoints.down('sm')]: {
     position: 'absolute',
-    top: headerHeight,
+    top: multiPageHeaderHeight,
     left: `calc(${iconPanelWidth} + 1px)`,
     height: '100%',
     backgroundColor: theme.palette.common.white,
@@ -97,11 +94,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
         ))}
       </Stack>
       <Divider orientation="vertical" flexItem />
-      <StyledDrawer
-        open={isDrawerOpen}
-        headerHeight={multiPageHeaderHeight}
-        iconPanelWidth={iconPanelWidth}
-      >
+      <StyledDrawer open={isDrawerOpen}>
         <StepTitle variant="h6">{currentStep.title}</StepTitle>
         {sectionListPanel}
       </StyledDrawer>
