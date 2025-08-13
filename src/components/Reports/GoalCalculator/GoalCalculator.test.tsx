@@ -45,7 +45,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <GqlMockedProvider>
         <GoalCalculatorProvider>
           <ContextHelper selectedStepId={selectedStepId} />
-          <GoalCalculator isNavListOpen={false} onNavListToggle={jest.fn()} />
+          <GoalCalculator />
         </GoalCalculatorProvider>
       </GqlMockedProvider>
     </SnackbarProvider>
