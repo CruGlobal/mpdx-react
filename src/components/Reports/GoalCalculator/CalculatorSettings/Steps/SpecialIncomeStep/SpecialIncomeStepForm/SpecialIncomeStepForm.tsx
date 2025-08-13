@@ -35,7 +35,7 @@ const StyledAddIncomeButton = styled(Button)(({ theme }) => ({
 
 interface SpecialIncomeFormValues {
   // Special income fields
-  incidentIncome: number;
+  incidentalIncome: number;
   propertyIncome: number;
   spouseIncome: number;
   additionalIncomes: Array<{
@@ -67,16 +67,18 @@ export const SpecialIncomeStepForm: React.FC = () => {
     <Box>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Field name="incidentIncome">
+          <Field name="incidentalIncome">
             {({ field }) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Incident Income')}
+                label={t('Incidental Income')}
                 type="number"
-                error={touched.incidentIncome && Boolean(errors.incidentIncome)}
-                helperText={touched.incidentIncome && errors.incidentIncome}
+                error={
+                  touched.incidentalIncome && Boolean(errors.incidentalIncome)
+                }
+                helperText={touched.incidentalIncome && errors.incidentalIncome}
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
