@@ -13,11 +13,11 @@ export interface TableData {
 export interface MockData {
   accountListId: string;
   accountName: string;
-  income?: TableData;
-  ministryExpenses?: TableData;
-  healthcareExpenses?: TableData;
-  misc?: TableData;
-  other?: TableData;
+  income: TableData;
+  ministryExpenses: TableData;
+  healthcareExpenses: TableData;
+  misc: TableData;
+  other: TableData;
 }
 
 export const mockData: MockData = {

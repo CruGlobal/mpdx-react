@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Box, GlobalStyles } from '@mui/material';
 import {
   Bar,
@@ -11,6 +11,9 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { DataFields } from '../mockData';
 
 interface MonthlySummaryChartProps {
@@ -21,7 +24,10 @@ interface MonthlySummaryChartProps {
   width: number;
 }
 
-const chartColors = ['#88E4B6', '#EA657F'];
+const chartColors = [
+  theme.palette.chartGreen.main,
+  theme.palette.chartPink.main,
+];
 
 export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   incomeData,
@@ -30,11 +36,8 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   aspect,
   width,
 }) => {
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  const locale = useLocale();
+  const currency = 'USD';
 
   const combinedData = useMemo(() => {
     const transformedExpenseData = expenseData.map((item) => ({
@@ -65,20 +68,16 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
       });
     });
 
-    return months.map((month) => {
-      const { income = 0, expense = 0 } = totals[month] || {};
+    return months.map((name) => {
+      const { income = 0, expense = 0 } = totals[name] || {};
       return {
-        name: month,
+        name,
         income,
         expense,
         net: income + expense,
       };
     });
   }, [combinedData, months]);
-
-  if (!hasMounted) {
-    return null;
-  }
 
   return (
     <>
@@ -101,13 +100,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
               tickFormatter={(value) => value.split(' ')[0]}
             />
             <YAxis
-              tickFormatter={(value) =>
-                value.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  minimumFractionDigits: 0,
-                })
-              }
+              tickFormatter={(value) => currencyFormat(value, currency, locale)}
             />
             <Tooltip
               formatter={(value: number | string): [string, string] => [
@@ -131,13 +124,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                 dataKey="net"
                 position="top"
                 style={{ fill: '#000000' }}
-                formatter={(value) =>
-                  value.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  })
-                }
+                formatter={(value) => currencyFormat(value, currency, locale)}
               />
             </Bar>
             <Legend

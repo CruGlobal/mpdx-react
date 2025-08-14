@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import theme from 'src/theme';
 
 interface ExpensesPieChartProps {
   ministryExpenses: number | undefined;
@@ -11,7 +11,12 @@ interface ExpensesPieChartProps {
   width: number;
 }
 
-const chartColors = ['#05699B', '#00C0D8', '#F08020', '#FFCF07'];
+const chartColors = [
+  theme.palette.primary.main,
+  theme.palette.chartBlueLight.main,
+  theme.palette.chartOrange.main,
+  theme.palette.secondary.main,
+];
 
 export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
   ministryExpenses,
@@ -22,16 +27,6 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
   width,
 }) => {
   const { t } = useTranslation();
-
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
-    return null;
-  }
 
   const data = [
     { name: t('Ministry'), value: ministryExpenses ?? 0 },
