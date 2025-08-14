@@ -91,19 +91,12 @@ describe('GoalCalculator', () => {
   });
 
   describe('reports step', () => {
-    it('renders custom section list', () => {
+    it('renders custom section list and main content', () => {
       const { getByRole } = render(
         <TestComponent selectedStepId={GoalCalculatorStepEnum.SummaryReport} />,
       );
 
       expect(getByRole('button', { name: 'MPD Goal' })).toBeInTheDocument();
-    });
-
-    it('renders custom main content', () => {
-      const { getByRole } = render(
-        <TestComponent selectedStepId={GoalCalculatorStepEnum.SummaryReport} />,
-      );
-
       expect(getByRole('heading', { name: 'MPD Goal' })).toBeInTheDocument();
     });
   });
