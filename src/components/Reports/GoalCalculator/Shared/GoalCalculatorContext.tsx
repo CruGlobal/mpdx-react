@@ -77,11 +77,11 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
 
   const currentStep = useMemo(() => {
-    const currentStep = steps.find((step) => step.id === selectedStepId);
-    if (!currentStep) {
+    const selectedStep = steps.find((step) => step.id === selectedStepId);
+    if (!selectedStep) {
       throw new Error('Invalid step');
     }
-    return currentStep;
+    return selectedStep;
   }, [steps, selectedStepId]);
 
   const handleStepChange = useCallback(
