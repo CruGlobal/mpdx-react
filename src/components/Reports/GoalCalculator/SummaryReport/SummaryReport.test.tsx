@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -19,32 +20,39 @@ import {
 } from '../Shared/GoalCalculatorContext';
 import { SummaryReport } from './SummaryReport';
 
-interface ContextHelperProps {
-  selectedReport: GoalCalculatorReportEnum;
-}
-
-const ContextHelper: React.FC<ContextHelperProps> = ({ selectedReport }) => {
+const ContextHelper: React.FC = () => {
   const { handleStepChange, setSelectedReport } = useGoalCalculator();
 
-  useEffect(() => {
+  const handleReportChange = (report: GoalCalculatorReportEnum) => {
     handleStepChange(GoalCalculatorStepEnum.SummaryReport);
-    setSelectedReport(selectedReport);
-  }, []);
+    setSelectedReport(report);
+  };
 
-  return null;
+  return (
+    <>
+      <button
+        onClick={() => handleReportChange(GoalCalculatorReportEnum.MpdGoal)}
+      >
+        MPD Goal
+      </button>
+      <button
+        onClick={() =>
+          handleReportChange(GoalCalculatorReportEnum.PresentingYourGoal)
+        }
+      >
+        Presenting Your Goal
+      </button>
+    </>
+  );
 };
 
-interface TestComponentProps {
-  selectedReport: GoalCalculatorReportEnum;
-}
-
-const TestComponent: React.FC<TestComponentProps> = ({ selectedReport }) => (
+const TestComponent: React.FC = () => (
   <TestRouter>
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <GqlMockedProvider>
           <GoalCalculatorProvider>
-            <ContextHelper selectedReport={selectedReport} />
+            <ContextHelper />
             <SummaryReport />
           </GoalCalculatorProvider>
         </GqlMockedProvider>
@@ -63,20 +71,16 @@ describe('SummaryReport', () => {
   });
 
   it('renders MPD Goal report', () => {
-    const { getByRole } = render(
-      <TestComponent selectedReport={GoalCalculatorReportEnum.MpdGoal} />,
-    );
+    const { getByRole } = render(<TestComponent />);
 
+    userEvent.click(getByRole('button', { name: 'MPD Goal' }));
     expect(getByRole('heading', { name: 'MPD Goal' })).toBeInTheDocument();
   });
 
   it('renders Presenting Your Goal report', () => {
-    const { getByRole } = render(
-      <TestComponent
-        selectedReport={GoalCalculatorReportEnum.PresentingYourGoal}
-      />,
-    );
+    const { getByRole } = render(<TestComponent />);
 
+    userEvent.click(getByRole('button', { name: 'Presenting Your Goal' }));
     expect(
       getByRole('heading', { name: 'Presenting Your Goal' }),
     ).toBeInTheDocument();
