@@ -12,17 +12,19 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
+import { useLocale } from 'src/hooks/useLocale';
+import { useReportsStaffExpensesQuery } from '../ReportsStaffExpenses.generated';
+import {
+  SimplePrintOnly,
+  SimpleScreenOnly,
+  StyledPrintButton,
+} from '../styledComponents';
 import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
-import { getLast12Months } from './Helper/getLastTwelveMonths';
+import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { mockData } from './mockData';
-import {
-  PrintOnly,
-  ScreenOnly,
-  SimplePrintOnly,
-  StyledHeaderBox,
-  StyledPrintButton,
-} from './styledComponents';
+import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
   accountListId: string;
@@ -33,69 +35,32 @@ interface MPGAIncomeExpensesReportProps {
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
-> = ({ title, isNavListOpen, onNavListToggle }) => {
+> = ({ accountListId, title, isNavListOpen, onNavListToggle }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
+  const { data: staffExpensesData } = useReportsStaffExpensesQuery({
+    variables: { accountListId: accountListId },
+  });
 
   const handlePrint = () => {
     window.print();
   };
 
-  const last12Months = useMemo(() => getLast12Months(), []);
-
-  const incomeTotal = useMemo(
-    () => mockData.income?.data.reduce((sum, data) => sum + data.total, 0),
-    [mockData.income?.data],
-  );
-
-  const ministryTotal = useMemo(
-    () =>
-      mockData.ministryExpenses?.data.reduce(
-        (sum, data) => sum + data.total,
-        0,
-      ),
-    [mockData.ministryExpenses?.data],
-  );
-
-  const healthcareTotal = useMemo(
-    () =>
-      mockData.healthcareExpenses?.data.reduce(
-        (sum, data) => sum + data.total,
-        0,
-      ),
-    [mockData.healthcareExpenses?.data],
-  );
-
-  const miscTotal = useMemo(
-    () => mockData.misc?.data.reduce((sum, data) => sum + data.total, 0),
-    [mockData.misc?.data],
-  );
-
-  const otherTotal = useMemo(
-    () => mockData.other?.data.reduce((sum, data) => sum + data.total, 0),
-    [mockData.other?.data],
-  );
-
-  const expensesTotal = useMemo(
-    () =>
-      (ministryTotal ?? 0) +
-      (healthcareTotal ?? 0) +
-      (miscTotal ?? 0) +
-      (otherTotal ?? 0),
-    [ministryTotal, healthcareTotal, miscTotal, otherTotal],
-  );
+  const last12Months = useGetLastTwelveMonths(locale, true);
 
   const expenseData = useMemo(
     () => [
-      ...(mockData.ministryExpenses?.data ?? []),
-      ...(mockData.healthcareExpenses?.data ?? []),
-      ...(mockData.misc?.data ?? []),
-      ...(mockData.other?.data ?? []),
+      ...(mockData.ministryExpenses ?? []),
+      ...(mockData.healthcareExpenses ?? []),
+      ...(mockData.misc ?? []),
+      ...(mockData.other ?? []),
     ],
     [
-      mockData.ministryExpenses?.data,
-      mockData.healthcareExpenses?.data,
-      mockData.misc?.data,
-      mockData.other?.data,
+      mockData.ministryExpenses,
+      mockData.healthcareExpenses,
+      mockData.misc,
+      mockData.other,
     ],
   );
 
@@ -117,28 +82,28 @@ export const MPGAIncomeExpensesReport: React.FC<
         }}
       />
       <Box>
-        <ScreenOnly>
+        <SimpleScreenOnly>
           <MultiPageHeader
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
           />
-        </ScreenOnly>
+        </SimpleScreenOnly>
         <Box mt={2}>
           <Container>
             <StyledHeaderBox>
-              <ScreenOnly>
+              <SimpleScreenOnly>
                 <Typography variant="h4">
                   {t('Income & Expenses Analysis')}
                 </Typography>
-              </ScreenOnly>
+              </SimpleScreenOnly>
               <SimplePrintOnly>
                 <Typography variant="h4">
                   {t('Income & Expenses Analysis: Last 12 Months')}
                 </Typography>
               </SimplePrintOnly>
-              <ScreenOnly>
+              <SimpleScreenOnly>
                 <StyledPrintButton
                   startIcon={
                     <SvgIcon fontSize="small">
@@ -149,7 +114,7 @@ export const MPGAIncomeExpensesReport: React.FC<
                 >
                   {t('Print')}
                 </StyledPrintButton>
-              </ScreenOnly>
+              </SimpleScreenOnly>
             </StyledHeaderBox>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
               <Typography>{mockData.accountName}</Typography>
@@ -157,31 +122,25 @@ export const MPGAIncomeExpensesReport: React.FC<
             </Box>
           </Container>
         </Box>
-        <ScreenOnly>
-          <ScreenOnlyReport
-            data={mockData}
-            incomeTotal={incomeTotal}
-            expensesTotal={expensesTotal}
-            ministryTotal={ministryTotal}
-            healthcareTotal={healthcareTotal}
-            miscTotal={miscTotal}
-            otherTotal={otherTotal}
-            last12Months={last12Months}
-            expenseData={expenseData}
-          />
-        </ScreenOnly>
+        <SimpleScreenOnly>
+          <TotalsProvider data={mockData}>
+            <ScreenOnlyReport
+              data={mockData}
+              last12Months={last12Months}
+              expenseData={expenseData}
+              currency={staffExpensesData?.accountList.currency || 'USD'}
+            />
+          </TotalsProvider>
+        </SimpleScreenOnly>
         <PrintOnly>
-          <PrintOnlyReport
-            data={mockData}
-            incomeTotal={incomeTotal}
-            expensesTotal={expensesTotal}
-            ministryTotal={ministryTotal}
-            healthcareTotal={healthcareTotal}
-            miscTotal={miscTotal}
-            otherTotal={otherTotal}
-            last12Months={last12Months}
-            expenseData={expenseData}
-          />
+          <TotalsProvider data={mockData}>
+            <PrintOnlyReport
+              data={mockData}
+              last12Months={last12Months}
+              expenseData={expenseData}
+              currency={staffExpensesData?.accountList.currency || 'USD'}
+            />
+          </TotalsProvider>
         </PrintOnly>
       </Box>
     </>

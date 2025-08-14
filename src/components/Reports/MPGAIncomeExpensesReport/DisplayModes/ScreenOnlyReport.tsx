@@ -11,26 +11,16 @@ import { DataFields, MockData } from '../mockData';
 
 interface ScreenOnlyReportProps {
   data: MockData;
-  incomeTotal: number | undefined;
-  expensesTotal: number | undefined;
-  ministryTotal: number | undefined;
-  healthcareTotal: number | undefined;
-  miscTotal: number | undefined;
-  otherTotal: number | undefined;
   last12Months: string[];
   expenseData: DataFields[];
+  currency: string;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
-  incomeTotal,
-  expensesTotal,
-  ministryTotal,
-  healthcareTotal,
-  miscTotal,
-  otherTotal,
   last12Months,
   expenseData,
+  currency,
 }) => {
   const { t } = useTranslation();
 
@@ -41,12 +31,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           <Grid container spacing={2}>
             <Grid item xs={7}>
               <CardSkeleton title={t('Summary')} subtitle={t('Last 12 Months')}>
-                <SummaryBarChart
-                  incomeTotal={incomeTotal}
-                  expensesTotal={expensesTotal}
-                  aspect={2}
-                  width={100}
-                />
+                <SummaryBarChart aspect={2} width={100} currency={currency} />
               </CardSkeleton>
             </Grid>
             <Grid item xs={5}>
@@ -54,14 +39,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
                 title={t('Expenses Categories')}
                 subtitle={t('Last 12 Months')}
               >
-                <ExpensesPieChart
-                  ministryExpenses={ministryTotal}
-                  healthcareExpenses={healthcareTotal}
-                  misc={miscTotal}
-                  other={otherTotal}
-                  aspect={1.35}
-                  width={100}
-                />
+                <ExpensesPieChart aspect={1.35} width={100} />
               </CardSkeleton>
             </Grid>
           </Grid>
@@ -69,8 +47,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
         <Box>
           <TableCard
             type={ReportTypeEnum.Income}
-            data={data.income?.data ?? []}
-            overallTotal={incomeTotal}
+            data={data.income ?? []}
             emptyPlaceholder={
               <EmptyTable
                 title={t('No Income data available')}
@@ -85,7 +62,6 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           <TableCard
             type={ReportTypeEnum.Expenses}
             data={expenseData}
-            overallTotal={expensesTotal}
             emptyPlaceholder={
               <EmptyTable
                 title={t('No Expenses data available')}
@@ -102,11 +78,12 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
             subtitle={t('Last 12 Months')}
           >
             <MonthlySummaryChart
-              incomeData={data.income?.data ?? []}
+              incomeData={data.income ?? []}
               expenseData={expenseData}
               months={last12Months}
               aspect={2.5}
               width={100}
+              currency={currency}
             />
           </CardSkeleton>
         </Box>

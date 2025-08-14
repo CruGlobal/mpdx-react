@@ -1,43 +1,32 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
+import theme from 'src/theme';
+import { useTotals } from '../TotalsContext/TotalsContext';
 
 interface ExpensesPieChartProps {
-  ministryExpenses: number | undefined;
-  healthcareExpenses: number | undefined;
-  misc: number | undefined;
-  other: number | undefined;
   aspect: number;
   width: number;
 }
 
-const chartColors = ['#05699B', '#00C0D8', '#F08020', '#FFCF07'];
+const chartColors = [
+  theme.palette.primary.main,
+  theme.palette.chartBlue.main,
+  theme.palette.chartOrange.main,
+  theme.palette.secondary.main,
+];
 
 export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
-  ministryExpenses,
-  healthcareExpenses,
-  misc,
-  other,
   aspect,
   width,
 }) => {
   const { t } = useTranslation();
-
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
-    return null;
-  }
+  const { ministryTotal, healthcareTotal, miscTotal, otherTotal } = useTotals();
 
   const data = [
-    { name: t('Ministry'), value: ministryExpenses ?? 0 },
-    { name: t('Healthcare'), value: healthcareExpenses ?? 0 },
-    { name: t('Miscellaneous'), value: misc ?? 0 },
-    { name: t('Assessment, Benefits, Salary'), value: other ?? 0 },
+    { name: t('Ministry'), value: ministryTotal ?? 0 },
+    { name: t('Healthcare'), value: healthcareTotal ?? 0 },
+    { name: t('Miscellaneous'), value: miscTotal ?? 0 },
+    { name: t('Assessment, Benefits, Salary'), value: otherTotal ?? 0 },
   ];
 
   return (

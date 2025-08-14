@@ -9,6 +9,7 @@ import {
   Toolbar,
   ToolbarButton,
 } from '@mui/x-data-grid';
+import { useTranslation } from 'react-i18next';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { TableCardHead } from '../Tables/TableCardHead';
@@ -25,15 +26,17 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
   type,
   months,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Toolbar style={{ display: 'flex', justifyContent: 'left' }}>
-      <Tooltip title="Columns">
+      <Tooltip title={t('Columns')}>
         <ColumnsPanelTrigger render={<ToolbarButton />}>
           <ViewColumnIcon fontSize="small" color="primary" />
         </ColumnsPanelTrigger>
       </Tooltip>
 
-      <Tooltip title="Filters">
+      <Tooltip title={t('Filters')}>
         <FilterPanelTrigger
           render={(props, state) => (
             <ToolbarButton
@@ -60,12 +63,6 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
         />
       </Tooltip>
 
-      {/* <Tooltip title="Filters">
-        <FilterPanelTrigger render={<ToolbarButton />}>
-          <FilterListIcon fontSize="small" color="primary" />
-        </FilterPanelTrigger>
-      </Tooltip> */}
-
       <Divider
         orientation="vertical"
         variant="middle"
@@ -73,13 +70,13 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
         sx={{ mx: 0.5, height: 30, alignSelf: 'center' }}
       />
 
-      <Tooltip title="Download as CSV">
+      <Tooltip title={t('Download as CSV')}>
         <ToolbarButton onClick={() => exportToCsv(data, type, months)}>
           <FileDownloadIcon fontSize="small" color="primary" />
         </ToolbarButton>
       </Tooltip>
       <Box mb={2}>
-        <TableCardHead months={months!} />{' '}
+        <TableCardHead months={months} />
       </Box>
     </Toolbar>
   );

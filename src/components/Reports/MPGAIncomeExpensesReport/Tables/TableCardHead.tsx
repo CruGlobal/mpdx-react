@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Table,
   TableCell,
@@ -8,6 +8,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useMonthHeaders } from 'src/hooks/useMonthHeaders';
+import theme from 'src/theme';
 import { monthWidth, summaryWidth } from './TableCard';
 
 interface TableCardHeadProps {
@@ -17,41 +19,12 @@ interface TableCardHeadProps {
 export const TableCardHead: React.FC<TableCardHeadProps> = ({ months }) => {
   const { t } = useTranslation();
 
-  const getBorderColor = (index: number): string => {
-    if (index === 0) {
-      return '#05699B';
-    } else {
-      return '#F08020';
-    }
-  };
-
-  const monthCount = useMemo(() => {
-    const yearsObj = months.reduce<Record<string, number>>((acc, monthYear) => {
-      const year = monthYear.split(' ')[1];
-      acc[year] = (acc[year] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(yearsObj).map(([year, count]) => ({
-      year,
-      count,
-    }));
-  }, [months]);
-
-  const getFirstMonth = useMemo(
-    () =>
-      months.map((monthYear, index) => {
-        const [month, year] = monthYear.split(' ');
-        const isFirstOfYear =
-          index === 0 ||
-          monthYear.split(' ')[1] !== months[index - 1].split(' ')[1];
-        const isLastOfYear =
-          index === months.length - 1 ||
-          monthYear.split(' ')[1] !== months[index + 1].split(' ')[1];
-
-        return { month, year, isFirstOfYear, isLastOfYear };
-      }),
-    [months],
+  const { monthCount, firstMonthFlags, getBorderColor } = useMonthHeaders(
+    months,
+    {
+      first: theme.palette.primary.main,
+      second: theme.palette.chartOrange.main,
+    },
   );
 
   return (
@@ -60,48 +33,53 @@ export const TableCardHead: React.FC<TableCardHeadProps> = ({ months }) => {
         <TableHead>
           <TableRow>
             <TableCell sx={{ borderBottom: 'none', width: 43 }} />
-            {monthCount &&
-              monthCount.map(({ year, count }, index) => {
-                const borderColor = getBorderColor(index);
-                const firstMonthInYear = getFirstMonth.find(
-                  (month) => month.year === year && month.isFirstOfYear,
-                );
+            {monthCount?.map(({ year, count }, index) => {
+              const borderColor = getBorderColor(index);
+              const firstMonthInYear = firstMonthFlags.find(
+                (month) => month.year === year && month.isFirstOfYear,
+              );
 
-                return (
-                  <TableCell
-                    key={`${year}-${count}`}
-                    data-year={year}
-                    data-color={borderColor}
-                    data-count={count}
-                    data-width={(monthWidth + 5) * count}
-                    sx={{
-                      width: (monthWidth + 5) * count,
-                      borderBottom: `2px solid ${borderColor}`,
-                      borderRight: `20px solid transparent`,
-                    }}
-                  >
-                    {firstMonthInYear ? (
-                      <Typography
-                        sx={{
-                          color: borderColor,
-                          ml: -2,
-                          fontSize: '14px',
-                        }}
-                      >
-                        <strong>{year}</strong>
-                      </Typography>
-                    ) : null}
-                  </TableCell>
-                );
-              })}
+              return (
+                <TableCell
+                  key={`${year}-${count}`}
+                  data-year={year}
+                  data-color={borderColor}
+                  data-count={count}
+                  data-width={(monthWidth + 5) * count}
+                  sx={{
+                    width: (monthWidth + 5) * count,
+                    borderBottom: `2px solid ${borderColor}`,
+                    borderRight: `20px solid transparent`,
+                  }}
+                >
+                  {firstMonthInYear && (
+                    <Typography
+                      sx={{
+                        color: borderColor,
+                        ml: -2,
+                        fontSize: '14px',
+                      }}
+                    >
+                      <strong>{year}</strong>
+                    </Typography>
+                  )}
+                </TableCell>
+              );
+            })}
             <TableCell
               sx={{
-                borderBottom: '2px solid #565652',
+                borderBottom: `2px solid ${theme.palette.chartGray.main}`,
                 width: summaryWidth * 2,
                 borderRight: `5px solid transparent`,
               }}
             >
-              <Typography sx={{ color: '#565652', ml: -2, fontSize: '14px' }}>
+              <Typography
+                sx={{
+                  color: theme.palette.chartGray.main,
+                  ml: -2,
+                  fontSize: '14px',
+                }}
+              >
                 <strong>{t('Summary')}</strong>
               </Typography>
             </TableCell>

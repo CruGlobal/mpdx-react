@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Bar,
@@ -9,23 +8,28 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
+import { useTotals } from '../TotalsContext/TotalsContext';
 
 interface SummaryBarChartProps {
-  incomeTotal: number | undefined;
-  expensesTotal: number | undefined;
   aspect: number;
   width: number;
+  currency: string;
 }
 
-const chartColors = ['#05699B', '#00C0D8'];
+const chartColors = [theme.palette.primary.main, theme.palette.chartBlue.main];
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
-  incomeTotal,
-  expensesTotal,
   aspect,
   width,
+  currency,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
+  const { incomeTotal, expensesTotal } = useTotals();
 
   const data = [
     { name: t('Income'), total: incomeTotal },
@@ -35,16 +39,6 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
     },
   ];
 
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
-    return null;
-  }
-
   return (
     <ResponsiveContainer width={`${width}%`} aspect={aspect}>
       <BarChart
@@ -53,13 +47,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
       >
         <XAxis dataKey="name" />
         <YAxis
-          tickFormatter={(value) =>
-            value.toLocaleString('en-US', {
-              style: 'currency',
-              currency: 'USD',
-              minimumFractionDigits: 0,
-            })
-          }
+          tickFormatter={(value) => currencyFormat(value, currency, locale)}
         />
         <Bar dataKey="total">
           {data.map((_, index) => (
@@ -73,11 +61,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
             position="top"
             style={{ fill: '#000000' }}
             formatter={(value: number) =>
-              value.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-              })
+              currencyFormat(value, currency, locale)
             }
           />
         </Bar>

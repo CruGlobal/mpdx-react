@@ -9,26 +9,16 @@ import { DataFields, MockData } from '../mockData';
 
 interface PrintOnlyReportProps {
   data: MockData;
-  incomeTotal: number | undefined;
-  expensesTotal: number | undefined;
-  ministryTotal: number | undefined;
-  healthcareTotal: number | undefined;
-  miscTotal: number | undefined;
-  otherTotal: number | undefined;
   last12Months: string[];
   expenseData: DataFields[];
+  currency: string;
 }
 
 export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
   data,
-  incomeTotal,
-  expensesTotal,
-  ministryTotal,
-  healthcareTotal,
-  miscTotal,
-  otherTotal,
   last12Months,
   expenseData,
+  currency,
 }) => {
   const { t } = useTranslation();
 
@@ -57,33 +47,20 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {t('Summary')}
                 </Typography>
-                <SummaryBarChart
-                  incomeTotal={incomeTotal}
-                  expensesTotal={expensesTotal}
-                  aspect={2}
-                  width={80}
-                />
+                <SummaryBarChart aspect={2} width={80} currency={currency} />
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {t('Expenses Categories')}
                 </Typography>
-                <ExpensesPieChart
-                  ministryExpenses={ministryTotal}
-                  healthcareExpenses={healthcareTotal}
-                  misc={miscTotal}
-                  other={otherTotal}
-                  aspect={1.85}
-                  width={80}
-                />
+                <ExpensesPieChart aspect={1.85} width={80} />
               </Grid>
             </Grid>
           </Box>
           <Box mt={2}>
             <PrintTables
               type={ReportTypeEnum.Income}
-              data={data.income?.data}
-              overallTotal={incomeTotal}
+              data={data.income ?? []}
               title={t('Income')}
               months={last12Months}
             />
@@ -92,7 +69,6 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
             <PrintTables
               type={ReportTypeEnum.Expenses}
               data={expenseData}
-              overallTotal={expensesTotal}
               title={t('Expenses')}
               months={last12Months}
             />
@@ -102,11 +78,12 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
               {t('Monthly Summary')}
             </Typography>
             <MonthlySummaryChart
-              incomeData={data.income?.data ?? []}
+              incomeData={data.income ?? []}
               expenseData={expenseData}
               months={last12Months}
               aspect={2.7}
               width={80}
+              currency={currency}
             />
           </Box>
         </Container>

@@ -2,12 +2,16 @@ import React, { useMemo, useState } from 'react';
 import { Box, Tooltip, Typography } from '@mui/material';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { amountFormat, zeroAmountFormat } from 'src/lib/intlFormat';
+import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { populateCardTableRows } from '../Helper/createTableRows';
+import { useTotals } from '../TotalsContext/TotalsContext';
 import { DataFields } from '../mockData';
-import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
+import { StyledGrid } from '../styledComponents';
 import { TotalsRow } from './TotalsRow';
 
 export type RenderCell = GridColDef<DataFields>['renderCell'];
@@ -15,7 +19,6 @@ export type RenderCell = GridColDef<DataFields>['renderCell'];
 export interface TableCardProps {
   type: ReportTypeEnum;
   data: DataFields[];
-  overallTotal: number | undefined;
   emptyPlaceholder: React.ReactElement;
   title: string;
   months: string[];
@@ -49,13 +52,17 @@ const createToolbar = (
 export const TableCard: React.FC<TableCardProps> = ({
   type,
   data,
-  overallTotal,
   title,
   months,
   emptyPlaceholder,
   loading,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+  const { incomeTotal, expensesTotal } = useTotals();
+
+  const overallTotal =
+    type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -74,7 +81,7 @@ export const TableCard: React.FC<TableCardProps> = ({
 
   const tableLength = useMemo(() => cardTableRows.length, [cardTableRows]);
 
-  const { description, average, total } = populateCardTableRows();
+  const { description, average, total } = populateCardTableRows(locale);
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
     const monthColumns: GridColDef<DataFields>[] = months.map(
@@ -87,17 +94,16 @@ export const TableCard: React.FC<TableCardProps> = ({
           const v = row.monthly?.[index];
           return typeof v === 'number' ? v : null;
         },
-        valueFormatter: (value) => {
-          if (value === null) {
-            return '';
-          }
-          return value === 0 ? '-' : (value as number);
-        },
         renderCell: (params) => {
+          const formattedValue = zeroAmountFormat(params.value, locale);
           return (
-            <Tooltip title={params.value === null ? '' : String(params.value)}>
-              <Typography variant="body2" noWrap>
-                {params.formattedValue as string}
+            <Tooltip title={amountFormat(params.value, locale)}>
+              <Typography
+                variant="body2"
+                noWrap
+                sx={formattedValue === '-' ? { mx: 'auto' } : undefined}
+              >
+                {formattedValue}
               </Typography>
             </Tooltip>
           );

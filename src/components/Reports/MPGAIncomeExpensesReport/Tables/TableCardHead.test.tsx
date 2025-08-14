@@ -25,14 +25,25 @@ const months = [
   'Mar 2025',
 ];
 
-function monthCount(months: string[]) {
-  return months.reduce((acc, month) => {
-    const year = month.split(' ')[1];
-    acc[year] = (acc[year] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-}
-const year = monthCount(months);
+const years = [
+  { year: '2024', count: 9 },
+  { year: '2025', count: 3 },
+];
+
+const monthInfo = [
+  { year: '2024', isFirstOfYear: true },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2025', isFirstOfYear: true },
+  { year: '2025', isFirstOfYear: false },
+  { year: '2025', isFirstOfYear: false },
+];
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -53,7 +64,7 @@ describe('TableCardHead', () => {
     expect(getByText('Summary')).toBeInTheDocument();
   });
 
-  it('should get month count for each year', () => {
+  it('should get year and month count for each year', () => {
     const { container } = render(<TestComponent />);
 
     const y2024 = container.querySelector(
@@ -63,8 +74,11 @@ describe('TableCardHead', () => {
       'th[data-year="2025"]',
     ) as HTMLTableCellElement;
 
-    expect(Number(y2024.dataset.count)).toBe(year['2024']);
-    expect(Number(y2025.dataset.count)).toBe(year['2025']);
+    expect(y2024).toBeInTheDocument();
+    expect(y2025).toBeInTheDocument();
+
+    expect(Number(y2024.dataset.count)).toBe(years[0].count);
+    expect(Number(y2025.dataset.count)).toBe(years[1].count);
   });
 
   it('should span months correctly', () => {
@@ -78,18 +92,25 @@ describe('TableCardHead', () => {
     ) as HTMLTableCellElement)!;
 
     expect(Number(cell2024.dataset.width)).toBe(
-      (monthWidth + 5) * year['2024'],
+      (monthWidth + 5) * years[0].count,
     );
     expect(Number(cell2025.dataset.width)).toBe(
-      (monthWidth + 5) * year['2025'],
+      (monthWidth + 5) * years[1].count,
     );
+  });
+
+  it('should get correct month info', () => {
+    expect(monthInfo[0].isFirstOfYear).toBeTruthy();
+    expect(monthInfo[1].isFirstOfYear).toBeFalsy();
+    expect(monthInfo[9].isFirstOfYear).toBeTruthy();
+    expect(monthInfo[10].isFirstOfYear).toBeFalsy();
   });
 
   it('should apply correct color to border', () => {
     const { container } = render(<TestComponent />);
 
-    const color1 = '#05699B';
-    const color2 = '#F08020';
+    const color1 = theme.palette.primary.main;
+    const color2 = theme.palette.chartOrange.main;
 
     const cell2024 = container.querySelector('th[data-year="2024"]')!;
     const cell2025 = container.querySelector('th[data-year="2025"]')!;
