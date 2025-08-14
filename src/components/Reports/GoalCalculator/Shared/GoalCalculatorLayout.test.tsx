@@ -30,14 +30,15 @@ describe('GoalCalculatorLayout', () => {
   describe('step icons', () => {
     it('change the current step', () => {
       const { getByRole } = render(<TestComponent />);
+      const activeColor = theme.palette.mpdxBlue.main;
 
       const initialStep = getByRole('button', { name: 'Calculator Settings' });
-      expect(initialStep).toHaveStyle({ color: '#05699B' });
+      expect(initialStep).toHaveStyle({ color: activeColor });
 
       const newStep = getByRole('button', { name: 'Ministry Expenses' });
       userEvent.click(newStep);
-      expect(initialStep).not.toHaveStyle({ color: '#05699B' });
-      expect(newStep).toHaveStyle({ color: '#05699B' });
+      expect(initialStep).not.toHaveStyle({ color: activeColor });
+      expect(newStep).toHaveStyle({ color: activeColor });
     });
 
     it('close the drawer when the current step is clicked', () => {
