@@ -19,6 +19,7 @@ export const useCalculatorSettings = (): GoalCalculatorStep => {
       {
         id: GoalCalculatorCategoryEnum.Information,
         title: t('Information'),
+        subtitle: t('Take a moment to verify your information.'),
         component: <InformationStep />,
       },
       {

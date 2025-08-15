@@ -9,11 +9,22 @@ import { useGoalCalculator } from './GoalCalculatorContext';
 
 const iconPanelWidth = theme.spacing(5);
 
+const PrintableStack = styled(Stack)({
+  '@media print': {
+    // Hide all children except for the main content
+    '> *:not(.main-content)': {
+      display: 'none',
+    },
+  },
+});
+
 const MainContent = styled('div')(({ theme }) => ({
   paddingBlock: theme.spacing(4),
   width: '100%',
-  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
-  overflow: 'scroll',
+  '@media screen': {
+    height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
+    overflow: 'scroll',
+  },
 }));
 
 const StepTitle = styled(Typography)(({ theme }) => ({
@@ -78,7 +89,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   };
 
   return (
-    <Stack direction="row">
+    <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
         {steps.map((step) => (
           <IconButton
@@ -107,7 +118,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
       </StyledDrawer>
       {isDrawerOpen && <Divider orientation="vertical" flexItem />}
       <Divider orientation="vertical" flexItem />
-      <MainContent>{mainContent}</MainContent>
-    </Stack>
+      <MainContent className="main-content">{mainContent}</MainContent>
+    </PrintableStack>
   );
 };

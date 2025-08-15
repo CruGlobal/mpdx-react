@@ -42,6 +42,7 @@ export const GoalCalculator: React.FC = () => {
             <GoalCalculatorSection
               key={category.id}
               title={category.title}
+              subtitle={category.subtitle}
               rightPanelContent={category.rightPanelComponent}
             >
               {category.component}

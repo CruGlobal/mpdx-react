@@ -35,11 +35,6 @@ const StyledCard = styled(Card)({
   width: '100%',
 });
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  flex: '1 1 100%',
-  marginBottom: theme.spacing(2),
-}));
-
 const StyledTabs = styled(Tabs)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
@@ -248,136 +243,126 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
   };
 
   return (
-    <>
-      <StyledTypography data-testid="verify-info-typography">
-        {t('Take a moment to verify your information.')}
-      </StyledTypography>
-      <StyledCard>
-        <Box
-          display="flex"
-          gap={2}
-          m={2}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap={1}
-          >
-            {userData?.user ? (
-              <Avatar
-                data-testid="info-avatar"
-                src={userData.user.avatar}
-                alt={userData.user.firstName ?? t('User')}
-                variant="rounded"
-                sx={{ width: 36, height: 36, marginRight: 1 }}
-              />
-            ) : (
-              <Avatar variant="rounded" />
-            )}
-            <Typography data-testid="info-name-typography">
-              {userData?.user.firstName ?? t('User')}
-            </Typography>
-          </Box>
-          {spouseInformation !== null && (
-            <Button
-              endIcon={<RightArrowIcon />}
-              onClick={onClickSpouseInformation}
-            >
-              {buttonText}
-            </Button>
+    <StyledCard>
+      <Box
+        display="flex"
+        gap={2}
+        m={2}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+          {userData?.user ? (
+            <Avatar
+              data-testid="info-avatar"
+              src={userData.user.avatar}
+              alt={userData.user.firstName ?? t('User')}
+              variant="rounded"
+              sx={{ width: 36, height: 36, marginRight: 1 }}
+            />
+          ) : (
+            <Avatar variant="rounded" />
           )}
+          <Typography data-testid="info-name-typography">
+            {userData?.user.firstName ?? t('User')}
+          </Typography>
         </Box>
-
-        {!spouseInformation && (
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-            enableReinitialize
+        {spouseInformation !== null && (
+          <Button
+            endIcon={<RightArrowIcon />}
+            onClick={onClickSpouseInformation}
           >
-            <Form>
-              <StyledCard>
-                <StyledInfoBox>
-                  <StyledTabs
-                    value={value}
-                    onChange={handleChange}
-                    aria-label={t('information tabs')}
-                  >
-                    <Tab
-                      data-testid="personal-tab"
-                      iconPosition={'start'}
-                      icon={<PersonIcon />}
-                      label={t('Personal')}
-                    />
-                    <Tab
-                      data-testid="financial-tab"
-                      iconPosition={'start'}
-                      icon={<CreditCardIcon />}
-                      label={t('Financial')}
-                    />
-                  </StyledTabs>
-                </StyledInfoBox>
-
-                <TabPanel value={value} index={0}>
-                  <InformationStepPersonalForm />
-                </TabPanel>
-
-                <TabPanel value={value} index={1}>
-                  <InformationStepFinancialForm />
-                </TabPanel>
-              </StyledCard>
-            </Form>
-          </Formik>
+            {buttonText}
+          </Button>
         )}
+      </Box>
 
-        {spouseInformation && (
-          <Formik
-            initialValues={initialSpouseValues}
-            validationSchema={spouseValidationSchema}
-            onSubmit={handleSubmit}
-            enableReinitialize
-          >
-            <Form>
-              <StyledCard>
-                <StyledInfoBox>
-                  <StyledTabs
-                    value={value}
-                    onChange={handleChange}
-                    aria-label={t('information tabs')}
-                  >
-                    <Tab
-                      data-testid="spouse-personal-tab"
-                      iconPosition={'start'}
-                      icon={<PersonIcon />}
-                      label={t("Spouse's Personal")}
-                    />
-                    <Tab
-                      data-testid="spouse-financial-tab"
-                      iconPosition={'start'}
-                      icon={<CreditCardIcon />}
-                      label={t("Spouse's Financial")}
-                    />
-                  </StyledTabs>
-                </StyledInfoBox>
+      {!spouseInformation && (
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          <Form>
+            <StyledCard>
+              <StyledInfoBox>
+                <StyledTabs
+                  value={value}
+                  onChange={handleChange}
+                  aria-label={t('information tabs')}
+                >
+                  <Tab
+                    data-testid="personal-tab"
+                    iconPosition={'start'}
+                    icon={<PersonIcon />}
+                    label={t('Personal')}
+                  />
+                  <Tab
+                    data-testid="financial-tab"
+                    iconPosition={'start'}
+                    icon={<CreditCardIcon />}
+                    label={t('Financial')}
+                  />
+                </StyledTabs>
+              </StyledInfoBox>
 
-                <TabPanel value={value} index={0}>
-                  <InformationStepPersonalForm isSpouse />
-                </TabPanel>
+              <TabPanel value={value} index={0}>
+                <InformationStepPersonalForm />
+              </TabPanel>
 
-                <TabPanel value={value} index={1}>
-                  {/* isSpouse logic does not currently need to be handled in
+              <TabPanel value={value} index={1}>
+                <InformationStepFinancialForm />
+              </TabPanel>
+            </StyledCard>
+          </Form>
+        </Formik>
+      )}
+
+      {spouseInformation && (
+        <Formik
+          initialValues={initialSpouseValues}
+          validationSchema={spouseValidationSchema}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          <Form>
+            <StyledCard>
+              <StyledInfoBox>
+                <StyledTabs
+                  value={value}
+                  onChange={handleChange}
+                  aria-label={t('information tabs')}
+                >
+                  <Tab
+                    data-testid="spouse-personal-tab"
+                    iconPosition={'start'}
+                    icon={<PersonIcon />}
+                    label={t("Spouse's Personal")}
+                  />
+                  <Tab
+                    data-testid="spouse-financial-tab"
+                    iconPosition={'start'}
+                    icon={<CreditCardIcon />}
+                    label={t("Spouse's Financial")}
+                  />
+                </StyledTabs>
+              </StyledInfoBox>
+
+              <TabPanel value={value} index={0}>
+                <InformationStepPersonalForm isSpouse />
+              </TabPanel>
+
+              <TabPanel value={value} index={1}>
+                {/* isSpouse logic does not currently need to be handled in
                   InformationStepFinancialForm but it's worth passing
                   in the event we do make changes */}
-                  <InformationStepFinancialForm isSpouse />
-                </TabPanel>
-              </StyledCard>
-            </Form>
-          </Formik>
-        )}
-      </StyledCard>
-    </>
+                <InformationStepFinancialForm isSpouse />
+              </TabPanel>
+            </StyledCard>
+          </Form>
+        </Formik>
+      )}
+    </StyledCard>
   );
 };
