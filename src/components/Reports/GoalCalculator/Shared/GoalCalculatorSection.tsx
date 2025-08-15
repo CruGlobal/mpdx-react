@@ -34,6 +34,10 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   const { setRightPanelContent } = useGoalCalculator();
   const { t } = useTranslation();
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <SectionContainer>
       <Box pb={4}>
@@ -57,7 +61,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
               className="print-hidden"
               variant="outlined"
               endIcon={<PrintIcon />}
-              onClick={() => window.print()}
+              onClick={handlePrint}
             >
               {t('Print')}
             </Button>
