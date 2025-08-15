@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 import { useGoalLineItems } from './useGoalLineItems';
 
 export interface Goal {
@@ -315,55 +316,113 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
   );
 
   return (
-    <StyledDataGrid
-      label={t('MPD Goal')}
-      getRowId={(row) => row.line}
-      getRowClassName={(params) => {
-        const classes: string[] = [];
+    <>
+      <MpdGoalHeaderCards
+        goal={{
+          overallTotal: calculations.overallTotal,
+          supportRaisedPercentage: calculations.supportRaisedPercentage,
+        }}
+      />
+      <StyledDataGrid
+        label={t('MPD Goal')}
+        getRowId={(row) => row.line}
+        getRowClassName={(params) => {
+          const classes: string[] = [];
 
-        // Bold subtotal and total lines
-        if (
-          params.row.line === '1J' ||
-          params.row.line === '18' ||
-          params.row.line === '20'
-        ) {
-          classes.push('bold');
-        }
+          // Bold subtotal and total lines
+          if (
+            params.row.line === '1J' ||
+            params.row.line === '18' ||
+            params.row.line === '20'
+          ) {
+            classes.push('bold');
+          }
 
-        // Add a top border to some lines
-        if (params.row.line === '1' || params.row.line === '18') {
-          classes.push('top-border');
-        }
+          // Add a top border to some lines
+          if (params.row.line === '1' || params.row.line === '18') {
+            classes.push('top-border');
+          }
 
-        return classes.join(' ');
-      }}
-      getCellClassName={(params) => {
-        const classes: string[] = [];
+          return classes.join(' ');
+        }}
+        getCellClassName={(params) => {
+          const classes: string[] = [];
 
-        // Indent categories belonging to lines that contain a letter
-        if (
-          params.colDef.field === 'category' &&
-          typeof params.row.line === 'string' &&
-          /[a-z]/i.test(params.row.line)
-        ) {
-          classes.push('indent');
-        }
+          // Indent categories belonging to lines that contain a letter
+          if (
+            params.colDef.field === 'category' &&
+            typeof params.row.line === 'string' &&
+            /[a-z]/i.test(params.row.line)
+          ) {
+            classes.push('indent');
+          }
 
-        // Identify reference cells
-        if (params.colDef.field === 'reference') {
-          classes.push(params.colDef.field);
-        }
+          // Identify reference cells
+          if (params.colDef.field === 'reference') {
+            classes.push(params.colDef.field);
+          }
 
-        return classes.join(' ');
-      }}
-      rows={rows}
-      columns={columns}
-      disableColumnFilter
-      disableRowSelectionOnClick
-      disableVirtualization
-      hideFooter
-      autoHeight
-      localeText={localeText}
-    />
+          return classes.join(' ');
+        }}
+        rows={rows}
+        columns={columns}
+        disableColumnFilter
+        disableRowSelectionOnClick
+        disableVirtualization
+        hideFooter
+        autoHeight
+        localeText={localeText}
+      />
+      <StyledDataGrid
+        label={t('MPD Goal')}
+        getRowId={(row) => row.line}
+        getRowClassName={(params) => {
+          const classes: string[] = [];
+
+          // Bold subtotal and total lines
+          if (
+            params.row.line === '1J' ||
+            params.row.line === '18' ||
+            params.row.line === '20'
+          ) {
+            classes.push('bold');
+          }
+
+          // Add a top border to some lines
+          if (params.row.line === '1' || params.row.line === '18') {
+            classes.push('top-border');
+          }
+
+          return classes.join(' ');
+        }}
+        getCellClassName={(params) => {
+          const classes: string[] = [];
+
+          // Indent categories belonging to lines that contain a letter
+          if (
+            params.colDef.field === 'category' &&
+            typeof params.row.line === 'string' &&
+            /[a-z]/i.test(params.row.line)
+          ) {
+            classes.push('indent');
+          }
+
+          // Identify reference cells
+          if (params.colDef.field === 'reference') {
+            classes.push(params.colDef.field);
+          }
+
+          return classes.join(' ');
+        }}
+        rows={rows}
+        columns={columns}
+        disableColumnFilter
+        disableRowSelectionOnClick
+        disableVirtualization
+        hideFooter
+        autoHeight
+        localeText={localeText}
+      />
+    </>
   );
 };
