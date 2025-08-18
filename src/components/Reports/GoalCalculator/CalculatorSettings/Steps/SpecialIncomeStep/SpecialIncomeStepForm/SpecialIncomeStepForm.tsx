@@ -1,5 +1,6 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
   Button,
@@ -10,7 +11,9 @@ import {
 } from '@mui/material';
 import { Field, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import { CurrencyAdornment } from '../../../../Shared/Adornments';
+import { SpouseIncomeHelperPanel } from '../SpecialInterestHelperPanel/SpouseIncomeHelperPanel';
 
 const StyledDeleteIconButton = styled(IconButton)(({ theme }) => ({
   color: 'black',
@@ -34,6 +37,7 @@ interface SpecialIncomeFormValues {
   // Special income fields
   incidentIncome: number;
   propertyIncome: number;
+  spouseIncome: number;
   additionalIncomes: Array<{
     label: string;
     amount: number;
@@ -48,8 +52,8 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
   formikProps,
 }) => {
   const { t } = useTranslation();
-  const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
-    formikProps;
+  const { setRightPanelContent } = useGoalCalculator();
+  const { values, errors, touched, setFieldValue } = formikProps;
 
   const addIncomeField = () => {
     const newIncome = { label: '', amount: 0 };
@@ -69,16 +73,13 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Field name="incidentIncome">
-            {() => (
+            {({ field }) => (
               <TextField
+                {...field}
                 fullWidth
                 size="small"
                 label={t('Incident Income')}
-                name="incidentIncome"
                 type="number"
-                value={values.incidentIncome}
-                onChange={handleChange}
-                onBlur={handleBlur}
                 error={touched.incidentIncome && Boolean(errors.incidentIncome)}
                 helperText={touched.incidentIncome && errors.incidentIncome}
                 variant="outlined"
@@ -93,22 +94,48 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
 
         <Grid item xs={12}>
           <Field name="propertyIncome">
-            {() => (
+            {({ field }) => (
               <TextField
+                {...field}
                 fullWidth
                 size="small"
                 label={t('Property Income')}
-                name="propertyIncome"
                 type="number"
-                value={values.propertyIncome}
-                onChange={handleChange}
-                onBlur={handleBlur}
                 error={touched.propertyIncome && Boolean(errors.propertyIncome)}
                 helperText={touched.propertyIncome && errors.propertyIncome}
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
                   startAdornment: <CurrencyAdornment />,
+                }}
+              />
+            )}
+          </Field>
+        </Grid>
+        <Grid item xs={12}>
+          <Field name="spouseIncome">
+            {({ field }) => (
+              <TextField
+                {...field}
+                fullWidth
+                size="small"
+                label={t('Non Staff Spouse Income')}
+                type="number"
+                error={touched.spouseIncome && Boolean(errors.spouseIncome)}
+                helperText={touched.spouseIncome && errors.spouseIncome}
+                variant="outlined"
+                inputProps={{ min: 0, step: 0.01 }}
+                InputProps={{
+                  startAdornment: <CurrencyAdornment />,
+                  endAdornment: (
+                    <IconButton
+                      onClick={() =>
+                        setRightPanelContent(<SpouseIncomeHelperPanel />)
+                      }
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  ),
                 }}
               />
             )}
