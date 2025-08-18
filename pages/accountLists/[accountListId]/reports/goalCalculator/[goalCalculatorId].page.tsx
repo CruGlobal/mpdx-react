@@ -1,12 +1,17 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList/GoalsList';
-import { Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
+import {
+  GoalCalculatorProvider,
+  useGoalCalculator,
+} from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -35,9 +40,9 @@ const RightPanelTitle = styled(Typography)({
   fontSize: '0.875rem',
 });
 
-const RightPanelContent = styled('div')(({ theme }) => ({
-  margin: theme.spacing(2),
-}));
+const RightPanelContent = styled(Box)({
+  // Content wrapper for right panel
+});
 
 interface GoalCalculatorContentProps {
   isNavListOpen: boolean;
@@ -86,7 +91,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
       }
       leftOpen={isNavListOpen}
       leftWidth="290px"
-      rightWidth="600px"
+      rightWidth="290px"
       headerHeight={multiPageHeaderHeight}
       mainContent={
         <>
@@ -123,33 +128,14 @@ const GoalCalculatorPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <GoalCalculatorPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <MultiPageMenu
-                isOpen={isNavListOpen}
-                selectedId="goalCalculation"
-                onClose={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
-                navType={NavTypeEnum.Reports}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            headerHeight={multiPageHeaderHeight}
-            mainContent={
-              <>
-                <MultiPageHeader
-                  isNavListOpen={isNavListOpen}
-                  onNavListToggle={handleNavListToggle}
-                  title={t('Goal Calculator')}
-                  headerType={HeaderTypeEnum.Report}
-                />
-                <GoalsList />
-              </>
-            }
-          />
+          <GoalCalculatorProvider>
+            <GoalCalculatorContent
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              designationAccounts={designationAccounts}
+              setDesignationAccounts={setDesignationAccounts}
+            />
+          </GoalCalculatorProvider>
         </GoalCalculatorPageWrapper>
       ) : (
         <Loading loading />
