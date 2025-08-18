@@ -1,5 +1,15 @@
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
-import { Divider, IconButton, Stack, Typography, styled } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {
+  Divider,
+  IconButton,
+  Link,
+  Stack,
+  Typography,
+  styled,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -68,6 +78,8 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   mainContent,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { accountListId } = router.query;
   const iconPanelWidth = theme.spacing(5);
   const {
     steps,
@@ -106,6 +118,20 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
             {step.icon}
           </IconButton>
         ))}
+        <Link
+          component={NextLink}
+          href={`/accountLists/${accountListId}/reports/goalCalculator`}
+          sx={{ textDecoration: 'none' }}
+          aria-label={t('Go back')}
+        >
+          <IconButton
+            sx={(theme) => ({
+              color: theme.palette.cruGrayDark.main,
+            })}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        </Link>
       </Stack>
       <Divider orientation="vertical" flexItem />
       <StyledDrawer

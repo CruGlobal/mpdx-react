@@ -31,6 +31,8 @@ export interface ConfirmationProps {
   confirmButtonProps?: ActionButtonProps;
   handleClose: () => void;
   handleDecline?: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
 }
 
 export const Confirmation: React.FC<ConfirmationProps> = ({
@@ -42,6 +44,8 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
   mutation,
   handleClose,
   handleDecline,
+  confirmLabel,
+  cancelLabel,
 }) => {
   const { t } = useTranslation();
   const [mutating, setMutating] = useState(false);
@@ -94,7 +98,7 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
 
       <DialogActions>
         <CancelButton onClick={onClickDecline} disabled={mutating}>
-          {t('No')}
+          {cancelLabel || t('No')}
         </CancelButton>
         <SubmitButton
           type="button"
@@ -102,7 +106,7 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
           {...confirmButtonProps}
           disabled={mutating || confirmButtonProps?.disabled}
         >
-          {t('Yes')}
+          {confirmLabel || t('Yes')}
         </SubmitButton>
       </DialogActions>
     </Modal>

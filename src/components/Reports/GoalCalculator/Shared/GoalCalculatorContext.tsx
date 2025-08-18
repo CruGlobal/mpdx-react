@@ -109,7 +109,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
         variant: 'info',
       });
     }
-  }, [steps, enqueueSnackbar, selectedStepId, t]);
+  }, [steps, selectedStepId, handleStepChange, enqueueSnackbar, t]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);

@@ -12,6 +12,7 @@ const CategoryContainer = styled('div')(({ theme }) => ({
 
 export const GoalCalculator: React.FC = () => {
   const { currentStep, handleContinue } = useGoalCalculator();
+
   const {
     instructions: stepInstructions,
     categories,

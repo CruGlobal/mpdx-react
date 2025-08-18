@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useGreeting } from 'src/hooks/useGreeting';
 import PageHeading from '../../PageHeading';
 
 interface Props {
@@ -10,20 +10,8 @@ interface Props {
 
 const Welcome = ({ firstName }: Props): ReactElement => {
   const { t } = useTranslation();
-  const today = DateTime.local();
+  const greeting = useGreeting(firstName);
   const { appName } = useGetAppSettings();
-  const currentHour = today.hour;
-
-  let greeting = t('Good Evening,');
-
-  if (currentHour < 12) {
-    greeting = t('Good Morning,');
-  } else if (currentHour < 18) {
-    greeting = t('Good Afternoon,');
-  }
-  if (firstName) {
-    greeting += ` ${firstName}.`;
-  }
 
   return (
     <PageHeading

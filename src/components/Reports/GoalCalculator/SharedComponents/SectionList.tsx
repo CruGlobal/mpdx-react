@@ -63,16 +63,17 @@ interface SectionListProps {
   sections: SectionItem[];
 }
 
-export const SectionList: React.FC<SectionListProps> = ({ sections }) => (
-  <List disablePadding>
-    {sections.map(({ title, complete }, index) => (
-      <ListItem key={index} sx={categoryListItemStyles}>
-        <ListItemContent title={title} complete={complete} />
-      </ListItem>
-    ))}
-  </List>
-);
-
+export const SectionList: React.FC<SectionListProps> = ({ sections }) => {
+  return (
+    <List disablePadding>
+      {sections.map(({ title, complete }, index) => (
+        <ListItem key={index} sx={categoryListItemStyles}>
+          <ListItemContent title={title} complete={complete} />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
 export const ReportSectionList: React.FC = () => {
   const { t } = useTranslation();
   const { selectedReport, setSelectedReport } = useGoalCalculator();
