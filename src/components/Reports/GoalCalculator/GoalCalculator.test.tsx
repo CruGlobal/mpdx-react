@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { GoalCalculator } from './GoalCalculator';
@@ -12,7 +13,7 @@ import {
   useGoalCalculator,
 } from './Shared/GoalCalculatorContext';
 
-interface InitializeContextProps {
+interface ContextHelperProps {
   selectedStepId: GoalCalculatorStepEnum;
 }
 
@@ -21,9 +22,7 @@ interface InitializeContextProps {
  * tests. It also extracts state from the context, like the right panel contents, and renders it
  * in the page so that tests can query and assert the state of the context.
  */
-const ContextHelper: React.FC<InitializeContextProps> = ({
-  selectedStepId,
-}) => {
+const ContextHelper: React.FC<ContextHelperProps> = ({ selectedStepId }) => {
   const { handleStepChange, rightPanelContent } = useGoalCalculator();
 
   useEffect(() => {
@@ -40,16 +39,18 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   selectedStepId = GoalCalculatorStepEnum.MinistryExpenses,
 }) => (
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider>
-      <GqlMockedProvider>
-        <GoalCalculatorProvider>
-          <ContextHelper selectedStepId={selectedStepId} />
-          <GoalCalculator isNavListOpen={false} onNavListToggle={jest.fn()} />
-        </GoalCalculatorProvider>
-      </GqlMockedProvider>
-    </SnackbarProvider>
-  </ThemeProvider>
+  <TestRouter>
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <GoalCalculatorProvider>
+            <ContextHelper selectedStepId={selectedStepId} />
+            <GoalCalculator />
+          </GoalCalculatorProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+  </TestRouter>
 );
 
 describe('GoalCalculator', () => {
@@ -87,5 +88,16 @@ describe('GoalCalculator', () => {
     const { getByRole } = render(<TestComponent />);
     const heading = getByRole('heading', { name: 'Transfers' });
     expect(within(heading).queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  describe('reports step', () => {
+    it('renders custom section list and main content', () => {
+      const { getByRole } = render(
+        <TestComponent selectedStepId={GoalCalculatorStepEnum.SummaryReport} />,
+      );
+
+      expect(getByRole('button', { name: 'MPD Goal' })).toBeInTheDocument();
+      expect(getByRole('heading', { name: 'MPD Goal' })).toBeInTheDocument();
+    });
   });
 });

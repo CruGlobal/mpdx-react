@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface GoalCalculatorCategory {
   id: GoalCalculatorCategoryEnum;
   title: string;
@@ -9,7 +11,8 @@ export interface GoalCalculatorStep {
   id: GoalCalculatorStepEnum;
   title: string;
   instructions?: JSX.Element;
-  categories: GoalCalculatorCategory[];
+  PageComponent?: React.FC;
+  categories?: GoalCalculatorCategory[];
   icon: JSX.Element;
 }
 
@@ -47,7 +50,10 @@ export enum GoalCalculatorCategoryEnum {
   Technology = 'technology',
   SummerMissions = 'summer-missions',
   Other = 'other',
-  // SummaryReport
-  Overview = 'overview',
+}
+
+export enum GoalCalculatorReportEnum {
+  MpdGoal = 'mpd-goal',
+  SalaryRequest = 'salary-request',
   PresentingYourGoal = 'presenting-your-goal',
 }
