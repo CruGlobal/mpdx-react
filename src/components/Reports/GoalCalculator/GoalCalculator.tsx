@@ -1,5 +1,3 @@
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { Divider, Stack, styled } from '@mui/material';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
@@ -14,6 +12,7 @@ const CategoryContainer = styled('div')(({ theme }) => ({
 
 export const GoalCalculator: React.FC = () => {
   const { currentStep, handleContinue } = useGoalCalculator();
+
   const {
     instructions: stepInstructions,
     categories,
