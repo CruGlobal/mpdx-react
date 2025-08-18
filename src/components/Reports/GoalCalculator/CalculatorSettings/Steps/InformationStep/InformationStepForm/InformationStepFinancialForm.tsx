@@ -1,11 +1,20 @@
 import React from 'react';
-import { Grid, MenuItem, TextField, Typography } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import {
+  Grid,
+  IconButton,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import {
   CurrencyAdornment,
   PercentageAdornment,
 } from '../../../../Shared/Adornments';
+import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';
 
 interface InformationStepFinancialFormProps {
   isSpouse?: boolean;
@@ -15,6 +24,7 @@ export const InformationStepFinancialForm: React.FC<
   InformationStepFinancialFormProps
 > = ({ isSpouse }) => {
   const { t } = useTranslation();
+  const { setRightPanelContent } = useGoalCalculator();
 
   return (
     <>
@@ -120,6 +130,15 @@ export const InformationStepFinancialForm: React.FC<
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
                   startAdornment: <CurrencyAdornment />,
+                  endAdornment: (
+                    <IconButton
+                      onClick={() =>
+                        setRightPanelContent(<Contribution403bHelperPanel />)
+                      }
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  ),
                 }}
               />
             )}
@@ -145,6 +164,15 @@ export const InformationStepFinancialForm: React.FC<
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
                   startAdornment: <CurrencyAdornment />,
+                  endAdornment: (
+                    <IconButton
+                      onClick={() =>
+                        setRightPanelContent(<Contribution403bHelperPanel />)
+                      }
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  ),
                 }}
               />
             )}
