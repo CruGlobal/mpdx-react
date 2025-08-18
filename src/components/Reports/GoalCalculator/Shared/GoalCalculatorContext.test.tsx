@@ -66,7 +66,7 @@ describe('GoalCalculatorContext', () => {
     const { getByRole } = render(<WrappedTestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Continue' }));
-    expect(getByRole('heading')).toHaveTextContent('Household Expenses');
+    expect(getByRole('heading')).toHaveTextContent('Ministry Expenses');
   });
 
   it('should toggle drawer state', () => {
