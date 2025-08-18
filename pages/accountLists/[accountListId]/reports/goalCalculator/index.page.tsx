@@ -1,12 +1,12 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList/GoalsList';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList/GoalsList';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -22,88 +22,6 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
-
-const RightPanelHeader = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: theme.spacing(1),
-  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
-}));
-
-const RightPanelTitle = styled(Typography)({
-  fontSize: '0.875rem',
-});
-
-const RightPanelContent = styled('div')(({ theme }) => ({
-  margin: theme.spacing(2),
-}));
-
-interface GoalCalculatorContentProps {
-  isNavListOpen: boolean;
-  onNavListToggle: () => void;
-  designationAccounts: string[];
-  setDesignationAccounts: (accounts: string[]) => void;
-}
-
-const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
-  isNavListOpen,
-  onNavListToggle,
-  designationAccounts,
-  setDesignationAccounts,
-}) => {
-  const { rightPanelContent, closeRightPanel } = useGoalCalculator();
-  const { t } = useTranslation();
-
-  const rightPanel = (
-    <>
-      <RightPanelHeader>
-        <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
-        <IconButton
-          size="small"
-          onClick={closeRightPanel}
-          aria-label={t('Close Panel')}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </RightPanelHeader>
-      <RightPanelContent>{rightPanelContent}</RightPanelContent>
-    </>
-  );
-
-  return (
-    <SidePanelsLayout
-      isScrollBox={false}
-      leftPanel={
-        <MultiPageMenu
-          isOpen={isNavListOpen}
-          selectedId="goalCalculation"
-          onClose={onNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
-          navType={NavTypeEnum.Reports}
-        />
-      }
-      leftOpen={isNavListOpen}
-      leftWidth="290px"
-      rightWidth="600px"
-      headerHeight={multiPageHeaderHeight}
-      mainContent={
-        <>
-          <MultiPageHeader
-            isNavListOpen={isNavListOpen}
-            onNavListToggle={onNavListToggle}
-            title={t('Goal Calculator')}
-            headerType={HeaderTypeEnum.Report}
-          />
-          <GoalCalculator />
-        </>
-      }
-      rightPanel={rightPanel}
-      rightOpen={!!rightPanelContent}
-    />
-  );
-};
 
 const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
