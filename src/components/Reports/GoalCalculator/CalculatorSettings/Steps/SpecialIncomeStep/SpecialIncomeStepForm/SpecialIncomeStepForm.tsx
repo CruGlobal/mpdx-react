@@ -15,10 +15,6 @@ import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/
 import { CurrencyAdornment } from '../../../../Shared/Adornments';
 import { SpouseIncomeHelperPanel } from '../SpecialInterestHelperPanel/SpouseIncomeHelperPanel';
 
-const StyledCurrencyPrefix = styled('span')({
-  marginRight: 8,
-});
-
 const StyledDeleteIconButton = styled(IconButton)(({ theme }) => ({
   color: 'black',
   padding: theme.spacing(0.5),
@@ -130,9 +126,7 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
-                  startAdornment: (
-                    <StyledCurrencyPrefix>$</StyledCurrencyPrefix>
-                  ),
+                  startAdornment: <CurrencyAdornment />,
                   endAdornment: (
                     <IconButton
                       onClick={() =>

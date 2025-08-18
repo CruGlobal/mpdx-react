@@ -178,7 +178,7 @@ export const InformationStepPersonalForm: React.FC<
                         onClick={() =>
                           setRightPanelContent(<BenefitsPlanHelperPanel />)
                         }
-                        sx={{ mr: 1 }}
+                        sx={{ mr: 2 }}
                       >
                         <InfoIcon fontSize="small" />
                       </IconButton>
