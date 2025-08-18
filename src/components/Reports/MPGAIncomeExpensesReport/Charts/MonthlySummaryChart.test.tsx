@@ -11,18 +11,15 @@ import { MonthlySummaryChart } from './MonthlySummaryChart';
 
 const mutationSpy = jest.fn();
 
-const mockIncome = [
-  { ...mockData.income.data[0] },
-  { ...mockData.income.data[1] },
-];
+const mockIncome = [{ ...mockData.income[0] }, { ...mockData.income[1] }];
 
 const expenseData = [
-  { ...mockData.ministryExpenses.data[0] },
-  { ...mockData.ministryExpenses.data[1] },
-  { ...mockData.healthcareExpenses.data[0] },
-  { ...mockData.misc.data[0] },
-  { ...mockData.misc.data[1] },
-  { ...mockData.other.data[0] },
+  { ...mockData.ministryExpenses[0] },
+  { ...mockData.ministryExpenses[1] },
+  { ...mockData.healthcareExpenses[0] },
+  { ...mockData.misc[0] },
+  { ...mockData.misc[1] },
+  { ...mockData.other[0] },
 ];
 
 const months = [

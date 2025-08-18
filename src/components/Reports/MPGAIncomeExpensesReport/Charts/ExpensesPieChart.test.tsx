@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { TotalsProvider } from '../TotalsContext/TotalsContext';
 import { mockData } from '../mockData';
 import { ExpensesPieChart } from './ExpensesPieChart';
 
@@ -14,38 +15,23 @@ const mutationSpy = jest.fn();
 const data = {
   accountListId: '12345',
   accountName: 'Test Account',
+  income: [],
   ministryExpenses: [
-    { ...mockData.ministryExpenses.data[0] },
-    { ...mockData.ministryExpenses.data[1] },
+    { ...mockData.ministryExpenses[0] },
+    { ...mockData.ministryExpenses[1] },
   ],
-  healthcareExpenses: [{ ...mockData.healthcareExpenses.data[0] }],
-  misc: [{ ...mockData.misc.data[0] }, { ...mockData.misc.data[1] }],
-  other: [{ ...mockData.other.data[0] }],
+  healthcareExpenses: [{ ...mockData.healthcareExpenses[0] }],
+  misc: [{ ...mockData.misc[0] }, { ...mockData.misc[1] }],
+  other: [{ ...mockData.other[0] }],
 };
-
-const ministryTotal = data.ministryExpenses.reduce(
-  (acc, item) => acc + item.total,
-  0,
-);
-const healthcareTotal = data.healthcareExpenses.reduce(
-  (acc, item) => acc + item.total,
-  0,
-);
-const miscTotal = data.misc.reduce((acc, item) => acc + item.total, 0);
-const otherTotal = data.other.reduce((acc, item) => acc + item.total, 0);
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <ExpensesPieChart
-          ministryExpenses={ministryTotal}
-          healthcareExpenses={healthcareTotal}
-          misc={miscTotal}
-          other={otherTotal}
-          aspect={1.35}
-          width={100}
-        />
+        <TotalsProvider data={data}>
+          <ExpensesPieChart aspect={1.35} width={100} />
+        </TotalsProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>

@@ -1,7 +1,8 @@
 import { Tooltip, Typography } from '@mui/material';
+import { zeroAmountFormat } from 'src/lib/intlFormat';
 import { RenderCell } from '../Tables/TableCard';
 
-export const populateCardTableRows = () => {
+export const populateCardTableRows = (locale: string) => {
   const description: RenderCell = ({ row }) => {
     return (
       <Tooltip title={row.description}>
@@ -14,9 +15,9 @@ export const populateCardTableRows = () => {
 
   const average: RenderCell = ({ row }) => {
     return (
-      <Tooltip title={row.average}>
+      <Tooltip title={zeroAmountFormat(row.average, locale)}>
         <Typography variant="body2" noWrap>
-          {row.average}
+          {zeroAmountFormat(row.average, locale)}
         </Typography>
       </Tooltip>
     );
@@ -24,9 +25,9 @@ export const populateCardTableRows = () => {
 
   const total: RenderCell = ({ row }) => {
     return (
-      <Tooltip title={row.total}>
+      <Tooltip title={zeroAmountFormat(row.total, locale)}>
         <Typography variant="body2" noWrap>
-          {row.total}
+          {zeroAmountFormat(row.total, locale)}
         </Typography>
       </Tooltip>
     );

@@ -7,42 +7,34 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { TotalsProvider } from '../TotalsContext/TotalsContext';
+import { mockData } from '../mockData';
 import { TableCard } from './TableCard';
 
 const mutationSpy = jest.fn();
 
 const title = 'Income';
 
-const mockData = {
+const data = {
   accountListId: '12345',
   accountName: 'Test Account',
-  income: {
-    data: [
-      {
-        id: crypto.randomUUID(),
-        description: 'Contributions',
-        monthly: [
-          6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020,
-          19215,
-        ],
-        average: 9013,
-        total: 108156,
-      },
-      {
-        id: crypto.randomUUID(),
-        description: 'Fr Andre, Fre to Mouna Ghar',
-        monthly: [100, 100, 100, 100, 100, 100, 100, 0, 0, 0, 0, 0],
-        average: 58,
-        total: 700,
-      },
-    ],
-  },
+  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
+  ministryExpenses: [],
+  healthcareExpenses: [],
+  misc: [],
+  other: [],
 };
 
-const overallTotal = mockData.income.data.reduce(
-  (acc, item) => acc + item.total,
-  0,
-);
+const emptyData = {
+  accountListId: '12345',
+  accountName: 'Test Account',
+  income: [],
+  ministryExpenses: [],
+  healthcareExpenses: [],
+  misc: [],
+  other: [],
+};
+
 const months = [
   'Apr 2024',
   'May 2024',
@@ -62,14 +54,15 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <TableCard
-          type={ReportTypeEnum.Income}
-          data={mockData.income.data}
-          overallTotal={overallTotal}
-          emptyPlaceholder={<span>Empty Table</span>}
-          title={title}
-          months={months}
-        />
+        <TotalsProvider data={data}>
+          <TableCard
+            type={ReportTypeEnum.Income}
+            data={data.income}
+            emptyPlaceholder={<span>Empty Table</span>}
+            title={title}
+            months={months}
+          />
+        </TotalsProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
@@ -90,9 +83,9 @@ describe('TableCard', () => {
       getByRole('gridcell', { name: 'Contributions' }),
     ).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Average' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '9013' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '9,013' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Total' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '108156' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '108,156' })).toBeInTheDocument();
   });
 
   it('should calculate and display totals correctly', () => {
@@ -115,15 +108,16 @@ describe('TableCard', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <TableCard
-              type={ReportTypeEnum.Income}
-              data={mockData.income.data}
-              overallTotal={overallTotal}
-              emptyPlaceholder={<span>Empty Table</span>}
-              title={title}
-              months={months}
-              loading={true}
-            />
+            <TotalsProvider data={data}>
+              <TableCard
+                type={ReportTypeEnum.Income}
+                data={data.income}
+                emptyPlaceholder={<span>Empty Table</span>}
+                title={title}
+                months={months}
+                loading={true}
+              />
+            </TotalsProvider>
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,
@@ -144,14 +138,15 @@ describe('TableCard', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <TableCard
-              type={ReportTypeEnum.Income}
-              data={[]}
-              overallTotal={0}
-              emptyPlaceholder={<span>Empty Table</span>}
-              title={title}
-              months={months}
-            />
+            <TotalsProvider data={emptyData}>
+              <TableCard
+                type={ReportTypeEnum.Income}
+                data={[]}
+                emptyPlaceholder={<span>Empty Table</span>}
+                title={title}
+                months={months}
+              />
+            </TotalsProvider>
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,
@@ -183,7 +178,7 @@ describe('TableCard', () => {
         (cell) => cell.getAttribute('data-field') === 'month0',
       );
       const values = aprCells.map((cell) => (cell.textContent ?? '').trim());
-      expect(values).toEqual(['6770', '100']);
+      expect(values).toEqual(['6,770', '100']);
     });
 
     await userEvent.click(aprilHeader);
@@ -192,7 +187,7 @@ describe('TableCard', () => {
         (cell) => cell.getAttribute('data-field') === 'month0',
       );
       const values = aprCells.map((cell) => (cell.textContent ?? '').trim());
-      expect(values).toEqual(['100', '6770']);
+      expect(values).toEqual(['100', '6,770']);
     });
   });
 });

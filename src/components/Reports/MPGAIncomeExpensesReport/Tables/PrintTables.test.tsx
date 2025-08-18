@@ -6,42 +6,37 @@ import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { TotalsProvider } from '../TotalsContext/TotalsContext';
+import { mockData } from '../mockData';
 import { PrintTables } from './PrintTables';
 
 const mutationSpy = jest.fn();
 
 const title = 'Income';
 
-const mockData = {
+const data = {
   accountListId: '12345',
   accountName: 'Test Account',
-  income: {
-    data: [
-      {
-        id: crypto.randomUUID(),
-        description: 'Contributions',
-        monthly: [
-          6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020,
-          19215,
-        ],
-        average: 9013,
-        total: 108156,
-      },
-      {
-        id: crypto.randomUUID(),
-        description: 'Fr Andre, Fre to Mouna Ghar',
-        monthly: [100, 100, 100, 100, 100, 100, 100, 0, 0, 0, 0, 0],
-        average: 58,
-        total: 700,
-      },
-    ],
-  },
+  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
+  ministryExpenses: [
+    { ...mockData.ministryExpenses[0] },
+    { ...mockData.ministryExpenses[1] },
+  ],
+  healthcareExpenses: [{ ...mockData.healthcareExpenses[0] }],
+  misc: [{ ...mockData.misc[0] }, { ...mockData.misc[1] }],
+  other: [{ ...mockData.other[0] }],
 };
 
-const overallTotal = mockData.income.data.reduce(
-  (acc, item) => acc + item.total,
-  0,
-);
+const emptyData = {
+  accountListId: '12345',
+  accountName: 'Test Account',
+  income: [],
+  ministryExpenses: [],
+  healthcareExpenses: [],
+  misc: [],
+  other: [],
+};
+
 const months = [
   'Apr 2024',
   'May 2024',
@@ -61,13 +56,14 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <PrintTables
-          type={ReportTypeEnum.Income}
-          data={mockData.income.data}
-          overallTotal={overallTotal}
-          title={title}
-          months={months}
-        />
+        <TotalsProvider data={data}>
+          <PrintTables
+            type={ReportTypeEnum.Income}
+            data={mockData.income}
+            title={title}
+            months={months}
+          />
+        </TotalsProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
@@ -94,7 +90,7 @@ describe('PrintTables', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('cell', { name: '108,856' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '9,071' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '12,960' })).toBeInTheDocument();
   });
 
   it('renders months in column headers for all months', () => {
@@ -120,14 +116,15 @@ describe('PrintTables', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <PrintTables
-              type={ReportTypeEnum.Income}
-              data={mockData.income.data}
-              overallTotal={overallTotal}
-              title={title}
-              months={months}
-              loading={true}
-            />
+            <TotalsProvider data={data}>
+              <PrintTables
+                type={ReportTypeEnum.Income}
+                data={mockData.income}
+                title={title}
+                months={months}
+                loading={true}
+              />
+            </TotalsProvider>
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,
@@ -148,13 +145,14 @@ describe('PrintTables', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <PrintTables
-              type={ReportTypeEnum.Income}
-              data={[]}
-              overallTotal={0}
-              title={title}
-              months={months}
-            />
+            <TotalsProvider data={emptyData}>
+              <PrintTables
+                type={ReportTypeEnum.Income}
+                data={[]}
+                title={title}
+                months={months}
+              />
+            </TotalsProvider>
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,

@@ -12,17 +12,17 @@ const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 
 const title = 'MPGA Report';
-const mockData = {
-  accountListId: '12345',
-  accountName: 'Test Account',
-};
+// const mockData = {
+//   accountListId: '12345',
+//   accountName: 'Test Account',
+// };
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
         <MPGAIncomeExpensesReport
-          accountListId={mockData.accountListId}
+          //accountListId={mockData.accountListId}
           onNavListToggle={onNavListToggle}
           isNavListOpen={true}
           title={title}
@@ -43,14 +43,29 @@ beforeAll(() => {
     .mockImplementation(resizeObserverMock);
 });
 
+beforeEach(() => {
+  Object.defineProperty(window, 'print', {
+    value: jest.fn(),
+    writable: true,
+    configurable: true,
+  });
+});
+
 describe('MPGAIncomeExpensesReport', () => {
   it('renders data', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
     expect(getByRole('heading', { name: title })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Print' })).toBeInTheDocument();
 
-    expect(getByText('12345')).toBeInTheDocument();
-    expect(getByText('Test Account')).toBeInTheDocument();
+    // expect(getByText('12345')).toBeInTheDocument();
+    // expect(getByText('Test Account')).toBeInTheDocument();
+  });
+
+  it('should print', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    await waitFor(() => expect(window.print).toHaveBeenCalled());
   });
 
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {

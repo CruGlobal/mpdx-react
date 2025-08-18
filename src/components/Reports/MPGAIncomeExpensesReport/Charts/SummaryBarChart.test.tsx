@@ -6,38 +6,37 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { TotalsProvider } from '../TotalsContext/TotalsContext';
 import { mockData } from '../mockData';
 import { SummaryBarChart } from './SummaryBarChart';
 
 const mutationSpy = jest.fn();
 
-const mockIncome = [
-  { ...mockData.income.data[0] },
-  { ...mockData.income.data[1] },
-];
+const data = {
+  accountListId: '12345',
+  accountName: 'Test Account',
+  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
+  ministryExpenses: [
+    { ...mockData.ministryExpenses[0] },
+    { ...mockData.ministryExpenses[1] },
+  ],
+  healthcareExpenses: [{ ...mockData.healthcareExpenses[0] }],
+  misc: [{ ...mockData.misc[0] }, { ...mockData.misc[1] }],
+  other: [{ ...mockData.other[0] }],
+};
 
-const expenseData = [
-  { ...mockData.ministryExpenses.data[0] },
-  { ...mockData.ministryExpenses.data[1] },
-  { ...mockData.healthcareExpenses.data[0] },
-  { ...mockData.misc.data[0] },
-  { ...mockData.misc.data[1] },
-  { ...mockData.other.data[0] },
-];
-
-const incomeTotal = mockIncome.reduce((acc, curr) => acc + curr.total, 0);
-const expensesTotal = expenseData.reduce((acc, curr) => acc + curr.total, 0);
+const incomeTotal = data.income.reduce((acc, curr) => acc + curr.total, 0);
+const expensesTotal = data.ministryExpenses
+  .concat(data.healthcareExpenses, data.misc, data.other)
+  .reduce((acc, curr) => acc + curr.total, 0);
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <SummaryBarChart
-          incomeTotal={incomeTotal}
-          expensesTotal={expensesTotal}
-          aspect={1.35}
-          width={100}
-        />
+        <TotalsProvider data={data}>
+          <SummaryBarChart aspect={1.35} width={100} />
+        </TotalsProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
