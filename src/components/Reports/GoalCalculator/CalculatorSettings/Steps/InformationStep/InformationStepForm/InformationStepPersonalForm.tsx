@@ -1,9 +1,11 @@
 import React from 'react';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Autocomplete,
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -12,6 +14,8 @@ import {
 } from '@mui/material';
 import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
 import { BenefitsPlan, Role } from './enums';
 import { locations } from './geographicAdjustments';
 import { ageOptions, familySizeOptions, tenureOptions } from './mockData';
@@ -24,6 +28,7 @@ export const InformationStepPersonalForm: React.FC<
   InformationStepPersonalFormProps
 > = ({ isSpouse }) => {
   const { t } = useTranslation();
+  const { setRightPanelContent } = useGoalCalculator();
 
   return (
     <>
@@ -163,7 +168,22 @@ export const InformationStepPersonalForm: React.FC<
               {({ field, meta }: FieldProps) => (
                 <FormControl fullWidth size="small">
                   <InputLabel>{t('Benefits Plan')}</InputLabel>
-                  <Select {...field} label={t('Benefits Plan')}>
+
+                  <Select
+                    {...field}
+                    label={t('Benefits Plan')}
+                    endAdornment={
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          setRightPanelContent(<BenefitsPlanHelperPanel />)
+                        }
+                        sx={{ mr: 2 }}
+                      >
+                        <InfoIcon fontSize="small" />
+                      </IconButton>
+                    }
+                  >
                     <MenuItem value={BenefitsPlan.Select}>
                       {t('Select')}
                     </MenuItem>
