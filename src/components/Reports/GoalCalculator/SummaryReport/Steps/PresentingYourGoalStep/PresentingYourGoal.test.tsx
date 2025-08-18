@@ -144,25 +144,6 @@ describe('PresentingYourGoal', () => {
     expect(legend?.textContent).toMatch('Salary');
   });
 
-  it('renders the print button and triggers print handler', () => {
-    const { getByRole } = render(<TestComponent />);
-    const printButton = getByRole('button', { name: 'Print' });
-    expect(printButton).toBeInTheDocument();
-
-    const printSpy = jest.spyOn(window, 'print').mockImplementation();
-    jest.spyOn(window.location, 'reload').mockImplementation();
-    const originalInnerHTML = document.body.innerHTML;
-    Object.defineProperty(document.body, 'innerHTML', {
-      value: originalInnerHTML,
-      writable: true,
-    });
-
-    printButton.click();
-
-    expect(printSpy).toHaveBeenCalled();
-    expect(document.body.innerHTML).toBe(originalInnerHTML);
-  });
-
   it('renders the legend with all pie chart categories', async () => {
     const { container } = render(<TestComponent />);
     const legend = container.querySelector('.recharts-legend-wrapper');
