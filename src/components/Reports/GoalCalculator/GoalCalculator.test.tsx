@@ -86,7 +86,7 @@ describe('GoalCalculator', () => {
 
   it('does not show info icon for categories without right panel content', () => {
     const { getByRole } = render(<TestComponent />);
-    const heading = getByRole('heading', { name: 'Transfers' });
+    const heading = getByRole('heading', { name: 'Transfers' })[0];
     expect(within(heading).queryByRole('button')).not.toBeInTheDocument();
   });
 
