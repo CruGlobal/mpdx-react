@@ -17,7 +17,7 @@ import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
-  paddingTop: 2,
+  paddingTop: theme.spacing(2),
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
