@@ -71,8 +71,8 @@ describe('GoalCalculator', () => {
   });
 
   it('renders right panel components', () => {
-    const { getAllByRole, getByRole } = render(<TestComponent />);
-    const heading = getAllByRole('heading', { name: 'Mileage' })[0];
+    const { getByRole } = render(<TestComponent />);
+    const heading = getByRole('heading', { name: 'Mileage' });
     userEvent.click(
       within(heading).getByRole('button', {
         name: 'Show additional info',
