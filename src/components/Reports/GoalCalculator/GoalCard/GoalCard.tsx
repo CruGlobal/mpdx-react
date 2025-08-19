@@ -10,10 +10,10 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { GoalCalculation } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -65,9 +65,9 @@ const StyledActionBox = styled(Box)({
 });
 
 export interface GoalCardProps {
-  goal: Pick<GoalCalculation, 'id' | 'createdAt' | 'isCurrent'>;
+  goal: ListGoalCalculationFragment;
   onStarToggle: (goalId: string) => void;
-  onDelete: (goalId: string) => void;
+  onDelete: (goal: ListGoalCalculationFragment) => void;
   onView: (goalId: string) => void;
 }
 
@@ -85,7 +85,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   };
 
   const handleDelete = () => {
-    onDelete(goal.id);
+    onDelete(goal);
   };
 
   const handleView = () => {

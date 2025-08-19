@@ -1,9 +1,13 @@
+fragment ListGoalCalculation on GoalCalculation {
+  id
+  isCurrent
+  createdAt
+}
+
 query GoalCalculations($accountListId: ID!) {
   goalCalculations(accountListId: $accountListId) {
     nodes {
-      id
-      isCurrent
-      createdAt
+      ...ListGoalCalculation
     }
   }
 }

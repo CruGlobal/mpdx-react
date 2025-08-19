@@ -8,7 +8,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { GoalCard } from '../GoalCard/GoalCard';
 import {
-  GoalCalculationsQuery,
+  ListGoalCalculationFragment,
   useDeleteGoalCalculationMutation,
   useGoalCalculationsQuery,
 } from './GoalCalculations.generated';
@@ -59,9 +59,8 @@ export const GoalsList: React.FC = () => {
   });
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const goals = data?.goalCalculations.nodes ?? [];
-  const [goalToDelete, setGoalToDelete] = useState<
-    GoalCalculationsQuery['goalCalculations']['nodes'][number] | null
-  >(null);
+  const [goalToDelete, setGoalToDelete] =
+    useState<ListGoalCalculationFragment | null>(null);
 
   const { data: userData, loading } = useGetUserQuery();
   const firstName = loading ? 'User' : userData?.user?.firstName;
@@ -82,34 +81,33 @@ export const GoalsList: React.FC = () => {
     );
   };
 
-  const handleDelete = (goalId: string) => {
-    const toDelete = goals.find((goal) => goal.id === goalId);
-    if (toDelete) {
-      setGoalToDelete(toDelete);
-    }
+  const handleDelete = (goal: ListGoalCalculationFragment) => {
+    setGoalToDelete(goal);
   };
 
   const handleConfirmGoalDelete = async () => {
-    if (goalToDelete) {
-      await deleteGoalCalculation({
-        variables: {
-          accountListId,
-          id: goalToDelete.id,
-        },
-        update: (cache) => {
-          cache.evict({ id: `GoalCalculation:${goalToDelete.id}` });
-          cache.gc();
-        },
-      });
+    if (!goalToDelete) {
+      return;
     }
-  };
 
-  const handleView = () => {
-    // TODO
+    await deleteGoalCalculation({
+      variables: {
+        accountListId,
+        id: goalToDelete.id,
+      },
+      update: (cache) => {
+        cache.evict({ id: `GoalCalculation:${goalToDelete.id}` });
+        cache.gc();
+      },
+    });
   };
 
   const handleDeleteDialogCancel = () => {
     setGoalToDelete(null);
+  };
+
+  const handleView = () => {
+    // TODO
   };
 
   return (
