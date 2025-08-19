@@ -1,12 +1,17 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box, Button, List, ListItem, styled } from '@mui/material';
-import { DateTime } from 'luxon';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { GoalCard } from '../GoalCard/GoalCard';
+import {
+  GoalCalculationsQuery,
+  useDeleteGoalCalculationMutation,
+  useGoalCalculationsQuery,
+} from './GoalCalculations.generated';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
 const StyledEmptyStateContainer = styled(Box)({
@@ -45,67 +50,21 @@ const StyledListItem = styled(ListItem)({
   border: 'none',
 });
 
-type GoalCardData = {
-  goalId: number;
-  title: string;
-  description: string;
-  amount: number;
-  date: DateTime;
-  starred: boolean;
-};
-
-const mockGoalCards: GoalCardData[] = [
-  {
-    goalId: 1,
-    title: 'Initial Support Goal',
-    description: 'Reach 50% of monthly support by July.',
-    amount: 5000,
-    date: DateTime.now().plus({ months: 1 }),
-    starred: true,
-  },
-  {
-    goalId: 2,
-    title: 'Full Funding',
-    description: 'Achieve 100% support by end of year.',
-    amount: 10000,
-    date: DateTime.now().plus({ months: 6 }),
-    starred: false,
-  },
-  {
-    goalId: 3,
-    title: 'Special Project',
-    description: 'Raise $5,000 for summer outreach.',
-    amount: 2000,
-    date: DateTime.now().plus({ months: 2 }),
-    starred: true,
-  },
-  {
-    goalId: 4,
-    title: 'Special Project',
-    description: 'Raise $5,000 for summer outreach.',
-    amount: 2000,
-    date: DateTime.now().plus({ months: 2 }),
-    starred: false,
-  },
-  {
-    goalId: 5,
-    title: 'Special Project',
-    description: 'Raise $5,000 for summer outreach.',
-    amount: 2000,
-    date: DateTime.now().plus({ months: 2 }),
-    starred: true,
-  },
-];
-
 export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [goals, setGoals] = useState<GoalCardData[]>(mockGoalCards);
-  const [deleteGoalDialog, setDeleteGoalDialog] = useState(false);
-  const [goalToDelete, setGoalToDelete] = useState<GoalCardData | null>(null);
+  const accountListId = useAccountListId() ?? '';
+  const { data } = useGoalCalculationsQuery({
+    variables: { accountListId },
+  });
+  const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
+  const goals = data?.goalCalculations.nodes ?? [];
+  const [goalToDelete, setGoalToDelete] = useState<
+    GoalCalculationsQuery['goalCalculations']['nodes'][number] | null
+  >(null);
 
-  const { data, loading } = useGetUserQuery();
-  const firstName = loading ? 'User' : data?.user?.firstName;
+  const { data: userData, loading } = useGetUserQuery();
+  const firstName = loading ? 'User' : userData?.user?.firstName;
 
   const handleCreateGoal = () => {
     // TODO: Create a new goal with a GraphQL mutation
@@ -115,7 +74,7 @@ export const GoalsList: React.FC = () => {
     );
   };
 
-  const handleStarToggle = (goalId: number) => {
+  const handleStarToggle = (goalId: string) => {
     setGoals((prevGoals) =>
       prevGoals.map((goal) =>
         goalId === goal.goalId ? { ...goal, starred: !goal.starred } : goal,
@@ -123,21 +82,26 @@ export const GoalsList: React.FC = () => {
     );
   };
 
-  const handleDelete = (goalId: number) => {
-    const toDelete = goals.find((goal) => goal.goalId === goalId);
+  const handleDelete = (goalId: string) => {
+    const toDelete = goals.find((goal) => goal.id === goalId);
     if (toDelete) {
       setGoalToDelete(toDelete);
-      setDeleteGoalDialog(true);
     }
   };
 
   const handleConfirmGoalDelete = async () => {
     if (goalToDelete) {
-      setGoals((prevGoals) =>
-        prevGoals.filter((goal) => goal.goalId !== goalToDelete.goalId),
-      );
+      await deleteGoalCalculation({
+        variables: {
+          accountListId,
+          id: goalToDelete.id,
+        },
+        update: (cache) => {
+          cache.evict({ id: `GoalCalculation:${goalToDelete.id}` });
+          cache.gc();
+        },
+      });
     }
-    setDeleteGoalDialog(false);
   };
 
   const handleView = () => {
@@ -145,7 +109,6 @@ export const GoalsList: React.FC = () => {
   };
 
   const handleDeleteDialogCancel = () => {
-    setDeleteGoalDialog(false);
     setGoalToDelete(null);
   };
 
@@ -153,17 +116,19 @@ export const GoalsList: React.FC = () => {
     <Box sx={{ p: 3, alignSelf: 'center' }}>
       <Confirmation
         title={t('Delete Goal')}
-        isOpen={deleteGoalDialog}
+        isOpen={goalToDelete !== null}
         mutation={handleConfirmGoalDelete}
         handleClose={handleDeleteDialogCancel}
         confirmLabel={t('Delete Goal')}
         cancelLabel={t('Cancel')}
         message={
-          <>
-            {t('Are you sure you want to delete')}{' '}
-            <strong>{goalToDelete?.title || ''}</strong>?{' '}
-            {t('Deleting this goal will remove it permanently.')}
-          </>
+          goalToDelete && (
+            <Trans t={t}>
+              Are you sure you want to delete{' '}
+              <strong>{goalToDelete.createdAt}</strong>? Deleting this goal will
+              remove it permanently.
+            </Trans>
+          )
         }
         confirmButtonProps={{
           variant: 'contained',
@@ -201,7 +166,7 @@ export const GoalsList: React.FC = () => {
           <StyledList>
             {goals.map((goal) => (
               <StyledListItem
-                key={goal.goalId}
+                key={goal.id}
                 sx={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -211,11 +176,7 @@ export const GoalsList: React.FC = () => {
               >
                 <Box maxWidth={500} width="100%">
                   <GoalCard
-                    goalId={goal.goalId}
-                    goalTitle={goal.title}
-                    goalAmount={goal.amount}
-                    goalDate={goal.date}
-                    starred={goal.starred}
+                    goal={goal}
                     onStarToggle={handleStarToggle}
                     onDelete={handleDelete}
                     onView={handleView}

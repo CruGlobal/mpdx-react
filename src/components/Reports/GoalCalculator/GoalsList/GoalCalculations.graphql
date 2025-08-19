@@ -1,0 +1,17 @@
+query GoalCalculations($accountListId: ID!) {
+  goalCalculations(accountListId: $accountListId) {
+    nodes {
+      id
+      isCurrent
+      createdAt
+    }
+  }
+}
+
+mutation DeleteGoalCalculation($accountListId: ID!, $id: ID!) {
+  deleteGoalCalculation(input: { accountListId: $accountListId, id: $id }) {
+    goalCalculation {
+      id
+    }
+  }
+}

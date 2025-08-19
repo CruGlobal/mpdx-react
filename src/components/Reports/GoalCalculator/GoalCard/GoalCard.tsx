@@ -9,8 +9,8 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { GoalCalculation } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -65,22 +65,14 @@ const StyledActionBox = styled(Box)({
 });
 
 export interface GoalCardProps {
-  goalId: number;
-  goalTitle: string;
-  goalAmount: number;
-  goalDate: DateTime;
-  starred: boolean;
-  onStarToggle: (goalId: number) => void;
-  onDelete: (goalId: number) => void;
-  onView: (goalId: number) => void;
+  goal: Pick<GoalCalculation, 'id' | 'createdAt' | 'isCurrent'>;
+  onStarToggle: (goalId: string) => void;
+  onDelete: (goalId: string) => void;
+  onView: (goalId: string) => void;
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({
-  goalId,
-  goalTitle,
-  goalAmount,
-  goalDate,
-  starred,
+  goal,
   onStarToggle,
   onDelete,
   onView,
@@ -89,15 +81,15 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const locale = useLocale();
 
   const handleStarClick = () => {
-    onStarToggle(goalId);
+    onStarToggle(goal.id);
   };
 
   const handleDelete = () => {
-    onDelete(goalId);
+    onDelete(goal.id);
   };
 
   const handleView = () => {
-    onView(goalId);
+    onView(goal.id);
   };
 
   return (
@@ -105,11 +97,11 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       <StyledHeaderBox>
         <StyledTitleBox>
           <Typography data-testid="goal-title" variant="h6">
-            {goalTitle}
+            {goal.createdAt}
           </Typography>
         </StyledTitleBox>
         <StyledStarButton aria-label="star-button" onClick={handleStarClick}>
-          {starred ? (
+          {goal.isCurrent ? (
             <Star color="primary" sx={{ verticalAlign: 'middle' }} />
           ) : (
             <StarBorderOutlined
@@ -129,7 +121,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
               {t('Goal Amount')}
             </Typography>
             <Typography data-testid="goal-amount-value" variant="body1">
-              {currencyFormat(goalAmount, 'USD', locale)}
+              {currencyFormat(0, 'USD', locale)}
             </Typography>
           </StyledInfoRow>
 
@@ -140,7 +132,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
               {t('Last Updated')}
             </Typography>
             <Typography data-testid="date-value" variant="body1">
-              {goalDate.toLocaleString({
+              {new Date(goal.createdAt).toLocaleString(locale, {
                 month: 'long',
                 day: 'numeric',
                 year: 'numeric',
