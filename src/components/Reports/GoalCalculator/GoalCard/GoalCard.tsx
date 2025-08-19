@@ -66,7 +66,7 @@ const StyledActionBox = styled(Box)({
 
 export interface GoalCardProps {
   goal: ListGoalCalculationFragment;
-  onStarToggle: (goalId: string) => void;
+  onStarToggle: (goal: ListGoalCalculationFragment) => void;
   onDelete: (goal: ListGoalCalculationFragment) => void;
   onView: (goalId: string) => void;
 }
@@ -81,7 +81,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const locale = useLocale();
 
   const handleStarClick = () => {
-    onStarToggle(goal.id);
+    onStarToggle(goal);
   };
 
   const handleDelete = () => {

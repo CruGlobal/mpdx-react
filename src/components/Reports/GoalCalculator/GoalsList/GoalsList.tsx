@@ -12,6 +12,7 @@ import {
   useCreateGoalCalculationMutation,
   useDeleteGoalCalculationMutation,
   useGoalCalculationsQuery,
+  useUpdateGoalCalculationMutation,
 } from './GoalCalculations.generated';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
@@ -61,6 +62,7 @@ export const GoalsList: React.FC = () => {
   const [createGoalCalculation] = useCreateGoalCalculationMutation({
     variables: { accountListId },
   });
+  const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const goals = data?.goalCalculations.nodes ?? [];
   const [goalToDelete, setGoalToDelete] =
@@ -79,12 +81,25 @@ export const GoalsList: React.FC = () => {
     }
   };
 
-  const handleStarToggle = (goalId: string) => {
-    setGoals((prevGoals) =>
-      prevGoals.map((goal) =>
-        goalId === goal.goalId ? { ...goal, starred: !goal.starred } : goal,
-      ),
-    );
+  const handleStarToggle = async (goal: ListGoalCalculationFragment) => {
+    await updateGoalCalculation({
+      variables: {
+        accountListId,
+        attributes: {
+          id: goal.id,
+          isCurrent: !goal.isCurrent,
+        },
+      },
+      optimisticResponse: {
+        updateGoalCalculation: {
+          goalCalculation: {
+            ...goal,
+            isCurrent: !goal.isCurrent,
+          },
+        },
+      },
+      refetchQueries: ['GoalCalculations'],
+    });
   };
 
   const handleDelete = (goal: ListGoalCalculationFragment) => {

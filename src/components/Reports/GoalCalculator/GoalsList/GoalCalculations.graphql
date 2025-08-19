@@ -20,6 +20,19 @@ mutation CreateGoalCalculation($accountListId: ID!) {
   }
 }
 
+mutation UpdateGoalCalculation(
+  $accountListId: ID!
+  $attributes: GoalCalculationUpdateInput!
+) {
+  updateGoalCalculation(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    goalCalculation {
+      ...ListGoalCalculation
+    }
+  }
+}
+
 mutation DeleteGoalCalculation($accountListId: ID!, $id: ID!) {
   deleteGoalCalculation(input: { accountListId: $accountListId, id: $id }) {
     goalCalculation {
