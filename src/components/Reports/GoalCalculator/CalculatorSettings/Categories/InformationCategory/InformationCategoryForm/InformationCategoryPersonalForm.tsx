@@ -20,12 +20,12 @@ import { BenefitsPlan, Role } from './enums';
 import { locations } from './geographicAdjustments';
 import { ageOptions, familySizeOptions, tenureOptions } from './mockData';
 
-interface InformationStepPersonalFormProps {
+interface InformationCategoryPersonalFormProps {
   isSpouse?: boolean;
 }
 
-export const InformationStepPersonalForm: React.FC<
-  InformationStepPersonalFormProps
+export const InformationCategoryPersonalForm: React.FC<
+  InformationCategoryPersonalFormProps
 > = ({ isSpouse }) => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();

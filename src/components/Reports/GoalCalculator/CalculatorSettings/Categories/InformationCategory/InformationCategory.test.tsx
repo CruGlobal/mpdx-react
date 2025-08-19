@@ -7,7 +7,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import { GoalCalculatorProvider } from '../../../Shared/GoalCalculatorContext';
-import { InformationStep } from './InformationStep';
+import { InformationCategory } from './InformationCategory';
 
 const TestComponent = () => (
   <SnackbarProvider>
@@ -27,14 +27,14 @@ const TestComponent = () => (
         }}
       >
         <GoalCalculatorProvider>
-          <InformationStep />
+          <InformationCategory />
         </GoalCalculatorProvider>
       </GqlMockedProvider>
     </ThemeProvider>
   </SnackbarProvider>
 );
 
-describe('InformationStep', () => {
+describe('InformationCategory', () => {
   it('toggles to spouse information when button is clicked', async () => {
     const { getByRole, queryByTestId, getByTestId } = render(<TestComponent />);
     const button = getByRole('button', { name: 'View Spouse' });

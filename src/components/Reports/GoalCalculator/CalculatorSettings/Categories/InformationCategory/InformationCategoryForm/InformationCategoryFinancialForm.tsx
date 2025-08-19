@@ -16,12 +16,12 @@ import {
 } from '../../../../Shared/Adornments';
 import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';
 
-interface InformationStepFinancialFormProps {
+interface InformationCategoryFinancialFormProps {
   isSpouse?: boolean;
 }
 
-export const InformationStepFinancialForm: React.FC<
-  InformationStepFinancialFormProps
+export const InformationCategoryFinancialForm: React.FC<
+  InformationCategoryFinancialFormProps
 > = ({ isSpouse }) => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();

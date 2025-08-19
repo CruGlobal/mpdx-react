@@ -17,14 +17,14 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { InformationStepFinancialForm } from './InformationStepForm/InformationStepFinancialForm';
-import { InformationStepPersonalForm } from './InformationStepForm/InformationStepPersonalForm';
-import { BenefitsPlan, Role } from './InformationStepForm/enums';
+import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
+import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
+import { BenefitsPlan, Role } from './InformationCategoryForm/enums';
 import {
   ageOptions,
   familySizeOptions,
   tenureOptions,
-} from './InformationStepForm/mockData';
+} from './InformationCategoryForm/mockData';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -81,11 +81,11 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   );
 };
 
-interface InformationStepProps {
+interface InformationCategoryProps {
   handlePageChange?: (page: string) => void;
 }
 
-export const InformationStep: React.FC<InformationStepProps> = () => {
+export const InformationCategory: React.FC<InformationCategoryProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
@@ -308,11 +308,11 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
               </StyledInfoBox>
 
               <TabPanel value={value} index={0}>
-                <InformationStepPersonalForm />
+                <InformationCategoryPersonalForm />
               </TabPanel>
 
               <TabPanel value={value} index={1}>
-                <InformationStepFinancialForm />
+                <InformationCategoryFinancialForm />
               </TabPanel>
             </StyledCard>
           </Form>
@@ -350,14 +350,14 @@ export const InformationStep: React.FC<InformationStepProps> = () => {
               </StyledInfoBox>
 
               <TabPanel value={value} index={0}>
-                <InformationStepPersonalForm isSpouse />
+                <InformationCategoryPersonalForm isSpouse />
               </TabPanel>
 
               <TabPanel value={value} index={1}>
                 {/* isSpouse logic does not currently need to be handled in
-                  InformationStepFinancialForm but it's worth passing
+                  InformationCategoryFinancialForm but it's worth passing
                   in the event we do make changes */}
-                <InformationStepFinancialForm isSpouse />
+                <InformationCategoryFinancialForm isSpouse />
               </TabPanel>
             </StyledCard>
           </Form>

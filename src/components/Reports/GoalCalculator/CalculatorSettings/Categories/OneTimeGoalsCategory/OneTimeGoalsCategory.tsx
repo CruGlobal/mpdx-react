@@ -5,13 +5,13 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { OneTimeGoalsStepForm } from './OneTimeGoalsStepForm/OneTimeGoalsStepForm';
+import { OneTimeGoalsCategoryForm } from './OneTimeGoalsCategoryForm/OneTimeGoalsCategoryForm';
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-interface OneTimeGoalsStepProps {}
+interface OneTimeGoalsCategoryProps {}
 
 interface OneTimeGoalsFormValues {
   // One-time goals fields
@@ -21,7 +21,7 @@ interface OneTimeGoalsFormValues {
   }>;
 }
 
-export const OneTimeGoalsStep: React.FC<OneTimeGoalsStepProps> = () => {
+export const OneTimeGoalsCategory: React.FC<OneTimeGoalsCategoryProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const initialValues: OneTimeGoalsFormValues = {
     additionalGoals: [],
@@ -62,7 +62,7 @@ export const OneTimeGoalsStep: React.FC<OneTimeGoalsStepProps> = () => {
         enableReinitialize
       >
         <Form>
-          <OneTimeGoalsStepForm />
+          <OneTimeGoalsCategoryForm />
         </Form>
       </Formik>
     </>

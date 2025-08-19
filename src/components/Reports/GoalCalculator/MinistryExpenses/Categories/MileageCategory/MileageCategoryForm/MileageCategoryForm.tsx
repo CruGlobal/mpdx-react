@@ -5,7 +5,7 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { CurrencyAdornment } from '../../../../Shared/Adornments';
 
-interface MileageStepFormValues {
+interface MileageCategoryFormValues {
   // Mileage entries
   additionalMileage: Array<{
     label: string;
@@ -13,9 +13,10 @@ interface MileageStepFormValues {
   }>;
 }
 
-export const MileageStepForm: React.FC = () => {
+export const MileageCategoryForm: React.FC = () => {
   const { t } = useTranslation();
-  const { values, setFieldValue } = useFormikContext<MileageStepFormValues>();
+  const { values, setFieldValue } =
+    useFormikContext<MileageCategoryFormValues>();
 
   const addMileageField = () => {
     const newMileage = { label: '', amount: 0 };

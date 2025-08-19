@@ -44,7 +44,7 @@ interface SpecialIncomeFormValues {
   }>;
 }
 
-export const SpecialIncomeStepForm: React.FC = () => {
+export const SpecialIncomeCategoryForm: React.FC = () => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();
   const { values, errors, touched, setFieldValue } =

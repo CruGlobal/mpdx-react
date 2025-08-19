@@ -4,11 +4,11 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { MileageStepForm } from './MileageStepForm/MileageStepForm';
+import { MileageCategoryForm } from './MileageCategoryForm/MileageCategoryForm';
 
-interface MileageStepProps {}
+interface MileageCategoryProps {}
 
-interface MileageStepFormValues {
+interface MileageCategoryFormValues {
   // Mileage entries
   additionalMileage: Array<{
     label: string;
@@ -16,10 +16,10 @@ interface MileageStepFormValues {
   }>;
 }
 
-export const MileageStep: React.FC<MileageStepProps> = () => {
+export const MileageCategory: React.FC<MileageCategoryProps> = () => {
   const { t } = useTranslation();
   const { handleContinue } = useGoalCalculator();
-  const initialValues: MileageStepFormValues = {
+  const initialValues: MileageCategoryFormValues = {
     additionalMileage: [],
   };
 
@@ -58,7 +58,7 @@ export const MileageStep: React.FC<MileageStepProps> = () => {
           enableReinitialize
         >
           <Form>
-            <MileageStepForm />
+            <MileageCategoryForm />
           </Form>
         </Formik>
       </Container>

@@ -32,7 +32,7 @@ interface OneTimeGoalsFormValues {
   }>;
 }
 
-export const OneTimeGoalsStepForm: React.FC = () => {
+export const OneTimeGoalsCategoryForm: React.FC = () => {
   const { t } = useTranslation();
   const { values, setFieldValue } = useFormikContext<OneTimeGoalsFormValues>();
 

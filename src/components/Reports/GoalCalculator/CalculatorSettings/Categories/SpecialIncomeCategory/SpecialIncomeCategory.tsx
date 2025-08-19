@@ -4,13 +4,13 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { SpecialIncomeStepForm } from './SpecialIncomeStepForm/SpecialIncomeStepForm';
+import { SpecialIncomeCategoryForm } from './SpecialIncomeCategoryForm/SpecialIncomeCategoryForm';
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-interface SpecialIncomeStepProps {}
+interface SpecialIncomeCategoryProps {}
 
 interface SpecialIncomeFormValues {
   // Special income fields
@@ -23,7 +23,9 @@ interface SpecialIncomeFormValues {
   }>;
 }
 
-export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
+export const SpecialIncomeCategory: React.FC<
+  SpecialIncomeCategoryProps
+> = () => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
   const initialValues: SpecialIncomeFormValues = {
@@ -78,7 +80,7 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
         enableReinitialize
       >
         <Form>
-          <SpecialIncomeStepForm />
+          <SpecialIncomeCategoryForm />
         </Form>
       </Formik>
     </>
