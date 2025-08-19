@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, styled } from '@mui/material';
-import { Form, Formik, FormikProps } from 'formik';
+import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
@@ -14,7 +14,7 @@ interface SpecialIncomeStepProps {}
 
 interface SpecialIncomeFormValues {
   // Special income fields
-  incidentIncome: number;
+  incidentalIncome: number;
   propertyIncome: number;
   spouseIncome: number;
   additionalIncomes: Array<{
@@ -27,14 +27,14 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
   const initialValues: SpecialIncomeFormValues = {
-    incidentIncome: 0,
+    incidentalIncome: 0,
     propertyIncome: 0,
     spouseIncome: 0,
     additionalIncomes: [],
   };
 
   const validationSchema = yup.object({
-    incidentIncome: yup
+    incidentalIncome: yup
       .number()
       .min(0, t('Incident income must be positive'))
       .required(t('Incident income is required')),
@@ -66,7 +66,9 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
   return (
     <>
       <StyledTypography>
-        {t('Do you have any additional sources of income?')}
+        {t(
+          'Do you have any additional sources of income? If you have income from outside sources (other than Cru) that you use as part of your budget, please include it below. Please enter the NET amounts used in your monthly budget.',
+        )}
       </StyledTypography>
 
       <Formik
@@ -75,11 +77,9 @@ export const SpecialIncomeStep: React.FC<SpecialIncomeStepProps> = () => {
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {(formikProps: FormikProps<SpecialIncomeFormValues>) => (
-          <Form>
-            <SpecialIncomeStepForm formikProps={formikProps} />
-          </Form>
-        )}
+        <Form>
+          <SpecialIncomeStepForm />
+        </Form>
       </Formik>
     </>
   );

@@ -130,7 +130,7 @@ export const InformationStepPersonalForm: React.FC<
                   {...field}
                   fullWidth
                   size="small"
-                  label={t('Location')}
+                  label={t('Ministry Location')}
                   error={meta.touched && Boolean(meta.error)}
                   helperText={meta.touched && meta.error}
                   variant="outlined"

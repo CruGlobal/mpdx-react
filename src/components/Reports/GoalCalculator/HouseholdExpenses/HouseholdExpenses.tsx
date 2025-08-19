@@ -30,7 +30,7 @@ export const useHouseholdExpenses = (): GoalCalculatorStep => {
           <Typography variant="h6">{t('Enter your monthly budget')}</Typography>
           <Typography variant="body2">
             {t(
-              'You may choose to skip entering your budget below if you know the net cash you need each month.',
+              'You may choose to skip entering your budget below if you know the net cash you need each month. If you know the net cash you need each month, click "Direct Input" and enter it there. Otherwise, enter your household expenses directly below.',
             )}
           </Typography>
           <Typography variant="body2">

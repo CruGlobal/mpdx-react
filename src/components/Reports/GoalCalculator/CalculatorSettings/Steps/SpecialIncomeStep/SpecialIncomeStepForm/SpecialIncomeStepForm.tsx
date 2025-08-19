@@ -9,7 +9,7 @@ import {
   TextField,
   styled,
 } from '@mui/material';
-import { Field, FormikProps } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import { CurrencyAdornment } from '../../../../Shared/Adornments';
@@ -35,7 +35,7 @@ const StyledAddIncomeButton = styled(Button)(({ theme }) => ({
 
 interface SpecialIncomeFormValues {
   // Special income fields
-  incidentIncome: number;
+  incidentalIncome: number;
   propertyIncome: number;
   spouseIncome: number;
   additionalIncomes: Array<{
@@ -44,16 +44,11 @@ interface SpecialIncomeFormValues {
   }>;
 }
 
-interface SpecialIncomeStepFormProps {
-  formikProps: FormikProps<SpecialIncomeFormValues>;
-}
-
-export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
-  formikProps,
-}) => {
+export const SpecialIncomeStepForm: React.FC = () => {
   const { t } = useTranslation();
   const { setRightPanelContent } = useGoalCalculator();
-  const { values, errors, touched, setFieldValue } = formikProps;
+  const { values, errors, touched, setFieldValue } =
+    useFormikContext<SpecialIncomeFormValues>();
 
   const addIncomeField = () => {
     const newIncome = { label: '', amount: 0 };
@@ -72,16 +67,18 @@ export const SpecialIncomeStepForm: React.FC<SpecialIncomeStepFormProps> = ({
     <Box>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Field name="incidentIncome">
+          <Field name="incidentalIncome">
             {({ field }) => (
               <TextField
                 {...field}
                 fullWidth
                 size="small"
-                label={t('Incident Income')}
+                label={t('Incidental Income')}
                 type="number"
-                error={touched.incidentIncome && Boolean(errors.incidentIncome)}
-                helperText={touched.incidentIncome && errors.incidentIncome}
+                error={
+                  touched.incidentalIncome && Boolean(errors.incidentalIncome)
+                }
+                helperText={touched.incidentalIncome && errors.incidentalIncome}
                 variant="outlined"
                 inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
