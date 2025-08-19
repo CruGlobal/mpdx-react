@@ -7,7 +7,7 @@ import {
   GridColDef,
   GridValidRowModel,
 } from '@mui/x-data-grid';
-import { Form, Formik, FormikProps } from 'formik';
+import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
@@ -17,6 +17,7 @@ import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
+  paddingTop: 2,
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
@@ -117,30 +118,24 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {(formikProps: FormikProps<GoalCalculatorGridFormValues>) => (
-          <Form>
-            <GoalCalculatorGridForm
-              formikProps={formikProps}
-              categoryName={categoryName}
-            />
-          </Form>
-        )}
+        <Form>
+          <GoalCalculatorGridForm categoryName={categoryName} />
+        </Form>
       </Formik>
     </>
   );
 };
 
 interface GoalCalculatorGridFormProps {
-  formikProps: FormikProps<GoalCalculatorGridFormValues>;
   categoryName: string;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
-  formikProps,
   categoryName,
 }) => {
   const { t } = useTranslation();
-  const { values, setFieldValue } = formikProps;
+  const { values, setFieldValue } =
+    useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
 
   const totalAmount = values.gridData.reduce(
@@ -237,38 +232,36 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   ];
 
   return (
-    <Box sx={{ pt: 2 }}>
-      <StyledCard>
-        <StyledControlsBox>
-          <StyledAddButton
-            variant="text"
-            onClick={addExpense}
+    <StyledCard>
+      <StyledControlsBox>
+        <StyledAddButton
+          variant="text"
+          onClick={addExpense}
+          size="small"
+          startIcon={<AddIcon />}
+        >
+          {t('Add {{category}}', { category: categoryName })}
+        </StyledAddButton>
+        <StyledToggleBox>
+          <Switch
+            checked={directInput}
+            onChange={handleDirectInputToggle}
             size="small"
-            startIcon={<AddIcon />}
-          >
-            {t(`Add ${categoryName}`)}
-          </StyledAddButton>
-          <StyledToggleBox>
-            <Switch
-              checked={directInput}
-              onChange={handleDirectInputToggle}
-              size="small"
-            />
-
-            <StyledDirectInputText variant="button">
-              {t('Direct Input')}
-            </StyledDirectInputText>
-          </StyledToggleBox>
-        </StyledControlsBox>
-
-        <StyledGridContainer>
-          <StyledGrid
-            rows={dataWithTotal}
-            columns={columns}
-            processRowUpdate={processRowUpdate}
           />
-        </StyledGridContainer>
-      </StyledCard>
-    </Box>
+
+          <StyledDirectInputText variant="button">
+            {t('Direct Input')}
+          </StyledDirectInputText>
+        </StyledToggleBox>
+      </StyledControlsBox>
+
+      <StyledGridContainer>
+        <StyledGrid
+          rows={dataWithTotal}
+          columns={columns}
+          processRowUpdate={processRowUpdate}
+        />
+      </StyledGridContainer>
+    </StyledCard>
   );
 };
