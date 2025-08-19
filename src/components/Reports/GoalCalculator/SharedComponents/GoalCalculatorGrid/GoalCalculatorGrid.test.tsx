@@ -70,11 +70,9 @@ describe('GoalCalculatorGrid', () => {
     );
     const freelanceRow = getByText('Freelance Work').closest('[role="row"]');
     userEvent.hover(freelanceRow!);
-    const deleteButtons = freelanceRow?.querySelectorAll(
-      '[aria-label="Delete"]',
-    );
-    if (deleteButtons && deleteButtons.length > 0) {
-      userEvent.click(deleteButtons[0] as Element);
+    const deleteButton = freelanceRow?.querySelector('[aria-label="Delete"]');
+    if (deleteButton) {
+      userEvent.click(deleteButton as Element);
     }
     await waitFor(() => {
       expect(queryByText('Freelance Work')).not.toBeInTheDocument();
