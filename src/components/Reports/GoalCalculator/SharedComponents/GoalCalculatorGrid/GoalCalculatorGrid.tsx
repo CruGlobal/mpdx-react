@@ -144,17 +144,19 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const gridRef = useRef<GridApi | null>(null);
   const [totalAmount, setTotalAmount] = useState(0);
 
-  // Calculate total from data excluding the total row
+  // Calculate total from data excluding the total row (but only when NOT in direct input mode)
   useEffect(() => {
-    const dataWithoutTotal = values.gridData.filter(
-      (item) => item.id !== 'total',
-    );
-    const newTotal = dataWithoutTotal.reduce(
-      (sum, item) => sum + item.amount,
-      0,
-    );
-    setTotalAmount(newTotal);
-  }, [values.gridData]);
+    if (!directInput) {
+      const dataWithoutTotal = values.gridData.filter(
+        (item) => item.id !== 'total',
+      );
+      const newTotal = dataWithoutTotal.reduce(
+        (sum, item) => sum + item.amount,
+        0,
+      );
+      setTotalAmount(newTotal);
+    }
+  }, [values.gridData, directInput]);
 
   // Create dataWithTotal that reacts to totalAmount changes
   const dataWithTotal = React.useMemo(() => {
@@ -212,6 +214,10 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
     if (newRow.id === 'total') {
+      // When editing the total row in direct input mode, update the totalAmount state
+      setTotalAmount(newRow.amount as number);
+      // Also update the form field value to keep Formik in sync
+      setFieldValue('gridData', [newRow]);
       return newRow;
     }
 
