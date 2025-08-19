@@ -12,6 +12,14 @@ query GoalCalculations($accountListId: ID!) {
   }
 }
 
+mutation CreateGoalCalculation($accountListId: ID!) {
+  createGoalCalculation(input: { accountListId: $accountListId }) {
+    goalCalculation {
+      ...ListGoalCalculation
+    }
+  }
+}
+
 mutation DeleteGoalCalculation($accountListId: ID!, $id: ID!) {
   deleteGoalCalculation(input: { accountListId: $accountListId, id: $id }) {
     goalCalculation {

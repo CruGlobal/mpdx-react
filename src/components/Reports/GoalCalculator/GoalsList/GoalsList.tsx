@@ -9,6 +9,7 @@ import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-ill
 import { GoalCard } from '../GoalCard/GoalCard';
 import {
   ListGoalCalculationFragment,
+  useCreateGoalCalculationMutation,
   useDeleteGoalCalculationMutation,
   useGoalCalculationsQuery,
 } from './GoalCalculations.generated';
@@ -57,6 +58,9 @@ export const GoalsList: React.FC = () => {
   const { data } = useGoalCalculationsQuery({
     variables: { accountListId },
   });
+  const [createGoalCalculation] = useCreateGoalCalculationMutation({
+    variables: { accountListId },
+  });
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const goals = data?.goalCalculations.nodes ?? [];
   const [goalToDelete, setGoalToDelete] =
@@ -65,12 +69,14 @@ export const GoalsList: React.FC = () => {
   const { data: userData, loading } = useGetUserQuery();
   const firstName = loading ? 'User' : userData?.user?.firstName;
 
-  const handleCreateGoal = () => {
-    // TODO: Create a new goal with a GraphQL mutation
-    const goalCalculatorId = 1;
-    router.push(
-      `/accountLists/${router.query.accountListId}/reports/goalCalculator/${goalCalculatorId}`,
-    );
+  const handleCreateGoal = async () => {
+    const { data } = await createGoalCalculation();
+    const goalCalculation = data?.createGoalCalculation?.goalCalculation;
+    if (goalCalculation) {
+      router.push(
+        `/accountLists/${accountListId}/reports/goalCalculator/${goalCalculation.id}`,
+      );
+    }
   };
 
   const handleStarToggle = (goalId: string) => {
