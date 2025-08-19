@@ -127,10 +127,6 @@ export const GoalsList: React.FC = () => {
     setGoalToDelete(null);
   };
 
-  const handleView = () => {
-    // TODO
-  };
-
   return (
     <Box sx={{ p: 3, alignSelf: 'center' }}>
       <Confirmation
@@ -198,7 +194,6 @@ export const GoalsList: React.FC = () => {
                     goal={goal}
                     onStarToggle={handleStarToggle}
                     onDelete={handleDelete}
-                    onView={handleView}
                   />
                 </Box>
               </StyledListItem>

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import React from 'react';
 import { Star, StarBorderOutlined } from '@mui/icons-material';
 import {
@@ -10,6 +11,7 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -68,17 +70,16 @@ export interface GoalCardProps {
   goal: ListGoalCalculationFragment;
   onStarToggle: (goal: ListGoalCalculationFragment) => void;
   onDelete: (goal: ListGoalCalculationFragment) => void;
-  onView: (goalId: string) => void;
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({
   goal,
   onStarToggle,
   onDelete,
-  onView,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
 
   const handleStarClick = () => {
     onStarToggle(goal);
@@ -86,10 +87,6 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
   const handleDelete = () => {
     onDelete(goal);
-  };
-
-  const handleView = () => {
-    onView(goal.id);
   };
 
   return (
@@ -154,7 +151,12 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             {t('Delete')}
           </Typography>
         </Button>
-        <Button onClick={handleView} variant="contained" color="primary">
+        <Button
+          LinkComponent={NextLink}
+          href={`/accountLists/${accountListId}/reports/goalCalculator/${goal.id}`}
+          variant="contained"
+          color="primary"
+        >
           <Typography
             variant="body2"
             fontWeight="bold"
