@@ -5,7 +5,7 @@ import {
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { InformationStep } from './Steps/InformationStep/InformationStep';
+import { InformationCategory } from './Categories/InformationCategory/InformationCategory';
 
 export const useCalculatorSettings = (): GoalCalculatorStep => {
   const { t } = useTranslation();

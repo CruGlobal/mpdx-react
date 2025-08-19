@@ -1,14 +1,13 @@
 import ChurchIcon from '@mui/icons-material/Church';
 import { Link } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { InformationStep } from '../CalculatorSettings/Steps/InformationStep/InformationStep';
 import {
   GoalCalculatorCategoryEnum,
   GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { MileageStep } from './Steps/MileageStep/MileageStep';
-import { MileageStepRightPanelComponent } from './Steps/MileageStep/MileageStepRightPanelComponent/MileageStepRightPanelComponent';
+import { MileageCategory } from './Categories/MileageCategory/MileageCategory';
+import { MileageCategoryRightPanelComponent } from './Categories/MileageCategory/MileageCategoryRightPanelComponent/MileageCategoryRightPanelComponent';
 
 export const useMinistryExpenses = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -35,8 +34,8 @@ export const useMinistryExpenses = (): GoalCalculatorStep => {
       {
         id: GoalCalculatorCategoryEnum.MinistryMileage,
         title: t('Ministry Mileage'),
-        component: <MileageStep />,
-        rightPanelComponent: <MileageStepRightPanelComponent />,
+        component: <MileageCategory />,
+        rightPanelComponent: <MileageCategoryRightPanelComponent />,
       },
       {
         id: GoalCalculatorCategoryEnum.MedicalMileage,
@@ -77,12 +76,10 @@ export const useMinistryExpenses = (): GoalCalculatorStep => {
       {
         id: GoalCalculatorCategoryEnum.Transfers,
         title: t('Transfers'),
-        component: <InformationStep />,
       },
       {
         id: GoalCalculatorCategoryEnum.Technology,
         title: t('Technology'),
-        component: <InformationStep />,
       },
       {
         id: GoalCalculatorCategoryEnum.Travel,
