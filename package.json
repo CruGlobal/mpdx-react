@@ -26,6 +26,7 @@
     "postinstall": "husky install",
     "crowdin:sort-translations": "node ./crowdin/sort-translations.js",
     "crowdin:download": "crowdin download translations && yarn crowdin:sort-translations",
+    "crowdin:upload": "crowdin upload translations",
     "lighthouse": "lhci autorun"
   },
   "dependencies": {
