@@ -4,6 +4,7 @@ import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 import { GoalCalculatorLayout } from './Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from './Shared/GoalCalculatorSection';
 import { ContinueButton } from './SharedComponents/ContinueButton';
+import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
 import { SectionList } from './SharedComponents/SectionList';
 
 const CategoryContainer = styled('div')(({ theme }) => ({
@@ -46,7 +47,9 @@ export const GoalCalculator: React.FC = () => {
               subtitle={category.subtitle}
               rightPanelContent={category.rightPanelComponent}
             >
-              {category.component}
+              {category.component || (
+                <GoalCalculatorGrid categoryName={category.title} />
+              )}
             </GoalCalculatorSection>
           ))}
           <CategoryContainer>
