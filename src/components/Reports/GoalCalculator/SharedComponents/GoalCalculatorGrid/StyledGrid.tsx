@@ -14,7 +14,7 @@ const StyledDataGrid = styled(DataGrid)({
     '&:focus': {
       outline: 'none',
     },
-    '& .MuiDataGrid-actionsCell': {
+    '.MuiDataGrid-actionsCell': {
       opacity: 0,
       transition: 'opacity 0.2s ease-in-out',
     },
