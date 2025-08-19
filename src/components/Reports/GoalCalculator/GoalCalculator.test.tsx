@@ -71,8 +71,8 @@ describe('GoalCalculator', () => {
   });
 
   it('renders right panel components', () => {
-    const { getByRole } = render(<TestComponent />);
-    const heading = getByRole('heading', { name: 'Mileage' });
+    const { getAllByRole, getByRole } = render(<TestComponent />);
+    const heading = getAllByRole('heading', { name: 'Ministry Mileage' })[0];
     userEvent.click(
       within(heading).getByRole('button', {
         name: 'Show additional info',
@@ -85,8 +85,8 @@ describe('GoalCalculator', () => {
   });
 
   it('does not show info icon for categories without right panel content', () => {
-    const { getByRole } = render(<TestComponent />);
-    const heading = getByRole('heading', { name: 'Transfers' });
+    const { getAllByRole } = render(<TestComponent />);
+    const heading = getAllByRole('heading', { name: 'Transfers' })[0];
     expect(within(heading).queryByRole('button')).not.toBeInTheDocument();
   });
 
