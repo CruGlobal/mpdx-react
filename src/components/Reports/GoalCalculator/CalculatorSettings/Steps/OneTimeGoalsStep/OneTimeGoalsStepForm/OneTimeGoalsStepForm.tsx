@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Grid, IconButton, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { CurrencyAdornment } from '../../../../Shared/Adornments';
 
@@ -32,15 +32,9 @@ interface OneTimeGoalsFormValues {
   }>;
 }
 
-interface OneTimeGoalsStepFormProps {
-  formikProps: FormikProps<OneTimeGoalsFormValues>;
-}
-
-export const OneTimeGoalsStepForm: React.FC<OneTimeGoalsStepFormProps> = ({
-  formikProps,
-}) => {
+export const OneTimeGoalsStepForm: React.FC = () => {
   const { t } = useTranslation();
-  const { values, setFieldValue } = formikProps;
+  const { values, setFieldValue } = useFormikContext<OneTimeGoalsFormValues>();
 
   const addGoalField = () => {
     const newGoal = { label: '', amount: 0 };
