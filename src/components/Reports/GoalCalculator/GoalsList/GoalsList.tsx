@@ -1,18 +1,14 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Button, List, ListItem, styled } from '@mui/material';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { GoalCard } from '../GoalCard/GoalCard';
 import {
-  ListGoalCalculationFragment,
   useCreateGoalCalculationMutation,
-  useDeleteGoalCalculationMutation,
   useGoalCalculationsQuery,
-  useUpdateGoalCalculationMutation,
 } from './GoalCalculations.generated';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
@@ -62,11 +58,7 @@ export const GoalsList: React.FC = () => {
   const [createGoalCalculation] = useCreateGoalCalculationMutation({
     variables: { accountListId },
   });
-  const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
-  const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const goals = data?.goalCalculations.nodes ?? [];
-  const [goalToDelete, setGoalToDelete] =
-    useState<ListGoalCalculationFragment | null>(null);
 
   const { data: userData, loading } = useGetUserQuery();
   const firstName = loading ? 'User' : userData?.user?.firstName;
@@ -81,77 +73,8 @@ export const GoalsList: React.FC = () => {
     }
   };
 
-  const handleStarToggle = async (goal: ListGoalCalculationFragment) => {
-    await updateGoalCalculation({
-      variables: {
-        accountListId,
-        attributes: {
-          id: goal.id,
-          isCurrent: !goal.isCurrent,
-        },
-      },
-      optimisticResponse: {
-        updateGoalCalculation: {
-          goalCalculation: {
-            ...goal,
-            isCurrent: !goal.isCurrent,
-          },
-        },
-      },
-      refetchQueries: ['GoalCalculations'],
-    });
-  };
-
-  const handleDelete = (goal: ListGoalCalculationFragment) => {
-    setGoalToDelete(goal);
-  };
-
-  const handleConfirmGoalDelete = async () => {
-    if (!goalToDelete) {
-      return;
-    }
-
-    await deleteGoalCalculation({
-      variables: {
-        accountListId,
-        id: goalToDelete.id,
-      },
-      update: (cache) => {
-        cache.evict({ id: `GoalCalculation:${goalToDelete.id}` });
-        cache.gc();
-      },
-    });
-  };
-
-  const handleDeleteDialogCancel = () => {
-    setGoalToDelete(null);
-  };
-
   return (
     <Box sx={{ p: 3, alignSelf: 'center' }}>
-      <Confirmation
-        title={t('Delete Goal')}
-        isOpen={goalToDelete !== null}
-        mutation={handleConfirmGoalDelete}
-        handleClose={handleDeleteDialogCancel}
-        confirmLabel={t('Delete Goal')}
-        cancelLabel={t('Cancel')}
-        message={
-          goalToDelete && (
-            <Trans t={t}>
-              Are you sure you want to delete{' '}
-              <strong>{goalToDelete.createdAt}</strong>? Deleting this goal will
-              remove it permanently.
-            </Trans>
-          )
-        }
-        confirmButtonProps={{
-          variant: 'contained',
-          color: 'error',
-          children: t('Delete Goal'),
-        }}
-      />
-
       {goals.length === 0 ? (
         <StyledEmptyStateContainer>
           <Box sx={{ flex: '0 0 auto' }}>
@@ -190,11 +113,7 @@ export const GoalsList: React.FC = () => {
                 disableGutters
               >
                 <Box maxWidth={500} width="100%">
-                  <GoalCard
-                    goal={goal}
-                    onStarToggle={handleStarToggle}
-                    onDelete={handleDelete}
-                  />
+                  <GoalCard goal={goal} />
                 </Box>
               </StyledListItem>
             ))}

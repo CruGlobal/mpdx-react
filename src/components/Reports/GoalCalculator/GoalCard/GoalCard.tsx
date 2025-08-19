@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import { Star, StarBorderOutlined } from '@mui/icons-material';
 import {
   Box,
@@ -10,12 +10,17 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
+import {
+  ListGoalCalculationFragment,
+  useDeleteGoalCalculationMutation,
+  useUpdateGoalCalculationMutation,
+} from '../GoalsList/GoalCalculations.generated';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -68,104 +73,158 @@ const StyledActionBox = styled(Box)({
 
 export interface GoalCardProps {
   goal: ListGoalCalculationFragment;
-  onStarToggle: (goal: ListGoalCalculationFragment) => void;
-  onDelete: (goal: ListGoalCalculationFragment) => void;
 }
 
-export const GoalCard: React.FC<GoalCardProps> = ({
-  goal,
-  onStarToggle,
-  onDelete,
-}) => {
+export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
+  const accountListId = useAccountListId() ?? '';
+  const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
+  const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
+  const [deleting, setDeleting] = useState(false);
 
-  const handleStarClick = () => {
-    onStarToggle(goal);
+  const handleStarClick = async () => {
+    await updateGoalCalculation({
+      variables: {
+        accountListId,
+        attributes: {
+          id: goal.id,
+          isCurrent: !goal.isCurrent,
+        },
+      },
+      optimisticResponse: {
+        updateGoalCalculation: {
+          goalCalculation: {
+            ...goal,
+            isCurrent: !goal.isCurrent,
+          },
+        },
+      },
+      refetchQueries: ['GoalCalculations'],
+    });
   };
 
-  const handleDelete = () => {
-    onDelete(goal);
+  const handleDeleteClick = () => {
+    setDeleting(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    await deleteGoalCalculation({
+      variables: {
+        accountListId,
+        id: goal.id,
+      },
+      update: (cache) => {
+        cache.evict({ id: `GoalCalculation:${goal.id}` });
+        cache.gc();
+      },
+    });
+    setDeleting(false);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleting(false);
   };
 
   return (
-    <StyledCard>
-      <StyledHeaderBox>
-        <StyledTitleBox>
-          <Typography data-testid="goal-title" variant="h6">
-            {goal.createdAt}
-          </Typography>
-        </StyledTitleBox>
-        <StyledStarButton aria-label="star-button" onClick={handleStarClick}>
-          {goal.isCurrent ? (
-            <Star color="primary" sx={{ verticalAlign: 'middle' }} />
-          ) : (
-            <StarBorderOutlined
-              color="primary"
-              sx={{ verticalAlign: 'middle' }}
-            />
-          )}
-        </StyledStarButton>
-      </StyledHeaderBox>
+    <>
+      <Confirmation
+        title={t('Delete Goal')}
+        isOpen={deleting}
+        mutation={handleConfirmDelete}
+        handleClose={handleCancelDelete}
+        confirmLabel={t('Delete Goal')}
+        cancelLabel={t('Cancel')}
+        message={
+          <Trans t={t}>
+            Are you sure you want to delete <strong>{goal.createdAt}</strong>?
+            Deleting this goal will remove it permanently.
+          </Trans>
+        }
+        confirmButtonProps={{
+          variant: 'contained',
+          color: 'error',
+          children: t('Delete Goal'),
+        }}
+      />
 
-      <Divider />
-
-      <StyledContentBox>
-        <StyledContentInnerBox>
-          <StyledInfoRow pb={theme.spacing(1)}>
-            <Typography variant="body1" fontWeight="bold" pl={2}>
-              {t('Goal Amount')}
+      <StyledCard>
+        <StyledHeaderBox>
+          <StyledTitleBox>
+            <Typography data-testid="goal-title" variant="h6">
+              {goal.createdAt}
             </Typography>
-            <Typography data-testid="goal-amount-value" variant="body1">
-              {currencyFormat(0, 'USD', locale)}
+          </StyledTitleBox>
+          <StyledStarButton aria-label="star-button" onClick={handleStarClick}>
+            {goal.isCurrent ? (
+              <Star color="primary" sx={{ verticalAlign: 'middle' }} />
+            ) : (
+              <StarBorderOutlined
+                color="primary"
+                sx={{ verticalAlign: 'middle' }}
+              />
+            )}
+          </StyledStarButton>
+        </StyledHeaderBox>
+
+        <Divider />
+
+        <StyledContentBox>
+          <StyledContentInnerBox>
+            <StyledInfoRow pb={theme.spacing(1)}>
+              <Typography variant="body1" fontWeight="bold" pl={2}>
+                {t('Goal Amount')}
+              </Typography>
+              <Typography data-testid="goal-amount-value" variant="body1">
+                {currencyFormat(0, 'USD', locale)}
+              </Typography>
+            </StyledInfoRow>
+
+            <Divider />
+
+            <StyledInfoRow pt={theme.spacing(1)}>
+              <Typography variant="body1" fontWeight="bold" pl={2}>
+                {t('Last Updated')}
+              </Typography>
+              <Typography data-testid="date-value" variant="body1">
+                {new Date(goal.createdAt).toLocaleString(locale, {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </Typography>
+            </StyledInfoRow>
+          </StyledContentInnerBox>
+        </StyledContentBox>
+
+        <Divider sx={{ mt: 2, mb: 1 }} />
+
+        <StyledActionBox>
+          <Button onClick={handleDeleteClick}>
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              color={theme.palette.error.main}
+            >
+              {t('Delete')}
             </Typography>
-          </StyledInfoRow>
-
-          <Divider />
-
-          <StyledInfoRow pt={theme.spacing(1)}>
-            <Typography variant="body1" fontWeight="bold" pl={2}>
-              {t('Last Updated')}
-            </Typography>
-            <Typography data-testid="date-value" variant="body1">
-              {new Date(goal.createdAt).toLocaleString(locale, {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </Typography>
-          </StyledInfoRow>
-        </StyledContentInnerBox>
-      </StyledContentBox>
-
-      <Divider sx={{ mt: 2, mb: 1 }} />
-
-      <StyledActionBox>
-        <Button onClick={handleDelete}>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            color={theme.palette.error.main}
+          </Button>
+          <Button
+            LinkComponent={NextLink}
+            href={`/accountLists/${accountListId}/reports/goalCalculator/${goal.id}`}
+            variant="contained"
+            color="primary"
           >
-            {t('Delete')}
-          </Typography>
-        </Button>
-        <Button
-          LinkComponent={NextLink}
-          href={`/accountLists/${accountListId}/reports/goalCalculator/${goal.id}`}
-          variant="contained"
-          color="primary"
-        >
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            color={theme.palette.primary.contrastText}
-          >
-            {t('View')}
-          </Typography>
-        </Button>
-      </StyledActionBox>
-    </StyledCard>
+            <Typography
+              variant="body2"
+              fontWeight="bold"
+              color={theme.palette.primary.contrastText}
+            >
+              {t('View')}
+            </Typography>
+          </Button>
+        </StyledActionBox>
+      </StyledCard>
+    </>
   );
 };
