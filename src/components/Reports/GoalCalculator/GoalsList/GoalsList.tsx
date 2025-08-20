@@ -32,7 +32,9 @@ export const GoalsList: React.FC = () => {
   const [createGoalCalculation] = useCreateGoalCalculationMutation({
     variables: { accountListId },
   });
-  const goals = data?.goalCalculations.nodes;
+  const goals = data?.goalCalculations.nodes
+    ?.slice()
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   const { data: userData } = useGetUserQuery();
   const defaultName = t('User');

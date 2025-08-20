@@ -159,7 +159,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         <StyledHeaderBox>
           <StyledTitleBox>
             <Typography data-testid="goal-title" variant="h6">
-              {goal.createdAt}
+              {goal.name ?? t('Untitled Goal')}
             </Typography>
           </StyledTitleBox>
           {renderStar && (

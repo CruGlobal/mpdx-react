@@ -1,5 +1,6 @@
 fragment ListGoalCalculation on GoalCalculation {
   id
+  name
   createdAt
   primary
 }

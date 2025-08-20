@@ -4,6 +4,7 @@ import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
 import { GoalCalculatorGrid } from '../SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
 import { SectionPage } from '../SharedComponents/SectionPage';
+import { SettingsCategory } from './Categories/SettingsCategory/SettingsCategory';
 import { SettingsSectionList } from './SettingsSectionList';
 
 export const SettingsStep: React.FC = () => {
@@ -14,6 +15,12 @@ export const SettingsStep: React.FC = () => {
       sectionListPanel={<SettingsSectionList />}
       mainContent={
         <SectionPage>
+          <GoalCalculatorSection
+            title={t('Settings')}
+            subtitle={t('What do you want to call this goal?')}
+          >
+            <SettingsCategory />
+          </GoalCalculatorSection>
           <GoalCalculatorSection
             title={t('Information')}
             subtitle={t('Take a moment to verify your information.')}
