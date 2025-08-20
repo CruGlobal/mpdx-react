@@ -53,7 +53,7 @@ export const HouseholdExpensesHeader: React.FC<
 > = ({ categoriesTotal }) => {
   const accountListId = useAccountListId() ?? '';
   const { query } = useRouter();
-  const goalCalculationId = getQueryParam(query, 'goalCalculatorId') ?? '';
+  const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -121,7 +121,7 @@ export const HouseholdExpensesHeader: React.FC<
       <StyledCard>
         <CardContent>
           <Typography variant="h6">{t('Budgeted')}</Typography>
-          {loading ? (
+          {typeof directInput !== 'number' && loading ? (
             <Skeleton width={120} height={60} />
           ) : editing ? (
             <TextField
@@ -154,15 +154,15 @@ export const HouseholdExpensesHeader: React.FC<
         </CardContent>
         {!loading && (
           <CardActions>
-            {typeof directInput !== 'number' ? (
-              <Button onClick={handleEditDirectInput}>
-                {t('Direct input')}
-              </Button>
-            ) : editing ? (
+            {editing ? (
               <>
                 <Button onClick={handleDirectInputSave}>{t('Save')}</Button>
                 <Button onClick={handleDirectInputCancel}>{t('Cancel')}</Button>
               </>
+            ) : typeof directInput !== 'number' ? (
+              <Button onClick={handleEditDirectInput}>
+                {t('Direct input')}
+              </Button>
             ) : (
               <Button onClick={handleDirectInputClear}>
                 {t('Manual input')}
