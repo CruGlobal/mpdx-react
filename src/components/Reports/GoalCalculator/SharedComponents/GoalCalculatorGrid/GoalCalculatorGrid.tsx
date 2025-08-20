@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Card, Switch, Typography, styled } from '@mui/material';
@@ -127,6 +133,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 };
 
+type GridDataItem = {
+  id: number | string;
+  name: string;
+  amount: number;
+};
 interface GoalCalculatorGridFormProps {
   categoryName: string;
 }
@@ -135,14 +146,30 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   categoryName,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
-  const locale = useLocale();
-
   const [directInput, setDirectInput] = useState(false);
-  const [originalData, setOriginalData] = useState(values.gridData);
+  const [originalData, setOriginalData] = useState<GridDataItem[]>(
+    values.gridData,
+  );
   const gridRef = useRef<GridApi | null>(null);
   const [totalAmount, setTotalAmount] = useState(0);
+
+  // Create dataWithTotal that reacts to totalAmount changes
+  const dataWithTotal = useMemo(() => {
+    if (directInput) {
+      return values.gridData;
+    } else {
+      const dataWithoutTotal = values.gridData.filter(
+        (item) => item.id !== 'total',
+      );
+      return [
+        ...dataWithoutTotal,
+        { id: 'total', name: 'Total', amount: totalAmount },
+      ];
+    }
+  }, [values.gridData, totalAmount, directInput]);
 
   // Calculate total from data excluding the total row (but only when NOT in direct input mode)
   useEffect(() => {
@@ -158,26 +185,33 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     }
   }, [values.gridData, directInput]);
 
-  // Create dataWithTotal that reacts to totalAmount changes
-  const dataWithTotal = React.useMemo(() => {
-    if (directInput) {
-      return values.gridData; // In direct input mode, gridData contains the editable total row
-    } else {
-      // In normal mode, filter out any existing total row and add the calculated total
-      const dataWithoutTotal = values.gridData.filter(
-        (item) => item.id !== 'total',
-      );
-      return [
-        ...dataWithoutTotal,
-        { id: 'total', name: 'Total', amount: totalAmount },
-      ];
+  // Update gridData when directInput changes
+  useEffect(() => {
+    let fieldValue: Array<GridDataItem> = [];
+    if (directInput && gridRef.current) {
+      setOriginalData([...values.gridData]);
+      setTimeout(() => {
+        if (gridRef.current) {
+          gridRef.current.startCellEditMode({ id: 'total', field: 'amount' });
+        }
+      }, 100);
+      fieldValue = [{ id: 'total', name: 'Total', amount: 0 }];
+      setFieldValue('gridData', [{ id: 'total', name: 'Total', amount: 0 }]);
+    } else if (gridRef.current && originalData.length > 0) {
+      fieldValue = originalData;
     }
-  }, [values.gridData, totalAmount, directInput]);
+    setFieldValue('gridData', fieldValue);
+  }, [directInput]);
+
+  const handleDelete = (id: number | string) => {
+    const updatedData = values.gridData.filter((item) => item.id !== id);
+    setFieldValue('gridData', updatedData);
+  };
 
   const addExpense = () => {
     const numericIds = values.gridData
       .map((item) => item.id)
-      .filter((id): id is number => typeof id === 'number');
+      .filter((id) => id !== 'total' && typeof id === 'number');
     const newId = Math.max(...numericIds, 0) + 1;
     const newIncomeItem = {
       id: newId,
@@ -192,47 +226,28 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     setDirectInput(!directInput);
   };
 
-  useEffect(() => {
-    if (directInput && gridRef.current) {
-      setOriginalData([...values.gridData]);
-      setFieldValue('gridData', [{ id: 'total', name: 'Total', amount: 0 }]);
-      setTimeout(() => {
-        if (gridRef.current) {
-          gridRef.current.startCellEditMode({ id: 'total', field: 'amount' });
-        }
-      }, 300);
-    } else if (gridRef.current && originalData.length > 0) {
-      // Restore original data when switching back from direct input mode
-      setFieldValue('gridData', originalData);
-    }
-  }, [directInput]);
+  const processRowUpdate = useCallback(
+    (newRow: GridValidRowModel) => {
+      if (newRow.id === 'total') {
+        setTotalAmount(newRow.amount as number);
+        setFieldValue('gridData', [newRow]);
+        return newRow;
+      }
 
-  const handleDelete = (id: number | string) => {
-    const updatedData = values.gridData.filter((item) => item.id !== id);
-    setFieldValue('gridData', updatedData);
-  };
-
-  const processRowUpdate = (newRow: GridValidRowModel) => {
-    if (newRow.id === 'total') {
-      // When editing the total row in direct input mode, update the totalAmount state
-      setTotalAmount(newRow.amount as number);
-      // Also update the form field value to keep Formik in sync
-      setFieldValue('gridData', [newRow]);
+      const updatedData = values.gridData.map((item) =>
+        item.id === newRow.id
+          ? {
+              ...item,
+              name: newRow.name as string,
+              amount: newRow.amount as number,
+            }
+          : item,
+      );
+      setFieldValue('gridData', updatedData);
       return newRow;
-    }
-
-    const updatedData = values.gridData.map((item) =>
-      item.id === newRow.id
-        ? {
-            ...item,
-            name: newRow.name as string,
-            amount: newRow.amount as number,
-          }
-        : item,
-    );
-    setFieldValue('gridData', updatedData);
-    return newRow;
-  };
+    },
+    [setFieldValue, values.gridData],
+  );
 
   const columns: GridColDef[] = [
     {
@@ -285,6 +300,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           onClick={addExpense}
           size="small"
           startIcon={<AddIcon />}
+          disabled={directInput}
         >
           {t('Add {{category}}', { category: categoryName })}
         </StyledAddButton>
