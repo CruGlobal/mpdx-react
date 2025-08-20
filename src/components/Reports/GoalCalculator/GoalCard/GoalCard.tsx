@@ -10,11 +10,12 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import {
   ListGoalCalculationFragment,
@@ -198,10 +199,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
                 {t('Last Updated')}
               </Typography>
               <Typography data-testid="date-value" variant="body1">
-                {new Date(goal.createdAt).toLocaleString(locale, {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
+                {dateFormat(DateTime.fromISO(goal.createdAt), locale, {
+                  fullMonth: true,
                 })}
               </Typography>
             </StyledInfoRow>
