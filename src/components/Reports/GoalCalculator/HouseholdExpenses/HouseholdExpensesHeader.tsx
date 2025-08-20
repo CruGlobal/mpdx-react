@@ -1,24 +1,26 @@
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import {
   Button,
   Card,
   CardActions,
   CardContent,
+  Skeleton,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { getQueryParam } from 'src/utils/queryParam';
 import { CurrencyAdornment } from '../Shared/Adornments';
-
-enum TotalState {
-  Categories = 'Categories',
-  DirectInput = 'DirectInput',
-  Editing = 'Editing',
-}
+import {
+  useHouseholdDirectInputQuery,
+  useUpdateHouseholdDirectInputMutation,
+} from './HouseholdDirectInput.generated';
 
 const StyledCard = styled(Card)({
   flex: 1,
@@ -49,36 +51,69 @@ interface HouseholdExpensesHeaderProps {
 export const HouseholdExpensesHeader: React.FC<
   HouseholdExpensesHeaderProps
 > = ({ categoriesTotal }) => {
+  const accountListId = useAccountListId() ?? '';
+  const { query } = useRouter();
+  const goalCalculationId = getQueryParam(query, 'goalCalculatorId') ?? '';
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const [showPercentage, setShowPercentage] = useState(true);
-  const [totalState, setTotalState] = useState(TotalState.Categories);
-  const [directInput, setDirectInput] = useState(0);
+  const { data, loading } = useHouseholdDirectInputQuery({
+    variables: {
+      accountListId,
+      id: goalCalculationId,
+    },
+  });
+  const directInput = data?.goalCalculation.householdFamily.directInput;
+  const [updateDirectInput] = useUpdateHouseholdDirectInputMutation();
 
-  const budgetTotal =
-    totalState === TotalState.Categories ? categoriesTotal : directInput;
-  const leftToAllocate = directInput === 0 ? 0 : directInput - categoriesTotal;
+  const [showPercentage, setShowPercentage] = useState(true);
+  const [editing, setEditing] = useState(false);
+
+  const budgetTotal = directInput ?? categoriesTotal;
+  const leftToAllocate =
+    typeof directInput === 'number' ? directInput - categoriesTotal : 0;
 
   const [directInputFieldValue, setDirectInputFieldValue] = useState(0);
 
+  const setDirectInput = async (directInput: number | null) => {
+    const householdFamilyId = data?.goalCalculation.householdFamily.id;
+    if (householdFamilyId) {
+      return updateDirectInput({
+        variables: {
+          accountListId,
+          id: householdFamilyId,
+          directInput,
+        },
+        optimisticResponse: {
+          updateBudgetFamily: {
+            budgetFamily: {
+              __typename: 'BudgetFamily',
+              id: householdFamilyId,
+              directInput,
+            },
+          },
+        },
+      });
+    }
+  };
+
   const handleDirectInputClear = () => {
-    setDirectInput(0);
-    setTotalState(TotalState.Categories);
+    setDirectInput(null);
+    setEditing(false);
   };
 
   const handleEditDirectInput = () => {
     setDirectInputFieldValue(categoriesTotal);
-    setTotalState(TotalState.Editing);
+    setEditing(true);
   };
 
   const handleDirectInputSave = () => {
     setDirectInput(directInputFieldValue);
-    setTotalState(TotalState.DirectInput);
+    setEditing(false);
   };
 
   const handleDirectInputCancel = () => {
-    setTotalState(TotalState.Categories);
+    setEditing(false);
   };
 
   return (
@@ -86,9 +121,11 @@ export const HouseholdExpensesHeader: React.FC<
       <StyledCard>
         <CardContent>
           <Typography variant="h6">{t('Budgeted')}</Typography>
-          {totalState === TotalState.Editing ? (
+          {loading ? (
+            <Skeleton width={120} height={60} />
+          ) : editing ? (
             <TextField
-              sx={{ marginBlock: 2 }}
+              sx={(theme) => ({ marginBlock: theme.spacing(1) })}
               fullWidth
               type="number"
               value={directInputFieldValue}
@@ -104,7 +141,6 @@ export const HouseholdExpensesHeader: React.FC<
               variant="outlined"
               inputProps={{
                 min: 0,
-                step: 0.01,
               }}
               InputProps={{
                 startAdornment: <CurrencyAdornment />,
@@ -112,30 +148,28 @@ export const HouseholdExpensesHeader: React.FC<
             />
           ) : (
             <AmountTypography>
-              {currencyFormat(
-                totalState === TotalState.Categories
-                  ? budgetTotal
-                  : directInput,
-                'USD',
-                locale,
-              )}
+              {currencyFormat(budgetTotal, 'USD', locale)}
             </AmountTypography>
           )}
         </CardContent>
-        <CardActions>
-          {totalState === TotalState.Categories ? (
-            <Button onClick={handleEditDirectInput}>{t('Direct input')}</Button>
-          ) : totalState === TotalState.DirectInput ? (
-            <Button onClick={handleDirectInputClear}>
-              {t('Manual input')}
-            </Button>
-          ) : (
-            <>
-              <Button onClick={handleDirectInputSave}>{t('Save')}</Button>
-              <Button onClick={handleDirectInputCancel}>{t('Cancel')}</Button>
-            </>
-          )}
-        </CardActions>
+        {!loading && (
+          <CardActions>
+            {typeof directInput !== 'number' ? (
+              <Button onClick={handleEditDirectInput}>
+                {t('Direct input')}
+              </Button>
+            ) : editing ? (
+              <>
+                <Button onClick={handleDirectInputSave}>{t('Save')}</Button>
+                <Button onClick={handleDirectInputCancel}>{t('Cancel')}</Button>
+              </>
+            ) : (
+              <Button onClick={handleDirectInputClear}>
+                {t('Manual input')}
+              </Button>
+            )}
+          </CardActions>
+        )}
       </StyledCard>
       <StyledCard>
         <CardContent>
