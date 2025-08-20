@@ -1,0 +1,24 @@
+query HouseholdDirectInput($accountListId: ID!, $id: ID!) {
+  goalCalculation(accountListId: $accountListId, id: $id) {
+    id
+    householdFamily {
+      id
+      directInput
+    }
+  }
+}
+
+mutation UpdateHouseholdDirectInput(
+  $accountListId: ID!
+  $id: ID!
+  $directInput: Float
+) {
+  updateBudgetFamily(
+    input: { accountListId: $accountListId, id: $id, directInput: $directInput }
+  ) {
+    budgetFamily {
+      id
+      directInput
+    }
+  }
+}
