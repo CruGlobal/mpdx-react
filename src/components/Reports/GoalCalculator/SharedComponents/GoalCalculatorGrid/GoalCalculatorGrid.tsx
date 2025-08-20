@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Card, Switch, Typography, styled } from '@mui/material';
 import {
   GridActionsCellItem,
+  GridApi,
   GridColDef,
   GridValidRowModel,
 } from '@mui/x-data-grid';
@@ -54,7 +61,7 @@ const StyledGridContainer = styled(Box)({
 
 export interface GoalCalculatorGridFormValues {
   gridData: Array<{
-    id: number;
+    id: number | string;
     name: string;
     amount: number;
   }>;
@@ -126,6 +133,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 };
 
+type GridDataItem = {
+  id: number | string;
+  name: string;
+  amount: number;
+};
 interface GoalCalculatorGridFormProps {
   categoryName: string;
 }
@@ -134,24 +146,73 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   categoryName,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
-  const locale = useLocale();
-
-  const totalAmount = values.gridData.reduce(
-    (sum, item) => sum + item.amount,
-    0,
-  );
-
-  const dataWithTotal = [
-    ...values.gridData,
-    { id: 'total', name: 'Total', amount: totalAmount },
-  ];
-
   const [directInput, setDirectInput] = useState(false);
+  const [originalData, setOriginalData] = useState<GridDataItem[]>(
+    values.gridData,
+  );
+  const gridRef = useRef<GridApi | null>(null);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  // Create dataWithTotal that reacts to totalAmount changes
+  const dataWithTotal = useMemo(() => {
+    if (directInput) {
+      return values.gridData;
+    } else {
+      const dataWithoutTotal = values.gridData.filter(
+        (item) => item.id !== 'total',
+      );
+      return [
+        ...dataWithoutTotal,
+        { id: 'total', name: 'Total', amount: totalAmount },
+      ];
+    }
+  }, [values.gridData, totalAmount, directInput]);
+
+  // Calculate total from data excluding the total row (but only when NOT in direct input mode)
+  useEffect(() => {
+    if (!directInput) {
+      const dataWithoutTotal = values.gridData.filter(
+        (item) => item.id !== 'total',
+      );
+      const newTotal = dataWithoutTotal.reduce(
+        (sum, item) => sum + item.amount,
+        0,
+      );
+      setTotalAmount(newTotal);
+    }
+  }, [values.gridData, directInput]);
+
+  // Update gridData when directInput changes
+  useEffect(() => {
+    let fieldValue: Array<GridDataItem> = [];
+    if (directInput && gridRef.current) {
+      setOriginalData([...values.gridData]);
+      setTimeout(() => {
+        if (gridRef.current) {
+          gridRef.current.startCellEditMode({ id: 'total', field: 'amount' });
+        }
+      }, 100);
+      fieldValue = [{ id: 'total', name: 'Total', amount: 0 }];
+      setFieldValue('gridData', [{ id: 'total', name: 'Total', amount: 0 }]);
+    } else if (gridRef.current && originalData.length > 0) {
+      fieldValue = originalData;
+    }
+    setFieldValue('gridData', fieldValue);
+  }, [directInput]);
+
+  const handleDelete = (id: number | string) => {
+    const updatedData = values.gridData.filter((item) => item.id !== id);
+    setFieldValue('gridData', updatedData);
+  };
 
   const addExpense = () => {
-    const newId = Math.max(...values.gridData.map((item) => item.id), 0) + 1;
+    const numericIds = values.gridData
+      .map((item) => item.id)
+      .filter((id) => id !== 'total' && typeof id === 'number');
+    const newId = Math.max(...numericIds, 0) + 1;
     const newIncomeItem = {
       id: newId,
       name: t('New Income'),
@@ -165,28 +226,28 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     setDirectInput(!directInput);
   };
 
-  const handleDelete = (id: number) => {
-    const updatedData = values.gridData.filter((item) => item.id !== id);
-    setFieldValue('gridData', updatedData);
-  };
+  const processRowUpdate = useCallback(
+    (newRow: GridValidRowModel) => {
+      if (newRow.id === 'total') {
+        setTotalAmount(newRow.amount as number);
+        setFieldValue('gridData', [newRow]);
+        return newRow;
+      }
 
-  const processRowUpdate = (newRow: GridValidRowModel) => {
-    if (newRow.id === 'total') {
+      const updatedData = values.gridData.map((item) =>
+        item.id === newRow.id
+          ? {
+              ...item,
+              name: newRow.name as string,
+              amount: newRow.amount as number,
+            }
+          : item,
+      );
+      setFieldValue('gridData', updatedData);
       return newRow;
-    }
-
-    const updatedData = values.gridData.map((item) =>
-      item.id === newRow.id
-        ? {
-            ...item,
-            name: newRow.name as string,
-            amount: newRow.amount as number,
-          }
-        : item,
-    );
-    setFieldValue('gridData', updatedData);
-    return newRow;
-  };
+    },
+    [setFieldValue, values.gridData],
+  );
 
   const columns: GridColDef[] = [
     {
@@ -223,7 +284,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             key="delete"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDelete(params.id as number)}
+            onClick={() => handleDelete(params.id)}
             showInMenu={false}
           />,
         ];
@@ -239,6 +300,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           onClick={addExpense}
           size="small"
           startIcon={<AddIcon />}
+          disabled={directInput}
         >
           {t('Add {{category}}', { category: categoryName })}
         </StyledAddButton>
@@ -257,9 +319,11 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
       <StyledGridContainer>
         <StyledGrid
+          ref={gridRef}
           rows={dataWithTotal}
           columns={columns}
           processRowUpdate={processRowUpdate}
+          directInput={directInput}
         />
       </StyledGridContainer>
     </StyledCard>

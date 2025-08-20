@@ -227,4 +227,33 @@ describe('GoalCalculatorGrid', () => {
     expect(getByText('Investment Returns')).toBeInTheDocument();
     expect(getByText('Rental Income')).toBeInTheDocument();
   });
+
+  it('toggles direct input', async () => {
+    const propsWithoutData = {
+      categoryName: 'Special Income Name',
+    };
+
+    const { getByRole, getAllByRole } = render(
+      <TestWrapper>
+        <GoalCalculatorGrid {...propsWithoutData} />
+      </TestWrapper>,
+    );
+
+    const directInputSwitch = getByRole('checkbox');
+    expect(directInputSwitch).not.toBeChecked();
+    expect(
+      getByRole('button', { name: 'Add Special Income Name' }),
+    ).toBeEnabled();
+    const rowsBeforeDirectInput = getAllByRole('row');
+    expect(rowsBeforeDirectInput.length).toBe(5);
+    userEvent.click(directInputSwitch);
+    await waitFor(() => {
+      const rowsAfterDirectInput = getAllByRole('row');
+      expect(directInputSwitch).toBeChecked();
+      expect(rowsAfterDirectInput.length).toBe(2);
+      expect(
+        getByRole('button', { name: 'Add Special Income Name' }),
+      ).toBeDisabled();
+    });
+  });
 });
