@@ -73,9 +73,15 @@ const StyledActionBox = styled(Box)({
 
 export interface GoalCardProps {
   goal: ListGoalCalculationFragment;
+
+  /** Remove this prop and always render the star once we do something with the primary flag*/
+  renderStar?: boolean;
 }
 
-export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
+export const GoalCard: React.FC<GoalCardProps> = ({
+  goal,
+  renderStar = false,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
@@ -89,14 +95,14 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
         accountListId,
         attributes: {
           id: goal.id,
-          isCurrent: !goal.isCurrent,
+          primary: !goal.primary,
         },
       },
       optimisticResponse: {
         updateGoalCalculation: {
           goalCalculation: {
             ...goal,
-            isCurrent: !goal.isCurrent,
+            primary: !goal.primary,
           },
         },
       },
@@ -155,16 +161,21 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal }) => {
               {goal.createdAt}
             </Typography>
           </StyledTitleBox>
-          <StyledStarButton aria-label="star-button" onClick={handleStarClick}>
-            {goal.isCurrent ? (
-              <Star color="primary" sx={{ verticalAlign: 'middle' }} />
-            ) : (
-              <StarBorderOutlined
-                color="primary"
-                sx={{ verticalAlign: 'middle' }}
-              />
-            )}
-          </StyledStarButton>
+          {renderStar && (
+            <StyledStarButton
+              aria-label="star-button"
+              onClick={handleStarClick}
+            >
+              {goal.primary ? (
+                <Star color="primary" sx={{ verticalAlign: 'middle' }} />
+              ) : (
+                <StarBorderOutlined
+                  color="primary"
+                  sx={{ verticalAlign: 'middle' }}
+                />
+              )}
+            </StyledStarButton>
+          )}
         </StyledHeaderBox>
 
         <Divider />
