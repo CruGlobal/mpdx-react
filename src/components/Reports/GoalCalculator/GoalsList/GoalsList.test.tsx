@@ -50,17 +50,24 @@ describe('GoalsList', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders loading state', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('progressbar')).toBeInTheDocument();
+  });
+
   it('renders goal calculations', async () => {
-    const { findByRole } = render(<TestComponent />);
+    const { findByRole, queryByRole } = render(<TestComponent />);
 
     expect(
       await findByRole('heading', { name: '2025-01-01T00:00:00.000Z' }),
     ).toBeInTheDocument();
+    expect(queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('renders placeholder when there are no goals', async () => {
-    const { getByRole } = render(<TestComponent noGoals />);
+    const { findByRole } = render(<TestComponent noGoals />);
 
-    expect(getByRole('img')).toBeInTheDocument();
+    expect(await findByRole('img')).toBeInTheDocument();
   });
 });
