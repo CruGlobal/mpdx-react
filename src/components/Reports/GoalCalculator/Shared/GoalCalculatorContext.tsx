@@ -11,20 +11,15 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
-import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
 import {
   GoalCalculatorReportEnum,
-  GoalCalculatorStep,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { useHouseholdExpenses } from '../HouseholdExpenses/HouseholdExpenses';
-import { useMinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
-import { useSummaryReport } from '../SummaryReport/useSummaryReport';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
   steps: GoalCalculatorStep[];
-  selectedStepId: GoalCalculatorStepEnum;
   currentStep: GoalCalculatorStep;
   selectedReport: GoalCalculatorReportEnum;
   setSelectedReport: Dispatch<SetStateAction<GoalCalculatorReportEnum>>;
@@ -75,36 +70,21 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     },
   });
 
-  // Static categories - no memoization to avoid React queue issues
-  const steps = [
-    useCalculatorSettings(),
-    useMinistryExpenses(),
-    useHouseholdExpenses(),
-    useSummaryReport(),
-  ];
-
-  const [selectedStepId, setSelectedStepId] = useState(
-    GoalCalculatorStepEnum.CalculatorSettings,
-  );
+  const steps = useSteps();
+  const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
 
-  const currentStep = useMemo(() => {
-    const selectedStep = steps.find((step) => step.id === selectedStepId);
-    if (!selectedStep) {
-      throw new Error('Invalid step');
-    }
-    return selectedStep;
-  }, [steps, selectedStepId]);
+  const currentStep = steps[stepIndex];
 
   const handleStepChange = useCallback(
-    (stepId: GoalCalculatorStepEnum) => {
-      const step = steps.find((step) => step.id === stepId);
-      if (step) {
-        setSelectedStepId(stepId);
+    (newStep: GoalCalculatorStepEnum) => {
+      const newIndex = steps.findIndex((step) => step.step === newStep);
+      if (newIndex !== -1) {
+        setStepIndex(newIndex);
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
           variant: 'error',
@@ -115,17 +95,14 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   );
 
   const handleContinue = useCallback(() => {
-    const nextStepIndex =
-      steps.findIndex((step) => step.id === selectedStepId) + 1;
-    const nextStep = steps[nextStepIndex];
-    if (nextStep) {
-      setSelectedStepId(nextStep.id);
+    if (stepIndex < steps.length - 1) {
+      setStepIndex(stepIndex + 1);
     } else {
       enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
         variant: 'info',
       });
     }
-  }, [steps, selectedStepId, handleStepChange, enqueueSnackbar, t]);
+  }, [steps, stepIndex, enqueueSnackbar, t]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);
@@ -135,10 +112,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const contextValue: GoalCalculatorType = useMemo(
-    () => ({
+  const contextValue = useMemo(
+    (): GoalCalculatorType => ({
       steps,
-      selectedStepId,
       currentStep,
       rightPanelContent,
       isDrawerOpen,
@@ -153,7 +129,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
     }),
     [
-      selectedStepId,
+      steps,
       currentStep,
       rightPanelContent,
       isDrawerOpen,

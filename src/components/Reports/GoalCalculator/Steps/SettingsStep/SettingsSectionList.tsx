@@ -1,18 +1,15 @@
 import React from 'react';
-import { useCalculatorSettings } from '../../CalculatorSettings/CalculatorSettings';
+import { useTranslation } from 'react-i18next';
 import { SectionList } from '../../SharedComponents/SectionList';
 
 export const SettingsSectionList: React.FC = () => {
-  const calculatorSettings = useCalculatorSettings();
+  const { t } = useTranslation();
 
-  return (
-    <SectionList
-      sections={
-        calculatorSettings.categories.map((category) => ({
-          title: category.title,
-          complete: false,
-        })) ?? []
-      }
-    />
-  );
+  const sections = [
+    { title: t('Information'), complete: false },
+    { title: t('Special Income'), complete: false },
+    { title: t('One-time Goals'), complete: false },
+  ];
+
+  return <SectionList sections={sections} />;
 };

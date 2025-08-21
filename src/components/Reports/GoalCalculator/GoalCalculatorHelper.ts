@@ -1,20 +1,9 @@
-import React from 'react';
-
 export interface GoalCalculatorCategory {
   id: GoalCalculatorCategoryEnum;
   title: string;
   subtitle?: string;
   component?: JSX.Element;
   rightPanelComponent?: JSX.Element;
-}
-
-export interface GoalCalculatorStep {
-  id: GoalCalculatorStepEnum;
-  title: string;
-  instructions?: JSX.Element;
-  PageComponent?: React.FC;
-  categories?: GoalCalculatorCategory[];
-  icon: JSX.Element;
 }
 
 export enum GoalCalculatorStepEnum {
