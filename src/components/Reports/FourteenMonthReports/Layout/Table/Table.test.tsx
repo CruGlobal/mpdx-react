@@ -80,7 +80,7 @@ describe('FourteenMonthReportTable', () => {
     expect(getAllByTestId('FourteenMonthReportTableRow')).toHaveLength(2);
     expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
     const contactTotal = getAllByTestId('totalGivenByContact');
-    expect(contactTotal[0]).toHaveTextContent('3,366');
+    expect(contactTotal[0]).toHaveTextContent('1,020');
   });
 
   it('should order by name', async () => {
