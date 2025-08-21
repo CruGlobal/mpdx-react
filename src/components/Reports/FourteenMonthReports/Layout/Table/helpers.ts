@@ -1,5 +1,5 @@
 import { Order } from '../../../Reports.type';
-import { MonthTotal } from '../../TwelveMonthReport';
+import { MonthTotal } from '../../FourteenMonthReport';
 import { Contact, OrderBy } from './TableHead/TableHead';
 
 // Given a contact and a sorting field, calculate a sort key for the contact that can be

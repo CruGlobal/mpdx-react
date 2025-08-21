@@ -3,13 +3,13 @@ import FilterList from '@mui/icons-material/FilterList';
 import { Box, Grid, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { TwelveMonthReportActions } from './Actions/Actions';
+import { FourteenMonthReportActions } from './Actions/Actions';
 
-interface TwelveMonthReportHeaderProps {
+interface FourteenMonthReportHeaderProps {
   csvData: (string | number)[][];
-  currencyType: TwelveMonthReportCurrencyType;
+  currencyType: FourteenMonthReportCurrencyType;
   isExpanded: boolean;
   isMobile: boolean;
   isNavListOpen: boolean;
@@ -61,7 +61,7 @@ const StyledGrid = styled(Grid)(() => ({
   },
 }));
 
-export const TwelveMonthReportHeader: FC<TwelveMonthReportHeaderProps> = ({
+export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
   csvData,
   currencyType,
   title,
@@ -76,7 +76,7 @@ export const TwelveMonthReportHeader: FC<TwelveMonthReportHeaderProps> = ({
   const { t } = useTranslation();
 
   return (
-    <StickyHeader p={2} data-testid="TwelveMonthReportHeader">
+    <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
       <Grid
         container
         justifyContent={isMobile ? 'center' : 'space-between'}
@@ -92,7 +92,7 @@ export const TwelveMonthReportHeader: FC<TwelveMonthReportHeaderProps> = ({
           </Box>
         </Grid>
         <StyledGrid item>
-          <TwelveMonthReportActions
+          <FourteenMonthReportActions
             csvData={csvData}
             currencyType={currencyType}
             isExpanded={isExpanded}
