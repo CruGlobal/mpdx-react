@@ -7,7 +7,7 @@ import {
 } from '../GoalCalculatorHelper';
 import { InformationCategory } from './Categories/InformationCategory/InformationCategory';
 
-export const useCalculatorSettings = (): GoalCalculatorStep => {
+export const useCalculatorSettings = () => {
   const { t } = useTranslation();
   return {
     title: t('Calculator Settings'),
@@ -29,5 +29,5 @@ export const useCalculatorSettings = (): GoalCalculatorStep => {
         title: t('One-time Goals'),
       },
     ],
-  };
+  } satisfies GoalCalculatorStep;
 };

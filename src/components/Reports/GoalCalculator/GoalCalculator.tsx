@@ -3,9 +3,9 @@ import { Divider, Stack, styled } from '@mui/material';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 import { GoalCalculatorLayout } from './Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from './Shared/GoalCalculatorSection';
+import { ListPanel } from './Shared/ListPanel';
 import { ContinueButton } from './SharedComponents/ContinueButton';
 import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
-import { SectionList } from './SharedComponents/SectionList';
 
 const CategoryContainer = styled('div')(({ theme }) => ({
   paddingInline: theme.spacing(4),
@@ -24,17 +24,7 @@ export const GoalCalculator: React.FC = () => {
     <PageComponent />
   ) : (
     <GoalCalculatorLayout
-      sectionListPanel={
-        <SectionList
-          sections={
-            categories?.map((category) => ({
-              title: category.title,
-              // TODO: Determine whether each category is complete
-              complete: false,
-            })) ?? []
-          }
-        />
-      }
+      sectionListPanel={<ListPanel step={currentStep.id} />}
       mainContent={
         <Stack flex={1} spacing={4} divider={<Divider />}>
           {stepInstructions && (
