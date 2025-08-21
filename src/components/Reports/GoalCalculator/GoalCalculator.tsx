@@ -1,61 +1,24 @@
 import React from 'react';
-import { Divider, Stack, styled } from '@mui/material';
 import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
-import { GoalCalculatorLayout } from './Shared/GoalCalculatorLayout';
-import { GoalCalculatorSection } from './Shared/GoalCalculatorSection';
-import { ListPanel } from './Shared/ListPanel';
-import { ContinueButton } from './SharedComponents/ContinueButton';
-import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
 import { HouseholdExpensesStep } from './Steps/HouseholdExpensesStep/HouseholdExpensesStep';
 import { MinistryExpensesStep } from './Steps/MinistryExpensesStep/MinistryExpensesStep';
-
-const CategoryContainer = styled('div')(({ theme }) => ({
-  paddingInline: theme.spacing(4),
-}));
+import { ReportsStep } from './Steps/ReportsStep/ReportsStep';
+import { SettingsStep } from './Steps/SettingsStep/SettingsStep';
 
 export const GoalCalculator: React.FC = () => {
-  const { currentStep, handleContinue } = useGoalCalculator();
+  const { currentStep } = useGoalCalculator();
 
-  const {
-    instructions: stepInstructions,
-    categories,
-    PageComponent,
-  } = currentStep;
-
-  if (currentStep.id === GoalCalculatorStepEnum.HouseholdExpenses) {
-    return <HouseholdExpensesStep />;
-  } else if (currentStep.id === GoalCalculatorStepEnum.MinistryExpenses) {
-    return <MinistryExpensesStep />;
+  switch (currentStep.id) {
+    case GoalCalculatorStepEnum.CalculatorSettings:
+      return <SettingsStep />;
+    case GoalCalculatorStepEnum.HouseholdExpenses:
+      return <HouseholdExpensesStep />;
+    case GoalCalculatorStepEnum.MinistryExpenses:
+      return <MinistryExpensesStep />;
+    case GoalCalculatorStepEnum.SummaryReport:
+      return <ReportsStep />;
   }
 
-  return PageComponent ? (
-    <PageComponent />
-  ) : (
-    <GoalCalculatorLayout
-      sectionListPanel={<ListPanel step={currentStep.id} />}
-      mainContent={
-        <Stack flex={1} spacing={4} divider={<Divider />}>
-          {stepInstructions && (
-            <CategoryContainer>{stepInstructions}</CategoryContainer>
-          )}
-          {categories?.map((category) => (
-            <GoalCalculatorSection
-              key={category.id}
-              title={category.title}
-              subtitle={category.subtitle}
-              rightPanelContent={category.rightPanelComponent}
-            >
-              {category.component || (
-                <GoalCalculatorGrid categoryName={category.title} />
-              )}
-            </GoalCalculatorSection>
-          ))}
-          <CategoryContainer>
-            <ContinueButton onClick={handleContinue} />
-          </CategoryContainer>
-        </Stack>
-      }
-    />
-  );
+  return null;
 };
