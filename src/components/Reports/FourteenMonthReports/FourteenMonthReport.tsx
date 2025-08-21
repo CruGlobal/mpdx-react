@@ -150,7 +150,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
           alignItems="center"
           height="100%"
         >
-          <CircularProgress data-testid="LoadingTwelveMonthReport" />
+          <CircularProgress data-testid="LoadingFourteenMonthReport" />
         </Box>
       ) : fourteenMonthReportError ? (
         <Notification type="error" message={fourteenMonthReportError} />
