@@ -502,6 +502,7 @@ export const defaultFourteenMonthReport = {
             pledgeAmount: null,
             status: null,
             total: 3366,
+            completeMonthsTotal: 1020,
           },
           {
             accountNumbers: ['11610'],
@@ -565,6 +566,7 @@ export const defaultFourteenMonthReport = {
             pledgeCurrency: 'USD',
             status: null,
             total: 3366,
+            completeMonthsTotal: 1020,
           },
         ],
         currency: 'cad',
