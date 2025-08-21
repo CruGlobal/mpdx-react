@@ -8,6 +8,7 @@ import { ListPanel } from './Shared/ListPanel';
 import { ContinueButton } from './SharedComponents/ContinueButton';
 import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
 import { HouseholdExpensesStep } from './Steps/HouseholdExpensesStep/HouseholdExpensesStep';
+import { MinistryExpensesStep } from './Steps/MinistryExpensesStep/MinistryExpensesStep';
 
 const CategoryContainer = styled('div')(({ theme }) => ({
   paddingInline: theme.spacing(4),
@@ -24,6 +25,8 @@ export const GoalCalculator: React.FC = () => {
 
   if (currentStep.id === GoalCalculatorStepEnum.HouseholdExpenses) {
     return <HouseholdExpensesStep />;
+  } else if (currentStep.id === GoalCalculatorStepEnum.MinistryExpenses) {
+    return <MinistryExpensesStep />;
   }
 
   return PageComponent ? (
