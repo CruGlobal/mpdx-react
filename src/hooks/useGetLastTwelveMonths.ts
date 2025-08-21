@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { DateTime } from 'luxon';
 import { monthYearFormat } from 'src/lib/intlFormat';
 
 export const useGetLastTwelveMonths = (
@@ -6,23 +7,12 @@ export const useGetLastTwelveMonths = (
   fullYear: boolean,
 ): string[] => {
   return useMemo(() => {
-    const startDate = new Date();
+    const startDate = DateTime.now();
     const result: string[] = [];
 
     for (let i = 0; i < 12; i++) {
-      const date = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth() - i,
-        1,
-      );
-      result.push(
-        monthYearFormat(
-          date.getMonth() + 1,
-          date.getFullYear(),
-          locale,
-          fullYear,
-        ),
-      );
+      const date = startDate.minus({ months: i });
+      result.push(monthYearFormat(date.month, date.year, locale, fullYear));
     }
     return result.reverse();
   }, [locale, fullYear]);

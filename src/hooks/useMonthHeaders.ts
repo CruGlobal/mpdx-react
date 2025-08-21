@@ -1,27 +1,41 @@
 import { useCallback, useMemo } from 'react';
-import { getMonthCount } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/getMonthCount';
-import { getMonthInfo } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/getMonthInfo';
 
 export const useMonthHeaders = (
   months: string[],
   colors: { first: string; second: string },
 ) => {
-  const monthCount = useMemo(() => {
-    return getMonthCount(months);
-  }, [months]);
+  const { monthCount, firstMonthFlags } = useMemo(() => {
+    const yearsObj: Record<string, number> = {};
+    const firstMonthFlags: { year: string; isFirstOfYear: boolean }[] = [];
 
-  const firstMonth = useMemo(() => getMonthInfo(months), [months]);
+    months.forEach((monthYear, index) => {
+      const year = monthYear.split(' ')[1];
+
+      yearsObj[year] = (yearsObj[year] || 0) + 1;
+
+      const prevYear = index > 0 ? months[index - 1].split(' ')[1] : null;
+      const isFirstOfYear = index === 0 || year !== prevYear;
+      firstMonthFlags.push({ year, isFirstOfYear });
+    });
+
+    const monthCount = Object.entries(yearsObj).map(([year, count]) => ({
+      year,
+      count,
+    }));
+
+    return { monthCount, firstMonthFlags };
+  }, [months]);
 
   const getBorderColor = useCallback(
     (index: number) => {
       return index === 0 ? colors.first : colors.second;
     },
-    [firstMonth, colors, months],
+    [colors, months],
   );
 
   return {
     monthCount,
-    firstMonth,
+    firstMonthFlags,
     getBorderColor,
   };
 };

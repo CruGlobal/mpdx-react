@@ -13,12 +13,14 @@ interface ScreenOnlyReportProps {
   data: MockData;
   last12Months: string[];
   expenseData: DataFields[];
+  currency: string;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
   last12Months,
   expenseData,
+  currency,
 }) => {
   const { t } = useTranslation();
 
@@ -29,7 +31,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           <Grid container spacing={2}>
             <Grid item xs={7}>
               <CardSkeleton title={t('Summary')} subtitle={t('Last 12 Months')}>
-                <SummaryBarChart aspect={2} width={100} />
+                <SummaryBarChart aspect={2} width={100} currency={currency} />
               </CardSkeleton>
             </Grid>
             <Grid item xs={5}>
@@ -81,6 +83,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
               months={last12Months}
               aspect={2.5}
               width={100}
+              currency={currency}
             />
           </CardSkeleton>
         </Box>

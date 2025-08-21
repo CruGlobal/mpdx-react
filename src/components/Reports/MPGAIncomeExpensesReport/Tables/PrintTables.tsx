@@ -41,10 +41,13 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
   const overallTotal =
     type === ReportTypeEnum.Income ? incomeTotal : expensesTotal;
 
-  const { monthCount, firstMonth, getBorderColor } = useMonthHeaders(months, {
-    first: theme.palette.primary.main,
-    second: theme.palette.chartOrange.main,
-  });
+  const { monthCount, firstMonthFlags, getBorderColor } = useMonthHeaders(
+    months,
+    {
+      first: theme.palette.primary.main,
+      second: theme.palette.chartOrange.main,
+    },
+  );
 
   return loading ? (
     <LoadingBox>
@@ -64,7 +67,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
               <TableCell sx={{ borderBottom: 'none', width: 43 }} />
               {monthCount?.map(({ year, count }, index) => {
                 const borderColor = getBorderColor(index);
-                const firstMonthInYear = firstMonth.find(
+                const firstMonthInYear = firstMonthFlags.find(
                   (month) => month.year === year && month.isFirstOfYear,
                 );
 
@@ -162,7 +165,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
               <TableRow
                 sx={{
                   '@media print': {
-                    backgroundColor: '#BBDEFB !important',
+                    backgroundColor: theme.palette.chartBlueLight.main,
                     WebkitPrintColorAdjust: 'exact',
                     printColorAdjust: 'exact',
                   },

@@ -11,12 +11,14 @@ interface PrintOnlyReportProps {
   data: MockData;
   last12Months: string[];
   expenseData: DataFields[];
+  currency: string;
 }
 
 export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
   data,
   last12Months,
   expenseData,
+  currency,
 }) => {
   const { t } = useTranslation();
 
@@ -45,7 +47,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {t('Summary')}
                 </Typography>
-                <SummaryBarChart aspect={2} width={80} />
+                <SummaryBarChart aspect={2} width={80} currency={currency} />
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="h6" sx={{ mb: 2 }}>
@@ -81,6 +83,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
               months={last12Months}
               aspect={2.7}
               width={80}
+              currency={currency}
             />
           </Box>
         </Container>

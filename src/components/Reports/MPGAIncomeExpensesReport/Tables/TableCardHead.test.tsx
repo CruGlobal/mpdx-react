@@ -5,8 +5,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { getMonthCount } from '../Helper/getMonthCount';
-import { getMonthInfo } from '../Helper/getMonthInfo';
 import { monthWidth } from './TableCard';
 import { TableCardHead } from './TableCardHead';
 
@@ -27,7 +25,25 @@ const months = [
   'Mar 2025',
 ];
 
-const years = getMonthCount(months);
+const years = [
+  { year: '2024', count: 9 },
+  { year: '2025', count: 3 },
+];
+
+const monthInfo = [
+  { year: '2024', isFirstOfYear: true },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2024', isFirstOfYear: false },
+  { year: '2025', isFirstOfYear: true },
+  { year: '2025', isFirstOfYear: false },
+  { year: '2025', isFirstOfYear: false },
+];
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -84,8 +100,6 @@ describe('TableCardHead', () => {
   });
 
   it('should get correct month info', () => {
-    const monthInfo = getMonthInfo(months);
-
     expect(monthInfo[0].isFirstOfYear).toBeTruthy();
     expect(monthInfo[1].isFirstOfYear).toBeFalsy();
     expect(monthInfo[9].isFirstOfYear).toBeTruthy();

@@ -16,20 +16,18 @@ import { useTotals } from '../TotalsContext/TotalsContext';
 interface SummaryBarChartProps {
   aspect: number;
   width: number;
+  currency: string;
 }
 
-const chartColors = [
-  theme.palette.primary.main,
-  theme.palette.chartBlueLight.main,
-];
+const chartColors = [theme.palette.primary.main, theme.palette.chartBlue.main];
 
 export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
   aspect,
   width,
+  currency,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const currency = 'USD';
 
   const { incomeTotal, expensesTotal } = useTotals();
 

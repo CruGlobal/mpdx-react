@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { MockData } from '../mockData';
+import { DataFields, MockData } from '../mockData';
 
 export type TotalsType = {
   incomeTotal: number;
@@ -27,7 +27,7 @@ interface TotalsContextProps {
   children?: React.ReactNode;
 }
 
-const sum = (rows?: Array<{ total: number }>): number => {
+const sum = (rows?: DataFields[]): number => {
   return rows?.reduce((acc, item) => acc + item.total, 0) || 0;
 };
 

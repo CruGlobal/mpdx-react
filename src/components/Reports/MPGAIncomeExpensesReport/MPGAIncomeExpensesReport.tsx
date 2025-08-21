@@ -14,6 +14,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
+import { useReportsStaffExpensesQuery } from '../ReportsStaffExpenses.generated';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -26,7 +27,7 @@ import { mockData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
-  //accountListId: string;
+  accountListId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -34,9 +35,13 @@ interface MPGAIncomeExpensesReportProps {
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
-> = ({ title, isNavListOpen, onNavListToggle }) => {
+> = ({ accountListId, title, isNavListOpen, onNavListToggle }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const { data: staffExpensesData } = useReportsStaffExpensesQuery({
+    variables: { accountListId: accountListId },
+  });
 
   const handlePrint = () => {
     window.print();
@@ -123,6 +128,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               data={mockData}
               last12Months={last12Months}
               expenseData={expenseData}
+              currency={staffExpensesData?.accountList.currency || 'USD'}
             />
           </TotalsProvider>
         </SimpleScreenOnly>
@@ -132,6 +138,7 @@ export const MPGAIncomeExpensesReport: React.FC<
               data={mockData}
               last12Months={last12Months}
               expenseData={expenseData}
+              currency={staffExpensesData?.accountList.currency || 'USD'}
             />
           </TotalsProvider>
         </PrintOnly>

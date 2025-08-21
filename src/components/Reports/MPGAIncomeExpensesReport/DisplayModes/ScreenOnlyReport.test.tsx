@@ -10,6 +10,7 @@ import { mockData } from '../mockData';
 import { ScreenOnlyReport } from './ScreenOnlyReport';
 
 const mutationSpy = jest.fn();
+const currency = 'USD';
 
 const data = {
   accountListId: '12345',
@@ -67,6 +68,7 @@ const TestComponent: React.FC = () => (
             data={data}
             last12Months={months}
             expenseData={expenseData}
+            currency={currency}
           />
         </TotalsProvider>
       </GqlMockedProvider>
@@ -108,6 +110,7 @@ describe('ScreenOnlyReport', () => {
                 data={emptyData}
                 last12Months={months}
                 expenseData={expenseData}
+                currency={currency}
               />
             </TotalsProvider>
           </GqlMockedProvider>

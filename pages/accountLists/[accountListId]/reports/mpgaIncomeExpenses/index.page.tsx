@@ -51,7 +51,7 @@ const MPGAReportPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <MPGAIncomeExpensesReport
-                //accountListId={accountListId}
+                accountListId={accountListId}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Ministry Partner Giving Analysis')}

@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { zeroAmountFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { DataFields } from '../mockData';
 import { StyledTypography } from '../styledComponents';
 import { descriptionWidth, monthWidth, summaryWidth } from './TableCard';
@@ -25,7 +26,7 @@ export const TotalsRow: React.FC<TotalsRowProps> = ({ data, overallTotal }) => {
     <TableContainer>
       <Table>
         <TableHead>
-          <TableRow sx={{ backgroundColor: '#BBDEFB' }}>
+          <TableRow sx={{ backgroundColor: theme.palette.chartBlueLight.main }}>
             <TableCell sx={{ width: descriptionWidth }}>
               <StyledTypography>
                 <strong>{t('Overall Total')}</strong>

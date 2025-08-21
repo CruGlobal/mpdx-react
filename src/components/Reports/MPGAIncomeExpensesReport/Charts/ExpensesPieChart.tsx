@@ -10,7 +10,7 @@ interface ExpensesPieChartProps {
 
 const chartColors = [
   theme.palette.primary.main,
-  theme.palette.chartBlueLight.main,
+  theme.palette.chartBlue.main,
   theme.palette.chartOrange.main,
   theme.palette.secondary.main,
 ];

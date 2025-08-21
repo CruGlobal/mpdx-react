@@ -76,7 +76,7 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
         </ToolbarButton>
       </Tooltip>
       <Box mb={2}>
-        <TableCardHead months={months!} />
+        <TableCardHead months={months} />
       </Box>
     </Toolbar>
   );

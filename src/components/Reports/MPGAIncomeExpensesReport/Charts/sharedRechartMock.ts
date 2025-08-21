@@ -2,17 +2,21 @@ import * as React from 'react';
 
 const Original = jest.requireActual('recharts');
 
-const MockResponsiveContainer = ({ height, aspect, children }) => {
-  const w = 800;
-  const h =
-    typeof height === 'number' ? height : aspect ? Math.round(w / aspect) : 400;
+const MockResponsiveContainer = ({ heightValue, aspect, children }) => {
+  const width = 800;
+  const height =
+    typeof heightValue === 'number'
+      ? heightValue
+      : aspect
+      ? Math.round(width / aspect)
+      : 400;
   return React.createElement(
     'div',
     {
       className: 'recharts-responsive-container',
-      style: { width: w, height: h },
+      style: { width, height },
     },
-    React.cloneElement(React.Children.only(children), { width: w, height: h }),
+    React.cloneElement(React.Children.only(children), { width, height }),
   );
 };
 

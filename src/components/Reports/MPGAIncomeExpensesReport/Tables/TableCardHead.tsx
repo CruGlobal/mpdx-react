@@ -19,10 +19,13 @@ interface TableCardHeadProps {
 export const TableCardHead: React.FC<TableCardHeadProps> = ({ months }) => {
   const { t } = useTranslation();
 
-  const { monthCount, firstMonth, getBorderColor } = useMonthHeaders(months, {
-    first: theme.palette.primary.main,
-    second: theme.palette.chartOrange.main,
-  });
+  const { monthCount, firstMonthFlags, getBorderColor } = useMonthHeaders(
+    months,
+    {
+      first: theme.palette.primary.main,
+      second: theme.palette.chartOrange.main,
+    },
+  );
 
   return (
     <TableContainer>
@@ -32,7 +35,7 @@ export const TableCardHead: React.FC<TableCardHeadProps> = ({ months }) => {
             <TableCell sx={{ borderBottom: 'none', width: 43 }} />
             {monthCount?.map(({ year, count }, index) => {
               const borderColor = getBorderColor(index);
-              const firstMonthInYear = firstMonth.find(
+              const firstMonthInYear = firstMonthFlags.find(
                 (month) => month.year === year && month.isFirstOfYear,
               );
 

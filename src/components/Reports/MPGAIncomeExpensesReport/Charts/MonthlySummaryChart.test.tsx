@@ -10,6 +10,7 @@ import { mockData } from '../mockData';
 import { MonthlySummaryChart } from './MonthlySummaryChart';
 
 const mutationSpy = jest.fn();
+const currency = 'USD';
 
 const mockIncome = [{ ...mockData.income[0] }, { ...mockData.income[1] }];
 
@@ -47,6 +48,7 @@ const TestComponent: React.FC = () => (
           months={months}
           aspect={1.35}
           width={100}
+          currency={currency}
         />
       </GqlMockedProvider>
     </LocalizationProvider>

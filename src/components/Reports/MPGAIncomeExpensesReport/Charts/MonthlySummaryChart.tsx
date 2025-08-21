@@ -22,6 +22,7 @@ interface MonthlySummaryChartProps {
   months: string[];
   aspect: number;
   width: number;
+  currency: string;
 }
 
 const chartColors = [
@@ -35,9 +36,9 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
   months,
   aspect,
   width,
+  currency,
 }) => {
   const locale = useLocale();
-  const currency = 'USD';
 
   const combinedData = useMemo(() => {
     const transformedExpenseData = expenseData.map((item) => ({
@@ -104,11 +105,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
             />
             <Tooltip
               formatter={(value: number | string): [string, string] => [
-                `${Number(value).toLocaleString('en-US', {
-                  minimumFractionDigits: 0,
-                  style: 'currency',
-                  currency: 'USD',
-                })}`,
+                currencyFormat(Number(value), currency, locale),
                 'Total',
               ]}
               labelFormatter={(label: string) => `Month: ${label}`}

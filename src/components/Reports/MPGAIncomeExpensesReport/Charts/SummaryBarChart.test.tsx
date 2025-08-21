@@ -11,6 +11,7 @@ import { mockData } from '../mockData';
 import { SummaryBarChart } from './SummaryBarChart';
 
 const mutationSpy = jest.fn();
+const currency = 'USD';
 
 const data = {
   accountListId: '12345',
@@ -35,7 +36,7 @@ const TestComponent: React.FC = () => (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
         <TotalsProvider data={data}>
-          <SummaryBarChart aspect={1.35} width={100} />
+          <SummaryBarChart aspect={1.35} width={100} currency={currency} />
         </TotalsProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
