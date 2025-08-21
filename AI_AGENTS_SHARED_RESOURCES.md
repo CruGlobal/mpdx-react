@@ -5,7 +5,8 @@ This document provides a comprehensive reference of all shared functions, compon
 ## Table of Contents
 
 - [Core Libraries (`src/lib`)](#core-libraries-srclib)
-- [Utility Functions (`src/utils`)](#utility-functions-srcutils)  
+- [Utility Functions (`src/utils`)](#utility-functions-srcutils)
+- [Custom Hooks (`src/hooks`)](#custom-hooks-srchooks)
 - [Shared Components (`src/components/Shared`)](#shared-components-srccomponentsshared)
 - [Quick Reference](#quick-reference)
 - [Usage Guidelines](#usage-guidelines)
@@ -232,6 +233,206 @@ This document provides a comprehensive reference of all shared functions, compon
 **Purpose**: Task filtering tab configurations.
 - `TaskFilterTabsTypes` - Type definition for tab types
 - `getTaskFiltersTabs(t)` - Returns array of task filter tab configurations
+
+---
+
+## Custom Hooks (`src/hooks`)
+
+### 🌐 Router & Navigation Hooks
+
+#### `src/hooks/useAccountListId.ts`
+**Purpose**: Extract account list ID from Next.js router query parameters.
+
+**Hook**: `useAccountListId()`
+**Returns**: `string | undefined` - Account list ID from URL
+**Features**:
+- Waits for router to be ready
+- Returns undefined until router is available
+- Uses safe query parameter extraction
+
+#### `src/hooks/useCurrentToolId.ts`
+**Purpose**: Extract current tool ID from the pathname.
+
+**Hook**: `useCurrentToolId()`
+**Returns**: `string | undefined` - Tool ID if in /tools/[id] route
+**Features**:
+- Parses pathname to detect tools routes
+- Returns empty string if not in tools context
+- Handles routing edge cases safely
+
+#### `src/hooks/useAppealId.ts`
+**Purpose**: Extract appeal ID from router query parameters.
+
+### 📊 Data Management Hooks
+
+#### `src/hooks/useFetchAllPages.ts`
+**Purpose**: Automatically load all pages of paginated Apollo GraphQL queries.
+
+**Hook**: `useFetchAllPages<TData, TVariables>({ fetchMore, error, pageInfo })`
+**Returns**: `{ loading: boolean }`
+**Features**:
+- Automatically triggers fetchMore when hasNextPage is true
+- Works with Relay-style pagination
+- Handles Apollo Client cursors and page info
+- Returns loading state for UI feedback
+
+#### `src/hooks/useMassSelection.ts`
+**Purpose**: Comprehensive bulk selection management for lists.
+
+**Hook**: `useMassSelection(idsList: string[])`
+**Returns**: `UseMassSelectionResult`
+- `ids: string[]` - Currently selected IDs
+- `selectionType: ListHeaderCheckBoxState` - Checkbox state (none/partial/all)
+- `isRowChecked: (id: string) => boolean` - Check if specific ID is selected
+- `deselectAll: () => void` - Clear all selections
+- `toggleSelectAll: () => void` - Toggle all items
+- `toggleSelectionById: (id: string) => void` - Toggle individual item
+- `selectMultipleIds: (ids: string[]) => void` - Bulk select
+- `deselectMultipleIds: (ids: string[]) => void` - Bulk deselect
+
+**Features**:
+- Automatic cleanup when source list changes
+- Optimized for large lists
+- Integrated with ListHeader component
+
+#### `src/hooks/useUpdateTasksQueries.ts`
+**Purpose**: Cache management for task-related GraphQL queries.
+
+### 💾 Storage & Persistence Hooks
+
+#### `src/hooks/useLocalStorage.ts`
+**Purpose**: Browser localStorage with React state synchronization.
+
+**Hook**: `useLocalStorage<T>(key: string, defaultValue: T)`
+**Returns**: `[T, Dispatch<SetStateAction<T>>]` - useState-like API
+**Features**:
+- SSR-safe (handles server-side rendering)
+- JSON serialization for complex objects
+- Error handling with fallback to default values
+- Automatic storage synchronization
+- TypeScript generic support
+
+#### `src/hooks/useUserPreference.ts`
+**Purpose**: Server-persisted user preferences with optimistic updates.
+
+**Hook**: `useUserPreference<T>({ key, defaultValue })`
+**Returns**: `[T, Dispatch<SetStateAction<T>>, { loading: boolean }]`
+**Features**:
+- GraphQL-backed persistence
+- Optimistic updates for immediate UI feedback
+- JSON serialization for non-string values
+- Loading states for better UX
+- Automatic error handling and fallbacks
+
+### 🎯 UI & Interaction Hooks
+
+#### `src/hooks/useDebounce.ts`
+**Purpose**: Debouncing utilities for performance optimization.
+
+**Hooks**:
+- `useDebouncedCallback<Args, Return>(callback, delay)` - Debounce function calls
+- `useDebouncedValue<T>(value, delay)` - Debounce state changes
+
+**Features**:
+- Lodash-based debouncing with proper cleanup
+- TypeScript generics for type safety
+- Automatic cleanup on component unmount
+- Configurable delay timing
+
+#### `src/hooks/useTaskModal.tsx`
+**Purpose**: Access task modal context and controls.
+
+**Hook**: `useTaskModal()`
+**Returns**: `TaskModalProviderContext`
+**Usage**: Must be used within TaskModalProvider context
+
+### 🌍 Localization & Constants Hooks
+
+#### `src/hooks/useLocale.ts`
+**Purpose**: Get current user locale preference.
+
+**Hook**: `useLocale()`
+**Returns**: Current locale string
+**Usage**: Shorthand for accessing locale from UserPreferenceContext
+
+#### `src/hooks/useLocalizedConstants.ts`
+**Purpose**: Localized enum value resolution with API constants.
+
+**Hook**: `useLocalizedConstants()`
+**Returns**:
+- `getLocalizedContactStatus(statusEnum)` - Contact status names
+- `getLocalizedPhase(phaseEnum)` - Phase names  
+- `getLocalizedPledgeFrequency(freqEnum)` - Frequency names
+- `getLocalizedResultString(resultEnum)` - Result strings
+
+**Features**:
+- Integrates with API constants
+- Returns empty strings for missing values
+- Type-safe enum handling
+
+#### `src/hooks/usePhaseData.ts`
+**Purpose**: Comprehensive phase and activity type data management.
+
+**Hook**: `usePhaseData(phaseEnum?: PhaseEnum)`
+**Returns**:
+- `phaseData: Phase | null` - Current phase object
+- `setPhaseId: (phaseEnum) => void` - Change selected phase
+- `constants` - API constants
+- `taskPhases: PhaseEnum[]` - Phases with tasks
+- `activityTypes: Map<ActivityTypeEnum, ActivityData>` - Activity mappings
+- `phasesMap: Map<PhaseEnum, PhaseMappedData>` - Phase mappings
+- `activitiesByPhase: Map<PhaseEnum, ActivityTypeEnum[]>` - Phase-activity relationships
+- `allPhaseTags: Set<string>` - All available phase tags
+
+**Features**:
+- Memoized computations for performance
+- Rich activity type data with translations
+- Phase relationship mappings
+- Tag extraction and management
+
+### 🔒 Authentication & Session Hooks
+
+#### `src/hooks/useRequiredSession.tsx`
+**Purpose**: Session access with guaranteed availability.
+
+**Hook**: `useRequiredSession()`
+**Returns**: `Session['user']` - Never null/undefined
+**Usage**: Only use within `<RouterGuard>` components
+**Features**:
+- Throws error if session unavailable (fail-fast)
+- Eliminates need for optional chaining
+- Enforces proper session context usage
+
+### 📍 Location & Contact Hooks
+
+#### `src/hooks/useEmailLocations.ts`
+**Purpose**: Email location constants and utilities.
+
+#### `src/hooks/usePhoneLocations.ts` 
+**Purpose**: Phone location constants and utilities.
+
+#### `src/hooks/useContactPartnershipStatuses.ts`
+**Purpose**: Contact partnership status management.
+
+### 🛠️ Specialized Hooks
+
+#### `src/hooks/useGetTimezones.ts`
+**Purpose**: Timezone data and utilities.
+
+#### `src/hooks/useOrganizationId.ts`
+**Purpose**: Extract organization ID from router context.
+
+#### `src/hooks/useUpdateCache.ts`
+**Purpose**: Apollo Client cache update utilities.
+
+#### `src/hooks/useGetAppSettings.tsx`
+**Purpose**: Application settings and configuration.
+
+#### `src/hooks/useMuiLocaleText.ts`
+**Purpose**: Material-UI localized text configurations.
+
+#### `src/hooks/useGreeting.ts`
+**Purpose**: Localized greeting utilities.
 
 ---
 
@@ -632,22 +833,25 @@ Dynamic styling based on selection (blue for include, red for exclude, gray for 
 
 ### 🔥 Most Frequently Needed
 
-| Function | Purpose | Location |
-|----------|---------|-----------|
+| Function/Hook | Purpose | Location |
+|---------------|---------|-----------|
 | `currencyFormat()` | Format currency values | `src/lib/intlFormat.ts` |
 | `dateFormat()` | Format dates | `src/lib/intlFormat.ts` |
 | `getQueryParam()` | Extract URL params safely | `src/utils/queryParam.ts` |
-| `snakeToCamel()` | Convert object keys | `src/lib/snakeToCamel.ts` |
-| `sourceToStr()` | Convert source codes | `src/utils/sourceHelper.ts` |
+| `useAccountListId()` | Get account list ID from URL | `src/hooks/useAccountListId.ts` |
+| `useLocalStorage()` | Browser storage with React state | `src/hooks/useLocalStorage.ts` |
+| `useMassSelection()` | Bulk selection management | `src/hooks/useMassSelection.ts` |
+| `useDebounce()` | Performance debouncing | `src/hooks/useDebounce.ts` |
 | `FieldWrapper` | Form field wrapper | `src/components/Shared/Forms/FieldWrapper.tsx` |
-| `ListHeader` | List page header | `src/components/Shared/Header/ListHeader.tsx` |
 
 ### 🎯 GraphQL & Data
 
-| Function | Purpose | Location |
-|----------|---------|-----------|
+| Function/Hook | Purpose | Location |
+|---------------|---------|-----------|
 | `createCache()` | Apollo cache setup | `src/lib/apollo/cache.ts` |
 | `makeClient()` | Apollo client setup | `src/lib/apollo/client.ts` |
+| `useFetchAllPages()` | Auto-load paginated queries | `src/hooks/useFetchAllPages.ts` |
+| `useUserPreference()` | Server-persisted preferences | `src/hooks/useUserPreference.ts` |
 | `fetchAllData()` | JSON API deserialization | `src/lib/deserializeJsonApi.ts` |
 | `filterNullValues()` | Clean null values | `src/lib/removeObjectNulls.ts` |
 
@@ -688,6 +892,15 @@ import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 // Data transformation  
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import { getQueryParam } from 'src/utils/queryParam';
+
+// Custom Hooks
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocalStorage } from 'src/hooks/useLocalStorage';
+import { useMassSelection } from 'src/hooks/useMassSelection';
+import { useDebouncedCallback, useDebouncedValue } from 'src/hooks/useDebounce';
+import { useUserPreference } from 'src/hooks/useUserPreference';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 
 // Components
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
