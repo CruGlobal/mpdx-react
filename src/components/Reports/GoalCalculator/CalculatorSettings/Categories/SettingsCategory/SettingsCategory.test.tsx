@@ -10,7 +10,7 @@ describe('SettingsCategory', () => {
     expect(getByRole('textbox', { name: 'Goal Title' })).toBeInTheDocument();
   });
 
-  it('accepts valid input', async () => {
+  it('accepts valid input', () => {
     const { getByRole } = render(<SettingsCategory />);
 
     const input = getByRole('textbox', { name: 'Goal Title' });
