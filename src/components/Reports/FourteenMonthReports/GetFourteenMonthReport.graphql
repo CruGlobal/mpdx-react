@@ -34,6 +34,7 @@ fragment FourteenMonthReportContact on FourteenMonthReportContact {
   total
   average
   minimum
+  completeMonthsTotal
   months {
     month
     total

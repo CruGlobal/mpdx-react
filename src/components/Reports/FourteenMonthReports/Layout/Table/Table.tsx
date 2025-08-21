@@ -207,7 +207,10 @@ export const FourteenMonthReportTable: React.FC<
               ))}
               <StyledTableCell align="right">
                 <strong data-testid="totalGivenByContact">
-                  {numberFormat(Math.round(contact.total), locale)}
+                  {numberFormat(
+                    Math.round(contact.completeMonthsTotal),
+                    locale,
+                  )}
                 </strong>
               </StyledTableCell>
             </TableRow>
