@@ -1,11 +1,13 @@
 import React from 'react';
 import { Divider, Stack, styled } from '@mui/material';
+import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 import { GoalCalculatorLayout } from './Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from './Shared/GoalCalculatorSection';
 import { ListPanel } from './Shared/ListPanel';
 import { ContinueButton } from './SharedComponents/ContinueButton';
 import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
+import { HouseholdExpensesStep } from './Steps/HouseholdExpensesStep/HouseholdExpensesStep';
 
 const CategoryContainer = styled('div')(({ theme }) => ({
   paddingInline: theme.spacing(4),
@@ -19,6 +21,10 @@ export const GoalCalculator: React.FC = () => {
     categories,
     PageComponent,
   } = currentStep;
+
+  if (currentStep.id === GoalCalculatorStepEnum.HouseholdExpenses) {
+    return <HouseholdExpensesStep />;
+  }
 
   return PageComponent ? (
     <PageComponent />
