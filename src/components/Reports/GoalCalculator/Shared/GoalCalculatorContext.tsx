@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,6 +9,8 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { getQueryParam } from 'src/utils/queryParam';
 import { useCalculatorSettings } from '../CalculatorSettings/CalculatorSettings';
 import {
   GoalCalculatorReportEnum,
@@ -17,6 +20,7 @@ import {
 import { useHouseholdExpenses } from '../HouseholdExpenses/HouseholdExpenses';
 import { useMinistryExpenses } from '../MinistryExpenses/MinistryExpenses';
 import { useSummaryReport } from '../SummaryReport/useSummaryReport';
+import { useGoalCalculationQuery } from './GoalCalculation.generated';
 
 export type GoalCalculatorType = {
   steps: GoalCalculatorStep[];
@@ -37,6 +41,8 @@ export type GoalCalculatorType = {
   handleContinue: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
+
+  goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -58,6 +64,16 @@ interface Props {
 export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
+  const accountListId = useAccountListId() ?? '';
+  const { query } = useRouter();
+  const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
+
+  const goalCalculationResult = useGoalCalculationQuery({
+    variables: {
+      accountListId,
+      id: goalCalculationId,
+    },
+  });
 
   // Static categories - no memoization to avoid React queue issues
   const steps = [
@@ -134,6 +150,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       setDrawerOpen: setIsDrawerOpen,
       selectedReport,
       setSelectedReport,
+      goalCalculationResult,
     }),
     [
       selectedStepId,
@@ -148,6 +165,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       setIsDrawerOpen,
       selectedReport,
       setSelectedReport,
+      goalCalculationResult,
     ],
   );
 
