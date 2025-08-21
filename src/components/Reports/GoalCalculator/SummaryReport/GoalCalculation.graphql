@@ -1,0 +1,23 @@
+query GoalCalculation($accountListId: ID!, $goalCalculationId: ID!) {
+  goalCalculation(accountListId: $accountListId, id: $goalCalculationId) {
+    id
+    isCurrent
+    ministryFamily {
+      id
+      category
+      label
+      primaryBudgetCategories {
+        id
+        category
+        label
+        subBudgetCategories {
+          id
+          amount
+          category
+          label
+        }
+      }
+    }
+    primary
+  }
+}
