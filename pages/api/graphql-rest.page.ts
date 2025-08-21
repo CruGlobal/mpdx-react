@@ -3,6 +3,7 @@ import { AugmentedRequest, RESTDataSource } from '@apollo/datasource-rest';
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { GraphQLError } from 'graphql';
+import { DateTime } from 'luxon';
 import Cors from 'micro-cors';
 import {
   ExportFormatEnum,
@@ -11,7 +12,6 @@ import {
   MergeContactsInput,
   MergePeopleBulkInput,
 } from 'src/graphql/types.generated';
-import { getFourteenMonthReportDateRange } from 'src/lib/dateRangeHelpers';
 import schema from './Schema';
 import { getAccountListAnalytics } from './Schema/AccountListAnalytics/dataHandler';
 import { getAccountListCoaches } from './Schema/AccountListCoaches/dataHandler';
@@ -492,7 +492,9 @@ class MpdxRestApi extends RESTDataSource {
         currencyType === 'salary'
           ? 'salary_currency_donations'
           : 'donor_currency_donations'
-      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${getFourteenMonthReportDateRange()}`,
+      }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
+        .minus({ months: 13 })
+        .toISODate()}...${DateTime.now().toISODate()}`,
     );
     return mapFourteenMonthReport(data, currencyType);
   }

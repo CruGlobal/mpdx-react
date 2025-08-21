@@ -160,6 +160,6 @@ describe('FourteenMonthReportTable', () => {
 
     expect(getByTestId('averageTotal')).toHaveTextContent('516');
     expect(getByTestId('minimumTotal')).toHaveTextContent('510');
-    expect(getAllByTestId('overallTotal')[0]).toHaveTextContent('6,996');
+    expect(getAllByTestId('overallTotal')[0]).toHaveTextContent('5,160');
   });
 });
