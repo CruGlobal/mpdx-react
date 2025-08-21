@@ -64,7 +64,6 @@ export const HouseholdExpensesHeader: React.FC<
     },
   });
   const directInput = data?.goalCalculation.householdFamily.directInput;
-  const householdFamilyId = data?.goalCalculation.householdFamily.id;
   const [updateDirectInput] = useUpdateHouseholdDirectInputMutation();
 
   const [showPercentage, setShowPercentage] = useState(true);
@@ -77,6 +76,7 @@ export const HouseholdExpensesHeader: React.FC<
   const [directInputFieldValue, setDirectInputFieldValue] = useState(0);
 
   const setDirectInput = async (directInput: number | null) => {
+    const householdFamilyId = data?.goalCalculation.householdFamily.id;
     if (householdFamilyId) {
       return updateDirectInput({
         variables: {
