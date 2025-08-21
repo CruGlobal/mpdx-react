@@ -18,7 +18,7 @@ export const SettingsCategory: React.FC = () => {
       .string()
       .min(2, t('Goal title must be at least 2 characters'))
       .max(60, t('Goal title must be at most 60 characters'))
-      .matches(/^[a-zA-Z0-9 .,:-]*$/, t('Invalid character in goal title')),
+      .required('Goal title is a required field'),
   });
 
   const handleSubmit = () => {
