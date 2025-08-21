@@ -46,7 +46,7 @@ export const useGoalCalculator = (): GoalCalculatorType => {
   const context = React.useContext(GoalCalculatorContext);
   if (context === null) {
     throw new Error(
-      'Could not find GoalCalculatorContext. Make sure that your component is inside <GoalCalculatorProvider>.',
+      'Could not find GoalCalculatorContext. Make sure that your component is inside <GoalCalculatorProvider>.'
     );
   }
   return context;
@@ -81,22 +81,25 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const currentStep = steps[stepIndex];
 
   const handleStepChange = useCallback(
-    (newStep: GoalCalculatorStepEnum) => {
-      const newIndex = steps.findIndex((step) => step.step === newStep);
-      if (newIndex !== -1) {
-        setStepIndex(newIndex);
+    (stepId: GoalCalculatorStepEnum) => {
+      const step = steps.find((step) => step.id === stepId);
+      if (step) {
+        setSelectedStepId(stepId);
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
           variant: 'error',
         });
       }
     },
-    [steps, enqueueSnackbar, t],
+    [steps, enqueueSnackbar, t]
   );
 
   const handleContinue = useCallback(() => {
-    if (stepIndex < steps.length - 1) {
-      setStepIndex(stepIndex + 1);
+    const nextStepIndex =
+      steps.findIndex((step) => step.id === selectedStepId) + 1;
+    const nextStep = steps[nextStepIndex];
+    if (nextStep) {
+      setSelectedStepId(nextStep.id);
     } else {
       enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
         variant: 'info',
@@ -142,7 +145,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
-    ],
+    ]
   );
 
   return (
