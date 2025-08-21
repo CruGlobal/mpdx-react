@@ -8,7 +8,7 @@ const onClick = jest.fn();
 const direction = 'desc';
 const children = 'Jul';
 
-describe('TwelveMonthReportTableHead', () => {
+describe('FourteenMonthReportTableHead', () => {
   it('default', async () => {
     const { getByText } = render(
       <ThemeProvider theme={theme}>

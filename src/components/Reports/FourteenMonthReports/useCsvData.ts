@@ -5,7 +5,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
-import type { CurrencyTable } from './TwelveMonthReport';
+import type { CurrencyTable } from './FourteenMonthReport';
 
 export type CsvData = (string | number)[][];
 

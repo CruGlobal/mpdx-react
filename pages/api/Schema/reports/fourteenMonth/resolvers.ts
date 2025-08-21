@@ -1,13 +1,13 @@
 import { Resolvers } from '../../../graphql-rest.page.generated';
 
-const TwelveMonthReportResolvers: Resolvers = {
+const FourteenMonthReportResolvers: Resolvers = {
   Query: {
-    twelveMonthReport: (
+    fourteenMonthReport: (
       _source,
       { accountListId, designationAccountId, currencyType },
       { dataSources },
     ) => {
-      return dataSources.mpdxRestApi.getTwelveMonthReport(
+      return dataSources.mpdxRestApi.getFourteenMonthReport(
         accountListId,
         designationAccountId,
         currencyType,
@@ -16,4 +16,4 @@ const TwelveMonthReportResolvers: Resolvers = {
   },
 };
 
-export { TwelveMonthReportResolvers };
+export { FourteenMonthReportResolvers };

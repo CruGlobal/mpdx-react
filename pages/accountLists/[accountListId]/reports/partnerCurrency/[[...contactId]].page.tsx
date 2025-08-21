@@ -7,7 +7,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { TwelveMonthReport } from 'src/components/Reports/TwelveMonthReports/TwelveMonthReport';
+import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -16,7 +16,7 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
@@ -52,10 +52,10 @@ const PageContent: React.FC = () => {
         leftOpen={isNavListOpen}
         leftWidth="290px"
         mainContent={
-          <TwelveMonthReport
+          <FourteenMonthReport
             accountListId={accountListId}
             designationAccounts={designationAccounts}
-            currencyType={TwelveMonthReportCurrencyType.Donor}
+            currencyType={FourteenMonthReportCurrencyType.Donor}
             isNavListOpen={isNavListOpen}
             onNavListToggle={handleNavListToggle}
             title={t('Contributions by Partner Currency')}

@@ -4,9 +4,9 @@ import { render, waitFor, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
-import { TwelveMonthReportQuery } from '../../GetTwelveMonthReport.generated';
-import { defaultTwelveMonthReport } from '../../TwelveMonthReportMock';
-import { TwelveMonthReportTable } from './Table';
+import { defaultFourteenMonthReport } from '../../FourteenMonthReportMock';
+import { FourteenMonthReportQuery } from '../../GetFourteenMonthReport.generated';
+import { FourteenMonthReportTable } from './Table';
 import { OrderBy } from './TableHead/TableHead';
 
 const router = {
@@ -40,22 +40,22 @@ const totals = [
 ];
 
 interface ComponentsProps {
-  mocks?: TwelveMonthReportQuery;
+  mocks?: FourteenMonthReportQuery;
   orderBy?: OrderBy | null;
 }
 const Components: React.FC<ComponentsProps> = ({
-  mocks = defaultTwelveMonthReport,
+  mocks = defaultFourteenMonthReport,
   orderBy = 'name',
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <ContactPanelProvider>
-        <TwelveMonthReportTable
+        <FourteenMonthReportTable
           isExpanded={true}
           order="asc"
           orderBy={orderBy}
-          orderedContacts={mocks.twelveMonthReport.currencyGroups[0].contacts}
-          salaryCurrency={mocks.twelveMonthReport.currencyGroups[0].currency}
+          orderedContacts={mocks.fourteenMonthReport.currencyGroups[0].contacts}
+          salaryCurrency={mocks.fourteenMonthReport.currencyGroups[0].currency}
           onRequestSort={onRequestSort}
           totals={totals}
         />
@@ -64,19 +64,21 @@ const Components: React.FC<ComponentsProps> = ({
   </ThemeProvider>
 );
 
-describe('TwelveMonthReportTable', () => {
+describe('FourteenMonthReportTable', () => {
   it('default', async () => {
     const { getAllByTestId, getByRole, queryByTestId } = render(
       <Components orderBy={null} />,
     );
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('TwelveMonthReportTableRow')).toHaveLength(2);
-    expect(queryByTestId('TwelveMonthReport')).toBeInTheDocument();
+    expect(getAllByTestId('FourteenMonthReportTableRow')).toHaveLength(2);
+    expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
     const contactTotal = getAllByTestId('totalGivenByContact');
     expect(contactTotal[0]).toHaveTextContent('3,366');
   });
@@ -85,30 +87,38 @@ describe('TwelveMonthReportTable', () => {
     const { getAllByTestId, queryByTestId } = render(<Components />);
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
-    const twelveMonthReportRows = getAllByTestId('TwelveMonthReportTableRow');
-    expect(twelveMonthReportRows).toHaveLength(2);
-    expect(twelveMonthReportRows[0]).toHaveTextContent('test name');
-    expect(twelveMonthReportRows[1]).toHaveTextContent('name again');
-    expect(queryByTestId('TwelveMonthReport')).toBeInTheDocument();
+    const fourteenMonthReportRows = getAllByTestId(
+      'FourteenMonthReportTableRow',
+    );
+    expect(fourteenMonthReportRows).toHaveLength(2);
+    expect(fourteenMonthReportRows[0]).toHaveTextContent('test name');
+    expect(fourteenMonthReportRows[1]).toHaveTextContent('name again');
+    expect(queryByTestId('FourteenMonthReport')).toBeInTheDocument();
   });
 
   it('should should show the dot if a donation is late', async () => {
     const { getAllByTestId, queryByTestId } = render(<Components />);
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
-    const twelveMonthReportRows = getAllByTestId('TwelveMonthReportTableRow');
+    const fourteenMonthReportRows = getAllByTestId(
+      'FourteenMonthReportTableRow',
+    );
     expect(
-      within(twelveMonthReportRows[0]).getByTestId('lateCircle60'),
+      within(fourteenMonthReportRows[0]).getByTestId('lateCircle60'),
     ).toBeInTheDocument();
 
     expect(
-      within(twelveMonthReportRows[1]).queryByTestId('lateCircle30'),
+      within(fourteenMonthReportRows[1]).queryByTestId('lateCircle30'),
     ).not.toBeInTheDocument();
   });
 
@@ -116,7 +126,9 @@ describe('TwelveMonthReportTable', () => {
     const { getByRole, queryByTestId, getAllByTestId } = render(<Components />);
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
     expect(getByRole('link', { name: 'name again' })).toHaveAttribute(
@@ -135,7 +147,9 @@ describe('TwelveMonthReportTable', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('LoadingTwelveMonthReport')).not.toBeInTheDocument();
+      expect(
+        queryByTestId('LoadingFourteenMonthReport'),
+      ).not.toBeInTheDocument();
     });
 
     const contactTotal = getAllByTestId('monthlyTotals');

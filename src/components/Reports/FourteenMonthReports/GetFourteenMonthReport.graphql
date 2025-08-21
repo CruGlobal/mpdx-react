@@ -1,9 +1,9 @@
-query TwelveMonthReport(
+query FourteenMonthReport(
   $accountListId: ID!
   $designationAccountIds: [ID!]
-  $currencyType: TwelveMonthReportCurrencyType!
+  $currencyType: FourteenMonthReportCurrencyType!
 ) {
-  twelveMonthReport(
+  fourteenMonthReport(
     accountListId: $accountListId
     designationAccountId: $designationAccountIds
     currencyType: $currencyType
@@ -22,13 +22,13 @@ query TwelveMonthReport(
         minimum
       }
       contacts {
-        ...TwelveMonthReportContact
+        ...FourteenMonthReportContact
       }
     }
   }
 }
 
-fragment TwelveMonthReportContact on TwelveMonthReportContact {
+fragment FourteenMonthReportContact on FourteenMonthReportContact {
   id
   name
   total

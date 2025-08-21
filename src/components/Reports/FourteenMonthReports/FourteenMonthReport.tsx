@@ -2,17 +2,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Box, CircularProgress, useMediaQuery } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { mapTwelveMonthReport } from 'pages/api/Schema/reports/twelveMonth/datahandler';
-import { TwelveMonthReport as TwelveMonthReportQueryResponse } from 'pages/api/graphql-rest.page.generated';
+import { mapFourteenMonthReport } from 'pages/api/Schema/reports/fourteenMonth/datahandler';
+import { FourteenMonthReport as FourteenMonthReportQueryResponse } from 'pages/api/graphql-rest.page.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { TwelveMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { getTwelveMonthReportDateRange } from 'src/lib/dateRangeHelpers';
-import { TwelveMonthReportHeader as Header } from './Layout/Header/Header';
+import { getFourteenMonthReportDateRange } from 'src/lib/dateRangeHelpers';
+import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
 import {
-  TwelveMonthReportTable as Table,
-  TwelveMonthReportTableProps as TableProps,
+  FourteenMonthReportTable as Table,
+  FourteenMonthReportTableProps as TableProps,
 } from './Layout/Table/Table';
 import { calculateTotals, sortContacts } from './Layout/Table/helpers';
 import { useCsvData } from './useCsvData';
@@ -30,7 +30,7 @@ interface Props {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
-  currencyType: TwelveMonthReportCurrencyType;
+  currencyType: FourteenMonthReportCurrencyType;
 }
 
 export interface MonthTotal {
@@ -38,7 +38,7 @@ export interface MonthTotal {
   month: string;
 }
 
-export const TwelveMonthReport: React.FC<Props> = ({
+export const FourteenMonthReport: React.FC<Props> = ({
   accountListId,
   designationAccounts,
   currencyType,
@@ -49,10 +49,10 @@ export const TwelveMonthReport: React.FC<Props> = ({
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<OrderBy | null>(null);
-  const [twelveMonthReport, setTwelveMonthReport] = useState<
-    TwelveMonthReportQueryResponse | undefined
+  const [fourteenMonthReport, setFourteenMonthReport] = useState<
+    FourteenMonthReportQueryResponse | undefined
   >(undefined);
-  const [twelveMonthReportError, setTwelveMonthReportError] =
+  const [fourteenMonthReportError, setFourteenMonthReportError] =
     useState<string>('');
 
   const { t } = useTranslation();
@@ -67,7 +67,7 @@ export const TwelveMonthReport: React.FC<Props> = ({
   useEffect(() => {
     (async () => {
       try {
-        setTwelveMonthReportError('');
+        setFourteenMonthReportError('');
         const designationAccountFilter = designationAccounts?.length
           ? `&filter[designation_account_id]=${designationAccounts.join(',')}`
           : '';
@@ -75,7 +75,7 @@ export const TwelveMonthReport: React.FC<Props> = ({
           currencyType === 'salary'
             ? 'salary_currency_donations'
             : 'donor_currency_donations'
-        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${getTwelveMonthReportDateRange()}`;
+        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${getFourteenMonthReportDateRange()}`;
 
         const response = await fetch(
           `${process.env.REST_API_URL}reports/${requestUrl}`,
@@ -89,12 +89,12 @@ export const TwelveMonthReport: React.FC<Props> = ({
 
         const { data } = await response.json();
 
-        setTwelveMonthReport(mapTwelveMonthReport(data, currencyType));
+        setFourteenMonthReport(mapFourteenMonthReport(data, currencyType));
       } catch (error: unknown) {
         if (error instanceof Error) {
-          setTwelveMonthReportError(error.message);
+          setFourteenMonthReportError(error.message);
         } else {
-          setTwelveMonthReportError(String(error));
+          setFourteenMonthReportError(String(error));
         }
       }
     })();
@@ -103,12 +103,12 @@ export const TwelveMonthReport: React.FC<Props> = ({
   // Generate a table for each currency group in the report
   const currencyTables = useMemo<CurrencyTable[]>(
     () =>
-      twelveMonthReport?.currencyGroups.map((currencyGroup) => ({
+      fourteenMonthReport?.currencyGroups.map((currencyGroup) => ({
         currency: currencyGroup.currency,
         orderedContacts: sortContacts(currencyGroup.contacts, orderBy, order),
         totals: calculateTotals(currencyGroup.contacts),
       })) ?? [],
-    [twelveMonthReport, orderBy, order],
+    [fourteenMonthReport, orderBy, order],
   );
 
   const handleExpandToggle = (): void => {
@@ -141,7 +141,7 @@ export const TwelveMonthReport: React.FC<Props> = ({
         onPrint={handlePrint}
         title={title}
       />
-      {!twelveMonthReport && !twelveMonthReportError ? (
+      {!fourteenMonthReport && !fourteenMonthReportError ? (
         <Box
           display="flex"
           justifyContent="center"
@@ -150,8 +150,8 @@ export const TwelveMonthReport: React.FC<Props> = ({
         >
           <CircularProgress data-testid="LoadingTwelveMonthReport" />
         </Box>
-      ) : twelveMonthReportError ? (
-        <Notification type="error" message={twelveMonthReportError} />
+      ) : fourteenMonthReportError ? (
+        <Notification type="error" message={fourteenMonthReportError} />
       ) : currencyTables.length > 0 ? (
         <Box display="flex" flexDirection="column" gap={isPrint ? 1 : 4}>
           {currencyTables.map(({ currency, orderedContacts, totals }) => (
@@ -169,7 +169,9 @@ export const TwelveMonthReport: React.FC<Props> = ({
         </Box>
       ) : (
         <EmptyReport
-          title={t('You have received no donations in the last twelve months')}
+          title={t(
+            'You have received no donations in the last fourteen months',
+          )}
           subTitle={t(
             'You can setup an organization account to import them or add a new donation.',
           )}

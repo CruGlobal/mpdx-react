@@ -20,15 +20,15 @@ import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';
 import { numberFormat } from '../../../../../lib/intlFormat';
 import { useApiConstants } from '../../../../Constants/UseApiConstants';
-import { MonthTotal } from '../../TwelveMonthReport';
+import { MonthTotal } from '../../FourteenMonthReport';
 import { StyledTableCell } from './StyledComponents';
 import {
-  TwelveMonthReportTableHead as TableHead,
-  TwelveMonthReportTableHeadProps as TableHeadProps,
+  FourteenMonthReportTableHead as TableHead,
+  FourteenMonthReportTableHeadProps as TableHeadProps,
 } from './TableHead/TableHead';
 import type { Contact } from './TableHead/TableHead';
 
-export interface TwelveMonthReportTableProps extends TableHeadProps {
+export interface FourteenMonthReportTableProps extends TableHeadProps {
   isExpanded: boolean;
   orderedContacts: Contact[];
   totals: MonthTotal[];
@@ -80,7 +80,9 @@ const StyledTotalsRow = styled(TableRow)({
   },
 });
 
-export const TwelveMonthReportTable: React.FC<TwelveMonthReportTableProps> = ({
+export const FourteenMonthReportTable: React.FC<
+  FourteenMonthReportTableProps
+> = ({
   isExpanded,
   order,
   orderBy,
@@ -117,11 +119,11 @@ export const TwelveMonthReportTable: React.FC<TwelveMonthReportTableProps> = ({
   );
 
   return (
-    <PrintableContainer className="twelve-month-report">
+    <PrintableContainer className="fourteen-month-report">
       <Table
         stickyHeader={true}
-        aria-label={t('Twelve month report table')}
-        data-testid="TwelveMonthReport"
+        aria-label={t('Fourteen month report table')}
+        data-testid="FourteenMonthReport"
       >
         <TableHead
           isExpanded={isExpanded}
@@ -136,7 +138,7 @@ export const TwelveMonthReportTable: React.FC<TwelveMonthReportTableProps> = ({
             <TableRow
               key={contact.id}
               hover
-              data-testid="TwelveMonthReportTableRow"
+              data-testid="FourteenMonthReportTableRow"
             >
               <StyledTableCell>
                 <Box display="flex" flexDirection="column">
