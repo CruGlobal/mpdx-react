@@ -4,6 +4,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalTable } from './MpdGoalTable';
+import type { MinistryExpenses } from '../useReportExpenses';
 
 const goal = {
   netMonthlySalary: 5000,
@@ -11,20 +12,10 @@ const goal = {
   rothContributionPercentage: 0.1,
   traditionalContributionPercentage: 0.5,
   ministryExpenses: {
-    benefitsCharge: 100,
-    ministryMileage: 110,
-    medicalMileage: 120,
-    medicalExpenses: 130,
-    ministryPartnerDevelopment: 140,
-    communications: 150,
-    entertainment: 160,
-    staffDevelopment: 170,
-    supplies: 180,
-    technology: 190,
-    travel: 200,
-    transfers: 210,
-    other: 220,
-  },
+    benefitsCharge: 0,
+    primaryCategories: [],
+  } as MinistryExpenses,
+  ministryExpensesTotal: 2080,
 };
 
 const TestComponent: React.FC = () => (
@@ -58,9 +49,9 @@ describe('MpdGoalTable', () => {
     expect(grossMonthlyRow).toHaveClass('top-border');
 
     const totalGoalRow = getByRole('gridcell', {
-      name: /Total Goal/,
+      name: 'Total Goal (line 16 x 1.06 attrition)',
     }).parentElement;
-    expect(totalGoalRow).toHaveClass('bold', 'top-border');
+    expect(totalGoalRow).toHaveClass('top-border', 'bold');
 
     const monthlySupportRow = getByRole('gridcell', {
       name: 'Monthly Support to be Developed',
