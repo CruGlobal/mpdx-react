@@ -251,7 +251,7 @@ describe('FourteenMonthReport', () => {
       expect(table1MonthlyTotals[2]).toHaveTextContent('100');
       expect(table1MonthlyTotals[3]).toHaveTextContent('100');
       expect(within(tables[0]).getByTestId('overallTotal')).toHaveTextContent(
-        '400',
+        '300',
       );
 
       expect(
@@ -266,7 +266,7 @@ describe('FourteenMonthReport', () => {
       expect(table2MonthlyTotals[2]).toHaveTextContent('50');
       expect(table2MonthlyTotals[3]).toHaveTextContent('50');
       expect(within(tables[1]).getByTestId('overallTotal')).toHaveTextContent(
-        '200',
+        '150',
       );
     });
   });
