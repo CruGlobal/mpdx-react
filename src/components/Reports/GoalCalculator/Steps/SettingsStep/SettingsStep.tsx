@@ -6,9 +6,7 @@ import { GoalCalculatorGrid } from '../../SharedComponents/GoalCalculatorGrid/Go
 import { SectionPage } from '../SectionPage/SectionPage';
 import { SettingsSectionList } from './SettingsSectionList';
 
-interface SettingsStepProps {}
-
-export const SettingsStep: React.FC<SettingsStepProps> = ({}) => {
+export const SettingsStep: React.FC = () => {
   const { t } = useTranslation();
 
   return (

@@ -9,7 +9,7 @@ import { SettingsStep } from './Steps/SettingsStep/SettingsStep';
 export const GoalCalculator: React.FC = () => {
   const { currentStep } = useGoalCalculator();
 
-  switch (currentStep.id) {
+  switch (currentStep.step) {
     case GoalCalculatorStepEnum.CalculatorSettings:
       return <SettingsStep />;
     case GoalCalculatorStepEnum.HouseholdExpenses:
@@ -19,6 +19,4 @@ export const GoalCalculator: React.FC = () => {
     case GoalCalculatorStepEnum.SummaryReport:
       return <ReportsStep />;
   }
-
-  return null;
 };
