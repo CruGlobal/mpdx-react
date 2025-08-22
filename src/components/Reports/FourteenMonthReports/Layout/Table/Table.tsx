@@ -242,8 +242,7 @@ export const FourteenMonthReportTable: React.FC<
               {numberFormat(
                 Math.round(
                   totals
-                    ?.slice(0, -1) // Exclude the current incomplete month
-                    .slice(-12) // Include only the last 12 months
+                    ?.slice(-totals.length - 1, -1) // Get last 12 complete months (excluding current incomplete month)
                     .reduce((sum, month) => sum + month.total, 0) ?? 0,
                 ),
                 locale,
