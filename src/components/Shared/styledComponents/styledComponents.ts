@@ -5,6 +5,7 @@ import {
   FormControl,
   FormLabel,
   TextField,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -76,4 +77,13 @@ export const StyledDialogContentText = styled(DialogContentText)(
 
 export const ReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
+}));
+
+export const Header = styled(Typography)(({ theme }) => ({
+  display: 'flex',
+  gap: theme.spacing(2),
+  '@media (max-width: 900px)': {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
 }));
