@@ -9,7 +9,7 @@ type Direction = 'asc' | 'desc';
 
 type Sort = Direction | false;
 
-interface TwelveMonthReportTableCellProps {
+interface FourteenMonthReportTableCellProps {
   isActive: boolean;
   align?: Align;
   children: ReactNode;
@@ -56,7 +56,7 @@ const HeadCellSpan = styled('span')(() => ({
   },
 }));
 
-export const TableHeadCell: React.FC<TwelveMonthReportTableCellProps> = ({
+export const TableHeadCell: React.FC<FourteenMonthReportTableCellProps> = ({
   isActive,
   align,
   children,
