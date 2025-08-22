@@ -1,4 +1,26 @@
-Dev experience level: senior | experienced
+  <!--
+  USAGE: /review 
+
+  You can also specify if the review is for a Senior or an Experienced engineer.
+  /review senior
+  /review experienced
+  
+  -->
+
+## Step 1: Clarify Developer Experience Level
+
+Before beginning the review, if the user hasn't specified $ARGUMENTS, ask:
+
+"What experience level should I tailor this review for?
+
+- **Senior**: Concise feedback, focus on
+  architecture/performance
+- **Experienced**: Detailed explanations with mentoring
+  notes
+
+## Step 2: Conduct Review
+
+Dev experience level: $ARGUMENTS
 
 Before the review, print exactly: Operating in review-only mode (with .ai-review.json exception).
 
@@ -9,7 +31,7 @@ MODE
 
 === Stage 0 — Setup knowledge ===
 Known utilities/components (authoritative; adjust if paths differ)
-Please review the AI_AGENTS_SHARED_RESOURCES.md file to understand the shared functions and components that could be used globally. There might be functions and components which could be used in the parent(s) files.
+Please review the .CLAUDE/AI_AGENTS_SHARED_RESOURCES.md & .CLAUDE/CLAUDE.md files to understand the shared functions and components that could be used globally. There might be functions and components which could be used in the parent(s) files.
 
 Repo heuristics to enforce:
 
@@ -45,7 +67,7 @@ For EACH changed file from Stage 1, in order:
 RULE: If no issues found for a file, state: “No issues found after deep check” AND explain the checks you ran.
 
 === Stage 3 — Reuse Sweep (repo-wide) ===
-Scan the /AI_AGENTS_SHARED_RESOURCES.md file for candidates to replace or centralize logic introduced/changed in this PR; include path#symbol and tiny patch to adopt:
+Scan the .CLAUDE/AI_AGENTS_SHARED_RESOURCES.md file for candidates to replace or centralize logic introduced/changed in this PR; include path#symbol and tiny patch to adopt:
 
 For each reuse candidate:
 
