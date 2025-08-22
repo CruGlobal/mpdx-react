@@ -34,12 +34,6 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const StyledControlsBox = styled(Box)({
-  padding: 1,
-  display: 'flex',
-  alignItems: 'center',
-});
-
 const StyledAddButton = styled(Button)({
   color: 'primary.main',
 });
@@ -47,29 +41,7 @@ const StyledAddButton = styled(Button)({
 const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-start',
-  marginBottom: theme.spacing(1),
-}));
-
-const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 0,
-  marginBottom: theme.spacing(1),
-}));
-
-const StyledModeButton = styled(Button)<{
-  isActive?: boolean;
-}>(({ theme, isActive }) => ({
-  color: isActive ? theme.palette.grey[800] : theme.palette.grey[700],
-  backgroundColor: isActive ? theme.palette.grey[300] : theme.palette.grey[200],
-  '&.MuiButton-root': {
-    border: `1px solid ${theme.palette.grey[400]} !important`,
-  },
-  '&:hover': {
-    backgroundColor: isActive
-      ? theme.palette.grey[400]
-      : theme.palette.grey[300],
-  },
+  marginBottom: theme.spacing(2),
 }));
 
 const StyledGridContainer = styled(Box)({
@@ -264,26 +236,24 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
         <Typography variant="h6" component="span" sx={{ mr: 2 }}>
           {categoryName}
         </Typography>
-        <StyledButtonGroup>
-          <StyledModeButton
-            variant="outlined"
+        <ButtonGroup sx={{ mb: 1 }}>
+          <Button
+            variant={directInput ? 'contained' : 'outlined'}
             size="small"
-            isActive={directInput}
             onClick={() => setDirectInput(true)}
             startIcon={<FunctionsIcon />}
           >
             {t('Lump Sum')}
-          </StyledModeButton>
-          <StyledModeButton
-            variant="outlined"
+          </Button>
+          <Button
             size="small"
-            isActive={!directInput}
+            variant={!directInput ? 'contained' : 'outlined'}
             onClick={() => setDirectInput(false)}
             startIcon={<ViewHeadlineIcon />}
           >
             {t('Line Item')}
-          </StyledModeButton>
-        </StyledButtonGroup>
+          </Button>
+        </ButtonGroup>
       </StyledBox>
       <StyledCard>
         {directInput ? (
@@ -300,16 +270,14 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           </Box>
         ) : (
           <>
-            <StyledControlsBox>
-              <StyledAddButton
-                variant="text"
-                onClick={addExpense}
-                size="small"
-                startIcon={<AddIcon />}
-              >
-                {t('Add Expense')}
-              </StyledAddButton>
-            </StyledControlsBox>
+            <StyledAddButton
+              variant="text"
+              onClick={addExpense}
+              size="small"
+              startIcon={<AddIcon />}
+            >
+              {t('Add Line Item')}
+            </StyledAddButton>
 
             <StyledGridContainer>
               <StyledGrid
