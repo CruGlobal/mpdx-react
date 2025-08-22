@@ -19,7 +19,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     expect(getByText('Freelance Work')).toBeInTheDocument();
@@ -35,13 +35,13 @@ describe('GoalCalculatorGrid', () => {
     const { getByRole, getByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     userEvent.click(
       getByRole('button', {
         name: /Add Line Item/i,
-      }),
+      })
     );
 
     expect(getByText('New Income')).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, queryByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
     const freelanceRow = getByText('Freelance Work').closest('[role="row"]');
     userEvent.hover(freelanceRow!);
@@ -70,7 +70,7 @@ describe('GoalCalculatorGrid', () => {
     const { queryByDisplayValue, getByDisplayValue, findByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const nameCell = await findByText('Freelance Work');
@@ -93,7 +93,7 @@ describe('GoalCalculatorGrid', () => {
     const { findByText, getByDisplayValue } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const amountCell = await findByText('$2,500');
@@ -114,12 +114,12 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, getAllByLabelText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const totalRow = getByText('Total').closest('[role="row"]');
     const editableCells = totalRow?.querySelectorAll(
-      '[contenteditable="true"]',
+      '[contenteditable="true"]'
     );
     expect(editableCells).toHaveLength(0);
     userEvent.hover(totalRow!);
@@ -131,14 +131,14 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, getByRole, findByText, getAllByRole } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     expect(getByText('$5,500')).toBeInTheDocument();
     userEvent.click(
       getByRole('button', {
         name: /Add Line Item/i,
-      }),
+      })
     );
     await findByText('New Income');
     expect(getByText('$5,500')).toBeInTheDocument();
@@ -157,7 +157,7 @@ describe('GoalCalculatorGrid', () => {
     const { findByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     expect(await findByText('$2,500')).toBeInTheDocument();
@@ -176,7 +176,7 @@ describe('GoalCalculatorGrid', () => {
     } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const lumpSumButton = getByText('Lump Sum');
@@ -195,7 +195,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, findByLabelText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const lumpSumButton = getByText('Lump Sum');
@@ -211,7 +211,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, findByLabelText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const lumpSumButton = getByText('Lump Sum');
@@ -229,7 +229,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, findByText, queryByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     const lumpSumButton = getByText('Lump Sum');
@@ -247,11 +247,11 @@ describe('GoalCalculatorGrid', () => {
     const { queryByText, findByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...propsWithoutPrompt} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     expect(
-      queryByText('Add your special income sources'),
+      queryByText('Add your special income sources')
     ).not.toBeInTheDocument();
     expect(await findByText('Freelance Work')).toBeInTheDocument();
   });
@@ -264,7 +264,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...propsWithoutData} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     expect(getByText('Freelance Work')).toBeInTheDocument();

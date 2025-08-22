@@ -40,7 +40,7 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
       router={{
         query: {
           accountListId: 'account-list-1',
-          goalCalculationId: 'goal-calculator-1',
+          goalCalculatorId: 'goal-calculator-1',
         },
       }}
     >
