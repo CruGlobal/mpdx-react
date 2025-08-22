@@ -22,22 +22,20 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
       <SectionList sections={family ? getFamilySections(family) : []} />
     }
     mainContent={
-      <SectionPage
-        sections={[
-          instructions,
-          ...(family?.primaryBudgetCategories.map((category) => (
-            <GoalCalculatorSection
-              key={category.id}
-              title={category.label}
-              rightPanelContent={
-                getPrimaryCategoryRightPanel(category.category) ?? undefined
-              }
-            >
-              <GoalCalculatorGrid categoryName={category.label} />
-            </GoalCalculatorSection>
-          )) ?? []),
-        ]}
-      />
+      <SectionPage>
+        {instructions}
+        {family?.primaryBudgetCategories.map((category) => (
+          <GoalCalculatorSection
+            key={category.id}
+            title={category.label}
+            rightPanelContent={
+              getPrimaryCategoryRightPanel(category.category) ?? undefined
+            }
+          >
+            <GoalCalculatorGrid categoryName={category.label} />
+          </GoalCalculatorSection>
+        ))}
+      </SectionPage>
     }
   />
 );

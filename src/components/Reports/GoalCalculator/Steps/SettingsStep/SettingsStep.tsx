@@ -13,23 +13,20 @@ export const SettingsStep: React.FC = () => {
     <GoalCalculatorLayout
       sectionListPanel={<SettingsSectionList />}
       mainContent={
-        <SectionPage
-          sections={[
-            <GoalCalculatorSection
-              key={1}
-              title={t('Information')}
-              subtitle={t('Take a moment to verify your information.')}
-            >
-              <GoalCalculatorGrid categoryName={t('Information')} />
-            </GoalCalculatorSection>,
-            <GoalCalculatorSection key={2} title={t('Special Income')}>
-              <GoalCalculatorGrid categoryName={t('Special Income')} />
-            </GoalCalculatorSection>,
-            <GoalCalculatorSection key={3} title={t('One-time Goals')}>
-              <GoalCalculatorGrid categoryName={t('One-time Goals')} />
-            </GoalCalculatorSection>,
-          ]}
-        />
+        <SectionPage>
+          <GoalCalculatorSection
+            title={t('Information')}
+            subtitle={t('Take a moment to verify your information.')}
+          >
+            <GoalCalculatorGrid categoryName={t('Information')} />
+          </GoalCalculatorSection>
+          <GoalCalculatorSection title={t('Special Income')}>
+            <GoalCalculatorGrid categoryName={t('Special Income')} />
+          </GoalCalculatorSection>
+          <GoalCalculatorSection title={t('One-time Goals')}>
+            <GoalCalculatorGrid categoryName={t('One-time Goals')} />
+          </GoalCalculatorSection>
+        </SectionPage>
       }
     />
   );
