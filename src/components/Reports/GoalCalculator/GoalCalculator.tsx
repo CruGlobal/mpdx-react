@@ -1,10 +1,10 @@
 import React from 'react';
+import { SettingsStep } from './CalculatorSettings/SettingsStep';
 import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
+import { HouseholdExpensesStep } from './HouseholdExpenses/HouseholdExpensesStep';
+import { MinistryExpensesStep } from './MinistryExpenses/MinistryExpensesStep';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
-import { HouseholdExpensesStep } from './Steps/HouseholdExpensesStep/HouseholdExpensesStep';
-import { MinistryExpensesStep } from './Steps/MinistryExpensesStep/MinistryExpensesStep';
-import { ReportsStep } from './Steps/ReportsStep/ReportsStep';
-import { SettingsStep } from './Steps/SettingsStep/SettingsStep';
+import { ReportsStep } from './SummaryReport/ReportsStep';
 
 export const GoalCalculator: React.FC = () => {
   const { currentStep } = useGoalCalculator();

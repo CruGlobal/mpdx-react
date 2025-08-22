@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { GoalCalculatorLayout } from '../../Shared/GoalCalculatorLayout';
-import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
-import { GoalCalculatorGrid } from '../../SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
-import { SectionPage } from '../SectionPage/SectionPage';
+import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
+import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
+import { GoalCalculatorGrid } from '../SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
+import { SectionPage } from '../SharedComponents/SectionPage';
 import { SettingsSectionList } from './SettingsSectionList';
 
 export const SettingsStep: React.FC = () => {

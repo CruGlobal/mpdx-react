@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
-import { GoalCalculatorLayout } from '../../Shared/GoalCalculatorLayout';
-import { ReportSectionList } from '../../SharedComponents/SectionList';
-import { SummaryReport } from '../../SummaryReport/SummaryReport';
+import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
+import { ReportSectionList } from '../SharedComponents/SectionList';
+import { SummaryReport } from './SummaryReport';
 
 export const ReportsStep: React.FC = () => (
   <GoalCalculatorLayout

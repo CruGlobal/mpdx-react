@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, Typography, styled } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { ExpensesStep } from '../ExpensesStep';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { ExpensesStep } from '../SharedComponents/ExpensesStep/ExpensesStep';
 
 const InstructionsWrapper = styled('div')(({ theme }) => ({
   '.MuiTypography-root': {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { SectionList } from '../../SharedComponents/SectionList';
+import { SectionList } from '../SharedComponents/SectionList';
 
 export const SettingsSectionList: React.FC = () => {
   const { t } = useTranslation();
