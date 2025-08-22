@@ -13,7 +13,10 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  ContactEditContainer,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   DeleteButton,
@@ -57,13 +60,6 @@ const ContactPersonContainer = styled(Box)(({ theme }) => ({
 const ShowExtraContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
-  margin: theme.spacing(1, 0),
-}));
-
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
   margin: theme.spacing(1, 0),
 }));
 

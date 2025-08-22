@@ -20,7 +20,10 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  ContactEditContainer,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import {
   CancelButton,
@@ -46,13 +49,6 @@ import {
   useChurchOptionsQuery,
   useUpdateContactOtherMutation,
 } from './EditContactOther.generated';
-
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',

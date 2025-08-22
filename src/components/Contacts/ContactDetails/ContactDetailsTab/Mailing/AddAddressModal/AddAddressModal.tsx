@@ -16,7 +16,10 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  ContactEditContainer,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -31,13 +34,6 @@ import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.genera
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
 import { AddressSchema, addressSchema } from '../addressSchema';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
-
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',

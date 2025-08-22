@@ -15,3 +15,10 @@ export const LoadingBox = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 }));
+
+export const ContactEditContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  width: '100%',
+  flexDirection: 'column',
+  margin: theme.spacing(1, 0),
+}));

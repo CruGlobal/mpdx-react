@@ -19,7 +19,10 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  ContactEditContainer,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   DeleteButton,
@@ -42,13 +45,6 @@ import {
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
 import { generateEmailBody } from './helpers';
-
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
 
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
