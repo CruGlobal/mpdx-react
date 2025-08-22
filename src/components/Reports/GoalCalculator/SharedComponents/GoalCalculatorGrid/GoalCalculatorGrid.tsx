@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Button, Card, Switch, Typography, styled } from '@mui/material';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  Typography,
+  styled,
+} from '@mui/material';
 import {
   GridActionsCellItem,
   GridColDef,
@@ -27,7 +36,6 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 const StyledControlsBox = styled(Box)({
   padding: 1,
   display: 'flex',
-  gap: 0,
   alignItems: 'center',
 });
 
@@ -35,17 +43,33 @@ const StyledAddButton = styled(Button)({
   color: 'primary.main',
 });
 
-const StyledToggleBox = styled(Box)({
+const StyledBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: 1,
-});
+  gap: 0,
+  marginBottom: theme.spacing(1),
+}));
 
-const StyledDirectInputText = styled(Typography)({
-  color: 'primary.main',
-  fontSize: '0.875rem',
-  fontWeight: 500,
-});
+const StyledModeButton = styled(Button)<{
+  isActive?: boolean;
+}>(({ theme, isActive }) => ({
+  color: isActive ? theme.palette.grey[800] : theme.palette.grey[700],
+  backgroundColor: isActive ? theme.palette.grey[300] : theme.palette.grey[200],
+  '&.MuiButton-root': {
+    border: `1px solid ${theme.palette.grey[400]} !important`,
+  },
+  '&:hover': {
+    backgroundColor: isActive
+      ? theme.palette.grey[400]
+      : theme.palette.grey[300],
+  },
+}));
 
 const StyledGridContainer = styled(Box)({
   height: 'auto',
@@ -161,10 +185,6 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
     setFieldValue('gridData', updatedData);
   };
 
-  const handleDirectInputToggle = () => {
-    setDirectInput(!directInput);
-  };
-
   const handleDelete = (id: number) => {
     const updatedData = values.gridData.filter((item) => item.id !== id);
     setFieldValue('gridData', updatedData);
@@ -191,7 +211,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const columns: GridColDef[] = [
     {
       field: 'name',
-      headerName: categoryName,
+      headerName: t('Expense Name'),
       flex: 1,
       minWidth: 200,
       editable: true,
@@ -232,36 +252,54 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   ];
 
   return (
-    <StyledCard>
-      <StyledControlsBox>
-        <StyledAddButton
-          variant="text"
-          onClick={addExpense}
-          size="small"
-          startIcon={<AddIcon />}
-        >
-          {t('Add {{category}}', { category: categoryName })}
-        </StyledAddButton>
-        <StyledToggleBox>
-          <Switch
-            checked={directInput}
-            onChange={handleDirectInputToggle}
+    <>
+      <StyledBox>
+        <Typography variant="h6" component="span" sx={{ mr: 2 }}>
+          {categoryName}
+        </Typography>
+        <StyledButtonGroup>
+          <StyledModeButton
+            variant="outlined"
             size="small"
+            isActive={!directInput}
+            onClick={() => setDirectInput(false)}
+            startIcon={<FunctionsIcon />}
+            position="left"
+          >
+            {t('Lump Sum')}
+          </StyledModeButton>
+          <StyledModeButton
+            variant="outlined"
+            size="small"
+            isActive={directInput}
+            onClick={() => setDirectInput(true)}
+            startIcon={<ViewHeadlineIcon />}
+            position="right"
+          >
+            {t('Line Item')}
+          </StyledModeButton>
+        </StyledButtonGroup>
+      </StyledBox>
+      <StyledCard>
+        <StyledControlsBox>
+          <StyledAddButton
+            variant="text"
+            onClick={addExpense}
+            size="small"
+            startIcon={<AddIcon />}
+          >
+            {t('Add Expense')}
+          </StyledAddButton>
+        </StyledControlsBox>
+
+        <StyledGridContainer>
+          <StyledGrid
+            rows={dataWithTotal}
+            columns={columns}
+            processRowUpdate={processRowUpdate}
           />
-
-          <StyledDirectInputText variant="button">
-            {t('Direct Input')}
-          </StyledDirectInputText>
-        </StyledToggleBox>
-      </StyledControlsBox>
-
-      <StyledGridContainer>
-        <StyledGrid
-          rows={dataWithTotal}
-          columns={columns}
-          processRowUpdate={processRowUpdate}
-        />
-      </StyledGridContainer>
-    </StyledCard>
+        </StyledGridContainer>
+      </StyledCard>
+    </>
   );
 };
