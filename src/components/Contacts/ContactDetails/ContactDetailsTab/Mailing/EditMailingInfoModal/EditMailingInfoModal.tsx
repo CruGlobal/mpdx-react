@@ -12,7 +12,10 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  ContactInputWrapper,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -32,12 +35,6 @@ const ContactEditContainer = styled(Box)(({ theme }) => ({
   width: '100%',
   flexDirection: 'column',
   margin: theme.spacing(4, 0),
-}));
-
-const ContactInputWrapper = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  padding: theme.spacing(0, 6),
-  margin: theme.spacing(2, 0),
 }));
 
 interface EditMailingInfoModalProps {
