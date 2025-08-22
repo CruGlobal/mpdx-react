@@ -1,25 +1,16 @@
-import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
-import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { GoalCalculatorProvider } from './GoalCalculatorContext';
+import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
 import { GoalCalculatorLayout } from './GoalCalculatorLayout';
 
 const TestComponent: React.FC = () => (
-  <TestRouter router={{ query: { accountListId: 'account-1' } }}>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider>
-        <GoalCalculatorProvider>
-          <GoalCalculatorLayout
-            sectionListPanel={<h1>Section List</h1>}
-            mainContent={<h1>Main Content</h1>}
-          />
-        </GoalCalculatorProvider>
-      </SnackbarProvider>
-    </ThemeProvider>
-  </TestRouter>
+  <GoalCalculatorTestWrapper>
+    <GoalCalculatorLayout
+      sectionListPanel={<h1>Section List</h1>}
+      mainContent={<h1>Main Content</h1>}
+    />
+  </GoalCalculatorTestWrapper>
 );
 
 describe('GoalCalculatorLayout', () => {

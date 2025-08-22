@@ -1,20 +1,14 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { SnackbarProvider } from 'notistack';
-import { GoalCalculatorProvider } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import theme from 'src/theme';
 import { MpdGoalStepRightPanel } from './MpdGoalStepRightPanel';
 
 const TestComponent = () => {
   return (
-    <SnackbarProvider>
-      <ThemeProvider theme={theme}>
-        <GoalCalculatorProvider>
-          <MpdGoalStepRightPanel />
-        </GoalCalculatorProvider>
-      </ThemeProvider>
-    </SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <MpdGoalStepRightPanel />
+    </ThemeProvider>
   );
 };
 

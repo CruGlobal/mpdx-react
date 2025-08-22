@@ -1,24 +1,10 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { SnackbarProvider } from 'notistack';
-import { GoalCalculatorProvider } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
-import theme from 'src/theme';
 import { MpdGoalStepRightPanelAccordions } from './MpdGoalStepRightPanelAccordions';
-
-const TestComponent = () => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <GoalCalculatorProvider>
-        <MpdGoalStepRightPanelAccordions />
-      </GoalCalculatorProvider>
-    </ThemeProvider>
-  </SnackbarProvider>
-);
 
 describe('MpdGoalStepRightPanelAccordion', () => {
   it('renders all accordion items with correct titles', () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(<MpdGoalStepRightPanelAccordions />);
     expect(
       getByRole('button', { name: '1A Net Monthly Combined Salary' }),
     ).toBeInTheDocument();
@@ -28,13 +14,13 @@ describe('MpdGoalStepRightPanelAccordion', () => {
   });
 
   it('renders accordion details content when expanded', () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { getByTestId } = render(<MpdGoalStepRightPanelAccordions />);
     expect(getByTestId('content-1-typography')).toBeInTheDocument();
     expect(getByTestId('content-2-typography')).toBeInTheDocument();
   });
 
   it('applies extra spacing for items with hasSpace', () => {
-    const { getByText } = render(<TestComponent />);
+    const { getByText } = render(<MpdGoalStepRightPanelAccordions />);
     // Find an item with hasSpace
     const grossAnnualSalary = getByText('Gross Annual Salary').closest(
       '.MuiAccordion-root',

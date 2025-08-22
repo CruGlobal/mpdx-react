@@ -88,14 +88,13 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     isDrawerOpen,
     setDrawerOpen,
     toggleDrawer,
-    selectedStepId,
   } = useGoalCalculator();
 
-  const handleStepIconClick = (stepId: GoalCalculatorStepEnum) => {
-    if (selectedStepId === stepId) {
+  const handleStepIconClick = (step: GoalCalculatorStepEnum) => {
+    if (currentStep.step === step) {
       toggleDrawer();
     } else {
-      handleStepChange(stepId);
+      handleStepChange(step);
       setDrawerOpen(true);
     }
   };
@@ -105,15 +104,15 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
       <Stack direction="column" width={iconPanelWidth}>
         {steps.map((step) => (
           <IconButton
-            key={step.id}
+            key={step.step}
             aria-label={step.title}
             sx={(theme) => ({
               color:
-                selectedStepId === step.id
+                currentStep.step === step.step
                   ? theme.palette.mpdxBlue.main
                   : theme.palette.cruGrayDark.main,
             })}
-            onClick={() => handleStepIconClick(step.id)}
+            onClick={() => handleStepIconClick(step.step)}
           >
             {step.icon}
           </IconButton>
