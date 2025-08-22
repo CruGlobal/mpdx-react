@@ -7,31 +7,33 @@ interface Props {
   router?: Partial<NextRouter>;
 }
 
-const TestRouter = ({ children, router = {} }: Props): ReactElement => {
-  const defaultRouter: NextRouter = {
-    basePath: '',
-    route: '',
-    pathname: '',
-    query: {},
-    asPath: '',
-    push: async (): Promise<boolean> => true,
-    replace: async (): Promise<boolean> => true,
-    reload: (): void => undefined,
-    back: (): void => undefined,
-    forward: (): void => undefined,
-    prefetch: async (): Promise<void> => undefined,
-    beforePopState: (): void => undefined,
-    isFallback: false,
-    isReady: true,
-    events: {
-      on: (): void => undefined,
-      off: (): void => undefined,
-      emit: (): void => undefined,
-    },
-    isLocaleDomain: false,
-    isPreview: false,
-  };
+const defaultRouter: NextRouter = {
+  basePath: '',
+  route: '',
+  pathname: '',
+  query: {
+    accountListId: 'account-list-1',
+  },
+  asPath: '',
+  push: async () => true,
+  replace: async () => true,
+  reload: (): void => undefined,
+  back: (): void => undefined,
+  forward: (): void => undefined,
+  prefetch: async () => undefined,
+  beforePopState: (): void => undefined,
+  isFallback: false,
+  isReady: true,
+  events: {
+    on: (): void => undefined,
+    off: (): void => undefined,
+    emit: (): void => undefined,
+  },
+  isLocaleDomain: false,
+  isPreview: false,
+};
 
+const TestRouter = ({ children, router = {} }: Props): ReactElement => {
   const configuredRouter = { ...defaultRouter, ...router };
 
   Router.router = configuredRouter as IRouter;
