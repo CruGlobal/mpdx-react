@@ -48,8 +48,8 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
     return monthlyGoal && locale && currency
       ? currencyFormat(monthlyGoal, currency, locale)
       : monthlyGoal
-      ? String(monthlyGoal)
-      : '';
+        ? String(monthlyGoal)
+        : '';
   }, [monthlyGoal, locale, currency]);
 
   const onSubmit = async (

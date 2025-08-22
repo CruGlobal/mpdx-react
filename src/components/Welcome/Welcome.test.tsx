@@ -25,7 +25,9 @@ describe('Welcome', () => {
         <Welcome
           title={<div data-testid="testTitle">test title</div>}
           subtitle={<div data-testid="testSubtitle">test subtitle</div>}
-          imgSrc={require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`)}
+          imgSrc={require(
+            `../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`,
+          )}
         />
       </ThemeProvider>,
     );

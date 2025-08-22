@@ -112,7 +112,7 @@ const CreateContact = ({
         const findFirstName = firstAndSpouseNames.split(/ (.*)/s, 2);
         people.push({
           firstName: findFirstName[0],
-          lastName: lastName ? lastName : findFirstName[1] ?? '',
+          lastName: lastName ? lastName : (findFirstName[1] ?? ''),
         });
       }
 
