@@ -3,25 +3,23 @@ import { Divider, Stack, styled } from '@mui/material';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { ContinueButton } from '../../SharedComponents/ContinueButton';
 
-const CategoryContainer = styled('div')(({ theme }) => ({
-  paddingInline: theme.spacing(4),
+const StyledStack = styled(Stack)(({ theme }) => ({
+  '> *:not(.MuiDivider-root)': {
+    paddingInline: theme.spacing(4),
+  },
 }));
 
 interface SectionPageProps {
-  sections: React.ReactNode[];
+  children?: React.ReactNode;
 }
 
-export const SectionPage: React.FC<SectionPageProps> = ({ sections }) => {
+export const SectionPage: React.FC<SectionPageProps> = ({ children }) => {
   const { handleContinue } = useGoalCalculator();
 
   return (
-    <Stack flex={1} spacing={4} divider={<Divider />}>
-      {sections.map((section, index) => (
-        <CategoryContainer key={index}>{section}</CategoryContainer>
-      ))}
-      <CategoryContainer>
-        <ContinueButton onClick={handleContinue} />
-      </CategoryContainer>
-    </Stack>
+    <StyledStack spacing={4} divider={<Divider />}>
+      {children}
+      <ContinueButton onClick={handleContinue} />
+    </StyledStack>
   );
 };

@@ -28,7 +28,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   };
 
   return (
-    <>
+    <div>
       <Box pb={4}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h6">
@@ -59,6 +59,6 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
         {subtitle && <Typography pt={1}>{subtitle}</Typography>}
       </Box>
       {children}
-    </>
+    </div>
   );
 };
