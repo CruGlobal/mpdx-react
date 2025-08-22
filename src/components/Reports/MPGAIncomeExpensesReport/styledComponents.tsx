@@ -14,7 +14,7 @@ export const StyledHeaderBox = styled(Box)({
 export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
   <DataGrid<DataFields> {...props} />
 ))(() => ({
-  fontSize: '12px',
+  fontSize: '11px',
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
     backgroundColor: '#E3F2FD',
   },
@@ -30,9 +30,26 @@ export const StyledGrid = styled((props: DataGridProps<DataFields>) => (
     fontSize: '12px',
   },
   '.MuiDataGrid-cell *': {
-    fontSize: '12px',
+    fontSize: '11px',
   },
   border: 'none',
+  borderTopLeftRadius: 0,
+  borderTopRightRadius: 0,
+}));
+
+export const StyledTotalRow = styled(DataGrid)(() => ({
+  backgroundColor: theme.palette.chartBlueLight.main,
+  '.MuiDataGrid-cell': {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    alignItems: 'center',
+    display: 'flex',
+  },
+  '.MuiDataGrid-cell *': {
+    fontSize: '11px',
+    fontWeight: 'bold',
+  },
   borderTopLeftRadius: 0,
   borderTopRightRadius: 0,
 }));

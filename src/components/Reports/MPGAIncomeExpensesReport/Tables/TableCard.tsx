@@ -8,11 +8,11 @@ import { LoadingBox, LoadingIndicator } from '../../styledComponents';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { CustomToolbar } from '../CustomToolbar/CustomToolbar';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { populateCardTableRows } from '../Helper/createTableRows';
+import { populateCardTableRows } from '../Helper/createRows';
 import { useTotals } from '../TotalsContext/TotalsContext';
 import { DataFields } from '../mockData';
 import { StyledGrid } from '../styledComponents';
-import { TotalsRow } from './TotalsRow';
+import { TotalRow } from './TotalRow';
 
 export type RenderCell = GridColDef<DataFields>['renderCell'];
 
@@ -169,7 +169,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           showToolbar
         />
         <Box>
-          <TotalsRow data={data} overallTotal={overallTotal} />
+          <TotalRow data={data} overallTotal={overallTotal} />
         </Box>
       </Box>
     </CardSkeleton>

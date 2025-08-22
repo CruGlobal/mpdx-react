@@ -44,6 +44,13 @@ export const mockData: MockData = {
     },
     {
       id: crypto.randomUUID(),
+      description: 'All zeros test',
+      monthly: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      average: 0,
+      total: 0,
+    },
+    {
+      id: crypto.randomUUID(),
       description: 'Fr Hagen, Tan to Mouna Ghar',
       monthly: [150, 150, 150, 150, 150, 150, 150, 0, 0, 0, 0, 0],
       average: 88,
