@@ -6,13 +6,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton,
   Skeleton,
   TextareaAutosize,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
+import { CloseButton } from '../styledComponents';
 import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
 
 interface Props {
@@ -23,16 +23,6 @@ interface Props {
 const ExportEmailTitle = styled(DialogTitle)(() => ({
   textTransform: 'uppercase',
   textAlign: 'center',
-}));
-
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
 }));
 
 const TextArea = styled(TextareaAutosize)(() => ({

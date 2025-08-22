@@ -7,7 +7,6 @@ import {
   FormControl,
   FormControlLabel,
   Grid,
-  IconButton,
   Radio,
   RadioGroup,
   TextField,
@@ -31,6 +30,7 @@ import {
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
+import { CloseButton } from '../styledComponents';
 
 interface Props {
   accountListId: string;
@@ -40,16 +40,6 @@ interface Props {
 const LogNewsletterTitle = styled(DialogTitle)(() => ({
   textTransform: 'uppercase',
   textAlign: 'center',
-}));
-
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
 }));
 
 const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
