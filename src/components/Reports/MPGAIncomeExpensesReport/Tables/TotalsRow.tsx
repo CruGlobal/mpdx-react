@@ -34,7 +34,7 @@ export const TotalsRow: React.FC<TotalsRowProps> = ({ data, overallTotal }) => {
             </TableCell>
             {data[0].monthly.map((value, index) => (
               <TableCell key={value} sx={{ width: monthWidth }}>
-                <StyledTypography>
+                <StyledTypography sx={{ textAlign: 'right' }}>
                   <strong>
                     {zeroAmountFormat(
                       data.reduce((sum, row) => sum + row.monthly[index], 0),

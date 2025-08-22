@@ -7,19 +7,17 @@ import { SummaryBarChart } from '../Charts/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { EmptyTable } from '../Tables/EmptyTable';
 import { TableCard } from '../Tables/TableCard';
-import { DataFields, MockData } from '../mockData';
+import { AllData } from '../mockData';
 
 interface ScreenOnlyReportProps {
-  data: MockData;
+  data: AllData;
   last12Months: string[];
-  expenseData: DataFields[];
   currency: string;
 }
 
 export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
   data,
   last12Months,
-  expenseData,
   currency,
 }) => {
   const { t } = useTranslation();
@@ -61,7 +59,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
         <Box mt={2}>
           <TableCard
             type={ReportTypeEnum.Expenses}
-            data={expenseData}
+            data={data.expenses}
             emptyPlaceholder={
               <EmptyTable
                 title={t('No Expenses data available')}
@@ -79,7 +77,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
           >
             <MonthlySummaryChart
               incomeData={data.income ?? []}
-              expenseData={expenseData}
+              expenseData={data.expenses ?? []}
               months={last12Months}
               aspect={2.5}
               width={100}

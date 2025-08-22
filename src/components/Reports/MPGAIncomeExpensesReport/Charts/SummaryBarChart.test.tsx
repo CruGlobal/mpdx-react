@@ -14,22 +14,19 @@ const mutationSpy = jest.fn();
 const currency = 'USD';
 
 const data = {
-  accountListId: '12345',
-  accountName: 'Test Account',
   income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  ministryExpenses: [
+  expenses: [
     { ...mockData.ministryExpenses[0] },
     { ...mockData.ministryExpenses[1] },
+    { ...mockData.healthcareExpenses[0] },
+    { ...mockData.misc[0] },
+    { ...mockData.misc[1] },
+    { ...mockData.other[0] },
   ],
-  healthcareExpenses: [{ ...mockData.healthcareExpenses[0] }],
-  misc: [{ ...mockData.misc[0] }, { ...mockData.misc[1] }],
-  other: [{ ...mockData.other[0] }],
 };
 
-const incomeTotal = data.income.reduce((acc, curr) => acc + curr.total, 0);
-const expensesTotal = data.ministryExpenses
-  .concat(data.healthcareExpenses, data.misc, data.other)
-  .reduce((acc, curr) => acc + curr.total, 0);
+const incomeTotal = 108_856;
+const expensesTotal = 18_569;
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>

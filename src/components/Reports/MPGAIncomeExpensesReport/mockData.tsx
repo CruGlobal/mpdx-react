@@ -6,6 +6,11 @@ export interface DataFields {
   total: number;
 }
 
+export interface AllData {
+  income: DataFields[];
+  expenses: DataFields[];
+}
+
 export interface MockData {
   accountListId: string;
   accountName: string;

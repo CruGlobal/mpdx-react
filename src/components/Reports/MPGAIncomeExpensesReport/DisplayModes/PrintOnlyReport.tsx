@@ -5,19 +5,17 @@ import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { PrintTables } from '../Tables/PrintTables';
-import { DataFields, MockData } from '../mockData';
+import { AllData } from '../mockData';
 
 interface PrintOnlyReportProps {
-  data: MockData;
+  data: AllData;
   last12Months: string[];
-  expenseData: DataFields[];
   currency: string;
 }
 
 export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
   data,
   last12Months,
-  expenseData,
   currency,
 }) => {
   const { t } = useTranslation();
@@ -68,7 +66,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
           <Box mt={3}>
             <PrintTables
               type={ReportTypeEnum.Expenses}
-              data={expenseData}
+              data={data.expenses ?? []}
               title={t('Expenses')}
               months={last12Months}
             />
@@ -79,7 +77,7 @@ export const PrintOnlyReport: React.FC<PrintOnlyReportProps> = ({
             </Typography>
             <MonthlySummaryChart
               incomeData={data.income ?? []}
-              expenseData={expenseData}
+              expenseData={data.expenses ?? []}
               months={last12Months}
               aspect={2.7}
               width={80}

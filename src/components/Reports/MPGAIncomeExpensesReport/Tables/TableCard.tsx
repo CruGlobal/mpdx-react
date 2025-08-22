@@ -98,11 +98,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           const formattedValue = zeroAmountFormat(params.value, locale);
           return (
             <Tooltip title={amountFormat(params.value, locale)}>
-              <Typography
-                variant="body2"
-                noWrap
-                sx={formattedValue === '-' ? { mx: 'auto' } : undefined}
-              >
+              <Typography variant="body2" noWrap>
                 {formattedValue}
               </Typography>
             </Tooltip>

@@ -13,26 +13,16 @@ const mutationSpy = jest.fn();
 const currency = 'USD';
 
 const data = {
-  accountListId: '12345',
-  accountName: 'Test Account',
   income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  ministryExpenses: [
+  expenses: [
     { ...mockData.ministryExpenses[0] },
     { ...mockData.ministryExpenses[1] },
+    { ...mockData.healthcareExpenses[0] },
+    { ...mockData.misc[0] },
+    { ...mockData.misc[1] },
+    { ...mockData.other[0] },
   ],
-  healthcareExpenses: [{ ...mockData.healthcareExpenses[0] }],
-  misc: [{ ...mockData.misc[0] }, { ...mockData.misc[1] }],
-  other: [{ ...mockData.other[0] }],
 };
-
-const expenseData = [
-  { ...mockData.ministryExpenses[0] },
-  { ...mockData.ministryExpenses[1] },
-  { ...mockData.healthcareExpenses[0] },
-  { ...mockData.misc[0] },
-  { ...mockData.misc[1] },
-  { ...mockData.other[0] },
-];
 
 const months = [
   'Apr 2024',
@@ -50,13 +40,8 @@ const months = [
 ];
 
 const emptyData = {
-  accountListId: '12345',
-  accountName: 'Test Account',
   income: [],
-  ministryExpenses: [],
-  healthcareExpenses: [],
-  misc: [],
-  other: [],
+  expenses: [],
 };
 
 const TestComponent: React.FC = () => (
@@ -67,7 +52,6 @@ const TestComponent: React.FC = () => (
           <PrintOnlyReport
             data={data}
             last12Months={months}
-            expenseData={expenseData}
             currency={currency}
           />
         </TotalsProvider>
@@ -113,7 +97,6 @@ describe('PrintOnlyReport', () => {
               <PrintOnlyReport
                 data={emptyData}
                 last12Months={months}
-                expenseData={expenseData}
                 currency={currency}
               />
             </TotalsProvider>
