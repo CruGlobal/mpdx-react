@@ -1,23 +1,16 @@
 import React, { ReactNode, useState } from 'react';
-import {
-  Box,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, DialogActions, DialogContent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  LoadingIndicator,
+  StyledDialogContentText,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   ActionButtonProps,
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from '../Modal';
-
-const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
-}));
 
 export interface ConfirmationProps {
   isOpen: boolean;

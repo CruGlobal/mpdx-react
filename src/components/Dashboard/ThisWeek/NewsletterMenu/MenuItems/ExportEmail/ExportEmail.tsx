@@ -4,13 +4,13 @@ import {
   Button,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Skeleton,
   TextareaAutosize,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { StyledDialogContentText } from 'src/components/Shared/styledComponents/styledComponents';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { CloseButton } from '../styledComponents';
 import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
@@ -27,9 +27,6 @@ const ExportEmailTitle = styled(DialogTitle)(() => ({
 
 const TextArea = styled(TextareaAutosize)(() => ({
   width: '100%',
-}));
-const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
 }));
 
 const ExportEmail = ({

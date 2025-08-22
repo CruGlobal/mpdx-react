@@ -1,6 +1,7 @@
 import {
   Box,
   CircularProgress,
+  DialogContentText,
   FormControl,
   FormLabel,
   TextField,
@@ -53,3 +54,9 @@ export const LogTextField = styled(TextField)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
+export const StyledDialogContentText = styled(DialogContentText)(
+  ({ theme }) => ({
+    color: theme.palette.cruGrayDark.main,
+  }),
+);
