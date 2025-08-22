@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { GoalCalculatorLayout } from '../../Shared/GoalCalculatorLayout';
 import { ReportSectionList } from '../../SharedComponents/SectionList';
 import { SummaryReport } from '../../SummaryReport/SummaryReport';
@@ -5,6 +6,10 @@ import { SummaryReport } from '../../SummaryReport/SummaryReport';
 export const ReportsStep: React.FC = () => (
   <GoalCalculatorLayout
     sectionListPanel={<ReportSectionList />}
-    mainContent={<SummaryReport />}
+    mainContent={
+      <Box mx={4}>
+        <SummaryReport />
+      </Box>
+    }
   />
 );
