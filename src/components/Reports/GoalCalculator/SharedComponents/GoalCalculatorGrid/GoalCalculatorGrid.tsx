@@ -96,7 +96,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             .number()
             .min(0, t('Amount must be positive'))
             .required(t('Amount is required')),
-        }),
+        })
       )
       .optional(),
     lumpSumAmount: yup.number().min(0, t('Amount must be positive')).optional(),
@@ -140,7 +140,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
-    0,
+    0
   );
 
   const dataWithTotal = [
@@ -178,7 +178,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             name: newRow.name as string,
             amount: newRow.amount as number,
           }
-        : item,
+        : item
     );
     setFieldValue('gridData', updatedData);
     return newRow;
