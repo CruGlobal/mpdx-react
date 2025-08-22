@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, FormLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -27,4 +27,13 @@ export const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 6),
   margin: theme.spacing(2, 0),
+}));
+
+export const LogFormLabel = styled(FormLabel)(({ theme }) => ({
+  margin: theme.spacing(1, 0),
+  fontWeight: 'bold',
+  color: theme.palette.primary.dark,
+  '& span': {
+    color: theme.palette.error.main,
+  },
 }));

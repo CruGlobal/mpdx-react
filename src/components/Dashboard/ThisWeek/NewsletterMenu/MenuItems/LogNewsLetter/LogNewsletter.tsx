@@ -6,7 +6,6 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
   IconButton,
   Radio,
@@ -19,7 +18,10 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  LoadingIndicator,
+  LogFormLabel,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
 import {
   CancelButton,
@@ -51,15 +53,6 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
 
 const LogFormControl = styled(FormControl)(() => ({
   width: '100%',
-}));
-
-const LogFormLabel = styled(FormLabel)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  fontWeight: 'bold',
-  color: theme.palette.primary.dark,
-  '& span': {
-    color: theme.palette.error.main,
-  },
 }));
 
 const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({

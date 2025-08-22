@@ -4,7 +4,6 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
-  FormLabel,
   Grid,
   TextField,
 } from '@mui/material';
@@ -14,7 +13,10 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  LoadingIndicator,
+  LogFormLabel,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -38,15 +40,6 @@ interface Person {
 
 const LogFormControl = styled(FormControl)(() => ({
   width: '100%',
-}));
-
-const LogFormLabel = styled(FormLabel)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  fontWeight: 'bold',
-  color: theme.palette.primary.dark,
-  '& span': {
-    color: theme.palette.error.main,
-  },
 }));
 
 const LogTextField = styled(TextField)(({ theme }) => ({
