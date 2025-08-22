@@ -1,4 +1,4 @@
-import { Box, CircularProgress, FormLabel } from '@mui/material';
+import { Box, CircularProgress, FormControl, FormLabel } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -36,4 +36,8 @@ export const LogFormLabel = styled(FormLabel)(({ theme }) => ({
   '& span': {
     color: theme.palette.error.main,
   },
+}));
+
+export const LogFormControl = styled(FormControl)(() => ({
+  width: '100%',
 }));

@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import {
   LoadingIndicator,
+  LogFormControl,
   LogFormLabel,
 } from 'src/components/Shared/styledComponents/styledComponents';
 import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
@@ -49,10 +50,6 @@ const CloseButton = styled(IconButton)(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },
-}));
-
-const LogFormControl = styled(FormControl)(() => ({
-  width: '100%',
 }));
 
 const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({

@@ -1,12 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
-import {
-  DialogActions,
-  DialogContent,
-  FormControl,
-  Grid,
-  TextField,
-} from '@mui/material';
+import { DialogActions, DialogContent, Grid, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
@@ -15,6 +9,7 @@ import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
 import {
   LoadingIndicator,
+  LogFormControl,
   LogFormLabel,
 } from 'src/components/Shared/styledComponents/styledComponents';
 import {
@@ -37,10 +32,6 @@ interface Person {
   firstName: string;
   lastName: string;
 }
-
-const LogFormControl = styled(FormControl)(() => ({
-  width: '100%',
-}));
 
 const LogTextField = styled(TextField)(({ theme }) => ({
   '& div': {
