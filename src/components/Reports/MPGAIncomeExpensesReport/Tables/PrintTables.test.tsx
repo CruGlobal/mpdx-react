@@ -14,18 +14,6 @@ const mutationSpy = jest.fn();
 
 const title = 'Income';
 
-const data = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  expenses: [
-    { ...mockData.ministryExpenses[0] },
-    { ...mockData.ministryExpenses[1] },
-    { ...mockData.healthcareExpenses[0] },
-    { ...mockData.misc[0] },
-    { ...mockData.misc[1] },
-    { ...mockData.other[0] },
-  ],
-};
-
 const emptyData = {
   accountListId: '12345',
   accountName: 'Test Account',
@@ -52,7 +40,7 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={data}>
+        <TotalsProvider data={mockData}>
           <PrintTables
             type={ReportTypeEnum.Income}
             data={mockData.income}
@@ -86,7 +74,7 @@ describe('PrintTables', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('cell', { name: '108,856' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '12,960' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '9,071' })).toBeInTheDocument();
   });
 
   it('renders months in column headers for all months', () => {
@@ -112,7 +100,7 @@ describe('PrintTables', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <TotalsProvider data={data}>
+            <TotalsProvider data={mockData}>
               <PrintTables
                 type={ReportTypeEnum.Income}
                 data={mockData.income}

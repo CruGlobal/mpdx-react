@@ -10,23 +10,13 @@ import { TotalsProvider, useTotals } from './TotalsContext';
 
 const mutationSpy = jest.fn();
 
-const data = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  expenses: [
-    { ...mockData.ministryExpenses[0] },
-    { ...mockData.ministryExpenses[1] },
-    { ...mockData.healthcareExpenses[0] },
-    { ...mockData.misc[0] },
-    { ...mockData.misc[1] },
-    { ...mockData.other[0] },
-  ],
-};
-
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={data}>{<div>Test Children</div>}</TotalsProvider>
+        <TotalsProvider data={mockData}>
+          {<div>Test Children</div>}
+        </TotalsProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
@@ -73,7 +63,7 @@ describe('TotalsContext', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <TotalsProvider data={data}>
+            <TotalsProvider data={mockData}>
               <TestConsumer />
             </TotalsProvider>
           </GqlMockedProvider>

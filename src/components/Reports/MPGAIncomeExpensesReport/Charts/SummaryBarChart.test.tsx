@@ -13,18 +13,6 @@ import { SummaryBarChart } from './SummaryBarChart';
 const mutationSpy = jest.fn();
 const currency = 'USD';
 
-const data = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  expenses: [
-    { ...mockData.ministryExpenses[0] },
-    { ...mockData.ministryExpenses[1] },
-    { ...mockData.healthcareExpenses[0] },
-    { ...mockData.misc[0] },
-    { ...mockData.misc[1] },
-    { ...mockData.other[0] },
-  ],
-};
-
 const incomeTotal = 108_856;
 const expensesTotal = 18_569;
 
@@ -32,7 +20,7 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={data}>
+        <TotalsProvider data={mockData}>
           <SummaryBarChart aspect={1.35} width={100} currency={currency} />
         </TotalsProvider>
       </GqlMockedProvider>

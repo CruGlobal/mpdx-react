@@ -64,11 +64,6 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const { incomeData, expenseData } = useFilteredFunds(reportData);
 
-  //eslint-disable-next-line no-console
-  console.log('Income Data:', incomeData);
-  //eslint-disable-next-line no-console
-  console.log('Expense Data:', expenseData);
-
   // may need all data
   const allData: AllData = useMemo(() => {
     return {

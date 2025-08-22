@@ -38,9 +38,7 @@ const resizeObserverMock = () => ({
   disconnect: jest.fn(),
 });
 beforeAll(() => {
-  (window as any).ResizeObserver = jest
-    .fn()
-    .mockImplementation(resizeObserverMock);
+  window.ResizeObserver = jest.fn().mockImplementation(resizeObserverMock);
 });
 
 beforeEach(() => {

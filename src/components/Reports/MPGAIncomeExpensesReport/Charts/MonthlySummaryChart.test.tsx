@@ -12,17 +12,6 @@ import { MonthlySummaryChart } from './MonthlySummaryChart';
 const mutationSpy = jest.fn();
 const currency = 'USD';
 
-const mockIncome = [{ ...mockData.income[0] }, { ...mockData.income[1] }];
-
-const expenseData = [
-  { ...mockData.ministryExpenses[0] },
-  { ...mockData.ministryExpenses[1] },
-  { ...mockData.healthcareExpenses[0] },
-  { ...mockData.misc[0] },
-  { ...mockData.misc[1] },
-  { ...mockData.other[0] },
-];
-
 const months = [
   'Apr 2024',
   'May 2024',
@@ -43,8 +32,8 @@ const TestComponent: React.FC = () => (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
         <MonthlySummaryChart
-          incomeData={mockIncome}
-          expenseData={expenseData}
+          incomeData={mockData.income}
+          expenseData={mockData.expenses}
           months={months}
           aspect={1.35}
           width={100}
