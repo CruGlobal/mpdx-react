@@ -61,11 +61,11 @@ export const Helpjuice: React.FC = () => {
 
       // Helpjuice renders links to questions as relative URLs, e.g. href="/question/123"
       // We need to turn them into absolute URLs so that they open correctly
-      for (const link of document.querySelectorAll('#article-content-body a')) {
+      for (const link of document.querySelectorAll(
+        '#article-content-body a[href^="/"]',
+      )) {
         const href = link.getAttribute('href');
-        if (href?.startsWith('/')) {
-          link.setAttribute('href', `${helpJuiceOrigin}${href}`);
-        }
+        link.setAttribute('href', `${helpJuiceOrigin}${href}`);
       }
     });
     // Watch for changes to the selected question
