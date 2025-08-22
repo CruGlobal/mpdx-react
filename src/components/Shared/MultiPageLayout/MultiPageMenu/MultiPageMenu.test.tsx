@@ -59,8 +59,8 @@ describe('MultiPageMenu', () => {
     );
 
     expect(getByText('Donations')).toBeInTheDocument();
-    expect(getByText('12 Month Partner Report')).toBeInTheDocument();
-    expect(getByText('12 Month Salary Report')).toBeInTheDocument();
+    expect(getByText('14 Month Partner Report')).toBeInTheDocument();
+    expect(getByText('14 Month Salary Report')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
     expect(getByText('Responsibility Centers')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();

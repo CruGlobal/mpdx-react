@@ -3,18 +3,18 @@ import { ErgonoMockShape } from 'graphql-ergonomock';
 import { DeepPartial } from 'ts-essentials';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import { StatusEnum } from 'src/graphql/types.generated';
+import { CurrencyTable } from './FourteenMonthReport';
 import {
-  TwelveMonthReportContactFragment,
-  TwelveMonthReportContactFragmentDoc,
-} from './GetTwelveMonthReport.generated';
-import { CurrencyTable } from './TwelveMonthReport';
+  FourteenMonthReportContactFragment,
+  FourteenMonthReportContactFragmentDoc,
+} from './GetFourteenMonthReport.generated';
 import { useCsvData } from './useCsvData';
 
 const mockContact = (
-  mocks?: ErgonoMockShape & DeepPartial<TwelveMonthReportContactFragment>,
+  mocks?: ErgonoMockShape & DeepPartial<FourteenMonthReportContactFragment>,
 ) =>
-  gqlMock<TwelveMonthReportContactFragment>(
-    TwelveMonthReportContactFragmentDoc,
+  gqlMock<FourteenMonthReportContactFragment>(
+    FourteenMonthReportContactFragmentDoc,
     {
       mocks,
     },
@@ -38,6 +38,8 @@ describe('useCsvData', () => {
           { total: 100, month: '2020-03-01' },
           { total: 200, month: '2020-02-01' },
           { total: 150, month: '2020-01-01' },
+          { total: 100, month: '2019-12-01' },
+          { total: 200, month: '2019-11-01' },
         ],
         orderedContacts: [
           // Partner pledged for $450/quarter but who gave $275/month average over the last quarter
@@ -60,6 +62,8 @@ describe('useCsvData', () => {
               { total: 0, month: '2020-03-01' },
               { total: 0, month: '2020-02-01' },
               { total: 0, month: '2020-01-01' },
+              { total: 0, month: '2019-12-01' },
+              { total: 0, month: '2019-11-01' },
             ],
           }),
 
@@ -83,6 +87,8 @@ describe('useCsvData', () => {
               { total: 100, month: '2020-03-01' },
               { total: 0, month: '2020-02-01' },
               { total: 200, month: '2020-01-01' },
+              { total: 0, month: '2019-12-01' },
+              { total: 100, month: '2019-11-01' },
             ],
           }),
         ],
@@ -124,6 +130,8 @@ describe('useCsvData', () => {
         'Mar 20',
         'Feb 20',
         'Jan 20',
+        'Dec 19',
+        'Nov 19',
         'Total (last month excluded from total)',
       ],
       [
@@ -149,6 +157,8 @@ describe('useCsvData', () => {
         0,
         0,
         0,
+        0,
+        0,
         84,
       ],
       [
@@ -161,7 +171,7 @@ describe('useCsvData', () => {
         75,
         -25,
         0,
-        'Jan 20 - Nov 20',
+        'Dec 19 - Nov 20',
         0,
         100,
         0,
@@ -174,6 +184,8 @@ describe('useCsvData', () => {
         100,
         0,
         200,
+        0,
+        100,
         84,
       ],
       [
@@ -199,7 +211,9 @@ describe('useCsvData', () => {
         100,
         200,
         150,
-        1800,
+        100,
+        200,
+        2100,
       ],
       ['Currency', 'CAD', '$'],
       [

@@ -1,13 +1,13 @@
 import { convertStatus } from 'src/utils/functions/convertContactStatus';
 import {
-  TwelveMonthReport,
-  TwelveMonthReportCurrencyType,
+  FourteenMonthReport,
+  FourteenMonthReportCurrencyType,
 } from '../../../graphql-rest.page.generated';
 
 // We have switched to call the REST API directly from the frontend
 // due to Next.js having issues when the size of the response is too large.
 
-export interface TwelveMonthReportResponse {
+export interface FourteenMonthReportResponse {
   id: string;
   type:
     | 'reports_salary_currency_donations'
@@ -26,6 +26,7 @@ export interface TwelveMonthReportResponse {
           contact_id: string;
           maximum: number | string;
           minimum: number | string;
+          complete_months_total: number | string;
           months: {
             total: number | string;
             donations: {
@@ -72,11 +73,11 @@ export interface TwelveMonthReportResponse {
   };
 }
 
-export const mapTwelveMonthReport = (
-  data: TwelveMonthReportResponse,
-  currencyType: TwelveMonthReportCurrencyType,
-): TwelveMonthReport => {
-  const isSalaryType = currencyType === TwelveMonthReportCurrencyType.Salary;
+export const mapFourteenMonthReport = (
+  data: FourteenMonthReportResponse,
+  currencyType: FourteenMonthReportCurrencyType,
+): FourteenMonthReport => {
+  const isSalaryType = currencyType === FourteenMonthReportCurrencyType.Salary;
   return {
     currencyType,
     salaryCurrency: data.attributes.salary_currency,
@@ -113,6 +114,9 @@ export const mapTwelveMonthReport = (
               id: contactDonationInfo.contact_id,
               name: contact?.contact_name ?? '',
               total: Number(contactDonationInfo.total),
+              completeMonthsTotal: Number(
+                contactDonationInfo.complete_months_total,
+              ),
               average: Number(contactDonationInfo.average),
               minimum: Number(contactDonationInfo.minimum),
               months: contactDonationInfo.months.map((month, index) => {
