@@ -74,6 +74,6 @@ export const StyledDialogContentText = styled(DialogContentText)(
   }),
 );
 
-export const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
+export const ReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));

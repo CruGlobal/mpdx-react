@@ -14,7 +14,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { GoalCalculatorPageWrapper } from 'src/components/Shared/styledComponents/styledComponents';
+import { ReportPageWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
@@ -35,7 +35,7 @@ const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
-        <GoalCalculatorPageWrapper>
+        <ReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
@@ -63,7 +63,7 @@ const GoalCalculatorPage: React.FC = () => {
               </>
             }
           />
-        </GoalCalculatorPageWrapper>
+        </ReportPageWrapper>
       ) : (
         <Loading loading />
       )}
