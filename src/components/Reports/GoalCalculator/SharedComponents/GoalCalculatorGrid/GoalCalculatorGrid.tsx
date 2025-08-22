@@ -8,6 +8,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  TextField,
   Typography,
   styled,
 } from '@mui/material';
@@ -82,6 +83,7 @@ export interface GoalCalculatorGridFormValues {
     name: string;
     amount: number;
   }>;
+  lumpSumAmount: number;
 }
 
 interface GoalCalculatorGridProps {
@@ -108,22 +110,27 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       { id: 2, name: 'Investment Returns', amount: 1200 },
       { id: 3, name: 'Rental Income', amount: 1800 },
     ],
+    lumpSumAmount: 0,
   };
 
   const validationSchema = yup.object({
-    gridData: yup.array().of(
-      yup.object({
-        id: yup.number().required(),
-        name: yup
-          .string()
-          .min(2, t('Name must be at least 2 characters'))
-          .required(t('Name is required')),
-        amount: yup
-          .number()
-          .min(0, t('Amount must be positive'))
-          .required(t('Amount is required')),
-      }),
-    ),
+    gridData: yup
+      .array()
+      .of(
+        yup.object({
+          id: yup.number().required(),
+          name: yup
+            .string()
+            .min(2, t('Name must be at least 2 characters'))
+            .required(t('Name is required')),
+          amount: yup
+            .number()
+            .min(0, t('Amount must be positive'))
+            .required(t('Amount is required')),
+        }),
+      )
+      .optional(),
+    lumpSumAmount: yup.number().min(0, t('Amount must be positive')).optional(),
   });
 
   const handleSubmit = () => {
@@ -261,44 +268,58 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           <StyledModeButton
             variant="outlined"
             size="small"
-            isActive={!directInput}
-            onClick={() => setDirectInput(false)}
+            isActive={directInput}
+            onClick={() => setDirectInput(true)}
             startIcon={<FunctionsIcon />}
-            position="left"
           >
             {t('Lump Sum')}
           </StyledModeButton>
           <StyledModeButton
             variant="outlined"
             size="small"
-            isActive={directInput}
-            onClick={() => setDirectInput(true)}
+            isActive={!directInput}
+            onClick={() => setDirectInput(false)}
             startIcon={<ViewHeadlineIcon />}
-            position="right"
           >
             {t('Line Item')}
           </StyledModeButton>
         </StyledButtonGroup>
       </StyledBox>
       <StyledCard>
-        <StyledControlsBox>
-          <StyledAddButton
-            variant="text"
-            onClick={addExpense}
-            size="small"
-            startIcon={<AddIcon />}
-          >
-            {t('Add Expense')}
-          </StyledAddButton>
-        </StyledControlsBox>
+        {directInput ? (
+          <Box sx={{ p: 2 }}>
+            <TextField
+              fullWidth
+              size="small"
+              label={t('Total')}
+              type="number"
+              value={values.lumpSumAmount}
+              onChange={(e) => setFieldValue('lumpSumAmount', e.target.value)}
+              sx={{ mb: 2 }}
+            />
+          </Box>
+        ) : (
+          <>
+            <StyledControlsBox>
+              <StyledAddButton
+                variant="text"
+                onClick={addExpense}
+                size="small"
+                startIcon={<AddIcon />}
+              >
+                {t('Add Expense')}
+              </StyledAddButton>
+            </StyledControlsBox>
 
-        <StyledGridContainer>
-          <StyledGrid
-            rows={dataWithTotal}
-            columns={columns}
-            processRowUpdate={processRowUpdate}
-          />
-        </StyledGridContainer>
+            <StyledGridContainer>
+              <StyledGrid
+                rows={dataWithTotal}
+                columns={columns}
+                processRowUpdate={processRowUpdate}
+              />
+            </StyledGridContainer>
+          </>
+        )}
       </StyledCard>
     </>
   );
