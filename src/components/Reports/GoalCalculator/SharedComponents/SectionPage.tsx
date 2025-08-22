@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Stack, styled } from '@mui/material';
-import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { ContinueButton } from '../../SharedComponents/ContinueButton';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { ContinueButton } from './ContinueButton';
 
 const StyledStack = styled(Stack)(({ theme }) => ({
   '> *:not(.MuiDivider-root)': {

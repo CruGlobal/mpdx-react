@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { HouseholdExpensesHeader } from '../../HouseholdExpenses/HouseholdExpensesHeader';
-import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { ExpensesStep } from '../ExpensesStep';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { ExpensesStep } from '../SharedComponents/ExpensesStep/ExpensesStep';
+import { HouseholdExpensesHeader } from './HouseholdExpensesHeader';
 
 const InstructionsWrapper = styled('div')(({ theme }) => ({
   '.MuiTypography-root': {

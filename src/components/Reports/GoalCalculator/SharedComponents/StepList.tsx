@@ -9,7 +9,7 @@ import { IconButton, Link, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
-import { useGoalCalculator } from './GoalCalculatorContext';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 
 interface StepIconProps {
   step: GoalCalculatorStepEnum;
