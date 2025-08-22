@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
-import { DialogActions, DialogContent, Grid, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { DialogActions, DialogContent, Grid } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +10,7 @@ import {
   LoadingIndicator,
   LogFormControl,
   LogFormLabel,
+  LogTextField,
 } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
@@ -32,12 +32,6 @@ interface Person {
   firstName: string;
   lastName: string;
 }
-
-const LogTextField = styled(TextField)(({ theme }) => ({
-  '& div': {
-    padding: theme.spacing(1),
-  },
-}));
 
 const contactSchema: yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =
   yup.object({

@@ -9,7 +9,6 @@ import {
   Grid,
   Radio,
   RadioGroup,
-  TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
@@ -21,6 +20,7 @@ import {
   LoadingIndicator,
   LogFormControl,
   LogFormLabel,
+  LogTextField,
 } from 'src/components/Shared/styledComponents/styledComponents';
 import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
 import {
@@ -46,12 +46,6 @@ const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   '& span.MuiFormControlLabel-label': {
     fontWeight: 'bold',
     color: theme.palette.primary.dark,
-  },
-}));
-
-const LogTextField = styled(TextField)(({ theme }) => ({
-  '& div': {
-    padding: theme.spacing(1),
   },
 }));
 

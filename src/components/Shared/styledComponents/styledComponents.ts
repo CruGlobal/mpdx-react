@@ -1,4 +1,10 @@
-import { Box, CircularProgress, FormControl, FormLabel } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  TextField,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
@@ -40,4 +46,10 @@ export const LogFormLabel = styled(FormLabel)(({ theme }) => ({
 
 export const LogFormControl = styled(FormControl)(() => ({
   width: '100%',
+}));
+
+export const LogTextField = styled(TextField)(({ theme }) => ({
+  '& div': {
+    padding: theme.spacing(1),
+  },
 }));
