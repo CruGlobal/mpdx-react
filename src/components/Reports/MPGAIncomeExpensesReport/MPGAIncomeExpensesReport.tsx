@@ -13,7 +13,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useFilteredFunds } from 'src/hooks/filterFunds';
+import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
 import {
@@ -31,7 +31,7 @@ import { AllData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
-  //accountId: string;
+  accountId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -39,7 +39,7 @@ interface MPGAIncomeExpensesReportProps {
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
-> = ({ title, isNavListOpen, onNavListToggle }) => {
+> = ({ accountId, title, isNavListOpen, onNavListToggle }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -55,7 +55,7 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
-      accountId: '1000000001',
+      accountId: accountId,
       fundTypes: [FundTypes.Primary],
       startMonth: start,
       endMonth: end,
@@ -64,12 +64,6 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const { incomeData, expenseData } = useFilteredFunds(reportData);
 
-  //eslint-disable-next-line no-console
-  console.log('Income Data:', incomeData);
-  //eslint-disable-next-line no-console
-  console.log('Expense Data:', expenseData);
-
-  // may need all data
   const allData: AllData = useMemo(() => {
     return {
       income: incomeData,

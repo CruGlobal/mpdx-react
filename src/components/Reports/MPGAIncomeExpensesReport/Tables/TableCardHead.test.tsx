@@ -5,25 +5,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { months } from '../mockData';
 import { monthWidth } from './TableCard';
 import { TableCardHead } from './TableCardHead';
 
 const mutationSpy = jest.fn();
-
-const months = [
-  'Apr 2024',
-  'May 2024',
-  'Jun 2024',
-  'Jul 2024',
-  'Aug 2024',
-  'Sep 2024',
-  'Oct 2024',
-  'Nov 2024',
-  'Dec 2024',
-  'Jan 2025',
-  'Feb 2025',
-  'Mar 2025',
-];
 
 const years = [
   { year: '2024', count: 9 },

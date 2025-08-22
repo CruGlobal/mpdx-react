@@ -120,7 +120,7 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
               <LabelList
                 dataKey="net"
                 position="top"
-                style={{ fill: '#000000' }}
+                style={{ fill: theme.palette.chartBlack.main }}
                 formatter={(value) => currencyFormat(value, currency, locale)}
               />
             </Bar>
@@ -154,7 +154,9 @@ export const MonthlySummaryChart: React.FC<MonthlySummaryChartProps> = ({
                           printColorAdjust: 'exact',
                         }}
                       />
-                      <span style={{ color: '#000000' }}>{entry.value}</span>
+                      <span style={{ color: theme.palette.chartBlack.main }}>
+                        {entry.value}
+                      </span>
                     </li>
                   ))}
                 </ul>

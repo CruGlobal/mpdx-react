@@ -6,38 +6,11 @@ import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { TotalsProvider } from '../TotalsContext/TotalsContext';
-import { mockData } from '../mockData';
+import { mockData, months } from '../mockData';
 import { PrintOnlyReport } from './PrintOnlyReport';
 
 const mutationSpy = jest.fn();
 const currency = 'USD';
-
-const data = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  expenses: [
-    { ...mockData.ministryExpenses[0] },
-    { ...mockData.ministryExpenses[1] },
-    { ...mockData.healthcareExpenses[0] },
-    { ...mockData.misc[0] },
-    { ...mockData.misc[1] },
-    { ...mockData.other[0] },
-  ],
-};
-
-const months = [
-  'Apr 2024',
-  'May 2024',
-  'Jun 2024',
-  'Jul 2024',
-  'Aug 2024',
-  'Sep 2024',
-  'Oct 2024',
-  'Nov 2024',
-  'Dec 2024',
-  'Jan 2025',
-  'Feb 2025',
-  'Mar 2025',
-];
 
 const emptyData = {
   income: [],
@@ -48,9 +21,9 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={data}>
+        <TotalsProvider data={mockData}>
           <PrintOnlyReport
-            data={data}
+            data={mockData}
             last12Months={months}
             currency={currency}
           />
@@ -66,9 +39,7 @@ const resizeObserverMock = () => ({
   disconnect: jest.fn(),
 });
 beforeAll(() => {
-  (window as any).ResizeObserver = jest
-    .fn()
-    .mockImplementation(resizeObserverMock);
+  window.ResizeObserver = jest.fn().mockImplementation(resizeObserverMock);
 });
 
 describe('PrintOnlyReport', () => {

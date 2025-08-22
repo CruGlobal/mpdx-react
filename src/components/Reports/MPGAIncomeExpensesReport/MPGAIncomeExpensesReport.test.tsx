@@ -7,22 +7,35 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
+import { ReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 
 const title = 'MPGA Report';
-// const mockData = {
-//   accountListId: '12345',
-//   accountName: 'Test Account',
-// };
+
+const mockData = {
+  ReportsStaffExpenses: {
+    __typename: 'Query',
+    reportsStaffExpenses: {
+      __typename: 'StaffExpenses',
+      accountId: '12345',
+      name: 'Test Account',
+    },
+  },
+} as const;
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider onCall={mutationSpy}>
+      <GqlMockedProvider<{
+        ReportsStaffExpenses: ReportsStaffExpensesQuery;
+      }>
+        mocks={mockData}
+        onCall={mutationSpy}
+      >
         <MPGAIncomeExpensesReport
-          //accountId={mockData.accountListId}
+          accountId="12345"
           onNavListToggle={onNavListToggle}
           isNavListOpen={true}
           title={title}
@@ -38,9 +51,7 @@ const resizeObserverMock = () => ({
   disconnect: jest.fn(),
 });
 beforeAll(() => {
-  (window as any).ResizeObserver = jest
-    .fn()
-    .mockImplementation(resizeObserverMock);
+  window.ResizeObserver = jest.fn().mockImplementation(resizeObserverMock);
 });
 
 beforeEach(() => {
@@ -52,13 +63,13 @@ beforeEach(() => {
 });
 
 describe('MPGAIncomeExpensesReport', () => {
-  it('renders data', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders data', async () => {
+    const { getByRole, findByText } = render(<TestComponent />);
     expect(getByRole('heading', { name: title })).toBeInTheDocument();
     expect(getByRole('button', { name: 'Print' })).toBeInTheDocument();
 
-    // expect(getByText('12345')).toBeInTheDocument();
-    // expect(getByText('Test Account')).toBeInTheDocument();
+    expect(await findByText('12345')).toBeInTheDocument();
+    expect(await findByText('Test Account')).toBeInTheDocument();
   });
 
   it('should print', async () => {

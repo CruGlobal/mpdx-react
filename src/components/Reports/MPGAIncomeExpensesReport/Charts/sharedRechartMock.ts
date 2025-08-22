@@ -8,8 +8,8 @@ const MockResponsiveContainer = ({ heightValue, aspect, children }) => {
     typeof heightValue === 'number'
       ? heightValue
       : aspect
-      ? Math.round(width / aspect)
-      : 400;
+        ? Math.round(width / aspect)
+        : 400;
   return React.createElement(
     'div',
     {

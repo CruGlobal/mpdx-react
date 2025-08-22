@@ -92,7 +92,9 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
                       printColorAdjust: 'exact',
                     }}
                   />
-                  <span style={{ color: '#000000' }}>{entry.value}</span>
+                  <span style={{ color: theme.palette.chartBlack.main }}>
+                    {entry.value}
+                  </span>
                 </li>
               ))}
             </ul>

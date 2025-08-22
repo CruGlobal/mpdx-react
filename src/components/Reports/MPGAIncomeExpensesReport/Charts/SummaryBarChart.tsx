@@ -59,7 +59,7 @@ export const SummaryBarChart: React.FC<SummaryBarChartProps> = ({
           <LabelList
             dataKey="total"
             position="top"
-            style={{ fill: '#000000' }}
+            style={{ fill: theme.palette.chartBlack.main }}
             formatter={(value: number) =>
               currencyFormat(value, currency, locale)
             }

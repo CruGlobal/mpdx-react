@@ -1,4 +1,5 @@
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
+import { mockData, months } from '../mockData';
 import { createTable, exportToCsv } from './CustomExport';
 
 const mockSetAttribute = jest.fn();
@@ -25,51 +26,14 @@ const mockHeaders = [
   'Total',
 ];
 
-const mockData = [
-  {
-    id: crypto.randomUUID(),
-    description: 'Contributions',
-    monthly: [
-      6770, 6090, 5770, 7355, 8035, 6575, 7556, 8239, 9799, 9729, 13020, 19215,
-    ],
-    average: 9013,
-    total: 108156,
-  },
-  {
-    id: crypto.randomUUID(),
-    description: 'Fr Andre, Fre to Mouna Ghar',
-    monthly: [100, 100, 100, 100, 100, 100, 100, 0, 0, 0, 0, 0],
-    average: 58,
-    total: 700,
-  },
+const monthlyTotals = [
+  6_870, 6_190, 5_870, 7_455, 8_135, 6_675, 7_656, 8_239, 9_799, 9_729, 13_020,
+  19_215,
 ];
-
-const months = [
-  'Apr 2024',
-  'May 2024',
-  'Jun 2024',
-  'Jul 2024',
-  'Aug 2024',
-  'Sep 2024',
-  'Oct 2024',
-  'Nov 2024',
-  'Dec 2024',
-  'Jan 2025',
-  'Feb 2025',
-  'Mar 2025',
-];
-
-const monthlyTotals = mockData.reduce((totals, item) => {
-  item.monthly.forEach((value, index) => {
-    totals[index] = (totals[index] || 0) + value;
-  });
-  return totals;
-}, [] as number[]);
-
-const overallAverage = mockData.reduce((sum, item) => sum + item.average, 0);
-const overallTotal = mockData.reduce((sum, item) => sum + item.total, 0);
+const overallAverage = 9_071;
+const overallTotal = 108_856;
 const dataWithTotal = [
-  ...mockData,
+  ...mockData.income,
   {
     id: crypto.randomUUID(),
     description: 'Overall Total',
@@ -87,7 +51,7 @@ describe('CustomExport', () => {
     jest.spyOn(link, 'setAttribute').mockImplementation(mockSetAttribute);
     jest.spyOn(link, 'click').mockImplementation(mockClick);
 
-    const data = exportToCsv(mockData, ReportTypeEnum.Income, months);
+    const data = exportToCsv(mockData.income, ReportTypeEnum.Income, months);
 
     expect(mockSetAttribute).toHaveBeenCalledWith(
       'href',
@@ -105,7 +69,7 @@ describe('CustomExport', () => {
   });
 
   it('should contain correct data', () => {
-    const csvData = createTable(mockHeaders, mockData);
+    const csvData = createTable(mockHeaders, mockData.income);
 
     expect(csvData).toContain(mockHeaders);
     expect(csvData[1]).toEqual([
@@ -132,20 +96,9 @@ describe('CustomExport', () => {
 
     expect(csvData[csvData.length - 1]).toEqual([
       'Overall Total',
-      6870,
-      6190,
-      5870,
-      7455,
-      8135,
-      6675,
-      7656,
-      8239,
-      9799,
-      9729,
-      13020,
-      19215,
-      9071,
-      108856,
+      ...monthlyTotals,
+      overallAverage,
+      overallTotal,
     ]);
   });
 });

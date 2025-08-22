@@ -7,24 +7,12 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { TotalsProvider } from '../TotalsContext/TotalsContext';
-import { mockData } from '../mockData';
+import { mockData, months } from '../mockData';
 import { PrintTables } from './PrintTables';
 
 const mutationSpy = jest.fn();
 
 const title = 'Income';
-
-const data = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  expenses: [
-    { ...mockData.ministryExpenses[0] },
-    { ...mockData.ministryExpenses[1] },
-    { ...mockData.healthcareExpenses[0] },
-    { ...mockData.misc[0] },
-    { ...mockData.misc[1] },
-    { ...mockData.other[0] },
-  ],
-};
 
 const emptyData = {
   accountListId: '12345',
@@ -33,26 +21,11 @@ const emptyData = {
   expenses: [],
 };
 
-const months = [
-  'Apr 2024',
-  'May 2024',
-  'Jun 2024',
-  'Jul 2024',
-  'Aug 2024',
-  'Sep 2024',
-  'Oct 2024',
-  'Nov 2024',
-  'Dec 2024',
-  'Jan 2025',
-  'Feb 2025',
-  'Mar 2025',
-];
-
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <TotalsProvider data={data}>
+        <TotalsProvider data={mockData}>
           <PrintTables
             type={ReportTypeEnum.Income}
             data={mockData.income}
@@ -86,7 +59,7 @@ describe('PrintTables', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('cell', { name: '108,856' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '12,960' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '9,071' })).toBeInTheDocument();
   });
 
   it('renders months in column headers for all months', () => {
@@ -112,7 +85,7 @@ describe('PrintTables', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider>
-            <TotalsProvider data={data}>
+            <TotalsProvider data={mockData}>
               <PrintTables
                 type={ReportTypeEnum.Income}
                 data={mockData.income}

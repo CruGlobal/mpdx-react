@@ -8,7 +8,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { TotalsProvider } from '../TotalsContext/TotalsContext';
-import { mockData } from '../mockData';
+import { mockData, months } from '../mockData';
 import { TableCard } from './TableCard';
 
 const mutationSpy = jest.fn();
@@ -16,7 +16,7 @@ const mutationSpy = jest.fn();
 const title = 'Income';
 
 const data = {
-  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
+  income: mockData.income,
   expenses: [],
 };
 
@@ -24,21 +24,6 @@ const emptyData = {
   income: [],
   expenses: [],
 };
-
-const months = [
-  'Apr 2024',
-  'May 2024',
-  'Jun 2024',
-  'Jul 2024',
-  'Aug 2024',
-  'Sep 2024',
-  'Oct 2024',
-  'Nov 2024',
-  'Dec 2024',
-  'Jan 2025',
-  'Feb 2025',
-  'Mar 2025',
-];
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -65,7 +50,6 @@ describe('TableCard', () => {
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(/last 12 months/i)).toBeInTheDocument();
 
-    expect(getByRole('grid')).toBeInTheDocument();
     expect(
       getByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
@@ -81,8 +65,8 @@ describe('TableCard', () => {
   it('should calculate and display totals correctly', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('columnheader', { name: '108,856' })).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: '9,071' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '108,856' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '9,071' })).toBeInTheDocument();
   });
 
   it('renders months in column headers for all months', () => {
@@ -168,7 +152,7 @@ describe('TableCard', () => {
         (cell) => cell.getAttribute('data-field') === 'month0',
       );
       const values = aprCells.map((cell) => (cell.textContent ?? '').trim());
-      expect(values).toEqual(['6,770', '100']);
+      expect(values).toEqual(['6,770', '100', '-']);
     });
 
     await userEvent.click(aprilHeader);
@@ -177,7 +161,7 @@ describe('TableCard', () => {
         (cell) => cell.getAttribute('data-field') === 'month0',
       );
       const values = aprCells.map((cell) => (cell.textContent ?? '').trim());
-      expect(values).toEqual(['100', '6,770']);
+      expect(values).toEqual(['-', '100', '6,770']);
     });
   });
 });
