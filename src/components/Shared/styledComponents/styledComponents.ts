@@ -73,3 +73,7 @@ export const StyledDialogContentText = styled(DialogContentText)(
     color: theme.palette.cruGrayDark.main,
   }),
 );
+
+export const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));

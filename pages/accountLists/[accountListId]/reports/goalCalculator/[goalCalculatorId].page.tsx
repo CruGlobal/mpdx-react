@@ -21,12 +21,9 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { GoalCalculatorPageWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
