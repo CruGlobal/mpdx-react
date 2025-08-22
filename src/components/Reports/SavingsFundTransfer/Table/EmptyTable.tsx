@@ -3,24 +3,12 @@ import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { BoxWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 
 interface Props {
   title: string;
   subtitle: string;
 }
-
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  maxWidth: '97%',
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
 
 const StyledHourglassIcon = styled(HourglassDisabled)(({ theme }) => ({
   color: theme.palette.cruGrayDark.main,
