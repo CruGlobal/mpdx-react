@@ -1,3 +1,27 @@
+  <!--
+  USAGE: To have Claude review your PR using these instructions, say:
+  "Please read .ai/PR_REVIEW_PROMPT.md and follow those instructions for the current branch. Review as if for a ExperiencedLevel(senior|experienced) developer"
+
+ ExperiencedLevel: Adjust the review style with either "senior" or "experienced"
+
+  Or use the Task tool to launch an agent with these
+  instructions.
+  -->
+
+## Step 1: Clarify Developer Experience Level
+
+Before beginning the review, if the user hasn't specified
+their experience level, ask:
+
+"What experience level should I tailor this review for?
+
+- **Senior**: Concise feedback, focus on
+  architecture/performance
+- **Experienced**: Detailed explanations with mentoring
+  notes
+
+## Step 2: Conduct Review
+
 Dev experience level: senior | experienced
 
 Before the review, print exactly: Operating in review-only mode (with .ai-review.json exception).
@@ -9,7 +33,7 @@ MODE
 
 === Stage 0 — Setup knowledge ===
 Known utilities/components (authoritative; adjust if paths differ)
-Please review the AI_AGENTS_SHARED_RESOURCES.md file to understand the shared functions and components that could be used globally. There might be functions and components which could be used in the parent(s) files.
+Please review the .ai/AI_AGENTS_SHARED_RESOURCES.md file to understand the shared functions and components that could be used globally. There might be functions and components which could be used in the parent(s) files.
 
 Repo heuristics to enforce:
 
@@ -45,7 +69,7 @@ For EACH changed file from Stage 1, in order:
 RULE: If no issues found for a file, state: “No issues found after deep check” AND explain the checks you ran.
 
 === Stage 3 — Reuse Sweep (repo-wide) ===
-Scan the /AI_AGENTS_SHARED_RESOURCES.md file for candidates to replace or centralize logic introduced/changed in this PR; include path#symbol and tiny patch to adopt:
+Scan the .ai/AI_AGENTS_SHARED_RESOURCES.md file for candidates to replace or centralize logic introduced/changed in this PR; include path#symbol and tiny patch to adopt:
 
 For each reuse candidate:
 
