@@ -33,7 +33,10 @@ import {
   DynamicEditDonationModal,
   preloadEditDonationModal,
 } from '../EditDonationModal/DynamicEditDonationModal';
-import { LoadingIndicator } from '../Shared/styledComponents/styledComponents';
+import {
+  LoadingBox,
+  LoadingIndicator,
+} from '../Shared/styledComponents/styledComponents';
 import { useContactPanel } from '../common/ContactPanelProvider/ContactPanelProvider';
 import {
   DonationTableQueryVariables,
@@ -80,17 +83,6 @@ export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   ['& .MuiLinearProgress-bar']: {
     borderRadius: theme.shape.borderRadius,
   },
-}));
-
-export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
 }));
 
 const DashUnderlineTypography = styled(Typography)(() => ({

@@ -18,7 +18,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
   DonationRow,
-  LoadingBox,
   LoadingProgressBar,
   StyledGrid,
   createDonationRow,
@@ -27,7 +26,10 @@ import {
   DonationTableQueryVariables,
   useDonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import {
+  LoadingBox,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { useLocale } from 'src/hooks/useLocale';

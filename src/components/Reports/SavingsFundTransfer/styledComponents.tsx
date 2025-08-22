@@ -26,14 +26,3 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     alignContent: 'center',
   },
 }));
-
-export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
