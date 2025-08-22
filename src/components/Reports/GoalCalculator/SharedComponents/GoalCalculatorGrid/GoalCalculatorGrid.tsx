@@ -240,7 +240,10 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           size="small"
           startIcon={<AddIcon />}
         >
-          {t('Add {{category}}', { category: categoryName })}
+          {t('Add {{category}}', {
+            category: categoryName,
+            interpolation: { escapeValue: false },
+          })}
         </StyledAddButton>
         <StyledToggleBox>
           <Switch
