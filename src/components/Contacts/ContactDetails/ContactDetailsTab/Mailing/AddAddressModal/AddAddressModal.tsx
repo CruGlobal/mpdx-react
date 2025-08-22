@@ -1,9 +1,7 @@
 import React, { ReactElement } from 'react';
 import { ApolloCache } from '@apollo/client';
 import {
-  Box,
   Checkbox,
-  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
@@ -12,11 +10,15 @@ import {
   InputLabel,
   TextField,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
+import {
+  ContactEditContainer,
+  ContactInputWrapper,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -31,23 +33,6 @@ import { useSetContactPrimaryAddressMutation } from '../SetPrimaryAddress.genera
 import { StreetAutocomplete } from '../StreetAutocomplete/StreetAutocomplete';
 import { AddressSchema, addressSchema } from '../addressSchema';
 import { useCreateContactAddressMutation } from './CreateContactAddress.generated';
-
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
-
-const ContactInputWrapper = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  padding: theme.spacing(0, 6),
-  margin: theme.spacing(2, 0),
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 interface EditContactAddressModalProps {
   accountListId: string;

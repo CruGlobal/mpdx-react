@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { DialogActions, DialogContent, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { DialogContent, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { StyledDialogActions } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -16,10 +16,6 @@ interface DeletePrayerlettersAccountModalProps {
   accountListId: string;
   refetchPrayerlettersAccount: () => void;
 }
-
-const StyledDialogActions = styled(DialogActions)(() => ({
-  justifyContent: 'space-between',
-}));
 
 export const DeletePrayerlettersAccountModal: React.FC<
   DeletePrayerlettersAccountModalProps

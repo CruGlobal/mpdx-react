@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  DialogActions,
   DialogContent,
   Skeleton,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { StyledDialogActions } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   ActionButton,
   CancelButton,
@@ -41,10 +40,6 @@ enum TabsEnum {
   Calendar = 'calendar',
   Setup = 'setup',
 }
-
-const StyledDialogActions = styled(DialogActions)(() => ({
-  justifyContent: 'space-between',
-}));
 
 export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   account,

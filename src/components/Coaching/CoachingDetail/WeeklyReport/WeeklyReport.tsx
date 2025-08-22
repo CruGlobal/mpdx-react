@@ -1,29 +1,16 @@
 import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import {
-  Button,
-  ButtonGroup,
-  CardContent,
-  CardHeader,
-  Typography,
-} from '@mui/material';
+import { Button, ButtonGroup, CardHeader } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
+import { Header } from 'src/components/Shared/styledComponents/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
+import { ContentContainer } from '../StyledComponents';
 import { useWeeklyReportsQuery } from './WeeklyReport.generated';
-
-const Header = styled(Typography)(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(2),
-  '@media (max-width: 900px)': {
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-}));
 
 const CompletedText = styled('span')({
   textAlign: 'center',
@@ -33,11 +20,6 @@ const CompletedText = styled('span')({
 const StyledButton = styled(Button)({
   width: '6rem',
 });
-
-const ContentContainer = styled(CardContent)(({ theme }) => ({
-  padding: theme.spacing(2),
-  overflowX: 'scroll',
-}));
 
 const AnswersContainer = styled('div')(({ theme }) => ({
   display: 'grid',

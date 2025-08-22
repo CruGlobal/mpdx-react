@@ -6,12 +6,16 @@ import {
   GridSortModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import {
+  LoadingBox,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { ScheduleEnum, TransferHistory } from '../mockData';
-import { LoadingBox, LoadingIndicator, StyledGrid } from '../styledComponents';
+import { StyledGrid } from '../styledComponents';
 import { CustomToolbar } from './CustomToolbar';
 import { populateTransferHistoryRows } from './Row/createTableRow';
 

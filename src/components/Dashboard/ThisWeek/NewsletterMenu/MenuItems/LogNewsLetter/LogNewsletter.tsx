@@ -1,18 +1,14 @@
 import React, { ReactElement, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Grid,
-  IconButton,
   Radio,
   RadioGroup,
-  TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
@@ -20,6 +16,12 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import {
+  LoadingIndicator,
+  LogFormControl,
+  LogFormLabel,
+  LogTextField,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
 import {
   CancelButton,
@@ -28,6 +30,7 @@ import {
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
+import { CloseButton } from '../styledComponents';
 
 interface Props {
   accountListId: string;
@@ -39,44 +42,11 @@ const LogNewsletterTitle = styled(DialogTitle)(() => ({
   textAlign: 'center',
 }));
 
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
-}));
-
-const LogFormControl = styled(FormControl)(() => ({
-  width: '100%',
-}));
-
-const LogFormLabel = styled(FormLabel)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  fontWeight: 'bold',
-  color: theme.palette.primary.dark,
-  '& span': {
-    color: theme.palette.error.main,
-  },
-}));
-
 const LogFormControlLabel = styled(FormControlLabel)(({ theme }) => ({
   '& span.MuiFormControlLabel-label': {
     fontWeight: 'bold',
     color: theme.palette.primary.dark,
   },
-}));
-
-const LogTextField = styled(TextField)(({ theme }) => ({
-  '& div': {
-    padding: theme.spacing(1),
-  },
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const taskSchema = yup.object({

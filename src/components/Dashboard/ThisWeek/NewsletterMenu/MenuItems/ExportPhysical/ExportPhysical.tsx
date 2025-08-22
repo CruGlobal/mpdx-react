@@ -7,7 +7,6 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -20,6 +19,7 @@ import {
   ExportSortEnum,
 } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { CloseButton } from '../styledComponents';
 import { useCreateExportedContactsMutation } from './ExportPhysical.generated';
 
 interface Props {
@@ -30,16 +30,6 @@ interface Props {
 const ExportPhysicalTitle = styled(DialogTitle)(() => ({
   textTransform: 'uppercase',
   textAlign: 'center',
-}));
-
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(1),
-  top: theme.spacing(1),
-  color: theme.palette.text.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
-  },
 }));
 
 const LabelButton = styled(Button)(({ theme }) => ({

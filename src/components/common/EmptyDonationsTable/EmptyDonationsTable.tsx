@@ -8,25 +8,13 @@ import {
   DynamicAddDonation,
   preloadAddDonation,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import { BoxWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
 
 interface Props {
   title: string;
 }
-
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  maxWidth: '97%',
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
 
 const StyledLocalAtmIcon = styled(LocalAtmIcon)(({ theme }) => ({
   color: theme.palette.cruGrayDark.main,
