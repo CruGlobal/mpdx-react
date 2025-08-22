@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Box, Skeleton } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
@@ -12,6 +11,7 @@ import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/Org
 import { Organizations as OrganizationsType } from 'src/graphql/types.generated';
 import { SettingsWrapper } from './Wrapper';
 import { useOrganizationsQuery } from './organizations.generated';
+import { HeaderAndDropdown } from './styledComponents';
 
 export type OrganizationsContextType = {
   selectedOrganizationId: string;
@@ -32,13 +32,6 @@ export const OrganizationsContextProvider: React.FC<
     </OrganizationsContext.Provider>
   );
 };
-
-const HeaderAndDropdown = styled(Box)(() => ({
-  fontSize: '16px',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-}));
 
 const Organizations = (): ReactElement => {
   const { t } = useTranslation();
