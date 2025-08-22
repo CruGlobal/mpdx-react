@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -36,8 +36,4 @@ export const LoadingBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}));
-
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));

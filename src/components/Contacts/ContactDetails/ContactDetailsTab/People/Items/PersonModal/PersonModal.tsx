@@ -4,7 +4,6 @@ import { useApolloClient } from '@apollo/client';
 import {
   Box,
   Button,
-  CircularProgress,
   DialogActions,
   DialogContent,
   Typography,
@@ -14,6 +13,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   DeleteButton,
@@ -71,10 +71,6 @@ const ShowExtraText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
   textTransform: 'uppercase',
   fontWeight: 'bold',
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 export type Person = Omit<

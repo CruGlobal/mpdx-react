@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
-  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
@@ -15,6 +14,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -53,10 +53,6 @@ const LogTextField = styled(TextField)(({ theme }) => ({
   '& div': {
     padding: theme.spacing(1),
   },
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const contactSchema: yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =

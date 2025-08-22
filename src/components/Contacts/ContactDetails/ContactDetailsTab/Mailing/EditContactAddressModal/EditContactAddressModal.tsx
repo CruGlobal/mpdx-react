@@ -5,7 +5,6 @@ import {
   AlertTitle,
   Box,
   Checkbox,
-  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
@@ -20,6 +19,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   DeleteButton,
@@ -54,10 +54,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 6),
   margin: theme.spacing(2, 0),
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 interface EditContactAddressModalProps {

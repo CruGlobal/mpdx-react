@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -20,6 +19,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
 import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
 import {
   CancelButton,
@@ -73,10 +73,6 @@ const LogTextField = styled(TextField)(({ theme }) => ({
   '& div': {
     padding: theme.spacing(1),
   },
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const taskSchema = yup.object({
