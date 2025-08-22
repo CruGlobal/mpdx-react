@@ -37,7 +37,7 @@ export const Helpjuice: React.FC = () => {
   });
 
   // When a user clicks on an article in the beacon, make the title link to the article in a new
-  // tab on Helpjuice
+  // tab on Helpjuice and add the Helpjuice domain to links
   useEffect(() => {
     const helpJuiceOrigin = process.env.HELPJUICE_ORIGIN;
     const swiftyContainer = document.getElementsByClassName('hj-swifty')[0];
@@ -58,6 +58,15 @@ export const Helpjuice: React.FC = () => {
       link.setAttribute('target', '_blank');
       link.textContent = nameHeader.textContent;
       nameHeader.replaceChildren(link);
+
+      // Helpjuice renders links to questions as relative URLs, e.g. href="/question/123"
+      // We need to turn them into absolute URLs so that they open correctly
+      for (const link of document.querySelectorAll(
+        '#article-content-body a[href^="/"]',
+      )) {
+        const href = link.getAttribute('href');
+        link.setAttribute('href', `${helpJuiceOrigin}${href}`);
+      }
     });
     // Watch for changes to the selected question
     observer.observe(swiftyContainer, {
