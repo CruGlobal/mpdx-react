@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   Button,
-  CardContent,
   CardHeader,
   Table,
   TableBody,
@@ -20,15 +19,11 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
+import { ContentContainer } from '../StyledComponents';
 import {
   useLoadAccountListCoachingNeedsQuery,
   useLoadCoachingNeedsQuery,
 } from './OutstandingNeeds.generated';
-
-const ContentContainer = styled(CardContent)(({ theme }) => ({
-  padding: theme.spacing(2),
-  overflowX: 'scroll',
-}));
 
 const AlignedTableCell = styled(TableCell)({
   border: 'none',
