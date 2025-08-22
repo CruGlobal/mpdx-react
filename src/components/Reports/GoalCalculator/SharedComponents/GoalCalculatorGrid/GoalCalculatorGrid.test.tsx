@@ -1,22 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
-import { GoalCalculatorProvider } from '../../Shared/GoalCalculatorContext';
+import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
-
-jest.mock('src/lib/intlFormat', () => ({
-  currencyFormat: (value: number, currency: string, locale: string) =>
-    new Intl.NumberFormat(locale, { style: 'currency', currency }).format(
-      value,
-    ),
-}));
-
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <SnackbarProvider>
-    <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
-  </SnackbarProvider>
-);
 
 const defaultProps = {
   categoryName: 'Special Income Name',
@@ -31,9 +17,9 @@ const defaultProps = {
 describe('GoalCalculatorGrid', () => {
   it('renders with initial data and calculates total correctly', async () => {
     const { getByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     expect(getByText('Freelance Work')).toBeInTheDocument();
@@ -41,15 +27,15 @@ describe('GoalCalculatorGrid', () => {
     expect(getByText('Rental Income')).toBeInTheDocument();
     await waitFor(() => {
       expect(getByText('Total')).toBeInTheDocument();
-      expect(getByText('$5,500.00')).toBeInTheDocument();
+      expect(getByText('$5,500')).toBeInTheDocument();
     });
   });
 
   it('adds a new row when Add button is clicked', async () => {
     const { getByRole, getByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     userEvent.click(
@@ -59,14 +45,14 @@ describe('GoalCalculatorGrid', () => {
     );
 
     expect(getByText('New Income')).toBeInTheDocument();
-    expect(getByText('$5,500.00')).toBeInTheDocument();
+    expect(getByText('$5,500')).toBeInTheDocument();
   });
 
   it('removes a row when delete button is clicked', async () => {
     const { getByText, queryByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
     const freelanceRow = getByText('Freelance Work').closest('[role="row"]');
     userEvent.hover(freelanceRow!);
@@ -77,14 +63,14 @@ describe('GoalCalculatorGrid', () => {
     await waitFor(() => {
       expect(queryByText('Freelance Work')).not.toBeInTheDocument();
     });
-    expect(getByText('$3,000.00')).toBeInTheDocument();
+    expect(getByText('$3,000')).toBeInTheDocument();
   });
 
   it('edits a row name and updates the data', async () => {
     const { queryByDisplayValue, getByDisplayValue, findByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     const nameCell = await findByText('Freelance Work');
@@ -105,12 +91,12 @@ describe('GoalCalculatorGrid', () => {
 
   it('edits a row amount and updates the total', async () => {
     const { findByText, getByDisplayValue } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
-    const amountCell = await findByText('$2,500.00');
+    const amountCell = await findByText('$2,500');
     userEvent.dblClick(amountCell);
 
     // Wait for the input to appear and clear it
@@ -121,14 +107,14 @@ describe('GoalCalculatorGrid', () => {
     });
 
     userEvent.tab();
-    expect(await findByText('$6,000.00')).toBeInTheDocument();
+    expect(await findByText('$6,000')).toBeInTheDocument();
   });
 
   it('prevents editing the total row', async () => {
     const { getByText, queryAllByLabelText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     const totalRow = getByText('Total').closest('[role="row"]');
@@ -143,19 +129,19 @@ describe('GoalCalculatorGrid', () => {
 
   it('calculates total correctly when multiple operations are performed', async () => {
     const { getByText, getByRole, findByText, getAllByRole } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
-    expect(getByText('$5,500.00')).toBeInTheDocument();
+    expect(getByText('$5,500')).toBeInTheDocument();
     userEvent.click(
       getByRole('button', {
         name: /add special income name/i,
       }),
     );
     await findByText('New Income');
-    expect(getByText('$5,500.00')).toBeInTheDocument();
+    expect(getByText('$5,500')).toBeInTheDocument();
     const cells = getAllByRole('gridcell');
     const amountCell = cells[cells.length - 3];
     userEvent.click(amountCell);
@@ -163,27 +149,27 @@ describe('GoalCalculatorGrid', () => {
     userEvent.type(amountCell, '2000');
     userEvent.dblClick(cells[cells.length - 1]);
     await waitFor(() => {
-      expect(getByText('$5,500.00')).toBeInTheDocument();
+      expect(getByText('$5,500')).toBeInTheDocument();
     });
   });
 
   it('displays currency format correctly', async () => {
     const { findByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
-    expect(await findByText('$2,500.00')).toBeInTheDocument();
-    expect(await findByText('$1,200.00')).toBeInTheDocument();
-    expect(await findByText('$1,800.00')).toBeInTheDocument();
+    expect(await findByText('$2,500')).toBeInTheDocument();
+    expect(await findByText('$1,200')).toBeInTheDocument();
+    expect(await findByText('$1,800')).toBeInTheDocument();
   });
 
   it('toggles direct input switch', async () => {
     const { getByRole } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     const directInputSwitch = getByRole('checkbox');
@@ -201,9 +187,9 @@ describe('GoalCalculatorGrid', () => {
     };
 
     const { queryByText, findByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...propsWithoutPrompt} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     expect(
@@ -218,9 +204,9 @@ describe('GoalCalculatorGrid', () => {
     };
 
     const { getByText } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...propsWithoutData} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     expect(getByText('Freelance Work')).toBeInTheDocument();

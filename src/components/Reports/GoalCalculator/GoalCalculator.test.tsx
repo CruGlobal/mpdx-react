@@ -2,16 +2,11 @@ import React, { useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
-import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { GoalCalculator } from './GoalCalculator';
 import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
-import {
-  GoalCalculatorProvider,
-  useGoalCalculator,
-} from './Shared/GoalCalculatorContext';
+import { GoalCalculatorTestWrapper } from './GoalCalculatorTestWrapper';
+import { useGoalCalculator } from './Shared/GoalCalculatorContext';
 
 interface ContextHelperProps {
   selectedStepId: GoalCalculatorStepEnum;
@@ -39,18 +34,12 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   selectedStepId = GoalCalculatorStepEnum.MinistryExpenses,
 }) => (
-  <TestRouter>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider>
-        <GqlMockedProvider>
-          <GoalCalculatorProvider>
-            <ContextHelper selectedStepId={selectedStepId} />
-            <GoalCalculator />
-          </GoalCalculatorProvider>
-        </GqlMockedProvider>
-      </SnackbarProvider>
-    </ThemeProvider>
-  </TestRouter>
+  <ThemeProvider theme={theme}>
+    <GoalCalculatorTestWrapper>
+      <ContextHelper selectedStepId={selectedStepId} />
+      <GoalCalculator />
+    </GoalCalculatorTestWrapper>
+  </ThemeProvider>
 );
 
 describe('GoalCalculator', () => {
@@ -70,9 +59,11 @@ describe('GoalCalculator', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders right panel components', () => {
-    const { getAllByRole, getByRole } = render(<TestComponent />);
-    const heading = getAllByRole('heading', { name: 'Ministry Mileage' })[0];
+  it('renders right panel components', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+    const heading = await findByRole('heading', {
+      name: 'Ministry & Medical Mileage',
+    });
     userEvent.click(
       within(heading).getByRole('button', {
         name: 'Show additional info',
@@ -84,9 +75,9 @@ describe('GoalCalculator', () => {
     ).toHaveTextContent('Mileage Expenses');
   });
 
-  it('does not show info icon for categories without right panel content', () => {
-    const { getAllByRole } = render(<TestComponent />);
-    const heading = getAllByRole('heading', { name: 'Transfers' })[0];
+  it('does not show info icon for categories without right panel content', async () => {
+    const { findByRole } = render(<TestComponent />);
+    const heading = await findByRole('heading', { name: 'Account Transfers' });
     expect(within(heading).queryByRole('button')).not.toBeInTheDocument();
   });
 

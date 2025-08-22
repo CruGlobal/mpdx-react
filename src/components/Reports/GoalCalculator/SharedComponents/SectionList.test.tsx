@@ -1,19 +1,8 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
-import theme from 'src/theme';
-import { GoalCalculatorProvider } from '../Shared/GoalCalculatorContext';
+import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
 import { ReportSectionList, SectionItem, SectionList } from './SectionList';
-
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider>
-      <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
-    </SnackbarProvider>
-  </ThemeProvider>
-);
 
 describe('SectionList', () => {
   const mockSections: SectionItem[] = [
@@ -23,9 +12,9 @@ describe('SectionList', () => {
 
   it('renders sections with titles and icons', () => {
     const { getAllByRole } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <SectionList sections={mockSections} />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     const sections = getAllByRole('listitem');
@@ -47,9 +36,9 @@ describe('SectionList', () => {
 describe('ReportSectionList', () => {
   it('renders all report section buttons', () => {
     const { getByRole } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <ReportSectionList />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     expect(getByRole('button', { name: 'MPD Goal' })).toBeInTheDocument();
@@ -61,9 +50,9 @@ describe('ReportSectionList', () => {
 
   it('updates the selected report', async () => {
     const { getByRole } = render(
-      <TestWrapper>
+      <GoalCalculatorTestWrapper>
         <ReportSectionList />
-      </TestWrapper>,
+      </GoalCalculatorTestWrapper>,
     );
 
     const initialReport = getByRole('button', { name: 'MPD Goal' });
