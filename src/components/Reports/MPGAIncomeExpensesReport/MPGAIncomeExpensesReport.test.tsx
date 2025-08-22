@@ -12,17 +12,17 @@ const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
 
 const title = 'MPGA Report';
-const mockData = {
-  accountListId: '12345',
-  accountName: 'Test Account',
-};
+// const mockData = {
+//   accountListId: '12345',
+//   accountName: 'Test Account',
+// };
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
         <MPGAIncomeExpensesReport
-          accountListId={mockData.accountListId}
+          //accountId={mockData.accountListId}
           onNavListToggle={onNavListToggle}
           isNavListOpen={true}
           title={title}

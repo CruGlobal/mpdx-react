@@ -7,14 +7,15 @@ import {
   SvgIcon,
   Typography,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useFilteredFunds } from 'src/hooks/filterFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
-import { useReportsStaffExpensesQuery } from '../ReportsStaffExpenses.generated';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -22,12 +23,15 @@ import {
 } from '../styledComponents';
 import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
+import { FundTypes } from './Helper/MPGAReportEnum';
+import { convertMonths } from './Helper/convertMonths';
+import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
-import { mockData } from './mockData';
+import { AllData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
-  accountListId: string;
+  //accountId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -35,13 +39,10 @@ interface MPGAIncomeExpensesReportProps {
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
-> = ({ accountListId, title, isNavListOpen, onNavListToggle }) => {
+> = ({ title, isNavListOpen, onNavListToggle }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-
-  const { data: staffExpensesData } = useReportsStaffExpensesQuery({
-    variables: { accountListId: accountListId },
-  });
+  const currency = 'USD';
 
   const handlePrint = () => {
     window.print();
@@ -49,20 +50,32 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const last12Months = useGetLastTwelveMonths(locale, true);
 
-  const expenseData = useMemo(
-    () => [
-      ...(mockData.ministryExpenses ?? []),
-      ...(mockData.healthcareExpenses ?? []),
-      ...(mockData.misc ?? []),
-      ...(mockData.other ?? []),
-    ],
-    [
-      mockData.ministryExpenses,
-      mockData.healthcareExpenses,
-      mockData.misc,
-      mockData.other,
-    ],
-  );
+  const start = convertMonths(last12Months[0], locale);
+  const end = DateTime.now().toISODate();
+
+  const { data: reportData } = useReportsStaffExpensesQuery({
+    variables: {
+      accountId: '1000000001',
+      fundTypes: [FundTypes.Primary],
+      startMonth: start,
+      endMonth: end,
+    },
+  });
+
+  const { incomeData, expenseData } = useFilteredFunds(reportData);
+
+  //eslint-disable-next-line no-console
+  console.log('Income Data:', incomeData);
+  //eslint-disable-next-line no-console
+  console.log('Expense Data:', expenseData);
+
+  // may need all data
+  const allData: AllData = useMemo(() => {
+    return {
+      income: incomeData,
+      expenses: expenseData,
+    };
+  }, [incomeData, expenseData]);
 
   return (
     <>
@@ -117,28 +130,28 @@ export const MPGAIncomeExpensesReport: React.FC<
               </SimpleScreenOnly>
             </StyledHeaderBox>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
-              <Typography>{mockData.accountName}</Typography>
-              <Typography>{mockData.accountListId}</Typography>
+              <Typography>{reportData?.reportsStaffExpenses.name}</Typography>
+              <Typography>
+                {reportData?.reportsStaffExpenses.accountId}
+              </Typography>
             </Box>
           </Container>
         </Box>
         <SimpleScreenOnly>
-          <TotalsProvider data={mockData}>
+          <TotalsProvider data={allData}>
             <ScreenOnlyReport
-              data={mockData}
+              data={allData}
               last12Months={last12Months}
-              expenseData={expenseData}
-              currency={staffExpensesData?.accountList.currency || 'USD'}
+              currency={currency}
             />
           </TotalsProvider>
         </SimpleScreenOnly>
         <PrintOnly>
-          <TotalsProvider data={mockData}>
+          <TotalsProvider data={allData}>
             <PrintOnlyReport
-              data={mockData}
+              data={allData}
               last12Months={last12Months}
-              expenseData={expenseData}
-              currency={staffExpensesData?.accountList.currency || 'USD'}
+              currency={currency}
             />
           </TotalsProvider>
         </PrintOnly>

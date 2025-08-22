@@ -1,5 +1,0 @@
-query ReportsStaffExpenses($accountListId: ID!) {
-  accountList(id: $accountListId) {
-    currency
-  }
-}

@@ -13,16 +13,15 @@ import { ExpensesPieChart } from './ExpensesPieChart';
 const mutationSpy = jest.fn();
 
 const data = {
-  accountListId: '12345',
-  accountName: 'Test Account',
-  income: [],
-  ministryExpenses: [
+  income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
+  expenses: [
     { ...mockData.ministryExpenses[0] },
     { ...mockData.ministryExpenses[1] },
+    { ...mockData.healthcareExpenses[0] },
+    { ...mockData.misc[0] },
+    { ...mockData.misc[1] },
+    { ...mockData.other[0] },
   ],
-  healthcareExpenses: [{ ...mockData.healthcareExpenses[0] }],
-  misc: [{ ...mockData.misc[0] }, { ...mockData.misc[1] }],
-  other: [{ ...mockData.other[0] }],
 };
 
 const TestComponent: React.FC = () => (

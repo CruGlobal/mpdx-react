@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DataFields, MockData } from '../mockData';
+import { AllData, DataFields } from '../mockData';
 
 export type TotalsType = {
   incomeTotal: number;
@@ -23,7 +23,7 @@ export const useTotals = (): TotalsType => {
 };
 
 interface TotalsContextProps {
-  data: MockData;
+  data: AllData;
   children?: React.ReactNode;
 }
 
@@ -39,26 +39,36 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
     return sum(data.income);
   }, [data.income]);
 
-  const ministryTotal = useMemo(() => {
-    return sum(data.ministryExpenses);
-  }, [data.ministryExpenses]);
+  // const ministryTotal = useMemo(() => {
+  //   return sum(data.ministryExpenses);
+  // }, [data.ministryExpenses]);
 
-  const healthcareTotal = useMemo(() => {
-    return sum(data.healthcareExpenses);
-  }, [data.healthcareExpenses]);
+  // const healthcareTotal = useMemo(() => {
+  //   return sum(data.healthcareExpenses);
+  // }, [data.healthcareExpenses]);
 
-  const miscTotal = useMemo(() => {
-    return sum(data.misc);
-  }, [data.misc]);
+  // const miscTotal = useMemo(() => {
+  //   return sum(data.misc);
+  // }, [data.misc]);
 
-  const otherTotal = useMemo(() => {
-    return sum(data.other);
-  }, [data.other]);
+  // const otherTotal = useMemo(() => {
+  //   return sum(data.other);
+  // }, [data.other]);
 
-  const expensesTotal = useMemo(
-    () => ministryTotal + healthcareTotal + miscTotal + otherTotal,
-    [ministryTotal, healthcareTotal, miscTotal, otherTotal],
-  );
+  // const expensesTotal = useMemo(
+  //   () => ministryTotal + healthcareTotal + miscTotal + otherTotal,
+  //   [ministryTotal, healthcareTotal, miscTotal, otherTotal],
+  // );
+
+  // Remove Later
+  const ministryTotal = 2_456.78;
+  const healthcareTotal = 1_799.26;
+  const miscTotal = 1_732.11;
+  const otherTotal = 980.25;
+
+  const expensesTotal = useMemo(() => {
+    return sum(data.expenses);
+  }, [data.expenses]);
 
   const contextValue: TotalsType = useMemo(
     () => ({

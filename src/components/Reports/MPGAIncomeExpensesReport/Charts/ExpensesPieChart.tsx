@@ -35,7 +35,7 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
         <Pie
           data={data}
           cx="50%"
-          cy="50%"
+          cy="45%"
           labelLine={false}
           label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
             const RADIAN = Math.PI / 180;
@@ -55,7 +55,7 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
               </text>
             );
           }}
-          outerRadius="85%"
+          outerRadius="80%"
           dataKey="value"
         >
           <Cell key="cell-0" fill={chartColors[0]} />

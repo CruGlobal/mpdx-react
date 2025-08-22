@@ -16,23 +16,13 @@ const mutationSpy = jest.fn();
 const title = 'Income';
 
 const data = {
-  accountListId: '12345',
-  accountName: 'Test Account',
   income: [{ ...mockData.income[0] }, { ...mockData.income[1] }],
-  ministryExpenses: [],
-  healthcareExpenses: [],
-  misc: [],
-  other: [],
+  expenses: [],
 };
 
 const emptyData = {
-  accountListId: '12345',
-  accountName: 'Test Account',
   income: [],
-  ministryExpenses: [],
-  healthcareExpenses: [],
-  misc: [],
-  other: [],
+  expenses: [],
 };
 
 const months = [
