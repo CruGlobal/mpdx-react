@@ -1,14 +1,10 @@
 import React from 'react';
-import { Typography, styled } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { StyledTypography } from '../../../SharedComponents/styledComponents';
 import { SpecialIncomeCategoryForm } from './SpecialIncomeCategoryForm/SpecialIncomeCategoryForm';
-
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-}));
 
 interface SpecialIncomeCategoryProps {}
 
