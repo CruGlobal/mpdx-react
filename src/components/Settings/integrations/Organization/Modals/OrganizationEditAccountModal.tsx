@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
-import { Box, DialogActions, FormHelperText, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { DialogActions, FormHelperText, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { StyledBox } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -19,10 +19,6 @@ interface OrganizationEditAccountModalProps {
   handleClose: () => void;
   organizationId: string;
 }
-
-const StyledBox = styled(Box)(() => ({
-  padding: '0 10px',
-}));
 
 export const OrganizationEditAccountModal: React.FC<
   OrganizationEditAccountModalProps

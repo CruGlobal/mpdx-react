@@ -21,12 +21,9 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { ReportPageWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -127,7 +124,7 @@ const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
-        <GoalCalculatorPageWrapper>
+        <ReportPageWrapper>
           <GoalCalculatorProvider>
             <GoalCalculatorContent
               isNavListOpen={isNavListOpen}
@@ -136,7 +133,7 @@ const GoalCalculatorPage: React.FC = () => {
               setDesignationAccounts={setDesignationAccounts}
             />
           </GoalCalculatorProvider>
-        </GoalCalculatorPageWrapper>
+        </ReportPageWrapper>
       ) : (
         <Loading loading />
       )}

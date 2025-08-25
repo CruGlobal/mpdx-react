@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Email, Person, Phone, Place } from '@mui/icons-material';
 import {
-  CircularProgress,
   DialogActions,
   DialogContent,
   Link,
@@ -11,8 +10,8 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   DeleteButton,
@@ -21,10 +20,6 @@ import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import { useContactSourceQuery } from './ContactSource.generated';
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 interface CreateEmailLinkProps {
   partnerAccountNumbers: string[];

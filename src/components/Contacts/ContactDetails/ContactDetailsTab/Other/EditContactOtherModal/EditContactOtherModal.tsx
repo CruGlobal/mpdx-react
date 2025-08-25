@@ -20,6 +20,10 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
+import {
+  ContactEditContainer,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/styledComponents';
 import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import {
   CancelButton,
@@ -46,21 +50,10 @@ import {
   useUpdateContactOtherMutation,
 } from './EditContactOther.generated';
 
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
-
 const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 1),
   margin: theme.spacing(2, 0),
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const userName = (

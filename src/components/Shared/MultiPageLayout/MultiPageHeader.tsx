@@ -1,11 +1,11 @@
 import React, { FC, ReactNode } from 'react';
-import FilterList from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
+import { NavFilterIcon } from '../styledComponents/styledComponents';
 
 export enum HeaderTypeEnum {
   Report = 'reports',
@@ -44,12 +44,6 @@ const NavListButton = styled(IconButton, {
   backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
   marginRight: '8px',
   padding: '11px',
-}));
-
-const NavFilterIcon = styled(FilterList)(() => ({
-  width: 24,
-  height: 24,
-  color: theme.palette.primary.dark,
 }));
 
 const NavMenuIcon = styled(MenuIcon)(() => ({

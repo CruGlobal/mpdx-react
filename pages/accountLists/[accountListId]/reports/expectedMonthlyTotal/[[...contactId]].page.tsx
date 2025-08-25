@@ -1,7 +1,5 @@
 import Head from 'next/head';
 import React, { ReactElement, useState } from 'react';
-import { Box } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
@@ -13,16 +11,13 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { ReportPageWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const ExpectedMonthlyTotalReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 const PageContent: React.FC = () => {
   const { t } = useTranslation();
@@ -36,7 +31,7 @@ const PageContent: React.FC = () => {
   };
 
   return accountListId ? (
-    <ExpectedMonthlyTotalReportPageWrapper>
+    <ReportPageWrapper>
       <SidePanelsLayout
         isScrollBox={false}
         leftPanel={
@@ -64,7 +59,7 @@ const PageContent: React.FC = () => {
         rightOpen={isOpen}
         rightWidth="60%"
       />
-    </ExpectedMonthlyTotalReportPageWrapper>
+    </ReportPageWrapper>
   ) : (
     <>
       <ExpectedMonthlyTotalReportHeader
@@ -91,11 +86,11 @@ const ExpectedMonthlyTotalReportPage = (): ReactElement => {
           {`${appName} | ${t('Reports')} | ${t('Expect Monthly Total')}`}
         </title>
       </Head>
-      <ExpectedMonthlyTotalReportPageWrapper>
+      <ReportPageWrapper>
         <ContactPanelProvider>
           <PageContent />
         </ContactPanelProvider>
-      </ExpectedMonthlyTotalReportPageWrapper>
+      </ReportPageWrapper>
     </>
   );
 };

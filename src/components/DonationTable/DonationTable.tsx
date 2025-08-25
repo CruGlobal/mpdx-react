@@ -3,7 +3,6 @@ import React, { useMemo, useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
-  CircularProgress,
   LinearProgress,
   Link,
   Table,
@@ -34,6 +33,10 @@ import {
   DynamicEditDonationModal,
   preloadEditDonationModal,
 } from '../EditDonationModal/DynamicEditDonationModal';
+import {
+  LoadingBox,
+  LoadingIndicator,
+} from '../Shared/styledComponents/styledComponents';
 import { useContactPanel } from '../common/ContactPanelProvider/ContactPanelProvider';
 import {
   DonationTableQueryVariables,
@@ -80,21 +83,6 @@ export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   ['& .MuiLinearProgress-bar']: {
     borderRadius: theme.shape.borderRadius,
   },
-}));
-
-export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
-
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const DashUnderlineTypography = styled(Typography)(() => ({

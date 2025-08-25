@@ -2,22 +2,10 @@ import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefaultOutlined';
 import { Box, Button, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import BaseLayout from 'src/components/Layouts/Basic';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
+import { BoxWrapper } from './styledComponents';
 
 const Custom500 = (): ReactElement => {
   const { appName } = useGetAppSettings();

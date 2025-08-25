@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const PageContentWrapper = styled(Container)(({ theme }) => ({
@@ -9,4 +9,11 @@ export const PageContentWrapper = styled(Container)(({ theme }) => ({
     height: theme.spacing(10),
     display: 'block',
   },
+}));
+
+export const HeaderAndDropdown = styled(Box)(() => ({
+  fontSize: '16px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 }));

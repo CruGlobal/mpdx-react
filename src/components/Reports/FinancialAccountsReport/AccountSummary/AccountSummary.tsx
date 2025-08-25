@@ -14,7 +14,6 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { Maybe } from 'src/graphql/types.generated';
@@ -33,10 +32,7 @@ import {
   FinancialAccountCategoriesFragment,
   useFinancialAccountSummaryQuery,
 } from './financialAccountSummary.generated';
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
-}));
+import { StyledTableCell } from './styledComponents';
 
 interface Periods {
   startDateFormatted: string;

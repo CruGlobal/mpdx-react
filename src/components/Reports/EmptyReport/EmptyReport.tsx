@@ -2,12 +2,12 @@ import NextLink from 'next/link';
 import React, { useState } from 'react';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import { Box, Button, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   DynamicAddDonation,
   preloadAddDonation,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import { BoxWrapper } from 'src/components/Shared/styledComponents/styledComponents';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
@@ -16,19 +16,6 @@ interface Props {
   title: string;
   subTitle?: string;
 }
-
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  maxWidth: '97%',
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
 
 export const EmptyReport: React.FC<Props> = ({
   hasAddNewDonation = true,

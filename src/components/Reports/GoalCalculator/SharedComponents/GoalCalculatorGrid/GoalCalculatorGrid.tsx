@@ -13,15 +13,12 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
+import { StyledTypography } from '../styledComponents';
 import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   paddingTop: theme.spacing(2),
-}));
-
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
 }));
 
 const StyledControlsBox = styled(Box)({

@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Box,
   ButtonBase,
-  Checkbox,
   Grid,
   Hidden,
   ListItemIcon,
@@ -17,6 +16,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/styledComponents';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
@@ -44,12 +44,6 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
     backgroundColor: theme.palette.cruGrayLight.main,
   },
 })) as typeof ButtonBase;
-
-export const StyledCheckbox = styled(Checkbox)({
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-  },
-});
 
 interface Props {
   contact: ContactRowFragment;

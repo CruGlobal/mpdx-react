@@ -8,10 +8,10 @@ import {
   DialogContent,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
 import {
   CancelButton,
   SubmitButton,
@@ -30,10 +30,6 @@ import {
   useGetContactsForMergingQuery,
   useMassActionsMergeMutation,
 } from './MassActionsMerge.generated';
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 interface MassActionsMergeModalProps {
   ids: string[];
