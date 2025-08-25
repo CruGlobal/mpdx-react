@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
@@ -50,6 +51,8 @@ export const HouseholdExpensesHeader: React.FC<
   const accountListId = useAccountListId() ?? '';
   const {
     goalCalculationResult: { data, loading },
+    onMutationStart,
+    onMutationComplete,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const locale = useLocale();
@@ -70,6 +73,7 @@ export const HouseholdExpensesHeader: React.FC<
   const setDirectInput = async (directInput: number | null) => {
     const householdFamilyId = data?.goalCalculation.householdFamily.id;
     if (householdFamilyId) {
+      onMutationStart();
       return updateDirectInput({
         variables: {
           accountListId,
@@ -82,9 +86,12 @@ export const HouseholdExpensesHeader: React.FC<
               __typename: 'BudgetFamily',
               id: householdFamilyId,
               directInput,
+              updatedAt: DateTime.now().toISO(),
             },
           },
         },
+        onCompleted: () => onMutationComplete(),
+        onError: () => onMutationComplete(),
       });
     }
   };

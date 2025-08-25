@@ -12,6 +12,7 @@ mutation UpdateHouseholdDirectInput(
     budgetFamily {
       id
       directInput
+      updatedAt
     }
   }
 }
