@@ -12,6 +12,9 @@ const TestComponent: React.FC = () => {
     handleStepChange,
     handleContinue,
     toggleDrawer,
+    onMutationStart,
+    onMutationComplete,
+    isMutating,
   } = useGoalCalculator();
 
   return (
@@ -29,6 +32,12 @@ const TestComponent: React.FC = () => {
       </button>
       <button onClick={handleContinue}>Continue</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
+
+      <button onClick={onMutationStart}>Start mutation</button>
+      <button onClick={onMutationComplete}>Complete mutation</button>
+      <p data-testid="mutating-status">
+        {isMutating ? 'Mutating' : 'Not mutating'}
+      </p>
     </div>
   );
 };
@@ -68,5 +77,20 @@ describe('GoalCalculatorContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Toggle Drawer' }));
     expect(drawerState).toHaveAttribute('data-open', 'false');
+  });
+
+  it('should track pending mutations', () => {
+    const { getByRole, getByTestId } = render(<WrappedTestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Start mutation' }));
+    userEvent.click(getByRole('button', { name: 'Start mutation' }));
+
+    expect(getByTestId('mutating-status')).toHaveTextContent('Mutating');
+
+    userEvent.click(getByRole('button', { name: 'Complete mutation' }));
+    expect(getByTestId('mutating-status')).toHaveTextContent('Mutating');
+
+    userEvent.click(getByRole('button', { name: 'Complete mutation' }));
+    expect(getByTestId('mutating-status')).toHaveTextContent('Not mutating');
   });
 });
