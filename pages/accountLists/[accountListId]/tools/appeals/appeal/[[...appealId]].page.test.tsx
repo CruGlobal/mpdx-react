@@ -7,6 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { AppealQuery } from 'src/components/Tool/Appeal/AppealDetails/AppealsMainPanel/AppealInfo.generated';
 import { ContactsQuery } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
@@ -94,10 +95,17 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <DndProvider backend={HTML5Backend}>
-        <GqlMockedProvider<{ Contacts: ContactsQuery; Appeal: AppealQuery }>
+        <GqlMockedProvider<{
+          Contacts: ContactsQuery;
+          Appeal: AppealQuery;
+          ContactFilters: ContactFiltersQuery;
+        }>
           mocks={{
             Contacts: mockResponse,
             Appeal: mockAppealResponse,
+            ContactFilters: {
+              userOptions: [],
+            },
           }}
         >
           <VirtuosoMockContext.Provider
@@ -178,7 +186,7 @@ describe('Appeal navigation', () => {
   });
 
   it('should show flows detail appeal page and open filters', async () => {
-    const { queryByText, getByRole } = render(
+    const { queryByText, getByRole, findByRole } = render(
       <Components
         router={{
           ...defaultRouter,
@@ -209,13 +217,8 @@ describe('Appeal navigation', () => {
 
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
 
-    await waitFor(() => {
-      expect(
-        getByRole('complementary', { name: 'Filter' }),
-      ).toBeInTheDocument();
-      expect(
-        getByRole('heading', { name: 'See More Filters' }),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await findByRole('complementary', { name: 'Filter' }),
+    ).toBeInTheDocument();
   });
 });

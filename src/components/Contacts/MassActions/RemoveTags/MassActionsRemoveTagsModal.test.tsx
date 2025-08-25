@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../theme';
+import { GetContactsForTagsQuery } from '../GetContactsForTags.generated';
 import { MassActionsRemoveTagsModal } from './MassActionsRemoveTagsModal';
 
 const mockEnqueue = jest.fn();
@@ -27,10 +28,19 @@ describe('MassActionsRemoveTagsModal', () => {
   it('Clicks on tag to remove it, then saves action', async () => {
     const mutationSpy = jest.fn();
     const handleClose = jest.fn();
-    const tagName = 'Circus';
+    const tagName = 'Family';
     const { getByText } = render(
       <ThemeProvider theme={theme}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{ GetContactsForTags: GetContactsForTagsQuery }>
+          onCall={mutationSpy}
+          mocks={{
+            GetContactsForTags: {
+              contacts: {
+                nodes: [{ tagList: [tagName] }],
+              },
+            },
+          }}
+        >
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <SnackbarProvider>
               <MassActionsRemoveTagsModal
