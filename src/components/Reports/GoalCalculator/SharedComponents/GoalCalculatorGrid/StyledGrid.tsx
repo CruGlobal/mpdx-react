@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled } from '@mui/material';
-import { DataGrid, DataGridProps, GridApi } from '@mui/x-data-grid';
+import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 
 const StyledDataGrid = styled(DataGrid)({
   border: 'none',
@@ -43,28 +43,19 @@ const StyledDataGrid = styled(DataGrid)({
   },
 });
 
-interface StyledGridProps extends DataGridProps {
-  directInput: boolean;
-}
-
-export const StyledGrid = React.forwardRef<GridApi, StyledGridProps>(
-  (props, ref) => {
-    return (
-      <StyledDataGrid
-        apiRef={ref as React.MutableRefObject<GridApi | null>}
-        hideFooter
-        disableRowSelectionOnClick
-        disableColumnSorting
-        disableColumnMenu
-        hideFooterSelectedRowCount
-        rowHeight={38}
-        columnHeaderHeight={38}
-        isCellEditable={(params) => params.id !== 'total' || props.directInput}
-        isRowSelectable={(params) => params.id !== 'total' || props.directInput}
-        {...props}
-      />
-    );
-  },
-);
-
-StyledGrid.displayName = 'StyledGrid';
+export const StyledGrid: React.FC<DataGridProps> = (props) => {
+  return (
+    <StyledDataGrid
+      hideFooter
+      disableRowSelectionOnClick
+      disableColumnSorting
+      disableColumnMenu
+      hideFooterSelectedRowCount
+      rowHeight={38}
+      columnHeaderHeight={38}
+      isCellEditable={(params) => params.id !== 'total'}
+      isRowSelectable={(params) => params.id !== 'total'}
+      {...props}
+    />
+  );
+};
