@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CircularProgress, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,13 @@ export const SavingStatus: React.FC = () => {
     () => (goalCalculation ? getGoalLastUpdated(goalCalculation) : null),
     [goalCalculation],
   );
+
+  // Rerender periodically to update the saved at time
+  const [_tick, setTick] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setTick((tick) => tick + 1), 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (!lastSavedAt) {
     return null;
