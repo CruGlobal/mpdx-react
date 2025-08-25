@@ -58,24 +58,27 @@ const TestComponent: React.FC = () => (
 );
 
 describe('SummaryReport', () => {
+  beforeAll(() => {
+    beforeTestResizeObserver();
+  });
+
   it('renders MPD Goal report', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'MPD Goal' }));
-
-    const heading = await findByRole('heading', { name: 'MPD Goal' });
-    expect(heading).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'MPD Goal' }),
+    ).toBeInTheDocument();
   });
 
   it('renders Presenting Your Goal report', async () => {
-    beforeTestResizeObserver();
     const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Presenting Your Goal' }));
-
-    const heading = await findByRole('heading', {
-      name: 'Presenting Your Goal',
-    });
-    expect(heading).toBeInTheDocument();
+    expect(
+      await findByRole('heading', {
+        name: 'Presenting Your Goal',
+      }),
+    ).toBeInTheDocument();
   });
 });
