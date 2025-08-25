@@ -117,13 +117,22 @@ export const monthYearFormat = (
     year: fullYear ? 'numeric' : '2-digit',
   }).format(DateTime.local(year, month, 1).toJSDate());
 
-export const dateFormat = (date: DateTime | null, locale: string): string => {
+interface DateFormatOptions {
+  fullMonth?: boolean;
+}
+
+export const dateFormat = (
+  date: DateTime | null,
+  locale: string,
+  options?: DateFormatOptions,
+): string => {
+  const { fullMonth } = options ?? {};
   if (date === null) {
     return '';
   }
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
-    month: 'short',
+    month: fullMonth ? 'long' : 'short',
     year: 'numeric',
   }).format(date.toJSDate());
 };
