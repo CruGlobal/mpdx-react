@@ -8,14 +8,16 @@ import { SectionList } from '../SectionList';
 import { SectionPage } from '../SectionPage';
 import { getFamilySections } from './familySections';
 
-interface ExpensesStepProps {
+interface StepProps {
   instructions: React.ReactNode;
   family: BudgetFamilyFragment | null | undefined;
+  additionalComponent?: React.ReactNode;
 }
 
-export const ExpensesStep: React.FC<ExpensesStepProps> = ({
+export const Step: React.FC<StepProps> = ({
   instructions,
   family,
+  additionalComponent,
 }) => (
   <GoalCalculatorLayout
     sectionListPanel={
@@ -24,15 +26,15 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
     mainContent={
       <SectionPage>
         {instructions}
+        {additionalComponent}
         {family?.primaryBudgetCategories.map((category) => (
-          <GoalCalculatorSection
-            key={category.id}
-            title={category.label}
-            rightPanelContent={
-              getPrimaryCategoryRightPanel(category.category) ?? undefined
-            }
-          >
-            <GoalCalculatorGrid categoryName={category.label} />
+          <GoalCalculatorSection key={category.id}>
+            <GoalCalculatorGrid
+              categoryName={category.label}
+              rightPanelContent={
+                getPrimaryCategoryRightPanel(category.category) ?? undefined
+              }
+            />
           </GoalCalculatorSection>
         ))}
       </SectionPage>

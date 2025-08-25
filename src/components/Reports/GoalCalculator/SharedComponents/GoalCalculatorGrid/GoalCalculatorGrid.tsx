@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FunctionsIcon from '@mui/icons-material/Functions';
+import InfoIcon from '@mui/icons-material/Info';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
   Box,
   Button,
   ButtonGroup,
   Card,
+  IconButton,
   TextField,
   Typography,
   styled,
@@ -63,12 +65,14 @@ interface GoalCalculatorGridProps {
   }>;
   promptText?: string;
   categoryName: string;
+  rightPanelContent?: JSX.Element;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   formData,
   promptText,
   categoryName,
+  rightPanelContent,
 }) => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
@@ -119,7 +123,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         enableReinitialize
       >
         <Form>
-          <GoalCalculatorGridForm categoryName={categoryName} />
+          <GoalCalculatorGridForm
+            categoryName={categoryName}
+            rightPanelContent={rightPanelContent}
+          />
         </Form>
       </Formik>
     </>
@@ -128,15 +135,18 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
 interface GoalCalculatorGridFormProps {
   categoryName: string;
+  rightPanelContent?: JSX.Element;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   categoryName,
+  rightPanelContent,
 }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
+  const { setRightPanelContent } = useGoalCalculator();
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
@@ -233,6 +243,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
         <Typography variant="h6" component="span" sx={{ mr: 2 }}>
           {categoryName}
         </Typography>
+
         <ButtonGroup sx={{ mb: 1 }}>
           <Button
             variant={directInput ? 'contained' : 'outlined'}
@@ -251,6 +262,19 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             {t('Line Item')}
           </Button>
         </ButtonGroup>
+        <Typography variant="h6">
+          {rightPanelContent && (
+            <IconButton
+              className="print-hidden"
+              onClick={() => {
+                rightPanelContent && setRightPanelContent(rightPanelContent);
+              }}
+              aria-label={t('Show additional info')}
+            >
+              <InfoIcon />
+            </IconButton>
+          )}
+        </Typography>
       </StyledBox>
       <StyledCard>
         {directInput ? (

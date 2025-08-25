@@ -10,7 +10,7 @@ import {
   BudgetFamilyFragment,
   BudgetFamilyFragmentDoc,
 } from '../../Shared/GoalCalculation.generated';
-import { ExpensesStep } from './ExpensesStep';
+import { Step } from './Step';
 
 // Mock for performance because it is expensive to render the DataGrid
 jest.mock('../GoalCalculatorGrid/GoalCalculatorGrid', () => ({
@@ -32,11 +32,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
   family = mockBudgetFamily,
 }) => (
   <GoalCalculatorTestWrapper>
-    <ExpensesStep instructions={<h1>Instructions</h1>} family={family} />
+    <Step instructions={<h1>Instructions</h1>} family={family} />
   </GoalCalculatorTestWrapper>
 );
 
-describe('ExpensesStep', () => {
+describe('Step', () => {
   it('renders with instructions and budget categories', () => {
     const { getByRole } = render(<TestComponent />);
 
