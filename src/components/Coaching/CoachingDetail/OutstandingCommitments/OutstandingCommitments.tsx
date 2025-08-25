@@ -5,7 +5,6 @@ import {
   CardHeader,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
@@ -20,19 +19,11 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
-import { ContentContainer } from '../StyledComponents';
+import { AlignedTableCell, ContentContainer } from '../StyledComponents';
 import {
   useLoadAccountListCoachingCommitmentsQuery,
   useLoadCoachingCommitmentsQuery,
 } from './OutstandingCommitments.generated';
-
-const AlignedTableCell = styled(TableCell)({
-  border: 'none',
-  textAlign: 'right',
-  ':first-of-type': {
-    textAlign: 'unset',
-  },
-});
 
 const LoadMoreButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
