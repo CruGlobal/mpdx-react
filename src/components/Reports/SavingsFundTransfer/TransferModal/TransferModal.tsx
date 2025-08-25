@@ -32,11 +32,12 @@ import {
   TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
+  useCreateTransferMutation,
   useUpdateRecurringTransferMutation,
-} from '../RecurringTransferMutations.generated';
-import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
+} from '../TransferMutations.generated';
 import { ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
@@ -52,6 +53,7 @@ interface TransferFormValues {
   transferDate: DateTime<boolean>;
   endDate: DateTime<boolean> | null;
   amount: number;
+  note: string;
 }
 
 const getToday = (): DateTime => {
@@ -112,6 +114,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
   const [createRecurringTransfer] = useCreateRecurringTransferMutation();
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation();
+  const [createTransferMutation] = useCreateTransferMutation();
 
   const type = data.type || TransferTypeEnum.New;
 
@@ -137,7 +140,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     const convertedTransferDate = _values.transferDate.toISO() ?? '';
     const convertedEndDate = _values.endDate?.toISO() ?? '';
 
-    if (type === TransferTypeEnum.New && !data.transfer.id) {
+    if (
+      type === TransferTypeEnum.New &&
+      (schedule === ScheduleEnum.Monthly || schedule === ScheduleEnum.Annually)
+    ) {
       try {
         await createRecurringTransfer({
           variables: {
@@ -146,6 +152,31 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             destinationFundTypeName: _values.transferTo,
             recurringStart: convertedTransferDate,
             recurringEnd: convertedEndDate,
+          },
+        });
+        enqueueSnackbar(t('Transfer successful'), {
+          variant: 'success',
+        });
+        handleClose();
+      } catch (error) {
+        enqueueSnackbar(t('Transfer failed'), {
+          variant: 'error',
+        });
+      } finally {
+        setSubmitting(false);
+      }
+    } else if (
+      type === TransferTypeEnum.New &&
+      schedule === ScheduleEnum.OneTime
+    ) {
+      try {
+        await createTransferMutation({
+          variables: {
+            amount: _values.amount,
+            sourceFundTypeName: _values.transferFrom,
+            destinationFundTypeName: _values.transferTo,
+            description: _values.note,
+            //transferDate: convertedTransferDate,
           },
         });
         enqueueSnackbar(t('Transfer successful'), {
