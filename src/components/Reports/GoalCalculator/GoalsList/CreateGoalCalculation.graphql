@@ -1,0 +1,39 @@
+fragment BudgetFamily on BudgetFamily {
+  id
+  label
+  category
+  directInput
+  primaryBudgetCategories {
+    id
+    label
+    category
+    directInput
+    subBudgetCategories {
+      id
+      label
+      category
+      amount
+    }
+  }
+}
+
+mutation CreateGoalCalculation($input: GoalCalculationCreateMutationInput!) {
+  createGoalCalculation(input: $input) {
+    goalCalculation {
+      id
+      primary
+      isCurrent
+      createdAt
+      updatedAt
+      ministryFamily {
+        ...BudgetFamily
+      }
+      householdFamily {
+        ...BudgetFamily
+      }
+      specialFamily {
+        ...BudgetFamily
+      }
+    }
+  }
+}

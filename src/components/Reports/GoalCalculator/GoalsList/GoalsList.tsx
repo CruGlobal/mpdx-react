@@ -2,11 +2,14 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box, Button, List, ListItem, styled } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { GoalCard } from '../GoalCard/GoalCard';
+import { useCreateGoalCalculationMutation } from './CreateGoalCalculation.generated';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
 const StyledEmptyStateContainer = styled(Box)({
@@ -100,6 +103,8 @@ const mockGoalCards: GoalCardData[] = [
 export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const accountListId = useAccountListId();
+  const { enqueueSnackbar } = useSnackbar();
   const [goals, setGoals] = useState<GoalCardData[]>(mockGoalCards);
   const [deleteGoalDialog, setDeleteGoalDialog] = useState(false);
   const [goalToDelete, setGoalToDelete] = useState<GoalCardData | null>(null);
@@ -107,12 +112,45 @@ export const GoalsList: React.FC = () => {
   const { data, loading } = useGetUserQuery();
   const firstName = loading ? 'User' : data?.user?.firstName;
 
+  const [createGoalCalculation, { loading: isCreatingGoal }] =
+    useCreateGoalCalculationMutation({
+      onCompleted: (data) => {
+        const goalCalculationId =
+          data.createGoalCalculation?.goalCalculation?.id;
+        if (goalCalculationId) {
+          router.push(
+            `/accountLists/${router.query.accountListId}/reports/goalCalculator/${goalCalculationId}`,
+          );
+        }
+      },
+      onError: (error) => {
+        const errorMessage =
+          error?.message ||
+          error?.graphQLErrors?.[0]?.message ||
+          'Unknown error occurred';
+        enqueueSnackbar(
+          t('Failed to create goal calculation: {{error}}', {
+            error: errorMessage,
+          }),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+
   const handleCreateGoal = () => {
-    // TODO: Create a new goal with a GraphQL mutation
-    const goalCalculatorId = 1;
-    router.push(
-      `/accountLists/${router.query.accountListId}/reports/goalCalculator/${goalCalculatorId}`,
-    );
+    createGoalCalculation({
+      variables: {
+        input: {
+          accountListId: accountListId ?? '',
+          attributes: {
+            primary: true,
+            isCurrent: true,
+          },
+        },
+      },
+    });
   };
 
   const handleStarToggle = (goalId: number) => {
@@ -180,8 +218,14 @@ export const GoalsList: React.FC = () => {
           <StyledEmptyStateContent>
             <GoalsListWelcome firstName={firstName ?? t('User')} />
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Button variant="contained" onClick={handleCreateGoal}>
-                {t('Create a New Goal')}
+              <Button
+                variant="contained"
+                onClick={handleCreateGoal}
+                disabled={isCreatingGoal}
+              >
+                {isCreatingGoal && !data
+                  ? t('Creating...')
+                  : t('Create a New Goal')}
               </Button>
 
               <Button variant="outlined">{t('Learn About Goalsetting')}</Button>
@@ -192,8 +236,14 @@ export const GoalsList: React.FC = () => {
         <>
           <GoalsListWelcome firstName={firstName ?? t('User')} />
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Button variant="contained" onClick={handleCreateGoal}>
-              {t('Create a New Goal')}
+            <Button
+              variant="contained"
+              onClick={handleCreateGoal}
+              disabled={isCreatingGoal}
+            >
+              {isCreatingGoal && !data
+                ? t('Creating...')
+                : t('Create a New Goal')}
             </Button>
             <Button variant="outlined">{t('Learn About Goalsetting')}</Button>
           </Box>
