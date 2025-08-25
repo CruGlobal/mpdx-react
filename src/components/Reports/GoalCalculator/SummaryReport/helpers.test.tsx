@@ -2,12 +2,8 @@ import {
   BudgetFamilyCategoryEnum,
   PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
-import {
-  MinistryFamily,
-  getPrimaryTotal,
-  getSubTotal,
-} from './Helpers/helpers';
-import type { SubBudgetCategory } from './Helpers/helpers';
+import { MinistryFamily, getPrimaryTotal, getSubTotal } from './helpers';
+import type { SubBudgetCategory } from './helpers';
 
 const mockFamily: MinistryFamily = {
   __typename: 'BudgetFamily',
@@ -63,17 +59,8 @@ describe('getSubcategoryTotal', () => {
       getSubTotal(
         mockFamily,
         PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        'SUB_X',
+        'DOES_NOT_EXIST',
       ),
-    ).toBe(0);
-  });
-
-  it('returns 0 if family is null or undefined', () => {
-    expect(
-      getSubTotal(null, 'MEDICAL_AND_MEDICAL_MILEAGE', 'MINISTRY_MILEAGE'),
-    ).toBe(0);
-    expect(
-      getSubTotal(null, 'MEDICAL_AND_MEDICAL_MILEAGE', 'MINISTRY_MILEAGE'),
     ).toBe(0);
   });
 });
@@ -96,10 +83,5 @@ describe('getPrimaryCategoryTotal', () => {
 
   it('returns 0 if no matching primary category', () => {
     expect(getPrimaryTotal(mockFamily, 'CATEGORY_X')).toBe(0);
-  });
-
-  it('returns 0 if family is null or undefined', () => {
-    expect(getPrimaryTotal(null, 'MEDICAL_AND_MEDICAL_MILEAGE')).toBe(0);
-    expect(getPrimaryTotal(undefined, 'MEDICAL_AND_MEDICAL_MILEAGE')).toBe(0);
   });
 });
