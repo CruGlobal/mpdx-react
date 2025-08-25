@@ -1,4 +1,5 @@
 import React from 'react';
+import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
 import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { GoalCalculatorLayout } from '../../Shared/GoalCalculatorLayout';
@@ -26,11 +27,13 @@ export const Step: React.FC<StepProps> = ({
     mainContent={
       <SectionPage>
         {instructions}
-        {additionalComponent}
+        {additionalComponent && (
+          <GoalCalculatorSection>{additionalComponent}</GoalCalculatorSection>
+        )}
         {family?.primaryBudgetCategories.map((category) => (
           <GoalCalculatorSection key={category.id}>
             <GoalCalculatorGrid
-              categoryName={category.label}
+              category={category as PrimaryBudgetCategory}
               rightPanelContent={
                 getPrimaryCategoryRightPanel(category.category) ?? undefined
               }
