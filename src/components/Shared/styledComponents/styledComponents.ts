@@ -107,3 +107,7 @@ export const NavFilterIcon = styled(FilterList)(() => ({
 export const StyledDialogActions = styled(DialogActions)(() => ({
   justifyContent: 'space-between',
 }));
+
+export const StyledBox = styled(Box)(() => ({
+  padding: '0 10px',
+}));
