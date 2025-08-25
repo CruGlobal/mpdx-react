@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Button, Card, Switch, Typography, styled } from '@mui/material';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import InfoIcon from '@mui/icons-material/Info';
+import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  IconButton,
+  TextField,
+  Typography,
+  styled,
+} from '@mui/material';
 import {
   GridActionsCellItem,
   GridColDef,
@@ -10,6 +22,7 @@ import {
 import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
@@ -24,28 +37,15 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const StyledControlsBox = styled(Box)({
-  padding: 1,
-  display: 'flex',
-  gap: 0,
-  alignItems: 'center',
-});
-
 const StyledAddButton = styled(Button)({
   color: 'primary.main',
 });
 
-const StyledToggleBox = styled(Box)({
+const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
-  gap: 1,
-});
-
-const StyledDirectInputText = styled(Typography)({
-  color: 'primary.main',
-  fontSize: '0.875rem',
-  fontWeight: 500,
-});
+  justifyContent: 'flex-start',
+  marginBottom: theme.spacing(2),
+}));
 
 const StyledGridContainer = styled(Box)({
   height: 'auto',
@@ -54,52 +54,54 @@ const StyledGridContainer = styled(Box)({
 
 export interface GoalCalculatorGridFormValues {
   gridData: Array<{
-    id: number;
-    name: string;
+    id: string;
+    label: string;
     amount: number;
   }>;
+  lumpSumAmount: number;
 }
 
 interface GoalCalculatorGridProps {
-  formData?: Array<{
-    id: number;
-    name: string;
-    amount: number;
-  }>;
+  category: PrimaryBudgetCategory;
   promptText?: string;
-  categoryName: string;
+  rightPanelContent?: JSX.Element;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
-  formData,
+  category,
   promptText,
-  categoryName,
+  rightPanelContent,
 }) => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
 
   const initialValues: GoalCalculatorGridFormValues = {
-    gridData: formData || [
-      { id: 1, name: 'Freelance Work', amount: 2500 },
-      { id: 2, name: 'Investment Returns', amount: 1200 },
-      { id: 3, name: 'Rental Income', amount: 1800 },
-    ],
+    gridData: (category.subBudgetCategories || []).map((subCategory) => ({
+      id: subCategory.id,
+      label: subCategory.label,
+      amount: subCategory.amount,
+    })),
+    lumpSumAmount: 0,
   };
 
   const validationSchema = yup.object({
-    gridData: yup.array().of(
-      yup.object({
-        id: yup.number().required(),
-        name: yup
-          .string()
-          .min(2, t('Name must be at least 2 characters'))
-          .required(t('Name is required')),
-        amount: yup
-          .number()
-          .min(0, t('Amount must be positive'))
-          .required(t('Amount is required')),
-      }),
-    ),
+    gridData: yup
+      .array()
+      .of(
+        yup.object({
+          id: yup.string().required(),
+          label: yup
+            .string()
+            .min(2, t('Name must be at least 2 characters'))
+            .required(t('Name is required')),
+          amount: yup
+            .number()
+            .min(0, t('Amount must be positive'))
+            .required(t('Amount is required')),
+        }),
+      )
+      .optional(),
+    lumpSumAmount: yup.number().min(0, t('Amount must be positive')).optional(),
   });
 
   const handleSubmit = () => {
@@ -119,7 +121,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         enableReinitialize
       >
         <Form>
-          <GoalCalculatorGridForm categoryName={categoryName} />
+          <GoalCalculatorGridForm
+            category={category}
+            rightPanelContent={rightPanelContent}
+          />
         </Form>
       </Formik>
     </>
@@ -127,16 +132,20 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 };
 
 interface GoalCalculatorGridFormProps {
-  categoryName: string;
+  rightPanelContent?: JSX.Element;
+  category: PrimaryBudgetCategory;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
-  categoryName,
+  rightPanelContent,
+  category,
 }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
+  const { setRightPanelContent } = useGoalCalculator();
+  const { label: categoryName, directInput: categoryDirectInput } = category;
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
@@ -145,28 +154,29 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const dataWithTotal = [
     ...values.gridData,
-    { id: 'total', name: 'Total', amount: totalAmount },
+    { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
-  const [directInput, setDirectInput] = useState(false);
+  const [directInput, setDirectInput] = useState(!!categoryDirectInput);
 
   const addExpense = () => {
-    const newId = Math.max(...values.gridData.map((item) => item.id), 0) + 1;
+    const numericIds = values.gridData
+      .map((item) => parseInt(item.id.toString(), 10))
+      .filter((id) => !isNaN(id));
+    const newId = Math.max(...numericIds, 0) + 1;
     const newIncomeItem = {
-      id: newId,
-      name: t('New Income'),
+      id: newId.toString(),
+      label: t('New Income'),
       amount: 0,
     };
     const updatedData = [...values.gridData, newIncomeItem];
     setFieldValue('gridData', updatedData);
   };
 
-  const handleDirectInputToggle = () => {
-    setDirectInput(!directInput);
-  };
-
-  const handleDelete = (id: number) => {
-    const updatedData = values.gridData.filter((item) => item.id !== id);
+  const handleDelete = (id: string | number) => {
+    const updatedData = values.gridData.filter(
+      (item) => item.id !== id.toString(),
+    );
     setFieldValue('gridData', updatedData);
   };
 
@@ -179,7 +189,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       item.id === newRow.id
         ? {
             ...item,
-            name: newRow.name as string,
+            label: newRow.label as string,
             amount: newRow.amount as number,
           }
         : item,
@@ -190,8 +200,8 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const columns: GridColDef[] = [
     {
-      field: 'name',
-      headerName: categoryName,
+      field: 'label',
+      headerName: t('Expense Name'),
       flex: 1,
       minWidth: 200,
       editable: true,
@@ -223,7 +233,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             key="delete"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDelete(params.id as number)}
+            onClick={() => handleDelete(params.id)}
             showInMenu={false}
           />,
         ];
@@ -232,39 +242,78 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   ];
 
   return (
-    <StyledCard>
-      <StyledControlsBox>
-        <StyledAddButton
-          variant="text"
-          onClick={addExpense}
-          size="small"
-          startIcon={<AddIcon />}
-        >
-          {t('Add {{category}}', {
-            category: categoryName,
-            interpolation: { escapeValue: false },
-          })}
-        </StyledAddButton>
-        <StyledToggleBox>
-          <Switch
-            checked={directInput}
-            onChange={handleDirectInputToggle}
+    <>
+      <StyledBox>
+        <Typography variant="h6" component="span" sx={{ mr: 2 }}>
+          {categoryName}
+        </Typography>
+
+        <ButtonGroup sx={{ mb: 1 }}>
+          <Button
+            variant={directInput ? 'contained' : 'outlined'}
             size="small"
-          />
+            onClick={() => setDirectInput(true)}
+            startIcon={<FunctionsIcon />}
+          >
+            {t('Lump Sum')}
+          </Button>
+          <Button
+            size="small"
+            variant={!directInput ? 'contained' : 'outlined'}
+            onClick={() => setDirectInput(false)}
+            startIcon={<ViewHeadlineIcon />}
+          >
+            {t('Line Item')}
+          </Button>
+        </ButtonGroup>
+        <Typography variant="h6">
+          {rightPanelContent && (
+            <IconButton
+              className="print-hidden"
+              onClick={() => {
+                rightPanelContent && setRightPanelContent(rightPanelContent);
+              }}
+              aria-label={t('Show additional info')}
+            >
+              <InfoIcon />
+            </IconButton>
+          )}
+        </Typography>
+      </StyledBox>
+      <StyledCard>
+        {directInput ? (
+          <Box sx={{ p: 2 }}>
+            <TextField
+              fullWidth
+              size="small"
+              label={t('Total')}
+              type="number"
+              value={values.lumpSumAmount}
+              onChange={(e) => setFieldValue('lumpSumAmount', e.target.value)}
+              sx={{ mb: 2 }}
+            />
+          </Box>
+        ) : (
+          <>
+            <StyledAddButton
+              variant="text"
+              onClick={addExpense}
+              size="small"
+              startIcon={<AddIcon />}
+            >
+              {t('Add Line Item')}
+            </StyledAddButton>
 
-          <StyledDirectInputText variant="button">
-            {t('Direct Input')}
-          </StyledDirectInputText>
-        </StyledToggleBox>
-      </StyledControlsBox>
-
-      <StyledGridContainer>
-        <StyledGrid
-          rows={dataWithTotal}
-          columns={columns}
-          processRowUpdate={processRowUpdate}
-        />
-      </StyledGridContainer>
-    </StyledCard>
+            <StyledGridContainer>
+              <StyledGrid
+                rows={dataWithTotal}
+                columns={columns}
+                processRowUpdate={processRowUpdate}
+              />
+            </StyledGridContainer>
+          </>
+        )}
+      </StyledCard>
+    </>
   );
 };
