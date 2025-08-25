@@ -34,6 +34,28 @@ jest.mock('src/hooks/useOrganizationId', () => ({
   useOrganizationId: jest.fn(() => 'organization-id-1'),
 }));
 
+const goal = {
+  netMonthlySalary: 5000,
+  taxesPercentage: 0.25,
+  rothContributionPercentage: 0.1,
+  traditionalContributionPercentage: 0.5,
+  ministryExpenses: {
+    benefitsCharge: 100,
+    ministryMileage: 110,
+    medicalMileage: 120,
+    medicalExpenses: 130,
+    ministryPartnerDevelopment: 140,
+    communications: 150,
+    entertainment: 160,
+    staffDevelopment: 170,
+    supplies: 180,
+    technology: 190,
+    travel: 200,
+    transfers: 210,
+    other: 220,
+  },
+};
+
 const TestComponent: React.FC = () => (
   <GoalCalculatorTestWrapper>
     <GqlMockedProvider<{
@@ -83,7 +105,7 @@ const TestComponent: React.FC = () => (
         },
       }}
     >
-      <PresentingYourGoal />
+      <PresentingYourGoal goal={goal} />
     </GqlMockedProvider>
   </GoalCalculatorTestWrapper>
 );
