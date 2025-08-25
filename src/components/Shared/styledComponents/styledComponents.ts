@@ -1,5 +1,6 @@
 import {
   Box,
+  Checkbox,
   CircularProgress,
   DialogContentText,
   FormControl,
@@ -85,5 +86,11 @@ export const Header = styled(Typography)(({ theme }) => ({
   '@media (max-width: 900px)': {
     flexDirection: 'column',
     alignItems: 'center',
+  },
+}));
+
+export const StyledCheckbox = styled(Checkbox)(() => ({
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
 }));

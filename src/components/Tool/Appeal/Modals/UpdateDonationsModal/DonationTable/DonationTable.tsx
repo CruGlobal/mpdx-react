@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import {
   Box,
-  Checkbox,
   ListItemIcon,
   Table,
   TableBody,
@@ -29,6 +28,7 @@ import {
 import {
   LoadingBox,
   LoadingIndicator,
+  StyledCheckbox,
 } from 'src/components/Shared/styledComponents/styledComponents';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
@@ -62,12 +62,6 @@ const TotalsTable = styled(Table)({
     textAlign: 'right',
   },
 });
-
-const StyledCheckbox = styled(Checkbox)(() => ({
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-  },
-}));
 
 const StyledListItemIcon = styled(ListItemIcon)(() => ({
   minWidth: '40px',
