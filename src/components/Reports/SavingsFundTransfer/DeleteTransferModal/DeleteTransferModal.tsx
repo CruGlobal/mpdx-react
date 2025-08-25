@@ -7,7 +7,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { useDeleteRecurringTransferMutation } from '../RecurringTransferMutations.generated';
+import { useDeleteRecurringTransferMutation } from '../TransferMutations.generated';
 import { TransferHistory } from '../mockData';
 
 interface DeleteTransferModalProps {
