@@ -118,11 +118,9 @@ export const populateTransferHistoryRows = (
 
   const note: RenderCell = ({ row }) => {
     return (
-      <Tooltip title={t(row.note ? row.note : 'N/A') as string}>
-        <Typography variant="body2" noWrap>
-          {row.note}
-        </Typography>
-      </Tooltip>
+      <Typography variant="body2" noWrap>
+        {row.note}
+      </Typography>
     );
   };
 
