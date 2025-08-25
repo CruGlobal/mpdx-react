@@ -47,7 +47,7 @@ export const getMonthOrWeekDateRange = (
           DateTime.fromISO(endDate).toJSDate(),
         )
       : startDate
-      ? dateFormatMonthOnly(DateTime.fromISO(startDate), locale)
-      : null)
+        ? dateFormatMonthOnly(DateTime.fromISO(startDate), locale)
+        : null)
   );
 };

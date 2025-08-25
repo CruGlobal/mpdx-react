@@ -442,8 +442,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         userProfile
           ? 'Edit Details'
           : person
-          ? t('Edit Person')
-          : t('Create Person')
+            ? t('Edit Person')
+            : t('Create Person')
       }
       size="md"
       handleClose={handleClose}

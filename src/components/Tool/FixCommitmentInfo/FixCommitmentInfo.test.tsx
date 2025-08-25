@@ -138,12 +138,12 @@ describe('FixCommitmentInfo', () => {
 
     userEvent.click((await findAllByTestId('confirmButton'))[0]);
 
-    expect(
+    (expect(
       await findByText(
         'Are you sure you wish to update the commitment info for Tester 1?',
       ),
     ).toBeInTheDocument(),
-      userEvent.click(getByText('Yes'));
+      userEvent.click(getByText('Yes')));
 
     await waitFor(() =>
       expect(queryByText('Tester 1')).not.toBeInTheDocument(),

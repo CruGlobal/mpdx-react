@@ -37,14 +37,14 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
     fund.type === StaffSavingFundEnum.StaffAccount
       ? Wallet
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-      ? Groups
-      : Savings;
+        ? Groups
+        : Savings;
   const iconBgColor =
     fund.type === StaffSavingFundEnum.StaffAccount
       ? staffAccountColor
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-      ? staffConferenceSavingsColor
-      : staffSavingsColor;
+        ? staffConferenceSavingsColor
+        : staffSavingsColor;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({

@@ -65,8 +65,8 @@ export const useMassSelection = (idsList: string[]): UseMassSelectionResult => {
       ids.length === 0
         ? ListHeaderCheckBoxState.Unchecked
         : ids.length === totalCount
-        ? ListHeaderCheckBoxState.Checked
-        : ListHeaderCheckBoxState.Partial,
+          ? ListHeaderCheckBoxState.Checked
+          : ListHeaderCheckBoxState.Partial,
     isRowChecked,
     deselectAll,
     toggleSelectAll,
