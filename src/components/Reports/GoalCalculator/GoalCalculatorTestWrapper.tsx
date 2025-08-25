@@ -10,6 +10,7 @@ import { GoalCalculationQuery } from './Shared/GoalCalculation.generated';
 import { GoalCalculatorProvider } from './Shared/GoalCalculatorContext';
 
 interface GoalCalculatorTestWrapper {
+  householdDirectInput?: number | null;
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
 }
@@ -28,12 +29,16 @@ export const goalCalculationMock = {
         },
       ],
     },
+    householdFamily: {
+      id: 'household-family',
+    },
   },
 } satisfies DeepPartial<GoalCalculationQuery>;
 
 export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
-  children,
+  householdDirectInput = null,
   onCall,
+  children,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -47,7 +52,16 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
       <SnackbarProvider>
         <GqlMockedProvider<{ GoalCalculation: GoalCalculationQuery }>
           mocks={{
-            GoalCalculation: goalCalculationMock,
+            GoalCalculation: {
+              ...goalCalculationMock,
+              goalCalculation: {
+                ...goalCalculationMock.goalCalculation,
+                householdFamily: {
+                  ...goalCalculationMock.goalCalculation.householdFamily,
+                  directInput: householdDirectInput,
+                },
+              },
+            },
           }}
           onCall={onCall}
         >
