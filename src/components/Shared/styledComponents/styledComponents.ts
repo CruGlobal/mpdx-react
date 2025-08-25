@@ -3,6 +3,7 @@ import {
   Box,
   Checkbox,
   CircularProgress,
+  DialogActions,
   DialogContentText,
   FormControl,
   FormLabel,
@@ -101,4 +102,8 @@ export const NavFilterIcon = styled(FilterList)(() => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
+}));
+
+export const StyledDialogActions = styled(DialogActions)(() => ({
+  justifyContent: 'space-between',
 }));
