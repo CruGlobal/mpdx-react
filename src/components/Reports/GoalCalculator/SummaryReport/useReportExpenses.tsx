@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
-import { getPrimaryTotal, getSubTotal } from './Helpers/helpers';
 import { MinistryExpenses } from './MpdGoal/MpdGoalTable';
+import { getPrimaryTotal, getSubTotal } from './helpers';
 
 export const useReportExpenses = (
   accountListId: string,
