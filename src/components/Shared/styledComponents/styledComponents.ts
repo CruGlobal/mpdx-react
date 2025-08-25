@@ -1,3 +1,4 @@
+import FilterList from '@mui/icons-material/FilterList';
 import {
   Box,
   Checkbox,
@@ -9,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import theme from 'src/theme';
 
 export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
@@ -93,4 +95,10 @@ export const StyledCheckbox = styled(Checkbox)(() => ({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
+}));
+
+export const NavFilterIcon = styled(FilterList)(() => ({
+  width: 24,
+  height: 24,
+  color: theme.palette.primary.dark,
 }));
