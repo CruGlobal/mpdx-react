@@ -198,6 +198,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       {openDeleteModal && (
         <DynamicDeleteTransferModal
           handleClose={() => setOpenDeleteModal(null)}
+          transfer={openDeleteModal}
         />
       )}
     </>
