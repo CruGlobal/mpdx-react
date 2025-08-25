@@ -40,7 +40,7 @@ describe('GoalCalculatorGrid', () => {
 
     userEvent.click(
       getByRole('button', {
-        name: /add special income name/i,
+        name: /Add Line Item/i,
       }),
     );
 
@@ -111,7 +111,7 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('prevents editing the total row', async () => {
-    const { getByText, queryAllByLabelText } = render(
+    const { getByText, getAllByLabelText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
       </GoalCalculatorTestWrapper>,
@@ -123,7 +123,7 @@ describe('GoalCalculatorGrid', () => {
     );
     expect(editableCells).toHaveLength(0);
     userEvent.hover(totalRow!);
-    const deleteButtons = queryAllByLabelText('Delete');
+    const deleteButtons = getAllByLabelText('Delete');
     expect(deleteButtons).toHaveLength(3);
   });
 
@@ -137,7 +137,7 @@ describe('GoalCalculatorGrid', () => {
     expect(getByText('$5,500')).toBeInTheDocument();
     userEvent.click(
       getByRole('button', {
-        name: /add special income name/i,
+        name: /Add Line Item/i,
       }),
     );
     await findByText('New Income');
@@ -165,19 +165,77 @@ describe('GoalCalculatorGrid', () => {
     expect(await findByText('$1,800')).toBeInTheDocument();
   });
 
-  it('toggles direct input switch', async () => {
-    const { getByRole } = render(
+  it('toggles between Lump Sum and Line Item buttons', async () => {
+    const {
+      getByText,
+      findByLabelText,
+      queryByRole,
+      findByRole,
+      queryByLabelText,
+      getByRole,
+    } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
       </GoalCalculatorTestWrapper>,
     );
 
-    const directInputSwitch = getByRole('checkbox');
-    expect(directInputSwitch).not.toBeChecked();
-    userEvent.click(directInputSwitch);
-    expect(directInputSwitch).toBeChecked();
-    userEvent.click(directInputSwitch);
-    expect(directInputSwitch).not.toBeChecked();
+    const lumpSumButton = getByText('Lump Sum');
+    const lineItemButton = getByText('Line Item');
+    expect(queryByLabelText('Total')).not.toBeInTheDocument();
+    expect(getByRole('grid')).toBeInTheDocument();
+    userEvent.click(lumpSumButton);
+    expect(await findByLabelText('Total')).toBeInTheDocument();
+    expect(queryByRole('grid')).not.toBeInTheDocument();
+    userEvent.click(lineItemButton);
+    expect(await findByRole('grid')).toBeInTheDocument();
+    expect(queryByLabelText('Total')).not.toBeInTheDocument();
+  });
+
+  it('allows entering a value in the lump sum text field', async () => {
+    const { getByText, findByLabelText } = render(
+      <GoalCalculatorTestWrapper>
+        <GoalCalculatorGrid {...defaultProps} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const lumpSumButton = getByText('Lump Sum');
+    userEvent.click(lumpSumButton);
+    const textField = await findByLabelText('Total');
+    expect(textField).toBeInTheDocument();
+    userEvent.clear(textField);
+    userEvent.type(textField, '1500');
+    expect(textField).toHaveValue(1500);
+  });
+
+  it('preserves lump sum value when switching between modes', async () => {
+    const { getByText, findByLabelText } = render(
+      <GoalCalculatorTestWrapper>
+        <GoalCalculatorGrid {...defaultProps} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const lumpSumButton = getByText('Lump Sum');
+    const lineItemButton = getByText('Line Item');
+    userEvent.click(lumpSumButton);
+    const textField = await findByLabelText('Total');
+    userEvent.clear(textField);
+    userEvent.type(textField, '2500');
+    userEvent.click(lineItemButton);
+    userEvent.click(lumpSumButton);
+    expect(textField).toHaveValue(2500);
+  });
+
+  it('shows Add Line Item button only in Line Item mode', async () => {
+    const { getByText, findByText, queryByText } = render(
+      <GoalCalculatorTestWrapper>
+        <GoalCalculatorGrid {...defaultProps} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const lumpSumButton = getByText('Lump Sum');
+    expect(await findByText(/Add Line Item/i)).toBeInTheDocument();
+    userEvent.click(lumpSumButton);
+    expect(queryByText(/Add Line Item/i)).not.toBeInTheDocument();
   });
 
   it('renders without prompt text when not provided', async () => {
