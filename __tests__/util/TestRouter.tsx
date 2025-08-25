@@ -22,7 +22,7 @@ const TestRouter = ({ children, router = {} }: Props): ReactElement => {
     prefetch: async (): Promise<void> => undefined,
     beforePopState: (): void => undefined,
     isFallback: false,
-    isReady: false,
+    isReady: true,
     events: {
       on: (): void => undefined,
       off: (): void => undefined,
