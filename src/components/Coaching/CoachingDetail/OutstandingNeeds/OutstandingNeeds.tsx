@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Button,
   CardHeader,
   Table,
   TableBody,
@@ -9,7 +8,6 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
@@ -18,15 +16,16 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
-import { AlignedTableCell, ContentContainer } from '../StyledComponents';
+import {
+  AlignedTableCell,
+  ContentContainer,
+  LoadMoreButton,
+} from '../StyledComponents';
 import {
   useLoadAccountListCoachingNeedsQuery,
   useLoadCoachingNeedsQuery,
 } from './OutstandingNeeds.generated';
 
-const LoadMoreButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
-}));
 interface OutstandingNeedsProps {
   accountListId: string;
   // Whether the account list belongs to the user or someone that the user coaches

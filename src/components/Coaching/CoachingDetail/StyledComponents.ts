@@ -1,4 +1,4 @@
-import { CardContent, TableCell, TableRow } from '@mui/material';
+import { Button, CardContent, TableCell, TableRow } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const HeaderRow = styled(TableRow)({
@@ -25,4 +25,8 @@ export const AlignedTableCell = styled(TableCell)({
 export const ContentContainer = styled(CardContent)(({ theme }) => ({
   padding: theme.spacing(2),
   overflowX: 'scroll',
+}));
+
+export const LoadMoreButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
 }));
