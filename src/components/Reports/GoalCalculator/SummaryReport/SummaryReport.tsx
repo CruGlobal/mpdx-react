@@ -65,7 +65,7 @@ export const SummaryReport: React.FC = () => {
         rightPanelContent={<PresentingYourGoalStepRightPanel />}
         printable
       >
-        <PresentingYourGoal />
+        <PresentingYourGoal goal={goal} />
       </GoalCalculatorSection>
     );
   }

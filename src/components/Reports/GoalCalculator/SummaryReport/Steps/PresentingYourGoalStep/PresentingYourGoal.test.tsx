@@ -11,6 +11,7 @@ import { GoalCalculatorProvider } from '../../../Shared/GoalCalculatorContext';
 import { GetAccountListQuery } from './GetAccountList.generated';
 import { GetOrganizationsQuery } from './GetOrganization.generated';
 import { PresentingYourGoal } from './PresentingYourGoal';
+
 /*
  * Mocking recharts ResponsiveContainer to avoid ResponsiveContainer
  * width and height issue
@@ -35,6 +36,28 @@ jest.mock('src/hooks/useOrganizationId', () => ({
 jest.mock('src/hooks/useAccountListId', () => ({
   useAccountListId: jest.fn(() => 'account-list-id-1'),
 }));
+
+const goal = {
+  netMonthlySalary: 5000,
+  taxesPercentage: 0.25,
+  rothContributionPercentage: 0.1,
+  traditionalContributionPercentage: 0.5,
+  ministryExpenses: {
+    benefitsCharge: 100,
+    ministryMileage: 110,
+    medicalMileage: 120,
+    medicalExpenses: 130,
+    ministryPartnerDevelopment: 140,
+    communications: 150,
+    entertainment: 160,
+    staffDevelopment: 170,
+    supplies: 180,
+    technology: 190,
+    travel: 200,
+    transfers: 210,
+    other: 220,
+  },
+};
 
 const TestComponent: React.FC = () => (
   <SnackbarProvider>
@@ -85,7 +108,7 @@ const TestComponent: React.FC = () => (
         }}
       >
         <GoalCalculatorProvider>
-          <PresentingYourGoal />
+          <PresentingYourGoal goal={goal} />
         </GoalCalculatorProvider>
       </GqlMockedProvider>
     </ThemeProvider>
