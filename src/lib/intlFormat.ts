@@ -256,6 +256,33 @@ export const validateAndFormatInvalidDate = (
   };
 };
 
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+const UNITS = [
+  { threshold: 365 * DAY_MS, name: 'year' as const },
+  { threshold: 30 * DAY_MS, name: 'month' as const },
+  { threshold: DAY_MS, name: 'day' as const },
+  { threshold: HOUR_MS, name: 'hour' as const },
+  { threshold: MINUTE_MS, name: 'minute' as const },
+  { threshold: SECOND_MS, name: 'second' as const },
+];
+
+export const formatRelativeTime = (
+  milliseconds: number,
+  locale: string,
+): string => {
+  const unit =
+    UNITS.find((unit) => Math.abs(milliseconds) >= unit.threshold) ??
+    UNITS[UNITS.length - 1];
+  const count = Math.round(milliseconds / unit.threshold);
+
+  return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(
+    count,
+    unit.name,
+  );
+};
 const intlFormat = {
   numberFormat,
   percentageFormat,
