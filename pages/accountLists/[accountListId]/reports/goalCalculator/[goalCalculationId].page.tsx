@@ -8,6 +8,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
+import { SavingStatus } from 'src/components/Reports/GoalCalculator/SavingStatus/SavingStatus';
 import {
   GoalCalculatorProvider,
   useGoalCalculator,
@@ -96,6 +97,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             title={t('Goal Calculator')}
+            rightExtra={<SavingStatus />}
             headerType={HeaderTypeEnum.Report}
           />
           <GoalCalculator />
