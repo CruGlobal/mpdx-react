@@ -1,0 +1,43 @@
+mutation CreateRecurringTransfer(
+  $amount: Float!
+  $sourceFundTypeName: String!
+  $destinationFundTypeName: String!
+  $recurringStart: ISO8601DateTime!
+  $recurringEnd: ISO8601DateTime!
+) {
+  createRecurringTransfer(
+    input: {
+      amount: $amount
+      sourceFundTypeName: $sourceFundTypeName
+      destinationFundTypeName: $destinationFundTypeName
+      recurringStart: $recurringStart
+      recurringEnd: $recurringEnd
+    }
+  ) {
+    id
+  }
+}
+
+mutation DeleteRecurringTransfer($id: ID!) {
+  deleteRecurringTransfer(input: { id: $id }) {
+    id
+  }
+}
+
+mutation UpdateRecurringTransfer(
+  $id: ID!
+  $amount: Float!
+  $recurringStart: ISO8601DateTime!
+  $recurringEnd: ISO8601DateTime!
+) {
+  updateRecurringTransfer(
+    input: {
+      id: $id
+      amount: $amount
+      recurringStart: $recurringStart
+      recurringEnd: $recurringEnd
+    }
+  ) {
+    id
+  }
+}
