@@ -1,17 +1,40 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  PrimaryBudgetCategory,
+  PrimaryBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
 
 const defaultProps = {
-  categoryName: 'Special Income Name',
   promptText: 'Add your special income sources',
-  formData: [
-    { id: 1, name: 'Freelance Work', amount: 2500 },
-    { id: 2, name: 'Investment Returns', amount: 1200 },
-    { id: 3, name: 'Rental Income', amount: 1800 },
-  ],
+  category: {
+    id: 'category-1',
+    label: 'Special Income',
+    category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+    directInput: 0,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    subBudgetCategories: [
+      {
+        id: '1',
+        label: 'Freelance Work',
+        amount: 2500,
+      },
+      {
+        id: '2',
+        label: 'Investment Returns',
+        amount: 1200,
+      },
+      {
+        id: '3',
+        label: 'Rental Income',
+        amount: 1800,
+      },
+    ],
+  } as unknown as PrimaryBudgetCategory,
 };
 
 describe('GoalCalculatorGrid', () => {
@@ -240,8 +263,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('renders without prompt text when not provided', async () => {
     const propsWithoutPrompt = {
-      categoryName: 'Special Income Name',
-      formData: defaultProps.formData,
+      category: defaultProps.category,
     };
 
     const { queryByText, findByText } = render(
@@ -256,9 +278,12 @@ describe('GoalCalculatorGrid', () => {
     expect(await findByText('Freelance Work')).toBeInTheDocument();
   });
 
-  it('uses default data when no formData is provided', () => {
+  it('uses default data when no subBudgetCategories are provided', () => {
     const propsWithoutData = {
-      categoryName: 'Special Income Name',
+      category: {
+        ...defaultProps.category,
+        subBudgetCategories: [],
+      },
     };
 
     const { getByText } = render(
@@ -267,8 +292,6 @@ describe('GoalCalculatorGrid', () => {
       </GoalCalculatorTestWrapper>
     );
 
-    expect(getByText('Freelance Work')).toBeInTheDocument();
-    expect(getByText('Investment Returns')).toBeInTheDocument();
-    expect(getByText('Rental Income')).toBeInTheDocument();
+    expect(getByText('Special Income')).toBeInTheDocument();
   });
 });

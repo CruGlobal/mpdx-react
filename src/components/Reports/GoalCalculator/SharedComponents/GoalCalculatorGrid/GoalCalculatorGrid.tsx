@@ -22,6 +22,7 @@ import {
 import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
@@ -50,39 +51,33 @@ const StyledGridContainer = styled(Box)({
 
 export interface GoalCalculatorGridFormValues {
   gridData: Array<{
-    id: number;
-    name: string;
+    id: string;
+    label: string;
     amount: number;
   }>;
   lumpSumAmount: number;
 }
 
 interface GoalCalculatorGridProps {
-  formData?: Array<{
-    id: number;
-    name: string;
-    amount: number;
-  }>;
+  category: PrimaryBudgetCategory;
   promptText?: string;
-  categoryName: string;
   rightPanelContent?: JSX.Element;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
-  formData,
+  category,
   promptText,
-  categoryName,
   rightPanelContent,
 }) => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
 
   const initialValues: GoalCalculatorGridFormValues = {
-    gridData: formData || [
-      { id: 1, name: 'Freelance Work', amount: 2500 },
-      { id: 2, name: 'Investment Returns', amount: 1200 },
-      { id: 3, name: 'Rental Income', amount: 1800 },
-    ],
+    gridData: (category.subBudgetCategories || []).map((subCategory) => ({
+      id: subCategory.id,
+      label: subCategory.label,
+      amount: subCategory.amount,
+    })),
     lumpSumAmount: 0,
   };
 
@@ -91,8 +86,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       .array()
       .of(
         yup.object({
-          id: yup.number().required(),
-          name: yup
+          id: yup.string().required(),
+          label: yup
             .string()
             .min(2, t('Name must be at least 2 characters'))
             .required(t('Name is required')),
@@ -124,7 +119,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       >
         <Form>
           <GoalCalculatorGridForm
-            categoryName={categoryName}
+            category={category}
             rightPanelContent={rightPanelContent}
           />
         </Form>
@@ -134,19 +129,20 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 };
 
 interface GoalCalculatorGridFormProps {
-  categoryName: string;
   rightPanelContent?: JSX.Element;
+  category: PrimaryBudgetCategory;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
-  categoryName,
   rightPanelContent,
+  category,
 }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
   const { setRightPanelContent } = useGoalCalculator();
+  const { label: categoryName, directInput: categoryDirectInput } = category;
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
@@ -155,24 +151,29 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const dataWithTotal = [
     ...values.gridData,
-    { id: 'total', name: 'Total', amount: totalAmount },
+    { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
-  const [directInput, setDirectInput] = useState(false);
+  const [directInput, setDirectInput] = useState(!!categoryDirectInput);
 
   const addExpense = () => {
-    const newId = Math.max(...values.gridData.map((item) => item.id), 0) + 1;
+    const numericIds = values.gridData
+      .map((item) => parseInt(item.id.toString(), 10))
+      .filter((id) => !isNaN(id));
+    const newId = Math.max(...numericIds, 0) + 1;
     const newIncomeItem = {
-      id: newId,
-      name: t('New Income'),
+      id: newId.toString(),
+      label: t('New Income'),
       amount: 0,
     };
     const updatedData = [...values.gridData, newIncomeItem];
     setFieldValue('gridData', updatedData);
   };
 
-  const handleDelete = (id: number) => {
-    const updatedData = values.gridData.filter((item) => item.id !== id);
+  const handleDelete = (id: string | number) => {
+    const updatedData = values.gridData.filter(
+      (item) => item.id !== id.toString(),
+    );
     setFieldValue('gridData', updatedData);
   };
 
@@ -185,7 +186,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       item.id === newRow.id
         ? {
             ...item,
-            name: newRow.name as string,
+            label: newRow.label as string,
             amount: newRow.amount as number,
           }
         : item
@@ -196,7 +197,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const columns: GridColDef[] = [
     {
-      field: 'name',
+      field: 'label',
       headerName: t('Expense Name'),
       flex: 1,
       minWidth: 200,
@@ -229,7 +230,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             key="delete"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDelete(params.id as number)}
+            onClick={() => handleDelete(params.id)}
             showInMenu={false}
           />,
         ];
