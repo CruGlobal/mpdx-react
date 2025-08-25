@@ -32,7 +32,10 @@ import {
   TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
-import { useCreateRecurringTransferMutation } from '../RecurringTransferMutations.generated';
+import {
+  useCreateRecurringTransferMutation,
+  useUpdateRecurringTransferMutation,
+} from '../RecurringTransferMutations.generated';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
@@ -108,6 +111,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const [createRecurringTransfer] = useCreateRecurringTransferMutation();
+  const [updateRecurringTransfer] = useUpdateRecurringTransferMutation();
 
   const type = data.type || TransferTypeEnum.New;
 
@@ -129,28 +133,53 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
   const handleSubmit = async (_values: TransferFormValues) => {
     setSubmitting(true);
-    try {
-      const convertedTransferDate = _values.transferDate.toISO() ?? '';
-      const convertedEndDate = _values.endDate?.toISO() ?? '';
-      await createRecurringTransfer({
-        variables: {
-          amount: _values.amount,
-          sourceFundTypeName: _values.transferFrom,
-          destinationFundTypeName: _values.transferTo,
-          recurringStart: convertedTransferDate,
-          recurringEnd: convertedEndDate,
-        },
-      });
-      enqueueSnackbar(t('Transfer successful'), {
-        variant: 'success',
-      });
-      handleClose();
-    } catch (error) {
-      enqueueSnackbar(t('Transfer failed'), {
-        variant: 'error',
-      });
-    } finally {
-      setSubmitting(false);
+
+    const convertedTransferDate = _values.transferDate.toISO() ?? '';
+    const convertedEndDate = _values.endDate?.toISO() ?? '';
+
+    if (type === TransferTypeEnum.New && !data.transfer.id) {
+      try {
+        await createRecurringTransfer({
+          variables: {
+            amount: _values.amount,
+            sourceFundTypeName: _values.transferFrom,
+            destinationFundTypeName: _values.transferTo,
+            recurringStart: convertedTransferDate,
+            recurringEnd: convertedEndDate,
+          },
+        });
+        enqueueSnackbar(t('Transfer successful'), {
+          variant: 'success',
+        });
+        handleClose();
+      } catch (error) {
+        enqueueSnackbar(t('Transfer failed'), {
+          variant: 'error',
+        });
+      } finally {
+        setSubmitting(false);
+      }
+    } else if (type === TransferTypeEnum.Edit) {
+      try {
+        await updateRecurringTransfer({
+          variables: {
+            id: data.transfer.id ?? '',
+            amount: _values.amount,
+            recurringStart: convertedTransferDate,
+            recurringEnd: convertedEndDate,
+          },
+        });
+        enqueueSnackbar(t('Update transfer successful'), {
+          variant: 'success',
+        });
+        handleClose();
+      } catch (error) {
+        enqueueSnackbar(t('Update transfer failed'), {
+          variant: 'error',
+        });
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
