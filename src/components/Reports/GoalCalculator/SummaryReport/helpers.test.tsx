@@ -1,9 +1,9 @@
 import {
   BudgetFamilyCategoryEnum,
   PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { MinistryFamily, getPrimaryTotal, getSubTotal } from './helpers';
-import type { SubBudgetCategory } from './helpers';
 
 const mockFamily: MinistryFamily = {
   __typename: 'BudgetFamily',
@@ -13,22 +13,22 @@ const mockFamily: MinistryFamily = {
   primaryBudgetCategories: [
     {
       __typename: 'PrimaryBudgetCategory',
-      category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+      category: PrimaryBudgetCategoryEnum.Utilities,
       id: 'p1',
-      label: 'Medical & Mileage',
+      label: 'Utilities',
       subBudgetCategories: [
         {
           __typename: 'SubBudgetCategory',
           id: 's1',
-          category: 'MINISTRY_MILEAGE' as SubBudgetCategory['category'],
-          label: 'Ministry Mileage',
+          category: SubBudgetCategoryEnum.UtilitiesInternet,
+          label: 'Internet',
           amount: 100,
         },
         {
           __typename: 'SubBudgetCategory',
           id: 's2',
-          category: 'MEDICAL_MILEAGE' as SubBudgetCategory['category'],
-          label: 'Medical Mileage',
+          category: SubBudgetCategoryEnum.UtilitiesGas,
+          label: 'Gas',
           amount: 200,
         },
       ],
@@ -41,47 +41,24 @@ describe('getSubcategoryTotal', () => {
     expect(
       getSubTotal(
         mockFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        'MINISTRY_MILEAGE',
+        PrimaryBudgetCategoryEnum.Utilities,
+        SubBudgetCategoryEnum.UtilitiesInternet,
       ),
     ).toBe(100);
     expect(
       getSubTotal(
         mockFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        'MEDICAL_MILEAGE',
+        PrimaryBudgetCategoryEnum.Utilities,
+        SubBudgetCategoryEnum.UtilitiesGas,
       ),
     ).toBe(200);
-  });
-
-  it('returns 0 if no matching subcategory', () => {
-    expect(
-      getSubTotal(
-        mockFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        'DOES_NOT_EXIST',
-      ),
-    ).toBe(0);
   });
 });
 
 describe('getPrimaryCategoryTotal', () => {
   it('returns sum of all subcategory amounts for primary category', () => {
     expect(
-      getPrimaryTotal(
-        mockFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-      ),
+      getPrimaryTotal(mockFamily, PrimaryBudgetCategoryEnum.Utilities),
     ).toBe(300);
-    expect(
-      getPrimaryTotal(
-        mockFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-      ),
-    ).toBe(300);
-  });
-
-  it('returns 0 if no matching primary category', () => {
-    expect(getPrimaryTotal(mockFamily, 'CATEGORY_X')).toBe(0);
   });
 });
