@@ -32,6 +32,7 @@ import {
   TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
+import { useCreateRecurringTransferMutation } from '../RecurringTransferMutations.generated';
 import { Fund, ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
@@ -105,6 +106,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
 
+  const [createRecurringTransfer] = useCreateRecurringTransferMutation();
+
   const type = data.type || TransferTypeEnum.New;
 
   const {
@@ -126,10 +129,17 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const handleSubmit = async (_values: TransferFormValues) => {
     setSubmitting(true);
     try {
-      // Handle the submit logic here
-      // TODO: Replace with actual API call
-      // console.log('Form values:', values);
-
+      const convertedTransferDate = _values.transferDate.toISO() ?? '';
+      const convertedEndDate = _values.endDate?.toISO() ?? '';
+      await createRecurringTransfer({
+        variables: {
+          amount: _values.amount,
+          sourceFundTypeName: _values.transferFrom,
+          destinationFundTypeName: _values.transferTo,
+          recurringStart: convertedTransferDate,
+          recurringEnd: convertedEndDate,
+        },
+      });
       enqueueSnackbar(t('Transfer successful'), {
         variant: 'success',
       });
