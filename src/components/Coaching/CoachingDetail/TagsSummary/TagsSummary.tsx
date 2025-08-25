@@ -17,12 +17,8 @@ import { ReportsTagHistoriesAssociationEnum } from 'src/graphql/types.generated'
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatMonthOnly, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { CoachingPeriodEnum } from '../CoachingDetail';
+import { ContentContainer } from '../StyledComponents';
 import { useTagsSummaryQuery } from './TagsSummary.generated';
-
-const ContentContainer = styled('div')(({ theme }) => ({
-  padding: theme.spacing(2),
-  overflowX: 'scroll',
-}));
 
 const StyledTable = styled(Table)(({ theme }) => ({
   'tr:last-child td': {
