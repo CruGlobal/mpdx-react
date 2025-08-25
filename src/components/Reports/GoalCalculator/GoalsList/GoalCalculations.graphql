@@ -35,8 +35,6 @@ mutation UpdateGoalCalculation(
 
 mutation DeleteGoalCalculation($accountListId: ID!, $id: ID!) {
   deleteGoalCalculation(input: { accountListId: $accountListId, id: $id }) {
-    goalCalculation {
-      id
-    }
+    id
   }
 }
