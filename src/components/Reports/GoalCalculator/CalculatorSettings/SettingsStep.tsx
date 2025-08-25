@@ -1,33 +1,38 @@
 import React from 'react';
+import { Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
-import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
-import { GoalCalculatorGrid } from '../SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
-import { SectionPage } from '../SharedComponents/SectionPage';
-import { SettingsSectionList } from './SettingsSectionList';
+import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { Step } from '../SharedComponents/Step/Step';
+import { InformationCategory } from './Categories/InformationCategory/InformationCategory';
 
-export const SettingsStep: React.FC = () => {
+const InstructionsWrapper = styled('div')(({ theme }) => ({
+  '.MuiTypography-root': {
+    marginBottom: theme.spacing(1),
+  },
+}));
+
+const Instructions: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <GoalCalculatorLayout
-      sectionListPanel={<SettingsSectionList />}
-      mainContent={
-        <SectionPage>
-          <GoalCalculatorSection
-            title={t('Information')}
-            subtitle={t('Take a moment to verify your information.')}
-          >
-            <GoalCalculatorGrid categoryName={t('Information')} />
-          </GoalCalculatorSection>
-          <GoalCalculatorSection title={t('Special Income')}>
-            <GoalCalculatorGrid categoryName={t('Special Income')} />
-          </GoalCalculatorSection>
-          <GoalCalculatorSection title={t('One-time Goals')}>
-            <GoalCalculatorGrid categoryName={t('One-time Goals')} />
-          </GoalCalculatorSection>
-        </SectionPage>
-      }
+    <InstructionsWrapper>
+      <Typography variant="h6">{t('Information')}</Typography>
+      <Typography variant="body2">
+        {t('Take a moment to verify your information.')}
+      </Typography>
+    </InstructionsWrapper>
+  );
+};
+
+export const SettingsStep: React.FC = () => {
+  const { goalCalculationResult } = useGoalCalculator();
+  const { data } = goalCalculationResult;
+
+  return (
+    <Step
+      instructions={<Instructions />}
+      additionalComponent={<InformationCategory />}
+      family={data?.goalCalculation.specialFamily}
     />
   );
 };
