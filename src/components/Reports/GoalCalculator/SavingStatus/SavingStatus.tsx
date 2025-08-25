@@ -7,13 +7,10 @@ import { formatRelativeTime } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { getGoalLastUpdated } from './helpers';
 
-interface SavingStatusProps {}
-
-export const SavingStatus: React.FC<SavingStatusProps> = ({}) => {
+export const SavingStatus: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { goalCalculationResult } = useGoalCalculator();
-  const saving = false;
+  const { goalCalculationResult, isMutating } = useGoalCalculator();
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
   const lastSavedAt = useMemo(
@@ -25,7 +22,7 @@ export const SavingStatus: React.FC<SavingStatusProps> = ({}) => {
     return null;
   }
 
-  if (saving) {
+  if (isMutating) {
     return (
       <Typography variant="body1" color="textSecondary">
         {t('Saving')}
