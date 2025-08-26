@@ -48,3 +48,15 @@ export const getPrimaryTotal = (
     0,
   );
 };
+
+export const getMinistryExpensesTotal = (family: MinistryFamily): number => {
+  return family.primaryBudgetCategories.reduce(
+    (sum: number, primary) =>
+      sum +
+      primary.subBudgetCategories.reduce(
+        (subSum: number, sub) => subSum + sub.amount,
+        0,
+      ),
+    0,
+  );
+};
