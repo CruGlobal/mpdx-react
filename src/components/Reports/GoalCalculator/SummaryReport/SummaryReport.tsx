@@ -23,7 +23,7 @@ export const SummaryReport: React.FC = () => {
   const accountListId = useAccountListId() ?? '';
   const goalCalculationId = 'aaea272a-3f02-47da-9304-86bd408eb11d';
 
-  const { expenses, loading } = useReportExpenses(
+  const { expenses, ministryExpensesTotal, loading } = useReportExpenses(
     accountListId,
     goalCalculationId,
   );
@@ -38,6 +38,7 @@ export const SummaryReport: React.FC = () => {
       rothContributionPercentage: 0.04,
       traditionalContributionPercentage: 0.06,
       ministryExpenses: expenses,
+      ministryExpensesTotal,
     };
   }, [expenses]);
 
