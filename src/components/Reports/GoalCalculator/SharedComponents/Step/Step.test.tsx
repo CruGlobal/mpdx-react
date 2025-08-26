@@ -32,7 +32,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
   family = mockBudgetFamily,
 }) => (
   <GoalCalculatorTestWrapper>
-    <Step instructions={<h1>Instructions</h1>} family={family} />
+    <Step
+      instructions={<h1>Instructions</h1>}
+      family={family}
+      additionalComponent={<div>Additional Component</div>}
+    />
   </GoalCalculatorTestWrapper>
 );
 
@@ -90,5 +94,10 @@ describe('Step', () => {
     expect(
       within(categoryItems[1]).getByTestId('RadioButtonUncheckedIcon'),
     ).toBeInTheDocument();
+  });
+  it('renders additional component', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(getByText('Additional Component')).toBeInTheDocument();
   });
 });
