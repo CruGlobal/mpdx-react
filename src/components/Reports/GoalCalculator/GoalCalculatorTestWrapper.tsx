@@ -8,6 +8,12 @@ import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalCalculationQuery } from './Shared/GoalCalculation.generated';
 import { GoalCalculatorProvider } from './Shared/GoalCalculatorContext';
+import { UpdatePrimaryBudgetCategoryMutation } from './SharedComponents/GoalCalculatorGrid/PrimaryBudgetCategory.generated';
+import { 
+  CreateSubBudgetCategoryMutation,
+  DeleteSubBudgetCategoryMutation,
+  UpdateSubBudgetCategoryMutation,
+} from './SharedComponents/GoalCalculatorGrid/SubBudgetCategory.generated';
 
 interface GoalCalculatorTestWrapper {
   onCall?: MockLinkCallHandler;
@@ -31,6 +37,40 @@ export const goalCalculationMock = {
   },
 } satisfies DeepPartial<GoalCalculationQuery>;
 
+export const createSubBudgetCategoryMock = {
+  createSubBudgetCategory: {
+    subBudgetCategory: {
+      id: 'new-mock-id',
+      label: 'New Income',
+      amount: 0,
+    },
+  },
+} satisfies DeepPartial<CreateSubBudgetCategoryMutation>;
+
+export const updateSubBudgetCategoryMock = {
+  updateSubBudgetCategory: {
+    subBudgetCategory: {
+      id: 'updated-mock-id',
+      label: 'Updated Income',
+      amount: 1000,
+    },
+  },
+} satisfies DeepPartial<UpdateSubBudgetCategoryMutation>;
+
+export const deleteSubBudgetCategoryMock = {
+  deleteSubBudgetCategory: {
+    id: 'deleted-mock-id',
+  },
+} satisfies DeepPartial<DeleteSubBudgetCategoryMutation>;
+
+export const updatePrimaryBudgetCategoryMock = {
+  updatePrimaryBudgetCategory: {
+    primaryBudgetCategory: {
+      directInput: 5000,
+    },
+  },
+} satisfies DeepPartial<UpdatePrimaryBudgetCategoryMutation>;
+
 export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
   children,
   onCall,
@@ -45,9 +85,19 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
       }}
     >
       <SnackbarProvider>
-        <GqlMockedProvider<{ GoalCalculation: GoalCalculationQuery }>
+        <GqlMockedProvider<{ 
+          GoalCalculation: GoalCalculationQuery;
+          CreateSubBudgetCategory: CreateSubBudgetCategoryMutation;
+          UpdateSubBudgetCategory: UpdateSubBudgetCategoryMutation;
+          DeleteSubBudgetCategory: DeleteSubBudgetCategoryMutation;
+          UpdatePrimaryBudgetCategory: UpdatePrimaryBudgetCategoryMutation;
+        }>
           mocks={{
             GoalCalculation: goalCalculationMock,
+            CreateSubBudgetCategory: createSubBudgetCategoryMock,
+            UpdateSubBudgetCategory: updateSubBudgetCategoryMock,
+            DeleteSubBudgetCategory: deleteSubBudgetCategoryMock,
+            UpdatePrimaryBudgetCategory: updatePrimaryBudgetCategoryMock,
           }}
           onCall={onCall}
         >
