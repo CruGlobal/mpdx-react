@@ -6,7 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards';
-import type { Goal } from '../../useReportExpenses';
+import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const mockGoal = {
   netMonthlySalary: 5000,

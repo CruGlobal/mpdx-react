@@ -6,7 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalLineItems } from './useGoalLineItems';
-import type { Goal } from '../useReportExpenses';
+import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
 
 interface MpdGoalRow {
   line: string;
@@ -243,18 +243,15 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
 
         // Bold subtotal and total lines
         if (
-          params.row.category === t('Gross Annual Salary') ||
-          params.row.category === t('Total Goal (line 16 x 1.06 attrition)') ||
-          params.row.category === t('Monthly Support to be Developed')
+          params.row.line === '1J' ||
+          params.row.line === '7' ||
+          params.row.line === '9'
         ) {
           classes.push('bold');
         }
 
         // Add a top border to some lines
-        if (
-          params.row.line === '1' ||
-          params.row.category === t('Total Goal (line 16 x 1.06 attrition)')
-        ) {
+        if (params.row.line === '1' || params.row.line === '7') {
           classes.push('top-border');
         }
 

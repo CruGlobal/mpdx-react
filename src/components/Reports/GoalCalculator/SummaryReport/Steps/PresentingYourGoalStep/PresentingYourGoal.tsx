@@ -23,16 +23,14 @@ import {
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
-import { useGetAccountListQuery } from './GetAccountList.generated';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
-import type { Goal } from '../../useReportExpenses';
+import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -98,7 +96,6 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
    * the user is not part of Cru.
    */
   const { data: userData } = useGetUserQuery();
-  const accountListId = useAccountListId() ?? '';
   const salaryOrganizationId = useOrganizationId();
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
@@ -114,28 +111,25 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   const organizationName =
     salaryOrganization?.userOrganizationAccounts[0].organization.name;
 
-  const { data: receivedPledgesData } = useGetAccountListQuery({
-    variables: { accountListId: accountListId || '' },
-  });
-  const totalSolidSupport =
-    receivedPledgesData?.accountList?.receivedPledges || 0;
-
-  const presentationData = [
-    { name: 'Salary', value: goal.netMonthlySalary },
-    { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
-    { name: 'Benefits', value: 300 },
-    { name: 'Social Security and Taxes', value: calculations.taxes },
-    {
-      name: 'Voluntary 403b Retirement Plan',
-      value:
-        calculations.traditionalContribution + calculations.rothContribution,
-    },
-    {
-      name: 'Administrative Charge',
-      value:
-        calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
-    },
-  ];
+  const presentationData = useMemo(
+    () => [
+      { name: 'Salary', value: goal.netMonthlySalary },
+      { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
+      { name: 'Benefits', value: 300 },
+      { name: 'Social Security and Taxes', value: calculations.taxes },
+      {
+        name: 'Voluntary 403b Retirement Plan',
+        value:
+          calculations.traditionalContribution + calculations.rothContribution,
+      },
+      {
+        name: 'Administrative Charge',
+        value:
+          calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
+      },
+    ],
+    [goal, calculations],
+  );
 
   const total = useMemo(
     () => presentationData.reduce((sum, entry) => sum + entry.value, 0),
@@ -180,40 +174,40 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         title: 'Salary',
         description:
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
-        amount: presentationData[0].value ?? 0,
+        amount: presentationData[0].value,
       },
       {
         title: 'Ministry Expenses',
         description:
           'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
-        amount: presentationData[1].value ?? 0,
+        amount: presentationData[1].value,
       },
       {
         title: 'Benefits',
         description:
           "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
-        amount: presentationData[2].value ?? 0,
+        amount: presentationData[2].value,
       },
       {
         title: 'Social Security and Taxes',
         description:
           'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
-        amount: presentationData[3].value ?? 0,
+        amount: presentationData[3].value,
       },
       {
         title: 'Voluntary 403b Retirement Plan',
         description:
           'Staff members are eligible to contribute to a voluntary retirement program each month.',
-        amount: presentationData[4].value ?? 0,
+        amount: presentationData[4].value,
       },
       {
         title: 'Administrative Charge',
-        amount: presentationData[5].value ?? 0,
+        amount: presentationData[5].value,
       },
       { title: 'Total Support Goal', amount: total, bold: true },
-      { title: 'Total Solid Support', amount: totalSolidSupport },
+      { title: 'Total Solid Support', amount: calculations.supportRaised },
     ],
-    [presentationData, total, t],
+    [presentationData, total, t, calculations],
   );
 
   return (
