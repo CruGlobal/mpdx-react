@@ -5,6 +5,8 @@ import {
   StaffConferenceSavings,
   StaffSavings,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
 import { Fund, StaffSavingFundEnum } from '../../mockData';
 
@@ -20,6 +22,7 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   funds,
   ...props
 }) => {
+  const locale = useLocale();
   const filteredFunds =
     type === TransferDirectionEnum.From
       ? funds
@@ -37,7 +40,8 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
               : fund.type === StaffSavingFundEnum.StaffConferenceSavings
               ? StaffConferenceSavings
               : null}{' '}
-            <b>{fund.name}</b>
+            <b>{fund.name}</b> - {currencyFormat(fund.balance, 'USD', locale)}{' '}
+            available
           </Box>
         </MenuItem>
       ))}

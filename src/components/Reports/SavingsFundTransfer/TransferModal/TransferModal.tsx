@@ -14,6 +14,7 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
@@ -61,16 +62,7 @@ const getStartOfNextMonth = (): DateTime => {
 
 const transferSchema = yup.object({
   transferFrom: yup.string().required(i18n.t('From account is required')),
-  transferTo: yup
-    .string()
-    .required(i18n.t('To account is required'))
-    .test(
-      'different-accounts',
-      i18n.t('From and To accounts must be different'),
-      function (value) {
-        return value !== this.parent.transferFrom;
-      },
-    ),
+  transferTo: yup.string().required(i18n.t('To account is required')),
   schedule: yup
     .mixed<ScheduleEnum>()
     .oneOf(Object.values(ScheduleEnum))
@@ -299,7 +291,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       color="primary"
                       disabled={!transferFrom || !transferTo}
                     >
-                      <SwapHorizIcon />
+                      <Tooltip title={t('Swap')}>
+                        <SwapHorizIcon />
+                      </Tooltip>
                     </IconButton>
                   </Grid>
 
