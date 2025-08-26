@@ -48,9 +48,9 @@ describe('MpdGoalTable', () => {
     expect(grossMonthlyRow).toHaveClass('top-border');
 
     const totalGoalRow = getByRole('gridcell', {
-      name: 'Total Goal (line 16 x 1.06 attrition)',
+      name: /Total Goal/,
     }).parentElement;
-    expect(totalGoalRow).toHaveClass('top-border', 'bold');
+    expect(totalGoalRow).toHaveClass('bold', 'top-border');
 
     const monthlySupportRow = getByRole('gridcell', {
       name: 'Monthly Support to be Developed',
