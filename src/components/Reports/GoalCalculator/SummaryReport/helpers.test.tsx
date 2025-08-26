@@ -3,7 +3,12 @@ import {
   PrimaryBudgetCategoryEnum,
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
-import { MinistryFamily, getPrimaryTotal, getSubTotal } from './helpers';
+import {
+  MinistryFamily,
+  getMinistryExpensesTotal,
+  getPrimaryTotal,
+  getSubTotal,
+} from './helpers';
 
 const mockFamily: MinistryFamily = {
   __typename: 'BudgetFamily',
@@ -30,6 +35,28 @@ const mockFamily: MinistryFamily = {
           category: SubBudgetCategoryEnum.UtilitiesGas,
           label: 'Gas',
           amount: 200,
+        },
+      ],
+    },
+    {
+      __typename: 'PrimaryBudgetCategory',
+      category: PrimaryBudgetCategoryEnum.Recreation,
+      id: 'p2',
+      label: 'Recreation',
+      subBudgetCategories: [
+        {
+          __typename: 'SubBudgetCategory',
+          id: 's3',
+          category: SubBudgetCategoryEnum.RecreationEntertainment,
+          label: 'Entertainment',
+          amount: 300,
+        },
+        {
+          __typename: 'SubBudgetCategory',
+          id: 's4',
+          category: SubBudgetCategoryEnum.RecreationVacation,
+          label: 'Travel',
+          amount: 400,
         },
       ],
     },
@@ -60,5 +87,11 @@ describe('getPrimaryCategoryTotal', () => {
     expect(
       getPrimaryTotal(mockFamily, PrimaryBudgetCategoryEnum.Utilities),
     ).toBe(300);
+  });
+
+  describe('getMinistryExpensesTotal', () => {
+    it('returns sum of all primary category amounts for ministry family', () => {
+      expect(getMinistryExpensesTotal(mockFamily)).toBe(1000);
+    });
   });
 });
