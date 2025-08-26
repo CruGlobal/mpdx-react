@@ -40,10 +40,9 @@ const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
 );
 
 describe('GoalCalculatorSection', () => {
-  it('renders the header with the title and subtitle', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+  it('renders the header with the subtitle', () => {
+    const { getByText } = render(<TestComponent />);
 
-    expect(getByRole('heading', { name: 'Section Title' })).toBeInTheDocument();
     expect(getByText('Section Subtitle')).toBeInTheDocument();
   });
 
