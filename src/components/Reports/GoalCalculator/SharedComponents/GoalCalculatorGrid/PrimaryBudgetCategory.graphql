@@ -1,34 +1,9 @@
-fragment BudgetFamily on BudgetFamily {
-  id
-  label
-  category
-  directInput
-  primaryBudgetCategories {
-    id
-    label
-    category
-    directInput
-    subBudgetCategories {
-      id
-      label
-      category
-      amount
-    }
-  }
-}
-
-query GoalCalculation($accountListId: ID!, $id: ID!) {
-  goalCalculation(accountListId: $accountListId, id: $id) {
-    id
-    primary
-    ministryFamily {
-      ...BudgetFamily
-    }
-    householdFamily {
-      ...BudgetFamily
-    }
-    specialFamily {
-      ...BudgetFamily
+mutation UpdatePrimaryBudgetCategory(
+  $input: PrimaryBudgetCategoryUpdateMutationInput!
+) {
+  updatePrimaryBudgetCategory(input: $input) {
+    primaryBudgetCategory {
+      directInput
     }
   }
 }

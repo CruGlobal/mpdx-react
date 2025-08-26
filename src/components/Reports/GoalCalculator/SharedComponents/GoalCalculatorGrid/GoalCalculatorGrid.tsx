@@ -23,10 +23,12 @@ import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { StyledSectionTitle } from '../styledComponents/StyledSectionTitle';
+import { useUpdatePrimaryBudgetCategoryMutation } from './PrimaryBudgetCategory.generated';
 import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -78,7 +80,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       label: subCategory.label,
       amount: subCategory.amount,
     })),
-    lumpSumAmount: 0,
+    lumpSumAmount: category.directInput || 0,
   };
 
   const validationSchema = yup.object({
@@ -143,6 +145,9 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const locale = useLocale();
   const { setRightPanelContent } = useGoalCalculator();
   const { label: categoryName, directInput: categoryDirectInput } = category;
+  const accountListId = useAccountListId() ?? '';
+  const [updatePrimaryBudgetCategory] =
+    useUpdatePrimaryBudgetCategoryMutation();
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
@@ -155,6 +160,36 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   ];
 
   const [directInput, setDirectInput] = useState(!!categoryDirectInput);
+
+  const debouncedUpdateMutation = useDebouncedCallback(
+    (value: number | null) => {
+      updatePrimaryBudgetCategory({
+        variables: {
+          input: {
+            accountListId,
+            id: category.id,
+            directInput: value,
+          },
+        },
+      });
+    },
+    500
+  );
+
+  const handleDirectInputToggle = (enableDirectInput: boolean) => {
+    const valueToSet = enableDirectInput
+      ? values.lumpSumAmount || totalAmount
+      : null;
+    setDirectInput(enableDirectInput);
+    debouncedUpdateMutation(valueToSet);
+  };
+
+  const handleLumpSumChange = (value: string | number) => {
+    const numericValue =
+      typeof value === 'string' ? parseFloat(value) || 0 : value;
+    setFieldValue('lumpSumAmount', numericValue);
+    debouncedUpdateMutation(numericValue);
+  };
 
   const addExpense = () => {
     const numericIds = values.gridData
@@ -172,7 +207,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   const handleDelete = (id: string | number) => {
     const updatedData = values.gridData.filter(
-      (item) => item.id !== id.toString(),
+      (item) => item.id !== id.toString()
     );
     setFieldValue('gridData', updatedData);
   };
@@ -249,7 +284,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           <Button
             variant={directInput ? 'contained' : 'outlined'}
             size="small"
-            onClick={() => setDirectInput(true)}
+            onClick={() => handleDirectInputToggle(true)}
             startIcon={<FunctionsIcon />}
           >
             {t('Lump Sum')}
@@ -257,7 +292,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           <Button
             size="small"
             variant={!directInput ? 'contained' : 'outlined'}
-            onClick={() => setDirectInput(false)}
+            onClick={() => handleDirectInputToggle(false)}
             startIcon={<ViewHeadlineIcon />}
           >
             {t('Line Item')}
@@ -286,7 +321,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
               label={t('Total')}
               type="number"
               value={values.lumpSumAmount}
-              onChange={(e) => setFieldValue('lumpSumAmount', e.target.value)}
+              onChange={(e) => handleLumpSumChange(e.target.value)}
               sx={{ mb: 2 }}
             />
           </Box>
