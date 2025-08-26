@@ -164,8 +164,8 @@ export const CreateMultipleContacts = ({
                     ? `${lastName}, ${firstName} and ${spouseName}`
                     : `${lastName}, ${firstName}`
                   : spouseName
-                  ? `${firstName} and ${spouseName}`
-                  : `${firstName}`,
+                    ? `${firstName} and ${spouseName}`
+                    : `${firstName}`,
                 contactReferralsToMe: referredById
                   ? [{ referredById }]
                   : undefined,

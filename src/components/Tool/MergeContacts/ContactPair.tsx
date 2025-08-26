@@ -164,8 +164,8 @@ const ContactItem: React.FC<ContactItemProps> = ({
       selected
         ? classes.selectedBox
         : loser
-        ? classes.loserBox
-        : classes.unselectedBox
+          ? classes.loserBox
+          : classes.unselectedBox
     }`}
       onClick={() => updateState(side)}
     >
@@ -199,8 +199,8 @@ const ContactItem: React.FC<ContactItemProps> = ({
                 {isPersonType
                   ? `${contact.firstName} ${contact.lastName}`
                   : isContactType
-                  ? contact.name
-                  : null}
+                    ? contact.name
+                    : null}
               </InlineTypography>
             </Link>
             {selected && (

@@ -57,7 +57,7 @@ window.document.createRange = (): Range =>
       nodeName: 'BODY',
       ownerDocument: document,
     } as unknown as Node,
-  } as unknown as Range);
+  }) as unknown as Range;
 
 Object.defineProperty(window, 'location', {
   value: { ...window.location, assign: jest.fn(), replace: jest.fn() },
