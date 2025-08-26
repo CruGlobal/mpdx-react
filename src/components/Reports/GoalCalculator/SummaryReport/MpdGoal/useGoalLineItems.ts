@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useAccountListSupportRaisedQuery } from './MpdGoalTable.generated';
-import type { Goal } from '../useReportExpenses';
+import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
 
 export interface GoalTableLineItems {
   taxes: number;

@@ -23,16 +23,14 @@ import {
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
-import { useGetAccountListQuery } from './GetAccountList.generated';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
-import type { Goal } from '../../useReportExpenses';
+import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -98,7 +96,6 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
    * the user is not part of Cru.
    */
   const { data: userData } = useGetUserQuery();
-  const accountListId = useAccountListId() ?? '';
   const salaryOrganizationId = useOrganizationId();
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
@@ -113,12 +110,6 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
     organizationTypeName === 'Cru-International';
   const organizationName =
     salaryOrganization?.userOrganizationAccounts[0].organization.name;
-
-  const { data: receivedPledgesData } = useGetAccountListQuery({
-    variables: { accountListId: accountListId || '' },
-  });
-  const totalSolidSupport =
-    receivedPledgesData?.accountList?.receivedPledges || 0;
 
   const presentationData = [
     { name: 'Salary', value: goal.netMonthlySalary },
