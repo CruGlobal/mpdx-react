@@ -2,7 +2,6 @@ import { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MinistryExpenses } from '../useReportExpenses';
 import { AccountListSupportRaisedQuery } from './MpdGoalTable.generated';
 import { useGoalLineItems } from './useGoalLineItems';
 
@@ -14,7 +13,7 @@ const mockGoal = {
   ministryExpenses: {
     benefitsCharge: 0,
     primaryCategories: [],
-  } as MinistryExpenses,
+  },
   ministryExpensesTotal: 3800,
 };
 

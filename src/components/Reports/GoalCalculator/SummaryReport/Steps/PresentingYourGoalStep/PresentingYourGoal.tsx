@@ -32,6 +32,7 @@ import theme from 'src/theme';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 import { useGetAccountListQuery } from './GetAccountList.generated';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
+import type { Goal } from '../../useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {

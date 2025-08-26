@@ -40,20 +40,10 @@ const goal = {
   rothContributionPercentage: 0.1,
   traditionalContributionPercentage: 0.5,
   ministryExpenses: {
-    benefitsCharge: 100,
-    ministryMileage: 110,
-    medicalMileage: 120,
-    medicalExpenses: 130,
-    ministryPartnerDevelopment: 140,
-    communications: 150,
-    entertainment: 160,
-    staffDevelopment: 170,
-    supplies: 180,
-    technology: 190,
-    travel: 200,
-    transfers: 210,
-    other: 220,
+    benefitsCharge: 0,
+    primaryCategories: [],
   },
+  ministryExpensesTotal: 2080,
 };
 
 const TestComponent: React.FC = () => (
