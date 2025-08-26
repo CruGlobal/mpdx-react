@@ -1,8 +1,37 @@
 import { useMemo } from 'react';
-import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  Maybe,
+  PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
-import { MinistryExpenses } from './MpdGoal/MpdGoalTable';
-import { getPrimaryTotal, getSubTotal } from './helpers';
+import {
+  getMinistryExpensesTotal,
+  getPrimaryTotal,
+  getSubTotal,
+} from './helpers';
+
+export interface Goal {
+  netMonthlySalary: number;
+  taxesPercentage: number;
+  rothContributionPercentage: number;
+  traditionalContributionPercentage: number;
+  ministryExpenses: MinistryExpenses;
+  ministryExpensesTotal: number;
+}
+
+export interface MinistryExpenses {
+  benefitsCharge: number;
+  primaryCategories: Array<{
+    category: PrimaryBudgetCategoryEnum;
+    label: string;
+    amount: number;
+    subAmounts: Array<{
+      category: Maybe<SubBudgetCategoryEnum> | undefined;
+      amount: number;
+    }>;
+  }>;
+}
 
 export const useReportExpenses = (
   accountListId: string,
@@ -19,73 +48,37 @@ export const useReportExpenses = (
       return null;
     }
     const ministryFamily = goalData.goalCalculation.ministryFamily;
+
+    const primaryCategories = ministryFamily?.primaryBudgetCategories.map(
+      (primary) => ({
+        category: primary.category,
+        label: primary.label,
+        amount: getPrimaryTotal(ministryFamily, primary.category),
+        subAmounts: primary.subBudgetCategories.map((sub) => ({
+          category: sub.category,
+          amount: sub.category
+            ? getSubTotal(ministryFamily, primary.category, sub.category)
+            : 0,
+        })),
+      }),
+    );
+
     return {
       benefitsCharge: 0,
-      ministryMileage: getSubTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        'MINISTRY_MILEAGE',
-      ),
-      medicalMileage: getSubTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        'MEDICAL_MILEAGE',
-      ),
-      medicalExpenses: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.Medical,
-      ),
-      ministryPartnerDevelopment: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
-      ),
-      communications: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.Utilities,
-      ),
-      entertainment: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.Recreation,
-      ),
-      staffDevelopment: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
-      ),
-      supplies: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
-      ),
-      technology:
-        getPrimaryTotal(
-          ministryFamily,
-          PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
-        ) +
-        getPrimaryTotal(
-          ministryFamily,
-          PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
-        ),
-      travel:
-        getPrimaryTotal(
-          ministryFamily,
-          PrimaryBudgetCategoryEnum.MinistryTravel,
-        ) +
-        getPrimaryTotal(
-          ministryFamily,
-          PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
-        ),
-      transfers: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.AccountTransfers,
-      ),
-      other: getPrimaryTotal(
-        ministryFamily,
-        PrimaryBudgetCategoryEnum.MinistryOther,
-      ),
+      primaryCategories,
     };
+  }, [goalData]);
+
+  const ministryExpensesTotal = useMemo(() => {
+    if (!goalData?.goalCalculation?.ministryFamily) {
+      return 0;
+    }
+    return getMinistryExpensesTotal(goalData.goalCalculation.ministryFamily);
   }, [goalData]);
 
   return {
     expenses,
+    ministryExpensesTotal,
     loading,
   };
 };
