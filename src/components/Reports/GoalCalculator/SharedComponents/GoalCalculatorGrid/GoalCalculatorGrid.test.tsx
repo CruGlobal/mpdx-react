@@ -298,4 +298,23 @@ describe('GoalCalculatorGrid', () => {
 
     expect(getByText('Special Income')).toBeInTheDocument();
   });
+  it('renders rightPanelContent', async () => {
+    const { getByRole, getByText } = render(
+      <GoalCalculatorTestWrapper>
+        <GoalCalculatorGrid
+          {...defaultProps}
+          rightPanelContent={<h1>hello</h1>}
+        />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const rightPanelContentButton = getByRole('button', {
+      name: 'Show additional info',
+    });
+    expect(rightPanelContentButton).toBeInTheDocument();
+    userEvent.click(rightPanelContentButton);
+    waitFor(() => {
+      expect(getByText('hello')).toBeInTheDocument();
+    });
+  });
 });
