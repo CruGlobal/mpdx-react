@@ -6,30 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalLineItems } from './useGoalLineItems';
-
-export interface Goal {
-  netMonthlySalary: number;
-  taxesPercentage: number;
-  rothContributionPercentage: number;
-  traditionalContributionPercentage: number;
-  ministryExpenses: MinistryExpenses;
-}
-
-export interface MinistryExpenses {
-  benefitsCharge: number;
-  ministryMileage: number;
-  medicalMileage: number;
-  medicalExpenses: number;
-  ministryPartnerDevelopment: number;
-  communications: number;
-  entertainment: number;
-  staffDevelopment: number;
-  supplies: number;
-  technology: number;
-  travel: number;
-  transfers: number;
-  other: number;
-}
+import type { Goal } from '../useReportExpenses';
 
 interface MpdGoalRow {
   line: string;
@@ -76,8 +53,20 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
   );
 
   const ministryExpenses = goal.ministryExpenses;
-  const rows = useMemo(
-    (): MpdGoalRow[] => [
+  const rows = useMemo((): MpdGoalRow[] => {
+    const ministryExpenseRows: MpdGoalRow[] = [
+      ...ministryExpenses.primaryCategories.map((category, index) => {
+        const lineNumber = String.fromCharCode(65 + index);
+        return {
+          line: `3${lineNumber}`,
+          category: t(category.label),
+          amount: category.amount,
+          reference: Math.floor(Math.random() * 391) + 10,
+        };
+      }),
+    ];
+
+    return [
       {
         line: '1A',
         category: t('Net Monthly Combined Salary'),
@@ -157,124 +146,55 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
         amount: ministryExpenses.benefitsCharge,
         reference: 2302.24,
       },
-      {
-        line: '3',
-        category: t('Ministry Mileage'),
-        amount: ministryExpenses.ministryMileage,
-        reference: 95,
-      },
+      ...ministryExpenseRows,
       {
         line: '4',
-        category: t('Medical Mileage'),
-        amount: ministryExpenses.medicalMileage,
-        reference: 65,
+        category: t('Ministry Expenses Subtotal'),
+        amount: calculations.ministryExpensesTotal,
+        reference: ministryExpenseRows.reduce(
+          (sum, row) => sum + row.reference,
+          0,
+        ),
       },
       {
         line: '5',
-        category: t('Medical Expenses'),
-        amount: ministryExpenses.medicalExpenses,
-        reference: 230,
-      },
-      {
-        line: '6',
-        category: t('Ministry Partner Development'),
-        amount: ministryExpenses.ministryPartnerDevelopment,
-        reference: 155,
-      },
-      {
-        line: '7',
-        category: t('Communications'),
-        amount: ministryExpenses.communications,
-        reference: 135,
-      },
-      {
-        line: '8',
-        category: t('Entertainment'),
-        amount: ministryExpenses.entertainment,
-        reference: 125,
-      },
-      {
-        line: '9',
-        category: t('Staff Development'),
-        amount: ministryExpenses.staffDevelopment,
-        reference: 180,
-      },
-      {
-        line: '10',
-        category: t('Supplies'),
-        amount: ministryExpenses.supplies,
-        reference: 50,
-      },
-      {
-        line: '11',
-        category: t('Technology'),
-        amount: ministryExpenses.technology,
-        reference: 100,
-      },
-      {
-        line: '12',
-        category: t('Travel'),
-        amount: ministryExpenses.travel,
-        reference: 225,
-      },
-      {
-        line: '13',
-        category: t('Transfers'),
-        amount: ministryExpenses.transfers,
-        reference: 160,
-      },
-      {
-        line: '14',
-        category: t('Other'),
-        amount: ministryExpenses.other,
-        reference: 80,
-      },
-      {
-        line: '15',
-        category: t('Ministry Expenses Subtotal'),
-        amount: calculations.totalMinistryExpenses,
-        reference: 2994.74,
-      },
-      {
-        line: '16',
         category: t('Subtotal'),
         amount: calculations.overallSubtotal,
         reference: 10224.63,
       },
       {
-        line: '17',
+        line: '6',
         category: t('Subtotal with 12% admin charge'),
         amount: calculations.overallSubtotalWithAdmin,
         reference: 11618.9,
       },
       {
-        line: '18',
+        line: '7',
         category: t('Total Goal (line 16 x 1.06 attrition)'),
         amount: calculations.overallTotal,
         reference: 12316.03,
       },
       {
-        line: '19',
+        line: '8',
         category: t('Solid Monthly Support Developed'),
         amount: calculations.supportRaised,
         reference: 0,
       },
       {
-        line: '20',
+        line: '9',
         category: t('Monthly Support to be Developed'),
         amount: calculations.supportRemaining,
         reference: 12316.03,
       },
       {
-        line: '21',
+        line: '10',
         category: t('Support Goal Percentage Progress'),
         amount: calculations.supportRaisedPercentage,
         reference: 0,
         percentage: true,
       },
-    ],
-    [t, goal, calculations, ministryExpenses],
-  );
+    ];
+  }, [t, goal, calculations, ministryExpenses]);
 
   const columns = useMemo(
     (): GridColDef[] => [
@@ -323,15 +243,18 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
 
         // Bold subtotal and total lines
         if (
-          params.row.line === '1J' ||
-          params.row.line === '18' ||
-          params.row.line === '20'
+          params.row.category === t('Gross Annual Salary') ||
+          params.row.category === t('Total Goal (line 16 x 1.06 attrition)') ||
+          params.row.category === t('Monthly Support to be Developed')
         ) {
           classes.push('bold');
         }
 
         // Add a top border to some lines
-        if (params.row.line === '1' || params.row.line === '18') {
+        if (
+          params.row.line === '1' ||
+          params.row.category === t('Total Goal (line 16 x 1.06 attrition)')
+        ) {
           classes.push('top-border');
         }
 
