@@ -59,7 +59,8 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
   const [selectedTabKey, setSelectedTabKey] = React.useState(
     query?.tab
-      ? ContactDetailTabEnum[query.tab.toString()] ?? ContactDetailTabEnum.Tasks
+      ? (ContactDetailTabEnum[query.tab.toString()] ??
+          ContactDetailTabEnum.Tasks)
       : ContactDetailTabEnum.Tasks,
   );
   const handleTabChange = useCallback(

@@ -142,10 +142,13 @@ const Contact: React.FC<Props> = ({
   }, [addressesState]);
 
   const editableSources = useMemo(() => {
-    return addressesData?.reduce((acc, address) => {
-      acc[address.id] = isEditableSource(address.source);
-      return acc;
-    }, {} as Record<string, boolean>);
+    return addressesData?.reduce(
+      (acc, address) => {
+        acc[address.id] = isEditableSource(address.source);
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
   }, [addressesData]);
 
   const handleConfirm = () => {

@@ -50,12 +50,12 @@ export const ContactLateStatusLabel: React.FC<ContactLateStatusProps> = ({
           lateStatusEnum === ContactLateStatusEnum.OnTime
             ? theme.palette.mpdxGreen.main
             : lateStatusEnum === ContactLateStatusEnum.LateLessThirty
-            ? theme.palette.cruGrayMedium.main
-            : lateStatusEnum === ContactLateStatusEnum.LateMoreThirty
-            ? theme.palette.cruYellow.main
-            : lateStatusEnum === ContactLateStatusEnum.LateMoreSixty
-            ? theme.palette.error.main
-            : undefined,
+              ? theme.palette.cruGrayMedium.main
+              : lateStatusEnum === ContactLateStatusEnum.LateMoreThirty
+                ? theme.palette.cruYellow.main
+                : lateStatusEnum === ContactLateStatusEnum.LateMoreSixty
+                  ? theme.palette.error.main
+                  : undefined,
       }}
     >
       {isDetail ? lateStatusLabel : `(${lateStatusLabel})`}

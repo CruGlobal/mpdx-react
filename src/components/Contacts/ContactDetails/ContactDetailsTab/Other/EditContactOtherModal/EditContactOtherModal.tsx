@@ -217,12 +217,12 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
             },
           ]
         : selectedId
-        ? [
-            {
-              referredById: attributes.referredById,
-            },
-          ]
-        : [{}];
+          ? [
+              {
+                referredById: attributes.referredById,
+              },
+            ]
+          : [{}];
     await updateContactOther({
       variables: {
         accountListId,

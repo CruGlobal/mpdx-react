@@ -743,7 +743,7 @@ describe('UpdateDonationsModal', () => {
           ),
         );
 
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateDonations', {
+        (expect(mutationSpy).toHaveGraphqlOperation('UpdateDonations', {
           input: {
             accountListId,
             attributes: [
@@ -758,7 +758,7 @@ describe('UpdateDonationsModal', () => {
             ],
           },
         }),
-          expect(handleClose).toHaveBeenCalled();
+          expect(handleClose).toHaveBeenCalled());
       });
     });
   });

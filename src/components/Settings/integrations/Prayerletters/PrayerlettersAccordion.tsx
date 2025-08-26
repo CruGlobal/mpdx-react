@@ -130,32 +130,34 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
           </StyledServicesButton>
         </>
       )}
-      {!loading && prayerlettersAccount && !prayerlettersAccount?.validToken && (
-        <>
-          <Alert severity="error">
-            {t(
-              'The link between {{appName}} and your prayerletters.com account stopped working. Click "Refresh prayerletters.com Account" to re-enable it.',
-              { appName },
-            )}
-          </Alert>
+      {!loading &&
+        prayerlettersAccount &&
+        !prayerlettersAccount?.validToken && (
+          <>
+            <Alert severity="error">
+              {t(
+                'The link between {{appName}} and your prayerletters.com account stopped working. Click "Refresh prayerletters.com Account" to re-enable it.',
+                { appName },
+              )}
+            </Alert>
 
-          <Box style={{ marginTop: '20px' }}>
-            <Button href={getOauthUrl()} variant="contained">
-              {t('Refresh prayerletters.com Account')}
-            </Button>
+            <Box style={{ marginTop: '20px' }}>
+              <Button href={getOauthUrl()} variant="contained">
+                {t('Refresh prayerletters.com Account')}
+              </Button>
 
-            <Button
-              onClick={() => setShowDeleteModal(true)}
-              variant="text"
-              color="error"
-              style={{ marginLeft: '15px' }}
-              disabled={isSaving}
-            >
-              {t('Disconnect')}
-            </Button>
-          </Box>
-        </>
-      )}
+              <Button
+                onClick={() => setShowDeleteModal(true)}
+                variant="text"
+                color="error"
+                style={{ marginLeft: '15px' }}
+                disabled={isSaving}
+              >
+                {t('Disconnect')}
+              </Button>
+            </Box>
+          </>
+        )}
       {!loading && prayerlettersAccount && prayerlettersAccount?.validToken && (
         <>
           <Alert severity="warning">

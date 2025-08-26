@@ -65,12 +65,14 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
                 defaultSelection: '',
                 options: [
                   {
-                    name: 'Designation Account 1',
                     __typename: 'FilterOption' as const,
+                    name: 'Designation Account 1',
+                    value: 'designation-account-1',
                   },
                   {
-                    name: 'Designation Account 2',
                     __typename: 'FilterOption' as const,
+                    name: 'Designation Account 2',
+                    value: 'designation-account-2',
                   },
                 ],
               },
@@ -177,7 +179,7 @@ describe('partnerGivingAnalysis page', () => {
     await waitFor(() =>
       expect(replace.mock.lastCall[0].query).toEqual(
         expect.objectContaining({
-          filters: '{"designationAccountId":["Sandwich"]}',
+          filters: '{"designationAccountId":["designation-account-1"]}',
           searchTerm: 'John',
         }),
       ),
