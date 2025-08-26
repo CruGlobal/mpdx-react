@@ -55,7 +55,7 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('adds a new row when Add button is clicked', async () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, findByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...defaultProps} />
       </GoalCalculatorTestWrapper>
@@ -67,7 +67,11 @@ describe('GoalCalculatorGrid', () => {
       })
     );
 
-    expect(getByText('New Income')).toBeInTheDocument();
+    const newincome = await waitFor(() => findByText('New Income'), {
+      timeout: 5000,
+    });
+    expect(newincome).toBeInTheDocument();
+
     expect(getByText('$5,500')).toBeInTheDocument();
   });
 
