@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { Goal } from './MpdGoalTable';
 import { useAccountListSupportRaisedQuery } from './MpdGoalTable.generated';
+import type { Goal } from '../useReportExpenses';
 
 export interface GoalTableLineItems {
   taxes: number;
@@ -10,7 +10,7 @@ export interface GoalTableLineItems {
   traditionalContribution: number;
   grossAnnualSalary: number;
   grossMonthlySalary: number;
-  totalMinistryExpenses: number;
+  ministryExpensesTotal: number;
   overallSubtotal: number;
   overallSubtotalWithAdmin: number;
   overallTotal: number;
@@ -26,7 +26,7 @@ export const useGoalLineItems = (goal: Goal): GoalTableLineItems => {
   });
 
   const lineItems = useMemo<GoalTableLineItems>(() => {
-    const { ministryExpenses } = goal;
+    const { ministryExpensesTotal } = goal;
     const taxes = goal.netMonthlySalary * goal.taxesPercentage;
     const salaryPreIra = goal.netMonthlySalary + taxes;
     const rothContribution =
@@ -38,22 +38,7 @@ export const useGoalLineItems = (goal: Goal): GoalTableLineItems => {
       salaryPreIra + rothContribution + traditionalContribution;
     const grossAnnualSalary = grossMonthlySalary * 12;
 
-    const totalMinistryExpenses =
-      ministryExpenses.benefitsCharge +
-      ministryExpenses.ministryMileage +
-      ministryExpenses.medicalMileage +
-      ministryExpenses.medicalExpenses +
-      ministryExpenses.ministryPartnerDevelopment +
-      ministryExpenses.communications +
-      ministryExpenses.entertainment +
-      ministryExpenses.staffDevelopment +
-      ministryExpenses.supplies +
-      ministryExpenses.technology +
-      ministryExpenses.travel +
-      ministryExpenses.transfers +
-      ministryExpenses.other;
-
-    const overallSubtotal = grossMonthlySalary + totalMinistryExpenses;
+    const overallSubtotal = grossMonthlySalary + ministryExpensesTotal;
     const overallSubtotalWithAdmin = overallSubtotal / 0.88;
     const overallTotal = overallSubtotalWithAdmin * 1.06;
     const supportRaised = data?.accountList.receivedPledges ?? 0;
@@ -67,7 +52,7 @@ export const useGoalLineItems = (goal: Goal): GoalTableLineItems => {
       traditionalContribution,
       grossAnnualSalary,
       grossMonthlySalary,
-      totalMinistryExpenses,
+      ministryExpensesTotal,
       overallSubtotal,
       overallSubtotalWithAdmin,
       overallTotal,
