@@ -5,11 +5,13 @@ import {
   PrimaryAccount,
   SavingsAccount,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 import { FundTypeEnum } from '../../mockData';
 
-type SelectFunds = Pick<FundFieldsFragment, 'id' | 'fundType'>;
+type SelectFunds = Pick<FundFieldsFragment, 'id' | 'fundType' | 'balance'>;
 
 type TransferModalSelectProps = Partial<SelectProps> & {
   type: TransferDirectionEnum;
@@ -24,6 +26,7 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   ...props
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   const filteredFunds =
     type === TransferDirectionEnum.From
@@ -40,7 +43,8 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
               : fund.fundType === FundTypeEnum.Savings
                 ? SavingsAccount
                 : null}{' '}
-            <b>{t(`${fund.fundType} Account`)}</b>
+            <b>{t(`${fund.fundType} Account`)}</b> -{' '}
+            {currencyFormat(fund.balance, 'USD', locale)} available
           </Box>
         </MenuItem>
       ))}
