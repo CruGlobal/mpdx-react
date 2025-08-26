@@ -61,7 +61,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
           line: `3${lineNumber}`,
           category: t(category.label),
           amount: category.amount,
-          reference: Math.floor(Math.random() * 391) + 10,
+          reference: Math.random() * 391 + 10,
         };
       }),
     ];

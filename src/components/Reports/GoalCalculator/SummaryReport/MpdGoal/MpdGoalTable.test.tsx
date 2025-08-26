@@ -4,7 +4,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalTable } from './MpdGoalTable';
-import type { MinistryExpenses } from '../useReportExpenses';
 
 const goal = {
   netMonthlySalary: 5000,
@@ -14,7 +13,7 @@ const goal = {
   ministryExpenses: {
     benefitsCharge: 0,
     primaryCategories: [],
-  } as MinistryExpenses,
+  },
   ministryExpensesTotal: 2080,
 };
 

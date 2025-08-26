@@ -29,10 +29,10 @@ import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { Goal } from '../../MpdGoal/MpdGoalTable';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 import { useGetAccountListQuery } from './GetAccountList.generated';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
+import type { Goal } from '../../useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -92,29 +92,13 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   const calculations = useGoalLineItems(goal);
-  const presentationData = [
-    { name: 'Salary', value: goal.netMonthlySalary },
-    { name: 'Ministry Expenses', value: calculations.totalMinistryExpenses },
-    { name: 'Benefits', value: 300 },
-    { name: 'Social Security and Taxes', value: calculations.taxes },
-    {
-      name: 'Voluntary 403b Retirement Plan',
-      value:
-        calculations.traditionalContribution + calculations.rothContribution,
-    },
-    {
-      name: 'Administrative Charge',
-      value:
-        calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
-    },
-  ];
 
   /*
    * We don't want to display ministry location and Cru image if
    * the user is not part of Cru.
    */
   const { data: userData } = useGetUserQuery();
-  const accountListId = useAccountListId();
+  const accountListId = useAccountListId() ?? '';
   const salaryOrganizationId = useOrganizationId();
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
@@ -135,6 +119,23 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   });
   const totalSolidSupport =
     receivedPledgesData?.accountList?.receivedPledges || 0;
+
+  const presentationData = [
+    { name: 'Salary', value: goal.netMonthlySalary },
+    { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
+    { name: 'Benefits', value: 300 },
+    { name: 'Social Security and Taxes', value: calculations.taxes },
+    {
+      name: 'Voluntary 403b Retirement Plan',
+      value:
+        calculations.traditionalContribution + calculations.rothContribution,
+    },
+    {
+      name: 'Administrative Charge',
+      value:
+        calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
+    },
+  ];
 
   const total = useMemo(
     () => presentationData.reduce((sum, entry) => sum + entry.value, 0),
@@ -210,7 +211,6 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         amount: presentationData[5].value ?? 0,
       },
       { title: 'Total Support Goal', amount: total, bold: true },
-      // change amount when real data is added
       { title: 'Total Solid Support', amount: totalSolidSupport },
     ],
     [presentationData, total, t],
