@@ -1,15 +1,10 @@
+import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import {
-  Maybe,
-  PrimaryBudgetCategoryEnum,
-  SubBudgetCategoryEnum,
-} from 'src/graphql/types.generated';
-import { useGoalCalculationQuery } from './GoalCalculation.generated';
-import {
-  getMinistryExpensesTotal,
-  getPrimaryTotal,
-  getSubTotal,
-} from './helpers';
+import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { getQueryParam } from 'src/utils/queryParam';
+import { useGoalCalculationQuery } from '../../SummaryReport/GoalCalculation.generated';
+import { getMinistryExpensesTotal, getPrimaryTotal } from './helpers';
 
 export interface Goal {
   netMonthlySalary: number;
@@ -26,23 +21,24 @@ export interface MinistryExpenses {
     category: PrimaryBudgetCategoryEnum;
     label: string;
     amount: number;
-    subAmounts: Array<{
-      category: Maybe<SubBudgetCategoryEnum> | undefined;
-      amount: number;
-    }>;
   }>;
 }
 
-export const useReportExpenses = (
-  accountListId: string,
-  goalCalculationId: string,
-) => {
+export const useReportExpenses = () => {
+  const accountListId = useAccountListId() ?? '';
+  const { query } = useRouter();
+  let goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
+
+  // temporary
+  goalCalculationId = 'aaea272a-3f02-47da-9304-86bd408eb11d';
+
   const { data: goalData, loading } = useGoalCalculationQuery({
     variables: {
       accountListId,
       goalCalculationId,
     },
   });
+
   const expenses: MinistryExpenses | null = useMemo(() => {
     if (!goalData?.goalCalculation) {
       return null;
@@ -53,13 +49,7 @@ export const useReportExpenses = (
       (primary) => ({
         category: primary.category,
         label: primary.label,
-        amount: getPrimaryTotal(ministryFamily, primary.category),
-        subAmounts: primary.subBudgetCategories.map((sub) => ({
-          category: sub.category,
-          amount: sub.category
-            ? getSubTotal(ministryFamily, primary.category, sub.category)
-            : 0,
-        })),
+        amount: getPrimaryTotal(primary),
       }),
     );
 

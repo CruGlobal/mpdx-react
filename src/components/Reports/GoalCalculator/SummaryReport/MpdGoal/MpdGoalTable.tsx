@@ -6,7 +6,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalLineItems } from './useGoalLineItems';
-import type { Goal } from '../useReportExpenses';
+import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
 
 interface MpdGoalRow {
   line: string;

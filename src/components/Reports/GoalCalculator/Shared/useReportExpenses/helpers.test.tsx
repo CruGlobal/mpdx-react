@@ -7,7 +7,6 @@ import {
   MinistryFamily,
   getMinistryExpensesTotal,
   getPrimaryTotal,
-  getSubTotal,
 } from './helpers';
 
 const mockFamily: MinistryFamily = {
@@ -63,30 +62,9 @@ const mockFamily: MinistryFamily = {
   ],
 };
 
-describe('getSubcategoryTotal', () => {
-  it('returns total for matching subcategory in primary category', () => {
-    expect(
-      getSubTotal(
-        mockFamily,
-        PrimaryBudgetCategoryEnum.Utilities,
-        SubBudgetCategoryEnum.UtilitiesInternet,
-      ),
-    ).toBe(100);
-    expect(
-      getSubTotal(
-        mockFamily,
-        PrimaryBudgetCategoryEnum.Utilities,
-        SubBudgetCategoryEnum.UtilitiesGas,
-      ),
-    ).toBe(200);
-  });
-});
-
 describe('getPrimaryCategoryTotal', () => {
   it('returns sum of all subcategory amounts for primary category', () => {
-    expect(
-      getPrimaryTotal(mockFamily, PrimaryBudgetCategoryEnum.Utilities),
-    ).toBe(300);
+    expect(getPrimaryTotal(mockFamily.primaryBudgetCategories[0])).toBe(300);
   });
 
   describe('getMinistryExpensesTotal', () => {

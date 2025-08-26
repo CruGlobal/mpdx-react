@@ -3,30 +3,23 @@ import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GoalCalculatorReportEnum } from '../GoalCalculatorHelper';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
+import { useReportExpenses } from '../Shared/useReportExpenses/useReportExpenses';
 import { EmptySummaryReport } from './EmptySummaryReport/EmptySummaryReport';
 import { MpdGoalHeaderCards } from './MpdGoal/MpdGoalHeaderCards/MpdGoalHeaderCards';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
 import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
 import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanel';
-import { useReportExpenses } from './useReportExpenses';
 
 export const SummaryReport: React.FC = () => {
   const { t } = useTranslation();
   const { selectedReport } = useGoalCalculator();
   const theme = useTheme();
 
-  const accountListId = useAccountListId() ?? '';
-  const goalCalculationId = 'aaea272a-3f02-47da-9304-86bd408eb11d';
-
-  const { expenses, ministryExpensesTotal, loading } = useReportExpenses(
-    accountListId,
-    goalCalculationId,
-  );
+  const { expenses, ministryExpensesTotal, loading } = useReportExpenses();
 
   const goal = useMemo(() => {
     if (!expenses) {
