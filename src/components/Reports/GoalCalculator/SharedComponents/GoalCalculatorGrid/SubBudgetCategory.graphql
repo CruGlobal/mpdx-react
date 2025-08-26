@@ -1,0 +1,31 @@
+mutation UpdateSubBudgetCategory(
+  $input: SubBudgetCategoryUpdateMutationInput!
+) {
+  updateSubBudgetCategory(input: $input) {
+    subBudgetCategory {
+      id
+      label
+      amount
+    }
+  }
+}
+
+mutation CreateSubBudgetCategory(
+  $input: SubBudgetCategoryCreateMutationInput!
+) {
+  createSubBudgetCategory(input: $input) {
+    subBudgetCategory {
+      id
+      label
+      amount
+    }
+  }
+}
+
+mutation DeleteSubBudgetCategory(
+  $input: SubBudgetCategoryDeleteMutationInput!
+) {
+  deleteSubBudgetCategory(input: $input) {
+    id
+  }
+}

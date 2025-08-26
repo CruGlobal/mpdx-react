@@ -20,6 +20,7 @@ import {
   GridValidRowModel,
 } from '@mui/x-data-grid';
 import { Form, Formik, useFormikContext } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
@@ -30,6 +31,11 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { useUpdatePrimaryBudgetCategoryMutation } from './PrimaryBudgetCategory.generated';
 import { StyledGrid } from './StyledGrid';
+import {
+  useCreateSubBudgetCategoryMutation,
+  useDeleteSubBudgetCategoryMutation,
+  useUpdateSubBudgetCategoryMutation,
+} from './SubBudgetCategory.generated';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -140,6 +146,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   category,
 }) => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
@@ -148,6 +155,9 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const accountListId = useAccountListId() ?? '';
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
+  const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
+  const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
+  const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
 
   const totalAmount = values.gridData.reduce(
     (sum, item) => sum + item.amount,
@@ -171,6 +181,11 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             directInput: value,
           },
         },
+        onError: () => {
+          enqueueSnackbar(t('Failed to update budget category'), {
+            variant: 'error',
+          });
+        },
       });
     },
     500
@@ -192,24 +207,59 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   };
 
   const addExpense = () => {
-    const numericIds = values.gridData
-      .map((item) => parseInt(item.id.toString(), 10))
-      .filter((id) => !isNaN(id));
-    const newId = Math.max(...numericIds, 0) + 1;
-    const newIncomeItem = {
-      id: newId.toString(),
-      label: t('New Income'),
-      amount: 0,
-    };
-    const updatedData = [...values.gridData, newIncomeItem];
-    setFieldValue('gridData', updatedData);
+    // Create new sub-budget category on the server first
+    createSubBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            primaryBudgetCategoryId: category.id,
+            label: t('New Income'),
+            amount: 0,
+          },
+        },
+      },
+      onCompleted: (result) => {
+        if (result.createSubBudgetCategory?.subBudgetCategory) {
+          const serverCategory =
+            result.createSubBudgetCategory.subBudgetCategory;
+          const newIncomeItem = {
+            id: serverCategory.id,
+            label: serverCategory.label,
+            amount: serverCategory.amount,
+          };
+          const updatedData = [...values.gridData, newIncomeItem];
+          setFieldValue('gridData', updatedData);
+        }
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to add line item'), {
+          variant: 'error',
+        });
+      },
+    });
   };
 
   const handleDelete = (id: string | number) => {
-    const updatedData = values.gridData.filter(
-      (item) => item.id !== id.toString()
-    );
-    setFieldValue('gridData', updatedData);
+    deleteSubBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          id: id.toString(),
+        },
+      },
+      onCompleted: () => {
+        const updatedData = values.gridData.filter(
+          (item) => item.id !== id.toString()
+        );
+        setFieldValue('gridData', updatedData);
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to delete line item'), {
+          variant: 'error',
+        });
+      },
+    });
   };
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
@@ -227,6 +277,25 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
         : item,
     );
     setFieldValue('gridData', updatedData);
+
+    updateSubBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            id: newRow.id as string,
+            label: newRow.label as string,
+            amount: newRow.amount as number,
+          },
+        },
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to update line item'), {
+          variant: 'error',
+        });
+      },
+    });
+
     return newRow;
   };
 
