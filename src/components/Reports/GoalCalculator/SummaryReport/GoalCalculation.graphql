@@ -8,6 +8,7 @@ query GoalCalculation($accountListId: ID!, $goalCalculationId: ID!) {
       label
       primaryBudgetCategories {
         id
+        directInput
         category
         label
         subBudgetCategories {
