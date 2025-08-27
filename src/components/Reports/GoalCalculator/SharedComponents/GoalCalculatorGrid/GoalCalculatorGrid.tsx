@@ -15,18 +15,15 @@ import {
 import {
   GridActionsCellItem,
   GridColDef,
+  GridRenderCellParams,
   GridValidRowModel,
 } from '@mui/x-data-grid';
-import { Form, Formik, useFormikContext } from 'formik';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
 import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { useUpdatePrimaryBudgetCategoryMutation } from './PrimaryBudgetCategory.generated';
 import { StyledGrid } from './StyledGrid';
 import {
@@ -34,113 +31,87 @@ import {
   useDeleteSubBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
 } from './SubBudgetCategory.generated';
+import { validateRowData } from './gridErrorHelpers';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   paddingTop: theme.spacing(2),
 }));
 
-const StyledAddButton = styled(Button)({
-  color: 'primary.main',
-});
-
-const StyledBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  marginBottom: theme.spacing(2),
+const ErrorCell = styled(Box)(({ theme }) => ({
+  height: '100%',
+  border: `2px solid ${theme.palette.error.main}`,
 }));
-
-const StyledGridContainer = styled(Box)({
-  height: 'auto',
-  width: '100%',
-});
-
-export interface GoalCalculatorGridFormValues {
-  gridData: Array<{
-    id: string;
-    label: string;
-    amount: number;
-  }>;
-  lumpSumAmount: number;
-}
 
 interface GoalCalculatorGridProps {
   category: PrimaryBudgetCategory;
   promptText?: string;
-  rightPanelContent?: JSX.Element;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
   promptText,
 }) => {
-  const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
 
-  const initialValues: GoalCalculatorGridFormValues = {
-    gridData: (category.subBudgetCategories || []).map((subCategory) => ({
+  const [gridData, setGridData] = useState(
+    (category.subBudgetCategories || []).map((subCategory) => ({
       id: subCategory.id,
       label: subCategory.label,
       amount: subCategory.amount,
-    })),
-    lumpSumAmount: category.directInput || 0,
-  };
-
-  const validationSchema = yup.object({
-    gridData: yup
-      .array()
-      .of(
-        yup.object({
-          id: yup.string().required(),
-          label: yup
-            .string()
-            .min(2, t('Name must be at least 2 characters'))
-            .required(t('Name is required')),
-          amount: yup
-            .number()
-            .min(0, t('Amount must be positive'))
-            .required(t('Amount is required')),
-        })
-      )
-      .optional(),
-    lumpSumAmount: yup.number().min(0, t('Amount must be positive')).optional(),
-  });
-
-  const handleSubmit = () => {
-    // Handle form submission here
-    // TODO: Implement form submission logic
-    handleContinue();
-  };
+    }))
+  );
+  const [lumpSumAmount, setLumpSumAmount] = useState(category.directInput || 0);
+  const [cellErrors, setCellErrors] = useState<Record<string, string[]>>({});
 
   return (
     <>
-      {promptText && <StyledSectionTitle>{t(promptText)}</StyledSectionTitle>}
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        <Form>
-          <GoalCalculatorGridForm category={category} />
-        </Form>
-      </Formik>
+      {promptText && <Typography sx={{ mb: 2 }}>{t(promptText)}</Typography>}
+      <GoalCalculatorGridForm
+        category={category}
+        gridData={gridData}
+        setGridData={setGridData}
+        lumpSumAmount={lumpSumAmount}
+        setLumpSumAmount={setLumpSumAmount}
+        cellErrors={cellErrors}
+        setCellErrors={setCellErrors}
+      />
     </>
   );
 };
 
 interface GoalCalculatorGridFormProps {
   category: PrimaryBudgetCategory;
+  gridData: Array<{
+    id: string;
+    label: string;
+    amount: number;
+  }>;
+  setGridData: React.Dispatch<
+    React.SetStateAction<
+      Array<{
+        id: string;
+        label: string;
+        amount: number;
+      }>
+    >
+  >;
+  lumpSumAmount: number;
+  setLumpSumAmount: React.Dispatch<React.SetStateAction<number>>;
+  cellErrors: Record<string, string[]>;
+  setCellErrors: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   category,
+  gridData,
+  setGridData,
+  lumpSumAmount,
+  setLumpSumAmount,
+  cellErrors,
+  setCellErrors,
 }) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
-  const { values, setFieldValue } =
-    useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
   const { label: categoryName, directInput: categoryDirectInput } = category;
   const accountListId = useAccountListId() ?? '';
@@ -150,13 +121,10 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
 
-  const totalAmount = values.gridData.reduce(
-    (sum, item) => sum + item.amount,
-    0
-  );
+  const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
 
   const dataWithTotal = [
-    ...values.gridData,
+    ...gridData,
     { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
@@ -172,20 +140,13 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             directInput: value,
           },
         },
-        onError: () => {
-          enqueueSnackbar(t('Failed to update budget category'), {
-            variant: 'error',
-          });
-        },
       });
     },
     500
   );
 
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
-    const valueToSet = enableDirectInput
-      ? values.lumpSumAmount || totalAmount
-      : null;
+    const valueToSet = enableDirectInput ? lumpSumAmount || totalAmount : null;
     setDirectInput(enableDirectInput);
     debouncedUpdateMutation(valueToSet);
   };
@@ -193,12 +154,11 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const handleLumpSumChange = (value: string | number) => {
     const numericValue =
       typeof value === 'string' ? parseFloat(value) || 0 : value;
-    setFieldValue('lumpSumAmount', numericValue);
+    setLumpSumAmount(numericValue);
     debouncedUpdateMutation(numericValue);
   };
 
   const addExpense = () => {
-    // Create new sub-budget category on the server first
     createSubBudgetCategory({
       variables: {
         input: {
@@ -219,36 +179,26 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             label: serverCategory.label,
             amount: serverCategory.amount,
           };
-          const updatedData = [...values.gridData, newIncomeItem];
-          setFieldValue('gridData', updatedData);
+          const updatedData = [...gridData, newIncomeItem];
+          setGridData(updatedData);
         }
-      },
-      onError: () => {
-        enqueueSnackbar(t('Failed to add line item'), {
-          variant: 'error',
-        });
       },
     });
   };
 
   const handleDelete = (id: string | number) => {
+    const rowId = id.toString();
+
     deleteSubBudgetCategory({
       variables: {
         input: {
           accountListId,
-          id: id.toString(),
+          id: rowId,
         },
       },
       onCompleted: () => {
-        const updatedData = values.gridData.filter(
-          (item) => item.id !== id.toString()
-        );
-        setFieldValue('gridData', updatedData);
-      },
-      onError: () => {
-        enqueueSnackbar(t('Failed to delete line item'), {
-          variant: 'error',
-        });
+        const updatedData = gridData.filter((item) => item.id !== rowId);
+        setGridData(updatedData);
       },
     });
   };
@@ -258,7 +208,27 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       return newRow;
     }
 
-    const updatedData = values.gridData.map((item) =>
+    const rowId = newRow.id as string;
+    const label = newRow.label as string;
+    const amount = newRow.amount as number;
+    const validationResult = validateRowData(rowId, label, amount);
+
+    if (validationResult.hasErrors) {
+      setCellErrors((prev) => ({
+        ...prev,
+        ...validationResult.errors,
+      }));
+      return newRow;
+    }
+
+    setCellErrors((prev) => {
+      const updated = { ...prev };
+      delete updated[`${rowId}-label`];
+      delete updated[`${rowId}-amount`];
+      return updated;
+    });
+
+    const updatedData = gridData.map((item) =>
       item.id === newRow.id
         ? {
             ...item,
@@ -267,7 +237,8 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           }
         : item
     );
-    setFieldValue('gridData', updatedData);
+
+    setGridData(updatedData);
 
     updateSubBudgetCategory({
       variables: {
@@ -280,14 +251,32 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           },
         },
       },
-      onError: () => {
-        enqueueSnackbar(t('Failed to update line item'), {
-          variant: 'error',
-        });
-      },
     });
 
     return newRow;
+  };
+
+  const renderLabelCell = (params: GridRenderCellParams) => {
+    const cellKey = `${params.id}-label`;
+    const hasError = cellErrors[cellKey];
+
+    if (hasError) {
+      return <ErrorCell title={hasError[0]}>{params.value}</ErrorCell>;
+    }
+
+    return params.value;
+  };
+
+  const renderAmountCell = (params: GridRenderCellParams) => {
+    const cellKey = `${params.id}-amount`;
+    const hasError = cellErrors[cellKey];
+    const formattedValue = currencyFormat(params.value, 'USD', locale);
+
+    if (hasError) {
+      return <ErrorCell title={hasError[0]}>{formattedValue}</ErrorCell>;
+    }
+
+    return formattedValue;
   };
 
   const columns: GridColDef[] = [
@@ -297,6 +286,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       flex: 1,
       minWidth: 200,
       editable: true,
+      renderCell: renderLabelCell,
     },
     {
       field: 'amount',
@@ -307,7 +297,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       type: 'number',
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) => currencyFormat(params.value, 'USD', locale),
+      renderCell: renderAmountCell,
     },
     {
       field: 'actions',
@@ -335,7 +325,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   return (
     <>
-      <StyledBox>
+      <Box sx={{ mb: 2 }}>
         <Typography variant="h6" component="span" sx={{ mr: 2 }}>
           {categoryName}
         </Typography>
@@ -358,7 +348,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             {t('Line Item')}
           </Button>
         </ButtonGroup>
-      </StyledBox>
+      </Box>
       <StyledCard>
         {directInput ? (
           <Box sx={{ p: 2 }}>
@@ -367,29 +357,29 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
               size="small"
               label={t('Total')}
               type="number"
-              value={values.lumpSumAmount}
+              value={lumpSumAmount}
               onChange={(e) => handleLumpSumChange(e.target.value)}
               sx={{ mb: 2 }}
             />
           </Box>
         ) : (
           <>
-            <StyledAddButton
+            <Button
               variant="text"
               onClick={addExpense}
               size="small"
               startIcon={<AddIcon />}
             >
               {t('Add Line Item')}
-            </StyledAddButton>
+            </Button>
 
-            <StyledGridContainer>
+            <Box>
               <StyledGrid
                 rows={dataWithTotal}
                 columns={columns}
                 processRowUpdate={processRowUpdate}
               />
-            </StyledGridContainer>
+            </Box>
           </>
         )}
       </StyledCard>
