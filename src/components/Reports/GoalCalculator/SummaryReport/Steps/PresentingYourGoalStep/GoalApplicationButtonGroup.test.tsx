@@ -54,7 +54,7 @@ describe('GoalApplicationButtonGroup', () => {
     expect(
       queryByRole('button', { name: /finish & apply goal/i }),
     ).not.toBeInTheDocument();
-    expect(queryByRole(saveWithoutApplyingButton)).not.toBeInTheDocument();
+    expect(saveWithoutApplyingButton).not.toBeInTheDocument();
   });
 
   it('shows loading state when "Finish & Apply Goal" is clicked', async () => {
