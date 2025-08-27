@@ -42,11 +42,11 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
       birthdayYear,
       birthdayMonth,
       birthdayDay,
-      locale
+      locale,
     );
 
     setBackupBirthdayDate(
-      date.formattedInvalidDate as unknown as DateTime<boolean>
+      date.formattedInvalidDate as unknown as DateTime<boolean>,
     );
     if (date.dateTime.invalidExplanation) {
       setBirthdayDateIsInvalid(true);
@@ -75,7 +75,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
 
   const birthdayDate = useMemo(
     () => buildDate(birthdayMonth, birthdayDay, birthdayYear),
-    [birthdayMonth, birthdayDay, birthdayYear]
+    [birthdayMonth, birthdayDay, birthdayYear],
   );
 
   return (

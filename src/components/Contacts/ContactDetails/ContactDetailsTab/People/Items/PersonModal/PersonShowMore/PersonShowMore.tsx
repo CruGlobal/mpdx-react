@@ -78,11 +78,11 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
       anniversaryYear,
       anniversaryMonth,
       anniversaryDay,
-      locale
+      locale,
     );
 
     setBackupAnniversaryDate(
-      date.formattedInvalidDate as unknown as DateTime<boolean>
+      date.formattedInvalidDate as unknown as DateTime<boolean>,
     );
     if (date.dateTime.invalidExplanation) {
       setAnniversaryDateIsInvalid(true);
@@ -97,7 +97,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
 
   const anniversaryDate = useMemo(
     () => buildDate(anniversaryMonth, anniversaryDay, anniversaryYear),
-    [anniversaryMonth, anniversaryDay, anniversaryYear]
+    [anniversaryMonth, anniversaryDay, anniversaryYear],
   );
 
   const handleOnDateEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
