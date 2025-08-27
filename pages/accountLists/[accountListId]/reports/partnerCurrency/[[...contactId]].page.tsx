@@ -10,7 +10,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { ReportPageWrapper } from 'src/components/Shared/styledComponents/styledComponents';
+import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import {
   ContactPanelProvider,
   useContactPanel,

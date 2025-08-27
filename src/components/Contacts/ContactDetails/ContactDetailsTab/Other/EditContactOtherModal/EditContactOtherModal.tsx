@@ -20,10 +20,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
-import {
-  ContactEditContainer,
-  LoadingIndicator,
-} from 'src/components/Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
+import { ContactEditContainer } from 'src/components/Shared/styledComponents/styledComponents';
 import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import {
   CancelButton,

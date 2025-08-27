@@ -16,8 +16,8 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import {
-  LoadingIndicator,
   LogFormControl,
   LogFormLabel,
   LogTextField,

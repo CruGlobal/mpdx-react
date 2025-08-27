@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import {
   CancelButton,
   DeleteButton,

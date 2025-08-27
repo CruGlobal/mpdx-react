@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import {
   CancelButton,
   SubmitButton,

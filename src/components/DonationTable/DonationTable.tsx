@@ -33,10 +33,8 @@ import {
   DynamicEditDonationModal,
   preloadEditDonationModal,
 } from '../EditDonationModal/DynamicEditDonationModal';
-import {
-  LoadingBox,
-  LoadingIndicator,
-} from '../Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from '../Shared/styledComponents/LoadingIndicator';
+import { LoadingBox } from '../Shared/styledComponents/styledComponents';
 import { useContactPanel } from '../common/ContactPanelProvider/ContactPanelProvider';
 import {
   DonationTableQueryVariables,

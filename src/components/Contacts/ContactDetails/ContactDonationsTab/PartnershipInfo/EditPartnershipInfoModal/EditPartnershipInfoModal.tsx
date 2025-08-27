@@ -25,7 +25,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { LikelyToGiveSelect } from 'src/components/common/LikelyToGiveSelect/LikelyToGiveSelect';
