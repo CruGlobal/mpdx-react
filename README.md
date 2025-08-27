@@ -93,6 +93,7 @@ Note: there is a test account you can use. Get this from another developer if yo
 - `DATADOG_CLIENT_TOKEN` - Datadog tracking client token.
 - `DD_ENV` - Datadog environment.
 - `HELPJUICE_ORIGIN` - Helpjuice origin for documentation and user support (example: `https://www.helpducks.org`)
+- `HELPJUICE_SUBDOMAIN` - Helpjuice subdomain for documentation and user support (example: `helpducks`)
 - `HELPJUICE_KNOWLEDGE_BASE_URL` - Knowledge base page to make the Helpjuice "Visit Knowledge Base" page link to (example: `https://www.helpducks.org/mpdx`)
 - `HELPJUICE_PARENT_CATEGORY` - The numerical value for the parent category within Helpjuice to search (example: `434642`)
 - `HELPJUICE_CATEGORY_ID` - The numerical value for the category ID within Helpjuice which contains popular documents (example: `472031`)
