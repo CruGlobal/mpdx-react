@@ -14,7 +14,7 @@ export const SettingsStep: React.FC = () => {
   const { data } = goalCalculationResult;
   const { t } = useTranslation();
   const specialFamilyPrimaryBudgetCategories =
-    data?.goalCalculation?.specialFamily?.primaryBudgetCategories;
+    data?.goalCalculation.specialFamily.primaryBudgetCategories;
 
   return (
     <GoalCalculatorLayout
