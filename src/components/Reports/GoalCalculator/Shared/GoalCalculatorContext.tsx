@@ -83,7 +83,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const handleStepChange = useCallback(
     (newStep: GoalCalculatorStepEnum) => {
       const newIndex = steps.findIndex((step) => step.step === newStep);
-      if (stepIndex !== -1) {
+      if (newIndex !== -1) {
         setStepIndex(newIndex);
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
@@ -95,7 +95,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   );
 
   const handleContinue = useCallback(() => {
-    if (stepIndex < steps.length) {
+    if (stepIndex < steps.length - 1) {
       setStepIndex(stepIndex + 1);
     } else {
       enqueueSnackbar(t('You have reached the end of the goal calculator.'), {
