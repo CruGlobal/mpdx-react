@@ -3,15 +3,56 @@ import { TextField } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDebouncedCallback } from 'src/hooks/useDebounce';
+import {
+  useCreateGoalCalculationMutation,
+  useGoalCalculationQuery,
+} from './GoalCalculation.generated';
 
 export const SettingsCategory: React.FC = () => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId() ?? '';
+  // const { query } = useRouter();
+  // const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
 
-  /*
-   * TODO: Check if title exists when fetching goal,
-   * replace below with query data when available.
-   */
-  const goalTitle = '';
+  const goalCalculationId = 'c087c032-6383-480b-bf1d-ce33b827fab7';
+
+  const { data: goalData } = useGoalCalculationQuery({
+    variables: {
+      accountListId: accountListId,
+      goalCalculationId: goalCalculationId,
+    },
+  });
+
+  const goalTitle = goalData?.goalCalculation.name ?? '';
+
+  const [updateGoalCalculation] = useCreateGoalCalculationMutation();
+  const handleUpdateGoalTitle = (title: string) => {
+    updateGoalCalculation({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            name: title,
+          },
+        },
+      },
+      optimisticResponse: {
+        createGoalCalculation: {
+          __typename: 'GoalCalculationCreateMutationPayload',
+          goalCalculation: {
+            id: goalCalculationId,
+            name: title,
+          },
+        },
+      },
+    });
+  };
+
+  const debouncedUpdateGoalTitle = useDebouncedCallback((title: string) => {
+    handleUpdateGoalTitle(title);
+  }, 500);
 
   const validationSchema = yup.object({
     goalTitle: yup
@@ -21,15 +62,11 @@ export const SettingsCategory: React.FC = () => {
       .required('Goal title is a required field'),
   });
 
-  const handleSubmit = () => {
-    // TODO: mutate/update goal title here
-  };
-
   return (
     <Formik
       initialValues={{ goalTitle }}
       validationSchema={validationSchema}
-      onSubmit={handleSubmit}
+      onSubmit={() => {}}
     >
       {({ errors, setFieldTouched, handleChange }) => (
         <Form>
@@ -41,8 +78,10 @@ export const SettingsCategory: React.FC = () => {
             error={!!errors.goalTitle}
             helperText={errors.goalTitle}
             onChange={(event: React.SyntheticEvent) => {
+              const value = (event.target as HTMLInputElement).value;
               handleChange(event);
               setFieldTouched('goalTitle', true, false);
+              debouncedUpdateGoalTitle(value);
             }}
           />
         </Form>

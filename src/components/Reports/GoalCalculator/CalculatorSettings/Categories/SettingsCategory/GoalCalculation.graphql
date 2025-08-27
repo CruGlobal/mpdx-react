@@ -1,0 +1,14 @@
+query GoalCalculation($accountListId: ID!, $goalCalculationId: ID!) {
+  goalCalculation(accountListId: $accountListId, id: $goalCalculationId) {
+    name
+  }
+}
+
+mutation CreateGoalCalculation($input: GoalCalculationCreateMutationInput!) {
+  createGoalCalculation(input: $input) {
+    goalCalculation {
+      id
+      name
+    }
+  }
+}
