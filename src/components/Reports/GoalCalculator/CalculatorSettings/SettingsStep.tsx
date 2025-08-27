@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
+import { getPrimaryCategoryRightPanel } from '../RightPanels/rightPanels';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
@@ -22,12 +23,19 @@ export const SettingsStep: React.FC = () => {
       mainContent={
         <SectionPage>
           <GoalCalculatorSection
+            title={t('Information')}
             subtitle={t('Take a moment to verify your information.')}
           >
             <InformationCategory />
           </GoalCalculatorSection>
           {specialFamilyPrimaryBudgetCategories?.map((category) => (
-            <GoalCalculatorSection key={category.id} subtitle={category.label}>
+            <GoalCalculatorSection
+              key={category.id}
+              title={category.label}
+              rightPanelContent={
+                getPrimaryCategoryRightPanel(category.category) ?? undefined
+              }
+            >
               <GoalCalculatorGrid
                 category={category as PrimaryBudgetCategory}
               />

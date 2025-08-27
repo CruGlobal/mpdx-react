@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FunctionsIcon from '@mui/icons-material/Functions';
-import InfoIcon from '@mui/icons-material/Info';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
   Box,
   Button,
   ButtonGroup,
   Card,
-  IconButton,
   TextField,
   Typography,
   styled,
@@ -75,7 +73,6 @@ interface GoalCalculatorGridProps {
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
   promptText,
-  rightPanelContent,
 }) => {
   const { handleContinue } = useGoalCalculator();
   const { t } = useTranslation();
@@ -126,10 +123,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         enableReinitialize
       >
         <Form>
-          <GoalCalculatorGridForm
-            category={category}
-            rightPanelContent={rightPanelContent}
-          />
+          <GoalCalculatorGridForm category={category} />
         </Form>
       </Formik>
     </>
@@ -137,12 +131,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 };
 
 interface GoalCalculatorGridFormProps {
-  rightPanelContent?: JSX.Element;
   category: PrimaryBudgetCategory;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
-  rightPanelContent,
   category,
 }) => {
   const { t } = useTranslation();
@@ -150,7 +142,6 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const { values, setFieldValue } =
     useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
-  const { setRightPanelContent } = useGoalCalculator();
   const { label: categoryName, directInput: categoryDirectInput } = category;
   const accountListId = useAccountListId() ?? '';
   const [updatePrimaryBudgetCategory] =
@@ -367,19 +358,6 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
             {t('Line Item')}
           </Button>
         </ButtonGroup>
-        <Typography variant="h6">
-          {rightPanelContent && (
-            <IconButton
-              className="print-hidden"
-              onClick={() => {
-                rightPanelContent && setRightPanelContent(rightPanelContent);
-              }}
-              aria-label={t('Show additional info')}
-            >
-              <InfoIcon />
-            </IconButton>
-          )}
-        </Typography>
       </StyledBox>
       <StyledCard>
         {directInput ? (
