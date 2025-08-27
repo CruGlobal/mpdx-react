@@ -29,15 +29,12 @@ export const SettingsStep: React.FC = () => {
             <InformationCategory />
           </GoalCalculatorSection>
           {specialFamilyPrimaryBudgetCategories?.map((category) => (
-            <GoalCalculatorSection
-              key={category.id}
-              title={category.label}
-              rightPanelContent={
-                getPrimaryCategoryRightPanel(category.category) ?? undefined
-              }
-            >
+            <GoalCalculatorSection key={category.id}>
               <GoalCalculatorGrid
                 category={category as PrimaryBudgetCategory}
+                rightPanelContent={
+                  getPrimaryCategoryRightPanel(category.category) ?? undefined
+                }
               />
             </GoalCalculatorSection>
           ))}

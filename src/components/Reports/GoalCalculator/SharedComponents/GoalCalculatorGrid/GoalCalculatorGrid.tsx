@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FunctionsIcon from '@mui/icons-material/Functions';
+import InfoIcon from '@mui/icons-material/Info';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
   Box,
   Button,
   ButtonGroup,
   Card,
+  IconButton,
   TextField,
   Typography,
   styled,
@@ -24,6 +26,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { useUpdatePrimaryBudgetCategoryMutation } from './PrimaryBudgetCategory.generated';
 import { StyledGrid } from './StyledGrid';
 import {
@@ -46,11 +49,13 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 interface GoalCalculatorGridProps {
   category: PrimaryBudgetCategory;
   promptText?: string;
+  rightPanelContent?: JSX.Element;
 }
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
   promptText,
+  rightPanelContent,
 }) => {
   const { t } = useTranslation();
 
@@ -75,6 +80,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         setLumpSumAmount={setLumpSumAmount}
         cellErrors={cellErrors}
         setCellErrors={setCellErrors}
+        rightPanelContent={rightPanelContent}
       />
     </>
   );
@@ -100,6 +106,7 @@ interface GoalCalculatorGridFormProps {
   setLumpSumAmount: React.Dispatch<React.SetStateAction<number>>;
   cellErrors: Record<string, string[]>;
   setCellErrors: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
+  rightPanelContent?: JSX.Element;
 }
 
 const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
@@ -110,6 +117,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   setLumpSumAmount,
   cellErrors,
   setCellErrors,
+  rightPanelContent,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -120,7 +128,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
-
+  const { setRightPanelContent } = useGoalCalculator();
   const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
 
   const dataWithTotal = [
@@ -325,29 +333,49 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
 
   return (
     <>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h6" component="span" sx={{ mr: 2 }}>
-          {categoryName}
-        </Typography>
+      <Box
+        sx={{
+          mb: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h6" component="span" sx={{ mr: 3 }}>
+            {categoryName}
+          </Typography>
 
-        <ButtonGroup sx={{ mb: 1 }}>
-          <Button
-            variant={directInput ? 'contained' : 'outlined'}
-            size="small"
-            onClick={() => handleDirectInputToggle(true)}
-            startIcon={<FunctionsIcon />}
+          <ButtonGroup>
+            <Button
+              variant={directInput ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => handleDirectInputToggle(true)}
+              startIcon={<FunctionsIcon />}
+            >
+              {t('Lump Sum')}
+            </Button>
+            <Button
+              size="small"
+              variant={!directInput ? 'contained' : 'outlined'}
+              onClick={() => handleDirectInputToggle(false)}
+              startIcon={<ViewHeadlineIcon />}
+            >
+              {t('Line Item')}
+            </Button>
+          </ButtonGroup>
+        </Box>
+        {rightPanelContent && (
+          <IconButton
+            className="print-hidden"
+            onClick={() => {
+              rightPanelContent && setRightPanelContent(rightPanelContent);
+            }}
+            aria-label={t('Show additional info')}
           >
-            {t('Lump Sum')}
-          </Button>
-          <Button
-            size="small"
-            variant={!directInput ? 'contained' : 'outlined'}
-            onClick={() => handleDirectInputToggle(false)}
-            startIcon={<ViewHeadlineIcon />}
-          >
-            {t('Line Item')}
-          </Button>
-        </ButtonGroup>
+            <InfoIcon />
+          </IconButton>
+        )}
       </Box>
       <StyledCard>
         {directInput ? (
