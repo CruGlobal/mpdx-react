@@ -13,6 +13,7 @@ import {
 export const SettingsCategory: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
+  // temporary
   const goalCalculationId = '5d8291d7-df70-470b-b1ea-964acbef16c1';
 
   const { data: goalData } = useGoalCalculationQuery({
