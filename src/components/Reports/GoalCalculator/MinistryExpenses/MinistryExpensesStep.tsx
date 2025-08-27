@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Typography, styled } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
-import { Step } from '../SharedComponents/Step/Step';
+import { ExpensesStep } from '../SharedComponents/ExpensesStep/ExpensesStep';
 
 const InstructionsWrapper = styled('div')(({ theme }) => ({
   '.MuiTypography-root': {
@@ -40,7 +40,7 @@ export const MinistryExpensesStep: React.FC = () => {
   const { data } = goalCalculationResult;
 
   return (
-    <Step
+    <ExpensesStep
       instructions={<Instructions />}
       family={data?.goalCalculation?.ministryFamily}
     />

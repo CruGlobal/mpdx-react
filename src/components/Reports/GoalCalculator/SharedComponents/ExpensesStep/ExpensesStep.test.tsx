@@ -10,7 +10,7 @@ import {
   BudgetFamilyFragment,
   BudgetFamilyFragmentDoc,
 } from '../../Shared/GoalCalculation.generated';
-import { Step } from './Step';
+import { ExpensesStep } from './ExpensesStep';
 
 // Mock for performance because it is expensive to render the DataGrid
 jest.mock('../GoalCalculatorGrid/GoalCalculatorGrid', () => ({
@@ -32,19 +32,28 @@ const TestComponent: React.FC<TestComponentProps> = ({
   family = mockBudgetFamily,
 }) => (
   <GoalCalculatorTestWrapper>
-    <Step
-      instructions={<h1>Instructions</h1>}
-      family={family}
-      additionalComponent={<div>Additional Component</div>}
-    />
+    <ExpensesStep instructions={<h1>Instructions</h1>} family={family} />
   </GoalCalculatorTestWrapper>
 );
 
-describe('Step', () => {
-  it('renders with instructions', () => {
+describe('ExpensesStep', () => {
+  it('renders with instructions and budget categories', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Instructions' })).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'Ministry & Medical Mileage' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'Account Transfers' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders section list with family sections', async () => {
+    const { findAllByText, getAllByText } = render(<TestComponent />);
+
+    expect(await findAllByText('Ministry & Medical Mileage')).toHaveLength(2);
+    expect(getAllByText('Account Transfers')).toHaveLength(2);
   });
 
   it('renders GoalCalculatorGrid for each category', () => {
