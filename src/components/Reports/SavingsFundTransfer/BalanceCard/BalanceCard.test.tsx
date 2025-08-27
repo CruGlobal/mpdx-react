@@ -63,6 +63,7 @@ describe('BalanceCard', () => {
     const { getByText, getByRole } = render(<Components />);
 
     expect(getByText('Primary Account Balance')).toBeInTheDocument();
+    expect(getByText('Current Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
@@ -160,7 +161,8 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByText('-$500.00')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toHaveStyle('color: rgb(211, 47, 47)');
     });
 
     it('should handle decimal precision correctly', () => {

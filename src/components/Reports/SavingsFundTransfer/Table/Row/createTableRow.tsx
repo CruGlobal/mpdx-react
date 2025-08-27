@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { TFunction } from 'i18next';
-import { dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
 import { RenderCell } from '../TransferHistoryTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
@@ -47,9 +47,8 @@ export const populateTransferHistoryRows = (
   const amount: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.amount?.toLocaleString(locale, {
-          style: 'currency',
-          currency: 'USD',
+        {currencyFormat(row.amount ?? 0, 'USD', locale, {
+          showTrailingZeros: true,
         })}
       </Typography>
     );

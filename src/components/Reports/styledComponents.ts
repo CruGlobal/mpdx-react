@@ -1,6 +1,16 @@
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, TableRow } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
+
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '@media print': {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.cruGrayLight.main,
+      WebkitPrintColorAdjust: 'exact',
+      printColorAdjust: 'exact',
+    },
+  },
+}));
 
 export const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
