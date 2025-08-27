@@ -26,14 +26,13 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
       <SectionPage>
         {instructions}
         {family?.primaryBudgetCategories.map((category) => (
-          <GoalCalculatorSection
-            key={category.id}
-            title={category.label}
-            rightPanelContent={
-              getPrimaryCategoryRightPanel(category.category) ?? undefined
-            }
-          >
-            <GoalCalculatorGrid category={category as PrimaryBudgetCategory} />
+          <GoalCalculatorSection key={category.id}>
+            <GoalCalculatorGrid
+              category={category as PrimaryBudgetCategory}
+              rightPanelContent={
+                getPrimaryCategoryRightPanel(category.category) ?? undefined
+              }
+            />
           </GoalCalculatorSection>
         ))}
       </SectionPage>
