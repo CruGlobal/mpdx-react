@@ -14,7 +14,10 @@ mutation UpdateHouseholdDirectInput(
   $directInput: Float
 ) {
   updateBudgetFamily(
-    input: { accountListId: $accountListId, id: $id, directInput: $directInput }
+    input: {
+      accountListId: $accountListId
+      attributes: { id: $id, directInput: $directInput }
+    }
   ) {
     budgetFamily {
       id
