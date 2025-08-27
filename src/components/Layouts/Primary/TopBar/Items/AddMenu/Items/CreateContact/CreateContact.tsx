@@ -6,8 +6,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import {
-  LoadingIndicator,
   LogFormControl,
   LogFormLabel,
   LogTextField,

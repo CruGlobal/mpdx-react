@@ -25,9 +25,9 @@ import {
   DonationTableQueryVariables,
   useDonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import {
   LoadingBox,
-  LoadingIndicator,
   StyledCheckbox,
 } from 'src/components/Shared/styledComponents/styledComponents';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';

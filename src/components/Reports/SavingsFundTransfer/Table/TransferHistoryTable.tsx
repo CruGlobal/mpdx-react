@@ -6,10 +6,8 @@ import {
   GridSortModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import {
-  LoadingBox,
-  LoadingIndicator,
-} from 'src/components/Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
+import { LoadingBox } from 'src/components/Shared/styledComponents/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';

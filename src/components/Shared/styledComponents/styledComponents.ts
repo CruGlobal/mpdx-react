@@ -2,7 +2,6 @@ import FilterList from '@mui/icons-material/FilterList';
 import {
   Box,
   Checkbox,
-  CircularProgress,
   DialogActions,
   DialogContentText,
   FormControl,
@@ -12,10 +11,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
-
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 export const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
@@ -78,10 +73,6 @@ export const StyledDialogContentText = styled(DialogContentText)(
     color: theme.palette.cruGrayDark.main,
   }),
 );
-
-export const ReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 export const Header = styled(Typography)(({ theme }) => ({
   display: 'flex',
