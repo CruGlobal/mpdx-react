@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
-import { Step } from '../SharedComponents/Step/Step';
+import { ExpensesStep } from '../SharedComponents/ExpensesStep/ExpensesStep';
 import { HouseholdExpensesHeader } from './HouseholdExpensesHeader';
 
 const InstructionsWrapper = styled('div')(({ theme }) => ({
@@ -38,7 +38,7 @@ export const HouseholdExpensesStep: React.FC = () => {
   const { data } = goalCalculationResult;
 
   return (
-    <Step
+    <ExpensesStep
       instructions={
         <>
           <Instructions />

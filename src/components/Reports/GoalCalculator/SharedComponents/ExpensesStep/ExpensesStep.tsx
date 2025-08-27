@@ -9,13 +9,13 @@ import { SectionList } from '../SectionList';
 import { SectionPage } from '../SectionPage';
 import { getFamilySections } from './familySections';
 
-interface StepProps {
+interface ExpensesStepProps {
   instructions: React.ReactNode;
   family: BudgetFamilyFragment | null | undefined;
   additionalComponent?: React.ReactNode;
 }
 
-export const Step: React.FC<StepProps> = ({
+export const ExpensesStep: React.FC<ExpensesStepProps> = ({
   instructions,
   family,
   additionalComponent,
