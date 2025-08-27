@@ -22,6 +22,7 @@ export const GoalApplicationButtonGroup: React.FC<
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';
   const {} = useGoalCalculator();
+  const [buttonsHidden, setButtonsHidden] = useState(false);
 
   const onSave = async () => {
     await updateAccountPreferences({
@@ -47,6 +48,10 @@ export const GoalApplicationButtonGroup: React.FC<
     });
   };
 
+  if (buttonsHidden) {
+    return null;
+  }
+
   return (
     <Box
       sx={{
@@ -56,24 +61,26 @@ export const GoalApplicationButtonGroup: React.FC<
         mb: 2,
       }}
     >
-      <Button
-        variant="contained"
-        sx={{ mr: 2 }}
-        onClick={() => onSave()}
-        disabled={loading}
-        startIcon={loading ? <CircularProgress size={20} /> : undefined}
-      >
-        {loading ? t('Saving...') : t('Finish & Apply Goal')}
-      </Button>
-      <Button
-        variant="outlined"
-        color="primary"
-        href="https://mpdx.org/app/goal-application"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {t('Save Goal Without Applying')}
-      </Button>
+      {!buttonsHidden && (
+        <>
+          <Button
+            variant="contained"
+            sx={{ mr: 2 }}
+            onClick={() => onSave()}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} /> : undefined}
+          >
+            {loading ? t('Saving...') : t('Finish & Apply Goal')}
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setButtonsHidden(true)}
+          >
+            {t('Save Goal Without Applying')}
+          </Button>
+        </>
+      )}
     </Box>
   );
 };
