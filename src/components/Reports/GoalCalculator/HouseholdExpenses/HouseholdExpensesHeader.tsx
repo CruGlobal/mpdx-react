@@ -74,6 +74,7 @@ export const HouseholdExpensesHeader: React.FC<
     typeof directInput === 'number' ? directInput - categoriesTotal : 0;
 
   const [directInputFieldValue, setDirectInputFieldValue] = useState(0);
+  const directInputInvalid = directInputFieldValue < 0;
 
   const setDirectInput = async (directInput: number | null) => {
     const householdFamilyId = data?.goalCalculation.householdFamily.id;
@@ -138,6 +139,8 @@ export const HouseholdExpensesHeader: React.FC<
                 }
               }}
               label={t('Direct input')}
+              error={directInputInvalid}
+              helperText={directInputInvalid && t('Amount must be positive')}
               variant="outlined"
               inputProps={{
                 min: 0,
@@ -156,7 +159,12 @@ export const HouseholdExpensesHeader: React.FC<
           <CardActions>
             {editing ? (
               <>
-                <Button onClick={handleDirectInputSave}>{t('Save')}</Button>
+                <Button
+                  onClick={handleDirectInputSave}
+                  disabled={directInputInvalid}
+                >
+                  {t('Save')}
+                </Button>
                 <Button onClick={handleDirectInputCancel}>{t('Cancel')}</Button>
               </>
             ) : typeof directInput !== 'number' ? (

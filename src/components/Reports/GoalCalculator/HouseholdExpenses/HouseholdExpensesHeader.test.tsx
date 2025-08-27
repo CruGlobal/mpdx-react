@@ -124,6 +124,20 @@ describe('HouseholdExpensesHeader', () => {
       );
     });
 
+    it('direct input should validate that amount is not negative', async () => {
+      const { findByRole, getByRole, getByText } = render(<TestComponent />);
+
+      userEvent.click(await findByRole('button', { name: 'Direct input' }));
+
+      const directInputTextfield = getByRole('spinbutton', {
+        name: 'Direct input',
+      });
+      userEvent.clear(directInputTextfield);
+      userEvent.type(directInputTextfield, '-1');
+      expect(getByRole('button', { name: 'Save' })).toBeDisabled();
+      expect(getByText('Amount must be positive')).toBeInTheDocument();
+    });
+
     it('cancel should abort setting direct input', async () => {
       const { findByRole, getByRole, getByText, queryByRole } = render(
         <TestComponent />,
