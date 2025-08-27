@@ -3,6 +3,7 @@ mutation UpdatePrimaryBudgetCategory(
 ) {
   updatePrimaryBudgetCategory(input: $input) {
     primaryBudgetCategory {
+      id
       directInput
     }
   }

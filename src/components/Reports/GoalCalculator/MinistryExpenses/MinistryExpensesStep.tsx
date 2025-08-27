@@ -42,7 +42,7 @@ export const MinistryExpensesStep: React.FC = () => {
   return (
     <ExpensesStep
       instructions={<Instructions />}
-      family={data?.goalCalculation?.ministryFamily}
+      family={data?.goalCalculation.ministryFamily}
     />
   );
 };
