@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { Goal } from '../../MpdGoal/MpdGoalTable';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 
@@ -21,7 +20,7 @@ export const GoalApplicationButtonGroup: React.FC<
   const [updateAccountPreferences, { loading }] =
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';
-  const {} = useGoalCalculator();
+  const [buttonsHidden, setButtonsHidden] = useState(false);
 
   const onSave = async () => {
     await updateAccountPreferences({
@@ -56,24 +55,26 @@ export const GoalApplicationButtonGroup: React.FC<
         mb: 2,
       }}
     >
-      <Button
-        variant="contained"
-        sx={{ mr: 2 }}
-        onClick={() => onSave()}
-        disabled={loading}
-        startIcon={loading ? <CircularProgress size={20} /> : undefined}
-      >
-        {loading ? t('Saving...') : t('Finish & Apply Goal')}
-      </Button>
-      <Button
-        variant="outlined"
-        color="primary"
-        href="https://mpdx.org/app/goal-application"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {t('Save Goal Without Applying')}
-      </Button>
+      {!buttonsHidden && (
+        <>
+          <Button
+            variant="contained"
+            sx={{ mr: 2 }}
+            onClick={() => onSave()}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} /> : undefined}
+          >
+            {loading ? t('Saving...') : t('Finish & Apply Goal')}
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setButtonsHidden(true)}
+          >
+            {t('Save Goal Without Applying')}
+          </Button>
+        </>
+      )}
     </Box>
   );
 };
