@@ -6,41 +6,34 @@ import * as yup from 'yup';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import {
-  useCreateGoalCalculationMutation,
   useGoalCalculationQuery,
+  useUpdateGoalCalculationMutation,
 } from './GoalCalculation.generated';
 
 export const SettingsCategory: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
-  // const { query } = useRouter();
-  // const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
-
-  const goalCalculationId = 'c087c032-6383-480b-bf1d-ce33b827fab7';
+  const goalCalculationId = '5d8291d7-df70-470b-b1ea-964acbef16c1';
 
   const { data: goalData } = useGoalCalculationQuery({
-    variables: {
-      accountListId: accountListId,
-      goalCalculationId: goalCalculationId,
-    },
+    variables: { accountListId, goalCalculationId },
   });
 
-  const goalTitle = goalData?.goalCalculation.name ?? '';
+  const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
 
-  const [updateGoalCalculation] = useCreateGoalCalculationMutation();
-  const handleUpdateGoalTitle = (title: string) => {
+  const debouncedUpdateGoalTitle = useDebouncedCallback((title: string) => {
     updateGoalCalculation({
       variables: {
         input: {
           accountListId,
           attributes: {
+            id: goalCalculationId,
             name: title,
           },
         },
       },
       optimisticResponse: {
-        createGoalCalculation: {
-          __typename: 'GoalCalculationCreateMutationPayload',
+        updateGoalCalculation: {
           goalCalculation: {
             id: goalCalculationId,
             name: title,
@@ -48,10 +41,6 @@ export const SettingsCategory: React.FC = () => {
         },
       },
     });
-  };
-
-  const debouncedUpdateGoalTitle = useDebouncedCallback((title: string) => {
-    handleUpdateGoalTitle(title);
   }, 500);
 
   const validationSchema = yup.object({
@@ -64,11 +53,12 @@ export const SettingsCategory: React.FC = () => {
 
   return (
     <Formik
-      initialValues={{ goalTitle }}
+      initialValues={{ goalTitle: goalData?.goalCalculation?.name ?? '' }}
+      enableReinitialize
       validationSchema={validationSchema}
       onSubmit={() => {}}
     >
-      {({ errors, setFieldTouched, handleChange }) => (
+      {({ values, errors, setFieldTouched, handleChange }) => (
         <Form>
           <Field
             as={TextField}
@@ -77,11 +67,11 @@ export const SettingsCategory: React.FC = () => {
             label={t('Goal Title')}
             error={!!errors.goalTitle}
             helperText={errors.goalTitle}
-            onChange={(event: React.SyntheticEvent) => {
-              const value = (event.target as HTMLInputElement).value;
+            value={values.goalTitle}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               handleChange(event);
               setFieldTouched('goalTitle', true, false);
-              debouncedUpdateGoalTitle(value);
+              debouncedUpdateGoalTitle(event.target.value);
             }}
           />
         </Form>

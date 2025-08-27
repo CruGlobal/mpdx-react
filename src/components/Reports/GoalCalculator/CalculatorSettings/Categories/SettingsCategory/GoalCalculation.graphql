@@ -4,8 +4,8 @@ query GoalCalculation($accountListId: ID!, $goalCalculationId: ID!) {
   }
 }
 
-mutation CreateGoalCalculation($input: GoalCalculationCreateMutationInput!) {
-  createGoalCalculation(input: $input) {
+mutation UpdateGoalCalculation($input: GoalCalculationUpdateMutationInput!) {
+  updateGoalCalculation(input: $input) {
     goalCalculation {
       id
       name
