@@ -38,6 +38,12 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
+  /** Whether any mutations are currently in progress */
+  isMutating: boolean;
+  /** Call when a mutation starts */
+  onMutationStart: () => void;
+  /** Call when a mutation completes */
+  onMutationComplete: () => void;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -77,6 +83,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
+  const [mutationCount, setMutationCount] = useState(0);
+  const isMutating = mutationCount > 0;
 
   const currentStep = steps[stepIndex];
 
@@ -112,6 +120,14 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
+  const onMutationStart = useCallback(() => {
+    setMutationCount((prev) => prev + 1);
+  }, []);
+
+  const onMutationComplete = useCallback(() => {
+    setMutationCount((prev) => Math.max(0, prev - 1));
+  }, []);
+
   const contextValue = useMemo(
     (): GoalCalculatorType => ({
       steps,
@@ -127,6 +143,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isMutating,
+      onMutationStart,
+      onMutationComplete,
     }),
     [
       steps,
@@ -142,6 +161,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isMutating,
+      onMutationStart,
+      onMutationComplete,
     ],
   );
 
