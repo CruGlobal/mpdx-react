@@ -195,4 +195,40 @@ describe('DesktopDateField', () => {
       ).toEqual('MTWTFSS');
     });
   });
+
+  it('calls onChange when Enter is pressed in the field and the date is valid with a four digit year', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '6/7/2023{enter}');
+
+    expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
+      year: 2023,
+      month: 6,
+      day: 7,
+    });
+  });
+
+  it('calls onChange when Enter is pressed in the field and the date is valid with a two digit year', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '6/7/23{enter}');
+
+    expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
+      year: 2023,
+      month: 6,
+      day: 7,
+    });
+  });
+
+  it('calls onChange with null when Enter is pressed in the field and the date is empty', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '{Enter}');
+
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
+  it('calls onChange with null when Enter is pressed in the field and the date is invalid', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '6/222/0{Enter}');
+
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
 });
