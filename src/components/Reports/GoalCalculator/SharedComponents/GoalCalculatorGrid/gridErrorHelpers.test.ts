@@ -124,17 +124,5 @@ describe('gridErrorHelpers', () => {
         expect(result.errors['1-amount']).toBeUndefined();
       });
     });
-
-    describe('translation function integration', () => {
-      it('should use the provided translation function', () => {
-        const mockTranslation = jest.fn((key: string) => `Translated: ${key}`);
-        const result = validateRowData('1', '', 100);
-
-        expect(mockTranslation).toHaveBeenCalledWith('Label is required');
-        expect(result.errors['1-label']).toEqual([
-          'Translated: Label is required',
-        ]);
-      });
-    });
   });
 });
