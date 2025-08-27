@@ -12,17 +12,6 @@ import {
 import { styled } from '@mui/material/styles';
 import theme from 'src/theme';
 
-export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
-
 export const BoxWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
   height: 300,
@@ -32,6 +21,17 @@ export const BoxWrapper = styled(Box)(({ theme }) => ({
   padding: 4,
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
+
+export const LoadingBox = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.cruGrayLight.main,
+  height: 300,
+  minWidth: 700,
+  margin: 'auto',
+  padding: 4,
+  display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 }));
