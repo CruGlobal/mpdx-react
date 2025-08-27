@@ -9,6 +9,7 @@ import {
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { Fund, StaffSavingFundEnum } from '../mockData';
 import { ScreenOnly } from '../styledComponents';
@@ -27,6 +28,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
+  // will be taken from theme once mpga is merged
   const staffAccountColor = '#F08020';
   const staffConferenceSavingsColor = '#00C0D8';
   const staffSavingsColor = '#007890';
@@ -112,40 +114,59 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         </Box>
       </Box>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mt={5}
-        mb={1}
-        mr={1}
         sx={{
+          mt: 5,
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          rowGap: 0.25,
+          columnGap: 3,
+          alignItems: 'baseline',
           '@media print': {
-            fontSize: '14pt',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            mt: 2,
+            gridTemplateColumns: '1fr 1fr',
+            mt: 1,
+            fontSize: '12pt',
           },
         }}
       >
-        <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-          {fund.balance.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}
+        <Typography
+          variant="body1"
+          mb={0}
+          sx={{ '@media print': { fontSize: '10pt' } }}
+        >
+          {t('Current Balance')}
         </Typography>
-        {!!fund.pending && (
-          <Typography
-            variant="h5"
-            color={amountColor}
-            sx={{ fontSize: 'inherit' }}
-          >
-            {fund.pending.toLocaleString(locale, {
-              style: 'currency',
-              currency: 'USD',
-            })}{' '}
-            ({t('pending')})
-          </Typography>
-        )}
+        <Typography
+          variant="body1"
+          color={amountColor}
+          mb={0}
+          sx={{ '@media print': { fontSize: '10pt' } }}
+        >
+          {t('Pending Balance')}
+        </Typography>
+
+        <Typography
+          variant="h5"
+          color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+          sx={{ fontSize: 'inherit' }}
+        >
+          {fund.balance < 0 ? '(' : ''}
+          {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+          {fund.balance < 0 ? ')' : ''}
+        </Typography>
+
+        <Typography
+          variant="h5"
+          color={amountColor}
+          sx={{ fontSize: 'inherit' }}
+        >
+          {fund.pending < 0 ? '(' : ''}
+          {currencyFormat(Math.abs(fund.pending), 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+          {fund.pending < 0 ? ')' : ''}
+        </Typography>
       </Box>
 
       <ScreenOnly
@@ -155,7 +176,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           ml: 0,
         }}
       >
-        <Button onClick={handleTransferFrom}>
+        <Button onClick={handleTransferFrom} disabled={fund.pending <= 0}>
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER FROM')}
         </Button>

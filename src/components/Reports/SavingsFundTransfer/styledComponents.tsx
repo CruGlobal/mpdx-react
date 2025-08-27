@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, TableRow } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -24,6 +24,16 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     alignContent: 'center',
+  },
+}));
+
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '@media print': {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.cruGrayLight.main,
+      WebkitPrintColorAdjust: 'exact',
+      printColorAdjust: 'exact',
+    },
   },
 }));
 
