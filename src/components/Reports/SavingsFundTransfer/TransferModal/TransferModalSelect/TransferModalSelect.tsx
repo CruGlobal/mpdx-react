@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, MenuItem, Select, SelectProps } from '@mui/material';
+import { Box, MenuItem, Select, SelectProps, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   PrimaryAccount,
@@ -41,8 +41,20 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
               : fund.fundType === FundTypeEnum.Savings
                 ? SavingsAccount
                 : null}{' '}
-            <b>{t(`${fund.fundType} Account`)}</b> -{' '}
-            {currencyFormat(fund.balance, 'USD', locale)} available
+            {''}
+            <Typography>
+              <b>{t(`${fund.fundType} Account`)}</b>
+              {' - '}
+            </Typography>
+            <Typography
+              sx={{ color: fund.balance < 0 ? 'error.main' : 'text.primary' }}
+            >
+              {fund.balance < 0 ? ' (' : ' '}
+              {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+                showTrailingZeros: true,
+              })}
+              {fund.balance < 0 ? ')' : ' available'}
+            </Typography>
           </Box>
         </MenuItem>
       ))}
