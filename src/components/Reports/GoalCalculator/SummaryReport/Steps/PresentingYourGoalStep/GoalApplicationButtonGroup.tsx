@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { Goal } from '../../MpdGoal/MpdGoalTable';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 
@@ -21,7 +20,6 @@ export const GoalApplicationButtonGroup: React.FC<
   const [updateAccountPreferences, { loading }] =
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';
-  const {} = useGoalCalculator();
   const [buttonsHidden, setButtonsHidden] = useState(false);
 
   const onSave = async () => {
@@ -47,10 +45,6 @@ export const GoalApplicationButtonGroup: React.FC<
       },
     });
   };
-
-  if (buttonsHidden) {
-    return null;
-  }
 
   return (
     <Box
