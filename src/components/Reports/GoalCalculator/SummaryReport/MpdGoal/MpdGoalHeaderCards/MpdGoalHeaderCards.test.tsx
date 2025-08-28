@@ -6,7 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards';
-import type { Goal } from '../MpdGoalTable';
+import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const mockGoal = {
   netMonthlySalary: 5000,
@@ -14,20 +14,10 @@ const mockGoal = {
   rothContributionPercentage: 0.1,
   traditionalContributionPercentage: 0.5,
   ministryExpenses: {
-    benefitsCharge: 100,
-    ministryMileage: 110,
-    medicalMileage: 120,
-    medicalExpenses: 130,
-    ministryPartnerDevelopment: 140,
-    communications: 150,
-    entertainment: 160,
-    staffDevelopment: 170,
-    supplies: 180,
-    technology: 190,
-    travel: 200,
-    transfers: 210,
-    other: 220,
+    benefitsCharge: 0,
+    primaryCategories: [],
   },
+  ministryExpensesTotal: 2080,
 };
 
 const TestComponent = ({ goal }: { goal: Goal }) => (
