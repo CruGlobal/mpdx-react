@@ -16,7 +16,7 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
-import { StyledCheckbox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';

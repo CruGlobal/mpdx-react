@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
-import { NavFilterIcon } from '../styledComponents/styledComponents';
+import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
 
 export enum HeaderTypeEnum {
   Report = 'reports',

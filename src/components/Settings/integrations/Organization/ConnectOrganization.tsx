@@ -20,7 +20,7 @@ import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
 import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { Organization } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';

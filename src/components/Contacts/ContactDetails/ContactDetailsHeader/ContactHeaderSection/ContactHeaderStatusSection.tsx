@@ -9,7 +9,7 @@ import { EditPartnershipInfoModal } from '../../ContactDonationsTab/PartnershipI
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
-import { TextSkeleton } from './styledComponents';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;

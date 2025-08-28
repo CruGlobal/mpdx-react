@@ -12,8 +12,8 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
-import { ContactInputWrapper } from 'src/components/Shared/styledComponents/styledComponents';
+import { ContactInputWrapper } from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   SubmitButton,

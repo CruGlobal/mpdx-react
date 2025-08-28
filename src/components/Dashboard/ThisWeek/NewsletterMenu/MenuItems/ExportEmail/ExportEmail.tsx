@@ -10,9 +10,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { StyledDialogContentText } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledDialogContentText } from 'src/components/Shared/styledComponents/StyledDialogContentText';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
-import { CloseButton } from '../styledComponents';
+import { CloseButton } from '../styledComponents/CloseButton';
 import { useGetEmailNewsletterContactsQuery } from './GetNewsletterContacts.generated';
 
 interface Props {

@@ -16,12 +16,12 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   LogFormControl,
   LogFormLabel,
   LogTextField,
-} from 'src/components/Shared/styledComponents/styledComponents';
+} from 'src/components/Shared/styledComponents/LogStyling';
 import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
 import {
   CancelButton,
@@ -30,7 +30,7 @@ import {
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { nullableDateTime } from 'src/lib/formikHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
-import { CloseButton } from '../styledComponents';
+import { CloseButton } from '../styledComponents/CloseButton';
 
 interface Props {
   accountListId: string;

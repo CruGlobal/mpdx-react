@@ -19,7 +19,7 @@ import {
   ExportSortEnum,
 } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
-import { CloseButton } from '../styledComponents';
+import { CloseButton } from '../styledComponents/CloseButton';
 import { useCreateExportedContactsMutation } from './ExportPhysical.generated';
 
 interface Props {

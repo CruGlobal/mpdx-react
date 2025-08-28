@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { StyledTypography } from '../../../SharedComponents/styledComponents';
+import { StyledTypography } from '../../../SharedComponents/styledComponents/StyledTypography';
 import { SpecialIncomeCategoryForm } from './SpecialIncomeCategoryForm/SpecialIncomeCategoryForm';
 
 interface SpecialIncomeCategoryProps {}

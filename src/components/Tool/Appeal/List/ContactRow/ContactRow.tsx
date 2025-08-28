@@ -16,7 +16,7 @@ import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { ListItemButton } from 'src/components/Contacts/ContactRow/ContactRow';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
-import { StyledCheckbox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';

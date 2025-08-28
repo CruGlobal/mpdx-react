@@ -17,7 +17,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
-import { Header } from 'src/components/Shared/styledComponents/styledComponents';
+import { Header } from 'src/components/Shared/styledComponents/Header';
 import {
   Appeal,
   ContactFilterSetInput,

@@ -18,7 +18,7 @@ import {
   SettingsOrganizationFragment,
   useOrganizationsQuery,
 } from '../organizations.generated';
-import { HeaderAndDropdown } from '../styledComponents';
+import { HeaderAndDropdown } from '../styledComponents/HeaderAndDropdown';
 import { OrganizationsContextProvider } from './OrganizationsContext';
 
 const OrganizationsContacts = (): ReactElement => {

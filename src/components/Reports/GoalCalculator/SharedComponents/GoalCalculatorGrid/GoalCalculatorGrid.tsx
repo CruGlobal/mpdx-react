@@ -23,7 +23,7 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { StyledTypography } from '../styledComponents';
+import { StyledTypography } from '../styledComponents/StyledTypography';
 import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({

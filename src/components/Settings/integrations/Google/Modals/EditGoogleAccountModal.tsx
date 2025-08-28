@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { StyledDialogActions } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledDialogActions } from 'src/components/Shared/styledComponents/StyledDialogActions';
 import {
   ActionButton,
   CancelButton,

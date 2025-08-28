@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { Fund, StaffSavingFundEnum } from '../mockData';
-import { ScreenOnly } from '../styledComponents';
+import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
 export interface BalanceCardProps {
   fund: Fund;

@@ -7,7 +7,7 @@ import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSend
 import theme from '../../../../../theme';
 import { ContactHeaderNewsletterFragment } from './ContactHeaderNewsletter.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
-import { TextSkeleton } from './styledComponents';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;

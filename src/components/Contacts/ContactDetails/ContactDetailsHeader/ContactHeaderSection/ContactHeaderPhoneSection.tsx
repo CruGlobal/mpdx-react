@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { ContactHeaderPhoneFragment } from './ContactHeaderPhone.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
-import { TextSkeleton } from './styledComponents';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;

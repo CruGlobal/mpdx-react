@@ -1,8 +1,8 @@
 import React, { ReactNode, useState } from 'react';
 import { Box, DialogActions, DialogContent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
-import { StyledDialogContentText } from 'src/components/Shared/styledComponents/styledComponents';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
+import { StyledDialogContentText } from 'src/components/Shared/styledComponents/StyledDialogContentText';
 import {
   ActionButtonProps,
   CancelButton,

@@ -17,11 +17,11 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
 import {
   ContactEditContainer,
   ContactInputWrapper,
-} from 'src/components/Shared/styledComponents/styledComponents';
+} from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   DeleteButton,

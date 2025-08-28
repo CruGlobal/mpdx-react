@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { ContactHeaderAddressFragment } from './ContactHeaderAddress.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
-import { TextSkeleton } from './styledComponents';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;

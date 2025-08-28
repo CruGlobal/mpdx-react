@@ -3,7 +3,7 @@ import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { BoxWrapper } from 'src/components/Shared/styledComponents/styledComponents';
+import { BoxWrapper } from 'src/components/Shared/styledComponents/BoxWrapper';
 
 interface Props {
   title: string;

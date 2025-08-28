@@ -32,7 +32,7 @@ import {
   FinancialAccountCategoriesFragment,
   useFinancialAccountSummaryQuery,
 } from './financialAccountSummary.generated';
-import { StyledTableCell } from './styledComponents';
+import { StyledTableCell } from './styledComponents/StyledTableCell';
 
 interface Periods {
   startDateFormatted: string;

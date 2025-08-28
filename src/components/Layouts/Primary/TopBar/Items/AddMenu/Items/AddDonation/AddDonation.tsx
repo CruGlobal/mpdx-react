@@ -18,7 +18,8 @@ import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
 import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
-import { LogFormLabel } from 'src/components/Shared/styledComponents/styledComponents';
+import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
+import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
@@ -32,7 +33,6 @@ import {
   useAddDonationMutation,
   useGetDonationModalQuery,
 } from './AddDonation.generated';
-import { FormTextField } from './StyledComponents';
 
 interface AddDonationProps {
   accountListId: string;

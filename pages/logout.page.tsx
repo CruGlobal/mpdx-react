@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
-import { BoxWrapper } from './styledComponents';
+import { BoxWrapper } from './styledComponents/BoxWrapper';
 
 const LogoutPage = ({}): ReactElement => {
   const { t } = useTranslation();

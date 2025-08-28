@@ -18,7 +18,7 @@ import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/Ac
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';

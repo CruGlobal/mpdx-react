@@ -3,7 +3,7 @@ import { Box, Button, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { FilterButton } from 'src/components/Shared/Header/styledComponents';
-import { NavFilterIcon } from 'src/components/Shared/styledComponents/styledComponents';
+import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {

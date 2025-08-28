@@ -8,7 +8,7 @@ import {
   oneYearAgoDate,
   todaysDate,
 } from '../AccountSummaryHelper';
-import { StyledTableCell } from '../styledComponents';
+import { StyledTableCell } from '../styledComponents/StyledTableCell';
 
 interface CategoriesProps {
   category: Category;

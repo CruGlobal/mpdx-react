@@ -9,7 +9,7 @@ import theme from 'src/theme';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
-import { NavFilterIcon } from '../styledComponents/styledComponents';
+import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import { FilterButton } from './styledComponents';
 

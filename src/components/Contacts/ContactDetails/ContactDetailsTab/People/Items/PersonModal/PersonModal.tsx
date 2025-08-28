@@ -13,8 +13,8 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingIndicator';
-import { ContactEditContainer } from 'src/components/Shared/styledComponents/styledComponents';
+import { ContactEditContainer } from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   DeleteButton,

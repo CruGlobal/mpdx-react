@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
-import { Header } from 'src/components/Shared/styledComponents/styledComponents';
+import { Header } from 'src/components/Shared/styledComponents/Header';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat, dateFormatWithoutYear } from 'src/lib/intlFormat';
 import { ContentContainer } from '../StyledComponents';

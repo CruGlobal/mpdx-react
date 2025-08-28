@@ -11,7 +11,7 @@ import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/Org
 import { Organizations as OrganizationsType } from 'src/graphql/types.generated';
 import { SettingsWrapper } from './Wrapper';
 import { useOrganizationsQuery } from './organizations.generated';
-import { HeaderAndDropdown } from './styledComponents';
+import { HeaderAndDropdown } from './styledComponents/HeaderAndDropdown';
 
 export type OrganizationsContextType = {
   selectedOrganizationId: string;

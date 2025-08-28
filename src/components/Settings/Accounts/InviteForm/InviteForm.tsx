@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DialogActionsLeft } from 'src/components/Shared/Forms/DialogActions';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { InviteTypeEnum } from 'src/graphql/types.generated';

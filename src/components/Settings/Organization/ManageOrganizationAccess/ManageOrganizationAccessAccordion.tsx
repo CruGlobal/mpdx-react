@@ -25,7 +25,7 @@ import {
 import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';

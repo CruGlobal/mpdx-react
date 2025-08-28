@@ -10,7 +10,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
-import { StyledBox } from 'src/components/Shared/styledComponents/styledComponents';
+import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
 import {
   CancelButton,
   SubmitButton,

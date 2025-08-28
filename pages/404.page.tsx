@@ -5,7 +5,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import BaseLayout from 'src/components/Layouts/Basic';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { BoxWrapper } from './styledComponents';
+import { BoxWrapper } from './styledComponents/BoxWrapper';
 
 const Custom404 = (): ReactElement => {
   const { appName } = useGetAppSettings();
