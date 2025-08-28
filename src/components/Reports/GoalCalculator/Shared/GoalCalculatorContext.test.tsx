@@ -1,14 +1,9 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
-import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
-import {
-  GoalCalculatorProvider,
-  useGoalCalculator,
-} from './GoalCalculatorContext';
+import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
+import { useGoalCalculator } from './GoalCalculatorContext';
 
 const TestComponent: React.FC = () => {
   const {
@@ -39,13 +34,9 @@ const TestComponent: React.FC = () => {
 };
 
 const WrappedTestComponent: React.FC = () => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <GoalCalculatorProvider>
-        <TestComponent />
-      </GoalCalculatorProvider>
-    </ThemeProvider>
-  </SnackbarProvider>
+  <GoalCalculatorTestWrapper>
+    <TestComponent />
+  </GoalCalculatorTestWrapper>
 );
 
 describe('GoalCalculatorContext', () => {

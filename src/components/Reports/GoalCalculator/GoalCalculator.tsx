@@ -1,62 +1,22 @@
 import React from 'react';
-import { Divider, Stack, styled } from '@mui/material';
+import { SettingsStep } from './CalculatorSettings/SettingsStep';
+import { GoalCalculatorStepEnum } from './GoalCalculatorHelper';
+import { HouseholdExpensesStep } from './HouseholdExpenses/HouseholdExpensesStep';
+import { MinistryExpensesStep } from './MinistryExpenses/MinistryExpensesStep';
 import { useGoalCalculator } from './Shared/GoalCalculatorContext';
-import { GoalCalculatorLayout } from './Shared/GoalCalculatorLayout';
-import { GoalCalculatorSection } from './Shared/GoalCalculatorSection';
-import { ContinueButton } from './SharedComponents/ContinueButton';
-import { GoalCalculatorGrid } from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid';
-import { SectionList } from './SharedComponents/SectionList';
-
-const CategoryContainer = styled('div')(({ theme }) => ({
-  paddingInline: theme.spacing(4),
-}));
+import { ReportsStep } from './SummaryReport/ReportsStep';
 
 export const GoalCalculator: React.FC = () => {
-  const { currentStep, handleContinue } = useGoalCalculator();
+  const { currentStep } = useGoalCalculator();
 
-  const {
-    instructions: stepInstructions,
-    categories,
-    PageComponent,
-  } = currentStep;
-
-  return PageComponent ? (
-    <PageComponent />
-  ) : (
-    <GoalCalculatorLayout
-      sectionListPanel={
-        <SectionList
-          sections={
-            categories?.map((category) => ({
-              title: category.title,
-              // TODO: Determine whether each category is complete
-              complete: false,
-            })) ?? []
-          }
-        />
-      }
-      mainContent={
-        <Stack flex={1} spacing={4} divider={<Divider />}>
-          {stepInstructions && (
-            <CategoryContainer>{stepInstructions}</CategoryContainer>
-          )}
-          {categories?.map((category) => (
-            <GoalCalculatorSection
-              key={category.id}
-              title={category.title}
-              subtitle={category.subtitle}
-              rightPanelContent={category.rightPanelComponent}
-            >
-              {category.component || (
-                <GoalCalculatorGrid categoryName={category.title} />
-              )}
-            </GoalCalculatorSection>
-          ))}
-          <CategoryContainer>
-            <ContinueButton onClick={handleContinue} />
-          </CategoryContainer>
-        </Stack>
-      }
-    />
-  );
+  switch (currentStep.step) {
+    case GoalCalculatorStepEnum.CalculatorSettings:
+      return <SettingsStep />;
+    case GoalCalculatorStepEnum.HouseholdExpenses:
+      return <HouseholdExpensesStep />;
+    case GoalCalculatorStepEnum.MinistryExpenses:
+      return <MinistryExpensesStep />;
+    case GoalCalculatorStepEnum.SummaryReport:
+      return <ReportsStep />;
+  }
 };

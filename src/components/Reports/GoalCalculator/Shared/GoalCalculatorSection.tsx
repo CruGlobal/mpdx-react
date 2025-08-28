@@ -1,20 +1,9 @@
 import React from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import PrintIcon from '@mui/icons-material/Print';
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from './GoalCalculatorContext';
-
-const SectionContainer = styled('div')(({ theme }) => ({
-  paddingInline: theme.spacing(4),
-}));
 
 export interface GoalCalculatorSectionProps {
   title: string;
@@ -39,7 +28,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   };
 
   return (
-    <SectionContainer>
+    <div>
       <Box pb={4}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h6">
@@ -70,6 +59,6 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
         {subtitle && <Typography pt={1}>{subtitle}</Typography>}
       </Box>
       {children}
-    </SectionContainer>
+    </div>
   );
 };

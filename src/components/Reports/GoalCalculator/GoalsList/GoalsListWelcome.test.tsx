@@ -1,20 +1,10 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { Settings } from 'luxon';
-import { SnackbarProvider } from 'notistack';
-import theme from 'src/theme';
-import { GoalCalculatorProvider } from '../Shared/GoalCalculatorContext';
 import { GoalsListWelcome } from './GoalsListWelcome';
 
 const TestComponent: React.FC<{ firstName?: string }> = ({ firstName }) => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <GoalCalculatorProvider>
-        <GoalsListWelcome firstName={firstName} />
-      </GoalCalculatorProvider>
-    </ThemeProvider>
-  </SnackbarProvider>
+  <GoalsListWelcome firstName={firstName} />
 );
 
 describe('GoalsListWelcome', () => {
