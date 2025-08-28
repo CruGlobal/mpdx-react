@@ -6,6 +6,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { InformationCategory } from './Categories/InformationCategory/InformationCategory';
+import { SettingsCategory } from './Categories/SettingsCategory/SettingsCategory';
 
 export const useCalculatorSettings = (): GoalCalculatorStep => {
   const { t } = useTranslation();
@@ -14,6 +15,12 @@ export const useCalculatorSettings = (): GoalCalculatorStep => {
     id: GoalCalculatorStepEnum.CalculatorSettings,
     icon: <SettingsIcon />,
     categories: [
+      {
+        id: GoalCalculatorCategoryEnum.Settings,
+        title: t('Settings'),
+        subtitle: t('What do you want to call this goal?'),
+        component: <SettingsCategory />,
+      },
       {
         id: GoalCalculatorCategoryEnum.Information,
         title: t('Information'),
