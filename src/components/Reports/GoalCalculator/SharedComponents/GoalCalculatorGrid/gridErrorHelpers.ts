@@ -43,3 +43,29 @@ export const validateRowData = (
     errors,
   };
 };
+
+export const validateDirectInput = (
+  amount: number | null | undefined | string,
+): ValidationResult => {
+  const errors: Record<string, string[]> = {};
+  let hasErrors = false;
+
+  // Validate direct input amount
+  if (amount !== undefined && amount !== null) {
+    if (isNaN(Number(amount))) {
+      errors['directInput-amount'] = [i18n.t('Amount must be a valid number')];
+      hasErrors = true;
+    } else if (Number(amount) < 0) {
+      errors['directInput-amount'] = [i18n.t('Amount cannot be negative')];
+      hasErrors = true;
+    } else if (Number(amount) > 1000000000) {
+      errors['directInput-amount'] = [i18n.t('Amount is too large')];
+      hasErrors = true;
+    }
+  }
+
+  return {
+    hasErrors,
+    errors,
+  };
+};
