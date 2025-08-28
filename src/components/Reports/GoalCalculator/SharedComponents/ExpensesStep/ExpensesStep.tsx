@@ -3,10 +3,10 @@ import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { GoalCalculatorLayout } from '../../Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
+import { getFamilySections } from '../../Shared/familySections';
 import { GoalCalculatorGrid } from '../GoalCalculatorGrid/GoalCalculatorGrid';
 import { SectionList } from '../SectionList';
 import { SectionPage } from '../SectionPage';
-import { getFamilySections } from './familySections';
 
 interface ExpensesStepProps {
   instructions: React.ReactNode;
