@@ -33,14 +33,6 @@ export const SettingsCategory: React.FC = () => {
           },
         },
       },
-      optimisticResponse: {
-        updateGoalCalculation: {
-          goalCalculation: {
-            id: goalCalculationId,
-            name: title,
-          },
-        },
-      },
     });
   }, 500);
 
