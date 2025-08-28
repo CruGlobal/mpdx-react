@@ -43,6 +43,7 @@ export const createSubBudgetCategoryMock = {
       id: 'new-mock-id',
       label: 'New Income',
       amount: 0,
+      category: null,
     },
   },
 } satisfies DeepPartial<CreateSubBudgetCategoryMutation>;
@@ -52,6 +53,7 @@ export const updateSubBudgetCategoryMock = {
     subBudgetCategory: {
       id: 'updated-mock-id',
       label: 'Updated Income',
+      category: null,
       amount: 1000,
     },
   },

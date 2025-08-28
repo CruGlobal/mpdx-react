@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { gql } from '@apollo/client';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -59,21 +60,21 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { label: categoryName, directInput: categoryDirectInput } = category;
+  const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
   const { setRightPanelContent } = useGoalCalculator();
-  const [gridData, setGridData] = useState(
-    (category.subBudgetCategories || []).map((subCategory) => ({
-      id: subCategory.id,
-      label: subCategory.label,
-      amount: subCategory.amount,
-      canDelete: !subCategory.category,
-    })),
-  );
+
+  const gridData = (category.subBudgetCategories || []).map((subCategory) => ({
+    id: subCategory.id,
+    label: subCategory.label,
+    amount: subCategory.amount,
+    canDelete: !subCategory.category,
+  }));
+
   const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
-  const [lumpSumAmount, setLumpSumAmount] = useState(category.directInput || 0);
   const [cellErrors, setCellErrors] = useState<Record<string, string[]>>({});
   const [directInputError, setDirectInputError] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>('');
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
@@ -85,48 +86,67 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
-  const [directInput, setDirectInput] = useState(!!categoryDirectInput);
+  const directInput = !!category.directInput;
+  const lumpSumAmount = category.directInput || 0;
 
-  const debouncedUpdateMutation = useDebouncedCallback(
-    (value: number | null) => {
-      updatePrimaryBudgetCategory({
-        variables: {
-          input: {
-            accountListId,
-            id: category.id,
+  const updatePrimaryBudgetCategoryMutation = (value: number | null) => {
+    updatePrimaryBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          id: category.id,
+          directInput: value,
+        },
+      },
+      optimisticResponse: {
+        updatePrimaryBudgetCategory: {
+          __typename: 'PrimaryBudgetCategoryUpdateMutationPayload',
+          primaryBudgetCategory: {
+            ...category,
             directInput: value,
           },
         },
-        optimisticResponse: {
-          updatePrimaryBudgetCategory: {
-            __typename: 'PrimaryBudgetCategoryUpdateMutationPayload',
-            primaryBudgetCategory: {
-              ...category,
+      },
+      update: (cache, { data }) => {
+        const updatedCategory =
+          data?.updatePrimaryBudgetCategory?.primaryBudgetCategory;
+        if (updatedCategory) {
+          cache.writeFragment({
+            id: cache.identify(category),
+            fragment: gql`
+              fragment UpdatePrimaryBudgetCategory on PrimaryBudgetCategory {
+                id
+                directInput
+              }
+            `,
+            data: {
+              id: category.id,
               directInput: value,
             },
-          },
-        },
-        onCompleted: (result) => {
-          const updatedCategory =
-            result.updatePrimaryBudgetCategory?.primaryBudgetCategory;
-          setCellErrors({});
-          setDirectInputError('');
-          setLumpSumAmount(updatedCategory?.directInput || 0);
-          setDirectInput(!!updatedCategory?.directInput);
-        },
-      });
-    },
-    500
+          });
+        }
+      },
+    });
+  };
+
+  const debouncedUpdateMutation = useDebouncedCallback(
+    updatePrimaryBudgetCategoryMutation,
+    500,
   );
 
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
     const valueToSet = enableDirectInput ? lumpSumAmount || totalAmount : null;
-    debouncedUpdateMutation(valueToSet);
+
+    setCellErrors({});
+    setDirectInputError('');
+    updatePrimaryBudgetCategoryMutation(valueToSet);
   };
 
   const handleLumpSumChange = (value: string | number) => {
+    const stringValue = value.toString();
     const numericValue =
       typeof value === 'string' ? parseFloat(value) || 0 : value;
+    setInputValue(stringValue);
     const validationResult = validateDirectInput(numericValue);
 
     if (validationResult.hasErrors) {
@@ -164,18 +184,31 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           },
         },
       },
-      onCompleted: (result) => {
-        const newItem = result.createSubBudgetCategory?.subBudgetCategory;
+      update: (cache, { data }) => {
+        const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
         if (newItem) {
-          setGridData((prevGridData) => [
-            ...prevGridData,
-            {
-              id: newItem.id,
-              label: newItem.label,
-              amount: newItem.amount,
-              canDelete: true,
+          cache.modify({
+            id: cache.identify(category),
+            fields: {
+              subBudgetCategories(existingRefs = []) {
+                const newSubCategoryRef = cache.writeFragment({
+                  data: {
+                    ...newItem,
+                    category: null,
+                  },
+                  fragment: gql`
+                    fragment NewSubBudgetCategory on SubBudgetCategory {
+                      id
+                      label
+                      amount
+                      category
+                    }
+                  `,
+                });
+                return [...existingRefs, newSubCategoryRef];
+              },
             },
-          ]);
+          });
         }
       },
     });
@@ -197,11 +230,20 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           id: rowId,
         },
       },
-      onCompleted: (result) => {
-        const updatedData = gridData.filter(
-          (item) => item.id !== result?.deleteSubBudgetCategory?.id,
-        );
-        setGridData(updatedData);
+      update: (cache, { data }) => {
+        const deletedId = data?.deleteSubBudgetCategory?.id;
+        if (deletedId) {
+          cache.modify({
+            id: cache.identify(category),
+            fields: {
+              subBudgetCategories(existingRefs = [], { readField }) {
+                return existingRefs.filter(
+                  (ref) => readField('id', ref) !== deletedId,
+                );
+              },
+            },
+          });
+        }
       },
     });
   };
@@ -253,18 +295,23 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           },
         },
       },
-      onCompleted: (result) => {
-        const updatedRow = result.updateSubBudgetCategory?.subBudgetCategory;
-        const updatedData = gridData.map((item) =>
-          item.id === updatedRow?.id
-            ? {
-                ...item,
-                label: updatedRow?.label as string,
-                amount: updatedRow?.amount as number,
+      update: (cache, { data }) => {
+        const updatedSubCategory =
+          data?.updateSubBudgetCategory?.subBudgetCategory;
+        if (updatedSubCategory) {
+          cache.writeFragment({
+            id: cache.identify(updatedSubCategory),
+            fragment: gql`
+              fragment UpdateSubBudgetCategory on SubBudgetCategory {
+                id
+                label
+                amount
+                category
               }
-            : item,
-        );
-        setGridData(updatedData);
+            `,
+            data: updatedSubCategory,
+          });
+        }
       },
     });
 
@@ -393,7 +440,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               size="small"
               label={t('Total')}
               type="number"
-              value={lumpSumAmount}
+              value={inputValue || lumpSumAmount}
               onChange={(e) => handleLumpSumChange(e.target.value)}
               error={!!directInputError}
               helperText={directInputError}

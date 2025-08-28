@@ -5,6 +5,7 @@ mutation UpdateSubBudgetCategory(
     subBudgetCategory {
       id
       label
+      category
       amount
     }
   }
@@ -17,6 +18,7 @@ mutation CreateSubBudgetCategory(
     subBudgetCategory {
       id
       label
+      category
       amount
     }
   }
