@@ -1,4 +1,4 @@
-import { validateRowData } from './gridErrorHelpers';
+import { validateDirectInput, validateRowData } from './gridErrorHelpers';
 
 describe('gridErrorHelpers', () => {
   describe('validateRowData', () => {
@@ -123,6 +123,71 @@ describe('gridErrorHelpers', () => {
         expect(result.hasErrors).toBe(false);
         expect(result.errors['1-amount']).toBeUndefined();
       });
+    });
+  });
+
+  describe('validateDirectInput', () => {
+    it('should return no errors for valid direct input amount', () => {
+      const result = validateDirectInput(100);
+
+      expect(result).toEqual({
+        hasErrors: false,
+        errors: {},
+      });
+    });
+
+    it('should return error for NaN amount', () => {
+      const result = validateDirectInput(NaN);
+      expect(result.hasErrors).toBe(true);
+      expect(result.errors['directInput-amount']).toEqual([
+        'Amount must be a valid number',
+      ]);
+    });
+
+    it('should return error for negative amount', () => {
+      const result = validateDirectInput(-10);
+      expect(result.hasErrors).toBe(true);
+      expect(result.errors['directInput-amount']).toEqual([
+        'Amount cannot be negative',
+      ]);
+    });
+
+    it('should return error for amount too large', () => {
+      const result = validateDirectInput(1000000001);
+      expect(result.hasErrors).toBe(true);
+      expect(result.errors['directInput-amount']).toEqual([
+        'Amount is too large',
+      ]);
+    });
+
+    it('should accept amount at the maximum limit', () => {
+      const result = validateDirectInput(1000000000);
+      expect(result.hasErrors).toBe(false);
+      expect(result.errors['directInput-amount']).toBeUndefined();
+    });
+
+    it('should accept zero amount', () => {
+      const result = validateDirectInput(0);
+      expect(result.hasErrors).toBe(false);
+      expect(result.errors['directInput-amount']).toBeUndefined();
+    });
+
+    it('should accept valid positive amount', () => {
+      const result = validateDirectInput(500.75);
+      expect(result.hasErrors).toBe(false);
+      expect(result.errors['directInput-amount']).toBeUndefined();
+    });
+
+    it('should handle undefined amount gracefully', () => {
+      const result = validateDirectInput(undefined);
+      expect(result.hasErrors).toBe(false);
+      expect(result.errors['directInput-amount']).toBeUndefined();
+    });
+
+    it('should handle null amount gracefully', () => {
+      const result = validateDirectInput(null);
+      expect(result.hasErrors).toBe(false);
+      expect(result.errors['directInput-amount']).toBeUndefined();
     });
   });
 });
