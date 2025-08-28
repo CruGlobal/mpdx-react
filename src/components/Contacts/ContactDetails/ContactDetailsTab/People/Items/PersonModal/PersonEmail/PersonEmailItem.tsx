@@ -111,6 +111,7 @@ export const PersonEmailItem: React.FC<Props> = ({
               getIn(errors, `emailAddresses.${index}`).email
             }
             fullWidth
+            required
           />
         </Grid>
         <Grid item xs={12} sm={6} md={2}>

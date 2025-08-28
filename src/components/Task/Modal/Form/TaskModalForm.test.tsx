@@ -106,7 +106,7 @@ describe('TaskModalForm', () => {
 
     userEvent.click(getByRole('button', { name: 'Save' }));
     expect(onClose).not.toHaveBeenCalled();
-    expect(await findByText('Field is required')).toBeInTheDocument();
+    expect(await findByText('Task Name is required')).toBeInTheDocument();
     await waitFor(() => expect(onClose).not.toHaveBeenCalled());
   });
 
