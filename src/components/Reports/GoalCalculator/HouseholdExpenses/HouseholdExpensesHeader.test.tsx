@@ -1,16 +1,10 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { HouseholdDirectInputQuery } from './HouseholdDirectInput.generated';
+import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
 import { HouseholdExpensesHeader } from './HouseholdExpensesHeader';
 
 const accountListId = 'account-list-1';
-const goalCalculationId = 'goal-calculation-1';
-const familyId = 'family-1';
 const mutationSpy = jest.fn();
 
 type TestComponentProps = {
@@ -20,30 +14,12 @@ type TestComponentProps = {
 const TestComponent: React.FC<TestComponentProps> = ({
   directInput = null,
 }) => (
-  <TestRouter
-    router={{
-      isReady: true,
-      query: { accountListId, goalCalculationId },
-    }}
+  <GoalCalculatorTestWrapper
+    householdDirectInput={directInput}
+    onCall={mutationSpy}
   >
-    <ThemeProvider theme={theme}>
-      <GqlMockedProvider<{ HouseholdDirectInput: HouseholdDirectInputQuery }>
-        mocks={{
-          HouseholdDirectInput: {
-            goalCalculation: {
-              householdFamily: {
-                id: familyId,
-                directInput,
-              },
-            },
-          },
-        }}
-        onCall={mutationSpy}
-      >
-        <HouseholdExpensesHeader categoriesTotal={5000} />
-      </GqlMockedProvider>
-    </ThemeProvider>
-  </TestRouter>
+    <HouseholdExpensesHeader categoriesTotal={5000} />
+  </GoalCalculatorTestWrapper>
 );
 
 describe('HouseholdExpensesHeader', () => {
@@ -58,13 +34,6 @@ describe('HouseholdExpensesHeader', () => {
       expect(
         queryByRole('button', { name: 'Manual input' }),
       ).not.toBeInTheDocument();
-
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('HouseholdDirectInput', {
-          accountListId,
-          id: goalCalculationId,
-        }),
-      );
     });
 
     it('should render categories total when direct input is null', async () => {
@@ -92,7 +61,7 @@ describe('HouseholdExpensesHeader', () => {
           'UpdateHouseholdDirectInput',
           {
             accountListId,
-            id: familyId,
+            id: 'household-family',
             directInput: null,
           },
         ),
@@ -117,7 +86,7 @@ describe('HouseholdExpensesHeader', () => {
           'UpdateHouseholdDirectInput',
           {
             accountListId,
-            id: familyId,
+            id: 'household-family',
             directInput: 1234,
           },
         ),

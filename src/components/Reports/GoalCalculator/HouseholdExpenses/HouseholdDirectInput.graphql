@@ -1,13 +1,3 @@
-query HouseholdDirectInput($accountListId: ID!, $id: ID!) {
-  goalCalculation(accountListId: $accountListId, id: $id) {
-    id
-    householdFamily {
-      id
-      directInput
-    }
-  }
-}
-
 mutation UpdateHouseholdDirectInput(
   $accountListId: ID!
   $id: ID!
