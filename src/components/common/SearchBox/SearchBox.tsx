@@ -52,8 +52,8 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
         toolTipText
           ? toolTipText
           : page === PageEnum.Task
-          ? t('Search by subject, tags, contact name, or comments')
-          : t('Search by name, phone, email, or partner #')
+            ? t('Search by subject, tags, contact name, or comments')
+            : t('Search by name, phone, email, or partner #')
       }
     >
       <SearchInput

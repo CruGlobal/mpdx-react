@@ -35,8 +35,8 @@ const Contacts: React.FC = () => {
             viewMode === TableViewModeEnum.Flows
               ? t('Contact Flows')
               : viewMode === TableViewModeEnum.Map
-              ? t('Contacts Map')
-              : t('Contacts')
+                ? t('Contacts Map')
+                : t('Contacts')
           }`}
         </title>
       </Head>

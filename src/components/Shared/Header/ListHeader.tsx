@@ -183,7 +183,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             massDeselectAll={massDeselectAll}
             selectedIdCount={
               headerCheckboxState === ListHeaderCheckBoxState.Checked
-                ? totalItems ?? 0
+                ? (totalItems ?? 0)
                 : selectedIds.length
             }
           />

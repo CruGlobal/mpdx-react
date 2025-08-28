@@ -253,10 +253,10 @@ describe('Google Import', () => {
       const contactGroupTagAutocomplete = getAllByRole(
         'combobox',
       )[0] as HTMLInputElement;
-      expect(await findByText(account2GroupTag)).toBeInTheDocument(),
-        userEvent.type(contactGroupTagAutocomplete, 'hello-world');
-      expect(contactGroupTagAutocomplete.value).toBe('hello-world'),
-        userEvent.type(contactGroupTagAutocomplete, '{enter}');
+      (expect(await findByText(account2GroupTag)).toBeInTheDocument(),
+        userEvent.type(contactGroupTagAutocomplete, 'hello-world'));
+      (expect(contactGroupTagAutocomplete.value).toBe('hello-world'),
+        userEvent.type(contactGroupTagAutocomplete, '{enter}'));
 
       //Add tags for all
       const allTagAutocomplete = getAllByRole(

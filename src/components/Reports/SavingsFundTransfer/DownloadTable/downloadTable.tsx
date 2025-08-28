@@ -17,18 +17,18 @@ export const createTable = (
       transfer.transferFrom === StaffSavingFundEnum.StaffSavings
         ? 'Staff Savings'
         : transfer.transferFrom === StaffSavingFundEnum.StaffAccount
-        ? 'Staff Account'
-        : transfer.transferFrom === StaffSavingFundEnum.StaffConferenceSavings
-        ? 'Staff Conference Savings'
-        : transfer.transferFrom;
+          ? 'Staff Account'
+          : transfer.transferFrom === StaffSavingFundEnum.StaffConferenceSavings
+            ? 'Staff Conference Savings'
+            : transfer.transferFrom;
     const toFund =
       transfer.transferTo === StaffSavingFundEnum.StaffSavings
         ? 'Staff Savings'
         : transfer.transferTo === StaffSavingFundEnum.StaffAccount
-        ? 'Staff Account'
-        : transfer.transferTo === StaffSavingFundEnum.StaffConferenceSavings
-        ? 'Staff Conference Savings'
-        : transfer.transferTo;
+          ? 'Staff Account'
+          : transfer.transferTo === StaffSavingFundEnum.StaffConferenceSavings
+            ? 'Staff Conference Savings'
+            : transfer.transferTo;
     const schedule =
       transfer.schedule === ScheduleEnum.OneTime ? 'One Time' : 'Monthly';
     return [

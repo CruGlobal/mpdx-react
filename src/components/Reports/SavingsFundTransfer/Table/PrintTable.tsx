@@ -54,16 +54,16 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                     {transfer.transferFrom === StaffSavingFundEnum.StaffAccount
                       ? 'Staff Account'
                       : transfer.transferFrom ===
-                        StaffSavingFundEnum.StaffSavings
-                      ? 'Staff Savings'
-                      : 'Staff Conference Savings'}
+                          StaffSavingFundEnum.StaffSavings
+                        ? 'Staff Savings'
+                        : 'Staff Conference Savings'}
                   </TableCell>
                   <TableCell>
                     {transfer.transferTo === StaffSavingFundEnum.StaffAccount
                       ? 'Staff Account'
                       : transfer.transferTo === StaffSavingFundEnum.StaffSavings
-                      ? 'Staff Savings'
-                      : 'Staff Conference Savings'}
+                        ? 'Staff Savings'
+                        : 'Staff Conference Savings'}
                   </TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {

@@ -18,8 +18,8 @@ ErrorPage.getInitialProps = ({
   const statusCode: number = res?.statusCode
     ? res.statusCode
     : err?.statusCode
-    ? err.statusCode
-    : 404;
+      ? err.statusCode
+      : 404;
 
   if (!process.browser) {
     if (isRollBarEnabled) {

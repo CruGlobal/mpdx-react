@@ -319,8 +319,8 @@ const TaskModalCompleteForm = ({
                   {numberOfContacts > 1
                     ? t('Contacts: ')
                     : numberOfContacts > 0
-                    ? t('Contact: ')
-                    : null}
+                      ? t('Contact: ')
+                      : null}
                 </Typography>
                 {task?.contacts.nodes.map((contact, index) => (
                   <Typography
