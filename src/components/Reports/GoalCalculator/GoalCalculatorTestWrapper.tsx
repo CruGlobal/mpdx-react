@@ -28,6 +28,18 @@ export const goalCalculationMock = {
         },
       ],
     },
+    specialFamily: {
+      primaryBudgetCategories: [
+        {
+          label: 'Special Income',
+          category: PrimaryBudgetCategoryEnum.SpecialIncome,
+        },
+        {
+          label: 'One Time Goal',
+          category: PrimaryBudgetCategoryEnum.OneTimeGoal,
+        },
+      ],
+    },
   },
 } satisfies DeepPartial<GoalCalculationQuery>;
 
