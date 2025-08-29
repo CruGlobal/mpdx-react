@@ -30,8 +30,15 @@ MODE
 - Single exception: you MAY create ONE untracked file at repo root: `.ai-review.json`. Do not modify other files; do not stage/commit.
 
 === Stage 0 — Setup knowledge ===
-Known utilities/components (authoritative; adjust if paths differ)
-Please review the .CLAUDE/AI_AGENTS_SHARED_RESOURCES.md & .CLAUDE/CLAUDE.md files to understand the shared functions and components that could be used globally. There might be functions and components which could be used in the parent(s) files.
+First, read the .CLAUDE/CLAUDE.md file to understand project conventions, architecture, and coding standards.
+
+Then use search tools to build context for reuse analysis:
+- `Grep "export" src/lib/ -n` - Find available utility functions
+- `Glob "src/hooks/*.ts"` - List custom hooks
+- `Glob "src/components/Shared/**/*.tsx"` - Find shared components
+- `Read` key files that show up frequently in imports
+
+Note common patterns for later reuse identification in Stages 2-3.
 
 Repo heuristics to enforce:
 
@@ -45,6 +52,13 @@ Repo heuristics to enforce:
 - File types: pure helpers should be .ts, not .tsx.
 
 === Stage 1 — File index (completeness gate) ===
+First, determine the base branch and get the actual PR changes:
+
+- `git branch --show-current` - Get current branch name
+- `git merge-base HEAD main || git merge-base HEAD master` - Find base commit
+- `git diff $(git merge-base HEAD main)..HEAD --name-only` - Get files changed in this branch
+- `git diff $(git merge-base HEAD main)..HEAD` - Get the actual diff content
+
 List EVERY file changed in this PR (relative path). For each file, include:
 
 - Kind: {component | hook | util | helper | styled | test | other}
@@ -54,6 +68,12 @@ List EVERY file changed in this PR (relative path). For each file, include:
 Do not skip any file. If any file can’t be read, state it and continue.
 
 === Stage 2 — Deep review (file-by-file) ===
+IMPORTANT: Only review files that appear in the git diff from Stage 1. Do not review files that are not part of this PR.
+
+**Issue Severity Guidelines:**
+- **Must-fix**: Bugs, security issues, breaking changes, type errors, performance problems
+- **Nice-to-have**: Style improvements, minor refactoring, better naming, documentation
+
 For EACH changed file from Stage 1, in order:
 
 - Must-fix: file:line → issue → fix (unified diff if trivial)
@@ -67,22 +87,45 @@ For EACH changed file from Stage 1, in order:
 RULE: If no issues found for a file, state: “No issues found after deep check” AND explain the checks you ran.
 
 === Stage 3 — Reuse Sweep (repo-wide) ===
-Scan the .CLAUDE/AI_AGENTS_SHARED_RESOURCES.md file for candidates to replace or centralize logic introduced/changed in this PR; include path#symbol and tiny patch to adopt:
+Search for reuse opportunities in the PR changes:
 
-For each reuse candidate:
+**Global Shared Resources:**
+Use targeted searches based on PR content:
+- If PR has date/time logic: `Grep "date|time|format" src/lib/`
+- If PR has state management: `Grep "use.*State|use.*Effect" src/hooks/`
+- If PR has UI components: `Grep "export.*Component|export.*FC" src/components/Shared/`
+- If PR has validation/forms: `Grep "validate|schema|form" src/lib/`
 
-- Evidence: short fragment in shared file + where it applies in PR (file:line)
-- Impact: consistency/maintainability/perf
-- Patch: minimal unified diff to adopt it
+**Local Context Analysis:**
+For each changed .ts/.tsx file, search:
+
+- Sibling files in the same directory for similar functions/components
+- Parent directory files for shared utilities
+- Nearby test files for common mock patterns or test utilities
+
+**Duplication Detection:**
+
+- Look for similar code patterns across changed files that could be consolidated
+- Identify repeated logic that could be extracted to a shared location
+
+For each reuse candidate found:
+
+- Evidence: existing function/component location + where it applies in PR (file:line)
+- Impact: consistency/maintainability/perf/bundle size
+- Patch: minimal unified diff to adopt existing solution or create shared utility
+- Consolidation opportunity: if creating new shared code, suggest location (src/lib/, src/hooks/, etc.)
 
 === Stage 4 — Pattern Sweep (regex-guided) ===
-Search the CHANGED FILES for these patterns; for each hit, either propose a fix or mark “N/A” with reason. Cite exact lines.
+Search ONLY the files changed in this PR (from Stage 1 git diff) for these patterns; for each hit, either propose a fix or mark “N/A” with reason. Cite exact lines.
 
-- /(toLocaleString\\(.\*currency)/ → replace with intlFormat helpers
-- /new Date\\(/ → use Luxon DateTime
-- /key=\\{index\\}/ → use stable keys
-- /#[0-9a-fA-F]{3,6}\\b/ → use theme tokens
-- /console\\.(log|warn|error)/ → remove before merge
+- `toLocaleString.*currency` → replace with intlFormat helpers
+- `new Date\\(` → use Luxon DateTime instead
+- `key={index}` → use stable keys (object.id, etc.)
+- `#[0-9a-fA-F]{3,6}\\b` → use theme tokens instead of hex colors
+- `console\\.(log|warn|error)` → remove before merge
+- `useState.*\\[\\]` → consider if custom hook exists
+- `useEffect.*fetch` → consider using existing data hooks
+- `styled.*\\$\\{` → verify theme token usage in styled-components
 - Duplicated helpers (e.g., monthCount/getFirstMonth) across MPGA files → centralize
 - Pure helpers in .tsx → move to .ts
 - Tests not using central mockData → switch to shared mocks
@@ -90,11 +133,12 @@ Search the CHANGED FILES for these patterns; for each hit, either propose a fix 
 
 === Human-readable review (print to chat) ===
 
-- Summary (3–7 bullets)
-- Per-file results (from Stage 2)
-- Reuse Sweep Findings (from Stage 3)
-- Pattern Sweep Results (from Stage 4)
-- Quick patches (tiny unified diffs; do NOT apply)
+**Summary** (3–7 bullets covering key findings)
+**Architecture & Performance** (high-level concerns for senior devs)
+**Must-Fix Issues** (critical problems that must be addressed)
+**Reuse Opportunities** (existing utilities/components that could be used)
+**Code Quality** (style, patterns, best practices)
+**Testing Suggestions** (missing tests, test improvements)
 
 === Machine task: create `.ai-review.json` ===
 Create a single new untracked file at repo root named `.ai-review.json`. Valid JSON only (no code fences). Include ALL findings as line-anchored comments (single- or multi-line). Anchor tests/mentoring/reuse items to the most relevant changed line.
