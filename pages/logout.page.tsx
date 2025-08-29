@@ -3,24 +3,12 @@ import React, { ReactElement, useEffect } from 'react';
 import { useApolloClient } from '@apollo/client';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
-
-const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
+import { StatusPageWrapper } from './styledComponents/StatusPageWrapper';
 
 const LogoutPage = ({}): ReactElement => {
   const { t } = useTranslation();
@@ -39,14 +27,14 @@ const LogoutPage = ({}): ReactElement => {
       <Head>
         <title>{`${t('Logout')} | ${appName}`}</title>
       </Head>
-      <BoxWrapper boxShadow={3} data-testid="EmptyReport">
+      <StatusPageWrapper boxShadow={3} data-testid="EmptyReport">
         <Box mb={2}>
           <ExitToAppRoundedIcon fontSize="large" color="disabled" />
         </Box>
         <Typography variant="h5">
           {t("You're currently being logged out.")}
         </Typography>
-      </BoxWrapper>
+      </StatusPageWrapper>
     </>
   );
 };

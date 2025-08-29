@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react';
-import FilterList from '@mui/icons-material/FilterList';
 import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -10,6 +9,7 @@ import theme from 'src/theme';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
+import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import { FilterButton } from './styledComponents';
 
@@ -40,12 +40,6 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
-}));
-
-const FilterIcon = styled(FilterList)(({ theme }) => ({
-  width: 24,
-  height: 24,
-  color: theme.palette.primary.dark,
 }));
 
 const ItemsShowingText = styled('p')(({ theme }) => ({
@@ -133,7 +127,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (
-            <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+            <NavFilterIcon titleAccess={t('Toggle Filter Panel')} />
           )}
         </FilterButton>
         <SearchBox

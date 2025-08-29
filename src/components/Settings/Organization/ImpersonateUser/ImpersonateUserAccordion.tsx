@@ -1,13 +1,11 @@
 import { useRouter } from 'next/router';
 import { ReactElement, useContext } from 'react';
 import {
-  Box,
   DialogActions,
   FormHelperText,
   TextField,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -20,14 +18,11 @@ import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/Ac
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { AccordionProps } from '../../accordionHelper';
-
-const StyledBox = styled(Box)(() => ({
-  padding: '0 10px',
-}));
 
 type ImpersonateUserFormType = {
   user: string;
@@ -128,7 +123,7 @@ export const ImpersonateUserAccordion: React.FC<
           errors,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <StyledBox marginTop={4}>
+            <PaddedBox marginTop={4}>
               <FieldWrapper>
                 <TextField
                   required
@@ -149,8 +144,8 @@ export const ImpersonateUserAccordion: React.FC<
                   <FormHelperText error={true}>{errors.user}</FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
-            <StyledBox marginTop={2}>
+            </PaddedBox>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -166,7 +161,7 @@ export const ImpersonateUserAccordion: React.FC<
                   }}
                 />
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
             <DialogActions>
               <SubmitButton

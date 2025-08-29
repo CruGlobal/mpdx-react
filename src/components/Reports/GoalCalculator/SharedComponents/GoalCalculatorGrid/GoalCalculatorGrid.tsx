@@ -23,15 +23,12 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
+import { StyledSectionTitle } from '../styledComponents/StyledSectionTitle';
 import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   paddingTop: theme.spacing(2),
-}));
-
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
 }));
 
 const StyledAddButton = styled(Button)({
@@ -113,7 +110,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   return (
     <>
-      {promptText && <StyledTypography>{t(promptText)}</StyledTypography>}
+      {promptText && <StyledSectionTitle>{t(promptText)}</StyledSectionTitle>}
 
       <Formik
         initialValues={initialValues}

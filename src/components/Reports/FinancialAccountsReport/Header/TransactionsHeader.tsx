@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { FilterList } from '@mui/icons-material';
 import { Box, Button, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { FilterButton } from 'src/components/Shared/Header/styledComponents';
+import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
@@ -15,12 +15,6 @@ import { StickyHeader } from './styledComponents';
 
 const HeaderFilterAction = styled(Box)(() => ({
   width: '50px',
-}));
-
-const FilterIcon = styled(FilterList)(({ theme }) => ({
-  width: 24,
-  height: 24,
-  color: theme.palette.primary.dark,
 }));
 
 const Header = styled(Box)(({ theme }) => ({
@@ -73,7 +67,7 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
       <Header>
         <HeaderFilterAction>
           <FilterButton onClick={handleFilterListToggle}>
-            <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+            <NavFilterIcon titleAccess={t('Toggle Filter Panel')} />
           </FilterButton>
         </HeaderFilterAction>
         <HeaderActions>

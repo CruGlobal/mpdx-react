@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import {
   Box,
-  Checkbox,
   ListItemIcon,
   Table,
   TableBody,
@@ -18,8 +17,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
   DonationRow,
-  LoadingBox,
-  LoadingIndicator,
   LoadingProgressBar,
   StyledGrid,
   createDonationRow,
@@ -28,6 +25,11 @@ import {
   DonationTableQueryVariables,
   useDonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
+import {
+  LoadingBox,
+  LoadingIndicator,
+} from 'src/components/Shared/styledComponents/LoadingStyling';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { useLocale } from 'src/hooks/useLocale';
@@ -60,12 +62,6 @@ const TotalsTable = styled(Table)({
     textAlign: 'right',
   },
 });
-
-const StyledCheckbox = styled(Checkbox)(() => ({
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-  },
-}));
 
 const StyledListItemIcon = styled(ListItemIcon)(() => ({
   minWidth: '40px',

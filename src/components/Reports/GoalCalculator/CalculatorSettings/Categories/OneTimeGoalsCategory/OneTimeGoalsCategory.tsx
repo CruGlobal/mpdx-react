@@ -1,15 +1,10 @@
 import React from 'react';
-import { Typography } from '@mui/material';
-import { styled } from '@mui/system';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { StyledSectionTitle } from '../../../SharedComponents/styledComponents/StyledSectionTitle';
 import { OneTimeGoalsCategoryForm } from './OneTimeGoalsCategoryForm/OneTimeGoalsCategoryForm';
-
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-}));
 
 interface OneTimeGoalsCategoryProps {}
 
@@ -51,9 +46,9 @@ export const OneTimeGoalsCategory: React.FC<OneTimeGoalsCategoryProps> = () => {
 
   return (
     <>
-      <StyledTypography>
+      <StyledSectionTitle>
         {t('What are your one-time financial goals?')}
-      </StyledTypography>
+      </StyledSectionTitle>
 
       <Formik
         initialValues={initialValues}
