@@ -27,10 +27,7 @@ export interface MinistryExpenses {
 export const useReportExpenses = () => {
   const accountListId = useAccountListId() ?? '';
   const { query } = useRouter();
-  let goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
-
-  // temporary
-  goalCalculationId = 'aaea272a-3f02-47da-9304-86bd408eb11d';
+  const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
 
   const { data: goalData, loading } = useGoalCalculationQuery({
     variables: {
