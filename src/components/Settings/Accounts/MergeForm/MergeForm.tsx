@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DialogActionsLeft } from 'src/components/Shared/Forms/DialogActions';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -270,7 +270,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                     )}
                   </Grid>
                 </Grid>
-                <StyledBox marginTop={4}>
+                <PaddedBox marginTop={4}>
                   <FieldWrapper>
                     <FormControlLabel
                       control={
@@ -290,7 +290,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                       </FormHelperText>
                     )}
                   </FieldWrapper>
-                </StyledBox>
+                </PaddedBox>
 
                 <DialogActionsLeft>
                   <SubmitButton

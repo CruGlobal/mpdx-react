@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import {
   CancelButton,
   SubmitButton,
@@ -96,7 +96,7 @@ export const OrganizationEditAccountModal: React.FC<
           errors,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <StyledBox marginTop={4}>
+            <PaddedBox marginTop={4}>
               <FieldWrapper>
                 <TextField
                   required
@@ -114,8 +114,8 @@ export const OrganizationEditAccountModal: React.FC<
                   </FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
-            <StyledBox marginTop={2}>
+            </PaddedBox>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -135,7 +135,7 @@ export const OrganizationEditAccountModal: React.FC<
                   </FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />

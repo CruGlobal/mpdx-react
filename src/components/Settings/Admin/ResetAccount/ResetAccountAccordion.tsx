@@ -13,7 +13,7 @@ import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/Accordion
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AccordionProps } from '../../accordionHelper';
 import { useResetAccountListMutation } from './ResetAccount.generated';
@@ -103,7 +103,7 @@ export const ResetAccountAccordion: React.FC<
           errors,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <StyledBox marginTop={4}>
+            <PaddedBox marginTop={4}>
               <FieldWrapper>
                 <TextField
                   required
@@ -120,8 +120,8 @@ export const ResetAccountAccordion: React.FC<
                   <FormHelperText error={true}>{errors.user}</FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
-            <StyledBox marginTop={2}>
+            </PaddedBox>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -133,9 +133,9 @@ export const ResetAccountAccordion: React.FC<
                   onChange={handleChange('reason')}
                 />
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
-            <StyledBox marginTop={2}>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -147,7 +147,7 @@ export const ResetAccountAccordion: React.FC<
                   onChange={handleChange('account')}
                 />
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
             <DialogActions>
               <SubmitButton

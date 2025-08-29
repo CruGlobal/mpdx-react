@@ -10,7 +10,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
-import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import {
   CancelButton,
   SubmitButton,
@@ -140,7 +140,7 @@ export const OrganizationImportDataSyncModal: React.FC<
       size={'sm'}
     >
       <form onSubmit={handleSubmit}>
-        <StyledBox>
+        <PaddedBox>
           <StyledTypography color={theme.palette.mpdxYellow.contrastText}>
             {t(
               'This file should be a TntConnect DataSync file (.tntdatasync or .tntmpd) from your organization, not your local TntConnect database file (.mpddb).',
@@ -192,7 +192,7 @@ export const OrganizationImportDataSyncModal: React.FC<
               </Grid>
             </Grid>
           </Paper>
-        </StyledBox>
+        </PaddedBox>
 
         <DialogActions>
           <CancelButton onClick={handleClose} disabled={isSubmitting} />

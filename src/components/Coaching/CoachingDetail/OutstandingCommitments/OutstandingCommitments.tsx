@@ -21,7 +21,7 @@ import {
   AlignedTableCell,
   ContentContainer,
   LoadMoreButton,
-} from '../StyledComponents';
+} from '../styledComponents/styledComponents';
 import {
   useLoadAccountListCoachingCommitmentsQuery,
   useLoadCoachingCommitmentsQuery,

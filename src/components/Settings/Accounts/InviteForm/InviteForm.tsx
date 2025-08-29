@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DialogActionsLeft } from 'src/components/Shared/Forms/DialogActions';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
@@ -125,7 +125,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
         errors,
       }): ReactElement => (
         <form onSubmit={handleSubmit}>
-          <StyledBox marginTop={4}>
+          <PaddedBox marginTop={4}>
             <Typography marginBottom={2}>
               {t('Invite someone to share this account')}
             </Typography>
@@ -145,7 +145,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
                 <FormHelperText error={true}>{errors.email}</FormHelperText>
               )}
             </FieldWrapper>
-          </StyledBox>
+          </PaddedBox>
 
           <DialogActionsLeft>
             <SubmitButton disabled={!isValid} variant="contained">

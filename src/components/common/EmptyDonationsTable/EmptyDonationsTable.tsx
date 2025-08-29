@@ -8,7 +8,7 @@ import {
   DynamicAddDonation,
   preloadAddDonation,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
-import { BoxWrapper } from 'src/components/Shared/styledComponents/BoxWrapper';
+import { EmptyTableWrapper } from 'src/components/Shared/styledComponents/EmptyTableWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import Modal from '../Modal/Modal';
 
@@ -28,7 +28,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   const handleCloseAddDonation = () => setAddDonationOpen(false);
 
   return (
-    <BoxWrapper boxShadow={3}>
+    <EmptyTableWrapper boxShadow={3}>
       <StyledLocalAtmIcon fontSize="large" />
       <Typography variant="h5">{t(title)}</Typography>
       <Typography>
@@ -66,6 +66,6 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
           handleClose={handleCloseAddDonation}
         />
       </Modal>
-    </BoxWrapper>
+    </EmptyTableWrapper>
   );
 };

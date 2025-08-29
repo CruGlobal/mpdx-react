@@ -20,7 +20,7 @@ import { signOut } from 'next-auth/react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { StyledBox } from 'src/components/Shared/styledComponents/StyledBox';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { Organization } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -268,7 +268,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
             )}
             {organizationType === OrganizationTypesEnum.LOGIN && (
               <>
-                <StyledBox marginTop={4}>
+                <PaddedBox marginTop={4}>
                   <FieldWrapper>
                     <TextField
                       required
@@ -281,8 +281,8 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                       onChange={handleChange('username')}
                     />
                   </FieldWrapper>
-                </StyledBox>
-                <StyledBox marginTop={2}>
+                </PaddedBox>
+                <PaddedBox marginTop={2}>
                   <FieldWrapper>
                     <TextField
                       required
@@ -297,7 +297,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                       }}
                     />
                   </FieldWrapper>
-                </StyledBox>
+                </PaddedBox>
               </>
             )}
           </ContentContainer>

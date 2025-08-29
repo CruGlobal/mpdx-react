@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
-import { StyledTypography } from '../../../SharedComponents/styledComponents/StyledTypography';
+import { StyledSectionTitle } from '../../../SharedComponents/styledComponents/StyledSectionTitle';
 import { SpecialIncomeCategoryForm } from './SpecialIncomeCategoryForm/SpecialIncomeCategoryForm';
 
 interface SpecialIncomeCategoryProps {}
@@ -63,11 +63,11 @@ export const SpecialIncomeCategory: React.FC<
 
   return (
     <>
-      <StyledTypography>
+      <StyledSectionTitle>
         {t(
           'Do you have any additional sources of income? If you have income from outside sources (other than Cru) that you use as part of your budget, please include it below. Please enter the NET amounts used in your monthly budget.',
         )}
-      </StyledTypography>
+      </StyledSectionTitle>
 
       <Formik
         initialValues={initialValues}

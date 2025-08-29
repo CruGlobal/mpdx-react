@@ -17,13 +17,13 @@ import { usePhaseData } from 'src/hooks/usePhaseData';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
+import { getMonthOrWeekDateRange } from '../helpers';
 import {
   AlignedTableCell,
   ContentContainer,
   DividerRow,
   HeaderRow,
-} from '../StyledComponents';
-import { getMonthOrWeekDateRange } from '../helpers';
+} from '../styledComponents/styledComponents';
 import { useLevelOfEffortQuery } from './LevelOfEffort.generated';
 
 interface LevelOfEffortProps {

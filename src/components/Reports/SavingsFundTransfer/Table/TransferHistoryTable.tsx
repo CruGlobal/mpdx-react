@@ -15,7 +15,7 @@ import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDelete
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { ScheduleEnum, TransferHistory } from '../mockData';
-import { StyledGrid } from '../styledComponents/StyledGrid';
+import { StyledFundDataGrid } from '../styledComponents/StyledFundDataGrid';
 import { CustomToolbar } from './CustomToolbar';
 import { populateTransferHistoryRows } from './Row/createTableRow';
 
@@ -171,7 +171,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
           {t('Transfer History')}
         </Typography>
       </Box>
-      <StyledGrid
+      <StyledFundDataGrid
         rows={transferHistoryRows.slice(
           paginationModel.page * paginationModel.pageSize,
           (paginationModel.page + 1) * paginationModel.pageSize,

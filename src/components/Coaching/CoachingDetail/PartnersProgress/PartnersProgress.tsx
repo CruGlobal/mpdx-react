@@ -14,12 +14,12 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
+import { getMonthOrWeekDateRange } from '../helpers';
 import {
   AlignedTableCell,
   ContentContainer,
   HeaderRow,
-} from '../StyledComponents';
-import { getMonthOrWeekDateRange } from '../helpers';
+} from '../styledComponents/styledComponents';
 import { usePartnersProgressQuery } from './PartnersProgress.generated';
 
 interface PartnersProgressProps {
