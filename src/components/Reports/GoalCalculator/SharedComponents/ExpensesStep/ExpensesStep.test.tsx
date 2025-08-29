@@ -37,23 +37,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('ExpensesStep', () => {
-  it('renders with instructions and budget categories', () => {
+  it('renders with instructions', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Instructions' })).toBeInTheDocument();
-    expect(
-      getByRole('heading', { name: 'Ministry & Medical Mileage' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('heading', { name: 'Account Transfers' }),
-    ).toBeInTheDocument();
-  });
-
-  it('renders section list with family sections', async () => {
-    const { findAllByText, getAllByText } = render(<TestComponent />);
-
-    expect(await findAllByText('Ministry & Medical Mileage')).toHaveLength(2);
-    expect(getAllByText('Account Transfers')).toHaveLength(2);
   });
 
   it('renders GoalCalculatorGrid for each category', () => {

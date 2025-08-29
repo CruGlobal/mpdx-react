@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
 export interface GoalCalculatorSectionProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   rightPanelContent?: JSX.Element;
   printable?: boolean;
@@ -32,7 +32,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
       <Box pb={4}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h6">
-            {title}
+            {title || null}
             {rightPanelContent && (
               <IconButton
                 className="print-hidden"

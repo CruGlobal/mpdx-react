@@ -46,7 +46,7 @@ export const useGoalCalculator = (): GoalCalculatorType => {
   const context = React.useContext(GoalCalculatorContext);
   if (context === null) {
     throw new Error(
-      'Could not find GoalCalculatorContext. Make sure that your component is inside <GoalCalculatorProvider>.',
+      'Could not find GoalCalculatorContext. Make sure that your component is inside <GoalCalculatorProvider>.'
     );
   }
   return context;
@@ -91,7 +91,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
         });
       }
     },
-    [steps, enqueueSnackbar, t],
+    [steps, enqueueSnackbar, t]
   );
 
   const handleContinue = useCallback(() => {
@@ -142,7 +142,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
-    ],
+    ]
   );
 
   return (
