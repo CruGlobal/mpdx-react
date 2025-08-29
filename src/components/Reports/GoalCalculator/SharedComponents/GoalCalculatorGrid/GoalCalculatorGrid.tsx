@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { gql } from '@apollo/client';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,11 +23,12 @@ import {
   GridValidRowModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
+import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { useUpdatePrimaryBudgetCategoryMutation } from './PrimaryBudgetCategory.generated';
 import { StyledGrid } from './StyledGrid';
 import {
@@ -48,7 +49,7 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 }));
 
 interface GoalCalculatorGridProps {
-  category: PrimaryBudgetCategory;
+  category: BudgetFamilyFragment['primaryBudgetCategories'][number];
   rightPanelContent?: JSX.Element;
   promptText?: string;
 }
@@ -89,6 +90,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const directInput = !!category.directInput;
   const lumpSumAmount = category.directInput || 0;
 
+  useEffect(() => {
+    setInputValue(lumpSumAmount.toString());
+  }, [lumpSumAmount]);
+
   const updatePrimaryBudgetCategoryMutation = (value: number | null) => {
     updatePrimaryBudgetCategory({
       variables: {
@@ -112,7 +117,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           data?.updatePrimaryBudgetCategory?.primaryBudgetCategory;
         if (updatedCategory) {
           cache.writeFragment({
-            id: cache.identify(category),
+            id: `PrimaryBudgetCategory:${category.id}`,
             fragment: gql`
               fragment UpdatePrimaryBudgetCategory on PrimaryBudgetCategory {
                 id
@@ -188,7 +193,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
         if (newItem) {
           cache.modify({
-            id: cache.identify(category),
+            id: `PrimaryBudgetCategory:${category.id}`,
             fields: {
               subBudgetCategories(existingRefs = []) {
                 const newSubCategoryRef = cache.writeFragment({
@@ -231,19 +236,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         },
       },
       update: (cache, { data }) => {
-        const deletedId = data?.deleteSubBudgetCategory?.id;
-        if (deletedId) {
-          cache.modify({
-            id: cache.identify(category),
-            fields: {
-              subBudgetCategories(existingRefs = [], { readField }) {
-                return existingRefs.filter(
-                  (ref) => readField('id', ref) !== deletedId,
-                );
-              },
-            },
-          });
-        }
+        cache.evict({
+          id: `SubBudgetCategory:${data?.deleteSubBudgetCategory?.id}`,
+        });
+        cache.gc();
       },
     });
   };
@@ -300,7 +296,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           data?.updateSubBudgetCategory?.subBudgetCategory;
         if (updatedSubCategory) {
           cache.writeFragment({
-            id: cache.identify(updatedSubCategory),
+            id: `SubBudgetCategory:${updatedSubCategory.id}`,
             fragment: gql`
               fragment UpdateSubBudgetCategory on SubBudgetCategory {
                 id

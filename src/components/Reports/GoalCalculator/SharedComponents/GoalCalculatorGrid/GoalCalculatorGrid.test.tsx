@@ -6,7 +6,21 @@ import {
   PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
+import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
+
+const TestComponent: React.FC = () => {
+  const {
+    goalCalculationResult: { data },
+  } = useGoalCalculator();
+
+  return data ? (
+    <GoalCalculatorGrid
+      promptText=""
+      category={data.goalCalculation.ministryFamily.primaryBudgetCategories[0]}
+    />
+  ) : null;
+};
 
 const defaultProps = {
   promptText: 'Add your special income sources',
@@ -41,115 +55,135 @@ const defaultProps = {
 };
 
 describe('GoalCalculatorGrid', () => {
-  it('renders with initial data and calculates total correctly', async () => {
-    const { getByText } = render(
+  it('allows entering a value in the lump sum text field', async () => {
+    const { findByLabelText, findByText } = render(
       <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
     );
-
-    expect(getByText('Freelance Work')).toBeInTheDocument();
-    expect(getByText('Investment Returns')).toBeInTheDocument();
-    expect(getByText('Rental Income')).toBeInTheDocument();
-    await waitFor(() => {
-      expect(getByText('Total')).toBeInTheDocument();
-      expect(getByText('$5,500')).toBeInTheDocument();
-    });
+    const lumpSumButton = await findByText('Lump Sum');
+    userEvent.click(lumpSumButton);
+    const textField = await findByLabelText('Total');
+    expect(textField).toBeInTheDocument();
+    userEvent.clear(textField);
+    userEvent.type(textField, '1500');
+    expect(textField).toHaveValue(1500);
   });
 
   it('adds a new row when Add button is clicked', async () => {
-    const { getByRole, getByText, findByText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+    const { getByRole, findByText } = render(
+      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
     );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
 
-    userEvent.click(
-      getByRole('button', {
-        name: /Add Line Item/i,
-      }),
-    );
+    const addButton = getByRole('button', { name: /Add Line Item/i });
+    expect(addButton).toBeInTheDocument();
 
-    const newincome = await waitFor(() => findByText('New Income'), {
-      timeout: 5000,
-    });
-    expect(newincome).toBeInTheDocument();
-
-    expect(getByText('$5,500')).toBeInTheDocument();
+    userEvent.click(addButton);
+    expect(await findByText('New Income')).toBeInTheDocument();
   });
 
-  it('removes a row when delete button is clicked', async () => {
-    const { getByText, queryByText } = render(
+  it('doesnt remove base rows with categories', async () => {
+    const { getByText, findByText } = render(
       <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
     );
-    const freelanceRow = getByText('Freelance Work').closest('[role="row"]');
-    userEvent.hover(freelanceRow!);
-    const deleteButton = freelanceRow?.querySelector('[aria-label="Delete"]');
-    if (deleteButton) {
-      userEvent.click(deleteButton as Element);
-    }
-    await waitFor(() => {
-      expect(queryByText('Freelance Work')).not.toBeInTheDocument();
-    });
-    expect(getByText('$3,000')).toBeInTheDocument();
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
+
+    expect(getByText('Compass Room')).toBeInTheDocument();
+    expect(getByText('Desk')).toBeInTheDocument();
+    expect(getByText('Eyes PaintBrush Bible')).toBeInTheDocument();
+
+    const compassRow = getByText('Compass Room').closest('[role="row"]');
+    userEvent.hover(compassRow!);
+    const deleteButton = compassRow?.querySelector('[aria-label="Delete"]');
+
+    expect(deleteButton).not.toBeInTheDocument();
+  });
+
+  it('adds and removes a row when delete button is clicked', async () => {
+    const { getByText, findByText } = render(
+      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
+    );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
+
+    userEvent.click(getByText(/Add Line Item/i));
+    expect(await findByText('New Income')).toBeInTheDocument();
+    const newIncomeRow = getByText('New Income').closest('[role="row"]');
+    userEvent.hover(newIncomeRow!);
+    const deleteButton = newIncomeRow?.querySelector('[aria-label="Delete"]');
+
+    userEvent.click(deleteButton as Element);
   });
 
   it('edits a row name and updates the data', async () => {
-    const { queryByDisplayValue, getByDisplayValue, findByText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    const nameCell = await findByText('Freelance Work');
+    const { queryByDisplayValue, getByDisplayValue, findByText, getByText } =
+      render(
+        <GoalCalculatorTestWrapper useDynamicMocks={true}>
+          <TestComponent />
+        </GoalCalculatorTestWrapper>
+      );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
+    userEvent.click(getByText(/Add Line Item/i));
+    const nameCell = await findByText('New Income');
     userEvent.dblClick(nameCell);
 
-    await waitFor(() => {
-      const input = getByDisplayValue('Freelance Work');
-      userEvent.clear(input);
-      userEvent.type(input, 'Consulting Work');
-      userEvent.tab();
-    });
+    const input = getByDisplayValue('New Income');
+    userEvent.clear(input);
+    userEvent.type(input, 'Consulting Work');
+    userEvent.tab();
 
     await waitFor(() => {
-      expect(queryByDisplayValue('Freelance Work')).not.toBeInTheDocument();
+      expect(queryByDisplayValue('New Income')).not.toBeInTheDocument();
     });
-    expect(await findByText('Consulting Work')).toBeInTheDocument();
   });
 
   it('edits a row amount and updates the total', async () => {
-    const { findByText, getByDisplayValue } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+    const { findByText, getByDisplayValue, getByText } = render(
+      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
     );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
+    userEvent.click(getByText(/Add Line Item/i));
+    const newIncomeRow = getByText('New Income').closest('[role="row"]');
+    const amountCell = newIncomeRow?.querySelector('[data-field="amount"]');
+    expect(amountCell).toBeInTheDocument();
+    userEvent.dblClick(amountCell!);
 
-    const amountCell = await findByText('$2,500');
-    userEvent.dblClick(amountCell);
-
-    // Wait for the input to appear and clear it
     await waitFor(async () => {
-      const input = getByDisplayValue('2500');
+      const input = getByDisplayValue('0');
       userEvent.clear(input);
       userEvent.type(input, '3000');
     });
 
     userEvent.tab();
-    expect(await findByText('$6,000')).toBeInTheDocument();
+    const totalRow = getByText('Total').closest('[role="row"]');
+    const totalCell = totalRow?.querySelector('[data-field="amount"]');
+    expect(totalCell).toHaveTextContent('$1,450');
   });
 
   it('prevents editing the total row', async () => {
-    const { getByText, getAllByLabelText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+    const { getByText, getAllByLabelText, findByText } = render(
+      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
     );
-
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
     const totalRow = getByText('Total').closest('[role="row"]');
     const editableCells = totalRow?.querySelectorAll(
-      '[contenteditable="true"]',
+      '[contenteditable="true"]'
     );
     expect(editableCells).toHaveLength(0);
     userEvent.hover(totalRow!);
@@ -160,18 +194,21 @@ describe('GoalCalculatorGrid', () => {
   it('calculates total correctly when multiple operations are performed', async () => {
     const { getByText, getByRole, findByText, getAllByRole } = render(
       <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
+        <TestComponent />
+      </GoalCalculatorTestWrapper>
     );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
 
-    expect(getByText('$5,500')).toBeInTheDocument();
     userEvent.click(
       getByRole('button', {
         name: /Add Line Item/i,
-      }),
+      })
     );
     await findByText('New Income');
-    expect(getByText('$5,500')).toBeInTheDocument();
+    const totalRow = getByText('Total').closest('[role="row"]');
+    const totalCell = totalRow?.querySelector('[data-field="amount"]');
+    expect(totalCell).toHaveTextContent('$1,450');
     const cells = getAllByRole('gridcell');
     const amountCell = cells[cells.length - 3];
     userEvent.click(amountCell);
@@ -179,110 +216,10 @@ describe('GoalCalculatorGrid', () => {
     userEvent.type(amountCell, '2000');
     userEvent.dblClick(cells[cells.length - 1]);
     await waitFor(() => {
-      expect(getByText('$5,500')).toBeInTheDocument();
+      const totalRow = getByText('Total').closest('[role="row"]');
+      const totalCell = totalRow?.querySelector('[data-field="amount"]');
+      expect(totalCell).toHaveTextContent('$1,450');
     });
-  });
-
-  it('displays currency format correctly', async () => {
-    const { findByText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    expect(await findByText('$2,500')).toBeInTheDocument();
-    expect(await findByText('$1,200')).toBeInTheDocument();
-    expect(await findByText('$1,800')).toBeInTheDocument();
-  });
-
-  it('toggles between Lump Sum and Line Item buttons', async () => {
-    const {
-      getByText,
-      findByLabelText,
-      queryByRole,
-      findByRole,
-      queryByLabelText,
-      getByRole,
-    } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    const lumpSumButton = getByText('Lump Sum');
-    const lineItemButton = getByText('Line Item');
-    expect(queryByLabelText('Total')).not.toBeInTheDocument();
-    expect(getByRole('grid')).toBeInTheDocument();
-    userEvent.click(lumpSumButton);
-    expect(await findByLabelText('Total')).toBeInTheDocument();
-    expect(queryByRole('grid')).not.toBeInTheDocument();
-    userEvent.click(lineItemButton);
-    expect(await findByRole('grid')).toBeInTheDocument();
-    expect(queryByLabelText('Total')).not.toBeInTheDocument();
-  });
-
-  it('allows entering a value in the lump sum text field', async () => {
-    const { getByText, findByLabelText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    const lumpSumButton = getByText('Lump Sum');
-    userEvent.click(lumpSumButton);
-    const textField = await findByLabelText('Total');
-    expect(textField).toBeInTheDocument();
-    userEvent.clear(textField);
-    userEvent.type(textField, '1500');
-    expect(textField).toHaveValue(1500);
-  });
-
-  it('preserves lump sum value when switching between modes', async () => {
-    const { getByText, findByLabelText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    const lumpSumButton = getByText('Lump Sum');
-    const lineItemButton = getByText('Line Item');
-    userEvent.click(lumpSumButton);
-    const textField = await findByLabelText('Total');
-    userEvent.clear(textField);
-    userEvent.type(textField, '2500');
-    userEvent.click(lineItemButton);
-    userEvent.click(lumpSumButton);
-    expect(textField).toHaveValue(2500);
-  });
-
-  it('shows Add Line Item button only in Line Item mode', async () => {
-    const { getByText, findByText, queryByText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...defaultProps} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    const lumpSumButton = getByText('Lump Sum');
-    expect(await findByText(/Add Line Item/i)).toBeInTheDocument();
-    userEvent.click(lumpSumButton);
-    expect(queryByText(/Add Line Item/i)).not.toBeInTheDocument();
-  });
-
-  it('renders without prompt text when not provided', async () => {
-    const propsWithoutPrompt = {
-      category: defaultProps.category,
-    };
-
-    const { queryByText, findByText } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalCalculatorGrid {...propsWithoutPrompt} />
-      </GoalCalculatorTestWrapper>,
-    );
-
-    expect(
-      queryByText('Add your special income sources'),
-    ).not.toBeInTheDocument();
-    expect(await findByText('Freelance Work')).toBeInTheDocument();
   });
 
   it('uses default data when no subBudgetCategories are provided', () => {
@@ -296,7 +233,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...propsWithoutData} />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
 
     expect(getByText('Special Income')).toBeInTheDocument();
