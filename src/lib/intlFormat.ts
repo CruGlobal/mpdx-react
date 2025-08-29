@@ -61,6 +61,16 @@ export const amountFormat = (
   }
 };
 
+export const zeroAmountFormat = (
+  value: number | undefined | null,
+  locale: string,
+): string => {
+  if (value === 0) {
+    return '-';
+  }
+  return amountFormat(value, locale);
+};
+
 export const parseNumberFromCurrencyString = (
   input: string | null | undefined,
   locale: string = 'en-US',
