@@ -59,6 +59,20 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
     setFieldValue('birthdayYear', date?.year ?? null);
   };
 
+  const handleOnDateEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const inputValue = (event.target as HTMLInputElement).value.trim();
+      if (!inputValue) {
+        handleDateChange(null);
+      } else {
+        const parsed = DateTime.fromFormat(inputValue, 'M/d/yyyy');
+        if (parsed.isValid) {
+          handleDateChange(parsed);
+        }
+      }
+    }
+  };
+
   const birthdayDate = useMemo(
     () => buildDate(birthdayMonth, birthdayDay, birthdayYear),
     [birthdayMonth, birthdayDay, birthdayYear],
@@ -72,6 +86,7 @@ export const PersonBirthday: React.FC<PersonBirthdayProps> = ({
         invalidDate={birthdayDateIsInvalid}
         value={birthdayDateIsInvalid ? backupBirthdayDate : birthdayDate}
         onChange={(date) => handleDateChange(date)}
+        onKeyDown={handleOnDateEnter}
       />
     </ModalSectionContainer>
   );
